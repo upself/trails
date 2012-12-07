@@ -52,7 +52,7 @@ logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 1;
+my $maxChildren = 2;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 5;
@@ -95,7 +95,7 @@ eval {
         if ($@) {
             die $@;
         }
-         elog("cycle");
+
         ###Process each batch with max children forks.
         foreach my $name (@bankAccounts) {
             ilog("name=$name");
