@@ -8,8 +8,7 @@ use BRAVO::OM::Lpid;
 ###Need to check and make sure current stuff has active customerIds, etc
 sub new {
     my ($class) = @_;
-    my $self = {
-                 _testMode      => undef,
+    my $self = { _testMode      => undef,
                  _loadDeltaOnly => undef,
                  _applyChanges  => undef,
                  _list          => undef
@@ -86,7 +85,8 @@ sub load {
         elog($dieMsg);
 
         if ( $self->applyChanges == 1 ) {
-            SystemScheduleStatusDelegate->error( $systemScheduleStatus, $dieMsg );
+            SystemScheduleStatusDelegate->error( $systemScheduleStatus,
+                                                 $dieMsg );
         }
     }
     else {
@@ -137,7 +137,8 @@ sub doDelta {
 
     dlog('Binding columns');
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{lpidDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+                        @{ $connection->sql->{lpidDataFields} } );
     dlog('Columns binded');
 
     ilog('Executing bravo lpid query');
@@ -173,11 +174,8 @@ sub doDelta {
             }
         }
         else {
-            $self->list->{$key} = $lpid;
-            $self->list->{$key}->action('DELETE');
             elog('lpid does not exist in cndb');
-
-            # die('Lpid number deleted from CNDB');
+            die('Lpid number deleted from CNDB');
         }
     }
     $sth->finish();
@@ -198,9 +196,6 @@ sub applyDelta {
 
         if ( $self->list->{$key}->action eq 'COMPLETE' ) {
             dlog("Skipping this as is complete");
-        }
-        elsif ( $self->list->{$key}->action eq 'DELETE' ) {
-            $self->list->{$key}->delete($connection);
         }
         else {
             $self->list->{$key}->save($connection)
@@ -262,7 +257,8 @@ sub getLpidData {
 
     my $sth = $connection->sql->{lpidData};
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{lpidDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+                        @{ $connection->sql->{lpidDataFields} } );
     $sth->execute();
     while ( $sth->fetchrow_arrayref ) {
 
@@ -301,4 +297,3 @@ sub queryLpidData {
     return ( 'lpidData', $query, \@fields );
 }
 1;
-

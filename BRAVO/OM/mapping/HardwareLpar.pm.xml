@@ -17,11 +17,11 @@
 		sql-name="tech_image_id" />
 	<property name="serverType" type="scalar" equals="true"
 		sql-name="server_type" />
-	<property name="lparStatus" type="scalar" equals="true"
-		sql-name="lpar_status" />
+	<property name="lparStatus" type="scalar" equals="true" sql-name="lpar_status" />
 	<property name="partMIPS" type="scalar" equals="true"
 		sql-name="part_mips" />
-	<property name="partMSU" type="scalar" equals="true" sql-name="part_msu" />
+	<property name="partMSU" type="scalar" equals="true"
+		sql-name="part_msu" />
 	<property name="table" type="scalar" default="hardware_lpar" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

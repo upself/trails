@@ -219,11 +219,10 @@ sub doDelta {
         }
         else {
             if ( $customer->customerId == 999999 ) {
-            	$self->list->{$key} = $customer;
                 $self->list->{$key}->action('COMPLETE');
             }
             else {
-                elog('customer does not exist in cndb '.$key);
+                elog('customer does not exist in cndb');
 
                 #die('customer deleted from CNDB');
             }

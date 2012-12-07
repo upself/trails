@@ -16,7 +16,7 @@
 	<property name="hlStatus" type="scalar" equals="true" />
 	<property name="hlName" type="scalar" equals="true" />
 	<property name="hlPartMIPS" type="scalar" equals="true" />
-	<property name="hlPartMSU" type="scalar" equals="true" />
+    <property name="hlPartMSU" type="scalar" equals="true" />
 	<property name="slId" type="scalar" equals="true" />
 	<property name="cId" type="scalar" equals="true" />
 	<property name="slName" type="scalar" equals="true" />

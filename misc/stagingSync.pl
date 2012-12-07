@@ -76,10 +76,10 @@ sub querySoftwareLparIds {
 	  id
 	);
 	my $query = '
-         select
-         sl.id
-         from software_lpar sl
-         where sl.customer_id in(7767)
+        select
+            sl.id
+        from software_lpar sl
+        where sl.id=128500
     ';
 	return ( 'softwareLparIds', $query, \@fields );
 }
@@ -243,7 +243,7 @@ sub executeHchk {
                             }
                         }
                         else {
-                           BRAVO::Delegate::BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
+                           BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
                                 $bravoConnection, $bravoRec{id}, $bravoRec{bankAccountId}); 
                         }
 		}

@@ -131,9 +131,7 @@ sub queryBankAccounts {
             ba.status = \'ACTIVE\'
             and ba.data_type = \'INVENTORY\' 
         order by
-            ba.connection_status
-            ,ba.record_time
-	    ,ba.name
+            ba.name
     ';
 
     return ( 'bankAccounts', $query );

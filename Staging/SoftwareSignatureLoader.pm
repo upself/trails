@@ -77,14 +77,12 @@ sub load {
         elog($dieMsg);
     }
 
-    Staging::Delegate::StagingDelegate->insertCount( $stagingConnection, $self->count );
-
     $self->SUPER::endLoad($dieMsg);
 
     if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' ) {
         ilog('Disconnecting from bank account');
         $connection->disconnect
-            if ( defined $connection );
+          if ( defined $connection );
         ilog('Disconnected from bank account');
     }
 
@@ -107,7 +105,7 @@ sub prepareSourceData {
     eval {
         $self->list(
                      SoftwareSignatureDelegate->getSoftwareSignatureData(
-                                                       $connection, $self->SUPER::bankAccount, $self->loadDeltaOnly
+                                                            $connection, $self->SUPER::bankAccount, $self->loadDeltaOnly
                      )
         );
     };
@@ -136,6 +134,8 @@ sub doDelta {
         return;
     }
 
+    my $signatureList = $self->list;
+
     ###Loop through the staging query
     ###Prepare the necessary sql
 
@@ -156,39 +156,38 @@ sub doDelta {
     while ( $sth->fetchrow_arrayref ) {
 
         if ( $rec{action} eq 'DELETE' ) {
-            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
             next;
         }
 
-        if ( $rec{scanRecordAction} eq 'DELETE' ) {
-            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+        if ( $rec{scanRecordAction} eq 'DELETE' ) {    
+            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
             next;
         }
 
         $self->SUPER::incrTotalCnt();
 
         ###check if software exists
-        if ( exists $self->list->{ $rec{softwareId} } ) {
+        if ( exists $signatureList->{ $rec{softwareId} } ) {
             dlog( $rec{softwareId} . " softwareId exists in source" );
 
             ###check if software signature exists
-            if ( exists $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} } ) {
+            if ( exists $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} } ) {
                 dlog( $rec{softwareSignatureId} . " softwareSignatureId exists in source" );
 
                 ###check if scan record exists
                 if (
-                     exists $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                     ->{ $rec{scanRecordId} } )
+                    exists $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} } )
                 {
                     dlog( $rec{scanRecordId} . " scanRecordId exists in source" );
 
-                    $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'id'} = $rec{id};
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                      ->{'id'} = $rec{id};
 
                     #Get all the keys even though there should only be one
                     my $path =
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'path'};
+                      $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                      ->{'path'};
 
                     if (    ( $path eq "null" && ( !defined $rec{path} ) )
                          || ( stringEqual( $path, $rec{path} ) ) )
@@ -198,19 +197,19 @@ sub doDelta {
                         dlog("No update necessary");
 
                         #Exists in the file, no update necessary
-                        delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                            ->{ $rec{scanRecordId} };
+                        delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
+                          ->{ $rec{scanRecordId} };
                     }
                     else {
-                        if ( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40' ) {
+                        if ( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40') {
                             dlog("Setting record to update since path has changed");
-                            $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                                ->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
+                            $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                              ->{'action'} = 'UPDATE';
                             $self->SUPER::incrUpdateCnt();
                         }
                         else {
-                            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                                ->{ $rec{scanRecordId} };
+                            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
+                              ->{ $rec{scanRecordId} };
                         }
                     }
                 }
@@ -219,12 +218,12 @@ sub doDelta {
 
                     if ( $rec{action} eq 'COMPLETE' ) {
                         dlog("Setting record to delete");
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                            ->{'action'} = 'DELETE';
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                            ->{'id'} = $rec{id};
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                            ->{'path'} = $rec{path};
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                          ->{'action'} = 'DELETE';
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                          ->{'id'} = $rec{id};
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                          ->{'path'} = $rec{path};
                         $self->SUPER::incrDeleteCnt();
                     }
                 }
@@ -234,12 +233,12 @@ sub doDelta {
 
                 if ( $rec{action} eq 'COMPLETE' ) {
                     dlog("Setting record to delete");
-                    $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'action'} = 'DELETE';
-                    $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'id'} = $rec{id};
-                    $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'path'} = $rec{path};
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                      ->{'action'} = 'DELETE';
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                      ->{'id'} = $rec{id};
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                      ->{'path'} = $rec{path};
                     $self->SUPER::incrDeleteCnt();
                 }
             }
@@ -249,18 +248,19 @@ sub doDelta {
 
             if ( $rec{action} eq 'COMPLETE' ) {
                 dlog("Setting record to delete");
-                $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                    ->{'action'} = 'DELETE';
-                $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                    ->{'id'} = $rec{id};
-                $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                    ->{'path'} = $rec{path};
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                  ->{'action'} = 'DELETE';
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'id'} =
+                  $rec{id};
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'} =
+                  $rec{path};
                 $self->SUPER::incrDeleteCnt();
             }
         }
     }
     $sth->finish;
 
+    $self->list($signatureList);
 }
 
 sub applyDelta {
@@ -309,39 +309,19 @@ sub applyDelta {
                 $ss->action($action);
 
                 $ss->id(undef)
-                    if $ss->id == 0;
+                  if $ss->id == 0;
 
                 $ss->path(undef)
-                    if $ss->path eq 'null';
+                  if $ss->path eq 'null';
 
                 dlog( $ss->toString );
 
                 $ss->save($connection);
-                $self->addToCount( 'STAGING', 'SIGNATURE', 'STATUS_' . $ss->action );
             }
         }
     }
 
     dlog('End applyDelta method');
-}
-
-sub addToCount {
-    my ( $self, $db, $object, $action ) = @_;
-    my $hash;
-    if ( defined $self->count ) {
-        $hash = $self->count;
-        $hash->{$db}->{$object}->{$action}++;
-    }
-    else {
-      $hash->{$db}->{$object}->{$action} = 1;
-    }
-    $self->count($hash);
-}
-
-sub count {
-    my ( $self, $value ) = @_;
-    $self->{_count} = $value if defined($value);
-    return ( $self->{_count} );
 }
 
 sub applyFile {
@@ -360,13 +340,13 @@ sub applyFile {
     my $file = $self->SUPER::bankAccountName . '_signature.tsv';
 
     open( FILE, "> /db2/staging/temporaryExport/$file" )
-        or die "Can't open $file: $!";
+      or die "Can't open $file: $!";
 
     foreach my $key ( keys %{ $self->list } ) {
         dlog("Applying key=$key");
 
         $self->list->{$key}->action('UPDATE')
-            if ( !defined $self->list->{$key}->action );
+          if ( !defined $self->list->{$key}->action );
 
         if ( $self->list->{$key}->action eq 'COMPLETE' ) {
             dlog("Skipping this as is complete");
@@ -379,10 +359,10 @@ sub applyFile {
         }
 
         print FILE "\t"
-            . $self->list->{$key}->scanRecordId . "\t"
-            . $self->list->{$key}->softwareSignatureId . "\t"
-            . $self->list->{$key}->softwareId . "\t"
-            . $self->list->{$key}->action . "\n";
+          . $self->list->{$key}->scanRecordId . "\t"
+          . $self->list->{$key}->softwareSignatureId . "\t"
+          . $self->list->{$key}->softwareId . "\t"
+          . $self->list->{$key}->action . "\n";
 
     }
 
@@ -397,5 +377,3 @@ sub list {
     return ( $self->{_list} );
 }
 1;
-
-

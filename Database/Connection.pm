@@ -89,7 +89,7 @@ sub prepareSqlQueryAndFields {
         my $sql = $self->sql;
         eval { $sth = $self->dbh->prepare($query); };
         if ($@) {
-            croak( $@ . __LINE__ . "\n" . "prepareSqlQueryAndFields called" );
+            croak( $@ . __LINE__ . "\n" . "prepareSqlQueryAndFields called" );    
         }
 
         $sql->{$name} = $sth;
@@ -111,35 +111,35 @@ sub setDBInfo {
 
         my %dbs;
 
-            $dbs{'swasset'}{'password'} = 'NOV02db2';
-            $dbs{'swasset'}{'user'}     = 'swasset';
-            $dbs{'swasset'}{'name'}     = 'SWASSTDB';
-
-            $dbs{'staging'}{'password'} = 'apr03db2';
-            $dbs{'staging'}{'user'}     = 'eaadmin';
-            $dbs{'staging'}{'name'}     = 'STAGING';
-
-            $dbs{'trails'}{'password'} = 'Zum49tip';
-            $dbs{'trails'}{'user'}     = 'eaadmin';
-            $dbs{'trails'}{'name'}     = 'TRAILS';
-
-            $dbs{'cndb'}{'password'} = 'NOV02db2';
-            $dbs{'cndb'}{'user'}     = 'cndb';
-            $dbs{'cndb'}{'name'}     = 'CNDB';
-
-            $dbs{'swcm'}{'password'} = 'Tru30dds';
-            $dbs{'swcm'}{'user'}     = 'tap2swcm';
-            $dbs{'swcm'}{'name'}     = 'SWCMPROD';
-
-            $dbs{'sims'}{'password'} = 'ba001ley';
-            $dbs{'sims'}{'user'}     = 'simscon';
-            $dbs{'sims'}{'name'}     = 'SIMS';
+	    $dbs{'swasset'}{'password'} = 'NOV02db2';
+	    $dbs{'swasset'}{'user'}     = 'swasset';
+	    $dbs{'swasset'}{'name'}     = 'SWASSETR';
+	    
+	    $dbs{'staging'}{'password'} = 'apr03db2';
+	    $dbs{'staging'}{'user'}     = 'eaadmin';
+	    $dbs{'staging'}{'name'}     = 'STAGINGR';
+	
+	    $dbs{'trails'}{'password'} = 'Zum49tip';
+	    $dbs{'trails'}{'user'}     = 'eaadmin';
+	    $dbs{'trails'}{'name'}     = 'TRAILS';
+	    
+	    $dbs{'cndb'}{'password'} = 'NOV02db2';
+	    $dbs{'cndb'}{'user'}     = 'cndb';
+	    $dbs{'cndb'}{'name'}     = 'CNDBR';    
+	    
+	    $dbs{'swcm'}{'password'} = 'Tru30dds';
+	    $dbs{'swcm'}{'user'}     = 'tap2swcm';
+	    $dbs{'swcm'}{'name'}     = 'SWCMPROD';  
+	    
+	    $dbs{'sims'}{'password'} = 'ba001ley';
+	    $dbs{'sims'}{'user'}     = 'simscon';
+	    $dbs{'sims'}{'name'}     = 'SIMS'; 
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
             $self->password( $dbs{ $self->bankAccount }{'password'} );
             $self->name( $dbs{ $self->bankAccount }{'name'} );
-       }
+        }
     }
 }
 
@@ -201,6 +201,7 @@ sub name {
 sub schema {
     my $self = shift;
     $self->{_schema} = shift if scalar @_ == 1;
-    return $self->{_schema};
+    return $self->{_schema};    
 }
+
 1;

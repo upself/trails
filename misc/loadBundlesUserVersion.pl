@@ -80,7 +80,7 @@ use vars qw (
 getopt("iru");
 my $test_flag = "PRODUCTION";
 my $bundleFile = "bundle_load.tsv";
-my $logFile = "/var/staging/logs/loadBundle/bundle.log";
+my $logFile = "bundle.log";
 
 if ( $test_flag eq "TESTING" ) {
 	$SCHEMA          = "EAADMIN.";
@@ -90,9 +90,9 @@ if ( $test_flag eq "TESTING" ) {
 }
 else {
 	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILS";
+	$trails_db       = "dbi:DB2:TRAILS3";
 	$trails_user     = "eaadmin";
-	$trails_password = "jan11tra";
+	$trails_password = "apr03db2";
 }
 
 open LOG, ">>$logFile"; 
@@ -108,7 +108,7 @@ print LOG "Have handle\n";
 my $user = "LOADER";
 
 if ( $opt_u ) {
-	$user = $opt_u;
+	$user = $user;
 }
 
 if ( $opt_i ) {
@@ -131,7 +131,7 @@ if ( $opt_i ) {
 	( id, software_id, name, remote_user, record_time, status ) 
 	VALUES (?, ?, ?, ?, CURRENT TIMESTAMP, 'ACTIVE');");
 	
-	$getSoftwareId = $dbh->prepare("select p.id from product_info pi, product p, software_item si, kb_definition kb where pi.id=p.id and p.id=si.id and si.id=kb.id and kb.deleted!=1 and pi.licensable=1 and ucase(si.name) = ? order by si.product_role desc");
+	$getSoftwareId = $dbh->prepare("select id from product, software_item where product.id = software_item.id and software_item.name = ?");
 
 	$max = 0;
 	my $sqlCmd = "SELECT MAX(id) + 1 from EAADMIN.bundle";
@@ -324,3 +324,4 @@ sub usage {
     print "$0 -i <to import load_bundle.tsv> -r <create active_bundles.tsv> \n";
     exit 0;
 }
+

@@ -1,3 +1,2 @@
 server=tap
 debugLevel=info
-testMode=0

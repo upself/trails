@@ -62,19 +62,15 @@ sub load {
         $self->doDelta($stagingConnection);
         ilog('Delta complete');
 
-        eval {
+        ###Check if we have crossed the delete threshold
+        if ( $self->SUPER::checkDeleteThreshold() ) {
+            $dieMsg = '**** We are deleting more than 15% of total records - Aborting ****';
+        }
+        else {
             ilog('Applying deltas');
             $self->applyDelta($stagingConnection);
             ilog('Deltas applied');
-        };
-        if ($@) {
-            $dieMsg = $@;
         }
-        my $hash;
-        $hash->{'STAGING'}->{'SCAN_RECORD'}->{'UPDATE'} = $self->SUPER::updateCnt;
-        $hash->{'STAGING'}->{'SCAN_RECORD'}->{'DELETE'} = $self->SUPER::deleteCnt;
-        Staging::Delegate::StagingDelegate->insertCount( $stagingConnection, $hash );
-        die $dieMsg if defined $dieMsg;
     };
     if ($@) {
         $dieMsg = $@;
@@ -86,7 +82,7 @@ sub load {
     if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' ) {
         ilog('Disconnecting from bank account');
         $connection->disconnect
-            if ( defined $connection );
+          if ( defined $connection );
         ilog('Disconnected from bank account');
     }
 
@@ -108,9 +104,7 @@ sub prepareSourceData {
 
     eval {
         $self->list(
-            ComputerDelegate->getScanRecordData(
-                $connection, $self->SUPER::bankAccount, $self->SUPER::loadDeltaOnly
-            )
+              ComputerDelegate->getScanRecordData( $connection, $self->SUPER::bankAccount, $self->SUPER::loadDeltaOnly )
         );
     };
     if ($@) {
@@ -165,8 +159,6 @@ sub doDelta {
             delete $self->list->{$key};
             next;
         }
-
-        cleanValues( \%rec );
 
         my $scanRecord = new Staging::OM::ScanRecord();
         $scanRecord->id( $rec{id} );
@@ -225,7 +217,7 @@ sub doDelta {
             my $stagingTs = $rec{scanTime};
             $stagingTs =~ s/\D//g;
             $stagingTs =~ s/\s+//g;
-
+            
             my $stagingBTs = $rec{biosDate};
             $stagingBTs =~ s/\D//g;
             $stagingBTs =~ s/\s+//g;
@@ -235,13 +227,13 @@ sub doDelta {
 
             my $sourceTs  = $self->list->{$key}->scanTime;
             my $oSourceTs = $self->list->{$key}->scanTime;
-
-            my $sourceBTs  = $self->list->{$key}->biosDate;
+            
+            my $sourceBTs = $self->list->{$key}->biosDate;
             my $oSourceBTs = $self->list->{$key}->biosDate;
 
             $sourceTs =~ s/\D//g;
             $sourceTs =~ s/\s+//g;
-
+            
             $sourceBTs =~ s/\D//g;
             $sourceBTs =~ s/\s+//g;
 
@@ -253,13 +245,12 @@ sub doDelta {
             $self->list->{$key}->action('COMPLETE');
 
             if ( !$scanRecord->equals( $self->list->{$key} ) ) {
-                ilog('Record is not equal');
-                ilog($scanRecord->toString);
-                ilog($self->list->{$key}->toString);
+                dlog('Record is not equal');
 
                 if ( $scanRecord->action eq 'COMPLETE' ) {
                     ###Set to update if it is currently complete
                     $self->list->{$key}->action('UPDATE');
+                    $self->SUPER::incrUpdateCnt();
                 }
                 else {
                     ###Set to complete so we don't save
@@ -285,6 +276,7 @@ sub doDelta {
                 if ( $scanRecord->action eq 'COMPLETE' ) {
                     dlog('Setting record to delete');
                     $scanRecord->action('DELETE');
+                    $self->SUPER::incrDeleteCnt();
                 }
                 else {
                     dlog('Record is in update or delete, setting to complete');
@@ -326,39 +318,19 @@ sub applyDelta {
     }
 
     foreach my $key ( keys %{ $self->list } ) {
+        dlog("Applying key=$key");
+
         if ( !defined $self->list->{$key}->action ) {
             $self->list->{$key}->action('UPDATE');
-            $self->SUPER::incrUpdateCnt();
+            $self->SUPER::incrUpdateCnt();    
         }
-        elsif ( $self->list->{$key}->action eq 'UPDATE' ) {
-            $self->SUPER::incrUpdateCnt();
-        }
-        elsif ( $self->list->{$key}->action eq 'DELETE' ) {
-            $self->SUPER::incrDeleteCnt();
-        }
-        else {
-            delete $self->list->{$key};
-        }
-    }
 
-    ###Check if we have crossed the delete threshold
-    if ( $self->SUPER::checkDeleteThreshold() ) {
-        die '**** We are deleting more than 15% of total records - Aborting ****';
-    }
-    else {
-        $self->SUPER::updateCnt(0);
-        $self->SUPER::deleteCnt(0);
-        foreach my $key ( keys %{ $self->list } ) {
-            dlog("Applying key=$key");
-            $self->list->{$key}->save($connection);
-            if ( $self->list->{$key}->action eq 'UPDATE' ) {
-                $self->SUPER::incrUpdateCnt();
-                dlog($self->SUPER::incrUpdateCnt());
-            }
-            else {
-                $self->SUPER::incrDeleteCnt();
-            }
+        if ( $self->list->{$key}->action eq 'COMPLETE' ) {
+            dlog("Skipping this as is complete");
+            next;
         }
+
+        $self->list->{$key}->save($connection);
     }
 
     dlog('End applyDelta method');

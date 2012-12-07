@@ -496,14 +496,10 @@ sub buildScanRecord {
         || ( $rec->{processorCount} eq '' ) );
 
     if ( !defined $rec->{computerId} ) {
-      dlog( $rec->{computerId});
-      dlog('computerId is null');
         return undef;
     }
 
     if ( !defined $rec->{name} ) {
-      dlog($rec->{name});
-      dlog('computer name is unll');
         return undef;
     }
 

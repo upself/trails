@@ -749,8 +749,8 @@ sub queryInstalledSoftwareBySoftwareLparIdAndSoftwareId {
 }
 
 sub deleteInstalledTypeByTypeAndId {
-
-    my ( $self, $connection, $type, $id, $statistics ) = @_;
+    my ( $self, $connection, $type, $id, $stats ) = @_;
+    my %statistics = %{$stats};
     my $installedSoftware = new BRAVO::OM::InstalledSoftware();
     if ( $type eq 'MANUAL' ) {
 
@@ -786,7 +786,7 @@ sub deleteInstalledTypeByTypeAndId {
 
         ###Delete inst type.
         $installedType->delete($connection);
-        $statistics->{'TRAILS'}->{'DELETE'}->{$type}++;
+        $statistics{'TRAILS'}{$type}{'DELETE'}++;
     }
 
     ###Get inst type count for inst sw now.
@@ -796,7 +796,7 @@ sub deleteInstalledTypeByTypeAndId {
         ###Set inst sw to inactive.
         $installedSoftware->status('INACTIVE');
         $installedSoftware->save($connection);
-        $statistics->{'TRAILS'}->{'DELETE'}->{'INSTALLED_SOFTWARE'}++;
+        $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'DELETE'}++;
 
         ###Insert history record if discrepancy.
         if ( $type eq 'MANUAL' ) {
@@ -805,7 +805,7 @@ sub deleteInstalledTypeByTypeAndId {
             $discrepancyHistory->action('CLOSED - MISSING');
             $discrepancyHistory->comment('AUTO CLOSE');
             $discrepancyHistory->save($connection);
-            $statistics->{'TRAILS'}->{'UPDATE'}->{'SW_DISCREP_HIS'}++;
+            $statistics{'TRAILS'}{'SW_DISCREP_HIS'}{'UPDATE'}++;
         }
 
         ###Get software lpar object.
@@ -816,7 +816,7 @@ sub deleteInstalledTypeByTypeAndId {
         ###Call the recon engine for the inst sw object.
         my $queue = Recon::Queue->new( $connection, $installedSoftware, $softwareLpar );
         $queue->add;
-        $statistics->{'TRAILS'}->{'UPDATE'}->{'RECON_INST_SW'}++;
+        $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
 
         ###Get inst sw count for sw lpar.
         my $isCount = $self->getInstalledSoftwareCountBySwLparId( $connection, $softwareLpar->id );
@@ -825,12 +825,12 @@ sub deleteInstalledTypeByTypeAndId {
             ###Set sw lpar to inactive.
             $softwareLpar->status('INACTIVE');
             $softwareLpar->save($connection);
-            $statistics->{'TRAILS'}->{'DELETE'}->{'SOFTWARE_LPAR'}++;
+            $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'DELETE'}++;
 
             ###Call the recon engine for the sw lpar object.
             my $queue = Recon::Queue->new( $connection, $softwareLpar );
             $queue->add;
-            $statistics->{'TRAILS'}->{'UPDATE'}->{'RECON_SW_LPAR'}++;
+            $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
         }
     }
 }

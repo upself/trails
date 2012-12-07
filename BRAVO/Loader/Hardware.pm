@@ -12,18 +12,17 @@ use BRAVO::Delegate::BRAVODelegate;
 
 ###Object constructor.
 sub new {
-    my ( $class, $stagingConnection, $bravoConnection, $stagingHardware )
-        = @_;
+    my ( $class, $stagingConnection, $bravoConnection, $stagingHardware ) = @_;
     my $self = {
-        _stagingConnection      => $stagingConnection,
-        _bravoConnection        => $bravoConnection,
-        _stagingHardware        => $stagingHardware,
-        _error                  => 0,
-        _reconDeep              => 0,
-        _bravoHardware          => undef,
-        _saveBravoHardware      => 0,
-        _stagingHardwareLparIds => undef,
-        _hardwareLparLoaders    => undef
+                 _stagingConnection      => $stagingConnection,
+                 _bravoConnection        => $bravoConnection,
+                 _stagingHardware        => $stagingHardware,
+                 _error                  => 0,
+                 _reconDeep              => 0,
+                 _bravoHardware          => undef,
+                 _saveBravoHardware      => 0,
+                 _stagingHardwareLparIds => undef,
+                 _hardwareLparLoaders    => undef
     };
     bless $self, $class;
 
@@ -68,42 +67,38 @@ sub logic {
         if ( !$bravoHardware->equals( $self->bravoHardware ) ) {
             $self->saveBravoHardware(1);
 
-            if (   $self->bravoHardware->hardwareStatus eq 'HWCOUNT'
-                && $bravoHardware->hardwareStatus ne 'HWCOUNT' )
+            if (    $self->bravoHardware->hardwareStatus eq 'HWCOUNT'
+                 && $bravoHardware->hardwareStatus ne 'HWCOUNT' )
             {
                 $self->reconDeep(1);
             }
-            elsif ($bravoHardware->hardwareStatus eq 'HWCOUNT'
-                && $self->bravoHardware->hardwareStatus ne 'HWCOUNT' )
+            elsif (    $bravoHardware->hardwareStatus eq 'HWCOUNT'
+                    && $self->bravoHardware->hardwareStatus ne 'HWCOUNT' )
             {
                 $self->reconDeep(1);
             }
-            elsif ( $bravoHardware->processorCount
-                != $self->bravoHardware->processorCount )
-            {
+            elsif ( $bravoHardware->processorCount != $self->bravoHardware->processorCount ) {
                 $self->reconDeep(1);
             }
             elsif ( $bravoHardware->chips != $self->bravoHardware->chips ) {
                 $self->reconDeep(1);
             }
-            elsif ( $bravoHardware->machineTypeId
-                != $self->bravoHardware->machineTypeId )
-            {
+            elsif ( $bravoHardware->machineTypeId != $self->bravoHardware->machineTypeId ) {
                 $self->reconDeep(1);
             }
-            elsif($bravoHardware->model ne $self->bravoHardware->model) {
+            elsif ( $bravoHardware->model ne $self->bravoHardware->model ) {
                 $self->reconDeep(1);
             }
-            elsif($bravoHardware->processorType ne $self->bravoHardware->processorType) {
-                $self->reconDeep(1);    
+            elsif ( $bravoHardware->processorType ne $self->bravoHardware->processorType ) {
+                $self->reconDeep(1);
             }
-            elsif($bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS) {
-            	dlog( "$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
-                $self->reconDeep(1);    
+            elsif ( $bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS ) {
+                dlog("$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
+                $self->reconDeep(1);
             }
-            elsif($bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU) {
-            	dlog( "$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
-                $self->reconDeep(1);    
+            elsif ( $bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU ) {
+                dlog("$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
+                $self->reconDeep(1);
             }
         }
     }
@@ -133,14 +128,13 @@ sub processHardwareLpars {
                 $self->error(1);
                 $self->stagingHardware->action('UPDATE');
                 $self->stagingHardware->save( $self->stagingConnection );
+                $self->addToCount( 'STAGING', 'HARDWARE', 'STATUS_UPDATE' );
                 next;
             }
         }
 
-        my $hardwareLparLoader = new BRAVO::Loader::HardwareLpar(
-            $self->stagingConnection, $self->bravoConnection,
-            $stagingHardwareLpar,     $self->bravoHardware
-        );
+        my $hardwareLparLoader = new BRAVO::Loader::HardwareLpar( $self->stagingConnection, $self->bravoConnection,
+                                                                  $stagingHardwareLpar,     $self->bravoHardware );
         $hardwareLparLoader->reconDeep( $self->reconDeep );
         $hardwareLparLoader->logic;
         if ( $hardwareLparLoader->error == 1 ) {
@@ -157,15 +151,17 @@ sub save {
     return if $self->error == 1;
 
     ###Save the hardware if we're supposed to
-    $self->bravoHardware->save( $self->bravoConnection )
-        if ( $self->saveBravoHardware == 1 );
+    if ( $self->saveBravoHardware == 1 ) {
+        $self->bravoHardware->save( $self->bravoConnection );
+        $self->addToCount( 'TRAILS', 'HARDWARE', 'UPDATE' );
+    }
 
     ###Call save on the hardware lpar objects
     if ( defined $self->hardwareLparLoaders ) {
         foreach my $hardwareLparLoader ( @{ $self->hardwareLparLoaders } ) {
-            $hardwareLparLoader->bravoHardwareLpar->hardwareId(
-                $self->bravoHardware->id );
+            $hardwareLparLoader->bravoHardwareLpar->hardwareId( $self->bravoHardware->id );
             $hardwareLparLoader->save;
+            $self->addCountToCount($hardwareLparLoader);
         }
     }
 
@@ -179,6 +175,7 @@ sub save {
     ###Delete the staging hardware and return, if we're supposed to
     if ( $self->stagingHardware->action eq 'DELETE' ) {
         $self->stagingHardware->delete( $self->stagingConnection );
+        $self->addToCount( 'STAGING', 'HARDWARE', 'DELETE' );
         return;
     }
 
@@ -187,14 +184,15 @@ sub save {
 
     ###Save the staging license
     $self->stagingHardware->save( $self->stagingConnection );
+    $self->addToCount( 'STAGING', 'HARDWARE', 'COMPLETE' );
 }
 
 sub recon {
     my $self = shift;
 
-    my $queue
-        = Recon::Queue->new( $self->bravoConnection, $self->bravoHardware );
+    my $queue = Recon::Queue->new( $self->bravoConnection, $self->bravoHardware );
     $queue->add;
+    $self->addToCount( 'TRAILS', 'RECON_HW', 'UPDATE' );
 }
 
 sub getStagingHardwareLparIds {
@@ -203,11 +201,9 @@ sub getStagingHardwareLparIds {
     my @ids;
     my %rec;
 
-    $self->stagingConnection->prepareSqlQueryAndFields(
-        $self->queryHardwareLparData() );
+    $self->stagingConnection->prepareSqlQueryAndFields( $self->queryHardwareLparData() );
     my $sth = $self->stagingConnection->sql->{hardwareLparData};
-    $sth->bind_columns( map { \$rec{$_} }
-            @{ $self->stagingConnection->sql->{hardwareLparDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->stagingConnection->sql->{hardwareLparDataFields} } );
     $sth->execute( $self->stagingHardware->id );
     while ( $sth->fetchrow_arrayref ) {
         push @ids, $rec{id};
@@ -260,7 +256,7 @@ sub buildBravoHardware {
     my $accountNumber = $self->stagingHardware->customerNumber;
     $accountNumber =~ s/X//g;
     $bravoHardware->accountNumber($accountNumber);
-    
+
     $self->bravoHardware($bravoHardware);
 }
 
@@ -330,4 +326,46 @@ sub addToHardwareLparLoaders {
     $self->hardwareLparLoaders( \@array );
 }
 
+sub addToCount {
+    my ( $self, $db, $object, $action ) = @_;
+    my $hash;
+    if ( defined $self->count ) {
+        $hash = $self->count;
+        $hash->{$db}->{$object}->{$action}++;
+    }
+    else {
+        $hash->{$db}->{$object}->{$action} = 1;
+    }
+    $self->count($hash);
+}
+
+sub count {
+    my ( $self, $value ) = @_;
+    $self->{_count} = $value if defined($value);
+    return ( $self->{_count} );
+}
+
+sub addCountToCount {
+    my ( $self, $object ) = @_;
+    my $hash;
+    if ( defined $object->count ) {
+        foreach my $db ( keys %{ $object->count } ) {
+            foreach my $type ( keys %{ $object->count->{$db} } ) {
+                foreach my $action ( keys %{ $object->count->{$db}->{$type} } ) {
+                    my $count = $object->count->{$db}->{$type}->{$action};
+                    if ( defined $self->count ) {
+                        $hash = $self->count;
+                        $hash->{$db}->{$type}->{$action} = $hash->{$db}->{$type}->{$action} + $count;
+                    }
+                    else {
+                        $hash->{$db}->{$type}->{$action} = $count;
+                    }
+                }
+            }
+        }
+        $self->count($hash);
+    }
+}
+
 1;
+

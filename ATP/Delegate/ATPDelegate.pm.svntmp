@@ -25,7 +25,8 @@ sub getData {
     dlog('In getData method of ATPDelegate');
 
     dlog('Acquiring customer number map');
-    my $customerNumberMap = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
+    my $customerNumberMap
+        = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
     dlog('Customer number map acquired');
 
     dlog('Acquiring machine type map');
@@ -38,12 +39,15 @@ sub getData {
 
     $connection->dbh->{LongTruncOk} = 1;
 
-    dlog('Preparing atp data query');
+    dlog('Preparing atp data query');  
+    dlog('delta=$delta');           
     if ( $delta == 1 ) {
-        $connection->prepareSqlQueryAndFields( $self->queryATPDeltaData($testMode) );
+        $connection->prepareSqlQueryAndFields(
+            $self->queryATPDeltaData($testMode) );
     }
     else {
-        $connection->prepareSqlQueryAndFields( $self->queryATPData($testMode) );
+        $connection->prepareSqlQueryAndFields(
+            $self->queryATPData($testMode) );
     }
     dlog('ATP data query prepared');
 
@@ -54,12 +58,14 @@ sub getData {
     dlog('Binding columns');
 
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{atpDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+            @{ $connection->sql->{atpDataFields} } );
     dlog('Columns binded');
 
     dlog('Executing query');
     if ( $delta == 1 ) {
-        dlog( 'Executing delta query ' . "HWDATE: $hwDate LPARDATE: $lparDate" );
+        dlog(     'Executing delta query '
+                . "HWDATE: $hwDate LPARDATE: $lparDate" );
         $sth->execute( $hwDate, $lparDate );
         dlog('Execution complete');
     }
@@ -113,14 +119,21 @@ sub getData {
         my $hwLparCustomerId;
         if ( $customerNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
             dlog('Customer number is unique, assigning to hardware');
-            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{customerNumber} } } ) {
+            foreach my $countryCode (
+                keys %{ $customerNumberMap->{ $rec{customerNumber} } } )
+            {
                 next if $countryCode eq 'count';
-                $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{$countryCode};
+                $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }
+                    ->{$countryCode};
             }
         }
-        elsif ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) {
+        elsif (
+            defined $customerNumberMap->{ $rec{customerNumber} }
+            ->{ $rec{country} } )
+        {
             dlog("Matching country code found; assigning customer id");
-            $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} };
+            $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }
+                ->{ $rec{country} };
         }
         else {
             dlog("No unique customer number/country code defined, skipping");
@@ -128,27 +141,45 @@ sub getData {
         }
 
         if ( !defined $customerNumberMap->{ $rec{lparCustomerNumber} } ) {
-            dlog( 'LPAR customer number is not defined in cndb, reverting to hardware customer number' );
+            dlog(
+                'LPAR customer number is not defined in cndb, reverting to hardware customer number'
+            );
             $hwLparCustomerId = $hwCustomerId;
         }
-        elsif ( $customerNumberMap->{ $rec{lparCustomerNumber} }->{'count'} == 1 ) {
+        elsif (
+            $customerNumberMap->{ $rec{lparCustomerNumber} }->{'count'} == 1 )
+        {
             dlog('Lpar Customer number is unique, assigning to hardware');
-            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{lparCustomerNumber} } } ) {
+            foreach my $countryCode (
+                keys %{ $customerNumberMap->{ $rec{lparCustomerNumber} } } )
+            {
                 next if $countryCode eq 'count';
-                $hwLparCustomerId = $customerNumberMap->{ $rec{lparCustomerNumber} }->{$countryCode};
+                $hwLparCustomerId
+                    = $customerNumberMap->{ $rec{lparCustomerNumber} }
+                    ->{$countryCode};
             }
         }
-        elsif ( defined $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} } ) {
+        elsif (
+            defined $customerNumberMap->{ $rec{lparCustomerNumber} }
+            ->{ $rec{country} } )
+        {
             dlog("Matching country code found; assigning customer id");
-            $hwLparCustomerId = $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} };
+            $hwLparCustomerId
+                = $customerNumberMap->{ $rec{lparCustomerNumber} }
+                ->{ $rec{country} };
         }
         else {
-            dlog( "No unique customer number/country code defined for lpar, assigining hw customer id" );
+            dlog(
+                "No unique customer number/country code defined for lpar, assigining hw customer id"
+            );
             $hwLparCustomerId = $hwCustomerId;
         }
 
         ###Construct the key
-        my $key = $machineTypeMap->{ $rec{machineType} } . '|' . $rec{serial} . '|' . $rec{country};
+        my $key
+            = $machineTypeMap->{ $rec{machineType} } . '|'
+            . $rec{serial} . '|'
+            . $rec{country};
         dlog("hardware key=$key");
 
         ###Build our hardware object list
@@ -166,34 +197,24 @@ sub getData {
         $hardware->model( $rec{model} );
         $hardware->classification( $rec{classification} );
         $hardware->chips( $rec{chips} );
-       #$hardware->processorType( $rec{processorType} );
+        $hardware->processorType( $rec{processorType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
         dlog( $hardware->toString );
-        ###Add substr to cut down processorType
-        my $temProcessorType = $rec{processorType};
-        my $temSerialNumber = $rec{serial};
-        my $string_length = length( $temProcessorType);
-        if ( $string_length > 16 ) {
-                elog("ProcessorType $temProcessorType ,serialNumber $temSerialNumber is longer than 16, cut it off !");
-                my $newProcessorType =  substr $temProcessorType, 0, 16 ;
-                elog("newProcessorType $newProcessorType ");
-                $hardware->processorType( $newProcessorType );
-        }
-        else {
-                $hardware->processorType( $rec{processorType} );
-        }
-
 
         ###Add the hardware to the list
         if ( !exists $hardwareList{$key} ) {
             dlog('Adding hardware to hash as does not exist');
-            $hardware->serverType( $self->getServerType( $rec{serverType}, undef ) );
+            $hardware->serverType(
+                $self->getServerType( $rec{serverType}, undef ) );
             $hardwareList{$key} = $hardware;
         }
         else {
-            $hardwareList{$key}
-                ->serverType( $self->getServerType( $rec{serverType}, $hardwareList{$key}->serverType ) );
+            $hardwareList{$key}->serverType(
+                $self->getServerType(
+                    $rec{serverType}, $hardwareList{$key}->serverType
+                )
+            );
             dlog('Hardware already exists in hash');
         }
 
@@ -221,8 +242,9 @@ sub getData {
         $hardwareLpar->updateDate( $rec{lparDate} );
         $hardwareLpar->extId( $rec{extId} );
         $hardwareLpar->techImageId( $rec{techImageId} );
-        $hardwareLpar->serverType( $self->getServerType( $rec{serverType}, undef ) );
-        $hardwareLpar->lparStatus( $rec{lparStatus} );
+        $hardwareLpar->serverType(
+            $self->getServerType( $rec{serverType}, undef ) );
+        $hardwareLpar->lparStatus($rec{lparStatus});
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
 
@@ -348,8 +370,8 @@ sub queryATPData {
         from
             atpprod.bravo
     ';
-    if ( $testMode == 1 ) {
-        $query .= '
+	if ( $testMode == 1 ) {
+		$query .= '
     	where ( ltrim(rtrim(primbill)) in (\'35400XX\', \'39780XX\') 
     	or ltrim(rtrim(cpucustnum)) in (\'35400XX\', \'39780XX\'))
     	';
@@ -436,8 +458,6 @@ sub queryATPDeltaData {
              or lparupdt = \'\' ) then \'1970-01-01\'
             else date(substr(lparupdt,1,4)|| \'-\' || substr(lparupdt,5,2) || \'-\' || substr(lparupdt,7,2))
             end  >= ?)
-          and ( ltrim(rtrim(primbill)) not in (\'82100XX\')
-            or ltrim(rtrim(cpucustnum)) not in (\'82100XX\'))
     ';
     if ( $testMode == 1 ) {
         $query .= '

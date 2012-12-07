@@ -17,7 +17,6 @@ sub new {
 		_loadDeltaOnly      => undef,
 		_applyChanges       => undef,
 		_licenseList        => undef,
-		_licenseListKeep    => undef,
 		_accountNumberMap   => undef,
 		_customerNameMap    => undef,
 		_dupCustomerNameMap => undef,
@@ -37,7 +36,6 @@ sub new {
 	$self->getCustomerNameMap(
 		CNDB::Delegate::CNDBDelegate->getCustomerNameMap );
 	dlog("got cust name map");
-	
 
 	return $self;
 }
@@ -65,13 +63,6 @@ sub licenseList {
 	my ( $self, $value ) = @_;
 	$self->{_licenseList} = $value if defined($value);
 	return ( $self->{_licenseList} );
-}
-
-# for asset manager review
-sub licenseListKeep {
-	my ( $self, $value ) = @_;
-	$self->{_licenseListKeep} = $value if defined($value);
-	return ( $self->{_licenseListKeep} );
 }
 
 sub accountNumberMap {
@@ -165,7 +156,6 @@ sub load {
 	ilog("getting swcm db connection");
 	my $swcmConnection = Database::Connection->new('swcm');
 	ilog("got swcm db connection");
-	
 
 	###Get a connection to staging
 	ilog("getting staging db connection");
@@ -188,20 +178,11 @@ sub load {
 	###determine if this method should throw the die.
 	my $dieMsg;
 	eval {
-		# execute the proc to prepare the data
-		ilog("Calling swlm.createtrailstables()");
-		$swcmConnection->dbh->do("call swlm.createtrailstables()");
 		###Get the swcm data from the swcm db
 		$self->prepareSourceData( $stagingConnection, $swcmConnection,
 			$bravoConnection );
 		ilog("got data from swcm");
 		ilog( "swcm lic count: " . scalar keys %{ $self->licenseList } );
-		
-		###Get the keep list -- this should be removed after asset mgr review softReq
-		$self->licenseListKeep (
-			SWCMDelegate->getLicenseListKeep($swcmConnection)
-		);
-		dlog("got sr keep list");
 
 		###Delta the swcm license data against staging.
 		$self->doLicenseDelta($stagingConnection);
@@ -217,12 +198,6 @@ sub load {
 			ilog(
 "skipped applying license changes to staging per ApplyChanges arg"
 			);
-	# just for donnie testing
-#	foreach my $ky2 ( keys %{ $self->licenseList } ) {
-#		if ( $self->licenseList->{$ky2}->action eq 'DELETE' ) {
-#			dlog ("Donnie Deleting " . $self->licenseList->{$ky2}->extSrcId );
-#		}
-#	}
 		}
 
 	};
@@ -254,19 +229,10 @@ sub load {
 	logMsg("Total Counts  - $self->{_totalCnt}");
 	logMsg("Update Counts - $self->{_updateCnt}");
 	logMsg("Delete Counts - $self->{_deleteCnt}");
-	
+
 	###Display statistics
 	foreach my $key ( sort keys %statistics ) {
 		ilog( "statistics: $key=" . $statistics{$key} );
-	}
-	
-	###Display statistics
-	foreach my $key ( keys %{$self->licenseListKeep} ) {
-		if ( $self->licenseListKeep->{$key} == 1 ) {
-			dlog( "NOT DELETED due to final load omission: $key\n" );
-		} else {
-			dlog ("Final Load Data not loaded to STAGING $key\n");
-		}
 	}
 
 	###Calculate duration of this processing
@@ -435,7 +401,6 @@ sub doLicenseDelta {
 		$license->fullDesc( $rec{fullDesc} );
 		$license->version( $rec{version} );
 		$license->cpuSerial( $rec{cpuSerial} );
-		$license->lparName( $rec{lparName} );
 		$license->licenseStatus( $rec{licenseStatus} );
 		$license->swcmRecordTime( $rec{swcmRecordTime} );
 		$license->agreementType( $rec{agreementType} );
@@ -479,29 +444,6 @@ sub doLicenseDelta {
 				dlog("Setting to complete as this is delta only");
 				$license->action('COMPLETE');
 			}
-
-		   # the following condition is only inserted to keep from
-		   # deleting records that were originally sent via softreq
-		   # and are now missing from the final load
-		   # condition inserted 6/21/2011 dbryson
-		   # marker for easy removal after asset managers have reviewed the data
-		   # REMOVE_AFTER_ASSET_MANAGERS_REVIEW
-			elsif ( $key =~ /^SR*/ ) {
-
-				# Check to make sure this id is not in our KEEP list
-				if ( defined $self->licenseListKeep->{$key} ) {
-					$self->licenseListKeep->{$key} = 1;
-					$license->action('COMPLETE');
-				}
-				else {
-					if ( $license->action eq 'COMPLETE' ) {
-						$license->action('DELETE');
-						$self->incrDeleteCnt();
-						dlog("set license to delete");
-					}
-
-				}
-			}
 			else {
 				if ( $license->action eq 'COMPLETE' ) {
 					$license->action('DELETE');
@@ -515,11 +457,14 @@ sub doLicenseDelta {
 				}
 				else {
 					$license->action('COMPLETE');
-					dlog("license is in update or delete, setting to complete");
+					dlog(
+						"license is in update or delete, setting to complete" );
 				}
 
 				$license->status('INACTIVE');
 			}
+			
+			
 
 			$self->licenseList->{$key} = $license;
 			dlog( "new license obj=" . $self->licenseList->{$key}->toString() );
@@ -545,7 +490,6 @@ sub applyLicenseDelta {
 		if ( !defined $self->licenseList->{$key}->status ) {
 			$self->licenseList->{$key}->status('ACTIVE');
 		}
-		
 
 		$self->licenseList->{$key}->action('UPDATE')
 		  if ( !defined $self->licenseList->{$key}->action );

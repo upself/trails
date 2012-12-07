@@ -60,8 +60,8 @@ sub load {
 	my $dieMsg;
 	eval {
 		$self->loadSwassetQueue;
- 		$self->removeFromSwasset;
 		$self->loadManualQueue;
+		$self->removeFromSwasset;
 		$self->removeFromManual;
 	};
 	if ($@) {
@@ -88,7 +88,7 @@ sub removeFromSwasset {
 	return if ( !defined $self->swassetQueue );
 
 	foreach my $queue ( @{ $self->swassetQueue } ) {
-	    ilog("Queue=" . $queue->type);
+     	        ilog("Queue=" . $queue->type);
 		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
 		$softwareLpar->id( $queue->softwareLparId );
 		$softwareLpar->getById( $self->trailsConnection );
@@ -228,7 +228,7 @@ sub removeFromManual {
 		    $queue->comments("No scans found in staging");
 		    $queue->deleted(1);
 		    $queue->save($self->trailsConnection);
-		    #next; #comment out here to remove empty lpar 
+		    next;
 		}
 		$self->removeData($queue, $bankAccount, $scanIds, $softwareLpar);
 	}
@@ -416,8 +416,9 @@ sub removeSwassetDataDorana {
 	#	my ( $self, $computer ) = @_;
 	my ( $self, $computerId ) = @_;
 
-        $self->removeDoranaSware($computerId);
 	$self->removeDoranaComputer($computerId);
+	$self->removeDoranaSware($computerId);
+
 }
 
 sub removeDoranaComputer {
@@ -781,7 +782,6 @@ sub loadSwassetQueue {
 		$queue->customerId( $rec{customerId} );
 		$queue->softwareLparId( $rec{softwareLparId} );
 		$queue->type( $rec{type} );
-                $queue->hostname( $rec{hostname} );
 
 		push @data, $queue;
 	}
@@ -799,7 +799,6 @@ sub querySwassetQueue {
 	  customerId
 	  softwareLparId
 	  type
-	  hostname
 	);
 
 	my $query = '
@@ -808,13 +807,10 @@ sub querySwassetQueue {
             ,a.customer_id
             ,a.software_lpar_id
             ,a.type
-            ,a.hostname
         from
             swasset_queue a
         where
             a.deleted = 0
-        order by
-            a.record_time
     ';
 
 	return ( 'swassetQueue', $query, \@fields );
@@ -838,8 +834,7 @@ sub loadManualQueue {
 		$queue->customerId( $rec{customerId} );
 		$queue->softwareLparId( $rec{softwareLparId} );
 		$queue->softwareId( $rec{softwareId} );
-                $queue->hostname( $rec{hostname} );
-        
+
 		push @data, $queue;
 	}
 	###Close the statement handle
@@ -856,7 +851,6 @@ sub queryManualQueue {
 	  customerId
 	  softwareLparId
 	  softwareId
-	  hostname
 	);
 
 	my $query = '
@@ -865,13 +859,8 @@ sub queryManualQueue {
             ,a.customer_id
             ,a.software_lpar_id
             ,a.software_id
-            ,a.hostname
         from
             manual_queue a
-        where
-            a.deleted = 0
-        order by
-	    a.record_time
     ';
 
 	return ( 'manualQueue', $query, \@fields );

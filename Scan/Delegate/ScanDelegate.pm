@@ -11,8 +11,8 @@ use File::stat;
 sub getDisconnectedFile {
     my ( $self, $bankAccount, $delta, $filePart ) = @_;
 
-    my $rootDir         = '/var/ftp/staging/secondary';
-    my $disconnectedDir = '/var/staging/disconnected';
+    my $rootDir         = '/tmp';
+    my $disconnectedDir = '/db2/backup/trails';
     my $fileName        = $bankAccount->name . '_' . $filePart . '.tsv.gz';
     dlog("fileName=$fileName");
 
@@ -69,11 +69,10 @@ sub getDisconnectedFile {
     dlog('No new file');
 
     ###Return undef if we are only looking for new files
-    if($filePart ne 'software_filter') {
+    if($filePart != 'software_filter') {
         return undef if ($delta);
     }
 
-     dlog("$disconnectedDir/$fileName");
     ###We get here and we will return the old file if it exists
     if ( -e "$disconnectedDir/$fileName" ) {
         return "$disconnectedDir/$fileName" if ( -e "$disconnectedDir/$fileName" );

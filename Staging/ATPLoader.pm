@@ -447,23 +447,15 @@ sub doDelta {
     }
     $sth->finish();
 
-    if (  ( $hwDelCount > 15000 )
-         || ( $hwLparDelCount > 17000)
-         || ( $effDelCount > 8000 ) )
+    if (    ( $hwDelCount > 50000 )
+         || ( $hwLparDelCount > 50000 )
+         || ( $effDelCount > 50000 ) )
     {
         elog("hwDelCount=$hwDelCount, $hwLparDelCount=hwLparDelCount, $effDelCount=effDelCount");
         foreach my $key ( keys %{ $self->hardwareLpar } ) {
             elog( $self->hardwareLpar->{$key}->customerId . '|' . $self->hardwareLpar->{$key}->name )
                 if $self->hardwareLpar->{$key}->action eq 'DELETE';
         }
-
-			foreach my $key ( keys %{ $self->hardware } ) {
-				elog(   $self->hardware->{$key}->customerId . '|'
-					  . $self->hardware->{$key}->serial )
-				  if $self->hardware->{$key}->action eq 'DELETE';
-			}
-
-
         die('Too many deletes');
     }
 
