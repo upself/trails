@@ -52,7 +52,7 @@ logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 2;
+my $maxChildren = 1;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 5;
@@ -97,6 +97,7 @@ eval {
             next if $name eq 'TLCMZ';
             next if $name eq 'SWDISCRP';
             next if $name eq 'DORANA';     
+            next if $name eq 'WASSTDB';
 
             if ( $testMode == 1 ) {
                 next

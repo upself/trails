@@ -54,7 +54,7 @@ logging_level($cfgMgr->debugLevel);
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 1;
+my $maxChildren = 3;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 60;

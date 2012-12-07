@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Lpid" sql-name="lpid">
+	<property name="id" type="scalar" sql-name="lpid_id" sql-key="true" />
+	<property name="lpidId" type="scalar" equals="true" sql-name="lpid_id"
+		biz-key="true" />
+	<property name="majorId" type="scalar" equals="true" sql-name="major_id"
+		biz-key="true" />
+	<property name="name" type="scalar" equals="true" sql-name="lpid_name"
+		biz-key="true" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="customer_number" />
+	<property name="idField" type="scalar" default="customer_number_id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

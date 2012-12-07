@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="UsedLicenseHistory" sql-name="h_used_license">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="licenseId" type="scalar" equals="true"
+		sql-name="license_id" />
+	<property name="usedQuantity" type="scalar" equals="true"
+		sql-name="used_quantity" />
+	<property name="capacityTypeId" type="scalar" equals="true"
+		sql-name="capacity_type_id" />
+
+	<method name="save" />
+	<method name="delete" />
+	<method name="getById" />
+	<method name="getByBizKey" />
+</class>

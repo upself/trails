@@ -23,12 +23,12 @@ usage()
 	);    
 
 ###Close handles to avoid console output.
-#open( STDIN, "/dev/null" )
-#  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
-#open( STDOUT, "/dev/null" )
-#  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
-#open( STDERR, "/dev/null" )
-#  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
+open( STDIN, "/dev/null" )
+  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
+open( STDOUT, "/dev/null" )
+  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
+open( STDERR, "/dev/null" )
+  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
 
 eval {
 

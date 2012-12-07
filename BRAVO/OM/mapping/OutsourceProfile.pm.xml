@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="OutsourceProfile" sql-name="outsource_profile">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="outsourceProfileId" type="scalar" equals="true"
+		sql-name="id" biz-key="true" />
+	<property name="customerId" type="scalar" equals="true"
+		sql-name="customer_id" />
+	<property name="assetProcessId" type="scalar" equals="true"
+		sql-name="asset_process_id" />
+	<property name="countryId" type="scalar" equals="true"
+		sql-name="country_id" />
+	<property name="outsourceable" type="scalar" sql-name="outsourceable"
+		equals="true" />
+	<property name="comment" type="scalar" sql-name="comment"
+		equals="true" />
+	<property name="approver" type="scalar" sql-name="approver"
+		equals="true" />
+	<property name="recordTime" type="scalar" sql-name="record_time"
+		equals="true" />
+	<property name="current" type="scalar" sql-name="current"
+		equals="true" />
+	<property name="creationDateTime" type="scalar" sql-name="creation_date_time"
+		equals="true" />
+	<property name="updateDateTime" type="scalar" sql-name="update_date_time"
+		equals="true" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="outsource_profile" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

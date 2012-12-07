@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Staging::OM" name="SoftwareFilter" sql-name="software_filter">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="scanRecordId" type="scalar" equals="true"
+		sql-name="scan_record_id" biz-key="true" />
+	<property name="softwareFilterId" type="scalar" equals="true"
+		sql-name="software_filter_id" biz-key="true" />
+	<property name="softwareId" type="scalar" equals="true"
+		sql-name="software_id" biz-key="true" />
+	<property name="action" type="scalar" sql-name="action" />
+	<property name="table" type="scalar" default="software_filter" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+</class>

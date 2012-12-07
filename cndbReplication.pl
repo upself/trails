@@ -16,7 +16,7 @@ use BRAVO::CustomerTypeLoader;
 use BRAVO::CustomerLoader;
 use BRAVO::OutsourceProfileLoader;
 use BRAVO::MajorLoader;
-use BRAVO::LpidLoader;    
+use BRAVO::LpidLoader;
 use BRAVO::AccountPoolLoader;
 use BRAVO::CustomerNumberLoader;
 use Tap::NewPerl;
@@ -72,102 +72,117 @@ eval {
     while (1) {
 
         ###Execute load(s).
-#        $loader = new BRAVO::ContactLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::GeographyLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::RegionLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::CountryCodeLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::PodLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::SectorLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::IndustryLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::CustomerTypeLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::CustomerLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::OutsourceProfileLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::AccountPoolLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::MajorLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
-#
-#        $loader = new BRAVO::LpidLoader();
-#        $loader->load( TestMode            => $testMode,
-#                       LoadDeltaOnly       => $loadDeltaOnly,
-#                       ApplyChanges        => $applyChanges,
-#                       FullLoadPeriodHours => $fullLoadPeriodHours
-#        );
+
+        $loader = new BRAVO::ContactLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::GeographyLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::RegionLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::CountryCodeLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::PodLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::SectorLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::IndustryLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::CustomerTypeLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::CustomerLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::OutsourceProfileLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::AccountPoolLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::MajorLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
+
+        $loader = new BRAVO::LpidLoader();
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
+        );
 
         $loader = new BRAVO::CustomerNumberLoader();
-        $loader->load( TestMode            => $testMode,
-                       LoadDeltaOnly       => $loadDeltaOnly,
-                       ApplyChanges        => $applyChanges,
-                       FullLoadPeriodHours => $fullLoadPeriodHours
+        $loader->load(
+            TestMode            => $testMode,
+            LoadDeltaOnly       => $loadDeltaOnly,
+            ApplyChanges        => $applyChanges,
+            FullLoadPeriodHours => $fullLoadPeriodHours
         );
 
         ###Check if we should stop.

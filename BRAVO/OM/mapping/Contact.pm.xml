@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Contact" sql-name="contact">
+	<property name="id" type="scalar" sql-name="contact_id"
+		sql-key="true" />
+	<property name="contactId" type="scalar" equals="true"
+		sql-name="contact_id" biz-key="true" />
+	<property name="role" type="scalar" equals="true" sql-name="role" />
+	<property name="serial" type="scalar" equals="true" sql-name="serial" />
+	<property name="fullName" type="scalar" equals="true"
+		sql-name="full_name" />
+	<property name="remoteUserHolder" type="scalar" sql-name="remote_user"
+		equals="true" />
+	<property name="notesMail" type="scalar" sql-name="notes_mail"
+		equals="true" />
+	<property name="creationDateTime" type="scalar" sql-name="creation_date_time"
+		equals="true" />
+	<property name="updateDateTime" type="scalar" sql-name="update_date_time"
+		equals="true" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="contact" />
+	<property name="idField" type="scalar" default="contact_id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

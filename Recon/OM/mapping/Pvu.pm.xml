@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="Pvu" sql-name="pvu">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="processorBrand" type="scalar" equals="true"
+		sql-name="processor_brand" biz-key="true" />
+	<property name="processorModel" type="scalar" equals="true"
+		sql-name="processor_model" biz-key="true" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getById" />
+	<method name="getByBizKey" />
+</class>

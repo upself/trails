@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="ReconcileType" sql-name="reconcile_type">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="name" type="scalar" equals="true" sql-name="name"
+		biz-key="true" />
+	<property name="isManual" type="scalar" equals="true"
+		sql-name="is_manual" />
+	<property name="table" type="scalar" default="reconcile_type" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="getById" />
+	<method name="getByBizKey" />
+</class>

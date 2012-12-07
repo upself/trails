@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="ReconcileUsedLicense" sql-name="reconcile_used_license">
+	<property name="reconcileId" type="scalar " sql-name="reconcile_id"
+		biz-key="true" equals="true" />
+	<property name="usedLicenseId" type="scalar" equals="true"
+		sql-name="used_license_id" biz-key="true" />
+	<property name="id" type="scalar" sql-name="reconcile_id"
+		sql-key="true" />
+	<method name="save" />
+	<method name="getByBizKey" />
+</class>
