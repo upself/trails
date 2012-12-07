@@ -1,0 +1,70 @@
+#!/bin/sh
+
+DIR=/opt/staging/v2
+set -x
+cd $DIR
+set +x
+
+SHOST=`uname -n |awk -F'.' '{print $1}'`
+if [ "$SHOST" = "tap" ]
+then
+	. /db2/tap/sqllib/db2profile
+elif [ "$SHOST" = "tap2" ]
+then
+	. /home/eaadmin/sqllib/db2profile
+elif [ "$SHOST" = "tap3" ]
+then
+    . /home/eaadmin/sqllib/db2profile
+elif [ "$SHOST" = "tapmf" ]
+then
+	. /db2/cndb/sqllib/db2profile
+else
+    echo "ERROR: Unable to execute on this host: $SHOST"
+    exit 1
+fi
+
+SLEEP=2
+set -x
+./doranaToSwasset.pl start
+sleep $SLEEP
+./hdiskToStaging.pl start
+sleep $SLEEP
+./ipAddressToStaging.pl start
+sleep $SLEEP
+./manualToSwasset.pl start
+sleep $SLEEP
+./memModToStaging.pl start
+sleep $SLEEP
+./processorToStaging.pl start
+sleep $SLEEP
+./scanRecordToStaging.pl start
+sleep $SLEEP
+./softwareDoranaToStaging.pl start
+sleep $SLEEP
+./softwareFilterToStaging.pl start
+sleep $SLEEP
+./softwareManualToStaging.pl start
+sleep $SLEEP
+./softwareSignatureToStaging.pl start
+sleep $SLEEP
+./softwareTlcmzToStaging.pl start
+sleep $SLEEP
+./swassetDataManager.pl start
+sleep $SLEEP
+./tlcmzToSwasset.pl start
+sleep $SLEEP
+./capTypeToBravo.pl start
+sleep $SLEEP
+./cndbReplication.pl start
+sleep $SLEEP
+./expiredMaintManager.pl start
+sleep $SLEEP
+./expiredScansManager.pl start
+sleep $SLEEP
+./licenseToBravo.pl start
+sleep $SLEEP
+./licTypeToBravo.pl start
+sleep $SLEEP
+./scanRecordToLpar.pl start
+sleep $SLEEP
+exit 0

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="AlertExpiredMaintHistory"
+	sql-name="alert_exp_maint_h">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="alertExpiredMaintId" type="scalar" equals="true"
+		sql-name="alert_expired_maint_id" />
+	<property name="comments" type="scalar" equals="true"
+		sql-name="comments" />
+	<property name="open" type="scalar" equals="true" sql-name="open" />
+	<property name="creationTime" type="scalar" sql-name="creation_time" />
+	<property name="remoteUser" type="scalar" sql-name="remote_user"
+		default="STAGING" />
+	<property name="recordTime" type="scalar" sql-name="record_time" />
+	<property name="table" type="scalar" default="alert_exp_maint_h"
+		equals="true" />
+	<property name="idField" type="scalar" default="id" equals="true" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getById" />
+</class>

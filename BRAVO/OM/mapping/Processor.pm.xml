@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Processor" sql-name="software_lpar_processor">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="softwareLparId" type="scalar" equals="true"
+		sql-name="software_lpar_id" biz-key="true" />
+	<property name="processorNum" type="scalar" equals="true"
+		sql-name="processor_num" biz-key="true" />
+	<property name="manufacturer" type="scalar" sql-name="manufacturer"
+		equals="true" />
+	<property name="model" type="scalar" sql-name="model" equals="true" />
+	<property name="maxSpeed" type="scalar" sql-name="max_speed"
+		equals="true" />
+	<property name="busSpeed" type="scalar" sql-name="bus_speed"
+		equals="true" />
+	<property name="serialNumber" type="scalar" sql-name="serial_number"
+		equals="true" />
+	<property name="isActive" type="scalar" sql-name="is_active"
+		equals="true" />
+	<property name="numBoards" type="scalar" sql-name="num_boards"
+		equals="true" />
+	<property name="numModules" type="scalar" sql-name="num_modules"
+		equals="true" />
+	<property name="pvu" type="scalar" sql-name="pvu" equals="true" />
+	<property name="cache" type="scalar" sql-name="cache" equals="true" />
+	<property name="currentSpeed" type="scalar" sql-name="current_speed"
+		equals="true" />
+	<property name="table" type="scalar" default="software_lpar_processor" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="ContactHardware" sql-name="contact_hardware">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="contactSupportId" type="scalar" equals="true"
+		sql-name="contact_support_id" biz-key="true" />
+	<property name="hardwareId" type="scalar" equals="true"
+		sql-name="hardware_id" biz-key="true" />
+	<property name="table" type="scalar" default="contact_hardware" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getById" />
+</class>

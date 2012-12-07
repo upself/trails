@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="ReconInstalledSoftwareData">
+	<property name="hId" type="scalar" equals="true" />
+	<property name="hStatus" type="scalar" equals="true" />
+	<property name="hProcCount" type="scalar" equals="true" />
+	<property name="hHwStatus" type="scalar" equals="true" />
+	<property name="hSerial" type="scalar" equals="true" />
+	<property name="hProcessorBrand" type="scalar" equals="true" />
+	<property name="hProcessorModel" type="scalar" equals="true" />
+	<property name="hMachineTypeId" type="scalar" equals="true" />
+	<property name="hServerType" type="scalar" equals="true" />
+	<property name="hCpuMIPS" type="scalar" equals="true" />
+	<property name="hCpuMSU" type="scalar" equals="true" />
+	<property name="mtType" type="scalar" equals="true" />
+	<property name="hlId" type="scalar" equals="true" />
+	<property name="hlStatus" type="scalar" equals="true" />
+	<property name="hlName" type="scalar" equals="true" />
+	<property name="hlPartMIPS" type="scalar" equals="true" />
+	<property name="hlPartMSU" type="scalar" equals="true" />
+	<property name="slId" type="scalar" equals="true" />
+	<property name="cId" type="scalar" equals="true" />
+	<property name="slName" type="scalar" equals="true" />
+	<property name="slStatus" type="scalar" equals="true" />
+	<property name="processorCount" type="scalar" equals="true" />
+	<property name="sStatus" type="scalar" equals="true" />
+	<property name="sPriority" type="scalar" equals="true" />
+	<property name="sLevel" type="scalar" equals="true" />
+	<property name="sVendorMgd" type="scalar" equals="true" />
+	<property name="sMfg" type="scalar" equals="true" />
+	<property name="scName" type="scalar" equals="true" />
+	<property name="scParent" type="scalar" equals="true" />
+	<property name="scChildren" type="scalar" equals="true" />
+	<property name="bpIds" type="scalar" equals="true" />
+	<property name="bcSwIds" type="scalar" equals="true" />
+	<property name="bParent" type="scalar" equals="true" />
+	<property name="bChildren" type="scalar" equals="true" />
+	<property name="rId" type="scalar" equals="true" />
+	<property name="rTypeId" type="scalar" equals="true" />
+	<property name="rParentInstSwId" type="scalar" equals="true" />
+	<property name="rMachineLevel" type="scalar" equals="true" />
+	<property name="licsToRecon" type="scalar" equals="true" />
+	<property name="scopeName" type="scalar" equals="true" />
+	<property name="hChips" type="scalar" equals="true" />
+</class>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Pod" sql-name="pod">
+	<property name="id" type="scalar" sql-name="pod_id" sql-key="true" />
+	<property name="podId" type="scalar" equals="true" sql-name="pod_id"
+		biz-key="true" />
+	<property name="name" type="scalar" equals="true" sql-name="pod_name" />
+	<property name="creationDateTime" type="scalar" sql-name="creation_date_time"
+		equals="true" />
+	<property name="updateDateTime" type="scalar" sql-name="update_date_time"
+		equals="true" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="pod" />
+	<property name="idField" type="scalar" default="pod_id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

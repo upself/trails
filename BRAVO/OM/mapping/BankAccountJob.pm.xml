@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="BankAccountJob" sql-name="bank_account_job">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="bankAccountId" type="scalar" sql-name="bank_account_id"
+		equals="true" biz-key="true" />
+	<property name="name" type="scalar" equals="true" sql-name="name"
+		biz-key="true" />
+	<property name="comments" type="scalar" equals="true"
+		sql-name="comments" />
+	<property name="startTime" type="scalar" equals="true"
+		sql-name="start_time" />
+	<property name="endTime" type="scalar" equals="true" sql-name="end_time" />
+	<property name="status" type="scalar" equals="true" sql-name="status" />
+	<method name="save" />
+	<method name="getByBizKey" />
+</class>

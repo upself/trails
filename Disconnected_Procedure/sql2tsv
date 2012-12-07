@@ -1,0 +1,38 @@
+#!/usr/local/bin/perl
+#
+# denglers@us.ibm.com
+#
+# This script will take output from a db2 query and create a tab delimited file from it
+#
+# Pipe to this script with the output from a db2 query or
+# feed it as a filename
+#
+# Ex: db2 "select * from table" | sql2tsv
+# Ex: db2 "select * from table" > foo; sql2tsv foo
+#
+
+$|=1;
+
+my($header, $footer);
+
+$format = <>;
+while ($format !~ /\s*-/) {
+    $header = $format;
+    $format = <>;
+}
+
+$template = $header =~ /^( +)/ ? "x".length($1) : "" if defined $header;
+$length = 0;
+
+while($format =~ /(-+)( +)?/g) {
+    $field = length($1);
+    $field_separator = length($2);
+    $length += $field + $field_separator;
+    $template .= "A${field}x$field_separator ";
+}
+
+print("#", join("\t", unpack ($template, $header)),"\n") if defined $header;
+while(<>) {
+    next unless length $_ >= $length;
+    print(join("\t", map {s/^\s*(\d+)$/$1/; $_; } unpack ($template, $_)),"\n");
+}

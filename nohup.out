@@ -1,0 +1,6 @@
+syntax error at Scan/Delegate/ComputerDelegate.pm line 633, near "name)"
+Missing right curly or square bracket at Scan/Delegate/ComputerDelegate.pm line 1376, at end of line
+Compilation failed in require at Staging/ScanRecordLoader.pm line 8.
+BEGIN failed--compilation aborted at Staging/ScanRecordLoader.pm line 8.
+Compilation failed in require at ./scanRecordToStagingChild.pl line 7.
+BEGIN failed--compilation aborted at ./scanRecordToStagingChild.pl line 7.

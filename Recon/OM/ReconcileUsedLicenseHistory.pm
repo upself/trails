@@ -1,0 +1,187 @@
+package Recon::OM::ReconcileUsedLicenseHistory;
+
+use strict;
+use Base::Utils;
+
+sub new {
+    my ($class) = @_;
+    my $self = {
+        _reconcileId => undef
+        ,_usedLicenseId => undef
+        ,_id => undef
+    };
+    bless $self, $class;
+    return $self;
+}
+
+sub equals {
+    my ($self, $object) = @_;
+    my $equal;
+
+    $equal = 0;
+    if (defined $self->reconcileId && defined $object->reconcileId) {
+        $equal = 1 if $self->reconcileId->equals($object->reconcileId);
+    }
+    $equal = 1 if (!defined $self->reconcileId && !defined $object->reconcileId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->usedLicenseId && defined $object->usedLicenseId) {
+        $equal = 1 if $self->usedLicenseId eq $object->usedLicenseId;
+    }
+    $equal = 1 if (!defined $self->usedLicenseId && !defined $object->usedLicenseId);
+    return 0 if $equal == 0;
+
+    return 1;
+}
+
+sub reconcileId {
+    my $self = shift;
+    $self->{_reconcileId} = shift if scalar @_ == 1;
+    return $self->{_reconcileId};
+}
+
+sub usedLicenseId {
+    my $self = shift;
+    $self->{_usedLicenseId} = shift if scalar @_ == 1;
+    return $self->{_usedLicenseId};
+}
+
+sub id {
+    my $self = shift;
+    $self->{_id} = shift if scalar @_ == 1;
+    return $self->{_id};
+}
+
+sub toString {
+    my ($self) = @_;
+    my $s = "[ReconcileUsedLicenseHistory] ";
+    $s .= "reconcileId=";
+    if (defined $self->{_reconcileId}) {
+        $s .= $self->{_reconcileId};
+    }
+    $s .= ",";
+    $s .= "usedLicenseId=";
+    if (defined $self->{_usedLicenseId}) {
+        $s .= $self->{_usedLicenseId};
+    }
+    $s .= ",";
+    $s .= "id=";
+    if (defined $self->{_id}) {
+        $s .= $self->{_id};
+    }
+    $s .= ",";
+    chop $s;
+    return $s;
+}
+
+sub save {
+    my($self, $connection) = @_;
+    ilog("saving: ".$self->toString());
+    if( ! defined $self->id ) {
+        $connection->prepareSqlQuery($self->queryInsert());
+        my $sth = $connection->sql->{insertReconcileUsedLicenseHistory};
+        my $id;
+        $sth->bind_columns(\$id);
+        $sth->execute(
+            $self->reconcileId
+            ,$self->usedLicenseId
+        );
+        $sth->fetchrow_arrayref;
+        $sth->finish;
+        $self->id($id);
+    }
+    else {
+        $connection->prepareSqlQuery($self->queryUpdate);
+        my $sth = $connection->sql->{updateReconcileUsedLicenseHistory};
+        $sth->execute(
+            $self->reconcileId
+            ,$self->usedLicenseId
+            ,$self->id
+        );
+        $sth->finish;
+    }
+}
+
+sub queryInsert {
+    my $query = '
+        select
+            reconcile_id
+        from
+            final table (
+        insert into h_reconcile_used_license (
+            h_reconcile_id
+            ,h_used_license_id
+        ) values (
+            ?
+            ,?
+        ))
+    ';
+    return ('insertReconcileUsedLicenseHistory', $query);
+}
+
+sub queryUpdate {
+    my $query = '
+        update h_reconcile_used_license
+        set
+            h_reconcile_id = ?
+            ,h_used_license_id = ?
+        where
+            reconcile_id = ?
+    ';
+    return ('updateReconcileUsedLicenseHistory', $query);
+}
+
+sub delete {
+    my($self, $connection) = @_;
+    ilog("deleting: ".$self->toString());
+    if( defined $self->id ) {
+        $connection->prepareSqlQuery($self->queryDelete());
+        my $sth = $connection->sql->{deleteReconcileUsedLicenseHistory};
+        $sth->execute(
+            $self->id
+        );
+        $sth->finish;
+    }
+}
+
+sub queryDelete {
+    my $query = '
+        delete from h_reconcile_used_license
+        where
+            reconcile_id = ?
+    ';
+    return ('deleteReconcileUsedLicenseHistory', $query);
+}
+
+sub getByBizKey {
+    my($self, $connection) = @_;
+    $connection->prepareSqlQuery($self->queryGetByBizKey());
+    my $sth = $connection->sql->{getByBizKeyReconcileUsedLicenseHistory};
+    my $id;
+    $sth->bind_columns(
+        \$id
+    );
+    $sth->execute(
+        $self->reconcileId
+        ,$self->usedLicenseId
+    );
+    $sth->fetchrow_arrayref;
+    $sth->finish;
+    $self->id($id);
+}
+
+sub queryGetByBizKey {
+    my $query = '
+        select
+            reconcile_id
+        from
+            h_reconcile_used_license
+        where
+            h_reconcile_id = ?
+            and h_used_license_id = ?
+    ';
+    return ('getByBizKeyReconcileUsedLicenseHistory', $query);
+}
+
+1;

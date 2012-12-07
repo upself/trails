@@ -1,0 +1,14 @@
+RUNSTATS ON TABLE EAADMIN.EFFECTIVE_PROCESSOR and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.HARDWARE and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.HARDWARE_LPAR and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.HDISK and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.IP_ADDRESS and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.LICENSE and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.MEMORY and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SCAN_RECORD and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_FILTER and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_LPAR and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_LPAR_MAP and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_MANUAL and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_SIGNATURE and detailed indexes all shrlevel change;
+RUNSTATS ON TABLE EAADMIN.SOFTWARE_TLCMZ and detailed indexes all shrlevel change;
