@@ -9,7 +9,8 @@ use Sigbank::Delegate::SystemScheduleStatusDelegate;
 ###Need to check and make sure current stuff has active customerIds, etc
 sub new {
     my ($class) = @_;
-    my $self = { _testMode      => undef,
+    my $self = {
+                 _testMode      => undef,
                  _loadDeltaOnly => undef,
                  _applyChanges  => undef,
                  _list          => undef
@@ -22,7 +23,7 @@ sub new {
 
 sub testMode {
     my ( $self, $value ) = @_;
-    $self->{_testMode} = $value if defined($value);    
+    $self->{_testMode} = $value if defined($value);
     return ( $self->{_testMode} );
 }
 
@@ -86,8 +87,7 @@ sub load {
         elog($dieMsg);
 
         if ( $self->applyChanges == 1 ) {
-            SystemScheduleStatusDelegate->error( $systemScheduleStatus,
-                                                 $dieMsg );
+            SystemScheduleStatusDelegate->error( $systemScheduleStatus, $dieMsg );
         }
     }
     else {
@@ -118,8 +118,7 @@ sub prepareSourceData {
 
     ilog('Acquring customer number data');
 
-    $self->list(
-           CNDB::Delegate::CNDBDelegate->getCustomerNumberData($connection) );
+    $self->list( CNDB::Delegate::CNDBDelegate->getCustomerNumberData($connection) );
 
     dlog('End prepareSourceData method');
 }
@@ -130,8 +129,7 @@ sub doDelta {
     dlog('Start doDelta method');
 
     dlog('Preparing bravo customer number query');
-    $connection->prepareSqlQueryAndFields(
-                  BRAVO::Delegate::BRAVODelegate->queryCustomerNumberData() );
+    $connection->prepareSqlQueryAndFields( BRAVO::Delegate::BRAVODelegate->queryCustomerNumberData() );
     dlog('bravo customer number query prepared');
 
     dlog('Getting statement handle');
@@ -140,8 +138,7 @@ sub doDelta {
 
     dlog('Binding columns');
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} }
-                        @{ $connection->sql->{customerNumberDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{customerNumberDataFields} } );
     dlog('Columns binded');
 
     ilog('Executing bravo customer number query');
@@ -184,8 +181,8 @@ sub doDelta {
         }
         else {
             elog('customer number does not exist in cndb');
-
-            #			die('customer number deleted from CNDB');
+            $self->list->{$key} = $customerNumber;
+            $self->list->{$key}->action('DELETE');
         }
     }
     $sth->finish();
@@ -206,6 +203,9 @@ sub applyDelta {
 
         if ( $self->list->{$key}->action eq 'COMPLETE' ) {
             dlog("Skipping this as is complete");
+        }
+        elsif ( $self->list->{$key}->action eq 'DELETE' ) {
+            $self->list->{$key}->delete($connection);
         }
         else {
             $self->list->{$key}->save($connection)
@@ -254,3 +254,4 @@ sub checkArgs {
     ilog( "applyChanges=" . $self->applyChanges );
 }
 1;
+

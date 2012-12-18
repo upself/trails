@@ -8,62 +8,68 @@ use Base::ConfigManager;
 use Staging::OM::LoaderStatus;
 
 sub insertCount {
-    my ( $self, $connection, $countRef ) = @_;
-    foreach my $db ( keys %{$countRef} ) {
-        foreach my $object ( keys %{ $countRef->{$db} } ) {
-            foreach my $action ( keys %{ $countRef->{$db}->{$object} } ) {
-                my $count = $countRef->{$db}->{$object}->{$action};
-                if ( $count > 0 ) {
-                    my $loaderStatus = new Staging::OM::LoaderStatus();
-                    $loaderStatus->database($db);
-                    $loaderStatus->objectType($object);
-                    $loaderStatus->action($action);
-                    $loaderStatus->count($count);
-                    $loaderStatus->save($connection);
-                    dlog( $loaderStatus->toString );
-                }
-            }
-        }
-    }
+	my ( $self, $connection, $countRef ) = @_;
+	foreach my $db ( keys %{$countRef} ) {
+		foreach my $object ( keys %{ $countRef->{$db} } ) {
+			foreach my $action ( keys %{ $countRef->{$db}->{$object} } ) {
+				my $count = $countRef->{$db}->{$object}->{$action};
+				if ( $count > 0 ) {
+					my $loaderStatus = new Staging::OM::LoaderStatus();
+					$loaderStatus->database($db);
+					$loaderStatus->objectType($object);
+					$loaderStatus->action($action);
+					$loaderStatus->count($count);
+					$loaderStatus->save($connection);
+					dlog( $loaderStatus->toString );
+				}
+			}
+		}
+	}
 }
 
 sub getHardwareLparMap {
-    my ($self) = @_;
+	my ($self) = @_;
 
-    ###Hash to return
-    my %data;
+	###Hash to return
+	my %data;
 
-    ###Get cndb customer id map
-    my $customerIdMap = CNDB::Delegate::CNDBDelegate->getCustomerIdMap('ACTIVE');
+	###Get cndb customer id map
+	my $customerIdMap =
+	  CNDB::Delegate::CNDBDelegate->getCustomerIdMap('ACTIVE');
 
-    ###Get a staging connection
-    my $connection = Database::Connection->new('staging');
+	###Get a staging connection
+	my $connection = Database::Connection->new('staging');
 
-    ###Prepare the necessary sql
-    $connection->prepareSqlQueryAndFields( queryHardwareLparMap() );
+	###Prepare the necessary sql
+	$connection->prepareSqlQueryAndFields( queryHardwareLparMap() );
 
-    my $sth = $connection->sql->{hardwareLparMap};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{hardwareLparMapFields} } );
-    $sth->execute();
-    while ( $sth->fetchrow_arrayref ) {
+	my $sth = $connection->sql->{hardwareLparMap};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{hardwareLparMapFields} } );
+	$sth->execute();
+	while ( $sth->fetchrow_arrayref ) {
 
-        $data{ $rec{hardwareLparId} }->{"customerId"}       = $rec{customerId};
-        $data{ $rec{hardwareLparId} }->{"accountNumber"}    = $customerIdMap->{ $rec{customerId} };
-        $data{ $rec{hardwareLparId} }->{"hardwareLparName"} = $rec{hardwareLparName};
-        $data{ $rec{hardwareLparId} }->{"hardwareSerial"}   = $rec{hardwareSerial};
-    }
-    $sth->finish;
+		$data{ $rec{hardwareLparId} }->{"customerId"}    = $rec{customerId};
+		$data{ $rec{hardwareLparId} }->{"accountNumber"} =
+		  $customerIdMap->{ $rec{customerId} };
+		$data{ $rec{hardwareLparId} }->{"hardwareLparName"} =
+		  $rec{hardwareLparName};
+		$data{ $rec{hardwareLparId} }->{"hardwareSerial"} =
+		  $rec{hardwareSerial};
+	}
+	$sth->finish;
 
-    ###Close our staging connection
-    $connection->disconnect;
+	###Close our staging connection
+	$connection->disconnect;
 
-    return \%data;
+	return \%data;
 }
 
 sub queryHardwareLparMap {
-    my @fields = (qw(hardwareLparId customerId hardwareLparName hardwareSerial));
-    my $query  = '
+	my @fields =
+	  (qw(hardwareLparId customerId hardwareLparName hardwareSerial));
+	my $query = '
         select
             a.id
             ,a.customer_id
@@ -78,602 +84,607 @@ sub queryHardwareLparMap {
             and a.hardware_id = b.id
         with ur
     ';
-    return ( 'hardwareLparMap', $query, \@fields );
+	return ( 'hardwareLparMap', $query, \@fields );
 }
 
 # Added for the Mainframe Serial(4) match only for same machine type
 sub getMachineTypeByHardwareId {
-    my ( $self, $lpar, $serial ) = @_;
+	my ( $self, $lpar, $serial ) = @_;
 
-    ###Get a staging connection
-    my $connection = Database::Connection->new('trails');
+	###Get a staging connection
+	my $connection = Database::Connection->new('trails');
 
-    ###Prepare the necessary sql
-    $connection->prepareSqlQueryAndFields( queryGetMachineTypeByHardwareId() );
+	###Prepare the necessary sql
+	$connection->prepareSqlQueryAndFields( queryGetMachineTypeByHardwareId() );
 
-    my $sth = $connection->sql->{getMachineTypeByHardwareId};
-    my $MachineType;
-    $sth->bind_columns( undef, \$MachineType );
-    dlog("looking up machine type for $lpar $serial");
-    $sth->execute( $lpar, $serial );
-    my $found = $sth->fetch();
-    dlog("machine type is $MachineType");
-    $sth->finish;
+	my $sth = $connection->sql->{getMachineTypeByHardwareId};
+	my $MachineType;
+	$sth->bind_columns( undef, \$MachineType );
+	dlog("looking up machine type for $lpar $serial");
+	$sth->execute( $lpar, $serial );
+	my $found = $sth->fetch();
+	dlog("machine type is $MachineType");
+	$sth->finish;
 
-    if ( !defined $MachineType ) {
-        return "UNKNOWN";
-    }
-    else {
-        return $MachineType;
-    }
+	if ( !defined $MachineType ) {
+		return "UNKNOWN";
+	}
+	else {
+		return $MachineType;
+	}
 }
 
 sub queryGetMachineTypeByHardwareId {
-    my $query = '
+	my $query = '
 	select type from machine_type, hardware, hardware_lpar 
 	where 
 	hardware_id = hardware.id 
 	and hardware.machine_type_id = machine_type.id 
 	and hardware_lpar.name = ? and right(hardware.serial, 4) = ?
     ';
-    return ( 'getMachineTypeByHardwareId', $query );
+	return ( 'getMachineTypeByHardwareId', $query );
 }
 
-sub getSoftwareLparIpBatches {
-    my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+sub getScanRecordIpBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
 
-    my @softwareLparIds = ();
+	my @scanRecordIds = ();
 
-    ###Prepare query to pull software lpar ids from staging for Ip addresses
-    dlog("preparing software lpar ids for ip addresses query");
-    $connection->prepareSqlQueryAndFields( $self->querySoftwareLparIpIds( $testMode, $loadDeltaOnly ) );
-    dlog("prepared software lpar ids for ip addresses query");
+	###Prepare query to pull  ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for ip addresses query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordIpIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for ip addresses query");
 
-    ###Get the statement handle
-    dlog("getting sth for software lpar ids for ip addresses query");
-    my $sth = $connection->sql->{softwareLparIpIds};
-    dlog("got sth for software lpar ids for ip addresses query");
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for ip addresses query");
+	my $sth = $connection->sql->{scanRecordIpIds};
+	dlog("got sth for Scan Record ids for ip addresses query");
 
-    ###Bind our columns
-    my %rec;
-    dlog("binding columns for software lpar ids for ip addresses query");
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{softwareLparIpIdsFields} } );
-    dlog("binded columns for software lpar ids for ip addresses query");
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for ip addresses query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordIpIdsFields} } );
+	dlog("binded columns for Scan Record ids for ip addresses query");
 
-    ###Excute the query
-    ilog("executing software lpar ids for ip addresses query");
-    $sth->execute();
-    ilog("executed software lpar ids for ip addresses query");
+	###Excute the query
+	ilog("executing Scan Record ids for ip addresses query");
+	$sth->execute();
+	ilog("executed Scan Record ids for ip addresses query");
 
-    while ( $sth->fetchrow_arrayref ) {
+	while ( $sth->fetchrow_arrayref ) {
 
-        ###Clean record values
-        cleanValues( \%rec );
+		###Clean record values
+		cleanValues( \%rec );
 
-        push( @softwareLparIds, $rec{id} );
-    }
-    ilog( "got sw lpar ids, count: " . scalar(@softwareLparIds) );
-    ilog( "min id=" . $softwareLparIds[0] );
-    ilog( "max id=" . $softwareLparIds[$#softwareLparIds] );
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
 
-    ###
-    ###Calculate the batches of MaxLparsInQuery.
-    ###
-    my @idBatches = ();
-    my $firstIndex;
-    my $lastIndex;
-    for ( my $i = 0; $i <= $#softwareLparIds; $i++ ) {
-        if ( $i == 0 ) {
-            $firstIndex = 0;
-        }
-        elsif ( $firstIndex < $i && $i < $lastIndex ) {
-            next;
-        }
-        elsif ( $lastIndex == $#softwareLparIds ) {
-            last;
-        }
-        else {
-            $firstIndex = $lastIndex + 1;
-        }
-        $lastIndex = $firstIndex + $maxLparsInQuery - 1;
-        $lastIndex = ( $lastIndex > $#softwareLparIds ) ? $#softwareLparIds : $lastIndex;
-        push( @idBatches, "$softwareLparIds[$firstIndex],$softwareLparIds[$lastIndex]" );
-    }
-    ilog( "id batches count: " . scalar(@idBatches) );
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
 
-    return @idBatches;
+	return @idBatches;
 }
 
-sub querySoftwareLparIpIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (qw( id ));
-    my $query  = '
+sub queryScanRecordIpIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
         select
             distinct a.id
         from 
-            software_lpar a
-            join software_lpar_map b on b.software_lpar_id = a.id
-            join scan_record c on c.id = b.scan_record_id
-            join ip_address d on d.scan_record_id = c.id
+            scan_record a 
+            join ip_address b on b.scan_record_id = a.id
         where
             a.action = \'COMPLETE\'
-            and b.action = \'COMPLETE\'
-            and c.action = \'COMPLETE\'
     ';
-    my $clause = 'and';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . ' (
-            d.action != \'COMPLETE\')
+            b.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         order by
             a.id
         with ur
     ';
-    dlog("querySoftwareLparIpIds=$query");
-    return ( 'softwareLparIpIds', $query, \@fields );
+	dlog("queryScanRecordIpIds=$query");
+	return ( 'scanRecordIpIds', $query, \@fields );
 }
 
-sub getSoftwareLparHdiskBatches {
-    my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+sub getScanRecordHdiskBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
 
-    my @softwareLparIds = ();
+	my @scanRecordIds = ();
 
-    ###Prepare query to pull software lpar ids from staging for Ip addresses
-    dlog("preparing software lpar ids for hdisk query");
-    $connection->prepareSqlQueryAndFields( $self->querySoftwareLparHdiskIds( $testMode, $loadDeltaOnly ) );
-    dlog("prepared software lpar ids for hdisk query");
+	###Prepare query to pull  ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for hdisk query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordHdiskIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for hdisk query");
 
-    ###Get the statement handle
-    dlog("getting sth for software lpar ids for hdisk query");
-    my $sth = $connection->sql->{softwareLparHdiskIds};
-    dlog("got sth for software lpar ids for hdisk query");
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for hdisk query");
+	my $sth = $connection->sql->{scanRecordHdiskIds};
+	dlog("got sth for Scan Record ids for hdisk query");
 
-    ###Bind our columns
-    my %rec;
-    dlog("binding columns for software lpar ids for hdisk query");
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{softwareLparHdiskIdsFields} } );
-    dlog("binded columns for software lpar ids for hdisk query");
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for hdisk query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordHdiskIdsFields} } );
+	dlog("binded columns for Scan Record ids for hdisk query");
 
-    ###Excute the query
-    ilog("executing software lpar ids for hdisk query");
-    $sth->execute();
-    ilog("executed software lpar ids for hdisk query");
+	###Excute the query
+	ilog("executing Scan Record ids for hdisk query");
+	$sth->execute();
+	ilog("executed Scan Record ids for hdisk query");
 
-    while ( $sth->fetchrow_arrayref ) {
+	while ( $sth->fetchrow_arrayref ) {
 
-        ###Clean record values
-        cleanValues( \%rec );
+		###Clean record values
+		cleanValues( \%rec );
 
-        push( @softwareLparIds, $rec{id} );
-    }
-    ilog( "got sw lpar ids, count: " . scalar(@softwareLparIds) );
-    ilog( "min id=" . $softwareLparIds[0] );
-    ilog( "max id=" . $softwareLparIds[$#softwareLparIds] );
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
 
-    ###
-    ###Calculate the batches of MaxLparsInQuery.
-    ###
-    my @idBatches = ();
-    my $firstIndex;
-    my $lastIndex;
-    for ( my $i = 0; $i <= $#softwareLparIds; $i++ ) {
-        if ( $i == 0 ) {
-            $firstIndex = 0;
-        }
-        elsif ( $firstIndex < $i && $i < $lastIndex ) {
-            next;
-        }
-        elsif ( $lastIndex == $#softwareLparIds ) {
-            last;
-        }
-        else {
-            $firstIndex = $lastIndex + 1;
-        }
-        $lastIndex = $firstIndex + $maxLparsInQuery - 1;
-        $lastIndex = ( $lastIndex > $#softwareLparIds ) ? $#softwareLparIds : $lastIndex;
-        push( @idBatches, "$softwareLparIds[$firstIndex],$softwareLparIds[$lastIndex]" );
-    }
-    ilog( "id batches count: " . scalar(@idBatches) );
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
 
-    return @idBatches;
+	return @idBatches;
 }
 
-sub querySoftwareLparHdiskIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (qw( id ));
-    my $query  = '
+sub queryScanRecordHdiskIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
         select
             a.id
         from 
-            software_lpar a
-            join software_lpar_map b on b.software_lpar_id = a.id
-            join scan_record c on c.id = b.scan_record_id
-            join hdisk d on d.scan_record_id = c.id
+            scan_record a 
+            join hdisk b on b.scan_record_id = a.id
         where
             a.action = \'COMPLETE\'
-            and b.action = \'COMPLETE\'
-            and c.action = \'COMPLETE\'
     ';
-    my $clause = 'and';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . ' (
-            d.action != \'COMPLETE\')
+            b.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         group by
             a.id
         order by
             a.id
         with ur
     ';
-    dlog("querySoftwareLparHdiskIds=$query");
-    return ( 'softwareLparHdiskIds', $query, \@fields );
+	dlog("queryScanRecordHdiskIds=$query");
+	return ( 'scanRecordHdiskIds', $query, \@fields );
 }
 
-sub getSoftwareLparMemModBatches {
-    my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+sub getScanRecordMemModBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
 
-    my @softwareLparIds = ();
+	my @scanRecordIds = ();
 
-    ###Prepare query to pull software lpar ids from staging for Ip addresses
-    dlog("preparing software lpar ids for memmod query");
-    $connection->prepareSqlQueryAndFields( $self->querySoftwareLparMemModIds( $testMode, $loadDeltaOnly ) );
-    dlog("prepared software lpar ids for memmod query");
+	###Prepare query to pull Scan Record ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for memmod query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordMemModIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for memmod query");
 
-    ###Get the statement handle
-    dlog("getting sth for software lpar ids for memmod query");
-    my $sth = $connection->sql->{softwareLparMemModIds};
-    dlog("got sth for software lpar ids for memmod query");
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for memmod query");
+	my $sth = $connection->sql->{scanRecordMemModIds};
+	dlog("got sth for Scan Record ids for memmod query");
 
-    ###Bind our columns
-    my %rec;
-    dlog("binding columns for software lpar ids for memmod query");
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{softwareLparMemModIdsFields} } );
-    dlog("binded columns for software lpar ids for memmod query");
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for memmod query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordMemModIdsFields} } );
+	dlog("binded columns for Scan Record ids for memmod query");
 
-    ###Excute the query
-    ilog("executing software lpar ids for memmod query");
-    $sth->execute();
-    ilog("executed software lpar ids for memmod query");
+	###Excute the query
+	ilog("executing Scan Record ids for memmod query");
+	$sth->execute();
+	ilog("executed Scan Record ids for memmod query");
 
-    while ( $sth->fetchrow_arrayref ) {
+	while ( $sth->fetchrow_arrayref ) {
 
-        ###Clean record values
-        cleanValues( \%rec );
+		###Clean record values
+		cleanValues( \%rec );
 
-        push( @softwareLparIds, $rec{id} );
-    }
-    ilog( "got sw lpar ids, count: " . scalar(@softwareLparIds) );
-    ilog( "min id=" . $softwareLparIds[0] );
-    ilog( "max id=" . $softwareLparIds[$#softwareLparIds] );
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
 
-    ###
-    ###Calculate the batches of MaxLparsInQuery.
-    ###
-    my @idBatches = ();
-    my $firstIndex;
-    my $lastIndex;
-    for ( my $i = 0; $i <= $#softwareLparIds; $i++ ) {
-        if ( $i == 0 ) {
-            $firstIndex = 0;
-        }
-        elsif ( $firstIndex < $i && $i < $lastIndex ) {
-            next;
-        }
-        elsif ( $lastIndex == $#softwareLparIds ) {
-            last;
-        }
-        else {
-            $firstIndex = $lastIndex + 1;
-        }
-        $lastIndex = $firstIndex + $maxLparsInQuery - 1;
-        $lastIndex = ( $lastIndex > $#softwareLparIds ) ? $#softwareLparIds : $lastIndex;
-        push( @idBatches, "$softwareLparIds[$firstIndex],$softwareLparIds[$lastIndex]" );
-    }
-    ilog( "id batches count: " . scalar(@idBatches) );
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
 
-    return @idBatches;
+	return @idBatches;
 }
 
-sub querySoftwareLparMemModIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (qw( id ));
-    my $query  = '
+sub queryScanRecordMemModIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
         select
             distinct a.id
         from 
-            software_lpar a
-            join software_lpar_map b on b.software_lpar_id = a.id
-            join scan_record c on c.id = b.scan_record_id
-            join mem_mod d on d.scan_record_id = c.id
+            scan_record a 
+            join mem_mod b on b.scan_record_id = a.id
         where
             a.action = \'COMPLETE\'
-            and b.action = \'COMPLETE\'
-            and c.action = \'COMPLETE\'
     ';
-    my $clause = 'and';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . ' (
-            d.action != \'COMPLETE\')
+            b.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         order by
             a.id
         with ur
     ';
-    dlog("querySoftwareLparMemModIds=$query");
-    return ( 'softwareLparMemModIds', $query, \@fields );
+	dlog("queryScanRecordMemModIds=$query");
+	return ( 'scanRecordMemModIds', $query, \@fields );
 }
 
-sub getSoftwareLparProcessorBatches {
-    my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+sub getScanRecordProcessorBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
 
-    my @softwareLparIds = ();
+	my @scanRecordIds = ();
 
-    ###Prepare query to pull software lpar ids from staging for Ip addresses
-    dlog("preparing software lpar ids for processors query");
-    $connection->prepareSqlQueryAndFields( $self->querySoftwareLparProcessorIds( $testMode, $loadDeltaOnly ) );
-    dlog("prepared software lpar ids for processors query");
+	###Prepare query to pull Scan Record ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for processors query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordProcessorIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for processors query");
 
-    ###Get the statement handle
-    dlog("getting sth for software lpar ids for processors query");
-    my $sth = $connection->sql->{softwareLparProcessorIds};
-    dlog("got sth for software lpar ids for processors query");
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for processors query");
+	my $sth = $connection->sql->{scanRecordProcessorIds};
+	dlog("got sth for Scan Record ids for processors query");
 
-    ###Bind our columns
-    my %rec;
-    dlog("binding columns for software lpar ids for processors query");
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{softwareLparProcessorIdsFields} } );
-    dlog("binded columns for software lpar ids for processors query");
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for processors query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordProcessorIdsFields} } );
+	dlog("binded columns for Scan Record ids for processors query");
 
-    ###Excute the query
-    ilog("executing software lpar ids for processors query");
-    $sth->execute();
-    ilog("executed software lpar ids for processors query");
+	###Excute the query
+	ilog("executing Scan Record ids for processors query");
+	$sth->execute();
+	ilog("executed Scan Record ids for processors query");
 
-    while ( $sth->fetchrow_arrayref ) {
+	while ( $sth->fetchrow_arrayref ) {
 
-        ###Clean record values
-        cleanValues( \%rec );
+		###Clean record values
+		cleanValues( \%rec );
 
-        push( @softwareLparIds, $rec{id} );
-    }
-    ilog( "got sw lpar ids, count: " . scalar(@softwareLparIds) );
-    ilog( "min id=" . $softwareLparIds[0] );
-    ilog( "max id=" . $softwareLparIds[$#softwareLparIds] );
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
 
-    ###
-    ###Calculate the batches of MaxLparsInQuery.
-    ###
-    my @idBatches = ();
-    my $firstIndex;
-    my $lastIndex;
-    for ( my $i = 0; $i <= $#softwareLparIds; $i++ ) {
-        if ( $i == 0 ) {
-            $firstIndex = 0;
-        }
-        elsif ( $firstIndex < $i && $i < $lastIndex ) {
-            next;
-        }
-        elsif ( $lastIndex == $#softwareLparIds ) {
-            last;
-        }
-        else {
-            $firstIndex = $lastIndex + 1;
-        }
-        $lastIndex = $firstIndex + $maxLparsInQuery - 1;
-        $lastIndex = ( $lastIndex > $#softwareLparIds ) ? $#softwareLparIds : $lastIndex;
-        push( @idBatches, "$softwareLparIds[$firstIndex],$softwareLparIds[$lastIndex]" );
-    }
-    ilog( "id batches count: " . scalar(@idBatches) );
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
 
-    return @idBatches;
+	return @idBatches;
 }
 
-sub querySoftwareLparProcessorIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (qw( id ));
-    my $query  = '
+sub queryScanRecordProcessorIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
         select
             a.id
         from 
-            software_lpar a
-            join software_lpar_map b on b.software_lpar_id = a.id
-            join scan_record c on c.id = b.scan_record_id
-            join processor d on d.scan_record_id = c.id
+            scan_record a 
+            join processor b on b.scan_record_id = a.id
         where
             a.action = \'COMPLETE\'
-            and b.action = \'COMPLETE\'
-            and c.action = \'COMPLETE\'
     ';
-    my $clause = 'and';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . ' (
-            d.action != \'COMPLETE\')
+            b.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         group by
             a.id
         order by
             a.id
         with ur
     ';
-    dlog("querySoftwareLparProcessorIds=$query");
-    return ( 'softwareLparProcessorIds', $query, \@fields );
+	dlog("queryScanRecordProcessorIds=$query");
+	return ( 'scanRecordProcessorIds', $query, \@fields );
 }
 
-sub getSoftwareLparAdcBatches {
-    my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+sub getScanRecordAdcBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
 
-    my @softwareLparIds = ();
+	my @scanRecordIds = ();
 
-    ###Prepare query to pull software lpar ids from staging for Ip addresses
-    dlog("preparing software lpar ids for adc query");
-    $connection->prepareSqlQueryAndFields( $self->querySoftwareLparAdcIds( $testMode, $loadDeltaOnly ) );
-    dlog("prepared software lpar ids for adc query");
+	###Prepare query to pull Scan Record ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for adc query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordAdcIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for adc query");
 
-    ###Get the statement handle
-    dlog("getting sth for software lpar ids for adc query");
-    my $sth = $connection->sql->{softwareLparAdcIds};
-    dlog("got sth for software lpar ids for adc query");
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for adc query");
+	my $sth = $connection->sql->{scanRecordAdcIds};
+	dlog("got sth for Scan Record ids for adc query");
 
-    ###Bind our columns
-    my %rec;
-    dlog("binding columns for software lpar ids for adc query");
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{softwareLparAdcIdsFields} } );
-    dlog("binded columns for software lpar ids for adc query");
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for adc query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordAdcIdsFields} } );
+	dlog("binded columns for Scan Record ids for adc query");
 
-    ###Excute the query
-    ilog("executing software lpar ids for adc query");
-    $sth->execute();
-    ilog("executed software lpar ids for adc query");
+	###Excute the query
+	ilog("executing Scan Record ids for adc query");
+	$sth->execute();
+	ilog("executed Scan Record ids for adc query");
 
-    while ( $sth->fetchrow_arrayref ) {
+	while ( $sth->fetchrow_arrayref ) {
 
-        ###Clean record values
-        cleanValues( \%rec );
+		###Clean record values
+		cleanValues( \%rec );
 
-        push( @softwareLparIds, $rec{id} );
-    }
-    ilog( "got sw lpar ids, count: " . scalar(@softwareLparIds) );
-    ilog( "min id=" . $softwareLparIds[0] );
-    ilog( "max id=" . $softwareLparIds[$#softwareLparIds] );
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
 
-    ###
-    ###Calculate the batches of MaxLparsInQuery.
-    ###
-    my @idBatches = ();
-    my $firstIndex;
-    my $lastIndex;
-    for ( my $i = 0; $i <= $#softwareLparIds; $i++ ) {
-        if ( $i == 0 ) {
-            $firstIndex = 0;
-        }
-        elsif ( $firstIndex < $i && $i < $lastIndex ) {
-            next;
-        }
-        elsif ( $lastIndex == $#softwareLparIds ) {
-            last;
-        }
-        else {
-            $firstIndex = $lastIndex + 1;
-        }
-        $lastIndex = $firstIndex + $maxLparsInQuery - 1;
-        $lastIndex = ( $lastIndex > $#softwareLparIds ) ? $#softwareLparIds : $lastIndex;
-        push( @idBatches, "$softwareLparIds[$firstIndex],$softwareLparIds[$lastIndex]" );
-    }
-    ilog( "id batches count: " . scalar(@idBatches) );
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
 
-    return @idBatches;
+	return @idBatches;
 }
 
-sub querySoftwareLparAdcIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (qw( id ));
-    my $query  = '
+sub queryScanRecordAdcIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
         select
             distinct a.id
         from 
-            software_lpar a
-            join software_lpar_map b on b.software_lpar_id = a.id
-            join scan_record c on c.id = b.scan_record_id
-            join adc d on d.scan_record_id = c.id
+            scan_record a 
+            join adc b on b.scan_record_id = a.id
         where
             a.action = \'COMPLETE\'
-            and b.action = \'COMPLETE\'
-            and c.action = \'COMPLETE\'
     ';
-    my $clause = 'and';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . ' (
-            d.action != \'COMPLETE\')
+            b.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         order by
             a.id
         with ur
     ';
-    dlog("querySoftwareLparAdcIds=$query");
-    return ( 'softwareLparAdcIds', $query, \@fields );
+	dlog("queryScanRecordAdcIds=$query");
+	return ( 'scanRecordAdcIds', $query, \@fields );
 }
 
 #############################################################################
 sub queryHardwareData {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            id
-            machineTypeId
-            serial
-            country
-            owner
-            customerNumber
-            hardwareStatus
-            status
-            action
-            hwDate
-            processorCount
-            model
-            customerId
-            classification
-            chips
-            processorType
-            cpuMIPS
-            cpuMSU
-            lparId
-            name
-            lparCustomerId
-            hlStatus
-            lparStatus
-            lparAction
-            lparDate
-            extId
-            techImageId
-            partMIPS
-            partMSU
-            effId
-            effProcessorCount
-            effStatus
-            effAction
-            serverType)
-    );
-    my $query = '
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  id
+		  machineTypeId
+		  serial
+		  country
+		  owner
+		  customerNumber
+		  hardwareStatus
+		  status
+		  action
+		  hwDate
+		  processorCount
+		  model
+		  customerId
+		  classification
+		  chips
+		  processorType
+		  cpuMIPS
+		  cpuMSU
+		  lparId
+		  name
+		  lparCustomerId
+		  hlStatus
+		  lparStatus
+		  lparAction
+		  lparDate
+		  extId
+		  techImageId
+		  partMIPS
+		  partMSU
+		  effId
+		  effProcessorCount
+		  effStatus
+		  effAction
+		  serverType)
+	);
+	my $query = '
         select
             a.id
             ,a.machine_type_id
@@ -716,87 +727,89 @@ sub queryHardwareData {
             left outer join effective_processor c on
                 b.id = c.hardware_lpar_id
     ';
-    my $clause = 'where';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	my $clause = 'where';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . '
             (a.action != \'COMPLETE\'
                 or b.action != \'COMPLETE\'
                 or c.action != \'COMPLETE\')
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
         ' . $clause . '
             a.customer_number in (\'35400XX\', \'39780XX\')
         ';
-        $clause = 'and';
-    }
-    $query .= '
+		$clause = 'and';
+	}
+	$query .= '
         order by
             a.id
         with ur
     ';
-    dlog("queryHardwareData=$query");
-    return ( 'hardwareData', $query, \@fields );
+	dlog("queryHardwareData=$query");
+	return ( 'hardwareData', $query, \@fields );
 }
 
 sub queryScanRecordData {
-    my @fields = (
-        qw(
-            id
-            computerId
-            name
-            objectId
-            model
-            serialNumber
-            scanTime
-            osName
-            osType
-            osMajor
-            osMinor
-            osSub
-            osInst
-            userName
-            manufacturer
-            biosModel
-            serverType
-            techImageId
-            extId
-            memory
-            disk
-            dedicatedProcessors
-            totalProcessors
-            sharedProcessors
-            processorType
-            sharedProcByCores
-            dedicatedProcByCores
-            totalProcByCores
-            alias
-            physicalTotalKb
-            virtualMemory
-            physicalFreeMemory
-            virtualFreeMemory
-            nodeCapacity
-            lparCapacity
-            biosDate
-            biosSerialNumber
-            biosUniqueId
-            boardSerial
-            caseSerial
-            caseAssetTag
-            powerOnPassword
-            users
-            processorCount
-            authenticated
-            isManual
-            action)
-    );
+	my @fields = (
+		qw(
+		  id
+		  customerId
+		  computerId
+		  name
+		  objectId
+		  model
+		  serialNumber
+		  scanTime
+		  osName
+		  osType
+		  osMajor
+		  osMinor
+		  osSub
+		  osInst
+		  userName
+		  manufacturer
+		  biosModel
+		  serverType
+		  techImageId
+		  extId
+		  memory
+		  disk
+		  dedicatedProcessors
+		  totalProcessors
+		  sharedProcessors
+		  processorType
+		  sharedProcByCores
+		  dedicatedProcByCores
+		  totalProcByCores
+		  alias
+		  physicalTotalKb
+		  virtualMemory
+		  physicalFreeMemory
+		  virtualFreeMemory
+		  nodeCapacity
+		  lparCapacity
+		  biosDate
+		  biosSerialNumber
+		  biosUniqueId
+		  boardSerial
+		  caseSerial
+		  caseAssetTag
+		  powerOnPassword
+		  users
+		  processorCount
+		  authenticated
+		  isManual
+		  action)
+	);
 
-    my $query = '
+	my $query = '
         select
             a.id
+            ,a.customer_id
             ,a.computer_id
             ,a.name
             ,a.object_id
@@ -850,11 +863,11 @@ sub queryScanRecordData {
         with ur
     ';
 
-    return ( 'scanRecordData', $query, \@fields );
+	return ( 'scanRecordData', $query, \@fields );
 }
 
 sub queryHdiskData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.model
@@ -874,11 +887,11 @@ sub queryHdiskData {
         with ur
     ';
 
-    return ( 'hdiskData', $query );
+	return ( 'hdiskData', $query );
 }
 
 sub queryMemoryData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.size
@@ -893,11 +906,11 @@ sub queryMemoryData {
         with ur
     ';
 
-    return ( 'memoryData', $query );
+	return ( 'memoryData', $query );
 }
 
 sub queryMemModData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.inst_mem_id
@@ -917,80 +930,75 @@ sub queryMemModData {
         with ur
     ';
 
-    return ( 'memModData', $query );
+	return ( 'memModData', $query );
 }
 
 sub queryMemModDataByMinMaxIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            customerId
-            name
-            memModId
-            scanRecordId
-            instMemId
-            moduleSizeMb
-            maxModuleSizeMb
-            socketName
-            packaging
-            memType
-            action
-            )
-    );
-    my $query = '
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  customerId
+		  name
+		  memModId
+		  scanRecordId
+		  instMemId
+		  moduleSizeMb
+		  maxModuleSizeMb
+		  socketName
+		  packaging
+		  memType
+		  action
+		  )
+	);
+	my $query = '
         select * from (
     ';
-    $query .= '
+	$query .= '
             select
                 a.customer_id
                 ,a.name
-                ,d.id as mem_mod_id
-                ,d.scan_record_id                                
-                ,d.inst_mem_id    
-                ,d.module_size_mb
-                ,d.max_module_size_mb
-                ,d.socket_name   
-                ,d.packaging
-                ,d.mem_type
-                ,d.action 
+                ,b.id as mem_mod_id
+                ,b.scan_record_id                                
+                ,b.inst_mem_id    
+                ,b.module_size_mb
+                ,b.max_module_size_mb
+                ,b.socket_name   
+                ,b.packaging
+                ,b.mem_type
+                ,b.action 
             from 
-                software_lpar a
-                ,software_lpar_map b
-                ,scan_record c
-                ,mem_mod d
+                scan_record a
+                ,mem_mod b
             where
                 a.id >= ?
                 and a.id <= ?
                 and a.action = \'COMPLETE\'
-                and b.action = \'COMPLETE\'
-                and c.action = \'COMPLETE\'
-                and a.id = b.software_lpar_id
-                and c.id = b.scan_record_id
-                and d.scan_record_id = c.id
+                and b.scan_record_id = a.id
     ';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
-                and d.action != \'COMPLETE\'
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+                and b.action != \'COMPLETE\'
         ';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         ) as x
         order by
             x. customer_id
             ,x.mem_mod_id
         with ur
     ';
-    dlog("queryMemModIds=$query");
-    return ( 'memModDataByMinMaxIds', $query, \@fields );
+	dlog("queryMemModIds=$query");
+	return ( 'memModDataByMinMaxIds', $query, \@fields );
 
 }
 
 sub queryOsData {
-    my $query = '
+	my $query = '
         select
         	a.id
         	,a.name
@@ -1011,11 +1019,11 @@ sub queryOsData {
 	
     ';
 
-    return ( 'osData', $query );
+	return ( 'osData', $query );
 }
 
 sub queryProcessorData {
-    my $query = '
+	my $query = '
         select
         	a.id
         	,a.processor_num
@@ -1042,82 +1050,77 @@ sub queryProcessorData {
 	
     ';
 
-    return ( 'processorData', $query );
+	return ( 'processorData', $query );
 }
 
 sub queryProcessorDataByMinMaxIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
+	my ( $self, $testMode, $deltaOnly ) = @_;
 
-    my @fields = (
-        qw(
-            customerId
-            name
-            processorId
-            scanRecordId
-            processorNum
-            manufacturer
-            model
-            maxSpeed
-            busSpeed
-            isActive
-            serialNumber
-            numBoards
-            numModules
-            pvu
-            cache
-            currentSpeed
-            processorAction
-            )
-    );
-    my $query = '
+	my @fields = (
+		qw(
+		  customerId
+		  name
+		  processorId
+		  scanRecordId
+		  processorNum
+		  manufacturer
+		  model
+		  maxSpeed
+		  busSpeed
+		  isActive
+		  serialNumber
+		  numBoards
+		  numModules
+		  pvu
+		  cache
+		  currentSpeed
+		  processorAction
+		  )
+	);
+	my $query = '
         select * from (
     ';
-    $query .= '
+	$query .= '
             select
                 a.customer_id
                 ,a.name
-                ,d.id as processor_id
-                ,d.scan_record_id                                
-        	    ,d.processor_num
-        	    ,d.manufacturer
-        	    ,d.model
-        	    ,d.max_speed
-        	    ,d.bus_speed
-        	    ,d.is_active
-        	    ,d.serial_number
-        	    ,d.num_boards
-        	    ,d.num_modules
-        	    ,d.pvu
-        	    ,d.cache
-        	    ,d.current_speed
-                ,d.action  
+                ,b.id as processor_id
+                ,b.scan_record_id                                
+        	    ,b.processor_num
+        	    ,b.manufacturer
+        	    ,b.model
+        	    ,b.max_speed
+        	    ,b.bus_speed
+        	    ,b.is_active
+        	    ,b.serial_number
+        	    ,b.num_boards
+        	    ,b.num_modules
+        	    ,b.pvu
+        	    ,b.cache
+        	    ,b.current_speed
+                ,b.action  
             from 
-                software_lpar a
-                ,software_lpar_map b
-                ,scan_record c
-                ,processor d
+                scan_record a
+                ,processor b
             where
                 a.id >= ?
                 and a.id <= ?
                 and a.action = \'COMPLETE\'
-                and b.action = \'COMPLETE\'
-                and c.action = \'COMPLETE\'
-                and a.id = b.software_lpar_id
-                and c.id = b.scan_record_id
-                and d.scan_record_id = c.id
+                and b.scan_record_id = a.id
 
     ';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
-                and d.action != \'COMPLETE\'
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+                and b.action != \'COMPLETE\'
         ';
-    }
+	}
 
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         ) as x
         order by
             x.customer_id
@@ -1125,13 +1128,13 @@ sub queryProcessorDataByMinMaxIds {
         with ur
     ';
 
-    dlog("queryProcessorIds=$query");
-    return ( 'processorDataByMinMaxIds', $query, \@fields );
+	dlog("queryProcessorIds=$query");
+	return ( 'processorDataByMinMaxIds', $query, \@fields );
 }
 
 sub queryAdcData {
 
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.ep_Name
@@ -1156,78 +1159,73 @@ sub queryAdcData {
         with ur
     ';
 
-    return ( 'adcData', $query );
+	return ( 'adcData', $query );
 }
 
 sub queryAdcDataByMinMaxIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
+	my ( $self, $testMode, $deltaOnly ) = @_;
 
-    my @fields = (
-        qw(
-            customerId
-            name
-            adcId
-            scanRecordId
-            epName
-            epOid
-            ipAddress
-            cust
-            loc
-            gu
-            serverType
-            sesdrLocation
-            serdrBpUsing
-            sesdrSystid
-            adcAction
-            )
-    );
-    my $query = '
+	my @fields = (
+		qw(
+		  customerId
+		  name
+		  adcId
+		  scanRecordId
+		  epName
+		  epOid
+		  ipAddress
+		  cust
+		  loc
+		  gu
+		  serverType
+		  sesdrLocation
+		  sesdrBpUsing
+		  sesdrSystid
+		  adcAction
+		  )
+	);
+	my $query = '
         select * from (
     ';
-    $query .= '
+	$query .= '
             select
                 a.customer_id
                 ,a.name
-                ,d.id as adc_id
-                ,d.scan_record_id                                
-                ,d.ep_name   
-                ,d.ep_oid
-                ,d.ip_address
-                ,d.cust    
-                ,d.loc
-                ,d.gu
-                ,d.server_type   
-                ,d.sesdr_location
-                ,d.sesdr_bp_location  
-                ,d.sesdr_systid              
-                ,d.action  
+                ,b.id as adc_id
+                ,b.scan_record_id                                
+                ,b.ep_name   
+                ,b.ep_oid
+                ,b.ip_address
+                ,b.cust    
+                ,b.loc
+                ,b.gu
+                ,b.server_type   
+                ,b.sesdr_location
+                ,b.SESDR_BP_USING  
+                ,b.sesdr_systid              
+                ,b.action  
             from 
-                software_lpar a
-                ,software_lpar_map b
-                ,scan_record c
-                ,adc d
+                scan_record a
+                ,adc b
             where
                 a.id >= ?
                 and a.id <= ?
                 and a.action = \'COMPLETE\'
-                and b.action = \'COMPLETE\'
-                and c.action = \'COMPLETE\'
-                and a.id = b.software_lpar_id
-                and c.id = b.scan_record_id
-                and d.scan_record_id = c.id
+                and b.scan_record_id = a.id
 
     ';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
-                and d.action != \'COMPLETE\'
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+                and b.action != \'COMPLETE\'
         ';
-    }
+	}
 
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         ) as x
         order by
             x.customer_id
@@ -1235,12 +1233,12 @@ sub queryAdcDataByMinMaxIds {
         with ur
     ';
 
-    dlog("queryAdcIds=$query");
-    return ( 'adcDataByMinMaxIds', $query, \@fields );
+	dlog("queryAdcIds=$query");
+	return ( 'adcDataByMinMaxIds', $query, \@fields );
 }
 
 sub queryIpAddressData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.ip_address
@@ -1266,11 +1264,11 @@ sub queryIpAddressData {
         with ur
     ';
 
-    return ( 'ipAddressData', $query );
+	return ( 'ipAddressData', $query );
 }
 
 sub querySoftwareFilterData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.software_filter_id
@@ -1287,11 +1285,11 @@ sub querySoftwareFilterData {
         with ur
     ';
 
-    return ( 'softwareFilterData', $query );
+	return ( 'softwareFilterData', $query );
 }
 
 sub querySoftwareSignatureData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.software_signature_id
@@ -1309,11 +1307,11 @@ sub querySoftwareSignatureData {
         with ur
     ';
 
-    return ( 'softwareSignatureData', $query );
+	return ( 'softwareSignatureData', $query );
 }
 
 sub querySoftwareManualData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.software_id
@@ -1330,11 +1328,11 @@ sub querySoftwareManualData {
         with ur
     ';
 
-    return ( 'softwareManualData', $query );
+	return ( 'softwareManualData', $query );
 }
 
 sub querySoftwareTlcmzData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.sa_product_id
@@ -1350,11 +1348,11 @@ sub querySoftwareTlcmzData {
         with ur
     ';
 
-    return ( 'softwareTlcmzData', $query );
+	return ( 'softwareTlcmzData', $query );
 }
 
 sub querySoftwareDoranaData {
-    my $query = '
+	my $query = '
         select
             a.id
             ,a.dorana_product_id
@@ -1370,7 +1368,7 @@ sub querySoftwareDoranaData {
         with ur
     ';
 
-    return ( 'softwareDoranaData', $query );
+	return ( 'softwareDoranaData', $query );
 }
 
 ###TODO: for the memory, hdisk, ipaddr, and osinfo tables,
@@ -1379,253 +1377,243 @@ sub querySoftwareDoranaData {
 ###and join to these tables based on that element???
 
 sub queryIpAddressDataByMinMaxIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            customerId
-            name
-            ipAddressId
-            scanRecordId
-            ipAddress
-            hostname
-            domain
-            subnet
-            ipAction
-            gateway
-            primaryDns
-            secondaryDns
-            isDhcp
-            instanceId
-            permMacAddress
-            ipv6Address
-            )
-    );
-    my $query = '
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  customerId
+		  name
+		  ipAddressId
+		  scanRecordId
+		  ipAddress
+		  hostname
+		  domain
+		  subnet
+		  ipAction
+		  gateway
+		  primaryDns
+		  secondaryDns
+		  isDhcp
+		  instanceId
+		  permMacAddress
+		  ipv6Address
+		  )
+	);
+	my $query = '
         select * from (
     ';
-    $query .= '
+	$query .= '
             select
                 a.customer_id
                 ,a.name
-                ,d.id as ip_address_id
-                ,d.scan_record_id                                
-                ,d.ip_address    
-                ,d.hostname
-                ,d.domain
-                ,d.subnet   
-                ,d.action 
-                ,d.gateway
-                ,d.primary_dns
-                ,d.secondary_dns   
-                ,d.is_dhcp
-                ,d.instance_id  
-                ,d.perm_mac_address              
-                ,d.ipv6_address
+                ,b.id as ip_address_id
+                ,b.scan_record_id                                
+                ,b.ip_address    
+                ,b.hostname
+                ,b.domain
+                ,b.subnet   
+                ,b.action 
+                ,b.gateway
+                ,b.primary_dns
+                ,b.secondary_dns   
+                ,b.is_dhcp
+                ,b.instance_id  
+                ,b.perm_mac_address              
+                ,b.ipv6_address
             from 
-                software_lpar a
-                ,software_lpar_map b
-                ,scan_record c
-                ,ip_address d
+                scan_record a
+                ,ip_address b
             where
                 a.id >= ?
                 and a.id <= ?
-                and a.action = \'COMPLETE\'
-                and b.action = \'COMPLETE\'
-                and c.action = \'COMPLETE\'
-                and a.id = b.software_lpar_id
-                and c.id = b.scan_record_id
-                and d.scan_record_id = c.id
+                and b.scan_record_id = a.id
 
     ';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
-                and d.action != \'COMPLETE\'
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+                and b.action != \'COMPLETE\'
         ';
-    }
+	}
 
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         ) as x
         order by
             x.customer_id
             ,x.ip_address_id
         with ur
     ';
-    dlog("queryIpAddressIds=$query");
-    return ( 'ipAddressDataByMinMaxIds', $query, \@fields );
+	dlog("queryIpAddressIds=$query");
+	return ( 'ipAddressDataByMinMaxIds', $query, \@fields );
 }
 
 sub queryHdiskDataByMinMaxIds {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            customerId
-            name
-            hdiskId
-            scanRecordId
-            model
-            size
-            manufacturer
-            serialNumber
-            storageType
-            action
-            )
-    );
-    my $query = '
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  customerId
+		  name
+		  hdiskId
+		  scanRecordId
+		  model
+		  size
+		  manufacturer
+		  serialNumber
+		  storageType
+		  action
+		  )
+	);
+	my $query = '
         select * from (
     ';
-    $query .= '
+	$query .= '
             select
                 a.customer_id
                 ,a.name
-                ,d.id as hdisk_id
-                ,d.scan_record_id                                
-                ,d.model    
-                ,d.size
-                ,d.manufacturer
-                ,d.serial_number   
-                ,d.storage_type
-                ,d.action 
+                ,b.id as hdisk_id
+                ,b.scan_record_id                                
+                ,b.model    
+                ,b.size
+                ,b.manufacturer
+                ,b.serial_number   
+                ,b.storage_type
+                ,b.action 
             from 
-                software_lpar a
-                ,software_lpar_map b
-                ,scan_record c
-                ,hdisk d
+                scan_record a
+                ,hdisk b
             where
                 a.id >= ?
                 and a.id <= ?
                 and a.action = \'COMPLETE\'
-                and b.action = \'COMPLETE\'
-                and c.action = \'COMPLETE\'
-                and a.id = b.software_lpar_id
-                and c.id = b.scan_record_id
-                and d.scan_record_id = c.id                
+                and b.scan_record_id = a.id                
     ';
-    if ( $deltaOnly == 1 ) {
-        $query .= '
-                and d.action != \'COMPLETE\'
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+                and b.action != \'COMPLETE\'
         ';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
-                and a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
         ) as x
         order by
             x.customer_id
             ,x.hdisk_id
         with ur
     ';
-    dlog("queryHdiskIds=$query");
-    return ( 'hdiskDataByMinMaxIds', $query, \@fields );
+	dlog("queryHdiskIds=$query");
+	return ( 'hdiskDataByMinMaxIds', $query, \@fields );
 }
 
 sub queryLparMaps {
-    my @fields = (
-        qw(
-            scanRecordId
-            scanRecordComputerId
-            scanRecordName
-            scanRecordObjectId
-            scanRecordModel
-            scanRecordSerialNumber
-            scanRecordScanTime
-            scanRecordOsName
-            scanRecordOsType
-            scanRecordOsMajor
-            scanRecordOsMinor
-            scanRecordOsSub
-            scanRecordOsInst
-            scanRecordUserName
-            scanRecordManufacturer
-            scanRecordBiosModel
-            scanRecordServerType
-            scanRecordTechImageId
-            scanRecordExtId
-            scanRecordMemory
-            scanRecordDisk
-            scanRecordDedicatedProcessors
-            scanRecordTotalProcessors
-            scanRecordSharedProcessors
-            scanRecordProcessorType
-            scanRecordSharedProcByCores
-            scanRecordDedicatedProcByCores
-            scanRecordTotalProcByCores
-            scanRecordAlias
-            scanRecordPhysicalTotalKb
-            scanRecordVirtualMemory
-            scanRecordPhysicalFreeMemory
-            scanRecordVirtualFreeMemory
-            scanRecordNodeCapacity
-            scanRecordLparCapacity
-            scanRecordBiosDate
-            scanRecordBiosSerialNumber
-            scanRecordBiosUniqueId
-            scanRecordBoardSerial
-            scanRecordCaseSerial
-            scanRecordCaseAssetTag
-            scanRecordPowerOnPassword
-            scanRecordProcessorCount
-            users
-            authenticated
-            bankAccountId
-            isManual
-            scanRecordAction
-            softwareLparId
-            customerId
-            softwareLparComputerId
-            softwareLparObjectId
-            softwareLparName
-            softwareLparModel
-            softwareLparSerialNumber
-            softwareLparOsName
-            softwareLparOsType
-            softwareLparOsMajor
-            softwareLparOsMinor
-            softwareLparOsSub
-            softwareLparOsInst
-            softwareLparUserName
-            softwareLparManufacturer
-            softwareLparBiosModel
-            softwareLparServerType
-            softwareLparTechImageId
-            softwareLparExtId
-            softwareLparMemory
-            softwareLparDisk
-            softwareLparDedicatedProcessors
-            softwareLparTotalProcessors
-            softwareLparSharedProcessors
-            softwareLparProcessorType
-            softwareLparSharedProcByCores
-            softwareLparDedicatedProcByCores
-            softwareLparTotalProcByCores
-            softwareLparAlias
-            softwareLparPhysicalTotalKb
-            softwareLparVirtualMemory
-            softwareLparPhysicalFreeMemory
-            softwareLparVirtualFreeMemory
-            softwareLparNodeCapacity
-            softwareLparLparCapacity
-            softwareLparBiosDate
-            softwareLparBiosSerialNumber
-            softwareLparBiosUniqueId
-            softwareLparBoardSerial
-            softwareLparCaseSerial
-            softwareLparCaseAssetTag
-            softwareLparPowerOnPassword
-            softwareLparProcessorCount
-            softwareLparScanTime
-            softwareLparStatus
-            softwareLparAction
-            softwareLparMapId
-            softwareLparMapAction)
-    );
+	my @fields = (
+		qw(
+		  scanRecordId
+		  scanRecordComputerId
+		  scanRecordName
+		  scanRecordObjectId
+		  scanRecordModel
+		  scanRecordSerialNumber
+		  scanRecordScanTime
+		  scanRecordOsName
+		  scanRecordOsType
+		  scanRecordOsMajor
+		  scanRecordOsMinor
+		  scanRecordOsSub
+		  scanRecordOsInst
+		  scanRecordUserName
+		  scanRecordManufacturer
+		  scanRecordBiosModel
+		  scanRecordServerType
+		  scanRecordTechImageId
+		  scanRecordExtId
+		  scanRecordMemory
+		  scanRecordDisk
+		  scanRecordDedicatedProcessors
+		  scanRecordTotalProcessors
+		  scanRecordSharedProcessors
+		  scanRecordProcessorType
+		  scanRecordSharedProcByCores
+		  scanRecordDedicatedProcByCores
+		  scanRecordTotalProcByCores
+		  scanRecordAlias
+		  scanRecordPhysicalTotalKb
+		  scanRecordVirtualMemory
+		  scanRecordPhysicalFreeMemory
+		  scanRecordVirtualFreeMemory
+		  scanRecordNodeCapacity
+		  scanRecordLparCapacity
+		  scanRecordBiosDate
+		  scanRecordBiosSerialNumber
+		  scanRecordBiosUniqueId
+		  scanRecordBoardSerial
+		  scanRecordCaseSerial
+		  scanRecordCaseAssetTag
+		  scanRecordPowerOnPassword
+		  scanRecordProcessorCount
+		  scanRecordCustomerId
+		  users
+		  authenticated
+		  bankAccountId
+		  isManual
+		  scanRecordAction
+		  softwareLparId
+		  customerId
+		  softwareLparComputerId
+		  softwareLparObjectId
+		  softwareLparName
+		  softwareLparModel
+		  softwareLparSerialNumber
+		  softwareLparOsName
+		  softwareLparOsType
+		  softwareLparOsMajor
+		  softwareLparOsMinor
+		  softwareLparOsSub
+		  softwareLparOsInst
+		  softwareLparUserName
+		  softwareLparManufacturer
+		  softwareLparBiosModel
+		  softwareLparServerType
+		  softwareLparTechImageId
+		  softwareLparExtId
+		  softwareLparMemory
+		  softwareLparDisk
+		  softwareLparDedicatedProcessors
+		  softwareLparTotalProcessors
+		  softwareLparSharedProcessors
+		  softwareLparProcessorType
+		  softwareLparSharedProcByCores
+		  softwareLparDedicatedProcByCores
+		  softwareLparTotalProcByCores
+		  softwareLparAlias
+		  softwareLparPhysicalTotalKb
+		  softwareLparVirtualMemory
+		  softwareLparPhysicalFreeMemory
+		  softwareLparVirtualFreeMemory
+		  softwareLparNodeCapacity
+		  softwareLparLparCapacity
+		  softwareLparBiosDate
+		  softwareLparBiosSerialNumber
+		  softwareLparBiosUniqueId
+		  softwareLparBoardSerial
+		  softwareLparCaseSerial
+		  softwareLparCaseAssetTag
+		  softwareLparPowerOnPassword
+		  softwareLparProcessorCount
+		  softwareLparScanTime
+		  softwareLparStatus
+		  softwareLparAction
+		  softwareLparMapId
+		  softwareLparMapAction)
+	);
 
-    my $query = '
+	my $query = '
         select
             T.sr_id
             ,T.sr_computer_id
@@ -1670,6 +1658,7 @@ sub queryLparMaps {
             ,T.sr_case_asset_tag
             ,T.sr_power_on_password            
             ,T.sr_processor_count
+            ,T.sr_customer_id
             ,T.users
             ,T.authenticated
             ,T.bank_account_id
@@ -1773,6 +1762,7 @@ sub queryLparMaps {
             ,a.bank_account_id
             ,a.is_manual
             ,a.action as sr_action
+            ,a.customer_id as sr_customer_id
             ,b.id as sl_id
             ,b.customer_id
             ,b.computer_id as sl_computer_id
@@ -1877,6 +1867,7 @@ sub queryLparMaps {
             ,a.bank_account_id
             ,a.is_manual
             ,a.action as sr_action
+            ,a.customer_id as sr_customer_id
             ,b.id as sl_id
             ,b.customer_id
             ,b.computer_id as sl_computer_id
@@ -1937,18 +1928,18 @@ sub queryLparMaps {
            ,T.sr_scan_time DESC
         with ur
     ';
-    dlog("queryLparMaps=$query");
-    return ( 'lparMaps', $query, \@fields );
+	dlog("queryLparMaps=$query");
+	return ( 'lparMaps', $query, \@fields );
 }
 
 sub queryLicenseLastUpdate {
-    my ( $self, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            lastUpdate
-            )
-    );
-    my $query = '
+	my ( $self, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  lastUpdate
+		  )
+	);
+	my $query = '
         select
             max(a.swcm_record_time)
         from
@@ -1956,39 +1947,39 @@ sub queryLicenseLastUpdate {
         with ur
     ';
 
-    dlog("queryLicenseLastUpdate=$query");
-    return ( 'licenseLastUpdate', $query, \@fields );
+	dlog("queryLicenseLastUpdate=$query");
+	return ( 'licenseLastUpdate', $query, \@fields );
 }
 
 sub queryLicenseData {
-    my ( $self, $testMode, $deltaOnly ) = @_;
-    my @fields = qw(
-        id
-        extSrcId
-        licType
-        capType
-        customerId
-        softwareId
-        quantity
-        ibmOwned
-        draft
-        pool
-        tryAndBuy
-        expireDate
-        endDate
-        poNumber
-        prodName
-        fullDesc
-        version
-        cpuSerial
-        licenseStatus
-        swcmRecordTime
-        agreementType
-        environment
-        status
-        action
-    );
-    my $query = '
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = qw(
+	  id
+	  extSrcId
+	  licType
+	  capType
+	  customerId
+	  softwareId
+	  quantity
+	  ibmOwned
+	  draft
+	  pool
+	  tryAndBuy
+	  expireDate
+	  endDate
+	  poNumber
+	  prodName
+	  fullDesc
+	  version
+	  cpuSerial
+	  licenseStatus
+	  swcmRecordTime
+	  agreementType
+	  environment
+	  status
+	  action
+	);
+	my $query = '
         select
             a.id
             ,a.ext_src_id
@@ -2017,37 +2008,38 @@ sub queryLicenseData {
         from
             license a
     ';
-    my $clause = 'where';
+	my $clause = 'where';
 
-    if ( $deltaOnly == 1 ) {
-        $query .= '
+	if ( $deltaOnly == 1 ) {
+		$query .= '
         ' . $clause . '
             a.action != \'COMPLETE\'
         ';
-        $clause = 'and';
-    }
-    if ( $testMode == 1 ) {
-        $query .= '
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
         ' . $clause . '
-                a.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
-        $clause = 'and';
-    }
-    $query .= '
+                a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+		$clause = 'and';
+	}
+	$query .= '
         with ur
     ';
-    dlog("queryLicenseData=$query");
-    return ( 'licenseData', $query, \@fields );
+	dlog("queryLicenseData=$query");
+	return ( 'licenseData', $query, \@fields );
 }
 
 sub queryHwLastUpdate {
-    my ( $self, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            hwDate
-            lparDate
-            )
-    );
-    my $query = '
+	my ( $self, $deltaOnly ) = @_;
+	my @fields = (
+		qw(
+		  hwDate
+		  lparDate
+		  )
+	);
+	my $query = '
         select
             max(a.update_date)
             ,max(b.update_date)
@@ -2058,99 +2050,101 @@ sub queryHwLastUpdate {
         with ur
     ';
 
-    dlog("queryHwLastUpdate=$query");
-    return ( 'hwLastUpdate', $query, \@fields );
+	dlog("queryHwLastUpdate=$query");
+	return ( 'hwLastUpdate', $query, \@fields );
 }
 
 sub markHardwareAsError {
-    my ( $self, $connection, $id ) = @_;
+	my ( $self, $connection, $id ) = @_;
 
-    $connection->prepareSqlQuery( $self->queryMarkHardwareAsError() );
+	$connection->prepareSqlQuery( $self->queryMarkHardwareAsError() );
 
-    my $sth = $connection->sql->{markHardwareAsError};
-    $sth->execute($id);
-    $sth->finish;
+	my $sth = $connection->sql->{markHardwareAsError};
+	$sth->execute($id);
+	$sth->finish;
 }
 
 sub queryMarkHardwareAsError {
-    my $query = '
+	my $query = '
         update hardware
         set
             action = \'ERROR\'
         where
             id = ?
     ';
-    return ( 'markHardwareAsError', $query );
+	return ( 'markHardwareAsError', $query );
 }
 
 sub markHardwareLparAsError {
-    my ( $self, $connection, $id ) = @_;
+	my ( $self, $connection, $id ) = @_;
 
-    $connection->prepareSqlQuery( $self->queryMarkHardwareLparAsError() );
+	$connection->prepareSqlQuery( $self->queryMarkHardwareLparAsError() );
 
-    my $sth = $connection->sql->{markHardwareLparAsError};
-    $sth->execute($id);
-    $sth->finish;
+	my $sth = $connection->sql->{markHardwareLparAsError};
+	$sth->execute($id);
+	$sth->finish;
 }
 
 sub queryMarkHardwareLparAsError {
-    my $query = '
+	my $query = '
         update hardware_lpar
         set
             action = \'ERROR\'
         where
             id = ?
     ';
-    return ( 'markHardwareLparAsError', $query );
+	return ( 'markHardwareLparAsError', $query );
 }
 
 sub markEffectiveProcessorAsError {
-    my ( $self, $connection, $id ) = @_;
+	my ( $self, $connection, $id ) = @_;
 
-    $connection->prepareSqlQuery( $self->queryMarkEffectiveProcessorAsError() );
+	$connection->prepareSqlQuery( $self->queryMarkEffectiveProcessorAsError() );
 
-    my $sth = $connection->sql->{markEffectiveProcessorAsError};
-    $sth->execute($id);
-    $sth->finish;
+	my $sth = $connection->sql->{markEffectiveProcessorAsError};
+	$sth->execute($id);
+	$sth->finish;
 }
 
 sub queryMarkEffectiveProcessorAsError {
-    my $query = '
+	my $query = '
         update effective_processor
         set
             action = \'ERROR\'
         where
             id = ?
     ';
-    return ( 'markEffectiveProcessorAsError', $query );
+	return ( 'markEffectiveProcessorAsError', $query );
 }
 
 sub getStagingScanRecordsBySoftwareLpar {
-    my ( $self, $connection, $swLpar ) = @_;
+	my ( $self, $connection, $swLpar ) = @_;
 
-    my @scanRecords = ();
+	my @scanRecords = ();
 
-    $connection->prepareSqlQueryAndFields( $self->queryStagingScanRecordsBySoftwareLpar() );
-    my $sth = $connection->sql->{stagingScanRecordsBySoftwareLpar};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{stagingScanRecordsBySoftwareLparFields} } );
-    $sth->execute( $swLpar->customerId, $swLpar->name );
-    while ( $sth->fetchrow_arrayref ) {
+	$connection->prepareSqlQueryAndFields(
+		$self->queryStagingScanRecordsBySoftwareLpar() );
+	my $sth = $connection->sql->{stagingScanRecordsBySoftwareLpar};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{stagingScanRecordsBySoftwareLparFields} } );
+	$sth->execute( $swLpar->customerId, $swLpar->name );
+	while ( $sth->fetchrow_arrayref ) {
 
-        my $scanRecord = new Staging::OM::ScanRecord;
-        $scanRecord->id( $rec{id} );
-        $scanRecord->getById($connection);
+		my $scanRecord = new Staging::OM::ScanRecord;
+		$scanRecord->id( $rec{id} );
+		$scanRecord->getById($connection);
 
-        push @scanRecords, $scanRecord;
-    }
-    $sth->finish;
+		push @scanRecords, $scanRecord;
+	}
+	$sth->finish;
 
-    return @scanRecords;
+	return @scanRecords;
 }
 
 sub queryStagingScanRecordsBySoftwareLpar {
-    my @fields = qw( id );
-    my $query  = '
+	my @fields = qw( id );
+	my $query  = '
         select
             sr.id
         from
@@ -2162,7 +2156,33 @@ sub queryStagingScanRecordsBySoftwareLpar {
             and sl.name = ?
     ';
 
-    return ( 'stagingScanRecordsBySoftwareLpar', $query, \@fields );
+	return ( 'stagingScanRecordsBySoftwareLpar', $query, \@fields );
+}
+
+sub queryScanSoftwareItemData {
+	my ( $deltaOnly ) = @_;
+	my $query = '
+        select
+            id
+            ,scan_record_id
+            ,guid
+            ,last_used
+            ,use_count
+            ,action
+        from
+            scan_software_item 
+
+    ';
+	my $clause = 'where';
+
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+        ' . $clause . '
+            action != 0
+        ';
+	}
+
+	return ( 'scanSoftwareItemData', $query );
 }
 
 1;

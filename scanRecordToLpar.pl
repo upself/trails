@@ -49,14 +49,13 @@ logging_level($cfgMgr->debugLevel);
 ###Set the logfile
 logfile($logfile);
 
+while (1) {
 ###Wrap everything in an eval so we can capture in logfile.
 eval {
 	###Execute loader once, and then continue to execute
 	###based on existance of pid file.
 	$| = 1;
 	my $loader;
-	while (1) {
-
 		###Execute load(s).
 		$loader = new Staging::ScanRecordToLparLoader();
 		$loader->load(
@@ -65,13 +64,15 @@ eval {
 		);
 
 		###Check if we should stop.
-		last if loaderCheckForStop($pidFile) == 1;
-		sleep $sleepPeriod;
-	}
+#		last if loaderCheckForStop($pidFile) == 1;
+#		sleep $sleepPeriod;
 };
 if ($@) {
 	elog($@);
-	die $@;
+#	die $@;
+}
+last if loaderCheckForStop($pidFile) == 1;
+sleep $sleepPeriod;
 }
 
 exit 0;

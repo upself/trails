@@ -345,7 +345,7 @@ sub queryHardwareIds {
             and hardware_status = 'REMOVED'
             and days(current timestamp) - days(record_time) > ?
             and not exists(select 1 from hardware_lpar hl where
-                h.hardware_id = hl.hardware_id and h.customer_id
+                h.id = hl.hardware_id and h.customer_id
                 != hl.customer_id)
         };
 
@@ -412,7 +412,7 @@ sub queryInstalledSoftwareIds {
                     or 
                     (sl.status = 'INACTIVE' and days(current timestamp) - days(sl.record_time) > ?)
                     or
-                    (s.status = 'INACTIVE'
+                    (s.status = 'INACTIVE')
                 )
         };
 

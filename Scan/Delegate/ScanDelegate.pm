@@ -11,8 +11,8 @@ use File::stat;
 sub getDisconnectedFile {
     my ( $self, $bankAccount, $delta, $filePart ) = @_;
 
-    my $rootDir         = '/tmp';
-    my $disconnectedDir = '/db2/backup/trails';
+    my $rootDir         = '/var/ftp/staging/secondary';
+    my $disconnectedDir = '/var/staging/disconnected';
     my $fileName        = $bankAccount->name . '_' . $filePart . '.tsv.gz';
     dlog("fileName=$fileName");
 

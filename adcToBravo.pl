@@ -132,7 +132,7 @@ eval {
         eval {
             ###Get the current software lpar batches to process.
             @batches = Staging::Delegate::StagingDelegate
-                ->getSoftwareLparAdcBatches(
+                ->getScanRecordAdcBatches(
                                           $stagingConnection, $testMode,
                                           $loadDeltaOnly,     $maxLparsInQuery
                 );

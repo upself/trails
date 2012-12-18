@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Staging::OM" name="LoaderStatus" sql-name="loader_status">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="database" type="scalar" equals="true"
+		sql-name="database" biz-key="true" />
+	<property name="objectType" type="scalar" equals="true"
+		sql-name="object_type" biz-key="true" />
+	<property name="action" type="scalar" equals="true" sql-name="action"
+		biz-key="true" />
+	<property name="recordTime" type="scalar" equals="true"
+		sql-name="record_time" biz-key="true" />
+	<property name="count" type="scalar" sql-name="count" />
+	<property name="table" type="scalar" default="loader_status" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+</class>

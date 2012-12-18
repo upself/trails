@@ -66,9 +66,9 @@ sub keepTicking {
     my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
-             my $connection = Database::Connection->new('staging');
-             @customerIds = getStagingQueue( $connection, $count );
-             $connection->disconnect;
+            my $connection = Database::Connection->new('staging');
+            @customerIds = getStagingQueue( $connection, $count );
+            $connection->disconnect;
         }
         if ( $children >= $maxChildren ) {
             wlog("sleeping");
@@ -347,7 +347,6 @@ sub findSoftwareLparsByCustomerIdByDate {
     dlog("getting sth for software lpar ids query");
     my $sth = $connection->sql->{softwareLparsByCustomerIdByDate};
     dlog("got sth for software lpar ids query");
-
     ###Bind our columns
     my %rec;
     dlog("binding columns for software lpar ids query");
@@ -418,7 +417,7 @@ sub querySoftwareLparsByCustomerIdByDate {
         ';
     if ( $phase == 1 ) {
         $query .= '
-                or sm.action != \'COMPLETE\'
+                             or sm.action != \'COMPLETE\'
             ';
     }
     elsif ( $phase == 2 ) {
@@ -451,5 +450,3 @@ sub querySoftwareLparsByCustomerIdByDate {
     ';
     return ( 'softwareLparsByCustomerIdByDate', $query, \@fields );
 }
-
-

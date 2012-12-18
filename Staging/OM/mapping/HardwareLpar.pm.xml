@@ -16,8 +16,7 @@
 		sql-name="lpar_status" />
 	<property name="partMIPS" type="scalar" equals="true"
 		sql-name="part_mips" />
-	<property name="partMSU" type="scalar" equals="true"
-		sql-name="part_msu" />
+	<property name="partMSU" type="scalar" equals="true" sql-name="part_msu" />
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="updateDate" type="scalar" sql-name="update_date" />
 	<property name="hardwareKey" type="scalar" equals="true" />

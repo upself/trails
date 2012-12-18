@@ -282,7 +282,9 @@ sub reconcile {
 		&& $self->customer->swComplianceMgmt eq 'YES' )
 	{
 		if ( defined $self->installedSoftwareReconData->scopeName ) {
-			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
+			if (   $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
+				|| $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' )
+			{
 				###Create reconcile and set id in data.
 				my $reconcileTypeMap =
 				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
@@ -374,18 +376,22 @@ sub attemptCustomerOwnedAndManaged {
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
-	if ( defined $self->installedSoftwareReconData->scopeName
-		&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
+	if ( defined $self->customer->swComplianceMgmt
+		&& $self->customer->swComplianceMgmt eq 'NO' )
 	{
-		dlog("reconciling as Customer owned and customer managed");
-		###Create reconcile and set id in data.
-		$self->createReconcile(
-			$reconcileTypeMap->{'Customer owned and customer managed'},
-			0, $self->installedSoftware->id );
-		dlog("end attemptReconcile");
-		return 1;
+		if ( defined $self->installedSoftwareReconData->scopeName
+			&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
+		{
+			dlog("reconciling as Customer owned and customer managed");
+			###Create reconcile and set id in data.
+			$self->createReconcile(
+				$reconcileTypeMap->{'Customer owned and customer managed'},
+				0, $self->installedSoftware->id );
+			dlog("end attemptReconcile");
+			return 1;
+		}
 	}
-	
+
 	dlog("Did not reconcile as customer owned and managed");
 	return 0;
 }
@@ -3200,5 +3206,4 @@ sub poolRunning {
     return $self->{_poolRunning};
 }
 1;
-
 

@@ -219,6 +219,7 @@ sub doDelta {
         }
         else {
             if ( $customer->customerId == 999999 ) {
+            	$self->list->{$key} = $customer;
                 $self->list->{$key}->action('COMPLETE');
             }
             else {

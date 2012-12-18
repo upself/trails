@@ -1,10 +1,10 @@
-#!/bin/sh
+    #!/bin/sh
 
 DIR=/opt/staging/v2
 SHOST=`uname -n |awk -F'.' '{print $1}'`
 
 set -x
-chmod -R 775 $DIR
+chmod -R 0770 $DIR
 chgrp -R eadt $DIR
 cd $DIR
 cp misc/Connection.pm.$SHOST Database/Connection.pm
@@ -45,6 +45,7 @@ mkdir -p /var/staging/logs/swcmToStaging
 mkdir -p /var/staging/logs/tlcmzToSwasset
 mkdir -p /var/staging/logs/manualRecovery
 mkdir -p /var/staging/logs/bravoArchival
+mkdir -p /var/staging/logs/scanSoftwareItemToStaging
 dos2unix /opt/staging/v2/start-all.sh
 dos2unix /opt/staging/v2/stop-all.sh
 dos2unix /opt/staging/v2/scripts/*.sh

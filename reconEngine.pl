@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $maxChildren        = 150;
+my $maxChildren        = 100;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
@@ -53,7 +53,7 @@ sub spawnChildren {
     wlog("Spawning children");
     for ( my $i = 0; $i < $maxChildren; $i++ ) {
         my $customer = shift @customerIds;
-        my ($date, $customerId) = each %$customer;
+        my ( $date, $customerId ) = each %$customer;
         if ( isCustomerRunning($customerId) == 1 ) {
             next;
         }
@@ -74,11 +74,11 @@ sub keepTicking {
     my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
-             newSoftwareChild(shift @softwareIds);
-             my $connection = Database::Connection->new('trails');
-             @customerIds = getReconCustomerQueue( $connection, $testMode );
-             ( $masters, $members ) = getPoolCustomers($connection);
-             $connection->disconnect;
+            newSoftwareChild( shift @softwareIds );
+            my $connection = Database::Connection->new('trails');
+            @customerIds = getReconCustomerQueue( $connection, $testMode );
+            ( $masters, $members ) = getPoolCustomers($connection);
+            $connection->disconnect;
         }
         if ( $children >= $maxChildren ) {
             wlog("sleeping");
@@ -89,13 +89,13 @@ sub keepTicking {
             wlog("running $i");
             my $customer = shift @customerIds;
             my ( $date, $customerId ) = each %$customer;
-            if ( isCustomerRunning( $customerId ) == 1 ) {
+            if ( isCustomerRunning($customerId) == 1 ) {
                 next;
             }
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
             }
-            else { 
+            else {
                 newChild( $customerId, $date, 1 );
             }
             if ( scalar @customerIds == 0 ) {
@@ -172,9 +172,9 @@ sub newChild {
     }
 
     if ( scalar @customerIds == 0 ) {
-       wlog("sleeping 5");
-       sleep 300;
-       wlog("done sleeping 5");
+        wlog("sleeping 5");
+        sleep 300;
+        wlog("done sleeping 5");
     }
 
     my $reconEngine = new Recon::ReconEngineCustomer( $customerId, $date, $poolRunning );
@@ -201,7 +201,7 @@ sub newSoftwareChild {
         return;
     }
 
-    my $reconEngine = new Recon::ReconEngineSoftware( $softwareId );
+    my $reconEngine = new Recon::ReconEngineSoftware($softwareId);
     $reconEngine->recon;
 
     wlog("Child software: $softwareId complete");

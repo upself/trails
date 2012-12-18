@@ -37,6 +37,7 @@ eval {
 	logging_level($cfgMgr->debugLevel);
 
 	dlog('Creating new scan record loader');
+	
 	my $loader = new Staging::ScanRecordLoader($opt_b);
 	dlog('scan record loader created');
 

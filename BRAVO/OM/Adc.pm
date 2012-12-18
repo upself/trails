@@ -326,7 +326,7 @@ sub queryInsert {
             ,server_type
             ,sesdr_location
             ,sesdr_bp_using
-            ,sesdr_syst_id
+            ,sesdr_systid
         ) values (
             ?
             ,?
@@ -358,7 +358,7 @@ sub queryUpdate {
             ,server_type = ?
             ,sesdr_location = ?
             ,sesdr_bp_using = ?
-            ,sesdr_syst_id = ?
+            ,sesdr_systid = ?
         where
             id = ?
     ';
@@ -443,7 +443,7 @@ sub queryGetByBizKey {
             ,server_type
             ,sesdr_location
             ,sesdr_bp_using
-            ,sesdr_syst_id
+            ,sesdr_systid
         from
             software_lpar_adc
         where
@@ -513,7 +513,7 @@ sub queryGetById {
             ,server_type
             ,sesdr_location
             ,sesdr_bp_using
-            ,sesdr_syst_id
+            ,sesdr_systid
         from
             software_lpar_adc
         where

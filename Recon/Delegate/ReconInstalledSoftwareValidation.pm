@@ -181,7 +181,8 @@ sub validateInstalledSoftware {
  elsif ( $self->installedSoftware->discrepancyTypeId ==
      $self->discrepancyTypeMap->{'FALSE HIT'}
   || $self->installedSoftware->discrepancyTypeId ==
-  $self->discrepancyTypeMap->{'INVALID'} )
+  $self->discrepancyTypeMap->{'INVALID'} || $self->installedSoftware->discrepancyTypeId ==
+  $self->discrepancyTypeMap->{'TADZ'} )
  {
   dlog("discrepancy type not valid for recon base");
   return 0;
@@ -362,42 +363,44 @@ sub validateCustomerPendingDecision {
 		if ( defined $self->customer->swComplianceMgmt
 			&& $self->customer->swComplianceMgmt eq 'YES' )
 		{
-			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
+			if (   $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
+				|| $self->installedSoftwareReconData->scopeName eq
+				'CUSTOIBMM' )
+			{
 				dlog("reconcile validated");
 				return 1;
 			}
 
 		}
-		dlog(
-"reconciled as pending customer decision but does not pass validation"
-		);
+		dlog("reconciled as pending customer decision but does not pass validation");
 		return 0;
 	}
 	return 1;
 }
 
 sub validateCustomerOwnedAndManaged {
-        my $self = shift;
-	dlog("begin validateCustomerOwnedAndManaged");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
-		  . $self->reconcileTypeMap->{'Customer owned and customer managed'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned and customer managed'} )
-	{
-		dlog("reconciled as customer owned and customer managed");
-		if ( defined $self->installedSoftwareReconData->scopeName
-			&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
-		{
-			dlog("reconcile validated");
-			return 1;
-		}
+ my $self = shift;
+ dlog("begin validateCustomerOwnedAndManaged");
+ dlog("reconcile type id".$self->installedSoftwareReconData->rTypeId);
+ dlog("reconcile map id".$self->reconcileTypeMap->{'Customer owned and customer managed'});
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'Customer owned and customer managed'} )
+ {
+  dlog("reconciled as customer owned and customer managed");
+  if ( defined $self->customer->swComplianceMgmt ) {
+   if ( $self->customer->swComplianceMgmt eq 'NO' ) {
+    if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' ) {
+     dlog("reconcile validated");
+     return 1;
+    }
+   }
+  }
 
-		dlog("reconciled as custocustm but does not pass validation");
-		return 0;
-	}
+  dlog("reconciled as custocustm but does not pass validation");
+  return 0;
+ }
 
-	return 1;
+ return 1;
 }
 
 sub validateScheduleF {

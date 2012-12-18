@@ -127,7 +127,7 @@ eval {
 		my @batches;
 		eval {
 			###Get the current software lpar batches to process.
-			@batches = Staging::Delegate::StagingDelegate->getSoftwareLparMemModBatches(
+			@batches = Staging::Delegate::StagingDelegate->getScanRecordMemModBatches(
 				$stagingConnection, $testMode,
 				$loadDeltaOnly,     $maxLparsInQuery
 			);

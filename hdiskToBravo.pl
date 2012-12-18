@@ -128,7 +128,7 @@ eval {
 		my @batches;
 		eval {
 			###Get the current software lpar batches to process.
-			@batches = Staging::Delegate::StagingDelegate->getSoftwareLparHdiskBatches(
+			@batches = Staging::Delegate::StagingDelegate->getScanRecordHdiskBatches(
 				$stagingConnection, $testMode,
 				$loadDeltaOnly,     $maxLparsInQuery
 			);

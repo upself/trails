@@ -11,23 +11,22 @@ use Text::CSV_XS;
 ###TODO need to take into account processor counts for bank accounts other than tcm
 
 sub getScanRecordData {
-    my ( $self, $connection, $bankAccount, $delta ) = @_;
+    my ( $self, $connection, $bankAccount, $delta, $mapService ) = @_;
 
     dlog('In the getScanRecordData method');
 
     if ( $bankAccount->connectionType eq 'CONNECTED' ) {
-        return $self->getConnectedScanRecordData( $connection, $bankAccount,
-            $delta );
+        return $self->getConnectedScanRecordData( $connection, $bankAccount, $delta, $mapService );
     }
     elsif ( $bankAccount->connectionType eq 'DISCONNECTED' ) {
-        return $self->getDisconnectedScanRecordData( $bankAccount, $delta );
+        return $self->getDisconnectedScanRecordData( $bankAccount, $delta, $mapService );
     }
 
     die('This is neither a connected or disconnected bank account');
 }
 
 sub getDisconnectedScanRecordData {
-    my ( $self, $bankAccount, $delta ) = @_;
+    my ( $self, $bankAccount, $delta, $mapService ) = @_;
 
     dlog('in the getDisconnectedScanRecordData method');
 
@@ -36,9 +35,7 @@ sub getDisconnectedScanRecordData {
     dlog($filePart);
 
     dlog('Determining the file to process');
-    my $fileToProcess
-        = ScanDelegate->getDisconnectedFile( $bankAccount, $delta,
-        $filePart );
+    my $fileToProcess = ScanDelegate->getDisconnectedFile( $bankAccount, $delta, $filePart );
 
     my %scanList;
 
@@ -47,12 +44,13 @@ sub getDisconnectedScanRecordData {
 
         dlog('Creating tsv object');
         my $tsv = Text::CSV_XS->new(
-            {   sep_char    => "\t",
-                binary      => 1,
-                eol         => $/,
-                escape_char => '',
-                quote_char  => ''
-            }
+                                     {
+                                       sep_char    => "\t",
+                                       binary      => 1,
+                                       eol         => $/,
+                                       escape_char => '',
+                                       quote_char  => ''
+                                     }
         );
         dlog('tsv object created');
 
@@ -109,11 +107,12 @@ sub getDisconnectedScanRecordData {
                 powerOnPassword
                 )
         );
+
         while ( $gz->gzreadline($line) > 0 ) {
             my $status = $tsv->parse($line);
 
             my $index = 0;
-            my %rec   = map { $fields[ $index++ ] => $_ } $tsv->fields();
+            my %rec = map { $fields[ $index++ ] => $_ } $tsv->fields();
 
             ###Need to add some fields to disconnected
             $rec{processorCount} = 0;
@@ -121,7 +120,7 @@ sub getDisconnectedScanRecordData {
             $rec{users}          = 0;
             $rec{authenticated}  = 2;
 
-            my $sr = $self->buildScanRecord( \%rec, $bankAccount );
+            my $sr = $self->buildScanRecord( \%rec, $bankAccount, $mapService );
             next if ( !defined $sr );
 
             ###Add the scan record to the list
@@ -129,8 +128,7 @@ sub getDisconnectedScanRecordData {
                 if ( !exists $scanList{ $rec{computerId} } );
         }
 
-        die "Error reading from $fileToProcess: $gzerrno"
-            . ( $gzerrno + 0 ) . "\n"
+        die "Error reading from $fileToProcess: $gzerrno" . ( $gzerrno + 0 ) . "\n"
             if $gzerrno != Z_STREAM_END;
         $gz->gzclose();
     }
@@ -146,17 +144,14 @@ sub getDisconnectedScanRecordData {
         $filePart = 'cpu_count';
         dlog("filePart=$filePart");
 
-        $fileToProcess
-            = ScanDelegate->getDisconnectedFile( $bankAccount, $delta,
-            $filePart );
+        $fileToProcess = ScanDelegate->getDisconnectedFile( $bankAccount, $delta, $filePart );
         dlog("fileToProcess=$fileToProcess");
 
         if ($fileToProcess) {
             dlog("processing $fileToProcess");
 
             dlog('creating tsv object');
-            my $tsv = Text::CSV_XS->new(
-                { sep_char => "\t", binary => 1, eol => $/ } );
+            my $tsv = Text::CSV_XS->new( { sep_char => "\t", binary => 1, eol => $/ } );
             dlog('tsv object created');
 
             dlog('opening gzipped file');
@@ -180,14 +175,12 @@ sub getDisconnectedScanRecordData {
 
                 if ( defined $rec{physical} && $rec{physical} != '' ) {
                     if ( exists $scanList{ $rec{computerId} } ) {
-                        $scanList{ $rec{computerId} }
-                            ->processorCount( $rec{physical} );
+                        $scanList{ $rec{computerId} }->processorCount( $rec{physical} );
                     }
                 }
             }
 
-            die "Error reading from $fileToProcess: $gzerrno"
-                . ( $gzerrno + 0 ) . "\n"
+            die "Error reading from $fileToProcess: $gzerrno" . ( $gzerrno + 0 ) . "\n"
                 if $gzerrno != Z_STREAM_END;
 
             $gz->gzclose();
@@ -204,16 +197,14 @@ sub getDisconnectedScanRecordData {
     $filePart = 'processor';
     dlog("filePart=$filePart");
 
-    $fileToProcess = ScanDelegate->getDisconnectedFile( $bankAccount, $delta,
-        $filePart );
+    $fileToProcess = ScanDelegate->getDisconnectedFile( $bankAccount, $delta, $filePart );
     dlog("fileToProcess=$fileToProcess");
 
     if ($fileToProcess) {
         dlog("processing $fileToProcess");
 
         dlog('creating tsv object');
-        my $tsv = Text::CSV_XS->new(
-            { sep_char => "\t", binary => 1, eol => $/ } );
+        my $tsv = Text::CSV_XS->new( { sep_char => "\t", binary => 1, eol => $/ } );
         dlog('tsv object created');
 
         dlog('opening gzipped file');
@@ -236,8 +227,7 @@ sub getDisconnectedScanRecordData {
             upperValues( \%rec );
 
             ###TODO: ALEX I CHANGED THIS NEXT LINE, WAS=>$rec{physical}
-            if ( defined $rec{processorCount} && $rec{processorCount} != '' )
-            {
+            if ( defined $rec{processorCount} && $rec{processorCount} != '' ) {
                 if ( $bankAccount->type eq 'TCM' ) {
                     $data{ $rec{computerId} }++;
                 }
@@ -247,8 +237,7 @@ sub getDisconnectedScanRecordData {
             }
         }
 
-        die "Error reading from $fileToProcess: $gzerrno"
-            . ( $gzerrno + 0 ) . "\n"
+        die "Error reading from $fileToProcess: $gzerrno" . ( $gzerrno + 0 ) . "\n"
             if $gzerrno != Z_STREAM_END;
 
         $gz->gzclose();
@@ -269,8 +258,20 @@ sub getDisconnectedScanRecordData {
     return ( \%scanList );
 }
 
+sub getCustomerId {
+    my ( $self, $scanRecord, $mapService ) = @_;
+    ###add customer id from map service for each scan record.
+    dlog('Start looping for adding customer id');
+    my $customerId = $mapService->getCustomerId($scanRecord);
+    if ( $customerId =~ m/\D/ ) {
+        $customerId = 999999;
+    }
+    return $customerId;
+    dlog('End looping for adding customer id');
+}
+
 sub getConnectedScanRecordData {
-    my ( $self, $connection, $bankAccount, $delta ) = @_;
+    my ( $self, $connection, $bankAccount, $delta, $mapService ) = @_;
 
     my $max;
 
@@ -287,8 +288,7 @@ sub getConnectedScanRecordData {
     my $sth;
     if ($max) {
         if ( $bankAccount->type eq 'SW_DISCREPANCY' ) {
-            $connection->prepareSqlQuery(
-                queryComputerDiscrepancyDeltaData() );
+            $connection->prepareSqlQuery( queryComputerDiscrepancyDeltaData() );
             $sth = $connection->sql->{computerDiscrepancyDeltaData};
         }
         elsif ( $bankAccount->type eq 'TLCMZ' ) {
@@ -298,6 +298,10 @@ sub getConnectedScanRecordData {
         elsif ( $bankAccount->type eq 'DORANA' ) {
             $connection->prepareSqlQuery( queryComputerDoranaDeltaData() );
             $sth = $connection->sql->{computerDoranaDeltaData};
+        }
+        elsif ( $bankAccount->type eq 'TAD4Z' ) {
+            $connection->prepareSqlQuery( queryTAD4ZDeltaData() );
+            $sth = $connection->sql->{tad4zDeltaData};
         }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
             $connection->prepareSqlQuery( queryAuthComputerDeltaData() );
@@ -327,6 +331,10 @@ sub getConnectedScanRecordData {
             $connection->prepareSqlQuery( queryComputerDoranaData() );
             $sth = $connection->sql->{computerDoranaData};
         }
+        elsif ( $bankAccount->type eq 'TAD4Z' ) {
+            $connection->prepareSqlQuery( queryTAD4ZData() );
+            $sth = $connection->sql->{tad4zData};
+        }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
             $connection->prepareSqlQuery( queryAuthComputerData() );
             $sth = $connection->sql->{authComputerData};
@@ -346,9 +354,9 @@ sub getConnectedScanRecordData {
 
     ###Define the fields
     my @fields;
-    if (   $bankAccount->name eq 'TLCMZ'
-        || $bankAccount->name eq 'DORANA'
-        || $bankAccount->name eq 'SWDISCRP' )
+    if (    $bankAccount->name eq 'TLCMZ'
+         || $bankAccount->name eq 'DORANA'
+         || $bankAccount->name eq 'SWDISCRP' )
     {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
@@ -387,7 +395,7 @@ sub getConnectedScanRecordData {
     my %scanList;
     dlog('looping through query results');
     while ( $sth->fetchrow_arrayref ) {
-        my $sr = $self->buildScanRecord( \%rec, $bankAccount );
+        my $sr = $self->buildScanRecord( \%rec, $bankAccount, $mapService );
         next if ( !defined $sr );
 
         ###Add the hardware to the list
@@ -404,7 +412,7 @@ sub getConnectedScanRecordData {
 }
 
 sub buildScanRecord {
-    my ( $self, $rec, $bankAccount ) = @_;
+    my ( $self, $rec, $bankAccount, $mapService ) = @_;
 
     cleanValues($rec);
     upperValues($rec);
@@ -433,13 +441,12 @@ sub buildScanRecord {
     my $lastFieldSize = length($lastField);
 
     while ( length($lastField) < 6 ) {
-        $lastField       .= "0";
+        $lastField .= "0";
         $rec->{scanTime} .= "0";
     }
 
-    if ( $rec->{scanTime} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
-        || $rec->{scanTime}
-        =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
+    if (    $rec->{scanTime} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
+         || $rec->{scanTime} =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
     {
         dlog('Good timestamp');
     }
@@ -457,7 +464,7 @@ sub buildScanRecord {
     }
 
     @fields = split( /\./, $rec->{biosDate} );
-    $size   = scalar @fields;
+    $size = scalar @fields;
 
     if ( $size == 1 ) {
         $rec->{biosDate} .= '.0';
@@ -470,13 +477,12 @@ sub buildScanRecord {
     $lastFieldSize = length($lastField);
 
     while ( length($lastField) < 6 ) {
-        $lastField       .= "0";
+        $lastField .= "0";
         $rec->{biosDate} .= "0";
     }
 
-    if ( $rec->{biosDate} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
-        || $rec->{biosDate}
-        =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
+    if (    $rec->{biosDate} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
+         || $rec->{biosDate} =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
     {
         dlog('Good timestamp');
     }
@@ -487,13 +493,13 @@ sub buildScanRecord {
 
     ###Adjust the processor count
     if ( defined $rec->{authProcessorCount}
-        && $rec->{authProcessorCount} != 0 )
+         && $rec->{authProcessorCount} != 0 )
     {
         $rec->{processorCount} = $rec->{authProcessorCount};
     }
     $rec->{processorCount} = 0
-        if ( ( !defined $rec->{processorCount} )
-        || ( $rec->{processorCount} eq '' ) );
+        if (    ( !defined $rec->{processorCount} )
+             || ( $rec->{processorCount} eq '' ) );
 
     if ( !defined $rec->{computerId} ) {
         return undef;
@@ -678,6 +684,7 @@ sub buildScanRecord {
     $scanRecord->caseSerial( $rec->{caseSerial} );
     $scanRecord->caseAssetTag( $rec->{caseAssetTag} );
     $scanRecord->powerOnPassword( $rec->{powerOnPassword} );
+    $scanRecord->customerId($self->getCustomerId($scanRecord,$mapService));
 
     dlog( $scanRecord->toString );
 
@@ -1368,6 +1375,95 @@ sub queryComputerDoranaData {
     ';
 
     return ( 'computerDoranaData', $query );
+}
+
+sub queryTAD4ZData {
+    my $query = "
+	select
+     node_key
+      ,lpar_name
+      ,'' as objectId
+      ,hw_model
+      ,hw_serial
+      ,last_update_time
+      ,0 as users
+      ,2 as authenticated
+      ,0 as isManual
+      ,0 as authProc
+      ,0 as processor
+      ,'' as osName
+      ,'' as osType
+      ,'' as osMajorVers
+      ,'' as osMinorVers
+      ,'' as osSubVers
+      ,'' as osInstDate
+      ,'' as userName
+      ,'' as biosManufacturer
+      ,'' as biosModel
+      ,'' as computerAlias
+      ,'' as physicalTotalKb
+      ,'' as virtTotalKb
+      ,'' as physicalFreeKb
+      ,'' as virtFreeKb
+      ,'' as biosDate
+      ,'' as biosSerial
+      ,'' as sysUuid
+      ,'' as boardSerNum
+      ,'' as caseSerNum
+      ,'' as caseAssetTag
+   from
+	  node
+   where
+	  node_type = \'LPAR\'
+   with ur
+     ";
+
+    return ( 'tad4zData', $query );
+}
+
+sub queryTAD4ZDeltaData {
+    my $query = "
+    select
+     node_key
+      ,lpar_name
+      ,'' as objectId
+      ,hw_model
+      ,hw_serial
+      ,last_update_time
+      ,0 as users
+      ,2 as authenticated
+      ,0 as isManual
+      ,0 as authProc
+      ,0 as processor
+      ,'' as osName
+      ,'' as osType
+      ,'' as osMajorVers
+      ,'' as osMinorVers
+      ,'' as osSubVers
+      ,'' as osInstDate
+      ,'' as userName
+      ,'' as biosManufacturer
+      ,'' as biosModel
+      ,'' as computerAlias
+      ,'' as physicalTotalKb
+      ,'' as virtTotalKb
+      ,'' as physicalFreeKb
+      ,'' as virtFreeKb
+      ,'' as biosDate
+      ,'' as biosSerial
+      ,'' as sysUuid
+      ,'' as boardSerNum
+      ,'' as caseSerNum
+      ,'' as caseAssetTag
+   from
+      node
+   where
+      node_type = \'LPAR\'
+      and last_update_time > ?
+   with ur
+     ";
+
+    return ( 'tad4zData', $query );
 }
 
 1;

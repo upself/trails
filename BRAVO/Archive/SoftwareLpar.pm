@@ -73,6 +73,10 @@ sub archive {
     ilog('Deleting effective processor');
     $self->deleteEffectiveProcessor;
     ilog('Deleted effective processor');
+    
+    ilog('Deleting Scan Software Lpar');
+    $self->deleteScanSoftwareLpar;
+    ilog('Deleted Scan Software Lpar');
 
     ilog('Deleting software lpar');
     $self->deleteSoftwareLpar;
@@ -252,6 +256,26 @@ sub deleteEffectiveProcessorHistory {
 
         $effectiveProcessorH->delete( $self->connection );
     }
+}
+
+sub deleteScanSoftwareLpar {
+    my $self = shift;
+
+    dlog('Preparing Scan Sw Inst SW  query');
+    $self->connection->prepareSqlQuery( $self->queryDeleteScanSoftwareLpar );
+    dlog('Prepared Scan Sw Inst SW query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{deleteScanSoftwareLpar};
+    dlog('Statement handle obtained');
+    
+    dlog('Executing query');
+    $sth->execute( $self->softwareLpar->id );
+    dlog('Executed query');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
 }
 
 sub deleteSoftwareLpar {
@@ -672,6 +696,21 @@ sub getEffectiveProcessorHistoryIds {
     dlog('Statement handle closed');
 
     return @ids;
+}
+
+sub queryDeleteScanSoftwareLpar {
+    my $self = shift;
+
+    my $query = qq{
+		delete
+		from
+		  scan_software_lpar
+		where
+			software_lpar_id = ?
+        };
+
+    dlog("queryDeleteScanSoftwareLpar=$query");
+    return ( 'deleteScanSoftwareLpar', $query );
 }
 
 sub queryEffectiveProcessorHistoryIds {

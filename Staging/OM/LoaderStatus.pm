@@ -220,4 +220,3 @@ sub queryUpdate {
 }
 
 1;
-

@@ -111,7 +111,7 @@ sub setDBInfo {
 
         my %dbs;
 
-	    $dbs{'swasset'}{'password'} = 'aug27db2';
+	    $dbs{'swasset'}{'password'} = 'may08db2';
 	    $dbs{'swasset'}{'user'}     = 'swasset';
 	    $dbs{'swasset'}{'name'}     = 'SWASSETR';
 	    
@@ -119,11 +119,11 @@ sub setDBInfo {
 	    $dbs{'staging'}{'user'}     = 'eaadmin';
 	    $dbs{'staging'}{'name'}     = 'STAGINGR';
 	
-	    $dbs{'trails'}{'password'} = 'apr03db2';
+	    $dbs{'trails'}{'password'} = 'apr06new';
 	    $dbs{'trails'}{'user'}     = 'eaadmin';
 	    $dbs{'trails'}{'name'}     = 'TRAILS';
 	    
-	    $dbs{'cndb'}{'password'} = 'aug27db2';
+	    $dbs{'cndb'}{'password'} = 'may08db2';
 	    $dbs{'cndb'}{'user'}     = 'cndb';
 	    $dbs{'cndb'}{'name'}     = 'CNDBR';    
 	    

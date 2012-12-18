@@ -45,7 +45,7 @@ use vars qw (
 getopt("ifu");
 my $test_flag = "PRODUCTION";
 my $discrepancyFile = "Discrepancy_deletion.tsv";
-my $logFile = "/var/staging/logs/discreapancyDeletion/discrepancyDeletion.log";
+my $logFile = "/var/staging/logs/discrepancyDeletion/discrepancyDeletion.log";
 my ($swlparId,$swlparName,$installedswId,$swId,	$swName,$customerId,$actNumber,$hostAndsw)=@_;
 my ($swlparIdf,$swlparNamef,$installedswIdf,$swIdf,	$swNamef,$customerIdf,$actNumberf,$hostAndswf)=@_;
 
@@ -57,7 +57,7 @@ if ( $test_flag eq "TESTING" ) {
 }
 else {
 	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILS";
+	$trails_db       = "dbi:DB2:TRAILS3";
 	$trails_user     = "eaadmin";
 	$trails_password = "apr03db2";
 }
@@ -126,7 +126,8 @@ with ur ");
     WHERE software_id=?
     AND software_lpar_id=?
     with ur");
-	
+
+
 	
 LINE:	while (<INPUTFILE>) {
 		$dbh->commit;
@@ -167,56 +168,67 @@ LINE:	while (<INPUTFILE>) {
 			if (defined $opt_f && $opt_f eq '1' && defined $swlparId )
 			{			
 			 print LOG "It is full lpar deletion! \n";
-     		 $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
-               if ( my @frow = $get_discrepancy_sw_lpar->fetchrow_array() ) 
-               {
-               $swlparIdf = $frow[0];
-			   $swlparNamef = $frow[1];
-			   $installedswIdf = $frow[2];
-			   $swIdf = $frow[3];
-			   $swNamef = $frow[4];
-			   $customerIdf = $frow[5];
-			   $actNumberf = $frow[6];
-			   $hostAndswf = $frow[7];
+     		
+          
+               $get_discrepancy_sw_lpar->bind_columns( 
+               \$swlparIdf,
+			   \$swlparNamef ,
+			   \$installedswIdf ,
+			   \$swIdf,
+			   \$swNamef,
+			   \$customerIdf,
+			   \$actNumberf,
+			   \$hostAndswf,);
+			    $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
+			   
+			   while ( $get_discrepancy_sw_lpar->fetchrow_arrayref ) {
+			   	print LOG "Software id is $swIdf , softwarelpar id is $swlparIdf \n";
 			     $get_manual_queue->execute($swIdf,$swlparIdf);
-			     if ( my @qrow = $get_manual_queue->fetchrow_array() ) 
+			     if (@qrow = $get_manual_queue->fetchrow_array()) 
 			     {
-			     	$softwareId = $qrow[0];
+			       	$softwareId = $qrow[0];
 			     	$softwLparId = $qrow[1];
 			     	$custId = $qrow[2];
 			     	$deleted = $qrow[3];
 			     	if ( $deleted eq 0 ) 
 			     	      {
 			     	        print LOG "Discrepancy Software id : $softwareId already in queue  -- line $count .\n";
-			            	next LINE;
+			            
 			     	      } 
 			     	      else {
 			               	print LOG "Discrepancy Software id : $softwareId has been deleted before in queue , try to delete again -- line $count .\n";
 			  		    
 			                $rc = $update_manual_queue->execute($requester,$swIdf, $swlparIdf, $customerIdf);
 		                	if ( $rc == 1 ) {
-			        		print LOG "Discrepancy Software id : $swId updated into queue successfully -- line $count .\n";
+			        		print LOG "Discrepancy Software id : $swIdf updated into queue successfully -- line $count .\n";
 			        		$dbh->commit;
+			        		$insert_manual_queue->finish;
+			        	
 			            	} else {
-			          		print LOG "Attemped to update Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
-			         		next LINE;
+			          		print LOG "Attemped to update Discrepancy Software id : $swIdf into queue failed. aborting load at line $count \n";
+			         		
 				        	# exit;
 				                    }
-			  
+			           $update_manual_queue->finish;
 		        	       } 
 			       } else {
 			    
 			                $rc = $insert_manual_queue->execute($swIdf, $swlparIdf, $customerIdf, $swlparNamef,$requester );
 		    	     if ( $rc == 1 ) {
-				        	print LOG "Discrepancy Software id : $swId added into queue successfully -- line $count .\n";
+				        	print LOG "Discrepancy Software id : $swIdf added into queue successfully -- line $count .\n";
 				        	$dbh->commit;
+				        	$insert_manual_queue->finish;
+				        	
 				      } else {
-					     print LOG "Attemped to add Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
-					     next LINE;
+					     print LOG "Attemped to add Discrepancy Software id : $swIdf into queue failed. aborting load at line $count \n";
+					     
 				     	# exit;
 				       }
-			        }
-             }	
+				     }
+			        $get_manual_queue->finish;
+               }
+               $get_discrepancy_sw_lpar->finish;
+             next LINE;
             
 			}  
 			 if ( !defined $opt_f && defined $swlparId ) 

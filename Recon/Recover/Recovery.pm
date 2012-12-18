@@ -48,7 +48,6 @@ sub run {
 	}
 
 	$self->loadSoftwareLparNames if ( !defined $self->softwareLparNames );
-
 	foreach my $name ( sort @{ $self->softwareLparNames } ) {
 		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
 		$softwareLpar->customerId( $self->customer->id );
@@ -409,9 +408,17 @@ sub queryInstalledSoftwareIds {
             is.id
         from
             installed_software is
+            ,software s
         where
             is.software_lpar_id = ?
+            and is.software_id = s.software_id
+            and s.level = 'LICENSABLE'
+            and is.discrepancy_type_id != 3
+            and is.discrepancy_type_id != 5 
             and is.status = 'ACTIVE'            
+            and not exists(select 1 from reconcile r, reconcile_type rt where r.installed_software_id = is.id and r.reconcile_type_id = rt.id and rt.is_manual = 0) 
+            and not exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id and rh.manual_break = 1) 
+            and exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id) 
     };
 
 	dlog("installedSoftwareIds=$query");

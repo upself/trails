@@ -18,7 +18,7 @@
 	<property name="sesdrBpUsing" type="scalar" equals="true"
 		sql-name="sesdr_bp_using" />
 	<property name="sesdrSystid" type="scalar" equals="true"
-		sql-name="sesdr_syst_id" />
+		sql-name="sesdr_systid" />
 	<property name="table" type="scalar" default="software_lpar_adc" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

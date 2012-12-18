@@ -179,7 +179,7 @@ sub load {
             if ( $rec{action} eq 'DELETE' ) {
                 if ( defined $rec{mapAction} && $rec{mapAction} ne 'DELETE' ) {
 
-                    ilog("SL=D,SLM!=D");
+                    wlog("SL=D,SLM!=D");
                     $error = 1;
 
                     ###Remove this software lpar from to delete hash if exists.
@@ -364,7 +364,7 @@ sub load {
                                     $saveSoftwareLpar = 1;
                                 }
                                 elsif ( $bravoSoftwareLpar->status eq 'INACTIVE' ) {
-                                    ilog("SSL=D,BSL,BSL=I");
+                                    wlog("SSL=D,BSL,BSL=I");
                                     $saveSoftwareLpar = 0;
                                 }
                                 else {
@@ -373,7 +373,7 @@ sub load {
                             }
                             ###!BSL
                             else {
-                                ilog("SSL=D,!BSL");
+                                wlog("SSL=D,!BSL");
                                 $saveSoftwareLpar = 0;
                             }
                         }
@@ -399,7 +399,7 @@ sub load {
                         }
                         ###!BSL
                         else {
-                            ilog("SSL=D,!BSL");
+                            wlog("SSL=D,!BSL");
                             $saveSoftwareLpar = 0;
                         }
                     }
@@ -966,7 +966,7 @@ sub load {
                                     else {
                                         ###BIT
                                         if ( defined $bravoInstalledType->id ) {
-                                            ilog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT!=M,BIT");
+                                            wlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT!=M,BIT");
                                             $saveInstalledSoftware      = 1;
                                             $softwareDiscrepancyHistory = 'CLOSE';
                                             $deleteManual               = 1;
@@ -994,7 +994,7 @@ sub load {
                                 else {
                                     ###BIT
                                     if ( defined $bravoInstalledType->id ) {
-                                        ilog("SIT=U|C,BSL,BSL=A,BIS,BIS=I,SIT!=M,BIT");
+                                        wlog("SIT=U|C,BSL,BSL=A,BIS,BIS=I,SIT!=M,BIT");
                                         $saveInstalledSoftware = 1;
                                     }
                                     ###!BIT
@@ -1039,7 +1039,7 @@ sub load {
                                 {
                                     ###SIT=M
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
-                                        ilog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT=M");
+                                        wlog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT=M");
                                         $deleteManual = 1;
                                     }
                                     ###SIT!=M
@@ -1052,7 +1052,7 @@ sub load {
                                         }
                                         ###!BIT
                                         else {
-                                            ilog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT");
+                                            wlog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT");
                                         }
                                     }
                                 }
@@ -1066,13 +1066,13 @@ sub load {
                                     }
                                     ###SIT!=M
                                     else {
-                                        ilog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT=M,SIT!=M");
+                                        wlog("SIT=D,BSL,BSL=A,BIS,BIS=A,DT=M,SIT!=M");
                                     }
                                 }
                             }
                             ###BIS=I
                             elsif ( $bravoInstalledSoftware->status eq 'INACTIVE' ) {
-                                ilog("SIT=D,BIS,BIS=I");
+                                wlog("SIT=D,BIS,BIS=I");
                             }
                             else {
                                 die "Invalid status: " . $bravoInstalledSoftware->toString . "\n";
@@ -1080,7 +1080,7 @@ sub load {
                         }
                         ###!BIS
                         else {
-                            ilog("SIT=D,!BIS");
+                            wlog("SIT=D,!BIS");
                         }
                     }
                     ###BSL=I
