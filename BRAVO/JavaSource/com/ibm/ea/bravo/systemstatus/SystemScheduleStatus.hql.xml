@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="selectSystemScheduleStatusList">
+		<![CDATA[
+			FROM SystemScheduleStatus
+		]]>
+	</query>
+
+	<query name="selectBankAccountJobList">
+		<![CDATA[
+			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount
+		]]>
+	</query>
+
+</hibernate-mapping>

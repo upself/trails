@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.sigbank.BundleValue" table="BUNDLE_VALUE" mutable="false">
+
+		<id name="id" type="long" column="ID">
+			<generator class="increment"/>
+		</id>
+
+		<many-to-one name="bundle" column="BUNDLE_ID" class="com.ibm.ea.sigbank.Bundle" not-null="true" unique-key="IDX_BVBSW" index="IDX_BVB"/>
+		<many-to-one name="software" column="SOFTWARE_ID" class="com.ibm.ea.sigbank.Product" not-null="true"/>
+
+	</class>
+</hibernate-mapping>
+

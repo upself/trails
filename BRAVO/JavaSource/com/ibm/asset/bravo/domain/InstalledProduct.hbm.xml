@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.asset.bravo.domain.InstalledProduct" table="INSTALLED_PRODUCT"
+		mutable="false">
+
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+
+		<many-to-one name="product" class="com.ibm.ea.sigbank.Software">
+			<column name="PRODUCT_ID" not-null="true" />
+		</many-to-one>
+
+		<property name="version" column="VERSION" not-null="true" />
+
+		<property name="active" column="ACTIVE" not-null="true" />
+
+		<property name="comment" column="COMMENT" />
+
+		<property name="remoteUser" column="REMOTE_USER" not-null="true" />
+
+		<property name="creationTime" column="CREATION_TIME"
+			not-null="true" />
+
+		<joined-subclass name="com.ibm.asset.bravo.domain.AuthorizedProduct"
+			table="AUTHORIZED_PRODUCT">
+			<key column="ID" />
+			<many-to-one name="hardwareLpar"
+				class="com.ibm.ea.bravo.hardware.HardwareLpar">
+				<column name="HARDWARE_LPAR_ID" not-null="true" />
+			</many-to-one>
+			<property name="changeNumber" column="CHANGE_NUMBER"
+				not-null="true" />
+			<property name="changeDate" column="CHANGE_DATE" not-null="true" />
+		</joined-subclass>
+
+	</class>
+</hibernate-mapping>

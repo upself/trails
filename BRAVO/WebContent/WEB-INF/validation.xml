@@ -1,0 +1,159 @@
+<!DOCTYPE form-validation PUBLIC
+		"-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+		"http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
+
+<form-validation>
+	<formset>
+		<form name="bankAccountForm">
+			<field property="name" depends="required,maxlength">
+				<arg position="0" key="Bank account name" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>32</var-value>
+				</var>
+			</field>
+			<field property="description" depends="required,maxlength">
+				<arg position="0" key="Bank account description" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>128</var-value>
+				</var>
+			</field>
+			<field property="type" depends="required">
+				<arg position="0" key="Bank account type" resource="false" />
+			</field>
+			<field property="version" depends="required">
+				<arg position="0" key="Bank account version" resource="false" />
+			</field>
+			<field property="dataType" depends="required">
+				<arg position="0" key="Data type" resource="false" />
+			</field>
+			<field property="databaseType" depends="validwhen">
+				<arg position="0" key="Database type" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+			</field>
+			<field property="databaseVersion" depends="validwhen">
+				<arg position="0" key="Database version" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+			</field>
+			<field property="databaseName" depends="validwhen,maxlength">
+				<arg position="0" key="Database nme" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>8</var-value>
+				</var>
+			</field>
+			<field property="databaseSchema" depends="maxlength">
+				<arg position="0" key="Database schema" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>16</var-value>
+				</var>
+			</field>
+			<field property="databaseIp" depends="validwhen,mask">
+				<arg position="0" key="Database IP" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+				<var>
+					<var-name>mask</var-name>
+					<var-value>
+						\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b
+					</var-value>
+				</var>
+			</field>
+			<field property="databasePort" depends="validwhen,maxlength">
+				<arg position="0" key="Database port" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>16</var-value>
+				</var>
+			</field>
+			<field property="databaseUser" depends="validwhen,maxlength">
+				<arg position="0" key="Database user name" resource="false" />
+				<arg position="1" name="maxlength" key="${var:maxlength}"
+					resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>16</var-value>
+				</var>
+			</field>
+			<field property="databasePassword" depends="validwhen,maxlength">
+				<arg position="0" key="Database password" resource="false" />
+				<arg position="1" name="maxlength"
+					key="${var:maxlength}" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>16</var-value>
+				</var>
+			</field>
+			<field property="socks" depends="validwhen">
+				<arg position="0" key="Socks" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+			</field>
+			<field property="tunnel" depends="validwhen">
+				<arg position="0" key="Tunnel" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+			</field>
+			<field property="tunnelPort" depends="integer">
+				<arg position="0" key="Tunnel port" resource="false" />
+			</field>
+			<field property="authenticatedData" depends="required">
+				<arg position="0" key="Authenticated data" resource="false" />
+			</field>
+			<field property="syncSig" depends="validwhen">
+				<arg position="0" key="Synchronize signatures" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((connectionType == 'DISCONNECTED') or ((connectionType == 'CONNECTED') and (*this* != null)))</var-value>
+				</var>
+			</field>
+			<field property="status" depends="validwhen">
+				<arg position="0" key="Status" resource="false" />
+				<var>
+					<var-name>test</var-name>
+					<var-value>((id == null) or ((id != null) and (*this* != null)))</var-value>
+				</var>
+			</field>
+		</form>
+	</formset>
+</form-validation>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftProductMap"
+		table="MICROSOFT_PRODUCT_MAP">
+
+		<id name="microsoftProductMapId" type="long"
+			column="MICROSOFT_PRODUCT_MAP_ID">
+			<generator class="foreign">
+				<param name="property">software</param>
+			</generator>
+		</id>
+
+		<one-to-one name="software"
+			class="com.ibm.ea.sigbank.Product" constrained="true" />
+
+		<many-to-one
+			class="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftProduct"
+			name="microsoftProduct">
+			<column name="MICROSOFT_PRODUCT_ID" not-null="true" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

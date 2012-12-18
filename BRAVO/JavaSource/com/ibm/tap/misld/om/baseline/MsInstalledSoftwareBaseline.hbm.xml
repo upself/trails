@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.baseline.MsInstalledSoftwareBaseline"
+		table="MS_INSTALLED_SOFTWARE_BASELINE">
+
+		<id name="msInstalledSoftwareBaselineId" type="long"
+			column="INSTALLED_SOFTWARE_BASELINE_ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one
+			class="com.ibm.tap.misld.om.baseline.MsHardwareBaseline"
+			name="msHardwareBaseline">
+			<column name="MS_HARDWARE_BASELINE_ID" not-null="true"
+				unique-key="true" />
+		</many-to-one>
+
+		<many-to-one class="com.ibm.ea.sigbank.Product"
+			name="software">
+			<column name="SOFTWARE_ID" not-null="true"
+				unique-key="true" />
+		</many-to-one>
+
+		<property name="userCount" type="integer">
+			<column name="USER_COUNT" />
+		</property>
+
+		<property name="softwareOwner">
+			<column name="SOFTWARE_OWNER" length="16" />
+		</property>
+
+		<property name="softwareBuyer">
+			<column name="SOFTWARE_BUYER" length="16" />
+		</property>
+
+		<property name="purchaseEndDate" type="timestamp">
+			<column name="PURCHASE_END_DATE" />
+		</property>
+
+		<property name="authenticated">
+			<column name="AUTHENTICATED" length="1" />
+		</property>
+
+		<property name="osUnauthenticatedJust">
+			<column name="OS_UNAUTHENTICATED_JUST" length="255" />
+		</property>
+
+		<property name="scanTime" type="timestamp">
+			<column name="SCAN_TIME" not-null="true" />
+		</property>
+
+		<property name="loader">
+			<column name="LOADER" length="16" not-null="true" />
+		</property>
+
+		<property name="comment">
+			<column name="COMMENT" length="255" />
+		</property>
+
+		<property name="remoteUser">
+			<column name="REMOTE_USER" not-null="true" length="32" />
+		</property>
+
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" not-null="true" />
+
+		<property name="status">
+			<column name="STATUS" not-null="true" length="32" />
+		</property>
+	</class>
+
+</hibernate-mapping>
+

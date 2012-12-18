@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="hardwareLparsWithCompositeByCustomerId">
+		<![CDATA[
+      		select 
+      			count(*)
+			from 
+			 	HardwareLpar a
+			 	left join a.hardware b
+			where 
+				a.customer = :customerId
+				and a.status='ACTIVE'
+				and ( b.hardwareStatus is null
+				or b.hardwareStatus = '' or b.hardwareStatus = 'ACTIVE')
+				and a.softwareLpar is not null
+		]]>
+	</query>
+
+	<query name="softwareLparsWithNoCompositeByCustomerId">
+		<![CDATA[
+      		select 
+      			count(*)
+			from 
+			 	SoftwareLpar a
+			where
+				a.status = 'ACTIVE'
+				and a.customer = :customer
+				and a.hardwareLpar is null
+		]]>
+	</query>
+
+	<query name="accountsByNameCount">
+		<![CDATA[
+      		select count(*)
+			from com.ibm.ea.cndb.Customer c
+			where 
+				upper(c.customerName) like :name
+		]]>
+	</query>
+
+	<query name="accountsByName">
+		<![CDATA[
+			from com.ibm.ea.cndb.Customer c
+				join fetch c.industry
+				join fetch c.industry.sector
+				join fetch c.contactDPE
+				join fetch c.pod
+				join fetch c.customerType
+			where 
+				upper(c.customerName) like :name
+			order by
+				c.customerName
+		]]>
+	</query>
+
+	<query name="customerByAccountId">
+		<![CDATA[
+			from com.ibm.ea.cndb.Customer c
+				join fetch c.industry
+				join fetch c.industry.sector
+				join fetch c.contactDPE
+				join fetch c.pod
+				join fetch c.customerType
+				left join fetch c.bluegroups
+			where 
+				c.accountNumber = :accountId
+		]]>
+	</query>
+
+	<query name="accountStatisticsHardwareByCustomerId">
+		<![CDATA[
+			select
+				count(*)
+   			from
+   				HardwareLpar l
+   				left join l.hardware h
+			where 
+				l.customer = :customerId
+				and l.status = 'ACTIVE'
+				and (h.hardwareStatus is null or h.hardwareStatus = ''
+				or h.hardwareStatus = 'ACTIVE')
+		]]>
+	</query>
+
+	<sql-query name="accountStatisticsSoftwareByCustomerId">
+		<![CDATA[
+			select
+				value(sum(case when d.name = 'NONE' then 0 else 1 end), 0)
+				,count(*)
+   			from
+   				software_lpar l
+   				,installed_software s
+   				,discrepancy_type d
+			where 
+				l.customer_id = :customerId
+				and s.status = 'ACTIVE'
+				and s.software_lpar_id = l.id
+				and s.discrepancy_type_id = d.id
+		]]>
+	</sql-query>
+
+</hibernate-mapping>

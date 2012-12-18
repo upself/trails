@@ -1,0 +1,459 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="softwareStatisticsBySoftwareLpar">
+		<![CDATA[
+			select
+				count(*)
+			from
+				com.ibm.ea.bravo.software.InstalledSoftware s
+			where
+				s.softwareLpar = :softwareLpar
+				and s.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="installedSignaturesByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledSignature i
+				join fetch i.softwareSignature
+			where
+				i.installedSoftware = :installedSoftware
+				and i.softwareSignature.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="installedFiltersByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledFilter i
+				join fetch i.softwareFilter
+			where
+				i.installedSoftware = :installedSoftware
+				and i.softwareFilter.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="installedSaProductsByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledSaProduct i
+				join fetch i.saProduct
+			where
+				i.installedSoftware = :installedSoftware
+				and i.saProduct.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="installedDoranaProductsByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledDoranaProduct i
+				join fetch i.doranaProduct
+			where
+				i.installedSoftware = :installedSoftware
+				and i.doranaProduct.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="installedVmProductsByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledVmProduct i
+				join fetch i.vmProduct
+			where
+				i.installedSoftware = :installedSoftware
+				and i.vmProduct.status = 'ACTIVE'
+		]]>
+	</query>
+	
+		<query name="installedTadzProductsByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledTadz i
+				join fetch i.mainframeVersion j
+				join fetch j.manufacturer 
+			where
+				i.installedSoftware = :installedSoftware
+		]]>
+	</query>
+
+	<query name="softwareLparsSearch">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.customer = :customer
+				and l.name like :name
+				and (l.hardwareLpar.hardware is null or
+					 l.hardwareLpar.hardware.hardwareStatus in (:hardwareStatus))
+				and l.status in (:status)
+		]]>
+	</query>
+
+	<query name="softwareLparsSearchAll">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.name like :name
+		]]>
+	</query>
+
+	<query name="softwareByName">
+		<![CDATA[
+			from
+				Product s
+			join fetch s.softwareItem
+			join fetch s.kbDefinition
+				
+			where
+				upper(s.softwareItem.name) = :name
+				and s.kbDefinition.deleted != 1
+			order by product_role desc
+		]]>
+	</query>
+
+	<query name="swByName">
+		<![CDATA[
+		from Product s
+		    join fetch s.productInfo.softwareCategory
+
+		where
+			upper(s.softwareItem.name) = :softwareName 
+			and s.kbDefinition.deleted != 1
+            order by product_role desc
+
+		]]>
+	</query>
+
+	<query name="softwareById">
+		<![CDATA[
+			from
+				Product s
+			join fetch s.manufacturer
+			join fetch s.softwareItem
+			join fetch s.productInfo
+			where
+				s.id = :id
+		]]>
+	</query>
+
+	<query name="softwaresSearch">
+		<![CDATA[
+			FROM Product P
+				JOIN FETCH P.manufacturer
+				JOIN FETCH P.softwareItem
+				JOIN FETCH P.productInfo
+				JOIN FETCH P.kbDefinition
+			WHERE (UPPER(P.softwareItem.name) LIKE :name
+				OR UPPER(P.manufacturer.manufacturerName) LIKE :manufacturer)
+			AND P.softwareItem.productRole = 'SOFTWARE_PRODUCT'
+			AND P.kbDefinition.deleted != 1
+		]]>
+	</query>
+
+	<query name="softwaresSearchCount">
+		<![CDATA[
+			select
+				count(*)
+			from
+				Product s
+			where
+				upper(s.softwareItem.name) like :name
+				or upper(s.manufacturer.manufacturerName) like :manufacturer
+		]]>
+	</query>
+
+	<query name="softwareLparById">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left join fetch l.softwareLparEff
+			where
+				l.id = :softwareLparId
+		]]>
+	</query>
+
+	<query name="softwareLparByIdWithHardwareLparData">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.id = :softwareLparId
+		]]>
+	</query>
+
+	<query name="softwareLparsByAccount">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.customer = :customer
+		]]>
+	</query>
+
+	<query name="softwareLparsByAccountByStatus">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.customer = :customer
+				and (l.hardwareLpar.hardware is null or
+					 l.hardwareLpar.hardware.hardwareStatus in (:hardwareStatus))
+				and l.status in (:status)
+			order by
+				l.name
+		]]>
+	</query>
+
+	<query name="softwareLparByAccountByName">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+				left outer join fetch l.softwareLparEff
+				join fetch l.customer
+			where
+				l.customer = :customer
+				and l.name = :name
+		]]>
+	</query>
+
+	<query name="installedSoftwaresBySoftwareLpar">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.InstalledSoftware s
+			join fetch s.softwareLpar
+			join fetch s.software
+			join fetch s.software.manufacturer
+			join fetch s.software.softwareItem
+			join fetch s.discrepancyType
+			where
+				s.softwareLpar = :softwareLpar
+			order by
+				s.software.softwareItem.name
+		]]>
+	</query>
+
+	<query name="installedSoftwaresById">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.InstalledSoftware s
+			join fetch s.softwareLpar
+			join fetch s.softwareLpar.customer
+			join fetch s.software
+			join fetch s.software.manufacturer
+			join fetch s.software.softwareItem
+			join fetch s.discrepancyType
+			where
+				s.id = :id
+			order by
+				s.software.softwareItem.name
+		]]>
+	</query>
+
+	<query name="installedSoftwareBySoftwareBySoftwareLpar">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.InstalledSoftware s
+				join fetch s.softwareLpar
+				join fetch s.softwareLpar.customer
+				join fetch s.software
+				join fetch s.software.manufacturer
+				join fetch s.software.softwareItem
+				join fetch s.discrepancyType
+			where
+				s.softwareLpar = :softwareLpar
+				and s.software = :software
+		]]>
+	</query>
+
+	<query name="softwareHistoryBySoftwareId">
+		<![CDATA[
+			from
+				SoftwareDiscrepancyH h
+				join fetch h.installedSoftware
+			where
+				h.installedSoftware.id = :softwareId
+			order by 
+				h.recordTime desc
+		]]>
+	</query>
+
+	<query name="softwareLparWithHistoryById">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left join fetch l.softwareLparEff
+				left join fetch l.softwareLparEff.softwareLparEffHs
+			where
+				l.id = :softwareLparId
+		]]>
+	</query>
+
+	<query name="lparBankAccounts">
+		<![CDATA[
+			from
+				LparBankAccount l
+				join fetch l.bankAccount
+			where
+				l.softwareLpar = :softwareLpar
+		]]>
+	</query>
+
+	<query name="getSoftwareLparAllByCustomer">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left outer join fetch l.softwareLparEff
+				left outer join fetch l.hardwareLpar
+				left outer join fetch l.hardwareLpar.hardware
+				left outer join fetch l.hardwareLpar.hardware.machineType
+			where
+				l.customer = :customer
+				and l.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="getLparNoCompByCustByStatus">
+		<![CDATA[
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+				join fetch l.customer
+				left outer join fetch l.softwareLparEff
+			where
+				l.customer = :customer
+				and l.hardwareLpar is null
+				and l.status in (:status)
+		]]>
+	</query>
+
+	<query name="getUnassignedSoftware">
+		<![CDATA[
+		
+		from Software s 
+
+		join fetch s.manufacturer
+		join fetch s.softwareCategory
+		
+		where	
+			s.status = 'ACTIVE' and
+			s.manufacturer.manufacturerName = 'MICROSOFT' and
+			s.level = 'LICENSABLE' and
+			s.softwareId not in(select m.microsoftProductMapId from MicrosoftProductMap m)
+
+		]]>
+	</query>
+	
+	
+	<query name="getLparNoCompByCustByStatusSize">
+		<![CDATA[
+			select
+				count(*)
+			from
+				com.ibm.ea.bravo.software.SoftwareLpar l
+			where
+				l.customer = :customer
+				and l.hardwareLpar is null
+				and l.status in (:status)
+		]]>
+	</query><!--
+	
+	
+	<query name="getSoftwareLparIPAddress">
+		<![CDATA[
+			from
+				SoftwareLparIPAddress 
+			where
+				softwareLpar = :softwareLpar
+		]]>
+	</query>
+	
+
+	<query name="getSoftwareLparHDisk">
+		<![CDATA[
+			from
+				SoftwareLparHDisk
+			where
+				softwareLpar = :softwareLpar
+		]]>
+	</query>
+
+
+	<query name="getSoftwareLparMemMod">
+		<![CDATA[
+			from
+				SoftwareLparMemMod
+			where
+				softwareLpar = :softwareLpar
+		]]>
+	</query>
+
+	<query name="getSoftwareLparADC">
+		<![CDATA[
+			from
+				SoftwareLparADC
+			where
+				softwareLpar = :softwareLpar
+		]]>
+	</query>
+
+	<query name="getSoftwareLparProcessor">
+		<![CDATA[
+			from
+				SoftwareLparProcessor
+			where
+				softwareLpar = :softwareLpar
+		]]>
+	</query>
+
+-->
+	<sql-query name="checkManualQueue">
+		<![CDATA[
+			select 1 
+			from manual_queue 
+			where software_lpar_id = :softwareLparId
+			and software_id = :softwareId
+		]]>
+	</sql-query>
+
+	<sql-query name="checkManualRecord">
+		<![CDATA[
+		select coalesce(
+(select max(id) from installed_signature a where a.installed_software_id = i.id and i.status = 'ACTIVE' ),
+(select max(id) from installed_filter b where b.installed_software_id = i.id and i.status = 'ACTIVE'),
+(select max(id) from installed_sa_product c where c.installed_software_id = i.id and i.status = 'ACTIVE'),
+(select max(id) from installed_dorana_product d where d.installed_software_id = i.id and i.status = 'ACTIVE'),
+(select max(id) from installed_vm_product e where e.installed_software_id = i.id and i.status = 'ACTIVE' ),
+(select max(id) from installed_tadz f where f.installed_software_id = i.id and i.status = 'ACTIVE' ),
+0
+) from installed_software i where i.id = :installedSoftwareId
+		]]>
+	</sql-query>
+
+</hibernate-mapping>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="activeSoftware">
+		<![CDATA[
+		    select s.softwareItem.name
+            from
+                 Product s
+            join s.softwareItem
+            join s.kbDefinition          
+            where
+                s.softwareItem.name !='UNKNOWN'
+                and s.kbDefinition.deleted != 1
+            group by s.softwareItem.name
+            order by s.softwareItem.name
+		]]>
+	</query>
+	<query name="customerBankAccount">
+		<![CDATA[
+			from
+				BankAccount b where b.id not in 
+				(select bankAccountId from 
+				BankAccountInclusion 
+				where customerId = :customerId)
+				and status = 'ACTIVE'
+		]]>
+	</query>
+	<query name="BankAccountInclusionByCustomer">
+		<![CDATA[
+			from
+				BankAccountInclusion b
+			where
+				customerId = :customerId
+		]]>
+	</query>
+
+	<query name="softwareByCategoryId">
+		<![CDATA[
+		from Software s
+
+		join fetch s.softwareCategory
+
+		where
+			s.softwareCategory = :softwareCategoryId
+			and s.softwareId not in( select a.softwareId from Software a, com.ibm.ea.bravo.software.InstalledSoftware b
+			where a.softwareId = b.software and b.softwareLpar = :softwareLparId and a.softwareCategory
+			= :softwareCategoryId and a.softwareId != :softwareId )
+		]]>
+	</query>
+
+</hibernate-mapping>

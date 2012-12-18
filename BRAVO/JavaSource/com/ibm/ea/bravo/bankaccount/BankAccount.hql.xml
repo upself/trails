@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="selectBankAccountCountByIdAndName">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM BankAccount
+			WHERE id <> :id
+			AND UPPER(name) = :name
+		]]>
+	</query>
+
+	<query name="selectBankAccountCountByName">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM BankAccount
+			WHERE UPPER(name) = :name
+		]]>
+	</query>
+
+	<query name="selectBankAccountDetails">
+		<![CDATA[
+			FROM BankAccount
+			WHERE id = :id
+		]]>
+	</query>
+
+	<query name="selectBankAccountList">
+		<![CDATA[
+			FROM BankAccount
+			WHERE connectionType = :connectionType
+		]]>
+	</query>
+
+</hibernate-mapping>

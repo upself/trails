@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="manufacturers">
+		<![CDATA[
+		from Manufacturer m
+
+		]]>
+	</query>
+
+	<query name="manufacturerById">
+		<![CDATA[
+		from Manufacturer m
+
+		where m.manufacturerId = :manufacturerId
+
+		]]>
+	</query>
+
+	<query name="manufacturerUnknown">
+		<![CDATA[
+		from Manufacturer m
+
+		where m.manufacturerName = :manufacturerName
+
+		]]>
+	</query>
+
+	<query name="softwaresByManufacturer">
+		<![CDATA[
+		from  Software s
+
+		where 
+			s.manufacturer = :manufacturer  and
+			s.status = 'ACTIVE'
+
+		]]>
+	</query>
+
+
+
+
+</hibernate-mapping>
+

@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+
+		<!-- BlUEGROUP -->
+		<mapping resource="com/ibm/ea/bravo/secure/Bluegroup.hbm.xml" />
+
+		<!-- CNDB -->
+		<mapping resource="com/ibm/ea/cndb/AssetProcess.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Contact.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Country.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/CountryCode.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Customer.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/CustomerNumber.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/CustomerType.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Geography.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Industry.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Lpid.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Major.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/OutsourceProfile.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Pod.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Region.hbm.xml" />
+		<mapping resource="com/ibm/ea/cndb/Sector.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/cndb/Customer.hbm.xml" />
+
+		<!-- MSWIZ -->
+		<mapping resource="com/ibm/tap/misld/om/consent/ConsentLetter.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/consent/ConsentType.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/CustomerAgreement.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/CustomerAgreementType.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/holiday/Holiday.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/microsoftPriceList/LicenseType.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/licenseAgreementType/LicenseAgreementType.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftPriceList.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftProduct.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftProductMap.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/MisldAccountSettings.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/misldDate/MisldDate.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/MisldRegistration.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/msBatchQueue/MsBatchQueue.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/baseline/MsHardwareBaseline.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/baseline/MsInstalledSoftwareBaseline.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/msReportBatchQueue/MsReportBatchQueue.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/notification/Notification.hbm.xml" />
+		<mapping resource="com/ibm/tap/misld/om/priceLevel/PriceLevel.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/priceReportCycle/PriceReportArchive.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/priceReportCycle/PriceReportCycle.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/purchaseOrderReport/PurchaseOrderReport.hbm.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/qualifiedDiscount/QualifiedDiscount.hbm.xml" />
+
+		<!-- SIGBANK -->
+		<mapping resource="com/ibm/ea/sigbank/BankAccount.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/BankAccountInclusion.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/DoranaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/InstalledSoftware.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/InstalledSoftwareEff.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/Manufacturer.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/Software.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareCategory.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareFilter.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareLpar.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareLparEff.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareLparEffH.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareSignature.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SystemScheduleStatus.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/VmProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/systemstatus/BankAccountJob.hbm.xml" />
+	  	<mapping resource="com/ibm/ea/sigbank/MainframeVersion.hbm.xml" /> 
+		<mapping resource="com/ibm/ea/sigbank/MainframeFeature.hbm.xml" /> 
+		
+		<!-- SWKBT -->
+		<mapping resource="com/ibm/ea/sigbank/Product.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/ProductInfo.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/KbDefinition.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareItem.hbm.xml" />
+
+		<!-- BRAVO -->
+		<mapping resource="com/ibm/ea/bravo/discrepancy/DiscrepancyType.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/machinetype/MachineType.hbm.xml" />
+		<!-- <mapping resource="com/ibm/ea/bravo/machinetype/AssetType.hbm.xml" /> -->
+		<mapping resource="com/ibm/ea/bravo/submission/SubmissionH.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/report/VGlobalScan.hbm.xml" />
+
+		<!-- HARDWARE -->
+		<mapping resource="com/ibm/ea/bravo/hardware/Hardware.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/hardware/HardwareLpar.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/hardware/SCRTRecord.hbm.xml" />
+
+		<!-- SOFTWARE -->
+		<mapping resource="com/ibm/ea/bravo/software/InstalledDoranaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledFilter.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledSaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledSignature.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledSoftware.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledSoftwareEff.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledVmProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledTadz.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/LparBankAccount.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/ManualQueue.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/SoftwareDiscrepancyH.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/SoftwareLpar.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/SoftwareLparEff.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/SoftwareLparEffH.hbm.xml" />
+		<mapping resource="com/ibm/asset/bravo/domain/InstalledProduct.hbm.xml" />
+		<!--
+			<mapping
+			resource="com/ibm/ea/bravo/software/SoftwareLparIPAddress.hbm.xml" />
+			<mapping
+			resource="com/ibm/ea/bravo/software/SoftwareLparHDisk.hbm.xml" />
+			<mapping
+			resource="com/ibm/ea/bravo/software/SoftwareLparMemMod.hbm.xml" />
+			<mapping resource="com/ibm/ea/bravo/software/SoftwareLparADC.hbm.xml"
+			/> <mapping
+			resource="com/ibm/ea/bravo/software/SoftwareLparProcessor.hbm.xml" />
+		-->
+
+		<!-- SWASSET -->
+		<mapping resource="com/ibm/ea/bravo/swasset/SwassetQueue.hbm.xml" />
+
+		<!-- CONTACT -->
+		<mapping resource="com/ibm/ea/bravo/contact/AccountContact.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/contact/ContactSupport.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/contact/HardwareContact.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/contact/LparContact.hbm.xml" />
+
+		<!-- RECON -->
+		<mapping resource="com/ibm/ea/bravo/recon/ReconInstalledSoftware.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/recon/ReconSoftwareLpar.hbm.xml" />
+
+		<!--         -->
+		<!-- QUERIES -->
+		<!--         -->
+		
+		<!-- BRAVO -->
+		<mapping resource="com/ibm/ea/bravo/account/Account.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/bankaccount/BankAccount.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/contact/AccountContact.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/discrepancy/Discrepancy.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/hardware/Hardware.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/machinetype/MachineType.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/report/Report.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/parser/Parser.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/Software.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/swasset/Swasset.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/systemstatus/SystemScheduleStatus.hql.xml" />
+
+		<!-- CNDB -->
+		<mapping resource="com/ibm/ea/cndb/Cndb.hql.xml" />
+		<mapping resource="com/ibm/ea/cndb/Contact.hql.xml" />
+		<mapping resource="com/ibm/ea/cndb/CountryCode.hql.xml" />
+		<mapping resource="com/ibm/ea/cndb/Lpid.hql.xml" />
+		<mapping resource="com/ibm/ea/cndb/Pod.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/cndb/Customer.hql.xml" />
+
+		<!-- MSWIZ -->
+		<mapping resource="com/ibm/tap/misld/om/consent/ConsentLetter.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/consent/ConsentType.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/CustomerAgreement.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/CustomerAgreementType.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/holiday/Holiday.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/licenseAgreementType/LicenseAgreementType.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/microsoftPriceList/LicenseType.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftPriceList.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftProduct.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/microsoftPriceList/MicrosoftProductMap.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/MisldAccountSettings.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/misldDate/MisldDate.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/customerSettings/MisldRegistration.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/msBatchQueue/MsBatchQueue.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/baseline/MsHardwareBaseline.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/baseline/MsInstalledSoftwareBaseline.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/notification/Notification.hql.xml" />
+		<mapping resource="com/ibm/tap/misld/om/priceLevel/PriceLevel.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/priceReportCycle/PriceReportCycle.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/priceReportCycle/PriceReportArchive.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/purchaseOrderReport/PurchaseOrderReport.hql.xml" />
+		<mapping
+			resource="com/ibm/tap/misld/om/qualifiedDiscount/QualifiedDiscount.hql.xml" />
+
+		<!-- SIGBANK -->
+		<mapping resource="com/ibm/ea/sigbank/Software.hql.xml" />
+
+	</session-factory>
+</hibernate-configuration>

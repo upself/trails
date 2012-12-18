@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<sql-query name="swassetDataByCustomer">
+		<![CDATA[
+			select sl.id, sl.name
+				,Case When sl.id in (select software_lpar_id from swasset_queue where deleted=0) Then 'In process' End as status, 'TCM' as type
+			from bank_account ba,
+				installed_signature isig,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and isig.bank_account_id = ba.id
+			and isig.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+				,Case When sl.id in (select software_lpar_id from swasset_queue where deleted=0) Then 'In process' End as status, 'TCM' as type
+			from bank_account ba,
+				installed_filter if,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and if.bank_account_id = ba.id
+			and if.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+				,Case When sl.id in (select software_lpar_id from swasset_queue where deleted=0) Then 'In process' End as status, 'DORANA' as type
+			from bank_account ba,
+				installed_dorana_product idp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'DORANA'
+			and idp.bank_account_id = ba.id
+			and idp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+				,Case When sl.id in (select software_lpar_id from swasset_queue where deleted=0) Then 'In process' End as status, 'TLCMZ' as type
+			from bank_account ba,
+				installed_sa_product isp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'TLCMZ'
+			and isp.bank_account_id = ba.id
+			and isp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+				,Case When sl.id in (select software_lpar_id from swasset_queue where deleted=0) Then 'In process' End as status, 'VM' as type
+			from bank_account ba,
+				installed_vm_product ivp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and ivp.bank_account_id = ba.id
+			and ivp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			ORDER BY name
+		]]>
+	</sql-query>
+
+	<sql-query name="swassetDataSizeByCustomer">
+		<![CDATA[
+		  select count(*) from (
+			select sl.id, sl.name
+			from bank_account ba,
+				installed_signature isig,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and isig.bank_account_id = ba.id
+			and isig.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+			from bank_account ba,
+				installed_filter if,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and if.bank_account_id = ba.id
+			and if.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName 
+			UNION
+			select sl.id, sl.name
+			from bank_account ba,
+				installed_dorana_product idp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'DORANA'
+			and idp.bank_account_id = ba.id
+			and idp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+			from bank_account ba,
+				installed_sa_product isp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'TLCMZ'
+			and isp.bank_account_id = ba.id
+			and isp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			UNION
+			select sl.id, sl.name
+			from bank_account ba,
+				installed_vm_product ivp,
+				installed_software is,
+				software_lpar sl
+			where ba.name = 'SWASSTDB'
+			and ivp.bank_account_id = ba.id
+			and ivp.installed_software_id = is.id
+			and is.software_lpar_id = sl.id
+			and sl.customer_id = :customerId
+			and upper(sl.name) like :swLparName
+			) as numSwassets
+		]]>
+	</sql-query>
+
+	<sql-query name="insertIntoSwassetQueue">
+		<![CDATA[
+			insert into swasset_queue (
+	            software_lpar_id
+	            ,customer_id
+	            ,hostname
+	            ,record_time
+	            ) values (
+	            ?
+	            ,?
+	            ,?
+	            ,CURRENT TIMESTAMP
+		        )
+		]]>
+	</sql-query>
+
+	<sql-query name="insertIntoManualQueue">
+		<![CDATA[
+			insert into manual_queue (
+				software_id
+	            ,software_lpar_id
+	            ,customer_id
+	            ,hostname
+	            ,record_time
+	            ) values (
+	            ?
+	            ,?
+	            ,?
+	            ,?
+	            ,CURRENT TIMESTAMP
+		        )
+		]]>
+	</sql-query>
+</hibernate-mapping>

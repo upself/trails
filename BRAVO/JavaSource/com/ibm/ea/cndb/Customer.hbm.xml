@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="false">
+	<class name="com.ibm.ea.cndb.Customer" table="CUSTOMER"
+		mutable="false">
+
+		<id name="customerId" type="long" column="CUSTOMER_ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="customerType" column="CUSTOMER_TYPE_ID"
+			class="com.ibm.ea.cndb.CustomerType" not-null="true"
+			index="IDX_CCTY" />
+
+		<many-to-one name="pod" column="POD_ID"
+			class="com.ibm.ea.cndb.Pod" not-null="true" index="IDX_CP" />
+
+		<many-to-one name="industry" column="INDUSTRY_ID"
+			class="com.ibm.ea.cndb.Industry" not-null="true" index="IDX_CI" />
+
+		<property name="accountNumber" column="ACCOUNT_NUMBER"
+			type="long" not-null="true" index="IDX_CAN" unique="true" />
+			
+		<property name="scanValidity" 
+			formula="COALESCE(scan_validity, 365)" /> 
+
+		<property name="accountNumberStr"
+			formula="rtrim(cast(account_number as char(10)))" />
+
+		<property name="customerName" column="CUSTOMER_NAME"
+			length="64" />
+
+		<many-to-one name="contactDPE" column="CONTACT_DPE_ID"
+			class="com.ibm.ea.cndb.Contact" index="IDX_CCDPE" />
+
+		<many-to-one name="contactFA" column="CONTACT_FA_ID"
+			class="com.ibm.ea.cndb.Contact" index="IDX_CCFA" />
+
+		<many-to-one name="contactHW" column="CONTACT_HW_ID"
+			class="com.ibm.ea.cndb.Contact" index="IDX_CCHW" />
+
+		<many-to-one name="contactSW" column="CONTACT_SW_ID"
+			class="com.ibm.ea.cndb.Contact" index="IDX_CCSW" />
+
+		<many-to-one name="contactFocalAsset"
+			column="CONTACT_FOCAL_ASSET_ID" class="com.ibm.ea.cndb.Contact"
+			index="IDX_CCFOA" />
+
+		<many-to-one name="contactTransition"
+			column="CONTACT_TRANSITION_ID" class="com.ibm.ea.cndb.Contact"
+			index="IDX_CCTR" />
+
+		<property name="assetToolsBillingCode"
+			column="ASSET_TOOLS_BILLING_CODE" length="64" />
+		<!--        <property name="status" column="STATUS" length="32" not-null="true" index="IDX_CSTS"/>-->
+		<property name="status" column="STATUS" length="32"
+			not-null="true" />
+
+		<set name="bluegroups" table="CUSTOMER_BLUEGROUP">
+			<key column="CUSTOMER_ID" />
+			<many-to-many column="BLUEGROUP_ID"
+				class="com.ibm.ea.bravo.secure.Bluegroup" />
+		</set>
+
+		<set name="outsource">
+			<key column="CUSTOMER_ID" />
+			<one-to-many class="com.ibm.ea.cndb.OutsourceProfile" />
+		</set>
+		<set name="bankInclusions" table="BANK_ACCOUNT_INCLUSION">
+			<key column="CUSTOMER_ID" />
+			<many-to-many column="BANK_ACCOUNT_ID"
+				class="com.ibm.ea.sigbank.BankAccount" />
+		</set>
+
+		<many-to-one name="countryCode" column="COUNTRY_CODE_ID"
+			class="com.ibm.ea.cndb.CountryCode" not-null="false"
+			cascade="save-update" />
+
+	</class>
+</hibernate-mapping>

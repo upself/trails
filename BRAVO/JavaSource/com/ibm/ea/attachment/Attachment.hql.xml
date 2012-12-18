@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="attachmentsByStatus">
+		<![CDATA[
+			from
+				Attachment a
+			where
+				a.status = :status
+		]]>
+	</query>
+
+	<query name="attachmentById">
+		<![CDATA[
+			from
+				Attachment a
+			where
+				a.id = :id
+		]]>
+	</query>
+
+</hibernate-mapping>

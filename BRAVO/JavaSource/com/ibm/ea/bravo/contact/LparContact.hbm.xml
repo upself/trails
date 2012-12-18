@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.contact.LparContact" table="CONTACT_LPAR">
+        
+        <id name="id" type="long" column="ID">
+            <generator class="identity" />
+        </id>
+        
+        <many-to-one name="contact" class="com.ibm.ea.bravo.contact.ContactSupport">
+			<column name="CONTACT_SUPPORT_ID" not-null="true" index="IDX_CLCS" unique-key="U_LC"/>
+		</many-to-one>
+        <many-to-one name="hardwareLpar" class="com.ibm.ea.bravo.hardware.HardwareLpar">
+			<column name="HARDWARE_LPAR_ID" not-null="true" index="IDX_CLHWL" unique-key="U_LC"/>
+		</many-to-one>
+    </class>
+</hibernate-mapping>

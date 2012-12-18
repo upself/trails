@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.sigbank.ProductInfo" table="PRODUCT_INFO" mutable="false">
+
+		<id name="productId" type="long" column="ID">
+			<generator class="increment"/>
+		</id>
+
+		<many-to-one name="softwareCategory" column="SOFTWARE_CATEGORY_ID" class="com.ibm.ea.sigbank.SoftwareCategory" not-null="true"/>
+		<property name="priority" column="PRIORITY"  type="integer" />
+		<property name="licensable" column="LICENSABLE" type="boolean" />
+		<property name="changeJustification" column="CHANGE_JUSTIFICATION" length="128" />
+		<property name="comments" column="COMMENTS" length="254" />
+		<property name="remoteUser" column="REMOTE_USER" length="32" />	
+		<property name="recordTime" column="RECORD_TIME" type="timestamp" />	
+
+	</class>
+</hibernate-mapping>
+

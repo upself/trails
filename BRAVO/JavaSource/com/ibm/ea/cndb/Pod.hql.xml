@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="getPods">
+		<![CDATA[
+
+		from Pod p
+
+		order by p.podName
+
+		]]>
+	</query>
+	
+	<query name="getPod">
+		<![CDATA[
+
+		from Pod p
+
+		where p.podId = :podId
+
+		]]>
+	</query>
+
+	<query name="getAccountLockStatus">
+		<![CDATA[
+
+		select new com.ibm.tap.misld.report.RegistrationStatus(a.pod.podName,
+		case
+		when a.misldAccountSettings.status = 'COMPLETE' then 'UNLOCKED'
+		when a.misldAccountSettings.status = 'LOCKED' then 'LOCKED'
+		end,
+		count(*))
+		from
+		com.ibm.tap.misld.om.cndb.Customer a
+		where
+		(a.misldAccountSettings.status = 'COMPLETE' or a.misldAccountSettings.status = 'LOCKED')
+		group by
+		a.pod.podName,
+		case
+		when a.misldAccountSettings.status = 'COMPLETE' then 'UNLOCKED'
+		when a.misldAccountSettings.status = 'LOCKED' then 'LOCKED'
+		end
+
+		]]>
+	</query>
+
+	<query name="getRegistrationStatus">
+		<![CDATA[
+	
+		select new com.ibm.tap.misld.report.RegistrationStatus(a.pod.podName,
+		case
+		when a.misldRegistration.inScope is null then 'INCOMPLETE'
+		when a.misldRegistration.inScope = 0 then 'NOT IN SCOPE'
+		when a.misldRegistration.inScope = 1 and a.misldAccountSettings is null then 'INCOMPLETE'
+		when a.misldAccountSettings.status = 'DRAFT' then 'DRAFT'
+		else 'COMPLETE'
+		end,
+		count(*))
+		from 
+		com.ibm.tap.misld.om.cndb.Customer a
+		left join a.misldRegistration
+		left join a.misldAccountSettings
+		group by
+		a.pod.podName,
+		case
+		when a.misldRegistration.inScope is null then 'INCOMPLETE'
+		when a.misldRegistration.inScope = 0 then 'NOT IN SCOPE'
+		when a.misldRegistration.inScope = 1 and a.misldAccountSettings is null then 'INCOMPLETE'
+		when a.misldAccountSettings.status = 'DRAFT' then 'DRAFT'
+		else 'COMPLETE'
+		end
+		
+		]]>
+	</query>
+
+	<sql-query name="getPriceReportNotificationReport">
+		<return-scalar column="podName" type="string" />
+		<return-scalar column="mytime" type="string" />
+		<return-scalar column="count" type="integer" />
+
+		<![CDATA[
+				
+			select c.pod_name as podName,
+                case
+                when a.record_time + 1 month > current_timestamp then '< 1 Month'
+                when a.record_time + 2 month > current_timestamp and a.record_time + 1 month < current_timestamp then '> 1 Months'
+                when a.record_time + 2 month < current_timestamp then '> 2 Months'
+                else 'Never notified'
+                end as mytime,
+                count(*) as count
+                from
+                customer b
+                left outer join notification a on a.customer_id = b.customer_id and a.notification_type = 'PRICE REPORT'
+                left outer join pod c on b.pod_id = c.pod_id
+                group by
+                c.pod_name,
+                case
+                when a.record_time + 1 month > current_timestamp then '< 1 Month'
+                when a.record_time + 2 month > current_timestamp and a.record_time + 1 month < current_timestamp then '> 1 Months'
+                when a.record_time + 2 month < current_timestamp then '> 2 Months'
+                else 'Never notified'
+            end
+		]]>
+	</sql-query>
+
+</hibernate-mapping>
+

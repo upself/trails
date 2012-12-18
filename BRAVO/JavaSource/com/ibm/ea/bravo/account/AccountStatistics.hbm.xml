@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.account.AccountStatistics" table="V_ACCOUNT_STATISTICS">
+        
+        <id name="id" type="long" column="ID">
+            <generator class="increment"/>
+        </id>
+        
+        <property name="accountNumber" column="ACCOUNT_NUMBER" type="long"/> 
+        <property name="hardwareDiscrepancies" column="HARDWARE_DISCREPANCIES" type="integer"/> 
+        <property name="softwareDiscrepancies" column="SOFTWARE_DISCREPANCIES" type="integer"/> 
+        <property name="hardwareLpars" column="HARDWARE_LPARS" type="integer"/> 
+        <property name="softwareLpars" column="SOFTWARE_LPARS" type="integer"/> 
+        
+    </class>
+</hibernate-mapping>

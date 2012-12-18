@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftPriceList"
+		table="MICROSOFT_PRICE_LIST" lazy="true">
+
+		<id name="microsoftPriceListId" type="long"
+			column="MICROSOFT_PRICE_LIST_ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="microsoftProduct"
+			class="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftProduct">
+			<column name="MICROSOFT_PRODUCT_ID" not-null="true" />
+		</many-to-one>
+
+		<many-to-one name="licenseAgreementType"
+			class="com.ibm.tap.misld.om.licenseAgreementType.LicenseAgreementType">
+			<column name="LICENSE_AGREEMENT_TYPE_ID" not-null="true" />
+		</many-to-one>
+
+		<many-to-one name="licenseType"
+			class="com.ibm.tap.misld.om.microsoftPriceList.LicenseType">
+			<column name="LICENSE_TYPE_ID" not-null="true" />
+		</many-to-one>
+
+		<many-to-one name="priceLevel"
+			class="com.ibm.tap.misld.om.priceLevel.PriceLevel">
+			<column name="PRICE_LEVEL_ID" />
+		</many-to-one>
+
+		<many-to-one name="qualifiedDiscount"
+			class="com.ibm.tap.misld.om.qualifiedDiscount.QualifiedDiscount">
+			<column name="QUALIFIED_DISCOUNT_ID" />
+		</many-to-one>
+
+		<property name="sku">
+			<column name="SKU" not-null="true" />
+		</property>
+
+		<property name="authenticated">
+			<column name="AUTHENTICATED" length="1" />
+		</property>
+
+		<property name="unit" type="integer">
+			<column name="UNIT" not-null="true" />
+		</property>
+
+		<property name="unitPrice" type="float">
+			<column name="UNIT_PRICE" sql-type="NUMERIC(12, 2)"
+				not-null="true" />
+		</property>
+
+		<property name="remoteUser" column="REMOTE_USER" length="32"
+			not-null="true" />
+
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" not-null="true" />
+
+		<property name="status" column="STATUS" length="32"
+			not-null="true" />
+
+	</class>
+</hibernate-mapping>
+
