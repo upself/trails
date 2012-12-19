@@ -39,9 +39,11 @@ sub validate {
 sub recon {
     my $self = shift;
 
+    dlog("Acquiring customer");
     my $customer = new BRAVO::OM::Customer();
     $customer->id($self->hardwareLpar->customerId);
     $customer->getById( $self->connection );
+    dlog("Customer acquired");
 
     my $validation = new Recon::Validation();
     $validation->customer( $customer );
@@ -65,9 +67,11 @@ sub recon {
 sub openAlert {
     my $self = shift;
 
+    dlog("Acquiring hardware lpar");
     my $alert = new Recon::OM::AlertHardwareLpar();
     $alert->hardwareLparId( $self->hardwareLpar->id );
     $alert->getByBizKey( $self->connection );
+    dlog("Hardware lpar acquired");
 
     return if ( defined $alert->id && $alert->open == 1 );
 

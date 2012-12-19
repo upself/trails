@@ -23,13 +23,15 @@ use Recon::OM::PvuInfo;
 use Recon::SoftwareLpar;
 
 sub new {
-	my ( $class, $connection, $installedSoftware ) = @_;
+	my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
 	my $self = {
 		_connection                 => $connection,
 		_installedSoftware          => $installedSoftware,
 		_poolParentCustomers        => undef,
 		_customer                   => undef,
-		_installedSoftwareReconData => undef
+		_installedSoftwareReconData => undef,
+		_poolRunning => $poolRunning
+		
 	};
 	bless $self, $class;
 
@@ -139,6 +141,9 @@ sub recon {
 		if ( $returnCode == 1 ) {
 			$self->closeAlertUnlicensedSoftware(1);
 		}
+		elsif ($returnCode == 2) {
+		    return $returnCode;
+		}
 		else {
 			$self->openAlertUnlicensedSoftware;
 		}
@@ -233,6 +238,9 @@ sub reconcile {
 	return 1 if $self->attemptSoftwareCategory == 1;
 	return 1 if $self->attemptBundled == 1;
 	return 1 if $self->attemptCustomerOwnedAndManaged == 1;
+	if($self->poolRunning == 1) {
+	    return 2;
+	}
 
 	my $licsToAllocate;
 	my $reconcileTypeId;
@@ -274,9 +282,7 @@ sub reconcile {
 		&& $self->customer->swComplianceMgmt eq 'YES' )
 	{
 		if ( defined $self->installedSoftwareReconData->scopeName ) {
-			if (   $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
-				|| $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' )
-			{
+			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
 				###Create reconcile and set id in data.
 				my $reconcileTypeMap =
 				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
@@ -368,22 +374,18 @@ sub attemptCustomerOwnedAndManaged {
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
-	if ( defined $self->customer->swComplianceMgmt
-		&& $self->customer->swComplianceMgmt eq 'NO' )
+	if ( defined $self->installedSoftwareReconData->scopeName
+		&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
 	{
-		if ( defined $self->installedSoftwareReconData->scopeName
-			&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
-		{
-			dlog("reconciling as Customer owned and customer managed");
-			###Create reconcile and set id in data.
-			$self->createReconcile(
-				$reconcileTypeMap->{'Customer owned and customer managed'},
-				0, $self->installedSoftware->id );
-			dlog("end attemptReconcile");
-			return 1;
-		}
+		dlog("reconciling as Customer owned and customer managed");
+		###Create reconcile and set id in data.
+		$self->createReconcile(
+			$reconcileTypeMap->{'Customer owned and customer managed'},
+			0, $self->installedSoftware->id );
+		dlog("end attemptReconcile");
+		return 1;
 	}
-
+	
 	dlog("Did not reconcile as customer owned and managed");
 	return 0;
 }
@@ -741,6 +743,7 @@ sub getFreePoolData {
 			undef,
 			0
 		);
+		$validation->validateProcessorChip(0,$licView->capType,$self->installedSoftwareReconData->mtType,1,undef);
 
 		###Check pool
 		if ( $licView->pool == 0 ) {
@@ -3189,4 +3192,13 @@ sub mechineLevelServerType {
 	  if scalar @_ == 1;
 	return $self->{_mechineLevelServerType};
 }
+
+sub poolRunning {
+    my $self = shift;
+    $self->{_poolRunning} = shift
+      if scalar @_ == 1;
+    return $self->{_poolRunning};
+}
 1;
+
+
