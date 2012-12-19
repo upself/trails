@@ -2640,7 +2640,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.cpu_msu
             ,mt.type
             ,hl.id
-            ,hl.status
+            ,hl.lpar_status
             ,hl.name
             ,hl.part_mips
             ,hl.part_msu
