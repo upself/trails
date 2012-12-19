@@ -7,7 +7,6 @@ sub new {
     my ($class) = @_;
     my $self = {
         _id => undef
-        ,_customerId => undef
         ,_computerId => undef
         ,_name => undef
         ,_objectId => undef
@@ -65,13 +64,6 @@ sub new {
 sub equals {
     my ($self, $object) = @_;
     my $equal;
-
-    $equal = 0;
-    if (defined $self->customerId && defined $object->customerId) {
-        $equal = 1 if $self->customerId eq $object->customerId;
-    }
-    $equal = 1 if (!defined $self->customerId && !defined $object->customerId);
-    return 0 if $equal == 0;
 
     $equal = 0;
     if (defined $self->computerId && defined $object->computerId) {
@@ -404,12 +396,6 @@ sub id {
     return $self->{_id};
 }
 
-sub customerId {
-    my $self = shift;
-    $self->{_customerId} = shift if scalar @_ == 1;
-    return $self->{_customerId};
-}
-
 sub computerId {
     my $self = shift;
     $self->{_computerId} = shift if scalar @_ == 1;
@@ -712,11 +698,6 @@ sub toString {
         $s .= $self->{_id};
     }
     $s .= ",";
-    $s .= "customerId=";
-    if (defined $self->{_customerId}) {
-        $s .= $self->{_customerId};
-    }
-    $s .= ",";
     $s .= "computerId=";
     if (defined $self->{_computerId}) {
         $s .= $self->{_computerId};
@@ -975,8 +956,7 @@ sub save {
         my $id;
         $sth->bind_columns(\$id);
         $sth->execute(
-            $self->customerId
-            ,$self->computerId
+            $self->computerId
             ,$self->name
             ,$self->objectId
             ,$self->model
@@ -1032,8 +1012,7 @@ sub save {
         $connection->prepareSqlQuery($self->queryUpdate);
         my $sth = $connection->sql->{updateScanRecord};
         $sth->execute(
-            $self->customerId
-            ,$self->computerId
+            $self->computerId
             ,$self->name
             ,$self->objectId
             ,$self->model
@@ -1093,8 +1072,7 @@ sub queryInsert {
         from
             final table (
         insert into scan_record (
-            customer_id
-            ,computer_id
+            computer_id
             ,name
             ,object_id
             ,model
@@ -1189,7 +1167,6 @@ sub queryInsert {
             ,?
             ,?
             ,?
-            ,?
         ))
     ';
     return ('insertScanRecord', $query);
@@ -1199,8 +1176,7 @@ sub queryUpdate {
     my $query = '
         update scan_record
         set
-            customer_id = ?
-            ,computer_id = ?
+            computer_id = ?
             ,name = ?
             ,object_id = ?
             ,model = ?
@@ -1279,7 +1255,6 @@ sub getById {
     my($self, $connection) = @_;
     $connection->prepareSqlQuery($self->queryGetById());
     my $sth = $connection->sql->{getByIdKeyScanRecord};
-    my $customerId;
     my $computerId;
     my $name;
     my $objectId;
@@ -1328,8 +1303,7 @@ sub getById {
     my $action;
     my $isManual;
     $sth->bind_columns(
-        \$customerId
-        ,\$computerId
+        \$computerId
         ,\$name
         ,\$objectId
         ,\$model
@@ -1382,7 +1356,6 @@ sub getById {
     );
     my $found = $sth->fetchrow_arrayref;
     $sth->finish;
-    $self->customerId($customerId);
     $self->computerId($computerId);
     $self->name($name);
     $self->objectId($objectId);
@@ -1436,8 +1409,7 @@ sub getById {
 sub queryGetById {
     my $query = '
         select
-            customer_id
-            ,computer_id
+            computer_id
             ,name
             ,object_id
             ,model

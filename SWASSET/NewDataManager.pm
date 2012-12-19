@@ -228,7 +228,7 @@ sub removeFromManual {
 		    $queue->comments("No scans found in staging");
 		    $queue->deleted(1);
 		    $queue->save($self->trailsConnection);
-		    next;
+		    #next; #comment out here to remove empty lpar 
 		}
 		$self->removeData($queue, $bankAccount, $scanIds, $softwareLpar);
 	}
@@ -418,8 +418,6 @@ sub removeSwassetDataDorana {
 
         $self->removeDoranaSware($computerId);
 	$self->removeDoranaComputer($computerId);
-
-
 }
 
 sub removeDoranaComputer {

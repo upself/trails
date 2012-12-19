@@ -54,7 +54,7 @@ logging_level($cfgMgr->debugLevel);
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 1;
+my $maxChildren = 3;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 60;
@@ -127,7 +127,7 @@ eval {
 		my @batches;
 		eval {
 			###Get the current software lpar batches to process.
-			@batches = Staging::Delegate::StagingDelegate->getScanRecordMemModBatches(
+			@batches = Staging::Delegate::StagingDelegate->getSoftwareLparMemModBatches(
 				$stagingConnection, $testMode,
 				$loadDeltaOnly,     $maxLparsInQuery
 			);

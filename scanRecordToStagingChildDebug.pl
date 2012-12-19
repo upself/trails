@@ -11,15 +11,15 @@ $| = 1;
 
 our ( $opt_b, $opt_f, $opt_t, $opt_d, $opt_a, $opt_l );
 getopts("b:f:t:d:a:l:");
-usage() unless $opt_b && $opt_f && $opt_t && $opt_d && $opt_a && $opt_l;
+usage() unless (defined $opt_b && defined $opt_f &&  defined $opt_t && defined  $opt_d &&  defined $opt_a &&  defined $opt_l);
 
 ###Close handles to avoid console output.
-open( STDIN, "/dev/null" )
-  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
-open( STDOUT, "/dev/null" )
-  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
-open( STDERR, "/dev/null" )
-  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
+#open( STDIN, "/dev/null" )
+#  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
+#open( STDOUT, "/dev/null" )
+#  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
+#open( STDERR, "/dev/null" )
+#  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
 
 eval {
 	###Roll logfile
@@ -27,7 +27,7 @@ eval {
 
 	logfile($opt_l);
 
-	logging_level("error");
+	logging_level("debug");
 
 	dlog('Creating new scan record loader');
 	my $loader = new Staging::ScanRecordLoader($opt_b);

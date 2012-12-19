@@ -223,7 +223,7 @@ sub doDelta {
                 $self->list->{$key}->action('COMPLETE');
             }
             else {
-                elog('customer does not exist in cndb');
+                elog('customer does not exist in cndb '.$key);
 
                 #die('customer deleted from CNDB');
             }

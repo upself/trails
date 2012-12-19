@@ -181,8 +181,7 @@ sub validateInstalledSoftware {
  elsif ( $self->installedSoftware->discrepancyTypeId ==
      $self->discrepancyTypeMap->{'FALSE HIT'}
   || $self->installedSoftware->discrepancyTypeId ==
-  $self->discrepancyTypeMap->{'INVALID'} || $self->installedSoftware->discrepancyTypeId ==
-  $self->discrepancyTypeMap->{'TADZ'} )
+  $self->discrepancyTypeMap->{'INVALID'} )
  {
   dlog("discrepancy type not valid for recon base");
   return 0;

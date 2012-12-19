@@ -95,7 +95,7 @@ eval {
         if ($@) {
             die $@;
         }
-
+         elog("cycle");
         ###Process each batch with max children forks.
         foreach my $name (@bankAccounts) {
             ilog("name=$name");

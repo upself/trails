@@ -79,6 +79,7 @@ sub querySoftwareLparIds {
          select
          sl.id
          from software_lpar sl
+         where sl.customer_id in(7767)
     ';
 	return ( 'softwareLparIds', $query, \@fields );
 }

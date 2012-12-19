@@ -138,58 +138,6 @@ sub queryBankAccounts {
 
     return ( 'bankAccounts', $query );
 }
-sub getBankAccountsByType {
-    my ($self,$type) = @_;
-
-    my @data;
-
-    ###Get the trails connection
-    my $trailsConnection = Database::Connection->new('trails');
-
-    ###Prepare the query
-    $trailsConnection->prepareSqlQuery( $self->queryBankAccountsByType() );
-
-    ###Define the fields
-    my @fields = (qw(name));
-    dlog("$type");
-    ###Get the statement handle
-    my $sth = $trailsConnection->sql->{bankAccounts};
-
-    ###Bind the columns
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @fields );
-
-    ###Execute the query
-    $sth->execute($type);
-    while ( $sth->fetchrow_arrayref ) {
-        push @data, $rec{name};
-    }
-
-    ###Close the statement handle
-    $sth->finish;
-
-    ###Return the bank account
-    return @data;
-}
-
-sub queryBankAccountsByType {
-    my $query = '
-        select
-            ba.name
-        from
-            bank_account ba
-        where
-            ba.status = \'ACTIVE\'
-            and ba.data_type = \'INVENTORY\' 
-            and ba.type = ?
-        order by
-            ba.connection_status
-            ,ba.record_time
-	    ,ba.name
-    ';
-
-    return ( 'bankAccounts', $query );
-}
 
 sub queryBankAccountByName {
     my @fields = (

@@ -22,7 +22,7 @@ sub isValidCustomer {
     croak 'Customer is not defined' if !defined $self->customer;
 
     return 0 if $self->customer->status ne 'ACTIVE';
-    return 0 if !defined $self->customer->swLicenseMgmt;
+
     return 0 if $self->customer->swLicenseMgmt ne 'YES';
 
     return 1;

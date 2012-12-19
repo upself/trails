@@ -30,9 +30,6 @@ defined( my $pid = fork )
 exit if $pid;
 setsid or die "ERROR: Unable to setsid: $!";
 
-##It is not tested, if tested, please remove this line 
-die "Not tested, exit !";
-
 ####Handle usage and user action.
 loaderStart( shift @ARGV, $pidFile );
 

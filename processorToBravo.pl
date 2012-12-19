@@ -11,7 +11,7 @@ use Base::ConfigManager;
 use Tap::NewPerl; 
 
 ###Globals
-my $maxLparsInQuery = 2500;
+my $maxLparsInQuery = 100;
 my $logfile         = "/var/staging/logs/processorToBravo/processorToBravo.log";
 my $pidFile         = "/tmp/processorToBravo.pid";
 my $configFile      = "/opt/staging/v2/config/processorToBravoConfig.txt";
@@ -54,7 +54,7 @@ logging_level($cfgMgr->debugLevel);
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 1;
+my $maxChildren = 10;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 60;

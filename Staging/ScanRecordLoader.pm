@@ -7,7 +7,6 @@ use Staging::Delegate::ScanRecordDelegate;
 use Staging::OM::ScanRecord;
 use Scan::Delegate::ComputerDelegate;
 use Staging::Delegate::StagingDelegate;
-use Staging::Delegate::MappingService;
 
 our @ISA = qw(Loader);
 
@@ -108,11 +107,10 @@ sub prepareSourceData {
     die('Cannot call method directly') if ( $self->SUPER::flag == 0 );
 
     eval {
-        my $mappingService = new Staging::Delegate::MappingService();
         $self->list(
-                     ComputerDelegate->getScanRecordData(
-                               $connection, $self->SUPER::bankAccount, $self->SUPER::loadDeltaOnly, $mappingService
-                     )
+            ComputerDelegate->getScanRecordData(
+                $connection, $self->SUPER::bankAccount, $self->SUPER::loadDeltaOnly
+            )
         );
     };
     if ($@) {
@@ -169,9 +167,9 @@ sub doDelta {
         }
 
         cleanValues( \%rec );
+
         my $scanRecord = new Staging::OM::ScanRecord();
         $scanRecord->id( $rec{id} );
-        $scanRecord->customerId( $rec{customerId} );
         $scanRecord->computerId( $rec{computerId} );
         $scanRecord->name( $rec{name} );
         $scanRecord->objectId( $rec{objectId} );
@@ -255,7 +253,9 @@ sub doDelta {
             $self->list->{$key}->action('COMPLETE');
 
             if ( !$scanRecord->equals( $self->list->{$key} ) ) {
-                dlog('Record is not equal');
+                ilog('Record is not equal');
+                ilog($scanRecord->toString);
+                ilog($self->list->{$key}->toString);
 
                 if ( $scanRecord->action eq 'COMPLETE' ) {
                     ###Set to update if it is currently complete
@@ -353,6 +353,7 @@ sub applyDelta {
             $self->list->{$key}->save($connection);
             if ( $self->list->{$key}->action eq 'UPDATE' ) {
                 $self->SUPER::incrUpdateCnt();
+                dlog($self->SUPER::incrUpdateCnt());
             }
             else {
                 $self->SUPER::incrDeleteCnt();

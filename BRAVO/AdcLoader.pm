@@ -2,15 +2,7 @@ package BRAVO::AdcLoader;
 
 use strict;
 use Base::Utils;
-use Database::Connection;
 use Staging::Delegate::StagingDelegate;
-use Staging::OM::SoftwareLpar;
-use Staging::OM::SoftwareLparMap;
-use Staging::OM::ScanRecord;
-use Staging::OM::Adc;
-use BRAVO::Delegate::BRAVODelegate;
-use BRAVO::OM::SoftwareLpar;
-use BRAVO::OM::Adc;
 
 ###Object constructor.
 sub new {

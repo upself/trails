@@ -90,9 +90,9 @@ if ( $test_flag eq "TESTING" ) {
 }
 else {
 	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILS3";
+	$trails_db       = "dbi:DB2:TRAILS";
 	$trails_user     = "eaadmin";
-	$trails_password = "apr03db2";
+	$trails_password = "jan11tra";
 }
 
 open LOG, ">>$logFile"; 

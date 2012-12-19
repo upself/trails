@@ -26,17 +26,15 @@ use Recon::Queue;
 
 ###Object constructor.
 sub new {
-    my ($class,$stagingConnection, $trailsConnection, $swassetConnection) = @_;
+    my ($class) = @_;
     my $self = {
+                 _testMode           => undef,
                  _loadDeltaOnly      => undef,
                  _applyChanges       => undef,
-                 _customerId         => undef,
-                 _phase              => undef,
-                 _discrepancyTypeMap => undef,
-                 _lparId => undef,
-                 _stagingConnection => $stagingConnection,
-                 _bravoConnection => $trailsConnection,
-                 _swassetConnection => $swassetConnection
+                 _maxLparsInQuery    => undef,
+                 _firstId            => undef,
+                 _lastId             => undef,
+                 _discrepancyTypeMap => undef
     };
     bless $self, $class;
     dlog("instantiated self");
@@ -49,6 +47,12 @@ sub new {
 }
 
 ###Object get/set methods.
+sub testMode {
+    my ( $self, $value ) = @_;
+    $self->{_testMode} = $value if defined($value);
+    return ( $self->{_testMode} );
+}
+
 sub loadDeltaOnly {
     my ( $self, $value ) = @_;
     $self->{_loadDeltaOnly} = $value if defined($value);
@@ -61,46 +65,28 @@ sub applyChanges {
     return ( $self->{_applyChanges} );
 }
 
-sub customerId {
+sub maxLparsInQuery {
     my ( $self, $value ) = @_;
-    $self->{_customerId} = $value if defined($value);
-    return ( $self->{_customerId} );
+    $self->{_maxLparsInQuery} = $value if defined($value);
+    return ( $self->{_maxLparsInQuery} );
+}
+
+sub firstId {
+    my ( $self, $value ) = @_;
+    $self->{_firstId} = $value if defined($value);
+    return ( $self->{_firstId} );
+}
+
+sub lastId {
+    my ( $self, $value ) = @_;
+    $self->{_lastId} = $value if defined($value);
+    return ( $self->{_lastId} );
 }
 
 sub discrepancyTypeMap {
     my ( $self, $value ) = @_;
     $self->{_discrepancyTypeMap} = $value if defined($value);
     return ( $self->{_discrepancyTypeMap} );
-}
-
-sub phase {
-    my ( $self, $value ) = @_;
-    $self->{_phase} = $value if defined($value);
-    return ( $self->{_phase} );
-}
-
-sub lparId {
-    my ( $self, $value ) = @_;
-    $self->{_lparId} = $value if defined($value);
-    return ( $self->{_lparId} );
-}
-
-sub stagingConnection {
-    my ( $self, $value ) = @_;
-    $self->{_stagingConnection} = $value if defined($value);
-    return ( $self->{_stagingConnection} );
-}
-
-sub bravoConnection {
-    my ( $self, $value ) = @_;
-    $self->{_bravoConnection} = $value if defined($value);
-    return ( $self->{_bravoConnection} );
-}
-
-sub swassetConnection {
-    my ( $self, $value ) = @_;
-    $self->{_swassetConnection} = $value if defined($value);
-    return ( $self->{_swassetConnection} );
 }
 
 ###Primary method used by calling clients to load staging
@@ -110,6 +96,27 @@ sub load {
 
     ###Check and set arguments.
     $self->checkArgs( \%args );
+
+    ###Get a connection to staging
+    ilog("getting staging db connection");
+    my $stagingConnection = Database::Connection->new('staging');
+    die "Unable to get staging db connection!\n"
+      unless defined $stagingConnection;
+    ilog("got staging db connection");
+
+    ###Get a connection to bravo
+    ilog("getting bravo db connection");
+    my $bravoConnection = Database::Connection->new('trails');
+    die "Unable to get bravo db connection!\n"
+      unless defined $bravoConnection;
+    ilog("got bravo db connection");
+
+    ###Get a connection to swasset
+    ilog("getting swasset db connection");
+    my $swassetConnection = Database::Connection->new('swasset');
+    die "Unable to get swasset db connection!\n"
+      unless defined $swassetConnection;
+    ilog("got swasset db connection");
 
     ###Get start time for processing
     my $begin = time();
@@ -124,24 +131,25 @@ sub load {
     eval {
         ###Prepare query to pull software lpar data from staging
         dlog("preparing software lpar data query");
-        $self->stagingConnection->prepareSqlQueryAndFields(
-                                                $self->querySoftwareLparDataByCustomerId( $self->loadDeltaOnly ) );
+        $stagingConnection->prepareSqlQueryAndFields(
+                           Staging::Delegate::StagingDelegate->querySoftwareLparDataByMinMaxIds( $self->testMode, $self->loadDeltaOnly ) );
         dlog("prepared software lpar data query");
 
         ###Get the statement handle
         dlog("getting sth for software lpar data query");
-        my $sth = $self->stagingConnection->sql->{softwareLparDataByCustomerId};
+        my $sth = $stagingConnection->sql->{softwareLparDataByMinMaxIds};
         dlog("got sth for software lpar data query");
 
         ###Bind our columns
         my %rec;
         dlog("binding columns for software lpar data query");
-        $sth->bind_columns( map { \$rec{$_} } @{ $self->stagingConnection->sql->{softwareLparDataByCustomerIdFields} } );
+        $sth->bind_columns( map { \$rec{$_} } @{ $stagingConnection->sql->{softwareLparDataByMinMaxIdsFields} } );
         dlog("binded columns for software lpar data query");
 
         ###Excute the query
         ilog("executing software lpar data query");
-        $sth->execute( $self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId);
+        $sth->execute( $self->firstId, $self->lastId,  $self->firstId, $self->lastId,  $self->firstId,
+                       $self->lastId,  $self->firstId, $self->lastId,  $self->firstId, $self->lastId );
         ilog("executed software lpar data query");
 
         ###Helper variables to store the currently processing software lpar object.
@@ -159,6 +167,7 @@ sub load {
         my %stagingSoftwareLparsToDelete = ();
         my %stagingMapsToDelete          = ();
         my %stagingScanRecordsToDelete   = ();
+
         while ( $sth->fetchrow_arrayref ) {
 
             ###Clean record values
@@ -184,7 +193,7 @@ sub load {
 
                     ###Remove this software lpar from to delete hash if exists.
                     delete $stagingSoftwareLparsToDelete{ $rec{id} }
-                        if exists $stagingSoftwareLparsToDelete{ $rec{id} };
+                      if exists $stagingSoftwareLparsToDelete{ $rec{id} };
                 }
             }
 
@@ -206,9 +215,9 @@ sub load {
 
             ###Get the map key
             my $mapKey =
-                  $softwareLparKey . '|'
-                . ( defined $rec{mapId}        ? $rec{mapId}        : '' ) . '|'
-                . ( defined $rec{scanRecordId} ? $rec{scanRecordId} : '' );
+                $softwareLparKey . '|'
+              . ( defined $rec{mapId}        ? $rec{mapId}        : '' ) . '|'
+              . ( defined $rec{scanRecordId} ? $rec{scanRecordId} : '' );
 
             ###Determine if we have processed this software lpar key yet.
             my $stagingSoftwareLpar;
@@ -273,7 +282,7 @@ sub load {
                 $bravoSoftwareLpar = new BRAVO::OM::SoftwareLpar();
                 $bravoSoftwareLpar->customerId( $rec{customerId} );
                 $bravoSoftwareLpar->name( $rec{name} );
-                $bravoSoftwareLpar->getByBizKey($self->bravoConnection);
+                $bravoSoftwareLpar->getByBizKey($bravoConnection);
 
                 ###Set the action property to the staging action.
                 $bravoSoftwareLpar->action( $stagingSoftwareLpar->action );
@@ -317,7 +326,7 @@ sub load {
 
                                     ###Always want to delete BIT in this case.
                                     $deleteInstalledType = 1;
-                                    $saveSoftwareLpar    = 1;
+                                    $saveSoftwareLpar = 1;
                                 }
                                 else {
                                     die "Invalid action: " . $rec{scanRecordAction} . "\n";
@@ -334,7 +343,7 @@ sub load {
 
                             ###Always want to delete BIT in this case.
                             $deleteInstalledType = 1;
-                            $saveSoftwareLpar    = 1;
+                            $saveSoftwareLpar = 1;
                         }
                         else {
                             die "Invalid action: " . $rec{mapAction} . "\n";
@@ -422,7 +431,7 @@ sub load {
                          )
                          && stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime )
                          && $bravoSoftwareLpar->status eq $stagingSoftwareLpar->status
-                        )
+                      )
                     {
 
                         dlog("bravo software lpar identical to staging software lpar, not saving");
@@ -432,9 +441,9 @@ sub load {
                             ###Call the recon engine if this is a full load even if
                             ###there were no changes to save.
                             dlog("calling recon engine for bravo software lpar object");
-                            my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
+                            my $queue = Recon::Queue->new( $bravoConnection, $bravoSoftwareLpar );
                             $queue->add;
-                            $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
+                            $statistics{'TRAILS'}{'UPDATE'}{'RECON_SW_LPAR'}++;
                             dlog("called recon engine for bravo software lpar object");
                         }
                     }
@@ -502,23 +511,23 @@ sub load {
 
                             ###Save the object.
                             dlog("saving bravo software lpar object");
-                            $bravoSoftwareLpar->save($self->bravoConnection);
-                            $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'UPDATE'}++;
+                            $bravoSoftwareLpar->save($bravoConnection);
+                            $statistics{'TRAILS'}{'UPDATE'}{'SOFTWARE_LPAR'}++;
                             dlog("saved bravo software lpar object");
 
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo software lpar object");
-                            my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
+                            my $queue = Recon::Queue->new( $bravoConnection, $bravoSoftwareLpar );
                             $queue->add;
-                            $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
+                           $statistics{'TRAILS'}{'UPDATE'}{'RECON_SW_LPAR'}++;
                             dlog("called recon engine for bravo software lpar object");
 
                             ###If we are inactivating this software lpar, then
                             ###we must inactivate all installed software, and
                             ###delete all installed sigs, filters, manual, etc.
                             if ( $bravoSoftwareLpar->status eq 'INACTIVE' ) {
-                                BRAVO::Delegate::BRAVODelegate->inactivateSoftwareLparById( $self->bravoConnection,
-                                                                            $bravoSoftwareLpar->id, \%statistics );
+                                BRAVO::Delegate::BRAVODelegate->inactivateSoftwareLparById( $bravoConnection,
+                                                                                            $bravoSoftwareLpar->id,\%statistics );
                             }
                         }
                     }
@@ -531,9 +540,9 @@ sub load {
                         ###Call the recon engine if this is a full load even if
                         ###there were no changes to save.
                         dlog("calling recon engine for bravo software lpar object");
-                        my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
+                        my $queue = Recon::Queue->new( $bravoConnection, $bravoSoftwareLpar );
                         $queue->add;
-                        $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
+                        $statistics{'TRAILS'}{'UPDATE'}{'RECON_SW_LPAR'}++;
                         dlog("called recon engine for bravo software lpar object");
                     }
                 }
@@ -548,8 +557,8 @@ sub load {
                     ###Save if applyChanges is true.
                     if ( $self->applyChanges == 1 ) {
                         dlog("saving staging software lpar object");
-                        $stagingSoftwareLpar->save($self->stagingConnection);
-                        $statistics{'STAGING'}{'SOFTWARE_LPAR'}{'STATUS_COMPLETE'}++;
+                        $stagingSoftwareLpar->save($stagingConnection);
+                       $statistics{'STAGING'}{'COMPLETE'}{'SOFTWARE_LPAR'}++;
                         dlog("saved staging software lpar object");
                     }
 
@@ -661,7 +670,7 @@ sub load {
             my $bravoInstalledSoftware = new BRAVO::OM::InstalledSoftware();
             $bravoInstalledSoftware->softwareLparId( $bravoSoftwareLpar->id );
             $bravoInstalledSoftware->softwareId( $rec{softwareId} );
-            $bravoInstalledSoftware->getByBizKey($self->bravoConnection);
+            $bravoInstalledSoftware->getByBizKey($bravoConnection);
 
             ###Set the action property to the staging action.
             $bravoInstalledSoftware->action( $rec{installedSoftwareTypeAction} );
@@ -685,7 +694,7 @@ sub load {
 
                 $stagingInstalledType = new Staging::OM::SoftwareSignature();
                 $stagingInstalledType->softwareSignatureId( $rec{installedSoftwareTypeId} );
-                $stagingInstalledType->path( $rec{path} );
+                $stagingInstalledType->path($rec{path});
 
                 $bravoInstalledType = new BRAVO::OM::InstalledSignature();
                 $bravoInstalledType->softwareSignatureId( $rec{installedSoftwareTypeId} );
@@ -734,12 +743,13 @@ sub load {
             dlog( "staging software installed type obj=" . $stagingInstalledType->toString() );
 
             if ( defined $bravoInstalledType ) {
-                dlog( "bank account id " . $rec{bankAccountId} );
+                dlog("bank account id " .  $rec{bankAccountId});
+
 
                 ###Get bravo installed type object by biz key if exists
                 $bravoInstalledType->installedSoftwareId( $bravoInstalledSoftware->id );
                 $bravoInstalledType->bankAccountId( $rec{bankAccountId} );
-                $bravoInstalledType->getByBizKey($self->bravoConnection);
+                $bravoInstalledType->getByBizKey($bravoConnection);
                 if ( defined $bravoInstalledType->id ) {
                     dlog(   "matching bravo installed software type record found: "
                           . "old bravo installed software type obj="
@@ -781,12 +791,12 @@ sub load {
             my $softwareTypeAction = $stagingInstalledType->action;
             $softwareTypeAction = 'DELETE' if $deleteInstalledType == 1;
             dlog( "softwareTypeAction=" . $softwareTypeAction );
-
-            if ( $rec{installedSoftwareType} eq 'SIGNATURE' ) {
+            
+            if($rec{installedSoftwareType} eq 'SIGNATURE') {
                 if ( defined $bravoInstalledType ) {
-                    if ( $stagingInstalledType->path ne $bravoInstalledType->path ) {
+                    if($stagingInstalledType->path ne $bravoInstalledType->path) {
                         $saveInstalledType = 1;
-                        $bravoInstalledType->path( $stagingInstalledType->path );
+                        $bravoInstalledType->path($stagingInstalledType->path);
                     }
                 }
             }
@@ -818,8 +828,8 @@ sub load {
                             ###BIS=A
                             if ( $bravoInstalledSoftware->status eq 'ACTIVE' ) {
                                 ###DT!=M
-                                if ( $bravoInstalledSoftware->discrepancyTypeId
-                                     != $self->discrepancyTypeMap->{'MISSING'} )
+                                if ( $bravoInstalledSoftware->discrepancyTypeId !=
+                                     $self->discrepancyTypeMap->{'MISSING'} )
                                 {
                                     ###SIT=M
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
@@ -834,35 +844,31 @@ sub load {
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
-                                                 && numericEqualOrBothUndef(
-                                                                             $bravoInstalledSoftware->users,
-                                                                             $rec{installedSoftwareTypeUsers}
-                                                 )
+                                                 && numericEqualOrBothUndef( $bravoInstalledSoftware->users,
+                                                                             $rec{installedSoftwareTypeUsers} )
                                                  && stringEqual(
                                                                  $bravoInstalledSoftware->version,
                                                                  $rec{installedSoftwareTypeVersion}
                                                  )
-                                                )
+                                              )
                                             {
                                                 ###AUTH=AUTH|1
                                                 if (
                                                      numericEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->authenticated,
-                                                                            $rec{scanRecordAuthenticated}
+                                                                              $bravoInstalledSoftware->authenticated,
+                                                                              $rec{scanRecordAuthenticated}
                                                      )
                                                      || ( defined $bravoInstalledSoftware->authenticated
                                                           && $bravoInstalledSoftware->authenticated == 1 )
-                                                    )
+                                                  )
                                                 {
                                                     dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH=AUTH|1"
-                                                    );
+"SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH=AUTH|1" );
                                                 }
                                                 ###AUTH!=AUTH|1
                                                 else {
                                                     dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH!=AUTH|1"
-                                                    );
+"SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH!=AUTH|1" );
                                                     $saveInstalledSoftware = 1;
                                                 }
                                             }
@@ -878,36 +884,32 @@ sub load {
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
-                                                 && numericEqualOrBothUndef(
-                                                                             $bravoInstalledSoftware->users,
-                                                                             $rec{installedSoftwareTypeUsers}
-                                                 )
+                                                 && numericEqualOrBothUndef( $bravoInstalledSoftware->users,
+                                                                             $rec{installedSoftwareTypeUsers} )
                                                  && stringEqual(
                                                                  $bravoInstalledSoftware->version,
                                                                  $rec{installedSoftwareTypeVersion}
                                                  )
-                                                )
+                                              )
                                             {
                                                 ###AUTH=AUTH|1
                                                 if (
                                                      numericEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->authenticated,
-                                                                            $rec{scanRecordAuthenticated}
+                                                                              $bravoInstalledSoftware->authenticated,
+                                                                              $rec{scanRecordAuthenticated}
                                                      )
                                                      || ( defined $bravoInstalledSoftware->authenticated
                                                           && $bravoInstalledSoftware->authenticated == 1 )
-                                                    )
+                                                  )
                                                 {
                                                     dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH=AUTH|1"
-                                                    );
+"SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH=AUTH|1" );
                                                     $saveInstalledType = 1;
                                                 }
                                                 ###AUTH!=AUTH|1
                                                 else {
                                                     dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH!=AUTH|1"
-                                                    );
+"SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH!=AUTH|1" );
                                                     $saveInstalledSoftware = 1;
                                                     $saveInstalledType     = 1;
                                                 }
@@ -935,7 +937,7 @@ sub load {
                                                              $bravoInstalledSoftware->version,
                                                              $rec{installedSoftwareTypeVersion}
                                              )
-                                            )
+                                          )
                                         {
                                             ###AUTH=AUTH|1
                                             if (
@@ -945,14 +947,13 @@ sub load {
                                                  )
                                                  || ( defined $bravoInstalledSoftware->authenticated
                                                       && $bravoInstalledSoftware->authenticated == 1 )
-                                                )
+                                              )
                                             {
                                                 dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT=M,BIS=SIT,AUTH=AUTH|1");
                                             }
                                             ###AUTH!=AUTH|1
                                             else {
-                                                dlog(
-                                                    "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT=M,BIS=SIT,AUTH!=AUTH|1");
+                                                dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT=M,BIS=SIT,AUTH!=AUTH|1");
                                                 $saveInstalledSoftware = 1;
                                             }
                                         }
@@ -1034,8 +1035,8 @@ sub load {
                             ###BIS=A
                             if ( $bravoInstalledSoftware->status eq 'ACTIVE' ) {
                                 ###DT!=M
-                                if ( $bravoInstalledSoftware->discrepancyTypeId
-                                     != $self->discrepancyTypeMap->{'MISSING'} )
+                                if ( $bravoInstalledSoftware->discrepancyTypeId !=
+                                     $self->discrepancyTypeMap->{'MISSING'} )
                                 {
                                     ###SIT=M
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
@@ -1123,18 +1124,18 @@ sub load {
                     ###for a given scanned signature/filter. Only update version
                     ###if we are a manual line item.
                     $bravoInstalledSoftware->version( $rec{installedSoftwareTypeVersion} )
-                        if $rec{installedSoftwareType} eq 'MANUAL';
+                      if $rec{installedSoftwareType} eq 'MANUAL';
 
                     ###Only want to set users and authenticated values if this record
                     ###came from swassset, all other sources will have a value of 0,
                     ###so we should only update if the current bravo value is 0 or
                     ###if the new scan value is not 0.
                     $bravoInstalledSoftware->users( $rec{installedSoftwareTypeUsers} )
-                        if $bravoInstalledSoftware->users == 0
-                        || $rec{installedSoftwareTypeUsers} > 0;
+                      if $bravoInstalledSoftware->users == 0
+                      || $rec{installedSoftwareTypeUsers} > 0;
                     $bravoInstalledSoftware->authenticated( $rec{scanRecordAuthenticated} )
-                        if $bravoInstalledSoftware->authenticated == 0
-                        || $rec{scanRecordAuthenticated} > 0;
+                      if $bravoInstalledSoftware->authenticated == 0
+                      || $rec{scanRecordAuthenticated} > 0;
 
                     ###Update discrepancy type id.
                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
@@ -1142,8 +1143,7 @@ sub load {
                     }
                     else {
                         if ( defined $bravoInstalledSoftware->discrepancyTypeId ) {
-                            if ( $bravoInstalledSoftware->discrepancyTypeId
-                                 == $self->discrepancyTypeMap->{'MISSING'} )
+                            if ( $bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'MISSING'} )
                             {
                                 $bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'VALID'} );
                             }
@@ -1160,16 +1160,15 @@ sub load {
 
                         ###Save the object.
                         dlog("saving bravo installed software object");
-                        $bravoInstalledSoftware->save($self->bravoConnection);
-                        $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
+                        $bravoInstalledSoftware->save($bravoConnection);
+$statistics{'TRAILS'}{'UPDATE'}{'INSTALLED_SOFTWARE'}++;
                         dlog("saved bravo installed software object");
 
                         ###Call the recon engine for the object.
                         dlog("calling recon engine for bravo installed software object");
-                        my $queue =
-                            Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
+                        my $queue = Recon::Queue->new($bravoConnection,$bravoInstalledSoftware,$bravoSoftwareLpar);
                         $queue->add;
-                        $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+                        $statistics{'TRAILS'}{'UPDATE'}{'RECON_INST_SW'}++;
                         dlog("called recon engine for bravo installed software object");
                     }
                 }
@@ -1189,9 +1188,8 @@ sub load {
 
                         ###Save the object.
                         dlog("saving bravo installed type object");
-                        $bravoInstalledType->save($self->bravoConnection)
-                            if ( defined $bravoInstalledType->installedSoftwareId );
-                        $statistics{'TRAILS'}{ $rec{installedSoftwareType} }{'UPDATE'}++;
+                        $bravoInstalledType->save($bravoConnection) if(defined $bravoInstalledType->installedSoftwareId);
+                         $statistics{'TRAILS'}{'UPDATE'}{$rec{installedSoftwareType}}++;
                         dlog("saved bravo installed type object");
                     }
                 }
@@ -1208,8 +1206,8 @@ sub load {
 
                         ###Delete the bravo installed type.
                         dlog("deleting bravo installed type object");
-                        $bravoInstalledType->delete($self->bravoConnection);
-                        $statistics{'TRAILS'}{ $rec{installedSoftwareType} }{'DELETE'}++;
+                        $bravoInstalledType->delete($bravoConnection);
+                                                 $statistics{'TRAILS'}{'DELETE'}{$rec{installedSoftwareType}}++;
                         dlog("deleted bravo installed type object");
                     }
                 }
@@ -1224,8 +1222,8 @@ sub load {
                     ###type for the given record.
 
                     ###Get the count of installed types referencing this record.
-                    my $count = BRAVO::Delegate::BRAVODelegate->getInstalledSoftwareCountById( $self->bravoConnection,
-                                                                                     $bravoInstalledSoftware->id );
+                    my $count = BRAVO::Delegate::BRAVODelegate->getInstalledSoftwareCountById( $bravoConnection,
+                                                                                          $bravoInstalledSoftware->id );
 
                     ###Do not inactivate if there are still records
                     ###referencing this installed software record.
@@ -1240,32 +1238,30 @@ sub load {
 
                             ###Save the object.
                             dlog("saving bravo installed software object");
-                            $bravoInstalledSoftware->save($self->bravoConnection);
-                            $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
+                            $bravoInstalledSoftware->save($bravoConnection);
+                            $statistics{'TRAILS'}{'UPDATE'}{'INSTALLED_SOFTWARE'}++;
                             dlog("saved bravo installed software object");
 
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo installed software object");
-                            my $queue =
-                                Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
+                            my $queue = Recon::Queue->new($bravoConnection,$bravoInstalledSoftware,$bravoSoftwareLpar);
                             $queue->add;
-                            $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+                            $statistics{'TRAILS'}{'UPDATE'}{'RECON_INST_SW'}++;
                             dlog("called recon engine for bravo installed software object");
 
                             ###Check if this was the last installed software on the associated
                             ###software lpar and inactivate/recon the lpar if it was the last.
                             my $instSwCount =
-                                BRAVO::Delegate::BRAVODelegate->getInstalledSoftwareCountBySwLparId(
-                                                                                          $self->bravoConnection,
-                                                                                          $bravoSoftwareLpar->id );
+                              BRAVO::Delegate::BRAVODelegate->getInstalledSoftwareCountBySwLparId( $bravoConnection,
+                                                                                               $bravoSoftwareLpar->id );
                             dlog("installed software count for software lpar=$instSwCount");
 
                             if ( defined $instSwCount && $instSwCount == 0 ) {
                                 ###Call the recon engine for the object.
                                 dlog("calling recon engine for bravo software lpar object");
-                                my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
+                                my $queue = Recon::Queue->new( $bravoConnection, $bravoSoftwareLpar );
                                 $queue->add;
-                                $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
+                                $statistics{'TRAILS'}{'UPDATE'}{'RECON_SW_LPAR'}++;
                                 dlog("called recon engine for bravo software lpar object");
                             }
                             else {
@@ -1310,8 +1306,8 @@ sub load {
                 ###Save the object if applyChanges is true.
                 if ( $self->applyChanges == 1 ) {
                     dlog("saving bravo software discrep history object");
-                    $bravoSoftwareDiscrepancyHistory->save($self->bravoConnection);
-                    $statistics{'TRAILS'}{'SW_DISCREP_HIS'}{'UPDATE'}++;
+                    $bravoSoftwareDiscrepancyHistory->save($bravoConnection);
+                    $statistics{'TRAILS'}{'UPDATE'}{'SW_DISCREP'}++;
                     dlog("saved bravo software discrep history object");
                 }
             }
@@ -1326,8 +1322,8 @@ sub load {
                 ###Save if applyChanges is true.
                 if ( $self->applyChanges == 1 ) {
                     dlog("saving staging installed type object");
-                    $stagingInstalledType->save($self->stagingConnection);
-                    $statistics{'STAGING'}{ $rec{installedSoftwareType} }{'STATUS_COMPLETE'}++;
+                    $stagingInstalledType->save($stagingConnection);
+                    $statistics{'STAGING'}{'COMPLETE'}{$rec{installedSoftwareType}}++;
                     dlog("saved staging installed type object");
                 }
 
@@ -1345,8 +1341,8 @@ sub load {
 
                     ###Delete from staging.
                     dlog("deleting staging installed type");
-                    $stagingInstalledType->delete($self->stagingConnection);
-                    $statistics{'STAGING'}{ $rec{installedSoftwareType} }{'DELETE'}++;
+                    $stagingInstalledType->delete($stagingConnection);
+                    $statistics{'STAGING'}{'DELETE'}{$rec{installedSoftwareType}}++;
                     dlog("deleted staging installed type");
                 }
             }
@@ -1365,14 +1361,14 @@ sub load {
                 $installedManualSoftware->softwareId( $rec{softwareId} );
 
                 ###Get the inst manual sw object from db by biz key.
-                $installedManualSoftware->getByBizKey($self->swassetConnection);
+                $installedManualSoftware->getByBizKey($swassetConnection);
                 dlog( "swasset installed manual software: " . $installedManualSoftware->toString() );
 
                 ###Delete the record if id is set.
                 if ( defined $installedManualSoftware->id ) {
                     dlog("deleting swasset installed manual software");
-                    $installedManualSoftware->delete($self->swassetConnection);
-                    $statistics{'SWASSET'}{'MANUAL_SW'}{'DELETE'}++;
+                    $installedManualSoftware->delete($swassetConnection);
+                    $statistics{'SWASSET'}{'DELETE'}{'MANUAL_SW'}++;
                     dlog("deleted swasset installed manual software");
                 }
                 else {
@@ -1381,8 +1377,8 @@ sub load {
 
                 ###Check if this was the last line item of software for this
                 ###manual computer record.
-                my $manualCount = SWASSETDelegate->getManualSoftwareCountByComputerSysId( $self->swassetConnection,
-                                                                                      $rec{scanRecordComputerId} );
+                my $manualCount = SWASSETDelegate->getManualSoftwareCountByComputerSysId( $swassetConnection,
+                                                                                          $rec{scanRecordComputerId} );
                 dlog("manualCount=$manualCount");
 
                 ###Delete the manual computer record if this was the last sw line item.
@@ -1391,13 +1387,13 @@ sub load {
                     ###Get the manual computer object from db by biz key.
                     my $manualComputer = new SWASSET::OM::ManualComputer();
                     $manualComputer->computerSysId( $rec{scanRecordComputerId} );
-                    $manualComputer->getByBizKey($self->swassetConnection);
+                    $manualComputer->getByBizKey($swassetConnection);
                     dlog( "swasset manual computer: " . $manualComputer->toString() );
 
                     ###Delete the manual computer record.
                     dlog("deleting swasset manual computer");
-                    $manualComputer->delete($self->swassetConnection);
-                    $statistics{'SWASSET'}{'MANUAL_COMPUTER'}{'DELETE'}++;
+                    $manualComputer->delete($swassetConnection);
+                    $statistics{'SWASSET'}{'DELETE'}{'MANUAL_COMPUTER'}++;
                     dlog("deleted swasset manual computer");
                 }
             }
@@ -1414,8 +1410,8 @@ sub load {
             foreach my $id ( sort keys %stagingMapsToDelete ) {
                 my $softwareLparMap = new Staging::OM::SoftwareLparMapNonObject();
                 $softwareLparMap->id($id);
-                $softwareLparMap->delete($self->stagingConnection);
-                $statistics{'STAGING'}{'SOFTWARE_LPAR_MAP'}{'DELETE'}++;
+                $softwareLparMap->delete($stagingConnection);
+                $statistics{'STAGING'}{'DELETE'}{'SOFTWARE_LPAR_MAP'}++;
                 dlog( "deleted staging software lpar map: " . $softwareLparMap->toString() );
             }
 
@@ -1425,8 +1421,8 @@ sub load {
             foreach my $id ( sort keys %stagingSoftwareLparsToDelete ) {
                 my $softwareLpar = new Staging::OM::SoftwareLpar();
                 $softwareLpar->id($id);
-                $softwareLpar->delete($self->stagingConnection);
-                $statistics{'STAGING'}{'SOFTWARE_LPAR'}{'DELETE'}++;
+                $softwareLpar->delete($stagingConnection);
+                $statistics{'STAGING'}{'DELETE'}{'SOFTWARE_LPAR'}++;
                 dlog( "deleted staging software lpar: " . $softwareLpar->toString() );
             }
 
@@ -1436,8 +1432,8 @@ sub load {
             foreach my $id ( sort keys %stagingScanRecordsToDelete ) {
                 my $scanRecord = new Staging::OM::ScanRecord();
                 $scanRecord->id($id);
-                $scanRecord->delete($self->stagingConnection);
-                $statistics{'STAGING'}{'SCAN_RECORD'}{'DELETE'}++;
+                $scanRecord->delete($stagingConnection);
+                $statistics{'STAGING'}{'DELETE'}{'SCAN_RECORD'}++;
                 dlog( "deleted staging scan record: " . $scanRecord->toString() );
             }
         }
@@ -1450,11 +1446,33 @@ sub load {
     }
 
     ###Display statistics
-    #Staging::Delegate::StagingDelegate->insertCount( $self->stagingConnection, \%statistics );
+    foreach my $database ( keys %statistics ) {
+        foreach my $action ( keys %{$statistics{$database}} ) {
+            foreach my $object ( keys %{$statistics{$database}{$action}} ) {
+                my $count = $statistics{$database}{$action}{$object};
+                Staging::Delegate::StagingDelegate->insertCount( $stagingConnection, $database, $object, $action, $count );
+            }
+        }
+    }
 
     ###Calculate duration of this processing
     my $totalProcessingTime = time() - $begin;
     ilog("totalProcessingTime: $totalProcessingTime secs");
+
+    ###Close the staging db connection
+    ilog("disconnecting staging db connection");
+    $stagingConnection->disconnect;
+    ilog("disconnected staging db connection");
+
+    ###Close the bravo connection
+    ilog("disconnecting bravo db connection");
+    $bravoConnection->disconnect;
+    ilog("disconnected bravo db connection");
+
+    ####Close the swasset connection
+    ilog("disconnecting swasset db connection");
+    $swassetConnection->disconnect;    
+    ilog("disconnected swasset db connection");
 
     ###die if dieMsg is defined
     die $dieMsg if defined($dieMsg);
@@ -1464,528 +1482,53 @@ sub load {
 sub checkArgs {
     my ( $self, $args ) = @_;
 
+    ###Check TestMode arg is passed correctly
+    die "Must specify TestMode sub argument!\n"
+      unless exists( $args->{'TestMode'} );
+    die "Invalid value passed for TestMode param!\n"
+      unless ( $args->{'TestMode'} == 0 || $args->{'TestMode'} == 1 );
+    $self->testMode( $args->{'TestMode'} );
+    ilog( "testMode=" . $self->testMode );
+
     ###Check LoadDeltaOnly arg is passed correctly
     die "Must specify LoadDeltaOnly sub argument!\n"
-        unless exists( $args->{'LoadDeltaOnly'} );
+      unless exists( $args->{'LoadDeltaOnly'} );
     die "Invalid value passed for LoadDeltaOnly param!\n"
-        unless ( $args->{'LoadDeltaOnly'} == 0 || $args->{'LoadDeltaOnly'} == 1 );
+      unless ( $args->{'LoadDeltaOnly'} == 0 || $args->{'LoadDeltaOnly'} == 1 );
     $self->loadDeltaOnly( $args->{'LoadDeltaOnly'} );
     ilog( "loadDeltaOnly=" . $self->loadDeltaOnly );
 
     ###Check ApplyChanges arg is passed correctly
     die "Must specify ApplyChanges sub argument!\n"
-        unless exists( $args->{'ApplyChanges'} );
+      unless exists( $args->{'ApplyChanges'} );
     die "Invalid value passed for ApplyChanges param!\n"
-        unless ( $args->{'ApplyChanges'} == 0 || $args->{'ApplyChanges'} == 1 );
+      unless ( $args->{'ApplyChanges'} == 0 || $args->{'ApplyChanges'} == 1 );
     $self->applyChanges( $args->{'ApplyChanges'} );
     ilog( "applyChanges=" . $self->applyChanges );
 
-    ###Check CustomerId arg is passed correctly
-    die "Must specify CustomerId sub argument!\n"
-        unless exists( $args->{'CustomerId'} );
-    die "Invalid value passed for CustomerId param!\n"
-        unless $args->{'CustomerId'} =~ m/\d+/;
-    $self->customerId( $args->{'CustomerId'} );
-    ilog( "customerId=" . $self->customerId );
+    ###Check MaxLparsInQuery arg is passed correctly
+    die "Must specify MaxLparsInQuery sub argument!\n"
+      unless exists( $args->{'MaxLparsInQuery'} );
+    die "Invalid value passed for MaxLparsInQuery param!\n"
+      unless $args->{'MaxLparsInQuery'} =~ m/\d+/;
+    $self->maxLparsInQuery( $args->{'MaxLparsInQuery'} );
+    ilog( "maxLparsInQuery=" . $self->maxLparsInQuery );
 
-    ###Check Phase arg is passed correctly
-    die "Must specify Phase sub argument!\n"
-        unless exists( $args->{'Phase'} );
-    die "Invalid value passed for Phase param!\n"
-        unless $args->{'Phase'} =~ m/\d+/;
-    $self->phase( $args->{'Phase'} );
-    ilog( "phase=" . $self->phase );
+    ###Check FirstId arg is passed correctly
+    die "Must specify FirstId sub argument!\n"
+      unless exists( $args->{'FirstId'} );
+    die "Invalid value passed for FirstId param!\n"
+      unless $args->{'FirstId'} =~ m/\d+/;
+    $self->firstId( $args->{'FirstId'} );
+    ilog( "firstId=" . $self->firstId );
 
-    ###Check Phase arg is passed correctly
-    die "Must specify Phase sub argument!\n"
-        unless exists( $args->{'LparId'} );
-    die "Invalid value passed for Phase param!\n"
-        unless $args->{'LparId'} =~ m/\d+/;
-    $self->lparId( $args->{'LparId'} );
-    ilog( "phase=" . $self->lparId );
-}
-
-sub querySoftwareLparDataByCustomerId {
-    my ( $self, $deltaOnly ) = @_;
-    my @fields = (
-        qw(
-            id
-            customerId
-            computerId
-            objectId
-            name
-            model
-            biosSerial
-            osName
-            osType
-            osMajor
-            osMinor
-            osSub
-            osInst
-            userName
-            manufacturer
-            biosModel
-            serverType
-            techImageId
-            extId
-            memory
-            disk
-            dedicatedProcessors
-            totalProcessors
-            sharedProcessors
-            processorType
-            sharedProcByCores
-            dedicatedProcByCores
-            totalProcByCores
-            alias
-            physicalTotalKb
-            virtualMemory
-            physicalFreeMemory
-            virtualFreeMemory
-            nodeCapacity
-            lparCapacity
-            biosDate
-            biosSerialNumber
-            biosUniqueId
-            boardSerial
-            caseSerial
-            caseAssetTag
-            powerOnPassword
-            processorCount
-            scanTime
-            status
-            action
-            mapId
-            mapAction
-            scanRecordId
-            scanRecordComputerId
-            bankAccountId
-            scanRecordScanTime
-            scanRecordAuthenticated
-            scanRecordAction
-            installedSoftwareType
-            installedSoftwareTypeTableId
-            installedSoftwareTypeId
-            softwareId
-            path
-            installedSoftwareTypeAction
-            installedSoftwareTypeUsers
-            installedSoftwareTypeVersion
-            )
-    );
-    my $query = '
-        select * from (
-    ';
-        $query .= $self->getManualQuery();
-        $query .= '
-            union
-        ';
-        $query .= $self->getSignatureQuery();
-        $query .= '
-            union
-        ';
-        $query .= $self->getFilterQuery();
-        $query .= '
-            union
-        ';
-        $query .= $self->getTlcmzQuery();
-        $query .= '
-            union
-        ';
-        $query .= $self->getDoranaQuery();
-    $query .= '
-        ) as x
-        order by
-            x.lpar_id
-            ,x.map_id
-            ,x.scan_record_id
-            ,x.software_id
-        with ur
-    ';
-
-    dlog("querySoftwareLparDataByCustomerId=$query");
-    return ( 'softwareLparDataByCustomerId', $query, \@fields );
-}
-
-sub getManualQuery {
-    my $self = shift;
-    return '
-            select
-                a.id as lpar_id
-                ,a.customer_id
-                ,a.computer_id
-                ,a.object_id
-                ,a.name
-                ,a.model
-                ,a.bios_serial
-                ,a.os_name
-                ,a.os_type
-                ,a.os_major_vers
-                ,a.os_minor_vers
-                ,a.os_sub_vers
-                ,a.os_inst_date
-                ,a.user_name
-                ,a.bios_manufacturer
-                ,a.bios_model
-                ,a.server_type
-                ,a.tech_img_id
-                ,a.ext_id
-                ,a.memory
-                ,a.disk
-                ,a.dedicated_processors
-                ,a.total_processors
-                ,a.shared_processors
-                ,a.processor_type
-                ,a.shared_proc_by_cores
-                ,a.dedicated_proc_by_cores
-                ,a.total_proc_by_cores
-                ,a.alias
-                ,a.physical_total_kb
-                ,a.virtual_memory
-                ,a.physical_free_memory
-                ,a.virtual_free_memory
-                ,a.node_capacity
-                ,a.lpar_capacity
-                ,a.bios_date
-                ,a.bios_serial_number
-                ,a.bios_unique_id
-                ,a.board_serial
-                ,a.case_serial
-                ,a.case_asset_tag
-                ,a.power_on_password                
-                ,a.processor_count
-                ,a.scan_time
-                ,a.status
-                ,a.action
-                ,b.id as map_id
-                ,b.action
-                ,c.id as scan_record_id
-                ,c.computer_id as scan_record_computer_id
-                ,c.bank_account_id
-                ,c.scan_time as scan_record_scan_time
-                ,c.authenticated
-                ,c.action
-                ,\'MANUAL\' as type
-                ,d.id as type_table_id
-                ,0 as type_id
-                ,d.software_id
-                ,\'NULL\' as path
-                ,d.action
-                ,d.users
-                ,d.version                
-            from software_lpar a
-            left outer join software_lpar_map b on b.software_lpar_id = a.id
-            left outer join scan_record c on c.id = b.scan_record_id
-            left outer join software_manual d on d.scan_record_id = c.id
-            where
-                a.customer_id = ?
-                and a.id = ?
-            ';
-}
-
-sub getSignatureQuery {
-    my $self = shift;
-    return '
-            select
-                a.id as lpar_id
-                ,a.customer_id
-                ,a.computer_id
-                ,a.object_id                
-                ,a.name
-                ,a.model
-                ,a.bios_serial
-                ,a.os_name
-                ,a.os_type
-                ,a.os_major_vers
-                ,a.os_minor_vers
-                ,a.os_sub_vers
-                ,a.os_inst_date
-                ,a.user_name
-                ,a.bios_manufacturer
-                ,a.bios_model
-                ,a.server_type
-                ,a.tech_img_id
-                ,a.ext_id
-                ,a.memory
-                ,a.disk
-                ,a.dedicated_processors
-                ,a.total_processors
-                ,a.shared_processors
-                ,a.processor_type
-                ,a.shared_proc_by_cores
-                ,a.dedicated_proc_by_cores
-                ,a.total_proc_by_cores
-                ,a.alias
-                ,a.physical_total_kb
-                ,a.virtual_memory
-                ,a.physical_free_memory
-                ,a.virtual_free_memory
-                ,a.node_capacity
-                ,a.lpar_capacity
-                ,a.bios_date
-                ,a.bios_serial_number
-                ,a.bios_unique_id
-                ,a.board_serial
-                ,a.case_serial
-                ,a.case_asset_tag
-                ,a.power_on_password                     
-                ,a.processor_count
-                ,a.scan_time
-                ,a.status
-                ,a.action
-                ,b.id as map_id
-                ,b.action
-                ,c.id as scan_record_id
-                ,c.computer_id as scan_record_computer_id
-                ,c.bank_account_id
-                ,c.scan_time as scan_record_scan_time
-                ,c.authenticated
-                ,c.action
-                ,\'SIGNATURE\' as type
-                ,d.id as type_table_id
-                ,d.software_signature_id as type_id
-                ,d.software_id
-                ,d.path
-                ,d.action
-                ,c.users
-                ,\'\'
-            from software_lpar a
-            left outer join software_lpar_map b on b.software_lpar_id = a.id
-            left outer join scan_record c on c.id = b.scan_record_id
-            left outer join software_signature d on d.scan_record_id = c.id
-            where
-                a.customer_id = ?
-                and a.id = ?
-            ';
-}
-
-sub getFilterQuery {
-    my $self = shift;
-    return '
-                select
-                a.id as lpar_id
-                ,a.customer_id
-                ,a.computer_id
-                ,a.object_id                
-                ,a.name
-                ,a.model
-                ,a.bios_serial
-                ,a.os_name
-                ,a.os_type
-                ,a.os_major_vers
-                ,a.os_minor_vers
-                ,a.os_sub_vers
-                ,a.os_inst_date
-                ,a.user_name
-                ,a.bios_manufacturer
-                ,a.bios_model
-                ,a.server_type
-                ,a.tech_img_id
-                ,a.ext_id
-                ,a.memory
-                ,a.disk
-                ,a.dedicated_processors
-                ,a.total_processors
-                ,a.shared_processors
-                ,a.processor_type
-                ,a.shared_proc_by_cores
-                ,a.dedicated_proc_by_cores
-                ,a.total_proc_by_cores
-                ,a.alias
-                ,a.physical_total_kb
-                ,a.virtual_memory
-                ,a.physical_free_memory
-                ,a.virtual_free_memory
-                ,a.node_capacity
-                ,a.lpar_capacity
-                ,a.bios_date
-                ,a.bios_serial_number
-                ,a.bios_unique_id
-                ,a.board_serial
-                ,a.case_serial
-                ,a.case_asset_tag
-                ,a.power_on_password                     
-                ,a.processor_count
-                ,a.scan_time
-                ,a.status
-                ,a.action
-                ,b.id as map_id
-                ,b.action
-                ,c.id as scan_record_id
-                ,c.computer_id as scan_record_computer_id
-                ,c.bank_account_id
-                ,c.scan_time as scan_record_scan_time
-                ,c.authenticated
-                ,c.action
-                ,\'FILTER\' as type
-                ,d.id as type_table_id
-                ,d.software_filter_id as type_id
-                ,d.software_id
-                ,\'NULL\' as path
-                ,d.action
-                ,c.users
-                ,\'\'
-            from software_lpar a
-            left outer join software_lpar_map b on b.software_lpar_id = a.id
-            left outer join scan_record c on c.id = b.scan_record_id
-            left outer join software_filter d on d.scan_record_id = c.id
-            where
-                a.customer_id = ?
-                and a.id = ?
-                ';
-}
-
-sub getTlcmzQuery {
-    my $self = shift;
-    return '
-                select
-                a.id as lpar_id
-                ,a.customer_id
-                ,a.computer_id
-                ,a.object_id                
-                ,a.name
-                ,a.model
-                ,a.bios_serial
-                ,a.os_name
-                ,a.os_type
-                ,a.os_major_vers
-                ,a.os_minor_vers
-                ,a.os_sub_vers
-                ,a.os_inst_date
-                ,a.user_name
-                ,a.bios_manufacturer
-                ,a.bios_model
-                ,a.server_type
-                ,a.tech_img_id
-                ,a.ext_id
-                ,a.memory
-                ,a.disk
-                ,a.dedicated_processors
-                ,a.total_processors
-                ,a.shared_processors
-                ,a.processor_type
-                ,a.shared_proc_by_cores
-                ,a.dedicated_proc_by_cores
-                ,a.total_proc_by_cores
-                ,a.alias
-                ,a.physical_total_kb
-                ,a.virtual_memory
-                ,a.physical_free_memory
-                ,a.virtual_free_memory
-                ,a.node_capacity
-                ,a.lpar_capacity
-                ,a.bios_date
-                ,a.bios_serial_number
-                ,a.bios_unique_id
-                ,a.board_serial
-                ,a.case_serial
-                ,a.case_asset_tag
-                ,a.power_on_password                     
-                ,a.processor_count
-                ,a.scan_time
-                ,a.status
-                ,a.action
-                ,b.id as map_id
-                ,b.action
-                ,c.id as scan_record_id
-                ,c.computer_id as scan_record_computer_id
-                ,c.bank_account_id
-                ,c.scan_time as scan_record_scan_time
-                ,c.authenticated
-                ,c.action
-                ,\'TLCMZ\' as type
-                ,d.id as type_table_id
-                ,d.sa_product_id as type_id
-                ,d.software_id
-                ,\'NULL\' as path
-                ,d.action
-                ,c.users
-                ,\'\'
-            from software_lpar a
-            left outer join software_lpar_map b on b.software_lpar_id = a.id
-            left outer join scan_record c on c.id = b.scan_record_id
-            left outer join software_tlcmz d on d.scan_record_id = c.id
-            where
-                a.customer_id = ?
-                and a.id = ?
-                ';
-}
-
-sub getDoranaQuery {
-    my $self = shift;
-    return '
-                select
-                a.id as lpar_id
-                ,a.customer_id
-                ,a.computer_id
-                ,a.object_id                
-                ,a.name
-                ,a.model
-                ,a.bios_serial
-                ,a.os_name
-                ,a.os_type
-                ,a.os_major_vers
-                ,a.os_minor_vers
-                ,a.os_sub_vers
-                ,a.os_inst_date
-                ,a.user_name
-                ,a.bios_manufacturer
-                ,a.bios_model
-                ,a.server_type
-                ,a.tech_img_id
-                ,a.ext_id
-                ,a.memory
-                ,a.disk
-                ,a.dedicated_processors
-                ,a.total_processors
-                ,a.shared_processors
-                ,a.processor_type
-                ,a.shared_proc_by_cores
-                ,a.dedicated_proc_by_cores
-                ,a.total_proc_by_cores
-                ,a.alias
-                ,a.physical_total_kb
-                ,a.virtual_memory
-                ,a.physical_free_memory
-                ,a.virtual_free_memory
-                ,a.node_capacity
-                ,a.lpar_capacity
-                ,a.bios_date
-                ,a.bios_serial_number
-                ,a.bios_unique_id
-                ,a.board_serial
-                ,a.case_serial
-                ,a.case_asset_tag
-                ,a.power_on_password                     
-                ,a.processor_count
-                ,a.scan_time
-                ,a.status
-                ,a.action
-                ,b.id as map_id
-                ,b.action
-                ,c.id as scan_record_id
-                ,c.computer_id as scan_record_computer_id
-                ,c.bank_account_id
-                ,c.scan_time as scan_record_scan_time
-                ,c.authenticated
-                ,c.action
-                ,\'DORANA\' as type
-                ,d.id as type_table_id
-                ,d.dorana_product_id as type_id
-                ,d.software_id
-                ,\'NULL\' as path
-                ,d.action
-                ,c.users
-                ,\'\'
-            from software_lpar a
-            left outer join software_lpar_map b on b.software_lpar_id = a.id
-            left outer join scan_record c on c.id = b.scan_record_id
-            left outer join software_dorana d on d.scan_record_id = c.id
-            where
-                a.customer_id = ?
-                and a.id = ?
-                ';
+    ###Check LastId arg is passed correctly
+    die "Must specify LastId sub argument!\n"
+      unless exists( $args->{'LastId'} );
+    die "Invalid value passed for LastId param!\n"
+      unless $args->{'LastId'} =~ m/\d+/;
+    $self->lastId( $args->{'LastId'} );
+    ilog( "lastId=" . $self->lastId );
 }
 
 1;
-

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class package="Staging::OM" name="ScanRecord" sql-name="scan_record">
 	<property name="id" type="scalar" sql-name="id" sql-key="true" />
-	<property name="customerId" type="scalar" equals="true"
-		sql-name="customer_id" />
 	<property name="computerId" type="scalar" equals="true"
 		sql-name="computer_id" biz-key="true" />
 	<property name="name" type="scalar" equals="true" sql-name="name" />

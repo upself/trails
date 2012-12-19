@@ -7,7 +7,6 @@ use CNDB::Delegate::CNDBDelegate;
 use BRAVO::OM::License;
 use BRAVO::OM::Software;
 use BRAVO::OM::InstalledSoftware;
-use BRAVO::OM::SoftwareLpar;
 use BRAVO::OM::LicenseSoftwareMap;
 use Recon::OM::ReconLicense;
 use Recon::OM::Reconcile;
@@ -20,8 +19,7 @@ use CNDB::Delegate::CNDBDelegate;
 
 sub new {
     my ( $class, $connection, $license ) = @_;
-    my $self = {
-                 _connection            => $connection,
+    my $self = { _connection            => $connection,
                  _license               => $license,
                  _licenseAllocationData => undef,
                  _accountPoolChildren   => undef,
@@ -58,7 +56,10 @@ sub recon {
     ###Get necessary data
     $self->getLicenseAllocationsData;
     $self->accountPoolChildren(
-                  CNDB::Delegate::CNDBDelegate->getAccountPoolChildren( $self->connection, $self->customer->id ) );
+                         CNDB::Delegate::CNDBDelegate->getAccountPoolChildren(
+                                        $self->connection, $self->customer->id
+                         )
+    );
 
     my $licSwMap = new BRAVO::OM::LicenseSoftwareMap();
     $licSwMap->licenseId( $self->license->id );
@@ -88,7 +89,9 @@ sub recon {
     if ( defined $validation->reconcilesToBreak ) {
         foreach my $reconcileId ( keys %{ $validation->reconcilesToBreak } ) {
             dlog("reconcileId=$reconcileId");
-            Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $reconcileId );
+            Recon::Delegate::ReconDelegate->breakReconcileById(
+                                                            $self->connection,
+                                                            $reconcileId );
         }
     }
 
@@ -112,8 +115,8 @@ sub queuePotentialInstalledSoftware {
          && $self->license->capType ne '13'
          && $self->license->capType ne '14'
          && $self->license->capType ne '17'
-         && $self->license->capType ne '34'
-         && $self->license->capType ne '48' )
+         && $self->license->capType ne '34' 
+         && $self->license->capType ne '48')
     {
         return;
     }
@@ -122,16 +125,21 @@ sub queuePotentialInstalledSoftware {
     my @instSwsToAttemptAllocation = ();
 
     foreach my $priority ( sort keys %{ $self->accountPoolChildren } ) {
-        foreach my $customerId ( keys %{ $self->accountPoolChildren->{$priority} } ) {
+        foreach my $customerId (
+                           keys %{ $self->accountPoolChildren->{$priority} } )
+        {
             ###Get hw specific inst sw if lic has hw serial specified.
             if ( defined $self->license->cpuSerial ) {
-                my @tempInstSwsHwSpecific = $self->getPotentialInstalledSoftwaresHwSpecific($customerId);
+                my @tempInstSwsHwSpecific
+                    = $self->getPotentialInstalledSoftwaresHwSpecific(
+                                                                 $customerId);
                 push @instSwsToAttemptAllocation, @tempInstSwsHwSpecific;
             }
 
             ###Get non hw specific inst sw unless license is hardware cap type. 34 - Physical cpu
             unless ( $self->license->capType eq '34' ) {
-                my @tempInstSws = $self->getPotentialInstalledSoftwares($customerId);
+                my @tempInstSws
+                    = $self->getPotentialInstalledSoftwares($customerId);
                 push @instSwsToAttemptAllocation, @tempInstSws;
             }
         }
@@ -146,14 +154,10 @@ sub queuePotentialInstalledSoftware {
         $installedSoftware->getById( $self->connection );
         dlog( "installedSoftware=" . $installedSoftware->toString() );
 
-        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-        $softwareLpar->id($installedSoftware->softwareLparId);
-        $softwareLpar->getById( $self->connection );
-        dlog( "softwareLpar=" . $softwareLpar->toString() );
-
         ###Call recon
-        my $queue = Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar );
-        $queue->add;
+        my $recon = Recon::InstalledSoftware->new( $self->connection,
+                                                   $installedSoftware );
+        $recon->recon;
     }
 
     dlog("end attemptAllocations");
@@ -165,12 +169,17 @@ sub getPotentialInstalledSoftwaresHwSpecific {
 
     my @ids = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryPotentialInstalledSoftwaresHwSpecific() );
+    $self->connection->prepareSqlQueryAndFields(
+                        $self->queryPotentialInstalledSoftwaresHwSpecific() );
     my $sth = $self->connection->sql->{potentialInstalledSoftwaresHwSpecific};
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} }
-                        @{ $self->connection->sql->{potentialInstalledSoftwaresHwSpecificFields} } );
-    $sth->execute( $customerId, $self->licSwMap->softwareId, $self->license->cpuSerial );
+    $sth->bind_columns(map { \$rec{$_} } @{
+                           $self->connection->sql
+                               ->{potentialInstalledSoftwaresHwSpecificFields}
+                           }
+    );
+    $sth->execute( $customerId, $self->licSwMap->softwareId,
+                   $self->license->cpuSerial );
 
     while ( $sth->fetchrow_arrayref ) {
         logRec( 'dlog', \%rec );
@@ -221,10 +230,13 @@ sub getPotentialInstalledSoftwares {
 
     my @ids = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryPotentialInstalledSoftwares() );
+    $self->connection->prepareSqlQueryAndFields(
+                                  $self->queryPotentialInstalledSoftwares() );
     my $sth = $self->connection->sql->{potentialInstalledSoftwares};
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{potentialInstalledSoftwaresFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+              @{ $self->connection->sql->{potentialInstalledSoftwaresFields} }
+    );
     $sth->execute( $customerId, $self->licSwMap->softwareId );
     while ( $sth->fetchrow_arrayref ) {
         logRec( 'dlog', \%rec );
@@ -274,10 +286,12 @@ sub getLicenseAllocationsData {
 
     my %data = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryLicenseAllocationsData() );
+    $self->connection->prepareSqlQueryAndFields(
+                                       $self->queryLicenseAllocationsData() );
     my $sth = $self->connection->sql->{licenseAllocationsData};
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{licenseAllocationsDataFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+                @{ $self->connection->sql->{licenseAllocationsDataFields} } );
     $sth->execute( $self->license->id );
     while ( $sth->fetchrow_arrayref ) {
         logRec( 'dlog', \%rec );
@@ -547,6 +561,4 @@ sub licSwMap {
     $self->{_licSwMap} = shift if scalar @_ == 1;
     return $self->{_licSwMap};
 }
-
 1;
-

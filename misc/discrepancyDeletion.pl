@@ -28,6 +28,7 @@ $| = 1;
 use Getopt::Std;
 
 use DBI;
+use Base::Utils;
 use DBD::DB2::Constants;
 use DBD::DB2 qw($attrib_int $attrib_char $attrib_float $attrib_date $attrib_ts);
 $DBI::dbi_debug = 9;    # increase the debug output
@@ -48,18 +49,20 @@ my $discrepancyFile = "Discrepancy_deletion.tsv";
 my $logFile = "/var/staging/logs/discrepancyDeletion/discrepancyDeletion.log";
 my ($swlparId,$swlparName,$installedswId,$swId,	$swName,$customerId,$actNumber,$hostAndsw)=@_;
 my ($swlparIdf,$swlparNamef,$installedswIdf,$swIdf,	$swNamef,$customerIdf,$actNumberf,$hostAndswf)=@_;
+my $timeDate;
+my @row;
 
 if ( $test_flag eq "TESTING" ) {
 	$SCHEMA          = "EAADMIN.";
 	$trails_db       = "dbi:DB2:TEST_DB";
 	$trails_user     = "donnie";
-	$trails_password = "dec26new";
+	$trails_password = "Zum49tip";
 }
 else {
 	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILS3";
+	$trails_db       = "dbi:DB2:TRAILS";
 	$trails_user     = "eaadmin";
-	$trails_password = "apr03db2";
+	$trails_password = "Zum49tip";
 }
 
 open LOG, ">>$logFile"; 
@@ -84,6 +87,16 @@ if ( $opt_i ) {
     $update_manual_queue = $dbh->prepare(
 	"UPDATE EAADMIN.manual_queue SET remote_user=?,deleted=0,comments='Removed again' WHERE software_id=? AND software_lpar_id=? AND customer_id=? "
 	);
+
+    $get_discrepancy_lpar = $dbh->prepare("SELECT sl.id as swlpar_id,sl.name as sl_name,11111100 as installedsw_id,11111000 as sw_id,'Dummy Software' as sw_name,cs.customer_id as customer_id,cs.account_number,
+    sl.name||'Dummy Software' as slsi_id
+    FROM EAADMIN.software_lpar sl 
+    JOIN EAADMIN.customer cs on sl.customer_id=cs.customer_id
+    WHERE sl.status='ACTIVE'
+    AND cs.status ='ACTIVE'
+    AND cs.account_number =?
+    AND sl.name =?
+    with ur");
 
 	$get_discrepancy_software = $dbh->prepare("SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
 sl.name||si.name as slsi_id
@@ -138,21 +151,29 @@ LINE:	while (<INPUTFILE>) {
 		$hostName   = $fields[1];
 		$requester  = $fields[2];
 		$softwareName   = $fields[3];
+	    $timeDate = currentTimeStamp();
 
+        print LOG  "$timeDate \n";
 		print LOG  "$accountNumber \n" ;
 		print LOG  "$hostName \n" ;
 		print LOG  "$requester \n" ;
 		print LOG  "$softwareName \n" ;
 
-		if ( $accountNumber eq 'ACCOUNT' || $hostName eq 'HOSTNAME' || $softwareName eq 'OS' ) {
-			print LOG "This is the title line, processing line $count \n";
-			next LINE;
-		}
+        if (!defined $softwareName) {
+        	$combineId = $accountNumber.$hostName;
+        	print LOG "$combineId \n";
+        	$get_discrepancy_lpar->execute($accountNumber,$hostName);
+        	@row = $get_discrepancy_lpar->fetchrow_array();
+        } else {
+        	$combineId=$hostName.$softwareName;
+        	print LOG "$combineId \n";
+	    	$get_discrepancy_software->execute($accountNumber,$combineId);
+	    	@row = $get_discrepancy_software->fetchrow_array() 
+        }
 
-		$combineId=$hostName.$softwareName;
-		print LOG "$combineId";
-		$get_discrepancy_software->execute($accountNumber,$combineId);
-		if ( my @row = $get_discrepancy_software->fetchrow_array() )
+		
+		
+		if ( @row  )
 		 {
   
 			$swlparId = $row[0];
@@ -165,7 +186,8 @@ LINE:	while (<INPUTFILE>) {
 			$hostAndsw = $row[7];
 			print LOG "Found SoftwareLpar and SW, swlpar id: $swlparId ,software_id :$swId line $count \n";
 			
-			if (defined $opt_f && $opt_f eq '1' && defined $swlparId )
+			
+			if (defined $opt_f && $opt_f eq 1 && defined $swlparId )
 			{			
 			 print LOG "It is full lpar deletion! \n";
      		
@@ -179,7 +201,8 @@ LINE:	while (<INPUTFILE>) {
 			   \$customerIdf,
 			   \$actNumberf,
 			   \$hostAndswf,);
-			    $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
+			   $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
+			   if($get_discrepancy_sw_lpar->fetchrow_arrayref ){
 			   
 			   while ( $get_discrepancy_sw_lpar->fetchrow_arrayref ) {
 			   	print LOG "Software id is $swIdf , softwarelpar id is $swlparIdf \n";
@@ -202,14 +225,14 @@ LINE:	while (<INPUTFILE>) {
 		                	if ( $rc == 1 ) {
 			        		print LOG "Discrepancy Software id : $swIdf updated into queue successfully -- line $count .\n";
 			        		$dbh->commit;
-			        		$insert_manual_queue->finish;
+			        		
 			        	
 			            	} else {
 			          		print LOG "Attemped to update Discrepancy Software id : $swIdf into queue failed. aborting load at line $count \n";
 			         		
 				        	# exit;
 				                    }
-			           $update_manual_queue->finish;
+			          $update_manual_queue->finish;
 		        	       } 
 			       } else {
 			    
@@ -226,10 +249,57 @@ LINE:	while (<INPUTFILE>) {
 				       }
 				     }
 			        $get_manual_queue->finish;
-               }
+                }
+			   } else {
+			   	
+			   	print LOG "Software id is $swId , softwarelpar id is $swlparId, this is a empty sw lpar \n";
+			     $get_manual_queue->execute($swId,$swlparId);
+			     if (@qrow = $get_manual_queue->fetchrow_array()) 
+			     {
+			       	$softwareId = $qrow[0];
+			     	$softwLparId = $qrow[1];
+			     	$custId = $qrow[2];
+			     	$deleted = $qrow[3];
+			     	if ( $deleted eq 0 ) 
+			     	      {
+			     	        print LOG "Discrepancy Software id : $softwareId already in queue  -- line $count .\n";
+			            
+			     	      } 
+			     	      else {
+			               	print LOG "Discrepancy Software id : $softwareId has been deleted before in queue , try to delete again -- line $count .\n";
+			  		    
+			                $rc = $update_manual_queue->execute($requester,$swId, $swlparId, $customerId);
+		                	if ( $rc == 1 ) {
+			        		print LOG "Discrepancy Software id : $swId updated into queue successfully -- line $count .\n";
+			        		$dbh->commit;
+			        		
+			        	
+			            	} else {
+			          		print LOG "Attemped to update Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
+			         		
+				        	# exit;
+				                    }
+			          $update_manual_queue->finish;
+		        	       } 
+			       } else {
+			    
+			                $rc = $insert_manual_queue->execute($swId, $swlparId, $customerId, $swlparName,$requester );
+		    	     if ( $rc == 1 ) {
+				        	print LOG "Discrepancy Software id : $swId added into queue successfully -- line $count .\n";
+				        	$dbh->commit;
+				        	$insert_manual_queue->finish;
+				        	
+				      } else {
+					     print LOG "Attemped to add Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
+					     
+				     	# exit;
+				       }
+				     }
+			        $get_manual_queue->finish;
+                
+			   }
                $get_discrepancy_sw_lpar->finish;
-             next LINE;
-            
+                       
 			}  
 			 if ( !defined $opt_f && defined $swlparId ) 
 			 {
@@ -244,7 +314,7 @@ LINE:	while (<INPUTFILE>) {
 			     	    if ( defined $deleted && $deleted eq 0 )
 			     	    {
 			            	print LOG "Discrepancy Software id : $softwareId already in queue  -- line $count .\n";
-			            	next LINE;
+			            	
 			          	} 
 			          	else {
 			            	print LOG "Discrepancy Software id : $softwareId has been deleted before in queue , try to delete again -- line $count .\n";
@@ -255,7 +325,7 @@ LINE:	while (<INPUTFILE>) {
 			        		$dbh->commit;
 			            	} else {
 			          		print LOG "Attemped to update Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
-			         		next LINE;
+			         		
 				        	# exit;
 			            	}
 		        	       } 
@@ -268,19 +338,31 @@ LINE:	while (<INPUTFILE>) {
 				        	$dbh->commit;
 				           } else {
 				         	print LOG "Attemped to add Discrepancy Software id : $swId into queue failed. aborting load at line $count \n";
-				        	next LINE;
+				        	
 				        	# exit;
 				          }
 			      }
-			} else 
+			      
+			} 
+			if ( !defined $opt_f && !defined $swlparId )
 			{
 				print LOG "No matching Discrepancy software found -- line $count .\n";
-				next LINE;
+			
 			}
+			
+			
 		} else {
 			print LOG "Did not find Discrepancy software combineId : $hostName$softwareName not in active software table --  processing line $count\n";
-			next LINE;
+			
 		}
+$get_discrepancy_lpar->finish;
+$get_discrepancy_software->finish;
+$get_discrepancy_sw_lpar->finish;
+$get_manual_queue->finish;
+$insert_manual_queue->finish;
+$update_manual_queue->finish;
+		next LINE;
+
      }
 }
 else {
@@ -288,11 +370,7 @@ else {
 }
 
 $dbh->commit;
-$get_discrepancy_software->finish;
-$get_discrepancy_sw_lpar->finish;
-$get_manual_queue->finish;
-$insert_manual_queue->finish;
-$update_manual_queue->finish;
+
 $rc = $dbh->disconnect or warn $dbh->errstr;
 print LOG "Disconnected from DB with $rc\n";
 close LOG;
@@ -300,7 +378,7 @@ close LOG;
 
 
 sub usage {
-    print "$0 -i <to import Discrepancy_deletion.tsv> -f <1 full lpar deletion \/0 discrepancy software deletion> \n";
+    print "$0 -i <to import Discrepancy_deletion.tsv> -f <1 full lpar deletion \/ discrepancy software deletion> \n";
     exit 0;
 }
 

@@ -29,8 +29,6 @@
 		sql-name="processor_type" />
 	<property name="serverType" type="scalar" equals="true"
 		sql-name="server_type" />
-	<property name="accountNumber" type="scalar" equals="true"
-        sql-name="account_number" />
 	<property name="cpuMIPS" type="scalar" equals="true" sql-name="cpu_mips" />
 	<property name="cpuMSU" type="scalar" equals="true" sql-name="cpu_msu" />
 	<property name="table" type="scalar" default="hardware" />

@@ -10,11 +10,22 @@
 			<arg value="${file}" />
 		</exec>
 		<zip destfile="${zip.file}" basedir="${basedir}" />
-		<!-- <exec executable="pscp"> <arg value="${zip.file}" /> <arg value="tap.raleigh.ibm.com:/opt/staging" 
-			/> </exec> <exec executable="pscp"> <arg value="${zip.file}" /> <arg value="tap2.raleigh.ibm.com:/opt/staging" 
-			/> </exec> <exec executable="pscp"> <arg value="${zip.file}" /> <arg value="tap3.raleigh.ibm.com:/opt/staging" 
-			/> </exec> <exec executable="pscp"> <arg value="${zip.file}" /> <arg value="tapmf.boulder.ibm.com:/opt/staging" 
-			/> </exec> -->
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap2.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap3.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tapmf.boulder.ibm.com:/opt/staging" />
+		</exec>
 	</target>
 
 </project>

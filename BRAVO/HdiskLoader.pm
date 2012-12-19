@@ -165,7 +165,7 @@ sub load {
             $stagingBravoHdisk->softwareLparId( $bravoSoftwareLpar->id );
 
             my $stagingHdisk = $self->buildStagingHdisk( \%rec );
-               dlog("staging hdisk obj = ".$stagingHdisk->toString() );
+
             if ( defined $bravoHdisk->id ) {
                 dlog( "matching bravo hdisk record found: " . "old bravo hdisk obj=" . $bravoHdisk->toString() );
 
@@ -355,7 +355,7 @@ sub buildBravoHdisk {
     $hdisk->hdiskSizeMb( $rec->{size} );
     $hdisk->serialNumber( $rec->{serialNumber} );
     $hdisk->storageType( $rec->{storageType} );
-    $hdisk->manufacturer( $rec->{manufacturer} );
+    $hdisk->manufacturer( $rec->{manfacturer} );
 
     return $hdisk;
 }
@@ -370,7 +370,7 @@ sub buildStagingHdisk {
     $hdisk->size( $rec->{size} );
     $hdisk->serialNumber( $rec->{serialNumber} );
     $hdisk->storageType( $rec->{storageType} );
-    $hdisk->manufacturer( $rec->{manufacturer} );
+    $hdisk->manufacturer( $rec->{manfacturer} );
     $hdisk->action( $rec->{action} );
 
     return $hdisk;

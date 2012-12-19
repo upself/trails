@@ -7,57 +7,58 @@ use BRAVO::OM::SoftwareLpar;
 use BRAVO::OM::HardwareSoftwareComposite;
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use BRAVO::OM::InstalledSoftware;
-use BRAVO::OM::DiscoveredSignature;
+use BRAVO::OM::InstalledSignature;
+use BRAVO::OM::InstalledFilter;
+use BRAVO::OM::InstalledTLCMZ;
+use BRAVO::OM::InstalledDorana;
 use Recon::Queue;
 
 sub getDiscrepancyTypeMap {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my %data;
+    my %data;
 
-	###NOTE: Hard coding these values from the database
-	###b/c they are extremely static and this data is
-	###required by the recon engine for the recon of
-	###every piece of installed software, and the recon
-	###engine children are short lived which does not
-	###allow for ability to get once and reuse across
-	###multiple recons.
+    ###NOTE: Hard coding these values from the database
+    ###b/c they are extremely static and this data is
+    ###required by the recon engine for the recon of
+    ###every piece of installed software, and the recon
+    ###engine children are short lived which does not
+    ###allow for ability to get once and reuse across
+    ###multiple recons.
 
-	$data{'NONE'}      = 1;
-	$data{'MISSING'}   = 2;
-	$data{'FALSE HIT'} = 3;
-	$data{'VALID'}     = 4;
-	$data{'INVALID'}   = 5;
-	$data{'TADZ'}      = 6;
+    $data{'NONE'}      = 1;
+    $data{'MISSING'}   = 2;
+    $data{'FALSE HIT'} = 3;
+    $data{'VALID'}     = 4;
+    $data{'INVALID'}   = 5;
 
-	return \%data;
+    return \%data;
 }
 
 sub getCapacityTypeMap {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	my %data;
+    my %data;
 
-	$connection->prepareSqlQueryAndFields( $self->queryCapacityTypeMap() );
-	my $sth = $connection->sql->{capacityTypeNameMap};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{capacityTypeMapFields} } );
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
-		$data{ $rec{code} } = $rec{description};
-	}
-	$sth->finish;
+    $connection->prepareSqlQueryAndFields( $self->queryCapacityTypeMap() );
+    my $sth = $connection->sql->{capacityTypeNameMap};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{capacityTypeMapFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
+        $data{ $rec{code} } = $rec{description};
+    }
+    $sth->finish;
 
-	return \%data;
+    return \%data;
 }
 
 sub queryCapacityTypeMap {
-	my @fields = qw(
-	  code
-	  description
-	);
-	my $query = '
+    my @fields = qw(
+        code
+        description
+    );
+    my $query = '
         select
             a.code
             ,a.description
@@ -65,34 +66,33 @@ sub queryCapacityTypeMap {
             capacity_type a
     ';
 
-	return ( 'capacityTypeMap', $query, \@fields );
+    return ( 'capacityTypeMap', $query, \@fields );
 }
 
 sub getMachineTypeNameMap {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	my %data = ();
+    my %data = ();
 
-	$connection->prepareSqlQueryAndFields( $self->queryMachineTypeNameMap() );
-	my $sth = $connection->sql->{machineTypeNameMap};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{machineTypeNameMapFields} } );
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
-		$data{ $rec{name} } = $rec{id};
-	}
-	$sth->finish;
+    $connection->prepareSqlQueryAndFields( $self->queryMachineTypeNameMap() );
+    my $sth = $connection->sql->{machineTypeNameMap};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{machineTypeNameMapFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
+        $data{ $rec{name} } = $rec{id};
+    }
+    $sth->finish;
 
-	return \%data;
+    return \%data;
 }
 
 sub queryMachineTypeNameMap {
-	my @fields = qw(
-	  name
-	  id
-	);
-	my $query = '
+    my @fields = qw(
+        name
+        id
+    );
+    my $query = '
         select
             upper(a.name)
             ,a.id
@@ -102,79 +102,75 @@ sub queryMachineTypeNameMap {
             a.status = \'ACTIVE\'
     ';
 
-	return ( 'machineTypeNameMap', $query, \@fields );
+    return ( 'machineTypeNameMap', $query, \@fields );
 }
 
 sub getInstalledSoftwareCountById {
-	my ( $self, $connection, $id ) = @_;
+    my ( $self, $connection, $id ) = @_;
 
-	my $count = undef;
+    my $count = undef;
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwareCountById() );
-	my $sth = $connection->sql->{installedSoftwareCountById};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwareCountByIdFields} } );
-	$sth->execute( $id );
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareCountById() );
+    my $sth = $connection->sql->{installedSoftwareCountById};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwareCountByIdFields} } );
+    $sth->execute( $id, $id, $id, $id );
+    while ( $sth->fetchrow_arrayref ) {
 
-		$count = $rec{count};
-	}
-	$sth->finish;
+        $count = $rec{count};
+    }
+    $sth->finish;
 
-	return $count;
+    return $count;
 }
 
 sub queryInstalledSoftwareCountById {
-	my @fields = (qw( count ));
-	my $query  = '
-        select 
-          count(*)
-        from 
-          installed_software is
-        join scan_sw_inst_sw ssis
-         on  is.id = ssis.installed_software_id
-        join scan_software ss
-         on  ssis.scan_software_id = ss.id
-        join scan_signature ssig
-         on ss.id = ssig.scan_software_id
-        join discovered_signature ds
-         on ssig.discovered_signature_id = ds.id 
-        where
-         ds.type in(\'SD\', \'SF\', \'SS\', \'SA\')
-         and is.id  = ?
+    my @fields = (qw( count ));
+    my $query  = '
+        select count(*)
+        from installed_signature a
+        where a.installed_software_id = ?
+        union
+        select count(*)
+        from installed_filter a
+        where a.installed_software_id = ?
+        union
+        select count(*)
+        from installed_sa_product a
+        where a.installed_software_id = ?
+        union
+        select count(*)
+        from installed_dorana_product a
+        where a.installed_software_id = ?
     ';
 
-	return ( 'installedSoftwareCountById', $query, \@fields );
+    return ( 'installedSoftwareCountById', $query, \@fields );
 }
 
 sub getInstalledSoftwareCountBySwLparId {
-	my ( $self, $connection, $id ) = @_;
+    my ( $self, $connection, $id ) = @_;
 
-	my $count = undef;
+    my $count = undef;
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwareCountBySwLparId() );
-	my $sth = $connection->sql->{installedSoftwareCountBySwLparId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwareCountBySwLparIdFields} } );
-	$sth->execute($id);
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareCountBySwLparId() );
+    my $sth = $connection->sql->{installedSoftwareCountBySwLparId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwareCountBySwLparIdFields} } );
+    $sth->execute($id);
+    while ( $sth->fetchrow_arrayref ) {
 
-		$count = $rec{count};
-	}
-	$sth->finish;
+        $count = $rec{count};
+    }
+    $sth->finish;
 
-	return $count;
+    return $count;
 }
 
 sub queryInstalledSoftwareCountBySwLparId {
-	my @fields = (qw( count ));
-	my $query  = '
+    my @fields = (qw( count ));
+    my $query  = '
         select
             count(*)
         from
@@ -183,33 +179,31 @@ sub queryInstalledSoftwareCountBySwLparId {
             a.software_lpar_id = ?
             and a.status = \'ACTIVE\'
     ';
-	return ( 'installedSoftwareCountBySwLparId', $query, \@fields );
+    return ( 'installedSoftwareCountBySwLparId', $query, \@fields );
 }
 
 sub getInstalledSoftwareIdsBySwLparId {
-	my ( $self, $connection, $id ) = @_;
+    my ( $self, $connection, $id ) = @_;
 
-	my @ids = ();
+    my @ids = ();
 
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwareIdsBySwLparId() );
-	my $sth = $connection->sql->{installedSoftwareIdsBySwLparId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwareIdsBySwLparIdFields} } );
-	$sth->execute($id);
-	while ( $sth->fetchrow_arrayref ) {
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareIdsBySwLparId() );
+    my $sth = $connection->sql->{installedSoftwareIdsBySwLparId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwareIdsBySwLparIdFields} } );
+    $sth->execute($id);
+    while ( $sth->fetchrow_arrayref ) {
 
-		push @ids, $rec{id};
-	}
-	$sth->finish;
+        push @ids, $rec{id};
+    }
+    $sth->finish;
 
-	return @ids;
+    return @ids;
 }
 
 sub queryInstalledSoftwareIdsBySwLparId {
-	my @fields = qw( id );
-	my $query  = '
+    my @fields = qw( id );
+    my $query  = '
         select
             a.id
         from
@@ -218,41 +212,40 @@ sub queryInstalledSoftwareIdsBySwLparId {
             a.software_lpar_id = ?
             and a.status = \'ACTIVE\'
     ';
-	return ( 'installedSoftwareIdsBySwLparId', $query, \@fields );
+    return ( 'installedSoftwareIdsBySwLparId', $query, \@fields );
 }
 
 sub getSoftwareIdBySoftwareNameAndType {
-	my ( $self, $connection, $softwareName, $type ) = @_;
+    my ( $self, $connection, $softwareName, $type ) = @_;
 
-	my $softwareId = undef;
-	$connection->prepareSqlQuery( $self->querySoftwareIdBySoftwareName() );
-	my $sth = $connection->sql->{softwareIdBySoftwareName};
-	$sth->bind_columns( \$softwareId );
-	$sth->execute( $softwareName, $type );
-	$sth->fetchrow_arrayref;
-	$sth->finish;
+    my $softwareId = undef;
+    $connection->prepareSqlQuery( $self->querySoftwareIdBySoftwareName() );
+    my $sth = $connection->sql->{softwareIdBySoftwareName};
+    $sth->bind_columns( \$softwareId );
+    $sth->execute( $softwareName, $type );
+    $sth->fetchrow_arrayref;
+    $sth->finish;
 
-	return $softwareId;
+    return $softwareId;
 }
 
 sub getSoftwareIdBySoftwareNameAndTypeFromHistory {
-	my ( $self, $connection, $softwareName, $type ) = @_;
+    my ( $self, $connection, $softwareName, $type ) = @_;
 
-	my $softwareIdInHistory = undef;
+    my $softwareIdInHistory = undef;
 
-	$connection->prepareSqlQuery(
-		$self->querySoftwareIdBySoftwareNameFromHistory() );
-	my $sth = $connection->sql->{softwareIdBySoftwareNameFromHistory};
-	$sth->bind_columns( \$softwareIdInHistory );
-	$sth->execute( $softwareName, $type );
-	$sth->fetchrow_arrayref;
-	$sth->finish;
+    $connection->prepareSqlQuery( $self->querySoftwareIdBySoftwareNameFromHistory() );
+    my $sth = $connection->sql->{softwareIdBySoftwareNameFromHistory};
+    $sth->bind_columns( \$softwareIdInHistory );
+    $sth->execute( $softwareName, $type );
+    $sth->fetchrow_arrayref;
+    $sth->finish;
 
-	return $softwareIdInHistory;
+    return $softwareIdInHistory;
 }
 
 sub querySoftwareIdBySoftwareName {
-	my $query = '
+    my $query = '
         select
             pi.id
         from
@@ -268,11 +261,11 @@ sub querySoftwareIdBySoftwareName {
             and p.id = si.id
             and si.id = kd.id
     ';
-	return ( 'softwareIdBySoftwareName', $query );
+    return ( 'softwareIdBySoftwareName', $query );
 }
 
 sub querySoftwareIdBySoftwareNameFromHistory {
-	my $query = '
+    my $query = '
         select
             pa.product_id
         from
@@ -290,33 +283,32 @@ sub querySoftwareIdBySoftwareNameFromHistory {
             and p.id = si.id
             and si.id = kd.id
     ';
-	return ( 'softwareIdBySoftwareNameFromHistory', $query );
+    return ( 'softwareIdBySoftwareNameFromHistory', $query );
 }
 
 sub getHwSwCompositeBySwLparId {
-	my ( $self, $connection, $swLparId ) = @_;
+    my ( $self, $connection, $swLparId ) = @_;
 
-	$connection->prepareSqlQueryAndFields(
-		$self->queryHwSwCompositeBySwLparId() );
-	my $sth = $connection->sql->{hwSwCompositeBySwLparId};
-	my $id;
-	$sth->bind_columns( \$id );
-	$sth->execute($swLparId);
-	$sth->fetchrow_arrayref;
-	$sth->finish;
+    $connection->prepareSqlQueryAndFields( $self->queryHwSwCompositeBySwLparId() );
+    my $sth = $connection->sql->{hwSwCompositeBySwLparId};
+    my $id;
+    $sth->bind_columns( \$id );
+    $sth->execute($swLparId);
+    $sth->fetchrow_arrayref;
+    $sth->finish;
 
-	my $hwSwComposite;
-	if ( defined $id ) {
-		$hwSwComposite = new BRAVO::OM::HardwareSoftwareComposite();
-		$hwSwComposite->id($id);
-		$hwSwComposite->getById($connection);
-	}
+    my $hwSwComposite;
+    if ( defined $id ) {
+        $hwSwComposite = new BRAVO::OM::HardwareSoftwareComposite();
+        $hwSwComposite->id($id);
+        $hwSwComposite->getById($connection);
+    }
 
-	return $hwSwComposite;
+    return $hwSwComposite;
 }
 
 sub queryHwSwCompositeBySwLparId {
-	my $query = '
+    my $query = '
         select
             a.id
         from
@@ -325,49 +317,47 @@ sub queryHwSwCompositeBySwLparId {
             a.software_lpar_id = ?
     ';
 
-	return ( 'hwSwCompositeBySwLparId', $query );
+    return ( 'hwSwCompositeBySwLparId', $query );
 }
 
 sub getHwLparsByCustomerIdAndShortName {
-	my ( $self, $connection, $customerId, $shortName ) = @_;
+    my ( $self, $connection, $customerId, $shortName ) = @_;
 
-	my %hardwareLpars = ();
+    my %hardwareLpars = ();
 
-	###Escape any underscores to avoid use as wildcard.
-	dlog( "shortName=" . $shortName );
-	my $shortNameForLike = $shortName;
-	$shortNameForLike =~ s/\\/\\\\/g;
-	$shortNameForLike =~ s/_/\\_/g;
-	dlog( "shortNameForLike=" . $shortNameForLike );
+    ###Escape any underscores to avoid use as wildcard.
+    dlog( "shortName=" . $shortName );
+    my $shortNameForLike = $shortName;
+    $shortNameForLike =~ s/\\/\\\\/g;
+    $shortNameForLike =~ s/_/\\_/g;
+    dlog( "shortNameForLike=" . $shortNameForLike );
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields(
-		$self->queryHwLparByCustomerIdAndShortName() );
-	my $sth = $connection->sql->{hwLparsByCustomerIdAndShortName};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{hwLparsByCustomerIdAndShortNameFields} } );
-	$sth->execute( $customerId, $shortName, $shortNameForLike . '.%' );
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryHwLparByCustomerIdAndShortName() );
+    my $sth = $connection->sql->{hwLparsByCustomerIdAndShortName};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{hwLparsByCustomerIdAndShortNameFields} } );
+    $sth->execute( $customerId, $shortName, $shortNameForLike . '.%' );
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Get the lpar object.
-		my $hardwareLpar = new BRAVO::OM::HardwareLpar();
-		$hardwareLpar->id( $rec{id} );
-		$hardwareLpar->getById($connection);
+        ###Get the lpar object.
+        my $hardwareLpar = new BRAVO::OM::HardwareLpar();
+        $hardwareLpar->id( $rec{id} );
+        $hardwareLpar->getById($connection);
 
-		###Add to the list.
-		$hardwareLpars{ $rec{id} } = $hardwareLpar;
-		dlog( "added id=" . $rec{id} );
-	}
-	$sth->finish;
+        ###Add to the list.
+        $hardwareLpars{ $rec{id} } = $hardwareLpar;
+        dlog( "added id=" . $rec{id} );
+    }
+    $sth->finish;
 
-	return %hardwareLpars;
+    return %hardwareLpars;
 }
 
 sub queryHwLparByCustomerIdAndShortName {
-	my @fields = (qw( id ));
+    my @fields = (qw( id ));
 
-	my $query = '
+    my $query = '
         select
             a.id
         from
@@ -377,147 +367,137 @@ sub queryHwLparByCustomerIdAndShortName {
             and (a.name = ? or a.name like ? escape \'\\\')
             and a.status = \'ACTIVE\'
     ';
-	return ( 'hwLparsByCustomerIdAndShortName', $query, \@fields );
+    return ( 'hwLparsByCustomerIdAndShortName', $query, \@fields );
 }
 
 sub getSwLparsByCustomerIdAndShortName {
-	my ( $self, $connection, $customerId, $shortName ) = @_;
+    my ( $self, $connection, $customerId, $shortName ) = @_;
 
-	my %softwareLpars = ();
+    my %softwareLpars = ();
 
-	###Escape any underscores to avoid use as wildcard.
-	dlog( "shortName=" . $shortName );
-	my $shortNameForLike = $shortName;
-	$shortNameForLike =~ s/\\/\\\\/g;
-	$shortNameForLike =~ s/_/\\_/g;
-	dlog( "shortNameForLike=" . $shortNameForLike );
+    ###Escape any underscores to avoid use as wildcard.
+    dlog( "shortName=" . $shortName );
+    my $shortNameForLike = $shortName;
+    $shortNameForLike =~ s/\\/\\\\/g;
+    $shortNameForLike =~ s/_/\\_/g;
+    dlog( "shortNameForLike=" . $shortNameForLike );
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields(
-		$self->querySwLparByCustomerIdAndShortName() );
-	my $sth = $connection->sql->{swLparsByCustomerIdAndShortName};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{swLparsByCustomerIdAndShortNameFields} } );
-	$sth->execute( $customerId, $shortName, $shortNameForLike . '.%' );
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->querySwLparByCustomerIdAndShortName() );
+    my $sth = $connection->sql->{swLparsByCustomerIdAndShortName};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{swLparsByCustomerIdAndShortNameFields} } );
+    $sth->execute( $customerId, $shortName, $shortNameForLike . '.%' );
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Get the lpar object.
-		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-		$softwareLpar->id( $rec{id} );
-		$softwareLpar->getById($connection);
+        ###Get the lpar object.
+        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+        $softwareLpar->id( $rec{id} );
+        $softwareLpar->getById($connection);
 
-		###Add to the list.
-		$softwareLpars{ $rec{id} } = $softwareLpar;
-	}
-	$sth->finish;
+        ###Add to the list.
+        $softwareLpars{ $rec{id} } = $softwareLpar;
+    }
+    $sth->finish;
 
-	return %softwareLpars;
+    return %softwareLpars;
 }
 
 sub getProcgrpsData {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	dlog('In the getProcgrpsData method');
-	###We are not doing deltas here
+    dlog('In the getProcgrpsData method');
+    ###We are not doing deltas here
 
-	my %procgrpsList;
+    my %procgrpsList;
 
-	###Prepare the query
-	$connection->prepareSqlQuery( $self->queryProcgrpsData );
+    ###Prepare the query
+    $connection->prepareSqlQuery( $self->queryProcgrpsData );
 
-	###Define the fields
-	my @fields = (
-		qw(type model group vendor description updUser updStamp msu pslcInd wlcInd totalEngines zosEngines ewlcInd updIntranetID status)
-	);
+    ###Define the fields
+    my @fields = (
+        qw(type model group vendor description updUser updStamp msu pslcInd wlcInd totalEngines zosEngines ewlcInd updIntranetID status)
+    );
 
-	###Get the statement handle
-	my $sth = $connection->sql->{procgrpsData};
+    ###Get the statement handle
+    my $sth = $connection->sql->{procgrpsData};
 
-	###Bind the columns
-	my %rec;
-	my %origRec;
-	my $dupProcgrps = 0;
-	$sth->bind_columns( map { \$rec{$_} } @fields );
+    ###Bind the columns
+    my %rec;
+    my %origRec;
+    my $dupProcgrps = 0;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
 
-	###Execute the query
-	$sth->execute();
-	my $i = 0;
-	while ( $sth->fetchrow_arrayref ) {
-		###Build our hardware object list
-		my $procgrps = $self->buildProcgrps( \%rec );
-		next if ( !defined $procgrps );
+    ###Execute the query
+    $sth->execute();
+    my $i = 0;
+    while ( $sth->fetchrow_arrayref ) {
+        ###Build our hardware object list
+        my $procgrps = $self->buildProcgrps( \%rec );
+        next if ( !defined $procgrps );
 
-		my $key =
-		    $procgrps->type . '|'
-		  . $procgrps->model . '|'
-		  . $procgrps->group . '|'
-		  . $procgrps->vendor;
+        my $key = $procgrps->type . '|' . $procgrps->model . '|' . $procgrps->group . '|' . $procgrps->vendor;
 
-		###Add the hardware to the list
-		$procgrpsList{$key} = $procgrps
-		  if ( !defined $procgrpsList{$key} );
-	}
+        ###Add the hardware to the list
+        $procgrpsList{$key} = $procgrps
+            if ( !defined $procgrpsList{$key} );
+    }
 
-	###Close the statement handle
-	$sth->finish;
+    ###Close the statement handle
+    $sth->finish;
 
-	###Return the lists
-	return ( \%procgrpsList );
+    ###Return the lists
+    return ( \%procgrpsList );
 }
 
 sub getMipsData {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	dlog('In BRAVODelegate->getMipsData method');
+    dlog('In BRAVODelegate->getMipsData method');
 
-	my %mipsList;
+    my %mipsList;
 
-	###Prepare the query
-	$connection->prepareSqlQuery( $self->queryMipsData );
+    ###Prepare the query
+    $connection->prepareSqlQuery( $self->queryMipsData );
 
-	###Define the fields
-	my @fields = (
-		qw(type model group vendor mipsVendor mips updUser updStamp updIntranetID status)
-	);
+    ###Define the fields
+    my @fields = (
+        qw(type model group vendor mipsVendor mips updUser updStamp updIntranetID status)
+    );
 
-	###Get the statement handle
-	my $sth = $connection->sql->{mipsData};
+    ###Get the statement handle
+    my $sth = $connection->sql->{mipsData};
 
-	###Bind the columns
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} } @fields );
+    ###Bind the columns
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
 
-	###Execute the query
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
+    ###Execute the query
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Build our hardware object list
-		my $mips = $self->buildMips( \%rec );
-		next if ( !defined $mips );
+        ###Build our hardware object list
+        my $mips = $self->buildMips( \%rec );
+        next if ( !defined $mips );
 
-		###Build our mips object list
-		my $key =
-		    $mips->type . '|'
-		  . $mips->model . '|'
-		  . $mips->group . '|'
-		  . $mips->vendor . '|'
-		  . $mips->mipsVendor;
-		$mipsList{$key} = $mips
-		  if ( !defined $mipsList{$key} );
+        ###Build our mips object list
+        my $key =
+            $mips->type . '|' . $mips->model . '|' . $mips->group . '|' . $mips->vendor . '|' . $mips->mipsVendor;
+        $mipsList{$key} = $mips
+            if ( !defined $mipsList{$key} );
 
-	}
+    }
 
-	###Close the statement handle
-	$sth->finish;
+    ###Close the statement handle
+    $sth->finish;
 
-	###Return the lists
-	return ( \%mipsList );
+    ###Return the lists
+    return ( \%mipsList );
 }
 
 sub querySwLparByCustomerIdAndShortName {
-	my @fields = (qw( id ));
-	my $query  = '
+    my @fields = (qw( id ));
+    my $query  = '
         select
             a.id
         from
@@ -528,62 +508,110 @@ sub querySwLparByCustomerIdAndShortName {
             and a.status = \'ACTIVE\'
     ';
 
-	return ( 'swLparsByCustomerIdAndShortName', $query, \@fields );
+    return ( 'swLparsByCustomerIdAndShortName', $query, \@fields );
 }
 
 sub queryInstalledSoftwaresBySoftwareLparId {
-	my @fields = qw(
-	  isId
-	  swId
-	  dtId
-	  isUsers
-	  isProcCount
-	  isAuthenticated
-	  isVersion
-	  isRemoteUser
-	  isRecordTime
-	  isStatus
-	  itType
-	  itId
-	  itTypeId
-	  bankAccountId
-	);
-	my $query = '
+    my @fields = qw(
+        isId
+        swId
+        dtId
+        isUsers
+        isProcCount
+        isAuthenticated
+        isVersion
+        isRemoteUser
+        isRecordTime
+        isStatus
+        itType
+        itId
+        itTypeId
+        bankAccountId
+    );
+    my $query = '
         select
-             is.id
-            ,is.software_id
-            ,is.discrepancy_type_id
-            ,is.users
-            ,is.processor_count
-            ,is.authenticated
-            ,is.version
-            ,is.remote_user
-            ,is.record_time
-            ,is.status
-            ,case ds.type
-                  when \'SD\' then \'DORANA\'
-                  when \'SS\' then \'SIGNATURE\'
-                  when \'SF\' then \'FILTER\'
-                  when \'SA\' then \'TLCMZ\'
-                 end
-            ,ds.id as itId
-            ,ds.signature_id as itTypeId
-            ,sc.bank_account_id as bankAccountId 
+        	is.id
+        	,is.software_id
+        	,is.discrepancy_type_id
+        	,is.users
+        	,is.processor_count
+        	,is.authenticated
+        	,is.version
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'SIGNATURE\' as itType
+        	,it.id as itId
+        	,it.software_signature_id as itTypeId
+        	,it.bank_account_id as bankAccountId
         from software_lpar sl
-            join installed_software is 
-             on is.software_lpar_id = sl.id
-            join scan_sw_inst_sw ssis
-             on is.id  = ssis.installed_software_id
-            join scan_software ss 
-             on ss.id  = ssis.scan_software_id
-            join scan sc
-             on sc.id = ss.scan_id
-            join scan_signature ssig 
-             on ssig.scan_software_id  = ss.id
-            join discovered_signature ds
-             on ssig.discovered_signature_id  = ds.id
-        where sl.id = ?
-            and is.status = \'ACTIVE\'
+        	join installed_software is on is.software_lpar_id = sl.id
+        	join installed_signature it on it.installed_software_id = is.id
+        	where sl.id = ?
+        	and is.status = \'ACTIVE\'
+        union
+        select 
+			is.id
+        	,is.software_id
+        	,is.discrepancy_type_id
+        	,is.users
+        	,is.processor_count
+        	,is.authenticated
+        	,is.version
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'FILTER\' as itType
+        	,it.id as itId
+        	,it.software_filter_id as itTypeId
+        	,it.bank_account_id as bankAccountId
+        from software_lpar sl
+        	join installed_software is on is.software_lpar_id = sl.id
+        	join installed_filter it on it.installed_software_id = is.id
+        	where sl.id = ?
+        	and is.status = \'ACTIVE\'
+        union
+        select
+        	is.id
+            ,is.software_id
+        	,is.discrepancy_type_id
+        	,is.users
+        	,is.processor_count
+        	,is.authenticated
+        	,is.version
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'TLCMZ\' as itType
+        	,it.id as itId
+        	,it.sa_product_id as itTypeId
+        	,it.bank_account_id as bankAccountId
+        from software_lpar sl
+        	join installed_software is on is.software_lpar_id = sl.id
+        	join installed_sa_product it on it.installed_software_id = is.id
+        	where sl.id = ?
+        	and is.status = \'ACTIVE\'
+        union
+        select
+        	is.id
+        	,is.software_id
+        	,is.discrepancy_type_id
+        	,is.users
+        	,is.processor_count
+        	,is.authenticated
+        	,is.version
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'DORANA\' as itType
+        	,it.id as itId
+        	,it.dorana_product_id as itTypeId
+        	,it.bank_account_id as bankAccountId
+        from software_lpar sl
+	        join installed_software is on is.software_lpar_id = sl.id
+	        join installed_dorana_product it on it.installed_software_id = is.id
+	        where sl.id = ?
+	        and is.status = \'ACTIVE\'
         union
         select
         	is.id
@@ -604,330 +632,239 @@ sub queryInstalledSoftwaresBySoftwareLparId {
 	        join installed_software is on is.software_lpar_id = sl.id
 	        where sl.id = ?
 	        and is.status = \'ACTIVE\'
-	        and not exists
-	        (
-              select 1 
-              from 
-              scan_sw_inst_sw ssis join scan_software ss 
-                on ss.id  = ssis.scan_software_id 
-              join scan_signature ssig 
-                on ssig.scan_software_id  = ss.id
-              join discovered_signature ds
-                on ssig.discovered_signature_id  = ds.id
-              where
-                ds.type in (\'SS\',\'SF\',\'SD\',\'SA\')
-                and is.id  = ssis.installed_software_id
-            )
+	        and not exists (select 1 from installed_signature it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_filter it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_sa_product it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_dorana_product it where it.installed_software_id = is.id)
     ';
-	return ( 'installedSoftwaresBySoftwareLparId', $query, \@fields );
+    return ( 'installedSoftwaresBySoftwareLparId', $query, \@fields );
 }
 
 sub getBankAccountsBySoftwareLpar {
 
-	my ( $self, $connection, $softwareLpar ) = @_;
+    my ( $self, $connection, $softwareLpar ) = @_;
 
-	my %bankAccountIds = ();
+    my %bankAccountIds = ();
 
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwaresBySoftwareLparId() );
-	my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
-	$sth->execute(
-		$softwareLpar->id, $softwareLpar->id, $softwareLpar->id,
-		$softwareLpar->id, $softwareLpar->id
-	);
-	while ( $sth->fetchrow_arrayref ) {
-		$bankAccountIds{ $rec{bankAccountId} }++;
-	}
-	$sth->finish;
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwaresBySoftwareLparId() );
+    my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
+    $sth->execute( $softwareLpar->id, $softwareLpar->id, $softwareLpar->id, $softwareLpar->id, $softwareLpar->id );
+    while ( $sth->fetchrow_arrayref ) {
+        $bankAccountIds{ $rec{bankAccountId} }++;
+    }
+    $sth->finish;
 
-	my @bankAccountIds = ();
-	foreach my $bankAccountId ( sort keys %bankAccountIds ) {
-		push @bankAccountIds, $bankAccountId;
-	}
+    my @bankAccountIds = ();
+    foreach my $bankAccountId ( sort keys %bankAccountIds ) {
+        push @bankAccountIds, $bankAccountId;
+    }
 
-	return @bankAccountIds;
+    return @bankAccountIds;
 }
 
 sub inactivateSoftwareLparById {
 
-	my ( $self, $connection, $id, $statistics ) = @_;
+    my ( $self, $connection, $id, $statistics ) = @_;
 
-	###Loop over inst sw/types and delete all, last one will inactivate sw lpar.
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwaresBySoftwareLparId() );
-	my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
-	$sth->execute( $id, $id, $id, $id, $id );
-	my %statistics;
-	while ( $sth->fetchrow_arrayref ) {
-
-		if ( $rec{itType} eq 'MANUAL' ) {
-			$self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType},
-				$rec{isId}, $statistics );
-		}
-		else {
-			$self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType},
-				$rec{itId}, $statistics );
-		}
-	}
-	$sth->finish;
+    ###Loop over inst sw/types and delete all, last one will inactivate sw lpar.
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwaresBySoftwareLparId() );
+    my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
+    $sth->execute( $id, $id, $id, $id, $id );
+    my %statistics;
+    while ( $sth->fetchrow_arrayref ) {
+        if ( $rec{itType} eq 'MANUAL' ) {
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{isId}, $statistics );
+        }
+        else {
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{itId}, $statistics )
+                ;
+        }
+    }
+    $sth->finish;
 }
 
 sub inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId {
-	my ( $self, $connection, $softwareLparId, $bankAccountId ) = @_;
+    my ( $self, $connection, $softwareLparId, $bankAccountId ) = @_;
 
-	###Loop over inst sw/types and delete all for this bank account id.
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwaresBySoftwareLparId() );
-	my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
-	$sth->execute(
-		$softwareLparId, $softwareLparId, $softwareLparId,
-		$softwareLparId, $softwareLparId
-	);
-	while ( $sth->fetchrow_arrayref ) {
-		next unless $rec{bankAccountId} == $bankAccountId;
-		if ( $rec{itType} eq 'MANUAL' ) {
-			$self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType},
-				$rec{isId} );
-		}
-		else {
-			$self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType},
-				$rec{itId} );
-		}
-	}
-	$sth->finish;
+    ###Loop over inst sw/types and delete all for this bank account id.
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwaresBySoftwareLparId() );
+    my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
+    $sth->execute( $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId );
+    while ( $sth->fetchrow_arrayref ) {
+        next unless $rec{bankAccountId} == $bankAccountId;
+        if ( $rec{itType} eq 'MANUAL' ) {
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{isId} );
+        }
+        else {
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{itId} );
+        }
+    }
+    $sth->finish;
 }
 
 sub inactivateInstalledSoftwareById {
 
-	my ( $self, $connection, $softwareLparId, $softwareId ) = @_;
+    my ( $self, $connection, $softwareLparId, $softwareId ) = @_;
 
-	$connection->prepareSqlQueryAndFields(
-		$self->queryInstalledSoftwareBySoftwareLparIdAndSoftwareId() );
-	my $sth =
-	  $connection->sql->{installedSoftwareBySoftwareLparIdAndSoftwareId};
-	my %rec;
-	$sth->bind_columns(
-		map { \$rec{$_} } @{
-			$connection->sql
-			  ->{installedSoftwareBySoftwareLparIdAndSoftwareIdFields}
-		  }
-	);
-	$sth->execute( $softwareLparId, $softwareId );
-	while ( $sth->fetchrow_arrayref ) {
-		$self->deleteInstalledTypeByTypeAndId( $connection, 'MANUAL',
-			$rec{isId} );
-	}
-	$sth->finish;
+    $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareBySoftwareLparIdAndSoftwareId() );
+    my $sth = $connection->sql->{installedSoftwareBySoftwareLparIdAndSoftwareId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} }
+                        @{ $connection->sql->{installedSoftwareBySoftwareLparIdAndSoftwareIdFields} } );
+    $sth->execute( $softwareLparId, $softwareId );
+    while ( $sth->fetchrow_arrayref ) {
+        $self->deleteInstalledTypeByTypeAndId( $connection, 'MANUAL', $rec{isId} );
+    }
+    $sth->finish;
 }
 
 sub queryInstalledSoftwareBySoftwareLparIdAndSoftwareId {
-	my @fields = qw(
-	  isId
-	);
+    my @fields = qw(
+        isId
+    );
 
- # ALEX: This query DID have the condition that the discrepancy_type is 2
- # HOWEVER, the users have by-passed this so it is no longer valid to think that
- # manual spreadsheets will have a discrepancy of 2
- # too this test out of the query 'and is.discrepancy_type_id = 2'
-
-# LOUIS: The query before sprint 2011-7
-#    select
-#        is.id
-#    from installed_software is
-#        where is.software_lpar_id = ?
-#        and is.software_id = ?
-#        and is.status = \'ACTIVE\'
-#        and not exists (select 1 from installed_signature it where it.installed_software_id = is.id)
-#        and not exists (select 1 from installed_filter it where it.installed_software_id = is.id)
-#        and not exists (select 1 from installed_sa_product it where it.installed_software_id = is.id)
-#        and not exists (select 1 from installed_dorana_product it where it.installed_software_id = is.id)
-
-	my $query = '
-        select 
-            is.id 
+    # ALEX: This query DID have the condition that the discrepancy_type is 2
+    # HOWEVER, the users have by-passed this so it is no longer valid to think that
+    # manual spreadsheets will have a discrepancy of 2
+    # too this test out of the query 'and is.discrepancy_type_id = 2'
+    my $query = '
+        select
+        	is.id
         from installed_software is
-            where
-            is.software_lpar_id = ?
+	        where is.software_lpar_id = ?
             and is.software_id = ?            
-            and is.status = \'ACTIVE\'
-            and not exists
-            (
-              select 1 
-              from 
-              scan_sw_inst_sw ssis join scan_software ss 
-                on ss.id  = ssis.scan_software_id 
-              join scan_signature ssig 
-                on ssig.scan_software_id  = ss.id
-              join discovered_signature ds
-                on ssig.discovered_signature_id  = ds.id
-              where
-                ds.type in (\'SS\',\'SF\',\'SD\',\'SA\')
-                and is.id  = ssis.installed_software_id
-            )
-     ';
-	return ( 'installedSoftwareBySoftwareLparIdAndSoftwareId', $query,
-		\@fields );
+	        and is.status = \'ACTIVE\'
+	        and not exists (select 1 from installed_signature it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_filter it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_sa_product it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_dorana_product it where it.installed_software_id = is.id)
+    ';
+    return ( 'installedSoftwareBySoftwareLparIdAndSoftwareId', $query, \@fields );
 }
 
 sub deleteInstalledTypeByTypeAndId {
-	my ( $self, $connection, $type, $id, $stats ) = @_;
-	my %statistics        = %{$stats};
-	my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-	if ( $type eq 'MANUAL' ) {
 
-		###Get inst sw from passed id.
-		$installedSoftware->id($id);
-		$installedSoftware->getById($connection);
-	}
-	else {
+    my ( $self, $connection, $type, $id, $statistics ) = @_;
+    my $installedSoftware = new BRAVO::OM::InstalledSoftware();
+    if ( $type eq 'MANUAL' ) {
 
-		###Get inst type from passed id by type.
-		my $installedType;
-		if ( $type ne 'MANUAL' ) {
-			$installedType = new BRAVO::OM::DiscoveredSignature();
-		}
+        ###Get inst sw from passed id.
+        $installedSoftware->id($id);
+        $installedSoftware->getById($connection);
+    }
+    else {
 
-		$installedType->id($id);
-		$installedType->getById($connection);
+        ###Get inst type from passed id by type.
+        my $installedType;
+        if ( $type eq 'SIGNATURE' ) {
+            $installedType = new BRAVO::OM::InstalledSignature();
+        }
+        elsif ( $type eq 'FILTER' ) {
+            $installedType = new BRAVO::OM::InstalledFilter();
+        }
+        elsif ( $type eq 'TLCMZ' ) {
+            $installedType = new BRAVO::OM::InstalledTLCMZ();
+        }
+        elsif ( $type eq 'DORANA' ) {
+            $installedType = new BRAVO::OM::InstalledDorana();
+        }
+        elsif ( $type eq 'MANUAL' ) {
+            ###Discrepancy.
+        }
+        $installedType->id($id);
+        $installedType->getById($connection);
 
         ###Get inst sw from inst type.
-		my $installedSwId = $self->getInstalledSwByDiscoveredSignatureId( $connection,
-			$installedType->id );
+        $installedSoftware->id( $installedType->installedSoftwareId );
+        $installedSoftware->getById($connection);
 
-		$installedSoftware->id($installedSwId);
-		$installedSoftware->getById($connection);
+        ###Delete inst type.
+        $installedType->delete($connection);
+        $statistics->{'TRAILS'}->{'DELETE'}->{$type}++;
+    }
 
-		###Delete inst type.
-		$installedType->delete($connection);
-		$statistics{'TRAILS'}{$type}{'DELETE'}++;
-	}
+    ###Get inst type count for inst sw now.
+    my $itCount = $self->getInstalledSoftwareCountById( $connection, $installedSoftware->id );
+    if ( $itCount == 0 ) {
 
-	###Get inst type count for inst sw now.
-	my $itCount =
-	  $self->getInstalledSoftwareCountById( $connection,
-		$installedSoftware->id );
-	if ( $itCount == 0 ) {
+        ###Set inst sw to inactive.
+        $installedSoftware->status('INACTIVE');
+        $installedSoftware->save($connection);
+        $statistics->{'TRAILS'}->{'DELETE'}->{'INSTALLED_SOFTWARE'}++;
 
-		###Set inst sw to inactive.
-		$installedSoftware->status('INACTIVE');
-		$installedSoftware->save($connection);
-		$statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'DELETE'}++;
+        ###Insert history record if discrepancy.
+        if ( $type eq 'MANUAL' ) {
+            my $discrepancyHistory = new BRAVO::OM::SoftwareDiscrepancyHistory();
+            $discrepancyHistory->installedSoftwareId( $installedSoftware->id );
+            $discrepancyHistory->action('CLOSED - MISSING');
+            $discrepancyHistory->comment('AUTO CLOSE');
+            $discrepancyHistory->save($connection);
+            $statistics->{'TRAILS'}->{'UPDATE'}->{'SW_DISCREP_HIS'}++;
+        }
 
-		###Insert history record if discrepancy.
-		if ( $type eq 'MANUAL' ) {
-			my $discrepancyHistory =
-			  new BRAVO::OM::SoftwareDiscrepancyHistory();
-			$discrepancyHistory->installedSoftwareId( $installedSoftware->id );
-			$discrepancyHistory->action('CLOSED - MISSING');
-			$discrepancyHistory->comment('AUTO CLOSE');
-			$discrepancyHistory->save($connection);
-			$statistics{'TRAILS'}{'SW_DISCREP_HIS'}{'UPDATE'}++;
-		}
+        ###Get software lpar object.
+        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+        $softwareLpar->id( $installedSoftware->softwareLparId );
+        $softwareLpar->getById($connection);
 
-		###Get software lpar object.
-		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-		$softwareLpar->id( $installedSoftware->softwareLparId );
-		$softwareLpar->getById($connection);
+        ###Call the recon engine for the inst sw object.
+        my $queue = Recon::Queue->new( $connection, $installedSoftware, $softwareLpar );
+        $queue->add;
+        $statistics->{'TRAILS'}->{'UPDATE'}->{'RECON_INST_SW'}++;
 
-		###Call the recon engine for the inst sw object.
-		my $queue =
-		  Recon::Queue->new( $connection, $installedSoftware, $softwareLpar );
-		$queue->add;
-		$statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+        ###Get inst sw count for sw lpar.
+        my $isCount = $self->getInstalledSoftwareCountBySwLparId( $connection, $softwareLpar->id );
+        if ( $isCount == 0 ) {
 
-		###Get inst sw count for sw lpar.
-		my $isCount =
-		  $self->getInstalledSoftwareCountBySwLparId( $connection,
-			$softwareLpar->id );
-		if ( $isCount == 0 ) {
+            ###Set sw lpar to inactive.
+            $softwareLpar->status('INACTIVE');
+            $softwareLpar->save($connection);
+            $statistics->{'TRAILS'}->{'DELETE'}->{'SOFTWARE_LPAR'}++;
 
-			###Set sw lpar to inactive.
-			$softwareLpar->status('INACTIVE');
-			$softwareLpar->save($connection);
-			$statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'DELETE'}++;
-
-			###Call the recon engine for the sw lpar object.
-			my $queue = Recon::Queue->new( $connection, $softwareLpar );
-			$queue->add;
-			$statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
-		}
-	}
-}
-
-sub getInstalledSwByDiscoveredSignatureId {
-	my ( $self, $connection, $discoveredSignatureId ) = @_;
-	$connection->prepareSqlQuery(
-		$self->queryGetInstalledSwByDiscoveredSignatureId() );
-	my $sth = $connection->sql->{installedSwByDiscoveredSignatureId};
-	my $installedSoftwareId;
-	$sth->bind_columns( \$installedSoftwareId );
-	$sth->execute($discoveredSignatureId);
-	$sth->fetchrow_arrayref;
-	$sth->finish;
-
-	return $installedSoftwareId;
-}
-
-sub queryGetInstalledSwByDiscoveredSignatureId {
-	my $query = '
-        select 
-          is.id
-        from 
-          installed_software is
-          join scan_sw_inst_sw ssis
-           on  is.id = ssis.installed_software_id
-          join scan_software ss
-           on  ssis.scan_software_id = ss.id
-          join scan_signature ssig
-           on ss.id = ssig.scan_software_id
-          join discovered_signature ds
-          on ssig.discovered_signature_id = ds.id 
-        where
-           ds.id = ? 
-    ';
-	return ( 'installedSwByDiscoveredSignatureId', $query );
+            ###Call the recon engine for the sw lpar object.
+            my $queue = Recon::Queue->new( $connection, $softwareLpar );
+            $queue->add;
+            $statistics->{'TRAILS'}->{'UPDATE'}->{'RECON_SW_LPAR'}++;
+        }
+    }
 }
 
 sub getHwLparsByCustomerId {
-	my ( $self, $connection, $customerId ) = @_;
+    my ( $self, $connection, $customerId ) = @_;
 
-	my %hardwareLpars = ();
+    my %hardwareLpars = ();
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields( $self->queryHwLparsByCustomerId() );
-	my $sth = $connection->sql->{hwLparsByCustomerId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{hwLparsByCustomerIdFields} } );
-	$sth->execute($customerId);
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryHwLparsByCustomerId() );
+    my $sth = $connection->sql->{hwLparsByCustomerId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{hwLparsByCustomerIdFields} } );
+    $sth->execute($customerId);
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Get the lpar object.
-		my $hardwareLpar = new BRAVO::OM::HardwareLpar();
-		$hardwareLpar->id( $rec{id} );
-		$hardwareLpar->getById($connection);
+        ###Get the lpar object.
+        my $hardwareLpar = new BRAVO::OM::HardwareLpar();
+        $hardwareLpar->id( $rec{id} );
+        $hardwareLpar->getById($connection);
 
-		###Add to the list.
-		$hardwareLpars{ $rec{id} } = $hardwareLpar;
-		dlog( "added id=" . $rec{id} );
-	}
-	$sth->finish;
+        ###Add to the list.
+        $hardwareLpars{ $rec{id} } = $hardwareLpar;
+        dlog( "added id=" . $rec{id} );
+    }
+    $sth->finish;
 
-	return %hardwareLpars;
+    return %hardwareLpars;
 }
 
 sub queryHwLparsByCustomerId {
-	my @fields = qw( id );
-	my $query  = '
+    my @fields = qw( id );
+    my $query  = '
         select
             a.id
         from
@@ -935,78 +872,73 @@ sub queryHwLparsByCustomerId {
         where
             a.customer_id = ?
     ';
-	return ( 'hwLparsByCustomerId', $query, \@fields );
+    return ( 'hwLparsByCustomerId', $query, \@fields );
 }
 
 sub getSwLparsByCustomerId {
-	my ( $self, $connection, $customerId ) = @_;
+    my ( $self, $connection, $customerId ) = @_;
 
-	my %softwareLpars = ();
+    my %softwareLpars = ();
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields( $self->querySwLparsByCustomerId() );
-	my $sth = $connection->sql->{swLparsByCustomerId};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{swLparsByCustomerIdFields} } );
-	$sth->execute($customerId);
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->querySwLparsByCustomerId() );
+    my $sth = $connection->sql->{swLparsByCustomerId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{swLparsByCustomerIdFields} } );
+    $sth->execute($customerId);
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Get the lpar object.
-		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-		$softwareLpar->id( $rec{id} );
-		$softwareLpar->getById($connection);
+        ###Get the lpar object.
+        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+        $softwareLpar->id( $rec{id} );
+        $softwareLpar->getById($connection);
 
-		###Add to the list.
-		$softwareLpars{ $rec{id} } = $softwareLpar;
-		dlog( "added id=" . $rec{id} );
-	}
-	$sth->finish;
+        ###Add to the list.
+        $softwareLpars{ $rec{id} } = $softwareLpar;
+        dlog( "added id=" . $rec{id} );
+    }
+    $sth->finish;
 
-	return %softwareLpars;
+    return %softwareLpars;
 }
 
 sub getBankAccountInclusionMap {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	my %map = ();
+    my %map = ();
 
-	###Prepare and execute the necessary sql
-	$connection->prepareSqlQueryAndFields( $self->queryBankAccountInclusion() );
-	my $sth = $connection->sql->{bankAccountInclusion};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{bankAccountInclusionFields} } );
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryBankAccountInclusion() );
+    my $sth = $connection->sql->{bankAccountInclusion};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{bankAccountInclusionFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
 
-		###Add to the list.
-		$map{ $rec{customerId} }{ $rec{bankAccountId} } = 1;
-		dlog(   "customerId="
-			  . $rec{customerId}
-			  . " bank account="
-			  . $rec{bankAccountId} );
-	}
-	$sth->finish;
+        ###Add to the list.
+        $map{ $rec{customerId} }{ $rec{bankAccountId} } = 1;
+        dlog( "customerId=" . $rec{customerId} . " bank account=" . $rec{bankAccountId} );
+    }
+    $sth->finish;
 
-	return \%map;
+    return \%map;
 }
 
 sub queryBankAccountInclusion {
-	my @fields = qw( customerId bankAccountId );
-	my $query  = '
+    my @fields = qw( customerId bankAccountId );
+    my $query  = '
         select
             a.customer_id
             ,a.bank_account_id
         from
             bank_account_inclusion a
     ';
-	return ( 'bankAccountInclusion', $query, \@fields );
+    return ( 'bankAccountInclusion', $query, \@fields );
 }
 
 sub querySwLparsByCustomerId {
-	my @fields = qw( id );
-	my $query  = '
+    my @fields = qw( id );
+    my $query  = '
         select
             a.id
         from
@@ -1014,13 +946,12 @@ sub querySwLparsByCustomerId {
         where
             a.customer_id = ?
     ';
-	return ( 'swLparsByCustomerId', $query, \@fields );
+    return ( 'swLparsByCustomerId', $query, \@fields );
 }
 
 sub queryCompositeDataByCustomerId {
-	my @fields =
-	  qw( hscId hlId hlCustomerId hlStatus slId slCustomerId slStatus );
-	my $query = '
+    my @fields = qw( hscId hlId hlCustomerId hlStatus slId slCustomerId slStatus );
+    my $query  = '
         select
             hsc.id
             ,hl.id
@@ -1036,12 +967,12 @@ sub queryCompositeDataByCustomerId {
         where
             (hl.customer_id = ? or sl.customer_id = ?)
     ';
-	return ( 'compositeDataByCustomerId', $query, \@fields );
+    return ( 'compositeDataByCustomerId', $query, \@fields );
 }
 
 sub queryHardwareDataByCustomerId {
-	my @fields = qw( hlId hlCustomerId hlStatus slId slCustomerId slStatus );
-	my $query  = '
+    my @fields = qw( hlId hlCustomerId hlStatus slId slCustomerId slStatus );
+    my $query  = '
         select
             hl.id
             ,hl.customer_id
@@ -1056,49 +987,49 @@ sub queryHardwareDataByCustomerId {
         where
             hl.customer_id = ?
     ';
-	return ( 'hardwareDataByCustomerId', $query, \@fields );
+    return ( 'hardwareDataByCustomerId', $query, \@fields );
 }
 
 sub isInCompositeByHwLparId {
-	my ( $self, $connection, $id ) = @_;
-	my $hsc = $self->getHwSwCompositeByHwLparId( $connection, $id );
-	if ( defined $hsc ) {
-		if ( defined $hsc->id ) {
-			return 1;
-		}
-	}
-	return 0;
+    my ( $self, $connection, $id ) = @_;
+    my $hsc = $self->getHwSwCompositeByHwLparId( $connection, $id );
+    if ( defined $hsc ) {
+        if ( defined $hsc->id ) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 sub isInCompositeBySwLparId {
-	my ( $self, $connection, $id ) = @_;
-	my $hsc = $self->getHwSwCompositeBySwLparId( $connection, $id );
-	if ( defined $hsc ) {
-		if ( defined $hsc->id ) {
-			return 1;
-		}
-	}
-	return 0;
+    my ( $self, $connection, $id ) = @_;
+    my $hsc = $self->getHwSwCompositeBySwLparId( $connection, $id );
+    if ( defined $hsc ) {
+        if ( defined $hsc->id ) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 sub getEffProcCountBySwLparId {
-	my ( $self, $connection, $id ) = @_;
-	my $slEffProc = new BRAVO::OM::SoftwareLparEff();
-	$slEffProc->softwareLparId($id);
-	if ( $slEffProc->getByBizKey($connection) ) {
-		if ( $slEffProc->status eq 'ACTIVE' ) {
-			return $slEffProc->processorCount;
-		}
-	}
-	my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-	$softwareLpar->id($id);
-	$softwareLpar->getById($connection);
-	return $softwareLpar->processorCount;
+    my ( $self, $connection, $id ) = @_;
+    my $slEffProc = new BRAVO::OM::SoftwareLparEff();
+    $slEffProc->softwareLparId($id);
+    if ( $slEffProc->getByBizKey($connection) ) {
+        if ( $slEffProc->status eq 'ACTIVE' ) {
+            return $slEffProc->processorCount;
+        }
+    }
+    my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+    $softwareLpar->id($id);
+    $softwareLpar->getById($connection);
+    return $softwareLpar->processorCount;
 }
 
 sub querySoftwareLparsByHardwareId {
-	my @fields = (qw( id ));
-	my $query  = '
+    my @fields = (qw( id ));
+    my $query  = '
 		select
 			sl.id
 		from
@@ -1109,26 +1040,26 @@ sub querySoftwareLparsByHardwareId {
 		where
 			h.id = ?
     ';
-	return ( 'softwareLparsByHardwareId', $query, \@fields );
+    return ( 'softwareLparsByHardwareId', $query, \@fields );
 }
 
 sub queryContactData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  role
-		  serial
-		  fullName
-		  remoteUser
-		  notesMail
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            role
+            serial
+            fullName
+            remoteUser
+            notesMail
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.contact_id
             ,a.role
@@ -1142,22 +1073,22 @@ sub queryContactData {
             contact a
     ';
 
-	return ( 'contactData', $query, \@fields );
+    return ( 'contactData', $query, \@fields );
 }
 
 sub queryGeographyData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.id
             ,a.name
@@ -1167,23 +1098,23 @@ sub queryGeographyData {
             geography a
     ';
 
-	return ( 'geographyData', $query, \@fields );
+    return ( 'geographyData', $query, \@fields );
 }
 
 sub queryRegionData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  geographyId
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            geographyId
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.id
             ,a.geography_id
@@ -1194,24 +1125,24 @@ sub queryRegionData {
             region a
     ';
 
-	return ( 'regionData', $query, \@fields );
+    return ( 'regionData', $query, \@fields );
 }
 
 sub queryCountryCodeData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  regionId
-		  name
-		  code
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            regionId
+            name
+            code
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.id
             ,a.region_id
@@ -1223,22 +1154,22 @@ sub queryCountryCodeData {
             country_code a
     ';
 
-	return ( 'countryCodeData', $query, \@fields );
+    return ( 'countryCodeData', $query, \@fields );
 }
 
 sub queryPodData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.pod_id
             ,a.pod_name
@@ -1248,22 +1179,22 @@ sub queryPodData {
             pod a
     ';
 
-	return ( 'podData', $query, \@fields );
+    return ( 'podData', $query, \@fields );
 }
 
 sub querySectorData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             a.sector_id
             ,a.sector_name
@@ -1273,23 +1204,23 @@ sub querySectorData {
             sector a
     ';
 
-	return ( 'sectorData', $query, \@fields );
+    return ( 'sectorData', $query, \@fields );
 }
 
 sub queryIndustryData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  sectorId
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            sectorId
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
         	a.industry_id
             ,a.sector_id
@@ -1300,29 +1231,29 @@ sub queryIndustryData {
             industry a
     ';
 
-	return ( 'industryData', $query, \@fields );
+    return ( 'industryData', $query, \@fields );
 }
 
 sub queryOutsourceProfileData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  customerId
-		  assetProcessId
-		  countryId
-		  outsourceable
-		  comment
-		  approver
-		  recordTime
-		  current
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            customerId
+            assetProcessId
+            countryId
+            outsourceable
+            comment
+            approver
+            recordTime
+            current
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
         	a.id
             ,a.customer_id
@@ -1339,22 +1270,22 @@ sub queryOutsourceProfileData {
             outsource_profile a
     ';
 
-	return ( 'outsourceProfileData', $query, \@fields );
+    return ( 'outsourceProfileData', $query, \@fields );
 }
 
 sub queryCustomerTypeData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  name
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            name
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
         	a.customer_type_id
             ,a.customer_type_name
@@ -1364,49 +1295,49 @@ sub queryCustomerTypeData {
             customer_type a
     ';
 
-	return ( 'customerTypeData', $query, \@fields );
+    return ( 'customerTypeData', $query, \@fields );
 }
 
 sub queryCustomerData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  customerTypeId
-		  podId
-		  industryId
-		  accountNumber
-		  customerName
-		  contactDpeId
-		  contactFaId
-		  contactHwId
-		  contactSwId
-		  contactFocalAssetId
-		  contactTransitionId
-		  contractSignDate
-		  assetToolsBillingCode
-		  status
-		  hwInterlock
-		  swInterlock
-		  invInterlock
-		  swLicenseMgmt
-		  swSupport
-		  hwSupport
-		  transitionStatus
-		  transitionExitDate
-		  countryCodeId
-		  scanValidity
-		  swTracking
-		  swComplianceMgmt
-		  swFinancialResponsibility
-		  swFinancialMgmt
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            customerTypeId
+            podId
+            industryId
+            accountNumber
+            customerName
+            contactDpeId
+            contactFaId
+            contactHwId
+            contactSwId
+            contactFocalAssetId
+            contactTransitionId
+            contractSignDate
+            assetToolsBillingCode
+            status
+            hwInterlock
+            swInterlock
+            invInterlock
+            swLicenseMgmt
+            swSupport
+            hwSupport
+            transitionStatus
+            transitionExitDate
+            countryCodeId
+            scanValidity
+            swTracking
+            swComplianceMgmt
+            swFinancialResponsibility
+            swFinancialMgmt
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
         	a.customer_id
         	,a.customer_type_id
@@ -1443,26 +1374,26 @@ sub queryCustomerData {
             customer a
     ';
 
-	return ( 'customerData', $query, \@fields );
+    return ( 'customerData', $query, \@fields );
 }
 
 sub queryCustomerNumberData {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  customerId
-		  customerNumber
-		  lpidId
-		  countryCodeId
-		  status
-		  creationDateTime
-		  updateDateTime
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            customerId
+            customerNumber
+            lpidId
+            countryCodeId
+            status
+            creationDateTime
+            updateDateTime
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
         	a.customer_number_id
         	,a.customer_id
@@ -1476,11 +1407,11 @@ sub queryCustomerNumberData {
             customer_number a
     ';
 
-	return ( 'customerNumberData', $query, \@fields );
+    return ( 'customerNumberData', $query, \@fields );
 }
 
 sub queryProcgrpsData {
-	my $query = '
+    my $query = '
         select
             a.machine_type_id
             ,a.model
@@ -1502,38 +1433,38 @@ sub queryProcgrpsData {
         with ur
     ';
 
-	return ( 'procgrpsData', $query );
+    return ( 'procgrpsData', $query );
 }
 
 sub buildProcgrps {
-	my ( $self, $rec ) = @_;
+    my ( $self, $rec ) = @_;
 
-	cleanValues($rec);
-	upperValues($rec);
+    cleanValues($rec);
+    upperValues($rec);
 
-	###Build the procgrps record
-	my $procgrps = new SIMS::OM::Procgrps();
-	$procgrps->type( $rec->{type} );
-	$procgrps->model( $rec->{model} );
-	$procgrps->group( $rec->{group} );
-	$procgrps->vendor( $rec->{vendor} );
-	$procgrps->description( $rec->{description} );
-	$procgrps->updUser( $rec->{updUser} );
-	$procgrps->updStamp( $rec->{updStamp} );
-	$procgrps->msu( $rec->{msu} );
-	$procgrps->pslcInd( $rec->{pslcInd} );
-	$procgrps->wlcInd( $rec->{wlcInd} );
-	$procgrps->totalEngines( $rec->{totalEngines} );
-	$procgrps->zosEngines( $rec->{zosEngines} );
-	$procgrps->ewlcInd( $rec->{ewlcInd} );
-	$procgrps->updIntranetID( $rec->{updIntranetID} );
-	$procgrps->status( $rec->{status} );
+    ###Build the procgrps record
+    my $procgrps = new SIMS::OM::Procgrps();
+    $procgrps->type( $rec->{type} );
+    $procgrps->model( $rec->{model} );
+    $procgrps->group( $rec->{group} );
+    $procgrps->vendor( $rec->{vendor} );
+    $procgrps->description( $rec->{description} );
+    $procgrps->updUser( $rec->{updUser} );
+    $procgrps->updStamp( $rec->{updStamp} );
+    $procgrps->msu( $rec->{msu} );
+    $procgrps->pslcInd( $rec->{pslcInd} );
+    $procgrps->wlcInd( $rec->{wlcInd} );
+    $procgrps->totalEngines( $rec->{totalEngines} );
+    $procgrps->zosEngines( $rec->{zosEngines} );
+    $procgrps->ewlcInd( $rec->{ewlcInd} );
+    $procgrps->updIntranetID( $rec->{updIntranetID} );
+    $procgrps->status( $rec->{status} );
 
-	return $procgrps;
+    return $procgrps;
 }
 
 sub queryMipsData {
-	my $query = '
+    my $query = '
         select
             a.machine_type_id
             ,a.model
@@ -1550,78 +1481,78 @@ sub queryMipsData {
         with ur
     ';
 
-	return ( 'mipsData', $query );
+    return ( 'mipsData', $query );
 }
 
 sub buildMips {
-	my ( $self, $rec ) = @_;
+    my ( $self, $rec ) = @_;
 
-	cleanValues($rec);
-	upperValues($rec);
+    cleanValues($rec);
+    upperValues($rec);
 
-	###Build the mips record
-	my $mips = new SIMS::OM::Mips();
-	$mips->type( $rec->{type} );
-	$mips->model( $rec->{model} );
-	$mips->group( $rec->{group} );
-	$mips->vendor( $rec->{vendor} );
-	$mips->mipsVendor( $rec->{mipsVendor} );
-	$mips->mips( $rec->{mips} );
-	$mips->updUser( $rec->{updUser} );
-	$mips->updStamp( $rec->{updStamp} );
-	$mips->updIntranetID( $rec->{updIntranetID} );
-	$mips->status( $rec->{status} );
+    ###Build the mips record
+    my $mips = new SIMS::OM::Mips();
+    $mips->type( $rec->{type} );
+    $mips->model( $rec->{model} );
+    $mips->group( $rec->{group} );
+    $mips->vendor( $rec->{vendor} );
+    $mips->mipsVendor( $rec->{mipsVendor} );
+    $mips->mips( $rec->{mips} );
+    $mips->updUser( $rec->{updUser} );
+    $mips->updStamp( $rec->{updStamp} );
+    $mips->updIntranetID( $rec->{updIntranetID} );
+    $mips->status( $rec->{status} );
 
-	return $mips;
+    return $mips;
 }
 
 sub getReconSummaryData {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	dlog('In BRAVODelegate->getReconSummaryData method');
+    dlog('In BRAVODelegate->getReconSummaryData method');
 
-	my @reconList;
+    my @reconList;
 
-	###Prepare the query
-	$connection->prepareSqlQuery( $self->queryReconSummaryData );
+    ###Prepare the query
+    $connection->prepareSqlQuery( $self->queryReconSummaryData );
 
-	###Define the fields
-	my @fields = (
-		qw(type manufacturerName softwareId softwareName
-		  reconcileTypeId open count)
-	);
+    ###Define the fields
+    my @fields = (
+        qw(type manufacturerName softwareId softwareName
+            reconcileTypeId open count)
+    );
 
-	###Get the statement handle
-	my $sth = $connection->sql->{reconSummaryData};
+    ###Get the statement handle
+    my $sth = $connection->sql->{reconSummaryData};
 
-	###Bind the columns
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} } @fields );
+    ###Bind the columns
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
 
-	###Execute the query
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
+    ###Execute the query
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
 
-		logRec( 'dlog', \%rec );
-		my $key;
-		my $value;
-		my %myRec;
-		while ( ( $key, $value ) = each %rec ) {
-			$myRec{$key} = $value;
-		}
-		push @reconList, \%myRec;
+        logRec( 'dlog', \%rec );
+        my $key;
+        my $value;
+        my %myRec;
+        while ( ( $key, $value ) = each %rec ) {
+            $myRec{$key} = $value;
+        }
+        push @reconList, \%myRec;
 
-	}
+    }
 
-	###Close the statement handle
-	$sth->finish;
+    ###Close the statement handle
+    $sth->finish;
 
-	###Return the lists
-	return ( \@reconList );
+    ###Return the lists
+    return ( \@reconList );
 }
 
 sub queryReconSummaryData {
-	my $query = '
+    my $query = '
      select distinct mt.type, m.name, s.software_id, s.software_name, reconcile_type_id, aus.open, count(*) as count 
      from	alert_unlicensed_sw aus, 
    		reconcile r, 
@@ -1651,15 +1582,15 @@ sub queryReconSummaryData {
      order by mt.type, m.name, s.software_id, s.software_name, r.reconcile_type_id, aus.open  
     ';
 
-	return ( 'reconSummaryData', $query );
+    return ( 'reconSummaryData', $query );
 }
 
 sub queryCapTypeDataAndFields {
 
-	###Define the fields
-	my @fields = (qw(id code description recordTime));
+    ###Define the fields
+    my @fields = (qw(id code description recordTime));
 
-	my $query = '
+    my $query = '
         select
             code
             ,code
@@ -1669,15 +1600,15 @@ sub queryCapTypeDataAndFields {
             eaadmin.capacity_type
     ';
 
-	return ( 'capTypeData', $query, \@fields );
+    return ( 'capTypeData', $query, \@fields );
 }
 
 sub queryLicTypeDataAndFields {
 
-	###Define the fields
-	my @fields = (qw(id code description recordTime));
+    ###Define the fields
+    my @fields = (qw(id code description recordTime));
 
-	my $query = '
+    my $query = '
         select
             code
             ,code
@@ -1687,23 +1618,23 @@ sub queryLicTypeDataAndFields {
             eaadmin.license_type
     ';
 
-	return ( 'licTypeData', $query, \@fields );
+    return ( 'licTypeData', $query, \@fields );
 }
 
 sub queryAccountPoolDataAndFields {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my @fields = (
-		qw(
-		  id
-		  accountPoolId
-		  masterAccountId
-		  memberAccountId
-		  logicalDeleteInd
-		  )
-	);
+    my @fields = (
+        qw(
+            id
+            accountPoolId
+            masterAccountId
+            memberAccountId
+            logicalDeleteInd
+            )
+    );
 
-	my $query = '
+    my $query = '
         select
             account_pool_id
             ,account_pool_id
@@ -1714,18 +1645,18 @@ sub queryAccountPoolDataAndFields {
             account_pool
     ';
 
-	return ( 'accountPoolData', $query, \@fields );
+    return ( 'accountPoolData', $query, \@fields );
 }
 
 sub querySwassetQueueDataAndFields {
-	my @fields = (
-		qw(
-		  id
-		  customerId
-		  softwareLparId
-		  hostname)
-	);
-	my $query = '
+    my @fields = (
+        qw(
+            id
+            customerId
+            softwareLparId
+            hostname)
+    );
+    my $query = '
         select
             id
             ,customer_id
@@ -1734,34 +1665,32 @@ sub querySwassetQueueDataAndFields {
         from
             swasset_queue
     ';
-	return ( 'swassetQueueData', $query, \@fields );
+    return ( 'swassetQueueData', $query, \@fields );
 }
 
 sub getSwassetQueueData {
-	my ( $self, $connection ) = @_;
+    my ( $self, $connection ) = @_;
 
-	my @swassetQueue = ();
+    my @swassetQueue = ();
 
-	$connection->prepareSqlQueryAndFields(
-		$self->querySwassetQueueDataAndFields() );
-	my $sth = $connection->sql->{swassetQueueData};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $connection->sql->{swassetQueueDataFields} } );
-	$sth->execute();
-	while ( $sth->fetchrow_arrayref ) {
+    $connection->prepareSqlQueryAndFields( $self->querySwassetQueueDataAndFields() );
+    my $sth = $connection->sql->{swassetQueueData};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{swassetQueueDataFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
 
-		my $swassetRecord = new BRAVO::OM::SwassetQueue();
-		$swassetRecord->id( $rec{id} );
-		$swassetRecord->customerId( $rec{customerId} );
-		$swassetRecord->softwareLparId( $rec{softwareLparId} );
-		$swassetRecord->hostname( $rec{hostname} );
+        my $swassetRecord = new BRAVO::OM::SwassetQueue();
+        $swassetRecord->id( $rec{id} );
+        $swassetRecord->customerId( $rec{customerId} );
+        $swassetRecord->softwareLparId( $rec{softwareLparId} );
+        $swassetRecord->hostname( $rec{hostname} );
 
-		push @swassetQueue, $swassetRecord;
-	}
-	$sth->finish;
+        push @swassetQueue, $swassetRecord;
+    }
+    $sth->finish;
 
-	return @swassetQueue;
+    return @swassetQueue;
 }
 
 1;

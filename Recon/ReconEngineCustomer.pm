@@ -26,13 +26,10 @@ use Recon::License;
 use Recon::CustomerSoftware;
 
 sub new {
-    my ( $class, $customerId, $date, $poolRunning ) = @_;
-    my $self = {
-                 _customerId  => $customerId,
-                 _queue       => undef,
-                 _connection  => Database::Connection->new('trails'),
-                 _date        => $date,
-                 _poolRunning => $poolRunning
+    my ( $class, $customerId ) = @_;
+    my $self = { _customerId => $customerId,
+                 _queue      => undef,
+                 _connection => Database::Connection->new('trails')
     };
     bless $self, $class;
 
@@ -59,138 +56,139 @@ sub recon {
     eval {
         $self->loadQueue;
 
-        foreach my $orderBy ( sort keys %{ $self->queue } ) {
-            foreach my $pk ( keys %{ $self->queue->{$orderBy} } ) {
+        foreach my $pk ( keys %{ $self->queue } ) {
 
-                my $table  = $self->queue->{$orderBy}->{$pk}->{table};
-                my $id     = $self->queue->{$orderBy}->{$pk}->{id};
-                my $fk     = $self->queue->{$orderBy}->{$pk}->{fk};
-                my $action = $self->queue->{$orderBy}->{$pk}->{action};
+            my $table  = $self->queue->{$pk}->{table};
+            my $id     = $self->queue->{$pk}->{id};
+            my $fk     = $self->queue->{$pk}->{fk};
+            my $action = $self->queue->{$pk}->{action};
 
-                my $recon;
+            my $recon;
 
-                ###Process the recon job based on table.
-                if ( $table eq 'RECON_CUSTOMER' ) {
+            ###Process the recon job based on table.
+            if ( $table eq 'RECON_CUSTOMER' ) {
 
-                    ###Get the customer
-                    my $customer = new BRAVO::OM::Customer();
-                    $customer->id($fk);
-                    $customer->getById( $self->connection );
+                ###Get the customer
+                my $customer = new BRAVO::OM::Customer();
+                $customer->id($fk);
+                $customer->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon.
-                    $recon = Recon::Customer->new( $self->connection, $customer );
-                    $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::Customer->new( $self->connection, $customer );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconCustomer = new Recon::OM::ReconCustomer();
-                    $reconCustomer->id($id);
-                    $reconCustomer->delete( $self->connection );
-                }
-                elsif ( $table eq 'RECON_HARDWARE' ) {
+                ###Remove recon job from queue.
+                my $reconCustomer = new Recon::OM::ReconCustomer();
+                $reconCustomer->id($id);
+                $reconCustomer->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_HARDWARE' ) {
 
-                    ###Get the hardware.
-                    my $hardware = new BRAVO::OM::Hardware();
-                    $hardware->id($fk);
-                    $hardware->getById( $self->connection );
+                ###Get the hardware.
+                my $hardware = new BRAVO::OM::Hardware();
+                $hardware->id($fk);
+                $hardware->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon.
-                    $recon = Recon::Hardware->new( $self->connection, $hardware );
-                    $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::Hardware->new( $self->connection, $hardware );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconHardware = new Recon::OM::ReconHardware();
-                    $reconHardware->id($id);
-                    $reconHardware->delete( $self->connection );
-                }
-                elsif ( $table eq 'RECON_HW_LPAR' ) {
+                ###Remove recon job from queue.
+                my $reconHardware = new Recon::OM::ReconHardware();
+                $reconHardware->id($id);
+                $reconHardware->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_HW_LPAR' ) {
 
-                    ###Get the object.
-                    my $hardwareLpar = new BRAVO::OM::HardwareLpar();
-                    $hardwareLpar->id($fk);
-                    $hardwareLpar->getById( $self->connection );
-                    dlog( $hardwareLpar->toString );
+                ###Get the object.
+                my $hardwareLpar = new BRAVO::OM::HardwareLpar();
+                $hardwareLpar->id($fk);
+                $hardwareLpar->getById( $self->connection );
+                dlog( $hardwareLpar->toString );
 
-                    ###Call recon delegate to perform recon.
-                    $recon = Recon::HardwareLpar->new( $self->connection, $hardwareLpar );
-                    $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::HardwareLpar->new( $self->connection,
+                                                   $hardwareLpar );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconHardwareLpar = new Recon::OM::ReconHardwareLpar();
-                    $reconHardwareLpar->id($id);
-                    $reconHardwareLpar->delete( $self->connection );
-                }
-                elsif ( $table eq 'RECON_SW_LPAR' ) {
+                ###Remove recon job from queue.
+                my $reconHardwareLpar = new Recon::OM::ReconHardwareLpar();
+                $reconHardwareLpar->id($id);
+                $reconHardwareLpar->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_SW_LPAR' ) {
 
-                    ###Get the object.
-                    my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-                    $softwareLpar->id($fk);
-                    $softwareLpar->getById( $self->connection );
+                ###Get the object.
+                my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+                $softwareLpar->id($fk);
+                $softwareLpar->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon
-                    $recon = Recon::SoftwareLpar->new( $self->connection, $softwareLpar, $action );
-                    $recon->recon;
+                ###Call recon delegate to perform recon
+                $recon = Recon::SoftwareLpar->new( $self->connection,
+                                                   $softwareLpar, $action );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconSoftwareLpar = new Recon::OM::ReconSoftwareLpar();
-                    $reconSoftwareLpar->id($id);
-                    $reconSoftwareLpar->delete( $self->connection );
-                }
-                elsif ( $table eq 'RECON_INSTALLED_SW' ) {
+                ###Remove recon job from queue.
+                my $reconSoftwareLpar = new Recon::OM::ReconSoftwareLpar();
+                $reconSoftwareLpar->id($id);
+                $reconSoftwareLpar->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_INSTALLED_SW' ) {
 
-                    ###Get the object.
-                    my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-                    $installedSoftware->id($fk);
-                    $installedSoftware->getById( $self->connection );
+                ###Get the object.
+                my $installedSoftware = new BRAVO::OM::InstalledSoftware();
+                $installedSoftware->id($fk);
+                $installedSoftware->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon.
-                    $recon =
-                        Recon::InstalledSoftware->new( $self->connection, $installedSoftware, $self->poolRunning );
-                    my $rc = $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::InstalledSoftware->new( $self->connection,
+                                                        $installedSoftware );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    if ( $rc != 2 ) {
-                        my $reconInstalledSoftware = new Recon::OM::ReconInstalledSoftware();
-                        $reconInstalledSoftware->id($id);
-                        $reconInstalledSoftware->delete( $self->connection );
-                    }
-                }
-                elsif ( $table eq 'RECON_LICENSE' ) {
+                ###Remove recon job from queue.
+                my $reconInstalledSoftware
+                    = new Recon::OM::ReconInstalledSoftware();
+                $reconInstalledSoftware->id($id);
+                $reconInstalledSoftware->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_LICENSE' ) {
 
-                    ###Get the object.
-                    my $license = new BRAVO::OM::License();
-                    $license->id($fk);
-                    $license->getById( $self->connection );
+                ###Get the object.
+                my $license = new BRAVO::OM::License();
+                $license->id($fk);
+                $license->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon.
-                    $recon = Recon::License->new( $self->connection, $license );
-                    $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::License->new( $self->connection, $license );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconLicense = new Recon::OM::ReconLicense();
-                    $reconLicense->id($id);
-                    $reconLicense->delete( $self->connection );
-                }
-                elsif ( $table eq 'RECON_CUSTOMER_SW' ) {
+                ###Remove recon job from queue.
+                my $reconLicense = new Recon::OM::ReconLicense();
+                $reconLicense->id($id);
+                $reconLicense->delete( $self->connection );
+            }
+            elsif ( $table eq 'RECON_CUSTOMER_SW' ) {
 
-                    ###Get the customer
-                    my $customer = new BRAVO::OM::Customer();
-                    $customer->id( $self->customerId );
-                    $customer->getById( $self->connection );
+                ###Get the customer
+                my $customer = new BRAVO::OM::Customer();
+                $customer->id( $self->customerId );
+                $customer->getById( $self->connection );
 
-                    ###Get the software
-                    my $software = new BRAVO::OM::Software();
-                    $software->id($fk);
-                    $software->getById( $self->connection );
+                ###Get the software
+                my $software = new BRAVO::OM::Software();
+                $software->id($fk);
+                $software->getById( $self->connection );
 
-                    ###Call recon delegate to perform recon.
-                    $recon = Recon::CustomerSoftware->new( $self->connection, $customer, $software );
-                    $recon->recon;
+                ###Call recon delegate to perform recon.
+                $recon = Recon::CustomerSoftware->new( $self->connection,
+                                                       $customer, $software );
+                $recon->recon;
 
-                    ###Remove recon job from queue.
-                    my $reconCustomerSoftware = new Recon::OM::ReconCustomerSoftware();
-                    $reconCustomerSoftware->id($id);
-                    $reconCustomerSoftware->delete( $self->connection );
-                }
+                ###Remove recon job from queue.
+                my $reconCustomerSoftware
+                    = new Recon::OM::ReconCustomerSoftware();
+                $reconCustomerSoftware->id($id);
+                $reconCustomerSoftware->delete( $self->connection );    
             }
         }
     };
@@ -212,17 +210,19 @@ sub loadQueue {
     my %queue;
 
     ###Prepare the query
-    $self->connection->prepareSqlQueryAndFields( $self->queryReconQueueByCustomerId() );
+    $self->connection->prepareSqlQueryAndFields(
+                                       $self->queryReconQueueByCustomerId() );
 
     ###Acquire the statement handle
     my $sth = $self->connection->sql->{reconQueueByCustomerId};
 
     ###Bind our columns
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{reconQueueByCustomerIdFields} } );
+    $sth->bind_columns( map { \$rec{$_} }
+                @{ $self->connection->sql->{reconQueueByCustomerIdFields} } );
 
     ###Excute the query
-    $sth->execute( $self->customerId, $self->date );
+    $sth->execute( $self->customerId );
 
     ###Loop over query result set.
     while ( $sth->fetchrow_arrayref ) {
@@ -234,10 +234,10 @@ sub loadQueue {
         upperValues( \%rec );
 
         ###Add to our queue hash
-        $queue{ $rec{orderBy} }{ $rec{pk} }{table}  = $rec{table};
-        $queue{ $rec{orderBy} }{ $rec{pk} }{id}     = $rec{id};
-        $queue{ $rec{orderBy} }{ $rec{pk} }{fk}     = $rec{fk};
-        $queue{ $rec{orderBy} }{ $rec{pk} }{action} = $rec{action};
+        $queue{ $rec{pk} }{table}  = $rec{table};
+        $queue{ $rec{pk} }{id}     = $rec{id};
+        $queue{ $rec{pk} }{fk}     = $rec{fk};
+        $queue{ $rec{pk} }{action} = $rec{action};
     }
     $sth->finish;
 
@@ -252,7 +252,6 @@ sub queryReconQueueByCustomerId {
         fk
         table
         action
-        orderBy
     );
     my $query = '
         select
@@ -261,27 +260,13 @@ sub queryReconQueueByCustomerId {
             ,a.fk
             ,a.table
             ,a.action
-            ,case when a.table = \'RECON_CUSTOMER\' then 0
-             when a.table = \'RECON_HARDWARE\' then 1
-             when a.table = \'RECON_HW_LPAR\' then 2
-             when a.table = \'RECON_SW_LPAR\' then 3
-             when a.table = \'RECON_LICENSE\' then 4
-             when a.table = \'RECON_INSTALLED_SW\' then 5
-             else 6 end
         from
             v_recon_queue a
         where
             a.customer_id = ?
-            and date(record_time) = ?
     ';
     dlog("queryReconQueueByCustomerId=$query");
     return ( 'reconQueueByCustomerId', $query, \@fields );
-}
-
-sub date {
-    my $self = shift;
-    $self->{_date} = shift if scalar @_ == 1;
-    return $self->{_date};
 }
 
 sub customerId {
@@ -300,12 +285,6 @@ sub connection {
     my $self = shift;
     $self->{_connection} = shift if scalar @_ == 1;
     return $self->{_connection};
-}
-
-sub poolRunning {
-    my $self = shift;
-    $self->{_poolRunning} = shift if scalar @_ == 1;
-    return $self->{_poolRunning};
 }
 
 1;

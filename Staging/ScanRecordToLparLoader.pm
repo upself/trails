@@ -193,7 +193,6 @@ sub doDelta {
 
         my $sr = new Staging::OM::ScanRecord();
         $sr->id( $rec{scanRecordId} );
-        $sr->customerId( $rec{customerId});
         $sr->computerId( $rec{scanRecordComputerId} );
         $sr->name( $rec{scanRecordName} );
         $sr->objectId( $rec{scanRecordObjectId} );
@@ -245,7 +244,6 @@ sub doDelta {
 
         my $newSl = new Staging::OM::SoftwareLpar();
         $newSl->id( $rec{softwareLparId} );
-        $newSl->customerId( $rec{customerId} );
         $newSl->computerId( $sr->computerId );
         $newSl->objectId( $sr->objectId );
         $newSl->name( $sr->name );
@@ -412,10 +410,10 @@ sub doDelta {
                                 dlog('SoftwareLparMap is marked as complete');
                                 dlog('SR=U,SL=C,SLM=C');
 
-                                my $customerId = $sr->customerId;
+                                my $customerId = $self->getCustomerId($sr);
                                 dlog("customerId=$customerId");
 
-                                if ( $customerId  =~ m/\D/ ) {
+                                if ( $customerId =~ m/\D/ ) {
                                     dlog('ScanRecord does not map to a customerId');
 
                                     my $key = $slm->softwareLpar->name . '|' . $slm->softwareLpar->customerId;
@@ -473,7 +471,7 @@ sub doDelta {
                                     my $key = $slm->softwareLpar->name . '|' . $slm->softwareLpar->customerId;
                                     dlog("key=$key");
 
-                                    ##   $newSl->customerId($customerId);
+                                    $newSl->customerId($customerId);
 
                                     if ( $newSl->customerId eq $slm->softwareLpar->customerId ) {
                                         dlog('ScanRecord customerId equals SoftwareLpar customerId');
@@ -807,7 +805,7 @@ sub doDelta {
                                 dlog('SoftwareLparMap is marked as complete');
                                 dlog('SR=C,SL=C,SLM=C');
 
-                                 my $customerId = $sr->customerId;
+                                my $customerId = $self->getCustomerId($sr);
                                 dlog("customerId=$customerId");
 
                                 if ( $customerId =~ m/\D/ ) {
@@ -860,7 +858,7 @@ sub doDelta {
                                     my $key = $slm->softwareLpar->name . '|' . $slm->softwareLpar->customerId;
                                     dlog("key=$key");
 
-                                 ##   $newSl->customerId($customerId);
+                                    $newSl->customerId($customerId);
 
                                     if ( $newSl->customerId eq $slm->softwareLpar->customerId ) {
                                         dlog('ScanRecord customerId equals SoftwareLpar customerId');
@@ -1173,7 +1171,7 @@ sub doDelta {
                                 dlog('SoftwareLparMap is marked as complete');
                                 dlog('SR=D,SL=C,SLM=C');
 
-                               my $customerId = $sr->customerId;
+                                my $customerId = $self->getCustomerId($sr);
                                 dlog("customerId=$customerId");
 
                                 my $key = $slm->softwareLpar->name . '|' . $slm->softwareLpar->customerId;
@@ -1342,7 +1340,7 @@ sub doDelta {
                         dlog('ScanRecord is marked as update');
                         dlog('SR=U,SL=N,SLM=N');
 
-                         my $customerId = $sr->customerId;
+                        my $customerId = $self->getCustomerId($sr);
                         dlog("customerId=$customerId");
 
                         if ( $customerId =~ m/\D/ ) {
@@ -1385,7 +1383,7 @@ sub doDelta {
                             else {
                                 dlog('This lpar has not been processed');
 
-                               ## $newSl->customerId($customerId);
+                                $newSl->customerId($customerId);
                                 $newSl->action('SAVEUPDATE');
 
                                 $lpar{$key} = $newSl;
@@ -1400,7 +1398,7 @@ sub doDelta {
                         dlog('ScanRecord is marked as complete');
                         dlog('SR=C,SL=N,SLM=N');
 
-                        my $customerId = $sr->customerId;
+                        my $customerId = $self->getCustomerId($sr);
                         dlog("customerId=$customerId");
 
                         if ( $customerId =~ m/\D/ ) {
@@ -1437,7 +1435,7 @@ sub doDelta {
                             else {
                                 dlog('This lpar has not been processed');
 
-                             ##   $newSl->customerId($customerId);
+                                $newSl->customerId($customerId);
                                 $newSl->action('SAVEUPDATE');
 
                                 $lpar{$key} = $newSl;
@@ -1667,6 +1665,247 @@ sub applyDelta {
         }
     }
     dlog('End applyDelta method');
+}
+
+sub updateStats {
+    my ( $self, $stagingConnection ) = @_;
+    ###SR
+
+}
+###TODO make sure everything is caps from source
+sub getCustomerId {
+    my ( $self, $sr ) = @_;
+
+    dlog("Start getCustomerId method");
+
+    my $acceptFlag = 0;
+    if (    $sr->bankAccountId == 180
+         || $sr->bankAccountId == 406
+         || $sr->bankAccountId == 410
+         || $sr->bankAccountId == 5
+         || $sr->bankAccountId == 740
+         || $sr->bankAccountId == 738 
+         || $sr->bankAccountId == 853
+         || $sr->bankAccountId == 920)
+    {
+        $acceptFlag = 1;
+    }
+
+    if ( $sr->isManual == 1 ) {
+        if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
+            return $self->customerAcctMap->{ $sr->objectId };
+        }
+
+        dlog('NO MATCHING ACCOUNT');
+        return 999999;
+    }
+
+    my $shortName = ( split( /\./, $sr->name ) )[0];
+    $shortName = $sr->name if ( !defined $shortName );
+    dlog("shortName=$shortName");
+
+    if ( exists $self->hwLparMap->{$shortName} ) {
+        my $count           = 0;
+        my $exactMatchCount = 0;
+        my $customerCount   = 0;
+        my $exactId;
+        my %customerIds;
+
+        #Loop through all the matches
+        foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
+
+            #Loop through the fqhns, there could be 1 short and 1 long
+            foreach my $fqhn ( keys %{$ref} ) {
+
+                if ( $acceptFlag == 0 ) {
+                    if ( exists $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } ) {
+                        ### This customer will only accept certain bank accounts
+
+                        if (
+                            !defined $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} }{ $sr->bankAccountId } )
+                        {
+                            dlog( $sr->bankAccountId . " not defined for " . $ref->{$fqhn}->{'customerId'} );
+                            $count++;
+                            next;
+                        }
+                    }
+                }
+
+                #If we match a serial number return it immediately per logic
+                if (    ( defined $sr->serialNumber )
+                     && ( $ref->{$fqhn}->{'serialNumber'} eq $sr->serialNumber ) )
+                {
+                    dlog( "ATP serial match: $shortName " . $sr->serialNumber . ", " . $sr->name . ", $fqhn" );
+
+                    return $ref->{$fqhn}->{'customerId'};
+                }
+
+                if ( $fqhn eq $sr->name ) {
+                    $exactMatchCount++;
+                    $exactId = $ref->{$fqhn}->{'customerId'};
+                }
+
+                if ( !exists $customerIds{ $ref->{$fqhn}->{'customerId'} } ) {
+                    $customerIds{ $ref->{$fqhn}->{'customerId'} } = 0;
+                    $customerCount++;
+                }
+
+                $count++;
+            }
+        }
+
+        #If we get here, we know a serial didn't match
+        #If our count is equal to 1, then we know we have a fuzzy unique match
+        dlog("count=$count");
+        if ( $count == 1 ) {
+            my $ref = @{ $self->hwLparMap->{$shortName} }[0];
+
+            foreach my $fqhn ( keys %{$ref} ) {
+                if ( $acceptFlag == 0 ) {
+                    if ( exists $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } ) {
+                        ### This customer will only accept certain bank accounts
+
+                        if (
+                            !defined $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} }{ $sr->bankAccountId } )
+                        {
+                            dlog( $sr->bankAccountId . " not defined for " . $ref->{$fqhn}->{'customerId'} );
+                            next;
+                        }
+                    }
+                }
+
+                dlog("ATP Fuzzy match $fqhn");
+                return $ref->{$fqhn}->{'customerId'};
+            }
+        }
+
+        #If we get here, we know we have multiple matches
+        dlog("exactMatchCount=$exactMatchCount");
+        if ( $exactMatchCount > 0 ) {
+
+            # If there is one exact match
+            if ( $exactMatchCount == 1 ) {
+                dlog("ATP exact match: $sr->name");
+                return $exactId;
+            }
+
+            # If we have only one customerId, thats it
+            dlog("customerCount=$customerCount");
+            if ( $customerCount == 1 ) {
+                foreach my $customerId ( keys %customerIds ) {
+                    dlog("ATP single customer: $sr->name");
+                    return $customerId;
+                }
+            }
+
+            # if account is swasset, only use if an account matches what is in swasset
+            if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
+                foreach my $customerId ( keys %customerIds ) {
+                    if ( exists $self->customerAcctMap->{ $sr->objectId }
+                         && $self->customerAcctMap->{ $sr->objectId } eq $customerId )
+                    {
+                        return $customerId;
+                    }
+                }
+
+                dlog('MOVE SWASSET SCAN');
+                return 999999;
+            }
+
+            #Check the mapping file for hostname
+            if ( exists $self->nameMap->{ $sr->name } ) {
+                foreach my $customerId ( keys %customerIds ) {
+                    if ( $self->nameMap->{ $sr->name } eq $customerId ) {
+                        dlog("ATP Mapping file match $sr->name");
+                        return $customerId;
+                    }
+                }
+
+                dlog('UPDATE MAPPING FILE');
+                return 999999;
+            }
+
+            # Use the tme_object_id from cndb
+            if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
+                foreach my $customerId ( keys %customerIds ) {
+                    if ( $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } eq $customerId ) {
+                        dlog("ATP tme_object_id match $sr->name");
+                        return $customerId;
+                    }
+                }
+
+                dlog('TME_OBJECT_ID MISMATCH');
+                return 999999;
+            }
+
+            dlog('ADD TME_OBJECT_ID TO CNDB');
+            return 999999;
+        }
+    }
+
+    # if account is swasset, only use if an account matches what is in swasset
+    if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
+        if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
+            return $self->customerAcctMap->{ $sr->objectId };
+        }
+
+        dlog('NO MATCHING ACCOUNT');
+        return 999999;
+    }
+
+    if ( exists $self->nameMap->{ $sr->name } ) {
+        dlog("Found hostname in mapping $sr->name");
+
+        if ( $acceptFlag == 0 ) {
+            if ( exists $self->inclusionMap->{ $self->nameMap->{ $sr->name } } ) {
+                ### This customer will only accept certain bank accounts
+
+                if ( defined $self->inclusionMap->{ $self->nameMap->{ $sr->name } }{ $sr->bankAccountId } ) {
+                    return $self->nameMap->{ $sr->name };
+                }
+            }
+            else {
+                return $self->nameMap->{ $sr->name };
+            }
+        }
+        else {
+            return $self->nameMap->{ $sr->name };
+        }
+    }
+
+    if ( defined $sr->objectId && $sr->objectId ne '' ) {
+        if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
+
+            if ( $acceptFlag == 0 ) {
+                if (
+                     exists
+                     $self->inclusionMap->{ $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } } )
+                {
+                    ### This customer will only accept certain bank accounts
+
+                    if (
+                         defined
+                         $self->inclusionMap->{ $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } }
+                         { $sr->bankAccountId } )
+                    {
+                        dlog( "Found tme_object_id in cndb" . $sr->name );
+                        return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+                    }
+                }
+                else {
+                    return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+                }
+            }
+            else {
+                return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+            }
+        }
+    }
+
+    dlog("End getCustomerId method");
+
+    dlog('ATP NEED UPDATE');
+    return 999999;
 }
 
 sub maps {

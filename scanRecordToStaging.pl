@@ -7,8 +7,7 @@ use File::Basename;
 use Base::Utils;
 use Sigbank::Delegate::BankAccountDelegate;
 use Base::ConfigManager;
-use Tap::NewPerl;
-use Staging::Delegate::MappingService;
+use Tap::NewPerl; 
 
 ###Globals
 my $logfile = "/var/staging/logs/scanRecordToStaging/scanRecordToStaging.log";
@@ -85,14 +84,9 @@ eval {
 	while (1) {
 	    
 		my @bankAccounts;
-		my $mapService = new Staging::Delegate::MappingService;
 		eval {
 			###Get the current software lpar batches to process.
-			@bankAccounts =
-			  Sigbank::Delegate::BankAccountDelegate->getBankAccounts;
-
-			###Persist the mapping to the physical files.
-			$mapService->prepareMappings;
+			@bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccounts;
 		};
 		if ($@) {
 			die $@;
@@ -112,15 +106,8 @@ eval {
 				sleep $sleepTime;
 			}
 
-			if ( !$mapService->needUpdate ) {
-				my $childLog = $logfile . "." . $name;
-				spawnScript( $name, $childLog );
-			}
-			elsif ( $children == 0 ) {
-				###Update the mapping.
-				$mapService->prepareMappings;
-				$mapService->needUpdate(0);
-			}
+			my $childLog = $logfile . "." . $name;
+			spawnScript( $name, $childLog );
 		}
 
 		###Wait till  all children die.

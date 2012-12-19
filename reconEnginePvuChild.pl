@@ -12,7 +12,7 @@ use Tap::NewPerl;
 #my $logfile    = "/var/staging/logs/reconEngine/reconEngine.log";
 #my $configFile = "/opt/staging/v2/config/reconEngineConfig.txt";
 # Sample: 
-# reconEnginePvuChild.pl -t 0 -a 1 -l /var/staging/logs/reconEngine/reconEnginePvuChild.log -f /opt/staging/v2/config/reconEnginePvuChildConfig.txt
+# reconEnginePvuChild.pl 0 1 /var/staging/logs/reconEngine/reconEnginePvuChild.log /opt/staging/v2/config/reconEnginePvuChildConfig.txt
 use vars qw( $opt_t $opt_a $opt_s $opt_l $opt_f);
 getopts("t:a:l:f:");
 die "Usage: $0"

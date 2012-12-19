@@ -69,10 +69,11 @@ sub getDisconnectedFile {
     dlog('No new file');
 
     ###Return undef if we are only looking for new files
-    if($filePart != 'software_filter') {
+    if($filePart ne 'software_filter') {
         return undef if ($delta);
     }
 
+     dlog("$disconnectedDir/$fileName");
     ###We get here and we will return the old file if it exists
     if ( -e "$disconnectedDir/$fileName" ) {
         return "$disconnectedDir/$fileName" if ( -e "$disconnectedDir/$fileName" );

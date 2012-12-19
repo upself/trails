@@ -6,7 +6,10 @@ use Carp qw( croak );
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use Recon::OM::AlertUnlicensedSoftware;
 use Recon::OM::AlertUnlicensedSoftwareHistory;
-
+use BRAVO::OM::InstalledFilter;
+use BRAVO::OM::InstalledSignature;
+use BRAVO::OM::InstalledDorana;
+use BRAVO::OM::InstalledTLCMZ;
 
 sub new {
     my ( $class, $connection, $installedSoftware ) = @_;
@@ -43,10 +46,22 @@ sub archive {
     $self->deleteAlertUnlicensedSoftware;
     ilog('Deleted alert unlicensed software');
 
-    ilog('Deleting Scan SW Inst SW');
-    $self->deleteScanSwInstSW;
-    ilog('Deleted Scan SW Inst SW');
-   
+    ilog('Deleting installed filters');
+    $self->deleteInstalledFilters;
+    ilog('Deleted installed filters');
+
+    ilog('Deleting installed signatures');
+    $self->deleteInstalledSignatures;
+    ilog('Deleted installed signatures');
+
+    ilog('Deleting installed dorana products');
+    $self->deleteInstalledDoranas;
+    ilog('Deleted installed dorana products');
+
+    ilog('Deleting installed sa products');
+    $self->deleteInstalledSas;
+    ilog('Deleted installed sa products');
+    
     ilog('Deleting installed sa products');
     $self->deleteInstalledSoftwareEff;
     ilog('Deleted installed sa products');
@@ -104,25 +119,64 @@ sub deleteAlertUnlicensedSoftwareHistory {
     }
 }
 
-
-sub deleteScanSwInstSW {
+sub deleteInstalledFilters {
     my $self = shift;
 
-    dlog('Preparing Scan Sw Inst SW  query');
-    $self->connection->prepareSqlQuery( $self->queryDeleteScanSwInstSW );
-    dlog('Prepared Scan Sw Inst SW query');
+    my @ids = $self->getInstalledFilterIds;
 
-    dlog('Obtaining statement handle');
-    my $sth = $self->connection->sql->{deleteScanSwInstSW};
-    dlog('Statement handle obtained');
-    
-    dlog('Executing query');
-    $sth->execute( $self->installedSoftware->id );
-    dlog('Executed query');
+    foreach my $id (@ids) {
+        my $filter = new BRAVO::OM::InstalledFilter();
+        $filter->id($id);
+        $filter->getById( $self->connection );
+        ilog( $filter->toString );
 
-    dlog('Closing statement handle');
-    $sth->finish;
-    dlog('Statement handle closed');
+        $filter->delete( $self->connection );
+    }
+}
+
+sub deleteInstalledSignatures {
+    my $self = shift;
+
+    my @ids = $self->getInstalledSignatureIds;
+
+    foreach my $id (@ids) {
+        my $signature = new BRAVO::OM::InstalledSignature();
+        $signature->id($id);
+        $signature->getById( $self->connection );
+        ilog( $signature->toString );
+
+        $signature->delete( $self->connection );
+    }
+}
+
+sub deleteInstalledDoranas {
+    my $self = shift;
+
+    my @ids = $self->getInstalledDoranaIds;
+
+    foreach my $id (@ids) {
+        my $dorana = new BRAVO::OM::InstalledDorana();
+        $dorana->id($id);
+        $dorana->getById( $self->connection );
+        ilog( $dorana->toString );
+
+        $dorana->delete( $self->connection );
+    }
+}
+
+sub deleteInstalledSas {
+    my $self = shift;
+
+    my @ids = $self->getInstalledSaIds;
+
+    foreach my $id (@ids) {
+        my $sa = new BRAVO::OM::InstalledTLCMZ();
+        $sa->id($id);
+        $sa->getById( $self->connection );
+        ilog( $sa->toString );
+
+        $sa->delete( $self->connection );
+    }
 }
 
 sub deleteInstalledSoftwareEff {
@@ -209,6 +263,221 @@ sub querySoftwareDiscrepancyHistoryIds {
     return ( 'softwareDiscrepancyHistoryIds', $query, \@fields );
 }
 
+sub getInstalledFilterIds {
+    my $self = shift;
+
+    my @ids;
+
+    dlog('Preparing installed filter query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledFilterIds );
+    dlog('Prepared installed filter query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{installedFilterIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{installedFilterIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $self->installedSoftware->id );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+sub queryInstalledFilterIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            id
+		from 
+            installed_filter
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryInstalledFilterIds=$query");
+    return ( 'installedFilterIds', $query, \@fields );
+}
+
+sub getInstalledSignatureIds {
+    my $self = shift;
+
+    my @ids;
+
+    dlog('Preparing installed signature query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledSignatureIds );
+    dlog('Prepared installed signature query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{installedSignatureIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{installedSignatureIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $self->installedSoftware->id );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+sub queryInstalledSignatureIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            id
+		from 
+            installed_signature
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryInstalledSignatureIds=$query");
+    return ( 'installedSignatureIds', $query, \@fields );
+}
+
+sub getInstalledDoranaIds {
+    my $self = shift;
+
+    my @ids;
+
+    dlog('Preparing installed dorana query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledDoranaIds );
+    dlog('Prepared installed dorana query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{installedDoranaIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{installedDoranaIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $self->installedSoftware->id );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+sub queryInstalledDoranaIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            id
+		from 
+            installed_dorana_product
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryInstalledDoranaIds=$query");
+    return ( 'installedDoranaIds', $query, \@fields );
+}
+
+sub getInstalledSaIds {
+    my $self = shift;
+
+    my @ids;
+
+    dlog('Preparing installed sa product query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledSaIds );
+    dlog('Prepared installed sa product query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{installedSaIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{installedSaIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $self->installedSoftware->id );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+sub queryInstalledSaIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            id
+		from 
+            installed_sa_product
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryInstalledSaIds=$query");
+    return ( 'installedSaIds', $query, \@fields );
+}
 
 sub getAlertUnlicensedSoftwareHistoryIds {
     my ( $self, $alertUnlicensedSoftwareId ) = @_;
@@ -277,21 +546,6 @@ sub queryDeleteInstalledSoftwareEff {
 
     dlog("queryDeleteInstalledSoftwareEff=$query");
     return ( 'deleteInstalledSoftwareEff', $query );
-}
-
-sub queryDeleteScanSwInstSW {
-    my $self = shift;
-
-    my $query = qq{
-		delete
-		from
-		  scan_sw_inst_sw
-		where
-			installed_software_id = ?
-        };
-
-    dlog("queryDeleteScanSwInstSW=$query");
-    return ( 'deleteScanSwInstSW', $query );
 }
 
 sub log {

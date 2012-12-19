@@ -24,7 +24,6 @@ sub new {
         ,_model => undef
         ,_processorType => undef
         ,_serverType => undef
-        ,_accountNumber => undef
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
         ,_table => 'hardware'
@@ -141,13 +140,6 @@ sub equals {
         $equal = 1 if $self->serverType eq $object->serverType;
     }
     $equal = 1 if (!defined $self->serverType && !defined $object->serverType);
-    return 0 if $equal == 0;
-
-    $equal = 0;
-    if (defined $self->accountNumber && defined $object->accountNumber) {
-        $equal = 1 if $self->accountNumber eq $object->accountNumber;
-    }
-    $equal = 1 if (!defined $self->accountNumber && !defined $object->accountNumber);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -275,12 +267,6 @@ sub serverType {
     return $self->{_serverType};
 }
 
-sub accountNumber {
-    my $self = shift;
-    $self->{_accountNumber} = shift if scalar @_ == 1;
-    return $self->{_accountNumber};
-}
-
 sub cpuMIPS {
     my $self = shift;
     $self->{_cpuMIPS} = shift if scalar @_ == 1;
@@ -398,11 +384,6 @@ sub toString {
         $s .= $self->{_serverType};
     }
     $s .= ",";
-    $s .= "accountNumber=";
-    if (defined $self->{_accountNumber}) {
-        $s .= $self->{_accountNumber};
-    }
-    $s .= ",";
     $s .= "cpuMIPS=";
     if (defined $self->{_cpuMIPS}) {
         $s .= $self->{_cpuMIPS};
@@ -450,7 +431,6 @@ sub save {
             ,$self->model
             ,$self->processorType
             ,$self->serverType
-            ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
         );
@@ -476,7 +456,6 @@ sub save {
             ,$self->model
             ,$self->processorType
             ,$self->serverType
-            ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
             ,$self->id
@@ -508,7 +487,6 @@ sub queryInsert {
             ,model
             ,processor_type
             ,server_type
-            ,account_number
             ,cpu_mips
             ,cpu_msu
         ) values (
@@ -521,7 +499,6 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
-            ,?
             ,?
             ,?
             ,?
@@ -556,7 +533,6 @@ sub queryUpdate {
             ,model = ?
             ,processor_type = ?
             ,server_type = ?
-            ,account_number = ?
             ,cpu_mips = ?
             ,cpu_msu = ?
         where
@@ -605,7 +581,6 @@ sub getByBizKey {
     my $model;
     my $processorType;
     my $serverType;
-    my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
     $sth->bind_columns(
@@ -623,7 +598,6 @@ sub getByBizKey {
         ,\$model
         ,\$processorType
         ,\$serverType
-        ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
     );
@@ -648,7 +622,6 @@ sub getByBizKey {
     $self->model($model);
     $self->processorType($processorType);
     $self->serverType($serverType);
-    $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
 }
@@ -670,7 +643,6 @@ sub queryGetByBizKey {
             ,model
             ,processor_type
             ,server_type
-            ,account_number
             ,cpu_mips
             ,cpu_msu
         from
@@ -703,7 +675,6 @@ sub getById {
     my $model;
     my $processorType;
     my $serverType;
-    my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
     $sth->bind_columns(
@@ -723,7 +694,6 @@ sub getById {
         ,\$model
         ,\$processorType
         ,\$serverType
-        ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
     );
@@ -748,7 +718,6 @@ sub getById {
     $self->model($model);
     $self->processorType($processorType);
     $self->serverType($serverType);
-    $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
     return (defined $found) ? 1 : 0;
@@ -773,7 +742,6 @@ sub queryGetById {
             ,model
             ,processor_type
             ,server_type
-            ,account_number
             ,cpu_mips
             ,cpu_msu
         from
