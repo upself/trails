@@ -210,7 +210,8 @@ sub reconFromHardwareLpar {
     ###Populate required data
     $self->populate;
 
-    if ( $self->hardwareLpar->status eq 'INACTIVE' ) {    
+    if ( $self->hardwareLpar->lparStatus eq 'INACTIVE' 
+         || $self->hardwareLpar->lparStatus eq 'HWCOUNT' ) {    
         dlog("hardware lpar is inactive");
         if ( defined $self->hwSwComposite ) {
             ###Add the hardware lpar to list to recon
