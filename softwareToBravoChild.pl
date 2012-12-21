@@ -149,6 +149,12 @@ sub querySoftwareLparsByCustomerIdByDate {
             c.id = ss.scan_record_id
         ';
     }
+    elsif ( $phase == 6 ) {
+        $query .= '
+        left outer join scan_software_item si on
+            c.id = si.scan_record_id
+        ';
+    }
         $query .= '
         where
             a.customer_id = ?
@@ -179,6 +185,11 @@ sub querySoftwareLparsByCustomerIdByDate {
         elsif ( $phase == 5 ) {
             $query .= '
                 or ss.action != \'COMPLETE\'
+            ';
+        }
+        elsif ( $phase == 6 ) {
+            $query .= '
+                or si.action != \'COMPLETE\'
             ';
         }
         $query .= ')';

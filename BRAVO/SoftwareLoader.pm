@@ -19,6 +19,7 @@ use BRAVO::OM::InstalledSignature;
 use BRAVO::OM::InstalledFilter;
 use BRAVO::OM::InstalledTLCMZ;
 use BRAVO::OM::InstalledDorana;
+use BRAVO::OM::InstalledTADZ;
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use SWASSET::Delegate::SWASSETDelegate;
 use SWASSET::OM::InstalledManualSoftware;
@@ -652,15 +653,39 @@ sub load {
                 dlog("no installed software id defined, skipping to next row");
                 next;
             }
+            
+            
+            
+            my $softwareId = undef;
+            my $mainframeFeatureId = undef;
+            ###fetch the software id from software item by guid for tad4z.
+            if( $rec{installedSoftwareType} eq 'TAD4Z' ){
+              $mainframeFeatureId  = getMainframeFeatureIdByGUID($rec{installedSoftwareTypeId});
+              if(!defined $mainframeFeatureId){
+                dlog("mainframe items not loaded by catalog loader under guid id $rec{installedSoftwareTypeId}");
+                next;
+              }
+              
+              my $versionId = undef;
+              $versionId = $self->getMainframeVersionIdByFeatureId($mainframeFeatureId);
+              ### mainframe feature not exsits, it is mainframe version.
+              if(!defined $versionId){
+                $versionId = $mainframeFeatureId;
+              }                            
+              $softwareId = getProductIdByVersionId($versionId);
+              
+            }else{
+              $softwareId = $rec{softwareId};
+            }
 
             ###Get the installed software key
-            my $installedSoftwareKey = $bravoSoftwareLpar->id . '|' . $rec{softwareId};
+            my $installedSoftwareKey = $bravoSoftwareLpar->id . '|' . $softwareId;
             dlog("installed software key=$installedSoftwareKey");
 
             ###Get bravo installed software object by biz key if exists
             my $bravoInstalledSoftware = new BRAVO::OM::InstalledSoftware();
             $bravoInstalledSoftware->softwareLparId( $bravoSoftwareLpar->id );
-            $bravoInstalledSoftware->softwareId( $rec{softwareId} );
+            $bravoInstalledSoftware->softwareId( $softwareId );
             $bravoInstalledSoftware->getByBizKey($self->bravoConnection);
 
             ###Set the action property to the staging action.
@@ -722,14 +747,30 @@ sub load {
 
                 ###Bravo installed type object remains undef.
             }
-            else {
+            elsif ( $rec{installedSoftwareType} eq 'TAD4Z' ) {
 
+                $stagingInstalledType = new Staging::OM::ScanSoftwareItem();
+                $stagingInstalledType->guid( $rec{installedSoftwareTypeId} );
+                ###make use of the softwareId/path filed to store lastUsed/useCount properties.
+                $stagingInstalledType->lastUsed( $rec{softwareId} );
+                $stagingInstalledType->useCount( $rec{path} );
+                
+                $bravoInstalledType = new BRAVO::OM::InstalledTADZ();
+                $bravoInstalledType->mainframeFeatureId($mainframeFeatureId);
+                ###make use of the softwareId/path filed to store lastUsed/useCount properties
+                $bravoInstalledType->lastUsed( $rec{softwareId} );
+                $bravoInstalledType->useCount( $rec{path} );
+
+                ###Bravo installed type object remains undef.
+            }
+            else {
                 die "Invalid installed type: " . $rec{installedSoftwareType} . "\n";
             }
 
             $stagingInstalledType->id( $rec{installedSoftwareTypeTableId} );
             $stagingInstalledType->scanRecordId( $rec{scanRecordId} );
-            $stagingInstalledType->softwareId( $rec{softwareId} );
+            $stagingInstalledType->softwareId( $softwareId );
+            
             $stagingInstalledType->action( $rec{installedSoftwareTypeAction} );
             dlog( "staging software installed type obj=" . $stagingInstalledType->toString() );
 
@@ -1362,7 +1403,7 @@ sub load {
                 ###Instantiate inst manual sw object for this input file line
                 my $installedManualSoftware = new SWASSET::OM::InstalledManualSoftware();
                 $installedManualSoftware->computerSysId( $rec{scanRecordComputerId} );
-                $installedManualSoftware->softwareId( $rec{softwareId} );
+                $installedManualSoftware->softwareId( $softwareId );
 
                 ###Get the inst manual sw object from db by biz key.
                 $installedManualSoftware->getByBizKey($self->swassetConnection);
@@ -1593,6 +1634,10 @@ sub querySoftwareLparDataByCustomerId {
             union
         ';
         $query .= $self->getDoranaQuery();
+        $query .= '
+            union
+        ';
+        $query .= $self->getTad4zQuery();
     $query .= '
         ) as x
         order by
@@ -1987,5 +2032,162 @@ sub getDoranaQuery {
                 ';
 }
 
+sub getTad4zQuery {
+    my $self = shift;
+    return '
+                select
+                a.id as lpar_id
+                ,a.customer_id
+                ,a.computer_id
+                ,a.object_id                
+                ,a.name
+                ,a.model
+                ,a.bios_serial
+                ,a.os_name
+                ,a.os_type
+                ,a.os_major_vers
+                ,a.os_minor_vers
+                ,a.os_sub_vers
+                ,a.os_inst_date
+                ,a.user_name
+                ,a.bios_manufacturer
+                ,a.bios_model
+                ,a.server_type
+                ,a.tech_img_id
+                ,a.ext_id
+                ,a.memory
+                ,a.disk
+                ,a.dedicated_processors
+                ,a.total_processors
+                ,a.shared_processors
+                ,a.processor_type
+                ,a.shared_proc_by_cores
+                ,a.dedicated_proc_by_cores
+                ,a.total_proc_by_cores
+                ,a.alias
+                ,a.physical_total_kb
+                ,a.virtual_memory
+                ,a.physical_free_memory
+                ,a.virtual_free_memory
+                ,a.node_capacity
+                ,a.lpar_capacity
+                ,a.bios_date
+                ,a.bios_serial_number
+                ,a.bios_unique_id
+                ,a.board_serial
+                ,a.case_serial
+                ,a.case_asset_tag
+                ,a.power_on_password                     
+                ,a.processor_count
+                ,a.scan_time
+                ,a.status
+                ,a.action
+                ,b.id as map_id
+                ,b.action
+                ,c.id as scan_record_id
+                ,c.computer_id as scan_record_computer_id
+                ,c.bank_account_id
+                ,c.scan_time as scan_record_scan_time
+                ,c.authenticated
+                ,c.action
+                ,\'TAD4Z\' as type
+                ,d.id as type_table_id
+                ,d.guid as type_id
+                ,d.last_used as software_id
+                ,d.use_count as path
+                ,d.action
+                ,c.users
+                ,\'\'
+            from software_lpar a
+            left outer join software_lpar_map b on b.software_lpar_id = a.id
+            left outer join scan_record c on c.id = b.scan_record_id
+            left outer join scan_software_item d on d.scan_record_id = c.id
+            where
+                a.customer_id = ?
+                and a.id = ?
+                ';
+}
+
+sub getMainframeFeatureIdByGUID{
+   my ($self, $guid)  = @_;
+   
+    $self->bravoConnection->prepareSqlQuery($self->queryGetMainframeFeatureIdByGUID());
+    my $sth = $connection->sql->{getMainframeFeatureId};
+    my $featureId=undef;
+  
+    $sth->bind_columns(
+        \$featureId
+    );
+    $sth->execute(
+        $guid
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    
+    return $featureId;
+}
+
+
+sub queryGetMainframeFeatureIdByGUID {
+    my $query = '
+        select id from kb_definition where guid =  ?
+    ';
+    return ('getMainframeFeatureId', $query);
+}
+
+
+sub getMainframeVersionIdByFeatureId{
+   my ($self, $featureId)  = @_;
+   
+    $self->bravoConnection->prepareSqlQuery($self->queryGetMainframeVersionIdByFeatureId());
+    my $sth = $connection->sql->{getMainframeVersionId};
+    my $id=undef;
+  
+    $sth->bind_columns(
+        \$id
+    );
+    $sth->execute(
+        $featureId
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    
+    return $id;
+}
+
+
+sub queryGetMainframeVersionIdByFeatureId {
+    my $query = '
+        select version_id from mainframe_feature where id =  ?
+    ';
+    return ('getMainframeVersionId', $query);
+}
+
+sub getProductIdByVersionId{
+   my ($self, $versionId)  = @_;
+   
+    $self->bravoConnection->prepareSqlQuery($self->queryGetProductIdByVersionId());
+    my $sth = $connection->sql->{getProductId};
+    my $id=undef;
+  
+    $sth->bind_columns(
+        \$id
+    );
+    $sth->execute(
+        $versionId
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    
+    return $id;
+}
+
+
+sub queryGetProductIdByVersionId {
+    my $query = '
+        select product_id from mainframe_version where id =  ?
+    ';
+    return ('getProductId', $query);
+}
 1;
 
