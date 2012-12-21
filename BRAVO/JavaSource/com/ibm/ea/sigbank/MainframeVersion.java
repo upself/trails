@@ -9,7 +9,7 @@ import com.ibm.ea.sigbank.Manufacturer;
 import com.ibm.ea.sigbank.MainframeFeature;
 import com.ibm.ea.sigbank.Product;
 
-public class MainframeVersion extends ValidatorActionForm  {
+public class MainframeVersion extends  ValidatorActionForm {
 
 	/**
 	 * 

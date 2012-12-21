@@ -12,8 +12,8 @@
         <many-to-one name="bankAccount" class="com.ibm.ea.sigbank.BankAccount">
         	<column name="BANK_ACCOUNT_ID" not-null="true" index="IDX_IVMPBA" unique-key="IDX_IVM"/>
         </many-to-one>
-        <many-to-one name="mainframeVersion" class="com.ibm.ea.sigbank.MainframeVersion">
-        	<column name="MAINFRAME_VERSION_ID" not-null="true" index="IDX_IFSWF" unique-key="IDX_IF"/>
+        <many-to-one name="softwareItem" class="com.ibm.ea.sigbank.SoftwareItem">
+        	<column name="MAINFRAME_FEATURE_ID" not-null="true" index="IDX_IFSWF" unique-key="IDX_IF"/>
         </many-to-one>
 		<property name="useCount" column="USE_COUNT"
 			not-null="true" />

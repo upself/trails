@@ -1,7 +1,7 @@
 package com.ibm.ea.bravo.software;
 
 import java.util.Date;
-import com.ibm.ea.sigbank.MainframeVersion;
+import com.ibm.ea.sigbank.SoftwareItem;
 
 public class InstalledTadz extends InstalledBase {
 
@@ -11,14 +11,14 @@ public class InstalledTadz extends InstalledBase {
 	private static final long serialVersionUID = 5644123551619521856L;
     private int useCount;
 	private Date lastUsed;
-	private MainframeVersion mainframeVersion;
+	private SoftwareItem softwareItem;
 
-	public void setMainframeVersion(MainframeVersion mainframeVersion) {
-		this.mainframeVersion = mainframeVersion;
+	public void setSoftwareItem(SoftwareItem softwareItem) {
+		this.softwareItem = softwareItem;
 	}
 
-	public MainframeVersion getMainframeVersion() {
-		return mainframeVersion;
+	public SoftwareItem getSoftwareItem() {
+		return softwareItem;
 	}
 	
 	public int getUseCount() {

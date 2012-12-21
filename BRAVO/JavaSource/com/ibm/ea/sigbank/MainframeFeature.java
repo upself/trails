@@ -1,9 +1,8 @@
 package com.ibm.ea.sigbank;
 
 import org.apache.struts.validator.ValidatorActionForm;
-import com.ibm.ea.sigbank.MainframeVersion;
 
-public class MainframeFeature  extends ValidatorActionForm {
+public class MainframeFeature  extends  ValidatorActionForm {
 
 
     /**
@@ -22,7 +21,7 @@ public class MainframeFeature  extends ValidatorActionForm {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
+		}
 	public MainframeVersion getVersion() {
 		return version;
 	}

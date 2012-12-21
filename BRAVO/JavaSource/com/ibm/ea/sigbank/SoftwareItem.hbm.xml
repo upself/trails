@@ -6,7 +6,6 @@
 		<id name="id" type="long" column="ID">
 			<generator class="increment"/>
 		</id>
-
 		<property name="name" column="NAME"  length="254" />
 		<property name="endOfSupport" column="END_OF_SUPPORT" type="timestamp" />
 		<property name="subCapacityLicensing" column="SUB_CAPACITY_LICENSING"  type="integer" />
@@ -15,7 +14,8 @@
 		<property name="webSite" column="WEBSITE" length="254" />
 		<property name="productRole" column="PRODUCT_ROLE" length="254" />	
 		<property name="activationDate" column="ACTIVATION_DATE" type="timestamp" />	
-
+        <one-to-one name="mainframeVersion" class="com.ibm.ea.sigbank.MainframeVersion" foreign-key="ID" outer-join="true"/>
+		<one-to-one name="mainframeFeature" class="com.ibm.ea.sigbank.MainframeFeature" foreign-key="ID" outer-join="true"/>
 	</class>
 </hibernate-mapping>
 

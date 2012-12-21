@@ -10,6 +10,11 @@
 	</div>
 	<display:table name="tadzList" requestURI="" class="bravo" id="small">
 		<display:setProperty name="basic.empty.showtable" value="true"/>	
-		<display:column property="mainframeVersion.manufacturer.manufacturerName" title="Manufacturer" headerClass="blue-med"/>
-		<display:column property="mainframeVersion.version" title="Version" headerClass="blue-med"/>
+ 
+	  	<display:column property="softwareItem.name" title="FEATURE NAME" headerClass="blue-med"/>
+	    <display:column property="softwareItem.mainframeVersion.manufacturer.manufacturerName" title="MANUFACTURER" headerClass="blue-med"/>
+		<display:column property="softwareItem.mainframeVersion.version" title="Version" headerClass="blue-med"/>
+		<display:column property="softwareItem.mainframeFeature.eId" title="EID" headerClass="blue-med"/> 
+	    <display:column property="useCount" title="USEcn" headerClass="blue-med"/>
+	    <display:column property="lastUsed" title="LastUP" headerClass="blue-med"/>
 	</display:table>

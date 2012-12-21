@@ -82,9 +82,11 @@
 		<mapping resource="com/ibm/ea/sigbank/SystemScheduleStatus.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/VmProduct.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/systemstatus/BankAccountJob.hbm.xml" />
-	  	<mapping resource="com/ibm/ea/sigbank/MainframeVersion.hbm.xml" /> 
-		<mapping resource="com/ibm/ea/sigbank/MainframeFeature.hbm.xml" /> 
-		
+	    <mapping resource="com/ibm/ea/sigbank/MainframeVersion.hbm.xml" />  
+	    <mapping resource="com/ibm/ea/sigbank/MainframeFeature.hbm.xml" /> 
+	    <!--  
+		<mapping resource="com/ibm/ea/sigbank/MainframeSoftwareItem.hbm.xml" />
+		-->
 		<!-- SWKBT -->
 		<mapping resource="com/ibm/ea/sigbank/Product.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/ProductInfo.hbm.xml" />

@@ -73,8 +73,10 @@
 		<![CDATA[
 			from
 				InstalledTadz i
-				join fetch i.mainframeVersion j
-				join fetch j.manufacturer 
+			    join fetch i.softwareItem j
+		        left outer join fetch j.mainframeVersion k
+		        left outer join fetch j.mainframeFeature
+		        left outer join fetch k.manufacturer 
 			where
 				i.installedSoftware = :installedSoftware
 		]]>
