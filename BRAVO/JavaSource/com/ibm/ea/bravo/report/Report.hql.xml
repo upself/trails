@@ -384,6 +384,7 @@
 				,hardware.cpu_msu 
 				,hardware_lpar.part_mips
 				,hardware_lpar.part_msu
+				,hardware_lpar.lpar_status
 			from
 				eaadmin.customer as customer
 				,eaadmin.customer_type as customer_type
@@ -433,6 +434,7 @@
                 ,hardware.cpu_msu 
                 ,hardware_lpar.part_mips
                 ,hardware_lpar.part_msu
+				,hardware_lpar.lpar_status
 			from
 				eaadmin.customer as customer
 				,eaadmin.customer_type as customer_type
@@ -477,6 +479,7 @@
                 ,hardware.cpu_msu 
                 ,0 as part_mips
                 ,0 as part_msu
+				,'' as lpar_status
 			from
 				eaadmin.customer as customer
 				,eaadmin.customer_type as customer_type

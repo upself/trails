@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 
@@ -62,6 +63,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"CPU MSU"
 		,"Part MIPS"
 		,"Part MSU"
+		,"Lpar Status"
 	};
 	
 	public AccountAssets() { }
@@ -95,7 +97,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 			
 			list = session.getNamedQuery("reportAccountAsset")
 					.setLong("accountNumber", account.getCustomer().getAccountNumber())
-					.scroll();
+					.scroll(ScrollMode.FORWARD_ONLY);
 			PrintWriter os = new PrintWriter(outputStream, true);
 			if ( os != null ) {
 				logger.debug("got print writer");
