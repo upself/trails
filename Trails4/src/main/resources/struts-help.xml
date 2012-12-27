@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="help" extends="trails-struts-default" namespace="/help">
+
+		<action name="home" method="home" class="helpAction">
+			<result type="tiles">tiles.help.home</result>
+		</action>
+
+		<action name="languageSelect" method="save" class="helpAction">
+			<result type="tiles">tiles.help.home</result>
+		</action>
+
+		<action name="userGuide" method="userGuide" class="helpAction">
+			<result type="tiles">tiles.help.userGuide</result>
+		</action>
+
+		<action name="faq" method="faq" class="helpAction">
+			<result type="tiles">tiles.help.faq</result>
+		</action>
+
+		<action name="onPageRef" method="onPageRef" class="helpAction">
+			<result type="tiles">tiles.help.onPageRef</result>
+		</action>
+
+		<action name="admin" method="admin" class="helpAction">
+			<result type="tiles">tiles.help.admin</result>
+		</action>
+
+	</package>
+
+</struts>
+

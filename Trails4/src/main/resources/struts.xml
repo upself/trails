@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.action.extension" value="htm" />
+
+	<package name="trails-struts-default" extends="struts-default">
+
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+
+		<interceptors>
+
+			<interceptor name="userRole"
+				class="com.ibm.tap.trails.interceptor.UserRolesInterceptor">
+			</interceptor>
+
+			<interceptor name="userSession"
+				class="com.ibm.tap.trails.interceptor.UserSessionInterceptor">
+			</interceptor>
+
+			<interceptor name="userSessionAccount"
+				class="com.ibm.tap.trails.interceptor.UserSessionAccountInterceptor">
+			</interceptor>
+
+			<interceptor-stack name="defaultStack">
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="userSession" />
+				<interceptor-ref name="userRole" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="i18n" />
+				<interceptor-ref name="chain" />
+				<interceptor-ref name="modelDriven" />
+				<interceptor-ref name="fileUpload">
+					<param name="allowedTypes">
+						application/vnd.ms-excel
+					</param>
+				</interceptor-ref>
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="conversionError" />
+				<interceptor-ref name="scope" />
+				<interceptor-ref name="validation">
+					<param name="excludeMethods">cancel</param>
+				</interceptor-ref>
+				<interceptor-ref name="workflow">
+					<param name="excludeMethods">cancel</param>
+				</interceptor-ref>
+			</interceptor-stack>
+
+			<interceptor-stack name="accountStack">
+				<interceptor-ref name="userRole" />
+				<interceptor-ref name="userSession" />
+				<interceptor-ref name="userSessionAccount" />
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="chain" />
+				<interceptor-ref name="modelDriven" />
+				<interceptor-ref name="fileUpload" />
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="conversionError" />
+				<interceptor-ref name="scope" />
+				<interceptor-ref name="validation">
+					<param name="excludeMethods">cancel</param>
+				</interceptor-ref>
+				<interceptor-ref name="workflow">
+					<param name="excludeMethods">cancel</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultStack" />
+		<default-action-ref name="home" />
+
+		<global-results>
+			<result name="global_home" type="redirectAction">
+				<param name="actionName">home</param>
+				<param name="namespace">/</param>
+			</result>
+		</global-results>
+
+		<action name="home">
+			<result type="tiles">tiles.home</result>
+		</action>
+
+	</package>
+
+	<include file="struts-account.xml" />
+	<include file="struts-alert.xml" />
+	<include file="struts-search.xml" />
+	<include file="struts-license.xml" />
+	<include file="struts-recon.xml" />
+	<include file="struts-help.xml" />
+	<include file="struts-report.xml" />
+	<include file="struts-admin.xml" />
+	<include file="struts-trailsreport.xml" />
+	<include file="struts-exception.xml" />
+
+</struts>
