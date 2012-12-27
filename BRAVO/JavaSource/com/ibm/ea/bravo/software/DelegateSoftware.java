@@ -881,19 +881,21 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	@SuppressWarnings("unchecked")
 	public static List<InstalledTadz> getTadzProducts(
 			String installedSoftwareId) {
-		List<InstalledTadz> list = new ArrayList<InstalledTadz>();
+		List<InstalledTadz> tadzlist = new ArrayList<InstalledTadz>();
+		List<InstalledTadz> mvlist = new ArrayList<InstalledTadz>();
+		List<InstalledTadz> mflist = new ArrayList<InstalledTadz>();
 
 		InstalledSoftware installedSoftware = DelegateSoftware
 				.getInstalledSoftware(installedSoftwareId);
 		if (installedSoftware == null)
-			return list;
+			return tadzlist;
 
 		try {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery(
-					"installedTadzProductsByInstalledSoftware").setEntity(
+			mvlist = session.getNamedQuery(
+					"installedTadzMvProductsByInstalledSoftware").setEntity(
 					"installedSoftware", installedSoftware).list();
 
 			closeSession(session);
@@ -901,8 +903,26 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		} catch (Exception e) {
 			logger.error(e, e);
 		}
+		
+		tadzlist.addAll(mvlist);
+		
+		try {
 
-		return list;
+			Session session = getSession();
+
+			mflist = session.getNamedQuery(
+					"installedTadzMfProductsByInstalledSoftware").setEntity(
+					"installedSoftware", installedSoftware).list();
+
+			closeSession(session);
+
+		} catch (Exception e) {
+			logger.error(e, e);
+		}
+		
+		tadzlist.addAll(mflist);
+
+		return tadzlist;
 	}
 
 	public static SoftwareStatistics getSoftwareStatistics(

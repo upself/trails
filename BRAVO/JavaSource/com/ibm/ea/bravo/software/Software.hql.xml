@@ -69,18 +69,31 @@
 		]]>
 	</query>
 	
-		<query name="installedTadzProductsByInstalledSoftware">
+	<query name="installedTadzMvProductsByInstalledSoftware">
 		<![CDATA[
-			from
+	        from
 				InstalledTadz i
 			    join fetch i.softwareItem j
-		        left outer join fetch j.mainframeVersion k
-		        left outer join fetch j.mainframeFeature
-		        left outer join fetch k.manufacturer 
+		        join fetch j.mainframeFeature k
+		        join fetch k.version l
+		        join fetch l.manufacturer       
 			where
 				i.installedSoftware = :installedSoftware
 		]]>
 	</query>
+	
+   <query name="installedTadzMfProductsByInstalledSoftware">
+		<![CDATA[	
+			from
+				InstalledTadz i
+			    join fetch i.softwareItem j
+		        join fetch j.mainframeVersion k
+		        join fetch k.manufacturer       
+			where
+				i.installedSoftware = :installedSoftware
+		]]>
+	</query>
+	
 
 	<query name="softwareLparsSearch">
 		<![CDATA[
