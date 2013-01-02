@@ -11,7 +11,7 @@ use Base::ConfigManager;
 use Tap::NewPerl;
 
 ###Globals
-my $maxLparsInQuery     = 100;
+my $maxLparsInQuery     = 2500;
 my $logfile             = "/var/staging/logs/hdiskToBravo/hdiskToBravo.log";
 my $pidFile             = "/tmp/hdiskToBravo.pid";
 my $configFile      = "/opt/staging/v2/config/hdiskToBravoConfig.txt";
@@ -54,7 +54,7 @@ logging_level($cfgMgr->debugLevel);
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 10;
+my $maxChildren = 1;
 my %children    = ();
 my $children    = 0;
 my $sleepTime   = 60;
@@ -128,7 +128,7 @@ eval {
 		my @batches;
 		eval {
 			###Get the current software lpar batches to process.
-			@batches = Staging::Delegate::StagingDelegate->getSoftwareLparHdiskBatches(
+			@batches = Staging::Delegate::StagingDelegate->getScanRecordHdiskBatches(
 				$stagingConnection, $testMode,
 				$loadDeltaOnly,     $maxLparsInQuery
 			);

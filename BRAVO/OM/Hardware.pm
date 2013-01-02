@@ -24,9 +24,9 @@ sub new {
         ,_model => undef
         ,_processorType => undef
         ,_serverType => undef
+        ,_accountNumber => undef
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
-        ,_accountNumber => undef
         ,_table => 'hardware'
         ,_idField => 'id'
     };
@@ -141,6 +141,13 @@ sub equals {
         $equal = 1 if $self->serverType eq $object->serverType;
     }
     $equal = 1 if (!defined $self->serverType && !defined $object->serverType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->accountNumber && defined $object->accountNumber) {
+        $equal = 1 if $self->accountNumber eq $object->accountNumber;
+    }
+    $equal = 1 if (!defined $self->accountNumber && !defined $object->accountNumber);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -268,6 +275,12 @@ sub serverType {
     return $self->{_serverType};
 }
 
+sub accountNumber {
+    my $self = shift;
+    $self->{_accountNumber} = shift if scalar @_ == 1;
+    return $self->{_accountNumber};
+}
+
 sub cpuMIPS {
     my $self = shift;
     $self->{_cpuMIPS} = shift if scalar @_ == 1;
@@ -278,12 +291,6 @@ sub cpuMSU {
     my $self = shift;
     $self->{_cpuMSU} = shift if scalar @_ == 1;
     return $self->{_cpuMSU};
-}
-
-sub accountNumber {
-    my $self = shift;
-    $self->{_accountNumber} = shift if scalar @_ == 1;
-    return $self->{_accountNumber};
 }
 
 sub table {
@@ -391,6 +398,11 @@ sub toString {
         $s .= $self->{_serverType};
     }
     $s .= ",";
+    $s .= "accountNumber=";
+    if (defined $self->{_accountNumber}) {
+        $s .= $self->{_accountNumber};
+    }
+    $s .= ",";
     $s .= "cpuMIPS=";
     if (defined $self->{_cpuMIPS}) {
         $s .= $self->{_cpuMIPS};
@@ -399,11 +411,6 @@ sub toString {
     $s .= "cpuMSU=";
     if (defined $self->{_cpuMSU}) {
         $s .= $self->{_cpuMSU};
-    }
-    $s .= ",";
-    $s .= "accountNumber=";
-    if (defined $self->{_accountNumber}) {
-        $s .= $self->{_accountNumber};
     }
     $s .= ",";
     $s .= "table=";
@@ -443,9 +450,9 @@ sub save {
             ,$self->model
             ,$self->processorType
             ,$self->serverType
+            ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
-            ,$self->accountNumber
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -469,9 +476,9 @@ sub save {
             ,$self->model
             ,$self->processorType
             ,$self->serverType
+            ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
-            ,$self->accountNumber
             ,$self->id
         );
         $sth->finish;
@@ -501,9 +508,9 @@ sub queryInsert {
             ,model
             ,processor_type
             ,server_type
+            ,account_number
             ,cpu_mips
             ,cpu_msu
-            ,account_number
         ) values (
             ?
             ,?
@@ -549,9 +556,9 @@ sub queryUpdate {
             ,model = ?
             ,processor_type = ?
             ,server_type = ?
+            ,account_number = ?
             ,cpu_mips = ?
             ,cpu_msu = ?
-            ,account_number = ?
         where
             id = ?
     ';
@@ -598,9 +605,9 @@ sub getByBizKey {
     my $model;
     my $processorType;
     my $serverType;
+    my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
-    my $accountNumber;
     $sth->bind_columns(
         \$id
         ,\$owner
@@ -616,9 +623,9 @@ sub getByBizKey {
         ,\$model
         ,\$processorType
         ,\$serverType
+        ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
-        ,\$accountNumber
     );
     $sth->execute(
         $self->machineTypeId
@@ -641,9 +648,9 @@ sub getByBizKey {
     $self->model($model);
     $self->processorType($processorType);
     $self->serverType($serverType);
+    $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
-    $self->accountNumber($accountNumber);
 }
 
 sub queryGetByBizKey {
@@ -663,9 +670,9 @@ sub queryGetByBizKey {
             ,model
             ,processor_type
             ,server_type
+            ,account_number
             ,cpu_mips
             ,cpu_msu
-            ,account_number
         from
             hardware
         where
@@ -696,9 +703,9 @@ sub getById {
     my $model;
     my $processorType;
     my $serverType;
+    my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
-    my $accountNumber;
     $sth->bind_columns(
         \$machineTypeId
         ,\$serial
@@ -716,9 +723,9 @@ sub getById {
         ,\$model
         ,\$processorType
         ,\$serverType
+        ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
-        ,\$accountNumber
     );
     $sth->execute(
         $self->id
@@ -741,9 +748,9 @@ sub getById {
     $self->model($model);
     $self->processorType($processorType);
     $self->serverType($serverType);
+    $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
-    $self->accountNumber($accountNumber);
     return (defined $found) ? 1 : 0;
 }
 
@@ -766,9 +773,9 @@ sub queryGetById {
             ,model
             ,processor_type
             ,server_type
+            ,account_number
             ,cpu_mips
             ,cpu_msu
-            ,account_number
         from
             hardware
         where
@@ -778,4 +785,3 @@ sub queryGetById {
 }
 
 1;
-
