@@ -7,16 +7,13 @@ use BRAVO::OM::HardwareLparEff;
 
 ###Object constructor.
 sub new {
-    my ( $class, $stagingConnection, $bravoConnection, $stagingHardwareLparEff,
-        $bravoHardwareLpar )
-      = @_;
+    my ( $class, $stagingConnection, $bravoConnection, $stagingHardwareLparEff, $bravoHardwareLpar ) = @_;
 
     my $self = {
-        _stagingConnection        => $stagingConnection,
-        _bravoConnection          => $bravoConnection,
-        _stagingHardwareLparEff   => $stagingHardwareLparEff,
-        _bravoHardwareLpar        => $bravoHardwareLpar,
-        _saveBravoHardwareLparEff => 0
+                 _stagingConnection      => $stagingConnection,
+                 _bravoConnection        => $bravoConnection,
+                 _stagingHardwareLparEff => $stagingHardwareLparEff,
+                 _bravoHardwareLpar      => $bravoHardwareLpar
     };
     bless $self, $class;
 
@@ -30,16 +27,16 @@ sub validate {
     my $self = shift;
 
     croak 'Staging connection is undefined'
-      unless defined $self->stagingConnection;
+        unless defined $self->stagingConnection;
 
     croak 'BRAVO connection is undefined'
-      unless defined $self->bravoConnection;
+        unless defined $self->bravoConnection;
 
     croak 'Staging hardware lpar eff is undefined'
-      unless defined $self->stagingHardwareLparEff;
+        unless defined $self->stagingHardwareLparEff;
 
     croak 'Bravo hardware lpar is undefined'
-      unless defined $self->bravoHardwareLpar;
+        unless defined $self->bravoHardwareLpar;
 }
 
 sub logic {
@@ -62,8 +59,7 @@ sub logic {
             $self->bravoHardwareLparEff->id( $bravoHardwareLparEff->id );
 
             ###Set to save the bravo hardware lpar if they are not equal
-            if ( !$bravoHardwareLparEff->equals( $self->bravoHardwareLparEff ) )
-            {
+            if ( !$bravoHardwareLparEff->equals( $self->bravoHardwareLparEff ) ) {
                 $self->saveBravoHardwareLparEff(1);
             }
         }
@@ -92,6 +88,7 @@ sub save {
         $temp->getByBizKey( $self->bravoConnection );
         $self->bravoHardwareLparEff->id( $temp->id );
         $self->bravoHardwareLparEff->save( $self->bravoConnection );
+        $self->addToCount( 'TRAILS', 'EFFECTIVE_PROCESSOR', 'UPDATE' );
     }
 
     ###Return here if the staging license is already in complete
@@ -100,6 +97,7 @@ sub save {
     ###Delete the staging license and return, if we're supposed to
     if ( $self->stagingHardwareLparEff->action eq 'DELETE' ) {
         $self->stagingHardwareLparEff->delete( $self->stagingConnection );
+        $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', 'DELETE' );
         return;
     }
 
@@ -108,6 +106,7 @@ sub save {
 
     ###Save the staging license
     $self->stagingHardwareLparEff->save( $self->stagingConnection );
+    $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', 'STATUS_COMPLETE' );
 }
 
 sub buildBravoHardwareLparEff {
@@ -115,8 +114,7 @@ sub buildBravoHardwareLparEff {
 
     my $bravoHardwareLparEff = new BRAVO::OM::HardwareLparEff();
     $bravoHardwareLparEff->hardwareLparId( $self->bravoHardwareLpar->id );
-    $bravoHardwareLparEff->processorCount(
-        $self->stagingHardwareLparEff->processorCount );
+    $bravoHardwareLparEff->processorCount( $self->stagingHardwareLparEff->processorCount );
     $bravoHardwareLparEff->status( $self->stagingHardwareLparEff->status );
 
     $self->bravoHardwareLparEff($bravoHardwareLparEff);
@@ -158,4 +156,24 @@ sub saveBravoHardwareLparEff {
     return ( $self->{_saveBravoHardwareLparEff} );
 }
 
+sub addToCount {
+    my ( $self, $db, $object, $action ) = @_;
+    my $hash;
+    if ( defined $self->count ) {
+        $hash = $self->count;
+        $hash->{$db}->{$object}->{$action}++;
+    }
+    else {
+        $hash->{$db}->{$object}->{$action} = 1;
+    }
+    $self->count($hash);
+}
+
+sub count {
+    my ( $self, $value ) = @_;
+    $self->{_count} = $value if defined($value);
+    return ( $self->{_count} );
+}
+
 1;
+
