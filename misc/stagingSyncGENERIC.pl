@@ -249,6 +249,14 @@ sub executeHchk {
                                 $filter->scanRecordId($stagingSoftwareLpars{$lparKey}->{ $bravoRec{bankAccountId} }->{scanRecordId});
                                 $filter->save($stagingConnection);
                             }
+                               elsif($bravoRec{itType} eq 'TADZ') {
+                                my $tadz = new Staging::OM::ScanSoftwareItem();
+                                $tadz->action('DELETE');
+                                $tadz->guId($bravoRec{softwareId});
+                                $tadz->useCount($bravoRec{itTypeId});
+                                $tadz->scanRecordId($stagingSoftwareLpars{$lparKey}->{ $bravoRec{bankAccountId} }->{scanRecordId});
+                                $tadz->save($stagingConnection);
+                            }
                         }
                         else {
                 #            BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
@@ -296,6 +304,15 @@ sub executeHchk {
                     $filter->id($stagingInstalledSoftware{$key}->{itId});
                     $filter->save($stagingConnection);
                 }
+                elsif($bravoRec{itType} eq 'TADZ') {
+                    my $tadz = new Staging::OM::ScanSoftwareItem();
+                    $tadz->action('UPDATE');
+                    $tadz->useCount($stagingInstalledSoftware{$key}->{itTypeId});
+                    $tadz->guId($stagingInstalledSoftware{$key}->{softwareId});
+                    $tadz->scanRecordId($stagingInstalledSoftware{$key}->{id});
+                    $tadz->id($stagingInstalledSoftware{$key}->{itId});
+                    $tadz->save($stagingConnection);
+                 }
 	}
 }
 
@@ -326,7 +343,7 @@ sub queryStagingSoftwareDataByCustomerId {
             ,c.scan_time
             ,c.action
             ,d.id
-            ,d.software_id
+            ,CHAR(d.software_id)
             ,\'MANUAL\'
             ,0
             ,d.action
@@ -347,7 +364,7 @@ sub queryStagingSoftwareDataByCustomerId {
             ,c.scan_time
             ,c.action
             ,d.id
-            ,d.software_id
+            ,CHAR(d.software_id)
             ,\'SIGNATURE\'
             ,d.software_signature_id
             ,d.action
@@ -368,7 +385,7 @@ sub queryStagingSoftwareDataByCustomerId {
             ,c.scan_time
             ,c.action
             ,d.id
-            ,d.software_id
+            ,CHAR(d.software_id)
             ,\'FILTER\'
             ,d.software_filter_id
             ,d.action
@@ -389,7 +406,7 @@ sub queryStagingSoftwareDataByCustomerId {
             ,c.scan_time
             ,c.action
             ,d.id
-            ,d.software_id
+            ,CHAR(d.software_id)
             ,\'TLCMZ\'
             ,d.sa_product_id
             ,d.action
@@ -397,6 +414,27 @@ sub queryStagingSoftwareDataByCustomerId {
             left outer join software_lpar_map b on b.software_lpar_id = a.id
             left outer join scan_record c on c.id = b.scan_record_id
             left outer join software_tlcmz d on d.scan_record_id = c.id
+            where a.customer_id = ?
+            and a.name = ?
+        union
+         select
+            a.name
+            ,a.scan_time
+            ,a.status
+            ,a.action
+            ,c.id
+            ,c.bank_account_id
+            ,c.scan_time
+            ,c.action
+            ,d.id
+            ,d.guid
+            ,\'TADZ\'
+            ,d.USE_COUNT
+            ,d.action
+        from software_lpar a
+            left outer join software_lpar_map b on b.software_lpar_id = a.id
+            left outer join scan_record c on c.id = b.scan_record_id
+            left outer join scan_software_item d on d.scan_record_id = c.id
             where a.customer_id = ?
             and a.name = ?
         union
@@ -410,7 +448,7 @@ sub queryStagingSoftwareDataByCustomerId {
             ,c.scan_time
             ,c.action
             ,d.id
-            ,d.software_id
+            ,CHAR(d.software_id)
             ,\'DORANA\'
             ,d.dorana_product_id
             ,d.action
@@ -442,7 +480,7 @@ sub queryBravoSoftwareDataByCustomerId {
         select
                 sl.id
         	,sl.name
-        	,is.software_id
+        	,,CHAR(is.software_id)
         	,is.discrepancy_type_id
         	,is.remote_user
         	,is.record_time
@@ -461,7 +499,7 @@ sub queryBravoSoftwareDataByCustomerId {
         select 
                 sl.id
 		,sl.name
-        	,is.software_id
+        	,CHAR(is.software_id)
         	,is.discrepancy_type_id
         	,is.remote_user
         	,is.record_time
@@ -480,7 +518,7 @@ sub queryBravoSoftwareDataByCustomerId {
         select
                 sl.id
         	,sl.name
-        	,is.software_id
+        	,CHAR(is.software_id)
         	,is.discrepancy_type_id
         	,is.remote_user
         	,is.record_time
@@ -497,9 +535,29 @@ sub queryBravoSoftwareDataByCustomerId {
         	and is.status = \'ACTIVE\'
         union
         select
+             sl.id
+        	,sl.name
+        	,kb.guid
+        	,is.discrepancy_type_id
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'TADZ\'
+        	,it.USE_COUNT
+        	,it.bank_account_id
+        from software_lpar sl
+        	join installed_software is on is.software_lpar_id = sl.id
+        	join installed_tadz it on it.installed_software_id = is.id
+        	join kb_definition kb on it.mainframe_feature_id=kb.id
+        	where sl.customer_id = ?
+                and sl.name = ?
+        	and sl.status = \'ACTIVE\'
+        	and is.status = \'ACTIVE\'
+        union
+        select
                 sl.id
         	,sl.name
-        	,is.software_id
+        	,CHAR(is.software_id)
         	,is.discrepancy_type_id
         	,is.remote_user
         	,is.record_time
@@ -518,7 +576,7 @@ sub queryBravoSoftwareDataByCustomerId {
         select
                 sl.id
         	,sl.name
-        	,is.software_id
+        	,CHAR(is.software_id)
         	,is.discrepancy_type_id
         	,is.remote_user
         	,is.record_time
@@ -536,6 +594,7 @@ sub queryBravoSoftwareDataByCustomerId {
 	        and not exists (select 1 from installed_filter it where it.installed_software_id = is.id)
 	        and not exists (select 1 from installed_sa_product it where it.installed_software_id = is.id)
 	        and not exists (select 1 from installed_dorana_product it where it.installed_software_id = is.id)
+	        and not exists (select 1 from installed_tadz it where it.installed_software_id = is.id)
 	    with ur
     ';
 	return ( 'bravoSoftwareDataByCustomerId', $query, \@fields );

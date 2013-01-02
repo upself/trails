@@ -92,7 +92,7 @@ eval {
 		my @bankAccounts;
 		eval {
 			###Get the current software lpar batches to process.
-			@bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccountsByType('TAD4Z');
+			@bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccountsByType('TADZ');
 		};
 		if ($@) {
 			die $@;

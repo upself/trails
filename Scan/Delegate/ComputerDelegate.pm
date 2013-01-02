@@ -299,7 +299,7 @@ sub getConnectedScanRecordData {
             $connection->prepareSqlQuery( queryComputerDoranaDeltaData() );
             $sth = $connection->sql->{computerDoranaDeltaData};
         }
-        elsif ( $bankAccount->type eq 'TAD4Z' ) {
+        elsif ( $bankAccount->type eq 'TADZ' ) {
             $connection->prepareSqlQuery( queryTAD4ZDeltaData() );
             $sth = $connection->sql->{tad4zDeltaData};
         }
