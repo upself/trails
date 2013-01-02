@@ -7,7 +7,8 @@ use Base::Utils;
 use Recon::ReconEngineCustomer;
 use Base::ConfigManager;
 use Tap::NewPerl;
-
+### example: 
+### nohup ./reconEngineCustomerChild.pl -t 0 -a 1 -c 504 -d 12/31/2012 -p 0 -l /var/staging/logs/reconEngine/reconEngine.log.child.504  -f /opt/staging/v2/config/reconEngineConfig.txt &
 ###Check usage.
 use vars qw( $opt_t $opt_a $opt_c $opt_l $opt_f $opt_d $opt_p);
 getopts("t:a:c:l:f:d:p:");
@@ -48,7 +49,7 @@ eval {
 
  ###Call recon engine for this customer id.
  my $reconEngine =
-   new Recon::ReconEngineCustomer( $customerId, $date, $poolRunning );
+   new Recon::ReconEngineCustomer( $opt_c, $opt_d, $opt_p );
  $reconEngine->recon;
 
  ilog("stopping customer child: testMode=$opt_t"
