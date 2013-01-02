@@ -1373,5 +1373,49 @@ sub queryComputerDoranaData {
 
     return ( 'computerDoranaData', $query );
 }
+sub queryTAD4ZDeltaData {
+    my $query = "
+    select
+     node_key
+      ,lpar_name
+      ,'' as objectId
+      ,hw_model
+      ,hw_serial
+      ,last_update_time
+      ,0 as users
+      ,2 as authenticated
+      ,0 as isManual
+      ,0 as authProc
+      ,0 as processor
+      ,'' as osName
+      ,'' as osType
+      ,'' as osMajorVers
+      ,'' as osMinorVers
+      ,'' as osSubVers
+      ,'' as osInstDate
+      ,'' as userName
+      ,'' as biosManufacturer
+      ,'' as biosModel
+      ,'' as computerAlias
+      ,'' as physicalTotalKb
+      ,'' as virtTotalKb
+      ,'' as physicalFreeKb
+      ,'' as virtFreeKb
+      ,'' as biosDate
+      ,'' as biosSerial
+      ,'' as sysUuid
+      ,'' as boardSerNum
+      ,'' as caseSerNum
+      ,'' as caseAssetTag
+   from
+      node
+   where
+      node_type = \'LPAR\'
+      and last_update_time > ?
+   with ur
+     ";
+
+    return ( 'tad4zData', $query );
+}
 
 1;

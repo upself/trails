@@ -224,16 +224,9 @@ sub getData {
         $hardwareLpar->extId( $rec{extId} );
         $hardwareLpar->techImageId( $rec{techImageId} );
         $hardwareLpar->serverType( $self->getServerType( $rec{serverType}, undef ) );
+        $hardwareLpar->lparStatus( $rec{lparStatus} );
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
-        
-        if($hardware->hardwareStatus eq 'ACTIVE'){
-          $hardwareLpar->lparStatus('ACTIVE');
-        }elsif($hardware->hardwareStatus eq 'HWCOUNT'){
-          $hardwareLpar->lparStatus('HWCOUNT');
-        }else{
-          $hardwareLpar->lparStatus( $rec{lparStatus} );
-        }
 
         dlog( $hardwareLpar->toString );
 
