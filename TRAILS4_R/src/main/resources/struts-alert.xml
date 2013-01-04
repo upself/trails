@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="accountAlerts" extends="trails-struts-default"
+		namespace="/account/alerts">
+
+		<action name="home" method="home" class="accountAction">
+			<interceptor-ref name="accountStack" />
+			<result type="tiles">tiles.account.home</result>
+		</action>
+
+		<action name="overview" method="overview" class="accountAlertAction">
+			<interceptor-ref name="accountStack" />
+			<result type="tiles">tiles.account.alerts.overview</result>
+		</action>
+
+		<action name="alert*" class="accountAlert{1}" method="input">
+			<interceptor-ref name="accountStack" />
+			<result type="redirectAction">
+				<param name="actionName">alert{1}</param>
+				<param name="parse">true</param>
+				<param name="page">${page}</param>
+				<param name="dir">${dir}</param>
+				<param name="sort">${sort}</param>
+			</result>
+			<result name="input" type="tiles">
+				tiles.alerts.alert{1}.list
+			</result>
+		</action>
+
+		<action name="alertUnlicensedIbmSw" class="accountAlertUnlicensedIbmSw"
+			method="input">
+			<interceptor-ref name="accountStack" />
+			<result type="redirectAction">
+				<param name="actionName">alertUnlicensedIbmSw</param>
+				<param name="parse">true</param>
+				<param name="page">${page}</param>
+				<param name="dir">${dir}</param>
+				<param name="sort">${sort}</param>
+			</result>
+			<result name="input" type="tiles">
+				tiles.alerts.alertUnlicensedIbmSw.list
+			</result>
+		</action>
+
+		<action name="alertUnlicensedIsvSw" class="accountAlertUnlicensedIsvSw"
+			method="input">
+			<interceptor-ref name="accountStack" />
+			<result type="redirectAction">
+				<param name="actionName">alertUnlicensedIsvSw</param>
+				<param name="parse">true</param>
+				<param name="page">${page}</param>
+				<param name="dir">${dir}</param>
+				<param name="sort">${sort}</param>
+			</result>
+			<result name="input" type="tiles">
+				tiles.alerts.alertUnlicensedIsvSw.list
+			</result>
+		</action>
+
+		<!--  need to fix this -->
+		<action name="alertExpiredScanHistory" class="alertExpiredScanHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertSoftwareLparHistory" class="alertSoftwareLparHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertHardwareHistory" class="alertHardwareHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertHardwareLparHistory" class="alertHardwareLparHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertUnlicensedIbmSwHistory" class="alertUnlicensedIbmSwHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertUnlicensedIsvSwHistory" class="alertUnlicensedIsvSwHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+		<action name="alertExpiredMaintHistory" class="alertExpiredMaintHistory">
+			<result type="tiles">tiles.alerts.history.popup</result>
+		</action>
+
+	</package>
+
+	<package name="reports" extends="trails-struts-default"
+		namespace="/reports">
+		<action name="home" method="home" class="alertAction">
+			<result type="tiles">tiles.reports.home</result>
+		</action>
+	</package>
+
+	<package name="reportAlerts" extends="trails-struts-default"
+		namespace="/reports/alerts">
+		
+		<action name="home" method="alertsHome" class="alertAction">
+			<result type="tiles">tiles.reports.alerts.home</result>
+		</action>
+
+		<action name="geography" method="geography" class="alertAction">
+			<result type="tiles">tiles.reports.alerts.geography</result>
+		</action>
+
+		<action name="region" method="region" class="alertAction">
+			<result type="tiles">tiles.reports.alerts.region</result>
+		</action>
+
+		<action name="countryCode" method="countryCode" class="alertAction">
+			<result type="tiles">
+				tiles.reports.alerts.countryCode
+			</result>
+		</action>
+
+		<action name="sector" method="sector" class="alertAction">
+			<result type="tiles">tiles.reports.alerts.sector</result>
+		</action>
+
+		<action name="department" method="department" class="alertAction">
+			<result type="tiles">
+				tiles.reports.alerts.department
+			</result>
+		</action>
+
+		<action name="account" method="account" class="alertAction">
+			<result name="success" type="tiles">
+				tiles.reports.alerts.account
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.alerts.account.error
+			</result>
+		</action>
+
+		<action name="pendingCustomerDecision" method="pendingCustomerDecision"
+			class="alertAction">
+			<result type="tiles">
+				tiles.reports.alerts.pendingCustomerDecision
+			</result>
+		</action>
+
+	</package>
+
+	<package name="reportOperational" extends="trails-struts-default"
+		namespace="/reports/operational">
+
+		<action name="home" method="operationalHome" class="alertAction">
+			<result type="tiles">tiles.reports.operational.home</result>
+		</action>
+
+		<action name="geography" method="geography" class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.geography
+			</result>
+		</action>
+
+		<action name="region" method="region" class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.region
+			</result>
+		</action>
+
+		<action name="countryCode" method="countryCode" class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.countryCode
+			</result>
+		</action>
+
+		<action name="sector" method="sector" class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.sector
+			</result>
+		</action>
+
+
+		<action name="department" method="department" class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.department
+			</result>
+		</action>
+
+		<action name="accountByName" method="accountByName"
+			class="operationalAction">
+			<result name="success" type="tiles">
+				tiles.reports.operational.accountByName
+			</result>
+			<result name="detail" type="tiles">
+				tiles.reports.operational.accountDetail
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.operational.account.error
+			</result>
+		</action>
+
+		<action name="accountByNumber" method="accountByNumber"
+			class="operationalAction">
+			<result name="success" type="tiles">
+				tiles.reports.operational.accountByNumber
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.operational.account.number.error
+			</result>
+		</action>
+
+		<action name="accountDetailDownload" method="accountDetailDownload"
+			class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.accountDetailDownload
+			</result>
+		</action>
+
+		<action name="accountRegion" method="accountRegion"
+			class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.accountRegion
+			</result>
+		</action>
+
+		<action name="accountCountryCode" method="accountCountryCode"
+			class="operationalAction">
+			<result type="tiles">
+				tiles.reports.operational.accountCountryCode
+			</result>
+		</action>
+	</package>
+
+	<package name="reportRedAging" extends="trails-struts-default"
+		namespace="/reports/alertRedAging">
+		
+		<action name="home" method="alertredAgingHome" class="alertAction">
+			<result type="tiles">tiles.reports.alertredaging.home</result>
+		</action>
+
+		<action name="geography" method="geography" class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.geography
+			</result>
+		</action>
+
+		<action name="region" method="region" class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.region
+			</result>
+		</action>
+
+		<action name="countryCode" method="countryCode" class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.countryCode
+			</result>
+		</action>
+
+		<action name="sector" method="sector" class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.sector
+			</result>
+		</action>
+
+		<action name="department" method="department" class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.department
+			</result>
+		</action>
+
+		<action name="account" method="account" class="alertRedAgingAction">
+			<result name="success" type="tiles">
+				tiles.reports.alertRedAging.account
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.alertRedAging.account.error
+			</result>
+		</action>
+
+		<action name="accountDetail" method="accountDetail"
+			class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.accountDetail
+			</result>
+		</action>
+
+
+		<action name="accountRegion" method="accountRegion"
+			class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.accountRegion
+			</result>
+		</action>
+
+		<action name="accountCountryCode" method="accountCountryCode"
+			class="alertRedAgingAction">
+			<result type="tiles">
+				tiles.reports.alertRedAging.accountCountryCode
+			</result>
+		</action>
+	</package>
+</struts>
