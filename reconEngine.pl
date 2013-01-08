@@ -324,7 +324,7 @@ sub getReconCustomerQueue {
 }
 
 sub getReconSoftwareQueue {
-    my ( $connection, $testMode ) = @_;
+    my ( $connection) = @_;
 
     my $id;
     my $recordTime;
@@ -378,6 +378,7 @@ sub queryDistinctCustomerIdsFromQueueFifo {
                 order by date(a.record_time)
                 with ur
     ';
+    dlog($query);
     return ( 'distinctCustomerIdsFromQueueFifo', $query );
 }
 
