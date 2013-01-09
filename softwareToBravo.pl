@@ -326,7 +326,7 @@ sub querySoftwareLparCustomers {
     }
     elsif ( $count == 6 ) {
         $query .= '
-                or si.action != 1
+                or si.action != 0  ### 0-COMPLETE 1-UPDATE 2-DELETE
             ';
     }
     $query .= '))';
@@ -460,7 +460,7 @@ sub querySoftwareLparsByCustomerIdByDate {
     }
     elsif ( $phase == 6 ) {
         $query .= '
-                or si.action != 1
+                or si.action != 0   ### 0-COMPLETE 1-UPDATE 2-DELETE
             ';
     }
     $query .= ')';
