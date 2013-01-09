@@ -289,6 +289,12 @@ sub querySoftwareLparCustomers {
             c.id = ss.scan_record_id
         ';
     }
+    elsif ( $count == 6 ) {
+        $query .= '
+        left outer join scan_software_item si on
+            c.id = si.scan_record_id
+        ';
+    }
     my $clause = 'where';
     $query .= ' ' . $clause . ' ( (
         a.action != \'COMPLETE\'
@@ -316,6 +322,11 @@ sub querySoftwareLparCustomers {
     elsif ( $count == 5 ) {
         $query .= '
                 or ss.action != \'COMPLETE\'
+            ';
+    }
+    elsif ( $phase == 6 ) {
+        $query .= '
+                or si.action != 1
             ';
     }
     $query .= '))';
@@ -449,7 +460,7 @@ sub querySoftwareLparsByCustomerIdByDate {
     }
     elsif ( $phase == 6 ) {
         $query .= '
-                or si.action != \'COMPLETE\'
+                or si.action != 1
             ';
     }
     $query .= ')';
