@@ -395,6 +395,8 @@ the scan is considered invalid.</font>
 		headerClass="blue-med" />
 	<display:column property="customerNumber" title="Customer Number"
 		sortable="true" headerClass="blue-med" />
+	<display:column property="machineType.name" title="MachineType"
+		sortable="true" headerClass="blue-med" />
 	<display:column property="machineType.type" title="Type"
 		sortable="true" headerClass="blue-med" />
 	<display:column property="serial" title="Serial" sortable="true"
