@@ -109,6 +109,8 @@ update the alert.</p>
 				includeContext="false" includeParams="none" />
 			<s:a id="hwserial_%{#attr.row.tableId}" href="%{bravoUrl}">${row.hardware.serial}</s:a>
 		</display:column>
+		<display:column property="hardware.machineType.name" title="MachineType" sortable="true" />
+		<display:column property="hardware.country" title="Country" sortable="false" />
 		<display:column property="creationTime" title="Create date"
 			sortable="true" class="date" format="{0,date,MM-dd-yyyy}" />
 		<display:column property="alertAge" title="Age(days)" sortable="true" />

@@ -27,7 +27,7 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 	public ArrayList paginatedList(Account account, int startIndex,
 			int objectsPerPage, String sort, String dir) {
 		StringBuffer query = new StringBuffer(
-				"from AlertViewHardware a join fetch a.hardware where a.account = :account and a.open = 1 order by a.")
+				"from AlertViewHardware a join fetch a.hardware b join fetch b.machineType where a.account = :account and a.open = 1 order by a.")
 				.append(sort).append(" ").append(dir);
 
 		Query q = super.getEntityManager().createQuery(query.toString());
@@ -42,7 +42,7 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 			int objectsPerPage, String sort, String dir) {
 
 		StringBuffer query = new StringBuffer(
-				"from AlertViewHardware a join fetch a.hardware where a.remoteUser = :remoteUser and a.open = 1 ");
+				"from AlertViewHardware a join fetch a.hardware b join fetch b.machineType where a.remoteUser = :remoteUser and a.open = 1 ");
 
 		query.append("order by a." + sort + " " + dir);
 
