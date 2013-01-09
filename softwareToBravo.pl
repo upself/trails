@@ -324,7 +324,7 @@ sub querySoftwareLparCustomers {
                 or ss.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 6 ) {
+    elsif ( $count == 6 ) {
         $query .= '
                 or si.action != 1
             ';
