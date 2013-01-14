@@ -10,6 +10,7 @@ use BRAVO::OM::InstalledSoftware;
 use BRAVO::OM::InstalledSignature;
 use BRAVO::OM::InstalledFilter;
 use BRAVO::OM::InstalledTLCMZ;
+use BRAVO::OM::InstalledTADZ;
 use BRAVO::OM::InstalledDorana;
 use Recon::Queue;
 
@@ -31,6 +32,7 @@ sub getDiscrepancyTypeMap {
     $data{'FALSE HIT'} = 3;
     $data{'VALID'}     = 4;
     $data{'INVALID'}   = 5;
+    $data{'TADZ'}      = 6;
 
     return \%data;
 }
@@ -115,10 +117,9 @@ sub getInstalledSoftwareCountById {
     my $sth = $connection->sql->{installedSoftwareCountById};
     my %rec;
     $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwareCountByIdFields} } );
-    $sth->execute( $id, $id, $id, $id );
+    $sth->execute( $id, $id, $id, $id,$id );
     while ( $sth->fetchrow_arrayref ) {
-
-        $count = $rec{count};
+        $count = $count+ $rec{count};
     }
     $sth->finish;
 
@@ -142,6 +143,10 @@ sub queryInstalledSoftwareCountById {
         union
         select count(*)
         from installed_dorana_product a
+        where a.installed_software_id = ?
+        union
+        select count(*)
+        from installed_tadz a
         where a.installed_software_id = ?
     ';
 
@@ -612,6 +617,27 @@ sub queryInstalledSoftwaresBySoftwareLparId {
 	        join installed_dorana_product it on it.installed_software_id = is.id
 	        where sl.id = ?
 	        and is.status = \'ACTIVE\'
+	    union
+		select 
+			is.id
+        	,is.software_id
+        	,is.discrepancy_type_id
+        	,is.users
+        	,is.processor_count
+        	,is.authenticated
+        	,is.version
+        	,is.remote_user
+        	,is.record_time
+        	,is.status
+        	,\'TADZ\' as itType
+        	,it.id as itId
+        	,it.mainframe_feature_id as itTypeId
+        	,it.bank_account_id as bankAccountId
+        from software_lpar sl
+        	join installed_software is on is.software_lpar_id = sl.id
+        	join installed_tadz it on it.installed_software_id = is.id
+        	where sl.id = ?
+        	and is.status = \'ACTIVE\'
         union
         select
         	is.id
@@ -676,6 +702,7 @@ sub inactivateSoftwareLparById {
     $sth->execute( $id, $id, $id, $id, $id );
     my %statistics;
     while ( $sth->fetchrow_arrayref ) {
+        dlog("deleting installed types");
         if ( $rec{itType} eq 'MANUAL' ) {
             $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{isId}, $statistics );
         }
@@ -774,8 +801,8 @@ sub deleteInstalledTypeByTypeAndId {
         elsif ( $type eq 'DORANA' ) {
             $installedType = new BRAVO::OM::InstalledDorana();
         }
-        elsif ( $type eq 'MANUAL' ) {
-            ###Discrepancy.
+        elsif( $type eq 'TADZ'){
+           $installedType = new BRAVO::OM::InstalledTADZ();
         }
         $installedType->id($id);
         $installedType->getById($connection);

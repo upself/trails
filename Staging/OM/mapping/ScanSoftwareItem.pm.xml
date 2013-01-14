@@ -11,6 +11,7 @@
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="table" type="scalar" default="scan_software_item" />
 	<property name="idField" type="scalar" default="id" />
+	<method name="getById" />
 	<method name="save" />
 	<method name="delete" />
 </class>

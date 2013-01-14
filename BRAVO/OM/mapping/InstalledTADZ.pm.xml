@@ -4,13 +4,13 @@
 	<property name="installedSoftwareId" type="scalar" equals="true"
 		sql-name="installed_software_id" biz-key="true" />
 	<property name="mainframeFeatureId" type="scalar" equals="true"
-		sql-name="mainframe_Feature_id" biz-key="true" />
+		sql-name="mainframe_Feature_id"  />
 	<property name="bankAccountId" type="scalar" equals="true"
 		sql-name="bank_account_id" biz-key="true" />
 	<property name="useCount" type="scalar" equals="true"
 		sql-name="use_count" />
 	<property name="lastUsed" type="scalar" equals="true"
-		sql-name="lastUsed" />
+		sql-name="last_used" />
 	<property name="status" type="scalar" equals="true" />
 	<property name="action" type="scalar" equals="true" />
 	<property name="remoteUser" type="scalar" />

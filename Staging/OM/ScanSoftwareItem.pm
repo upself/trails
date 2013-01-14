@@ -236,4 +236,49 @@ sub queryDelete {
     return ('deleteScanSoftwareItem', $query);
 }
 
+sub getById {
+    my($self, $connection) = @_;
+    $connection->prepareSqlQuery($self->queryGetById());
+    my $sth = $connection->sql->{getByIdKeyScanSoftwareItem};
+    my $scanRecordId;
+    my $guid;
+    my $lastUsed;
+    my $useCount;
+    my $action;
+    $sth->bind_columns(
+        \$scanRecordId
+        ,\$guid
+        ,\$lastUsed
+        ,\$useCount
+        ,\$action
+    );
+    $sth->execute(
+        $self->id
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    $self->scanRecordId($scanRecordId);
+    $self->guid($guid);
+    $self->lastUsed($lastUsed);
+    $self->useCount($useCount);
+    $self->action($action);
+    return (defined $found) ? 1 : 0;
+}
+
+sub queryGetById {
+    my $query = '
+        select
+            scan_record_id
+            ,guid
+            ,last_used
+            ,use_count
+            ,action
+        from
+            scan_software_item
+        where
+            id = ?
+    ';
+    return ('getByIdKeyScanSoftwareItem', $query);
+}
+
 1;

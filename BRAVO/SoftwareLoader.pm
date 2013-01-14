@@ -12,6 +12,7 @@ use Staging::OM::SoftwareSignature;
 use Staging::OM::SoftwareFilter;
 use Staging::OM::SoftwareTlcmz;
 use Staging::OM::SoftwareDorana;
+use Staging::OM::ScanSoftwareItem;
 use BRAVO::Delegate::BRAVODelegate;
 use BRAVO::OM::SoftwareLpar;
 use BRAVO::OM::InstalledSoftware;
@@ -518,6 +519,7 @@ sub load {
                             ###we must inactivate all installed software, and
                             ###delete all installed sigs, filters, manual, etc.
                             if ( $bravoSoftwareLpar->status eq 'INACTIVE' ) {
+                                dlog("delete all the installed types");
                                 BRAVO::Delegate::BRAVODelegate->inactivateSoftwareLparById( $self->bravoConnection,
                                                                             $bravoSoftwareLpar->id, \%statistics );
                             }
@@ -658,21 +660,46 @@ sub load {
             
             my $softwareId = undef;
             my $mainframeFeatureId = undef;
+            my $scanSwItem = undef;
             ###fetch the software id from software item by guid for tad4z.
             if( $rec{installedSoftwareType} eq 'TAD4Z' ){
-              $mainframeFeatureId  = getMainframeFeatureIdByGUID($rec{installedSoftwareTypeId});
-              if(!defined $mainframeFeatureId){
-                dlog("mainframe items not loaded by catalog loader under guid id $rec{installedSoftwareTypeId}");
-                next;
+              dlog("fetch the mainframe feature id by guid.");
+              $scanSwItem = new Staging::OM::ScanSoftwareItem();
+              $scanSwItem->id( $rec{installedSoftwareTypeTableId} );
+              $scanSwItem->getById($self->stagingConnection);
+              
+              if(!defined $scanSwItem->guid){
+                die  die "Invalid tadz scan item: " . $scanSwItem->toString . "\n";
               }
               
+              dlog($scanSwItem->toString);
+              
+              
+              ###next item if we didn't find the scanSoftwareItem under this id.
+              next
+                 if(!defined $scanSwItem->id);
+                 
+              
+              ###1. get the kb_def id through guid, it may be mainframe_feature/mainframe_version.
+              ###2. check if it's mainframe_feature, if yes. go step3, if not go step4.
+              ###3. it's mainframe_feature get the version id from it.
+              ###4. it's mainframe_version get the product_id from it as the software_id.
+              
+              $mainframeFeatureId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guid);
+              if(!defined $mainframeFeatureId){
+                my $gudi = $scanSwItem->guid;
+                dlog("mainframe items not loaded by catalog loader under guid id $gudi");
+                next;
+              }
+                            
               my $versionId = undef;
-              $versionId = $self->getMainframeVersionIdByFeatureId($mainframeFeatureId);
-              ### mainframe feature not exsits, it is mainframe version.
+              $versionId = $self->getMainframeVersionIdByFeatureId($self->bravoConnection, $mainframeFeatureId);
+              ###check if it's mainframe_feature.
               if(!defined $versionId){
+              ### mainframe feature not exsits, it is mainframe version.
                 $versionId = $mainframeFeatureId;
               }                            
-              $softwareId = getProductIdByVersionId($versionId);
+              $softwareId = $self->getProductIdByVersionId($self->bravoConnection, $versionId);
               
             }else{
               $softwareId = $rec{softwareId};
@@ -749,27 +776,25 @@ sub load {
             }
             elsif ( $rec{installedSoftwareType} eq 'TAD4Z' ) {
 
-                $stagingInstalledType = new Staging::OM::ScanSoftwareItem();
-                $stagingInstalledType->guid( $rec{installedSoftwareTypeId} );
-                ###make use of the softwareId/path filed to store lastUsed/useCount properties.
-                $stagingInstalledType->lastUsed( $rec{softwareId} );
-                $stagingInstalledType->useCount( $rec{path} );
+                $stagingInstalledType = $scanSwItem;
+                dlog('tad4z item to be processed '.$stagingInstalledType->toString);
                 
                 $bravoInstalledType = new BRAVO::OM::InstalledTADZ();
-                $bravoInstalledType->mainframeFeatureId($mainframeFeatureId);
-                ###make use of the softwareId/path filed to store lastUsed/useCount properties
-                $bravoInstalledType->lastUsed( $rec{softwareId} );
-                $bravoInstalledType->useCount( $rec{path} );
+                
+                
+                 dlog('bravo installed type to be processed '.$bravoInstalledType->toString);
 
                 ###Bravo installed type object remains undef.
             }
             else {
                 die "Invalid installed type: " . $rec{installedSoftwareType} . "\n";
             }
-
-            $stagingInstalledType->id( $rec{installedSoftwareTypeTableId} );
-            $stagingInstalledType->scanRecordId( $rec{scanRecordId} );
-            $stagingInstalledType->softwareId( $softwareId );
+            
+            if( $rec{installedSoftwareType} ne 'TAD4Z' ){
+              $stagingInstalledType->id( $rec{installedSoftwareTypeTableId} );
+              $stagingInstalledType->scanRecordId( $rec{scanRecordId} );
+              $stagingInstalledType->softwareId( $softwareId );
+            }
             
             $stagingInstalledType->action( $rec{installedSoftwareTypeAction} );
             dlog( "staging software installed type obj=" . $stagingInstalledType->toString() );
@@ -787,9 +812,15 @@ sub load {
                           . $bravoInstalledType->toString() );
                 }
                 else {
+                    if( $rec{installedSoftwareType} eq 'TAD4Z' ){
+                      $bravoInstalledType->mainframeFeatureId($mainframeFeatureId);
+                      $bravoInstalledType->lastUsed($stagingInstalledType->lastUsed);
+                      $bravoInstalledType->useCount($stagingInstalledType->useCount);
+                    }
                     dlog(   "no matching bravo installed software type record found: "
                           . "old bravo installed software type obj="
                           . $bravoInstalledType->toString() );
+                          
                 }
             }
             else {
@@ -824,11 +855,10 @@ sub load {
             dlog( "softwareTypeAction=" . $softwareTypeAction );
 
             if ( $rec{installedSoftwareType} eq 'SIGNATURE' ) {
-                if ( defined $bravoInstalledType ) {
-                    if ( $stagingInstalledType->path ne $bravoInstalledType->path ) {
+                if ( defined $bravoInstalledType 
+                     &&!stringEqualOrBothUndef($stagingInstalledType->path,$bravoInstalledType->path) ) {
                         $saveInstalledType = 1;
                         $bravoInstalledType->path( $stagingInstalledType->path );
-                    }
                 }
             }
 
@@ -1171,17 +1201,24 @@ sub load {
                     ###so we should only update if the current bravo value is 0 or
                     ###if the new scan value is not 0.
                     $bravoInstalledSoftware->users( $rec{installedSoftwareTypeUsers} )
-                        if $bravoInstalledSoftware->users == 0
-                        || $rec{installedSoftwareTypeUsers} > 0;
+                        if defined $bravoInstalledSoftware->users && 
+                        ($bravoInstalledSoftware->users == 0 || $rec{installedSoftwareTypeUsers} > 0);
                     $bravoInstalledSoftware->authenticated( $rec{scanRecordAuthenticated} )
-                        if $bravoInstalledSoftware->authenticated == 0
-                        || $rec{scanRecordAuthenticated} > 0;
+                        if defined $bravoInstalledSoftware->authenticated && 
+                        ($bravoInstalledSoftware->authenticated == 0 || $rec{scanRecordAuthenticated} > 0);
+                    $bravoInstalledSoftware->users(0) 
+                       if !defined $bravoInstalledSoftware->users;
+                    $bravoInstalledSoftware->authenticated(0) 
+                       if !defined $bravoInstalledSoftware->authenticated;
+                     
 
                     ###Update discrepancy type id.
                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
                         $bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'MISSING'} );
                     }
-                    else {
+                    elsif($rec{installedSoftwareType} eq 'TAD4Z'){
+                        $bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'TADZ'} );
+                    }else{
                         if ( defined $bravoInstalledSoftware->discrepancyTypeId ) {
                             if ( $bravoInstalledSoftware->discrepancyTypeId
                                  == $self->discrepancyTypeMap->{'MISSING'} )
@@ -1363,10 +1400,18 @@ sub load {
                 ###Mark as complete.
                 $stagingInstalledType->action('COMPLETE');
                 dlog("marked staging installed type action as complete");
-
+                
+                ###Convert the string type action to integer.
+                if( $self->applyChanges == 1 && 
+                    $stagingInstalledType->isa("Staging::OM::ScanSoftwareItem")){
+                    dlog("it is TADZ data type, convert the action from string to integer.");
+                    $stagingInstalledType->action(0);                                              
+                }
+                
                 ###Save if applyChanges is true.
                 if ( $self->applyChanges == 1 ) {
-                    dlog("saving staging installed type object");
+                   
+                    dlog("saving staging installed type object");                    
                     $stagingInstalledType->save($self->stagingConnection);
                     $statistics{'STAGING'}{ $rec{installedSoftwareType} }{'STATUS_COMPLETE'}++;
                     dlog("saved staging installed type object");
@@ -2092,10 +2137,14 @@ sub getTad4zQuery {
                 ,c.action
                 ,\'TAD4Z\' as type
                 ,d.id as type_table_id
-                ,d.guid as type_id
-                ,d.last_used as software_id
-                ,d.use_count as path
-                ,d.action
+                ,0 as type_id
+                ,0 as software_id
+                ,\'NULL\' as path
+                ,case 
+                  when d.action=0 then \'COMPLETE\'
+                  when d.action=1 then \'UPDATE\'
+                  when d.action=2 then \'DELETE\'
+                 end
                 ,c.users
                 ,\'\'
             from software_lpar a
@@ -2109,9 +2158,9 @@ sub getTad4zQuery {
 }
 
 sub getMainframeFeatureIdByGUID{
-   my ($self, $guid)  = @_;
+   my ($self, $connection, $guid)  = @_;
    
-    $self->bravoConnection->prepareSqlQuery($self->queryGetMainframeFeatureIdByGUID());
+    $connection->prepareSqlQuery($self->queryMainframeFeatureIdByGUID());
     my $sth = $connection->sql->{getMainframeFeatureId};
     my $featureId=undef;
   
@@ -2128,18 +2177,18 @@ sub getMainframeFeatureIdByGUID{
 }
 
 
-sub queryGetMainframeFeatureIdByGUID {
+sub queryMainframeFeatureIdByGUID {
     my $query = '
-        select id from kb_definition where guid =  ?
+        select id from kb_definition where upper(guid) =  ?
     ';
     return ('getMainframeFeatureId', $query);
 }
 
 
 sub getMainframeVersionIdByFeatureId{
-   my ($self, $featureId)  = @_;
+   my ($self,$connection, $featureId)  = @_;
    
-    $self->bravoConnection->prepareSqlQuery($self->queryGetMainframeVersionIdByFeatureId());
+    $connection->prepareSqlQuery($self->queryGetMainframeVersionIdByFeatureId());
     my $sth = $connection->sql->{getMainframeVersionId};
     my $id=undef;
   
@@ -2164,9 +2213,9 @@ sub queryGetMainframeVersionIdByFeatureId {
 }
 
 sub getProductIdByVersionId{
-   my ($self, $versionId)  = @_;
+   my ($self, $connection, $versionId)  = @_;
    
-    $self->bravoConnection->prepareSqlQuery($self->queryGetProductIdByVersionId());
+    $connection->prepareSqlQuery($self->queryGetProductIdByVersionId());
     my $sth = $connection->sql->{getProductId};
     my $id=undef;
   

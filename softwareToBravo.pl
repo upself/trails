@@ -325,8 +325,9 @@ sub querySoftwareLparCustomers {
             ';
     }
     elsif ( $count == 6 ) {
+        ### 0-COMPLETE 1-UPDATE 2-DELETE
         $query .= '
-                or si.action != 0  ### 0-COMPLETE 1-UPDATE 2-DELETE
+                or si.action != 0  
             ';
     }
     $query .= '))';
@@ -459,8 +460,9 @@ sub querySoftwareLparsByCustomerIdByDate {
             ';
     }
     elsif ( $phase == 6 ) {
+        ### 0-COMPLETE 1-UPDATE 2-DELETE
         $query .= '
-                or si.action != 0   ### 0-COMPLETE 1-UPDATE 2-DELETE
+                or si.action != 0
             ';
     }
     $query .= ')';
