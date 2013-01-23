@@ -78,7 +78,18 @@ sub logic {
         ###Set to save the bravo hardware lpar if they are not equal
         if ( !$bravoHardwareLpar->equals( $self->bravoHardwareLpar ) ) {
             $self->saveBravoHardwareLpar(1);
-
+            
+            if (    $self->bravoHardwareLpar->lparStatus eq 'HWCOUNT'
+                 && $bravoHardwareLpar->lparStatus ne 'HWCOUNT' )
+            {
+                $self->reconDeep(1);
+            }
+            elsif (    $bravoHardwareLpar->lparStatus eq 'HWCOUNT'
+                    && $self->bravoHardwareLpar->lparStatus ne 'HWCOUNT' )
+            {
+                $self->reconDeep(1);
+            }
+            
             if ( $bravoHardwareLpar->partMIPS != $self->bravoHardwareLpar->partMIPS ) {
                 $self->reconDeep(1);
             }
