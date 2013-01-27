@@ -317,23 +317,21 @@ sub getByBizKey {
     $connection->prepareSqlQuery($self->queryGetByBizKey());
     my $sth = $connection->sql->{getByBizKeyInstalledTADZ};
     my $id;
-    my $mainframeFeatureId;
     my $useCount;
     my $lastUsed;
     $sth->bind_columns(
         \$id
-        ,\$mainframeFeatureId
         ,\$useCount
         ,\$lastUsed
     );
     $sth->execute(
         $self->installedSoftwareId
+        ,$self->mainframeFeatureId
         ,$self->bankAccountId
     );
     $sth->fetchrow_arrayref;
     $sth->finish;
     $self->id($id);
-    $self->mainframeFeatureId($mainframeFeatureId);
     $self->useCount($useCount);
     $self->lastUsed($lastUsed);
 }
@@ -342,13 +340,13 @@ sub queryGetByBizKey {
     my $query = '
         select
             id
-            ,mainframe_Feature_id
             ,use_count
             ,last_used
         from
             installed_tadz
         where
             installed_software_id = ?
+            and mainframe_Feature_id = ?
             and bank_account_id = ?
     ';
     return ('getByBizKeyInstalledTADZ', $query);

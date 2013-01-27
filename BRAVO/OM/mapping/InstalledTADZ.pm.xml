@@ -4,7 +4,7 @@
 	<property name="installedSoftwareId" type="scalar" equals="true"
 		sql-name="installed_software_id" biz-key="true" />
 	<property name="mainframeFeatureId" type="scalar" equals="true"
-		sql-name="mainframe_Feature_id"  />
+		sql-name="mainframe_Feature_id"  biz-key="true"/>
 	<property name="bankAccountId" type="scalar" equals="true"
 		sql-name="bank_account_id" biz-key="true" />
 	<property name="useCount" type="scalar" equals="true"

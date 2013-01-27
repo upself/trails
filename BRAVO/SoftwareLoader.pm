@@ -659,7 +659,7 @@ sub load {
             
             
             my $softwareId = undef;
-            my $mainframeFeatureId = undef;
+            my $kbDefId = undef;
             my $scanSwItem = undef;
             ###fetch the software id from software item by guid for tad4z.
             if( $rec{installedSoftwareType} eq 'TAD4Z' ){
@@ -685,19 +685,19 @@ sub load {
               ###3. it's mainframe_feature get the version id from it.
               ###4. it's mainframe_version get the product_id from it as the software_id.
               
-              $mainframeFeatureId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guid);
-              if(!defined $mainframeFeatureId){
+              $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guid);
+              if(!defined $kbDefId){
                 my $gudi = $scanSwItem->guid;
                 dlog("mainframe items not loaded by catalog loader under guid id $gudi");
                 next;
               }
                             
               my $versionId = undef;
-              $versionId = $self->getMainframeVersionIdByFeatureId($self->bravoConnection, $mainframeFeatureId);
+              $versionId = $self->getMainframeVersionIdByFeatureId($self->bravoConnection, $kbDefId);
               ###check if it's mainframe_feature.
               if(!defined $versionId){
               ### mainframe feature not exsits, it is mainframe version.
-                $versionId = $mainframeFeatureId;
+                $versionId = $kbDefId;
               }                            
               $softwareId = $self->getProductIdByVersionId($self->bravoConnection, $versionId);
               
@@ -780,7 +780,7 @@ sub load {
                 dlog('tad4z item to be processed '.$stagingInstalledType->toString);
                 
                 $bravoInstalledType = new BRAVO::OM::InstalledTADZ();
-                
+                $bravoInstalledType->mainframeFeatureId($kbDefId);
                 
                  dlog('bravo installed type to be processed '.$bravoInstalledType->toString);
 
@@ -812,8 +812,7 @@ sub load {
                           . $bravoInstalledType->toString() );
                 }
                 else {
-                    if( $rec{installedSoftwareType} eq 'TAD4Z' ){
-                      $bravoInstalledType->mainframeFeatureId($mainframeFeatureId);
+                    if( $rec{installedSoftwareType} eq 'TAD4Z' ){                    
                       $bravoInstalledType->lastUsed($stagingInstalledType->lastUsed);
                       $bravoInstalledType->useCount($stagingInstalledType->useCount);
                     }
@@ -902,6 +901,7 @@ sub load {
                                         ###BIT
                                         if ( defined $bravoInstalledType->id ) {
                                             ###BIS=SIT
+                                            dlog('BIS=A DT!=M SIT!=M BIT BIS=SIT');
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
@@ -909,10 +909,14 @@ sub load {
                                                                              $bravoInstalledSoftware->users,
                                                                              $rec{installedSoftwareTypeUsers}
                                                  )
-                                                 && stringEqual(
+                                                 && stringEqualOrBothUndef(
                                                                  $bravoInstalledSoftware->version,
                                                                  $rec{installedSoftwareTypeVersion}
                                                  )
+                                                 && ( 
+                                                      ($rec{installedSoftwareType} eq 'TAD4Z') 
+                                                      && ($bravoInstalledSoftware->discrepancyTypeId != $self->discrepancyTypeMap->{'TADZ'}) 
+                                                  )                                               
                                                 )
                                             {
                                                 ###AUTH=AUTH|1
@@ -946,6 +950,7 @@ sub load {
                                         ###!BIT
                                         else {
                                             ###BIS=SIT
+                                            dlog('BIS=A DT!=M SIT!=M !BIT BIS=SIT');
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
@@ -953,10 +958,14 @@ sub load {
                                                                              $bravoInstalledSoftware->users,
                                                                              $rec{installedSoftwareTypeUsers}
                                                  )
-                                                 && stringEqual(
+                                                 && stringEqualOrBothUndef(
                                                                  $bravoInstalledSoftware->version,
                                                                  $rec{installedSoftwareTypeVersion}
                                                  )
+                                                 && ( 
+                                                      ($rec{installedSoftwareType} eq 'TAD4Z') 
+                                                      && ($bravoInstalledSoftware->discrepancyTypeId != $self->discrepancyTypeMap->{'TADZ'}) 
+                                                  )  
                                                 )
                                             {
                                                 ###AUTH=AUTH|1
