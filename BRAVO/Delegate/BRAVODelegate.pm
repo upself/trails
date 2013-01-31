@@ -716,7 +716,7 @@ sub inactivateSoftwareLparById {
 
 sub inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId {
     my ( $self, $connection, $softwareLparId, $bankAccountId ) = @_;
-
+    my %statistics =();
     ###Loop over inst sw/types and delete all for this bank account id.
     $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwaresBySoftwareLparId() );
     my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
@@ -726,10 +726,10 @@ sub inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId {
     while ( $sth->fetchrow_arrayref ) {
         next unless $rec{bankAccountId} == $bankAccountId;
         if ( $rec{itType} eq 'MANUAL' ) {
-            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{isId} );
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{isId},  \%statistics );
         }
         else {
-            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{itId} );
+            $self->deleteInstalledTypeByTypeAndId( $connection, $rec{itType}, $rec{itId},  \%statistics );
         }
     }
     $sth->finish;
@@ -738,7 +738,7 @@ sub inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId {
 sub inactivateInstalledSoftwareById {
 
     my ( $self, $connection, $softwareLparId, $softwareId ) = @_;
-
+    my %statistics =();
     $connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareBySoftwareLparIdAndSoftwareId() );
     my $sth = $connection->sql->{installedSoftwareBySoftwareLparIdAndSoftwareId};
     my %rec;
@@ -746,7 +746,7 @@ sub inactivateInstalledSoftwareById {
                         @{ $connection->sql->{installedSoftwareBySoftwareLparIdAndSoftwareIdFields} } );
     $sth->execute( $softwareLparId, $softwareId );
     while ( $sth->fetchrow_arrayref ) {
-        $self->deleteInstalledTypeByTypeAndId( $connection, 'MANUAL', $rec{isId} );
+        $self->deleteInstalledTypeByTypeAndId( $connection, 'MANUAL', $rec{isId},  \%statistics );
     }
     $sth->finish;
 }

@@ -2828,5 +2828,31 @@ sub queryStagingScanRecordsBySoftwareLpar {
     return ( 'stagingScanRecordsBySoftwareLpar', $query, \@fields );
 }
 
+sub queryScanSoftwareItemData {
+	my ( $deltaOnly ) = @_;
+	my $query = '
+        select
+            id
+            ,scan_record_id
+            ,guid
+            ,last_used
+            ,use_count
+            ,action
+        from
+            scan_software_item 
+
+    ';
+	my $clause = 'where';
+
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+        ' . $clause . '
+            action != 0
+        ';
+	}
+
+	return ( 'scanSoftwareItemData', $query );
+}
+
 1;
 
