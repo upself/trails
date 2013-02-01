@@ -119,7 +119,7 @@ sub setDBInfo {
             $dbs{'staging'}{'user'}     = 'eaadmin';
             $dbs{'staging'}{'name'}     = 'STAGING';
 
-            $dbs{'trails'}{'password'} = 'Zum49tip';
+            $dbs{'trails'}{'password'} = 'Bearw00n';
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
@@ -134,6 +134,7 @@ sub setDBInfo {
             $dbs{'sims'}{'password'} = 'ba001ley';
             $dbs{'sims'}{'user'}     = 'simscon';
             $dbs{'sims'}{'name'}     = 'SIMS';
+            
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
