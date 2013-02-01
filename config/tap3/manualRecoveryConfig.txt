@@ -2,7 +2,7 @@ testMode=0
 server=tap
 applyChanges=1
 loadDeltaOnly=1
-debugLevel=error
+debugLevel=debug
 fullLoadPeriodHours=12
 bravoFullLoadPeriodHours=36
 testBankAccounts=testBankAccounts=DOWLEG,SHAREDSE,SWASSTDB,TLCMZ,SWDISCRP,DORANA,EMEATLM

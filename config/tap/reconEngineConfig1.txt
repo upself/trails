@@ -1,10 +1,10 @@
 testMode=0
-server=tap
+server=tap3
 applyChanges=1
 loadDeltaOnly=1
-debugLevel=error
+debugLevel=debug
 fullLoadPeriodHours=12
 bravoFullLoadPeriodHours=36
 testBankAccounts=
 testCustomerIds=
-sleepPeriod=1800
+sleepPeriod=10

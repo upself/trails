@@ -1,5 +1,5 @@
 testMode=0
-server=tap
+server=tap3
 applyChanges=1
 loadDeltaOnly=1
 debugLevel=error

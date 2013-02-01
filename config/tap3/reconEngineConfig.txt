@@ -1,10 +1,10 @@
 testMode=0
-server=tap3
+server=only when we fix the lpar status problem tap3
 applyChanges=1
 loadDeltaOnly=1
-debugLevel=error
+debugLevel=warn
 fullLoadPeriodHours=12
 bravoFullLoadPeriodHours=36
 testBankAccounts=
 testCustomerIds=
-sleepPeriod=300
+sleepPeriod=10800
