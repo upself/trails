@@ -722,7 +722,7 @@ sub inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId {
     my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
     my %rec;
     $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
-    $sth->execute( $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId );
+    $sth->execute( $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId, $softwareLparId );
     while ( $sth->fetchrow_arrayref ) {
         next unless $rec{bankAccountId} == $bankAccountId;
         if ( $rec{itType} eq 'MANUAL' ) {
