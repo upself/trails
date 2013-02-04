@@ -42,12 +42,16 @@ sub isValidHardware {
 
 sub isValidHardwareLpar {
     my $self = shift;
+    
 
     croak 'HardwareLpar is not defined' if !defined $self->hardwareLpar;
     
+    return 1 if (!defined $self->hardwareLpar->lparStatus) 
+               ||('' eq $self->hardwareLpar->lparStatus);
+    
     return 0 if $self->hardwareLpar->status ne 'ACTIVE';
     
-    return 0 if $self->hardwareLpar->lparStatus ne 'ACTIVE';
+    return 0 if $self->hardwareLpar->lparStatus ne 'ACTIVE';    
 
     return 1;
 }

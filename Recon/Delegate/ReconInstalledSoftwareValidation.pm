@@ -124,8 +124,8 @@ sub validate {
 		|| $self->validateInstalledSoftware == 0
 		|| $self->validateSoftwareLpar == 0
 		|| $self->validateComposite == 0
-		|| $self->validateHardwareLpar == 0
 		|| $self->validateHardware == 0
+		|| $self->validateHardwareLpar == 0
 		|| $self->validateSoftware == 0 )
 	{
 		$self->validationCode(0);
@@ -207,7 +207,7 @@ sub validateComposite {
  my $self = shift;
 
  ###Check sw lpar is in composite.
- if ( !defined $self->installedSoftwareReconData->hlStatus ) {
+ if ( !defined $self->installedSoftwareReconData->hlId ) {
   dlog("sw lpar not in composite, not in recon base");
   return 0;
  }
@@ -217,9 +217,13 @@ sub validateComposite {
 
 sub validateHardwareLpar {
  my $self = shift;
-
+ dlog('validateHardwareLpar hlstatus='.$self->installedSoftwareReconData->hlStatus);
  ###Check hw lpar status.
- if ( $self->installedSoftwareReconData->hlStatus ne 'ACTIVE' ) {
+ return 1  if( '' eq $self->installedSoftwareReconData->hlStatus 
+      || !defined $self->installedSoftwareReconData->hlStatus 
+      || 'null' eq $self->installedSoftwareReconData->hlStatus);
+ 
+ if ( $self->installedSoftwareReconData->hlStatus eq 'HWCOUNT' ) {
   dlog("hw lpar not active, not in recon base");
   return 0;
  }
