@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class package="Staging::OM" name="ScanSoftwareItem" sql-name="scan_software_item">
-	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+    <property name="id" type="scalar" sql-name="id" sql-key="true" />
 	<property name="scanRecordId" type="scalar" equals="true"
 		sql-name="scan_record_id" biz-key="true" />
-	<property name="guid" type="scalar" equals="true" sql-name="guid"
-		biz-key="true" />
+	<property name="guId" type="scalar" equals="true"
+		sql-name="guid" biz-key="true" />
 	<property name="lastUsed" type="scalar" equals="true"
 		sql-name="last_used" />
-	<property name="useCount" type="scalar" sql-name="use_count" />
+	<property name="useCount" type="scalar" equals="true"
+		sql-name="use_count" />
 	<property name="action" type="scalar" sql-name="action" />
-	<property name="table" type="scalar" default="scan_software_item" />
-	<property name="idField" type="scalar" default="id" />
-	<method name="getById" />
 	<method name="save" />
 	<method name="delete" />
 </class>

@@ -8,12 +8,10 @@ sub new {
     my $self = {
         _id => undef
         ,_scanRecordId => undef
-        ,_guid => undef
+        ,_guId => undef
         ,_lastUsed => undef
         ,_useCount => undef
         ,_action => undef
-        ,_table => 'scan_software_item'
-        ,_idField => 'id'
     };
     bless $self, $class;
     return $self;
@@ -31,10 +29,10 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
-    if (defined $self->guid && defined $object->guid) {
-        $equal = 1 if $self->guid eq $object->guid;
+    if (defined $self->guId && defined $object->guId) {
+        $equal = 1 if $self->guId eq $object->guId;
     }
-    $equal = 1 if (!defined $self->guid && !defined $object->guid);
+    $equal = 1 if (!defined $self->guId && !defined $object->guId);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -42,6 +40,13 @@ sub equals {
         $equal = 1 if $self->lastUsed eq $object->lastUsed;
     }
     $equal = 1 if (!defined $self->lastUsed && !defined $object->lastUsed);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->useCount && defined $object->useCount) {
+        $equal = 1 if $self->useCount eq $object->useCount;
+    }
+    $equal = 1 if (!defined $self->useCount && !defined $object->useCount);
     return 0 if $equal == 0;
 
     return 1;
@@ -59,10 +64,10 @@ sub scanRecordId {
     return $self->{_scanRecordId};
 }
 
-sub guid {
+sub guId {
     my $self = shift;
-    $self->{_guid} = shift if scalar @_ == 1;
-    return $self->{_guid};
+    $self->{_guId} = shift if scalar @_ == 1;
+    return $self->{_guId};
 }
 
 sub lastUsed {
@@ -83,18 +88,6 @@ sub action {
     return $self->{_action};
 }
 
-sub table {
-    my $self = shift;
-    $self->{_table} = shift if scalar @_ == 1;
-    return $self->{_table};
-}
-
-sub idField {
-    my $self = shift;
-    $self->{_idField} = shift if scalar @_ == 1;
-    return $self->{_idField};
-}
-
 sub toString {
     my ($self) = @_;
     my $s = "[ScanSoftwareItem] ";
@@ -108,9 +101,9 @@ sub toString {
         $s .= $self->{_scanRecordId};
     }
     $s .= ",";
-    $s .= "guid=";
-    if (defined $self->{_guid}) {
-        $s .= $self->{_guid};
+    $s .= "guId=";
+    if (defined $self->{_guId}) {
+        $s .= $self->{_guId};
     }
     $s .= ",";
     $s .= "lastUsed=";
@@ -128,16 +121,6 @@ sub toString {
         $s .= $self->{_action};
     }
     $s .= ",";
-    $s .= "table=";
-    if (defined $self->{_table}) {
-        $s .= $self->{_table};
-    }
-    $s .= ",";
-    $s .= "idField=";
-    if (defined $self->{_idField}) {
-        $s .= $self->{_idField};
-    }
-    $s .= ",";
     chop $s;
     return $s;
 }
@@ -152,7 +135,7 @@ sub save {
         $sth->bind_columns(\$id);
         $sth->execute(
             $self->scanRecordId
-            ,$self->guid
+            ,$self->guId
             ,$self->lastUsed
             ,$self->useCount
             ,$self->action
@@ -166,7 +149,7 @@ sub save {
         my $sth = $connection->sql->{updateScanSoftwareItem};
         $sth->execute(
             $self->scanRecordId
-            ,$self->guid
+            ,$self->guId
             ,$self->lastUsed
             ,$self->useCount
             ,$self->action
@@ -234,51 +217,6 @@ sub queryDelete {
             id = ?
     ';
     return ('deleteScanSoftwareItem', $query);
-}
-
-sub getById {
-    my($self, $connection) = @_;
-    $connection->prepareSqlQuery($self->queryGetById());
-    my $sth = $connection->sql->{getByIdKeyScanSoftwareItem};
-    my $scanRecordId;
-    my $guid;
-    my $lastUsed;
-    my $useCount;
-    my $action;
-    $sth->bind_columns(
-        \$scanRecordId
-        ,\$guid
-        ,\$lastUsed
-        ,\$useCount
-        ,\$action
-    );
-    $sth->execute(
-        $self->id
-    );
-    my $found = $sth->fetchrow_arrayref;
-    $sth->finish;
-    $self->scanRecordId($scanRecordId);
-    $self->guid($guid);
-    $self->lastUsed($lastUsed);
-    $self->useCount($useCount);
-    $self->action($action);
-    return (defined $found) ? 1 : 0;
-}
-
-sub queryGetById {
-    my $query = '
-        select
-            scan_record_id
-            ,guid
-            ,last_used
-            ,use_count
-            ,action
-        from
-            scan_software_item
-        where
-            id = ?
-    ';
-    return ('getByIdKeyScanSoftwareItem', $query);
 }
 
 1;
