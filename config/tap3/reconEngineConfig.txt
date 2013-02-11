@@ -1,5 +1,5 @@
 testMode=0
-server=only when we fix the lpar status problem tap3
+server=tap3
 applyChanges=1
 loadDeltaOnly=1
 debugLevel=warn
