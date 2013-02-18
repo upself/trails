@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="bankAccounts">
+		<![CDATA[
+		from BankAccount b
+
+		]]>
+	</query>
+
+	<query name="bankAccountById">
+		<![CDATA[
+		from BankAccount b
+
+		where b.id = :id
+
+		]]>
+	</query>
+
+	<query name="bankAccountByName">
+		<![CDATA[
+		from BankAccount b
+
+		where
+			upper(b.name) = :name 
+
+		]]>
+	</query>
+
+	<query name="getBankAccounts">
+		<![CDATA[
+		from BankAccount b
+
+		where
+			b.connectionType = :connectionType
+
+		]]>
+	</query>
+</hibernate-mapping>
+

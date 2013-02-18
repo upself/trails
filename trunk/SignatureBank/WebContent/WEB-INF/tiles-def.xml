@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+              "-//Apache Software Foundation//DTD Tiles Configuration 1.3//EN"
+              "http://struts.apache.org/dtds/tiles-config_1_3.dtd">
+
+
+<tiles-definitions>
+
+	<!-- Basic Layout for All Pages -->
+	<definition name=".basic.layout" path="/WEB-INF/jsp/common/BasicLayout.jsp">
+		<put name="head" value="/WEB-INF/jsp/common/w3Head.jsp" />
+		<put name="prolog" value="/WEB-INF/jsp/common/w3Prolog.jsp" />
+		<put name="masthead" value="/WEB-INF/jsp/common/w3MastHead.jsp" />
+		<put name="javascript" value="/WEB-INF/jsp/common/w3JavaScript.jsp" />
+		<put name="content-header" value="/WEB-INF/jsp/common/ContentHeader.jsp" />
+		<put name="text-header" value="" />
+		<put name="content" value="" />
+		<put name="navigation" value=".view.navigation" />
+		<put name="relatedLinks" value="" />
+		<put name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
+	</definition>
+
+	<!-- Basic Layout for All Pages -->
+	<definition name=".popup" path="/WEB-INF/jsp/common/Popup.jsp">
+		<put name="header" value="/WEB-INF/jsp/common/w3PopUpHeader.jsp" />
+		<put name="content-header" value="/WEB-INF/jsp/common/w3PopUpContentHeader.jsp" />
+		<put name="content" value="/WEB-INF/jsp/common/w3PopUpContent.jsp" />
+		<put name="footer" value="/WEB-INF/jsp/common/w3PopUpfooter.jsp" />
+	</definition>
+
+	<!-- Calls Navigation Controller -->
+	<definition name=".view.navigation" path="/WEB-INF/jsp/common/NavigationBar.jsp"
+		controllerClass="com.ibm.tap.sigbank.framework.navigate.NavigationController" />
+
+	<!-- Welcome Page -->
+	<definition name=".welcome" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/Welcome.jsp" />
+	</definition>
+
+	<!-- Admin Welcome Page -->
+	<definition name=".welcome.admin" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/AdminWelcome.jsp" />
+		<put name="relatedLinks" value="/WEB-INF/jsp/common/NewFilters.jsp" />
+	</definition>
+
+	<!-- Software Report  -->
+	<definition name=".software.report" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/software/SoftwareReport.jsp" />
+	</definition>
+
+	<!-- Admin Software Report  -->
+	<definition name=".software.report.edit" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/software/SoftwareReport.jsp" />
+		<put name="relatedLinks" value="/WEB-INF/jsp/common/NewFilters.jsp" />
+	</definition>
+
+	<!-- View Software -->
+	<definition name=".view.software" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/software/ViewSoftware.jsp" />
+	</definition>
+
+	<!-- Manufacturer Home -->
+	<definition name=".manufacturer" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/manufacturer/Manufacturer.jsp" />
+	</definition>
+
+	<!-- Manufacturer History Popup  -->
+	<definition name=".manufacturer.history.popup" extends=".popup">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/manufacturer/ManufacturerHistoryPopUp.jsp" />
+	</definition>
+
+	<!-- Software Category Home -->
+	<definition name=".software.category" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/SoftwareCategory.jsp" />
+	</definition>
+
+	<!-- Software Category History Popup  -->
+	<definition name=".software.category.history.popup" extends=".popup">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/SoftwareCategoryHistoryPopUp.jsp" />
+	</definition>
+
+	<!-- Add New Software Category -->
+	<definition name=".add.software.category" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/AddSoftwareCategory.jsp" />
+	</definition>
+
+	<!-- Update Software Category -->
+	<definition name=".update.software.category" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/UpdateSoftwareCategory.jsp" />
+	</definition>
+
+	<!-- Move Software Category -->
+	<definition name=".move.software.category" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/MoveSoftwareCategory.jsp" />
+	</definition>
+
+	<!-- Add Software Category Software-->
+	<definition name=".add.software.category.software" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/softwareCategory/AddSoftwareCategorySoftware.jsp" />
+	</definition>
+
+	<!-- Change Software Priority -->
+	<definition name=".change.software.priority" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/software/ChangeSoftwarePriority.jsp" />
+	</definition>
+
+	<!-- View Software Signatures By Software -->
+	<definition name=".view.software.signature.software"
+		extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/signature/ReadOnlySoftwareSignaturesBySoftware.jsp" />
+	</definition>
+
+	<!-- View Software Signatures By Software -->
+	<definition name=".edit.software.signature.software"
+		extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/signature/ViewSoftwareSignaturesBySoftware.jsp" />
+	</definition>
+
+	<!-- Move Software Signatures By Software -->
+	<definition name=".move.software.signature.software"
+		extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/signature/MoveSoftwareSignaturesBySoftware.jsp" />
+	</definition>
+
+	<!-- Add New Software Signature-->
+	<definition name=".add.software.signature" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/signature/AddSoftwareSignature.jsp" />
+	</definition>
+
+	<!-- Update Software Signature-->
+	<definition name=".update.software.signature" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/signature/UpdateSoftwareSignature.jsp" />
+	</definition>
+
+	<!-- Software Signature Search -->
+	<definition name=".software.signature.search" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/signature/SoftwareSignatureSearch.jsp" />
+	</definition>
+
+	<!-- View Software Filters By Software -->
+	<definition name=".view.software.filter.software" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/filter/ReadOnlySoftwareFiltersBySoftware.jsp" />
+	</definition>
+
+	<!-- Edit Software Filters By Software -->
+	<definition name=".edit.software.filter.software" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/filter/ViewSoftwareFiltersBySoftware.jsp" />
+	</definition>
+
+	<!-- Move Software Filters By Software -->
+	<definition name=".move.software.filter.software" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/filter/MoveSoftwareFiltersBySoftware.jsp" />
+	</definition>
+
+	<!-- Update Software Filter-->
+	<definition name=".update.software.filter" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/filter/UpdateSoftwareFilter.jsp" />
+	</definition>
+
+	<!-- Software Filter Search -->
+	<definition name=".software.filter.search" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/filter/SoftwareFilterSearch.jsp" />
+	</definition>
+
+	<!-- New Software Filters -->
+	<definition name=".software.filter.new" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/filter/SoftwareFilterNew.jsp" />
+	</definition>
+
+	<!-- Filter upload -->
+	<definition name=".filter.upload" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/filter/UploadFilter.jsp" />
+	</definition>
+
+	<!-- Signature upload -->
+	<definition name=".signature.upload" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/signature/UploadSignature.jsp" />
+	</definition>
+
+	<!-- Connected Bank Account -->
+	<definition name=".connected.bank.account.admin" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/bankAccount/ConnectedBankAccountList.jsp" />
+	</definition>
+
+	<definition name=".connected.bank.account" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/bankAccount/ConnectedBankAccountList.jsp" />
+	</definition>
+
+	<definition name=".bank.account.status.detail" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/bankAccount/BankAccountStatusDetail.jsp" />
+	</definition>
+
+	<!-- Add Connected Bank Account -->
+	<definition name=".bank.account.connected.add" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/bankAccount/AddConnectedBankAccount.jsp" />
+	</definition>
+
+	<!-- Update Connected Bank Account -->
+	<definition name=".bank.account.connected.update" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/bankAccount/UpdateConnectedBankAccount.jsp" />
+	</definition>
+
+	<!-- Disconnected Bank Account -->
+	<definition name=".disconnected.bank.account.admin" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/admin/bankAccount/DisconnectedBankAccountList.jsp" />
+	</definition>
+
+	<definition name=".disconnected.bank.account" extends=".basic.layout">
+		<put name="content"
+			value="/WEB-INF/jsp/bankAccount/DisconnectedBankAccountList.jsp" />
+	</definition>
+
+	<!-- Report -->
+	<definition name=".report" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/report/Report.jsp" />
+	</definition>
+
+	<definition name=".report.admin" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/report/Report.jsp" />
+	</definition>
+
+	<definition name=".manufacturer.history.year" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/ManufacturerYear.jsp" />
+	</definition>
+
+	<definition name=".manufacturer.history.month" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/ManufacturerMonth.jsp" />
+	</definition>
+
+	<definition name=".manufacturer.history" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/Manufacturer.jsp" />
+	</definition>
+
+	<definition name=".software.category.history.year" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareCategoryYear.jsp" />
+	</definition>
+
+	<definition name=".software.category.history.month" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareCategoryMonth.jsp" />
+	</definition>
+
+	<definition name=".software.category.history" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareCategory.jsp" />
+	</definition>
+
+	<definition name=".software.history.year" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareYear.jsp" />
+	</definition>
+
+	<definition name=".software.history.month" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareMonth.jsp" />
+	</definition>
+
+	<definition name=".software.history" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/Software.jsp" />
+	</definition>
+
+	<definition name=".software.filter.history.year" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareFilterYear.jsp" />
+	</definition>
+
+	<definition name=".software.filter.history.month" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareFilterMonth.jsp" />
+	</definition>
+
+	<definition name=".software.filter.history" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareFilter.jsp" />
+	</definition>
+
+	<definition name=".software.signature.history.year" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareSignatureYear.jsp" />
+	</definition>
+
+	<definition name=".software.signature.history.month"
+		extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareSignatureMonth.jsp" />
+	</definition>
+
+	<definition name=".software.signature.history" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/SoftwareSignature.jsp" />
+	</definition>
+
+	<definition name=".templates" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/template/Template.jsp" />
+	</definition>
+</tiles-definitions>
+

@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+	<!-- Form Beans -->
+	<form-beans>
+		<form-bean name="softwareSearchForm"
+			type="com.ibm.tap.sigbank.framework.navigate.SearchForm">
+		</form-bean>
+
+		<form-bean name="softwareForm" type="com.ibm.tap.sigbank.software.SoftwareForm">
+		</form-bean>
+
+		<form-bean name="softwareCategoryForm"
+			type="com.ibm.tap.sigbank.softwarecategory.SoftwareCategoryForm">
+		</form-bean>
+
+		<form-bean name="softwareSignatureForm"
+			type="com.ibm.tap.sigbank.signature.SoftwareSignatureForm">
+		</form-bean>
+
+		<form-bean name="softwareFilterForm"
+			type="com.ibm.tap.sigbank.filter.SoftwareFilterForm">
+		</form-bean>
+
+		<form-bean name="fileLoaderForm" 
+			type="com.ibm.tap.sigbank.upload.FormUploadFile">
+		</form-bean>
+	</form-beans>
+
+	<!-- Global Exceptions -->
+	<global-exceptions>
+		<exception
+			type="com.ibm.tap.sigbank.framework.exceptions.InvalidAccessException"
+			key="invalid.access" path="/error.jsp">
+		</exception>
+	</global-exceptions>
+
+	<!-- Global Forwards -->
+	<global-forwards>
+		<forward name="GLOBAL_HOME" path="/Welcome.do"></forward>
+	</global-forwards>
+
+	<!-- Action Mappings -->
+	<action-mappings>
+
+		<action path="/Welcome"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionWelcome">
+			<forward name="edit" path=".welcome.admin"></forward>
+			<forward name="view" path=".welcome"></forward>
+		</action>
+
+		<!--  Software -->
+		<action path="/WelcomeSoftwareSearch"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" name="softwareSearchForm"
+			scope="session" parameter="searchSoftware" validate="true" input="/Welcome.do">
+			<forward name="view" path=".software.report" />
+			<forward name="edit" path=".software.report.edit" />
+		</action>
+
+		<action path="/Software" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="product">
+			<forward name="edit" path=".welcome.admin"></forward>
+			<forward name="view" path=".welcome"></forward>
+		</action>
+
+		<action path="/SoftwareSearchSetup"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" parameter="softwareSearchSetup">
+			<forward name="success" path=".software.report" />
+		</action>
+
+		<action path="/SoftwareSearch"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" name="softwareSearchForm"
+			scope="session" parameter="searchSoftware" validate="false"
+			input="/SoftwareSearchSetup.do">
+			<forward name="view" path=".software.report" />
+			<forward name="edit" path=".software.report.edit" />
+		</action>
+
+		<action path="/SoftwareRefineSearch"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" name="softwareSearchForm"
+			scope="session" parameter="searchRefineSoftware" validate="false"
+			input="/SoftwareSearchSetup.do">
+			<forward name="view" path=".software.report" />
+			<forward name="edit" path=".software.report" />
+		</action>
+
+		<action path="/ViewSoftware" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="viewProduct">
+			<forward name="success" path=".view.software"></forward>
+		</action>
+		
+		<action path="/AddSoftware"
+			type="com.ibm.tap.sigbank.software.ActionSoftware"
+			parameter="addSoftware">
+			<forward name="success" path=".view.software"></forward>
+		</action>
+
+		<action path="/UpdateSoftwareSoftwareCategorySave" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="updateProductSoftwareCategorySave" name="softwareForm"
+			scope="request" validate="true" input="/MoveSoftwareCategorySoftware.do">
+			<forward name="success" path="/MoveSoftwareCategorySoftware.do"
+				redirect="true">
+			</forward>
+		</action>
+
+		<action path="/AddSoftwareSoftwareCategorySave" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="addSoftwareSoftwareCategorySave" name="softwareForm"
+			scope="request" validate="false" input=".add.software.category.software">
+			<forward name="success" path="/AddSoftwareCategorySoftware.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareCategorySoftwareSearch.do" />
+		</action>
+
+		<action path="/ChangeSoftwarePriority" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="changeSoftwarePriority">
+			<forward name="success" path=".change.software.priority"></forward>
+		</action>
+
+		<action path="/ChangeSoftwarePrioritySave" type="com.ibm.tap.sigbank.software.ActionProduct"
+			parameter="changeSoftwarePrioritySave" name="softwareForm" scope="request"
+			validate="true" input="/ChangeSoftwarePriority.do">
+			<forward name="success" path="/MoveSoftwareCategorySoftware.do"
+				redirect="true">
+			</forward>
+		</action>
+
+		<!-- Manufacturer -->
+		<action path="/Manufacturer"
+			type="com.ibm.tap.sigbank.manufacturer.ActionManufacturer" parameter="manufacturer">
+			<forward name="success" path=".manufacturer"></forward>
+		</action>
+
+		<action path="/ManufacturerSoftware"
+			type="com.ibm.tap.sigbank.manufacturer.ActionManufacturer" parameter="software"
+			name="softwareSearchForm" scope="session" input="/SoftwareSearchSetup.do"
+			validate="false">
+			<forward name="success" path="/SoftwareRefineSearch.do"></forward>
+		</action>
+
+		<action path="/ManufacturerSoftwareSearch"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" name="softwareSearchForm"
+			scope="request" parameter="manufacturerSwSearch" validate="true"
+			input="/AddManufacturerSoftware.do">
+			<forward name="success" path=".add.manufacturer.software" />
+		</action>
+
+		<!-- Software Category -->
+
+		<action path="/SoftwareCategory"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="softwareCategory">
+			<forward name="success" path=".software.category"></forward>
+		</action>
+
+		<action path="/SoftwareCategorySoftware"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="software" name="softwareSearchForm" scope="session"
+			input="/SoftwareSearchSetup.do" validate="false">
+			<forward name="success" path="/SoftwareRefineSearch.do"></forward>
+		</action>
+
+		<action path="/SoftwareCategoryHistory"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="softwareCategoryHistoryPopUp">
+			<forward name="success" path=".software.category.history.popup" />
+		</action>
+
+		<action path="/AddSoftwareCategory"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="addSoftwareCategory">
+			<forward name="success" path=".add.software.category"></forward>
+		</action>
+
+		<action path="/AddSoftwareCategorySave"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="addSoftwareCategorySave" name="softwareCategoryForm"
+			scope="request" validate="true" input="/AddSoftwareCategory.do"
+			cancellable="true">
+			<forward name="success" path="/SoftwareCategory.do" redirect="true">
+			</forward>
+		</action>
+
+		<action path="/UpdateSoftwareCategory"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="updateSoftwareCategory">
+			<forward name="success" path=".update.software.category"></forward>
+		</action>
+
+		<action path="/UpdateSoftwareCategorySave"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="updateSoftwareCategorySave" name="softwareCategoryForm"
+			scope="request" validate="true" input="/UpdateSoftwareCategory.do"
+			cancellable="true">
+			<forward name="success" path="/SoftwareCategory.do" redirect="true">
+			</forward>
+			<forward name="error" path="/UpdateSoftwareCategory.do"
+				redirect="false">
+			</forward>
+		</action>
+
+		<action path="/MoveSoftwareCategorySoftware"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="moveSoftware">
+			<forward name="success" path=".move.software.category"></forward>
+		</action>
+
+		<action path="/AddSoftwareCategorySoftware"
+			type="com.ibm.tap.sigbank.softwarecategory.ActionSoftwareCategory"
+			parameter="addSoftware">
+			<forward name="success" path=".add.software.category.software">
+			</forward>
+		</action>
+
+		<action path="/SoftwareCategorySoftwareSearch"
+			type="com.ibm.tap.sigbank.framework.navigate.ActionSearch" name="softwareSearchForm"
+			scope="request" parameter="softwareCategorySwSearch" validate="true"
+			input="/AddSoftwareCategorySoftware.do">
+			<forward name="success" path=".add.software.category.software" />
+		</action>
+
+		<!-- Signatures -->
+
+		<action path="/SoftwareSignature"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="viewSignature">
+			<forward name="view" path=".view.software.signature.software" />
+			<forward name="edit" path=".edit.software.signature.software" />
+			<forward name="error" path="/Software.do" />
+		</action>
+
+		<action path="/SoftwareSignatureMove"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="moveSignature">
+			<forward name="edit" path=".move.software.signature.software" />
+			<forward name="error" path="/Software.do" />
+		</action>
+
+		<action path="/AddSoftwareSignature"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="addSoftwareSignature">
+			<forward name="success" path=".add.software.signature" />
+			<forward name="error" path="/Software.do" />
+		</action>
+
+		<action path="/AddSoftwareSignatureSave"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="addSoftwareSignatureSave" name="softwareSignatureForm"
+			scope="request" validate="true" input="/AddSoftwareSignature.do"
+			cancellable="true">
+			<forward name="success" path="/SoftwareSignature.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/Software.do" />
+		</action>
+
+		<action path="/UpdateSoftwareSignature"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="updateSoftwareSignature">
+			<forward name="success" path=".update.software.signature"></forward>
+		</action>
+
+		<action path="/UpdateSoftwareSignatureSave"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="updateSoftwareSignatureSave" name="softwareSignatureForm"
+			scope="request" validate="true" input="/UpdateSoftwareSignature.do"
+			cancellable="true">
+			<forward name="success" path="/SoftwareSignature.do"
+				redirect="true">
+			</forward>
+		</action>
+
+		<action path="/MoveSoftwareSignatureSave"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="moveSoftwareSignatureSave" name="softwareSignatureForm"
+			scope="request" validate="true" input="/SoftwareSignature.do">
+			<forward name="success" path="/SoftwareSignature.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareSignature.do" />
+		</action>
+
+		<action path="/SoftwareSignatureSearchSetup"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="searchSetup">
+			<forward name="success" path=".software.signature.search" />
+		</action>
+
+		<action path="/SoftwareSignatureSearch"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="search" name="softwareSignatureForm" scope="session"
+			input=".software.signature.search" validate="true" cancellable="true">
+			<forward name="success" path=".software.signature.search"
+				redirect="false">
+			</forward>
+		</action>
+
+		<action path="/AddSearchSoftwareSignatureSave"
+			type="com.ibm.tap.sigbank.signature.ActionSoftwareSignature"
+			parameter="addSearchSoftwareSignatureSave" name="softwareSignatureForm"
+			scope="request" validate="true" input="/SoftwareSignatureSearch.do">
+			<forward name="success" path="/SoftwareSignatureSearch.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareSignatureSearch.do" />
+		</action>
+
+		<!--  Filters -->
+
+		<action path="/SoftwareFilter" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="viewFilter">
+			<forward name="view" path=".view.software.filter.software" />
+			<forward name="edit" path=".edit.software.filter.software" />
+		</action>
+
+		<action path="/SoftwareFilterMove" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="moveFilter">
+			<forward name="edit" path=".move.software.filter.software" />
+		</action>
+
+		<action path="/MoveSoftwareFilterSave" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="moveSoftwareFilterSave" name="softwareFilterForm" scope="request"
+			validate="true" input="/SoftwareFilter.do">
+			<forward name="success" path="/SoftwareFilter.do" redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareFilter.do" />
+		</action>
+
+		<action path="/UpdateSoftwareFilter" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="updateSoftwareFilter">
+			<forward name="success" path=".update.software.filter"></forward>
+		</action>
+
+		<action path="/UpdateSoftwareFilterSave" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="updateSoftwareFilterSave" name="softwareFilterForm" scope="request"
+			validate="true" input="/UpdateSoftwareFilter.do">
+			<forward name="success" path="/SoftwareFilter.do" redirect="true">
+			</forward>
+		</action>
+
+		<action path="/SoftwareFilterSearchSetup" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="searchSetup">
+			<forward name="success" path=".software.filter.search" />
+		</action>
+
+		<action path="/SoftwareFilterSearch" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="search" name="softwareFilterForm" scope="session"
+			input=".software.filter.search" validate="true" cancellable="true">
+			<forward name="success" path=".software.filter.search"
+				redirect="false">
+			</forward>
+		</action>
+
+		<action path="/AddSearchSoftwareFilterSave" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="addSearchSoftwareFilterSave" name="softwareFilterForm"
+			scope="request" validate="true" input="/SoftwareFilterSearch.do">
+			<forward name="success" path="/SoftwareFilterSearch.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareFilterSearch.do" />
+		</action>
+
+		<action path="/SoftwareFilterNew" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="newFilters">
+			<forward name="success" path=".software.filter.new" />
+		</action>
+
+		<action path="/SoftwareFilterNewSave" type="com.ibm.tap.sigbank.filter.ActionSoftwareFilter"
+			parameter="newFilterSave" name="softwareFilterForm" scope="request"
+			validate="true" input="/SoftwareFilterNew.do">
+			<forward name="success" path="/SoftwareFilterNew.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path="/SoftwareFilterNew.do" />
+		</action>
+		<action path="/Upload"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="upload">
+		</action>
+
+		<action path="/UploadFilters"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="filters">
+			<forward name="success" path=".filter.upload" />
+		</action>
+
+		<action path="/UploadFilterSave"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="filterSave" name="fileLoaderForm" scope="request"
+			validate="false" input=".filter.upload">
+			<forward name="success" path="/UploadFilters.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path=".filter.upload" />
+		</action>
+
+		<action path="/UploadSignatures"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="signatures">
+			<forward name="success" path=".signature.upload" />
+		</action>
+
+		<action path="/UploadSignatureSave"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="signatureSave" name="fileLoaderForm" scope="request"
+			validate="false" input=".signature.upload">
+			<forward name="success" path="/UploadSignatures.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path=".signature.upload" />
+		</action>
+
+		<action path="/Templates"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="templates">
+			<forward name="success" path=".templates" />
+		</action>
+		
+		<action path="/Reports" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="report">
+			<forward name="edit" path=".report.admin"></forward>
+			<forward name="view" path=".report"></forward>
+		</action>
+
+		<action path="/History" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="history">
+			<forward name="success" path=".report.admin"></forward>
+		</action>
+
+		<action path="/ManufacturerHistoryReport" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="manufacturer">
+			<forward name="year" path=".manufacturer.history.year"></forward>
+			<forward name="month" path=".manufacturer.history.month"></forward>
+			<forward name="success" path=".manufacturer.history"></forward>
+		</action>
+
+		<action path="/SoftwareCategoryHistoryReport" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="softwareCategory">
+			<forward name="year" path=".software.category.history.year">
+			</forward>
+			<forward name="month" path=".software.category.history.month">
+			</forward>
+			<forward name="success" path=".software.category.history"></forward>
+		</action>
+
+		<action path="/SoftwareFilterHistoryReport" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="filter">
+			<forward name="year" path=".software.filter.history.year">
+			</forward>
+			<forward name="month" path=".software.filter.history.month">
+			</forward>
+			<forward name="success" path=".software.filter.history"></forward>
+		</action>
+
+		<action path="/SoftwareSignatureHistoryReport" type="com.ibm.tap.sigbank.reports.ActionReport"
+			parameter="signature">
+			<forward name="year" path=".software.signature.history.year">
+			</forward>
+			<forward name="month" path=".software.signature.history.month">
+			</forward>
+			<forward name="success" path=".software.signature.history">
+			</forward>
+		</action>
+	</action-mappings>
+
+	<!-- Message Resources -->
+	<message-resources parameter="ApplicationResources" />
+	<message-resources key="email"
+		parameter="com.ibm.tap.sigbank.framework.email.SignatureBankEmailResources" />
+	<plug-in className="com.ibm.tap.sigbank.framework.common.HibernateSessionPlugin">
+	</plug-in>
+
+	<plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+		<set-property property="pathnames"
+			value="/org/apache/struts/validator/validator-rules.xml,
+               /WEB-INF/validator.xml" />
+	</plug-in>
+
+	<plug-in className="org.apache.struts.tiles.TilesPlugin">
+		<set-property property="definitions-config" value="/WEB-INF/tiles-def.xml" />
+		<set-property property="definitions-parser-validate"
+			value="true" />
+		<set-property property="moduleAware" value="true" />
+		<set-property property="definitions-debug" value="2" />
+		<set-property property="definitions-parser-details"
+			value="2" />
+	</plug-in>
+	<plug-in className="com.ibm.tap.sigbank.framework.batch.BatchPlugin">
+	</plug-in>
+	<plug-in
+		className="com.ibm.tap.sigbank.framework.batch.email.BatchEmailProcessor">
+	</plug-in>
+
+</struts-config>
