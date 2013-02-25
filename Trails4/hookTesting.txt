@@ -1,5 +1,0 @@
-Hi, this is a hook of trac testing file.
-file modified
-file modfiled again. 
-file modfiled again. 
-4
