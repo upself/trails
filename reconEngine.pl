@@ -378,7 +378,7 @@ sub queryDistinctCustomerIdsFromQueueFifo {
     $query .= '
         where
           a.customer_id  = c.customer_id 
-          and a.table in (\'RECON_CUSTOMER\', \'RECON_HARDWARE\', \'RECON_HW_LPAR\')
+          and a.table in (\'RECON_SW_LPAR\', \'RECON_CUSTOMER_SW\', \'RECON_LICENSE\')
           and c.customer_type_id not in (172, 173, 222, 224, 217)
           and date(a.record_time)<=\'2013-03-05\'
                 group by
