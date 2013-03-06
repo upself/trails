@@ -367,7 +367,8 @@ sub queryDistinctCustomerIdsFromQueueFifo {
             a.customer_id
             ,date(a.record_time)
         from
-            v_recon_queue a
+            v_recon_queue a, 
+            customer c
     ';
     if ( $testMode == 1 ) {
         $query .= '
@@ -375,6 +376,11 @@ sub queryDistinctCustomerIdsFromQueueFifo {
             . $cfgMgr->testCustomerIdsAsString() . ')';
     }
     $query .= '
+        where
+          a.customer_id  = c.customer_id 
+          and a.table in (\'RECON_CUSTOMER\', \'RECON_HARDWARE\', \'RECON_HW_LPAR\')
+          and c.customer_type_id not in (172, 173, 222, 224, 217)
+          and date(a.record_time)<=\'2013-03-05\'
                 group by
                     a.customer_id
                     ,date(a.record_time)
