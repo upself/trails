@@ -271,7 +271,8 @@ sub queryReconQueueByCustomerId {
         from
             v_recon_queue a
         where
-            a.customer_id = ?
+            a.table in (\'RECON_CUSTOMER\', \'RECON_HARDWARE\', \'RECON_HW_LPAR\') 
+            and a.customer_id = ?
             and date(record_time) = ?
     ';
     dlog("queryReconQueueByCustomerId=$query");
