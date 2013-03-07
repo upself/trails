@@ -53,9 +53,10 @@ sub recon {
 	###Set the software lpar
 	$reconLpar->softwareLpar( $self->softwareLpar );
 
-	if (   $self->action eq 'OS'
+	if ( defined $self->action &&(
+	    $self->action eq 'OS'
 		|| $self->action eq 'SW'
-		|| $self->action eq 'LICENSABLE')
+		|| $self->action eq 'LICENSABLE'))
 	{
 		ilog("Only performing alertLogic if action = OS or SW or LICENSABLE");
 		$self->alertLogic( undef, $self->action );
@@ -70,7 +71,7 @@ sub recon {
 		$self->reconDeep( $reconLpar->reconDeep )
 		  if ( $self->reconDeep != 1 );
 
-		$self->reconDeep(1) if ( $self->action eq 'DEEP' );
+		$self->reconDeep(1) if ( defined $self->action && $self->action eq 'DEEP' );
 
 		###Run the alert logic
 		$self->alertLogic( $reconLpar->hardwareLpar, $self->action );
@@ -90,6 +91,9 @@ sub alertLogic {
 	my ( $self, $hardwareLpar, $action ) = @_;
 	ilog("Performing alert logic");
 	my $alert;
+	
+	$action='' 
+	   if !defined $self->action;
 	if ( $action eq 'OS' ) {
 		$alert =
 		  Recon::AlertNoOperatingSystem->new( $self->connection,
