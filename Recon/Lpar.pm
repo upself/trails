@@ -280,7 +280,7 @@ sub reconFromHardwareLpar {
             $self->hwSwComposite->delete( $self->connection );
         }
     }
-    elsif ( defined $matchType &&  $self->softwareLpar->status ne 'INACTIVE' ) {
+    elsif ( defined $matchType &&  $self->softwareLpar->status eq 'ACTIVE' ) {
         ###We found a definitive unique match
         dlog("we have a match");
 
