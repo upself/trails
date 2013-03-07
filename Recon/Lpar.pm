@@ -144,7 +144,8 @@ sub reconFromSoftwareLpar {
             $self->effectiveProcessorLogic;
         }
     }
-    elsif ( defined $matchType ) {
+    elsif ( defined $matchType && $self->hardwareLpar->lparStatus eq 'ACTIVE') 
+     {
         ###We found a definitive unique match
         dlog("we have a match");
 
@@ -279,7 +280,7 @@ sub reconFromHardwareLpar {
             $self->hwSwComposite->delete( $self->connection );
         }
     }
-    elsif ( defined $matchType ) {
+    elsif ( defined $matchType &&  $self->softwareLpar->status ne 'INACTIVE' ) {
         ###We found a definitive unique match
         dlog("we have a match");
 
