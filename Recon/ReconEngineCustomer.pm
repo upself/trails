@@ -271,7 +271,6 @@ sub queryReconQueueByCustomerId {
         from
             v_recon_queue a
         where
-            a.table in (\'RECON_SW_LPAR\', \'RECON_CUSTOMER_SW\', \'RECON_LICENSE\') 
             and a.customer_id = ?
             and date(record_time) = ?
     ';
