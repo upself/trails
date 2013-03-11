@@ -271,7 +271,7 @@ sub queryReconQueueByCustomerId {
         from
             v_recon_queue a
         where
-            and a.customer_id = ?
+            a.customer_id = ?
             and date(record_time) = ?
     ';
     dlog("queryReconQueueByCustomerId=$query");
