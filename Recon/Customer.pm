@@ -106,7 +106,7 @@ sub retrieveHardwareRecords {
     my $sth = $self->connection->sql->{hardwareIdsByCustomerId};
     my %rec;
     $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{hardwareIdsByCustomerIdFields} } );
-    $sth->execute( $self->customer->id, $self->customer->id );
+    $sth->execute( $self->customer->id );
     while ( $sth->fetchrow_arrayref ) {
         $self->hardwares->{ $rec{hardwareId} } = 1;
     }
