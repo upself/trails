@@ -54,6 +54,14 @@ public class ActionContact extends ActionBase {
 		}
 		long customerId = Long.parseLong(custid);
 		logger.debug("ActionContact.edit id=" + id);
+		
+		if ( EaUtils.isBlank(lparName)) {
+			logger.debug("LparNmae is null  " + lparName);
+			request.setAttribute(Constants.CUSTOMER_ID, custid);
+			request.setAttribute(Constants.CONTEXT, context);
+			request.setAttribute(Constants.ACCOUNT_ID, accountid);
+			return mapping.findForward(Constants.ERROR);
+		}
 
 		if (!EaUtils.isBlank(id)) {
 			// doing a delete
@@ -880,7 +888,16 @@ public class ActionContact extends ActionBase {
 		String lparName = getParameter(request, Constants.LPAR_NAME);
 		String image = Constants.IMAGE_ADD;
 		String lpar_id = "";
+       
+		if ( EaUtils.isBlank(lparName)) {
+			logger.debug("LparNmae is null  " + lparName);
+			request.setAttribute(Constants.CUSTOMER_ID, custid);
+			request.setAttribute(Constants.CONTEXT, context);
+			request.setAttribute(Constants.ACCOUNT_ID, accountid);
+			return mapping.findForward(Constants.ERROR);
+		}
 
+		
 		if (context.equalsIgnoreCase(Constants.HDW)) {
 			// get the lparId
 			HardwareLpar hardwarelpar = new HardwareLpar();
@@ -924,6 +941,15 @@ public class ActionContact extends ActionBase {
 		long customerId = Long.parseLong(custid);
 
 		logger.debug("ActionContact.update id=" + custid);
+		
+		if ( EaUtils.isBlank(lparName)) {
+			logger.debug("LparNmae is null  " + lparName);
+			request.setAttribute(Constants.CUSTOMER_ID, custid);
+			request.setAttribute(Constants.CONTEXT, context);
+			request.setAttribute(Constants.ACCOUNT_ID, accountid);
+			return mapping.findForward(Constants.ERROR);
+		}
+
 
 		if (!EaUtils.isBlank(custid)) {
 

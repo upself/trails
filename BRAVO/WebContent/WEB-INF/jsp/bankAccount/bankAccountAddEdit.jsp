@@ -24,7 +24,7 @@
 function setChange() {
 	var lbankAccountForm = document.bankAccountForm;
 	var bankAccountType = lbankAccountForm.type.value;
-	if ( bankAccountType && bankAccountType=='TAD4Z') {
+	if ( bankAccountType && bankAccountType=='TADZ') {
 
 		alert("You can not change the TAD4Z bank account to disconnected!");
        return false;
@@ -154,7 +154,7 @@ in to complete the form.</p>
 					<html:option value="BLAZANT">BLAZANT</html:option>
 					<html:option value="ALTIRIS">ALTIRIS</html:option>
 					<html:option value="IDD">IDD</html:option>
-					<html:option value="TAD4Z">TAD4Z</html:option>
+					<html:option value="TAD4Z">TADZ</html:option>
 					<logic:equal scope="request" name="bankAccountForm"
 						property="connectionType" value="DISCONNECTED">
 						<html:option value="FACTS">FACTS</html:option>

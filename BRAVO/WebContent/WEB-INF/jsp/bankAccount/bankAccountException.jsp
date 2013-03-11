@@ -23,9 +23,9 @@
 function setChange() {
 	var lbankAccountForm = document.bankAccountForm;
 	var bankAccountType = lbankAccountForm.type.value;
-	if ( bankAccountType && bankAccountType=='TAD4Z') {
+	if ( bankAccountType && bankAccountType=='TADZ') {
 
-		alert("You can not change the TAD4Z bank account to disconnected!");
+		alert("You can not change the TADZ bank account to disconnected!");
        return false;
 	} else {
 		self.location="/BRAVO/bankAccount/updateConnectionType.do?id="+lbankAccountForm.id.value ;

@@ -314,6 +314,7 @@
 		<action path="/software/copy" type="com.ibm.ea.bravo.software.ActionSoftware"
 			parameter="copy">
 			<forward name="success" path="/WEB-INF/jsp/software/copy.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/software/copyerror.jsp" />
 		</action>
 
 		<!-- SOFTWARE applyCopy -->

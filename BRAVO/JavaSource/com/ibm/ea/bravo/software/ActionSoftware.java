@@ -748,9 +748,10 @@ public class ActionSoftware extends ActionBase {
 			request.setAttribute(Constants.LPAR, softwareLpar);
 
 			return mapping.findForward(Constants.SUCCESS);
+		}else {
+			logger.debug("LparId is null  " + lparId);
+			return mapping.findForward(Constants.ERROR);
 		}
-
-		return mapping.findForward(Constants.HOME);
 
 	}
 
