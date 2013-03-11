@@ -37,9 +37,11 @@ sub recon {
 
     ###Retrieve all hardware records and their hardware lpars
     $self->retrieveHardwareRecords;
+    $self->retrieveHardwareLparRecords;
 
     ###Retrieve all software lpar records, and their inst sw.
     $self->retrieveSoftwareLparRecords;
+    $self->retrieveInstalledSwRecords;
 
     ###Retrieve all license records.
     $self->retrieveLicenseRecords;
@@ -107,28 +109,58 @@ sub retrieveHardwareRecords {
     $sth->execute( $self->customer->id, $self->customer->id );
     while ( $sth->fetchrow_arrayref ) {
         $self->hardwares->{ $rec{hardwareId} } = 1;
-        $self->hardwareLpars->{ $rec{hardwareLparId} } = 1 if defined $rec{hardwareLparId};
     }
     $sth->finish;
 }
 
 sub queryHardwareIdsByCustomerId {
-    my @fields = (qw( hardwareId hardwareLparId ));
+    my @fields = (qw( hardwareId ));
 
     my $query = qq{
         select
             h.id
-            ,hl.id
         from 
-            hardware h
-        left outer join hardware_lpar hl on
-            h.id = hl.hardware_id
-            and hl.customer_id = ?
+            hardware h        
         where 
             h.customer_id = ?
+            and not exists (select 1 from recon_hardware rh where rh.hardware_id = h.id)
     };
 
     return ( 'hardwareIdsByCustomerId', $query, \@fields );
+}
+
+
+sub retrieveHardwareLparRecords {
+    my $self = shift;
+
+    $self->connection->prepareSqlQueryAndFields( $self->queryHardwareLparIdsByCustomerId() );
+    my $sth = $self->connection->sql->{hardwareLparIdsByCustomerId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{hardwareLparIdsByCustomerIdFields} } );
+    $sth->execute( $self->customer->id, $self->customer->id );
+    while ( $sth->fetchrow_arrayref ) {
+        $self->hardwareLpars->{ $rec{hardwareLparId} } = 1;
+    }
+    $sth->finish;
+}
+
+sub queryHardwareLparIdsByCustomerId {
+    my @fields = (qw( hardwareLparId ));
+
+    my $query = qq{
+        select         
+            hl.id
+        from 
+            hardware h,
+            hardware_lpar hl
+        where
+            h.id = hl.hardware_id
+            and hl.customer_id = ?
+            and h.customer_id = ?
+            and not exists (select 1 from recon_hw_lpar rhl where rhl.hardware_lpar_id  = hl.id)
+    };
+
+    return ( 'hardwareLparIdsByCustomerId', $query, \@fields );
 }
 
 sub retrieveSoftwareLparRecords {
@@ -141,25 +173,51 @@ sub retrieveSoftwareLparRecords {
     $sth->execute( $self->customer->id );
     while ( $sth->fetchrow_arrayref ) {
         $self->softwareLpars->{ $rec{softwareLparId} } = 1;
-        $self->installedSoftwares->{ $rec{installedSoftwareId} } = 1 if defined $rec{installedSoftwareId};
     }
     $sth->finish;
 }
 
 sub querySoftwareLparIdsByCustomerId {
-    my @fields = (qw( softwareLparId installedSoftwareId ));
+    my @fields = (qw( softwareLparId ));
     my $query  = qq{
         select
             sl.id
-            ,is.id
         from 
             software_lpar sl
-            left outer join installed_software is on
-                sl.id = is.software_lpar_id
         where 
             sl.customer_id = ?
+            and not exists (select 1 from recon_sw_lpar rsl where rsl.software_lpar_id  = sl.id)
     };
     return ( 'softwareLparIdsByCustomerId', $query, \@fields );
+}
+
+sub retrieveInstalledSwRecords {
+    my $self = shift;
+
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledSwIdsByCustomerId() );
+    my $sth = $self->connection->sql->{installedSwIdsByCustomerId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{installedSwIdsByCustomerIdFields} } );
+    $sth->execute( $self->customer->id );
+    while ( $sth->fetchrow_arrayref ) {
+        $self->installedSoftwares->{ $rec{installedSoftwareId} } = 1;
+    }
+    $sth->finish;
+}
+
+sub queryInstalledSwIdsByCustomerId {
+    my @fields = (qw( installedSoftwareId ));
+    my $query  = qq{
+        select
+            is.id
+        from 
+            software_lpar sl join installed_software is 
+            on sl.id = is.software_lpar_id
+        where 
+            sl.customer_id = ?
+            and not exists (select 1 from recon_installed_sw ris where ris.installed_software_id = is.id)
+    };
+    return ( 'installedSwIdsByCustomerId', $query, \@fields );
 }
 
 sub retrieveLicenseRecords {
@@ -186,6 +244,7 @@ sub queryLicenseIdsByCustomerId {
             license l
         where 
             l.customer_id = ?
+            and not exists (select 1 from recon_license rl where rl.license_id  = l.id)
     };
     return ( 'licenseIdsByCustomerId', $query, \@fields );
 }
