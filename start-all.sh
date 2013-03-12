@@ -67,4 +67,6 @@ sleep $SLEEP
 sleep $SLEEP
 ./scanRecordToLpar.pl start
 sleep $SLEEP
+./scanSoftwareItemToStaging.pl start
+sleep $SLEEP
 exit 0

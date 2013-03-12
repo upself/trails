@@ -96,13 +96,13 @@ SELECT N.node_key
      , case when P.feature_guid is null then P.version_guid else P.feature_guid end
      , MAX(PU.PERIOD)       AS LASTUSED
      , SUM(PU.EVENT_CNT)   AS TOTAL
-  FROM IGA.PRODUCT_INSTALL        AS PI
-  JOIN IGA.PRODUCT                AS P  ON P.SW_KEY      = PI.SW_KEY
-  JOIN IGA.SYSTEM                 AS S  ON S.SYSTEM_KEY  = PI.SYSTEM_KEY
-  JOIN IGA.PRODUCT_USE            AS PU ON PU.SW_KEY     = PI.SW_KEY
+  FROM PRODUCT_INSTALL        AS PI
+  JOIN PRODUCT                AS P  ON P.SW_KEY      = PI.SW_KEY
+  JOIN SYSTEM                 AS S  ON S.SYSTEM_KEY  = PI.SYSTEM_KEY
+  JOIN PRODUCT_USE            AS PU ON PU.SW_KEY     = PI.SW_KEY
                                   AND PU.SYSTEM_KEY = PI.SYSTEM_KEY
-  JOIN IGA.SYSTEM_NODE            AS SN ON SN.SYSTEM_KEY = PI.SYSTEM_KEY AND SN.PERIOD = PU.PERIOD
-  JOIN IGA.NODE                   AS N  ON N.NODE_KEY    = SN.NODE_KEY
+  JOIN SYSTEM_NODE            AS SN ON SN.SYSTEM_KEY = PI.SYSTEM_KEY AND SN.PERIOD = PU.PERIOD
+  JOIN NODE                   AS N  ON N.NODE_KEY    = SN.NODE_KEY
   WHERE  PI.UNINSTALL_DATE IS NULL
     AND P.PRODUCT_NAME <> \'SCRT_ONLY\'
     AND P.SW_TYPE = \'FEATURE\'

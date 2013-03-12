@@ -93,4 +93,6 @@ sleep $SLEEP
 sleep $SLEEP
 ./softwareToBravo.pl stop
 sleep $SLEEP
+./scanSoftwareItemToStaging.pl stop
+sleep $SLEEP
 exit 0
