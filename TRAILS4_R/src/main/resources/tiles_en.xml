@@ -5,36 +5,40 @@
 
 <tiles-definitions>
 
-	<definition name="tiles.help.userGuide"
-		extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.help.userGuide" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/help/en/userGuides.html" />
+		<put-attribute name="description" value="TRAILS help user guide" />
+		<put-attribute name="keywords" value="TRAILS help user guide" />
 	</definition>
 
-	<definition name="tiles.help.faq"
-		extends="tiles.w3OneColumnLayout">
+<definition name="tiles.help.faq" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/help/en/frequentlyAskedQuestions.html" />
+		<put-attribute name="description" value="TRAILS help faq" />
+		<put-attribute name="keywords" value="TRAILS help faq" />
 	</definition>
 
-	<definition name="tiles.help.admin"
-		extends="tiles.w3OneColumnLayout">
+		<definition name="tiles.help.admin" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/help/en/administrationHelp.html" />
+		<put-attribute name="description" value="TRAILS help admin" />
+		<put-attribute name="keywords" value="TRAILS help admin" />
 	</definition>
 
-	<definition name="tiles.help.onPageRef"
-		extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.help.onPageRef" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/help/en/onPageReferences.html" />
+		<put-attribute name="description" value="TRAILS help on page reference" />
+		<put-attribute name="keywords" value="TRAILS help on page reference" />
 	</definition>
 
 </tiles-definitions>

@@ -1,5 +1,7 @@
 package com.ibm.asset.trails.action;
 
+import java.util.Date;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.CountryCode;
@@ -41,6 +43,9 @@ public class AlertReportAction extends BaseListAction {
     private Long departmentId;
 
     private Department department;
+    
+    private Date reportTimestamp;
+	private Integer reportMinutesOld;
 
     public void setAlertReportService(
             DataExceptionReportService alertReportService) {
@@ -80,7 +85,13 @@ public class AlertReportAction extends BaseListAction {
         if (getSectorId() != null) {
             setSector(getAccountService().getSector(sectorId));
         }
+        
     }
+    
+    private void retrieveReportInfo() {
+		setReportTimestamp(new Date());
+		setReportMinutesOld(0);
+	}
     
     @UserRole(userRole = UserRoleType.READER)
     public String doDataExceptionHome() {
@@ -89,13 +100,14 @@ public class AlertReportAction extends BaseListAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doGeography() {
-
+    	retrieveReportInfo();
         getData().setList(alertReportService.getGeographyReport());
         return Action.SUCCESS;
     }
 
     @UserRole(userRole = UserRoleType.READER)
     public String doRegion() {
+    	retrieveReportInfo();
         getData().setList(alertReportService.getRegionReport(geography));
 
         return Action.SUCCESS;
@@ -103,6 +115,7 @@ public class AlertReportAction extends BaseListAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doCountryCode() {
+    	retrieveReportInfo();
         getData().setList(
                 alertReportService.getCountryCodeReport(geography, region));
 
@@ -111,6 +124,7 @@ public class AlertReportAction extends BaseListAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doSector() {
+    	retrieveReportInfo();
         getData().setList(
                 alertReportService.getSectorReport(geography, region,
                         countryCode));
@@ -120,6 +134,7 @@ public class AlertReportAction extends BaseListAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doDepartment() {
+    	retrieveReportInfo();
         getData().setList(
                 alertReportService.getDepartmentReport(geography, region,
                         countryCode));
@@ -133,7 +148,7 @@ public class AlertReportAction extends BaseListAction {
                 && getSector() == null) {
             return Action.ERROR;
         }
-
+        retrieveReportInfo();
         getData().setList(
                 alertReportService.getAccountReport(geography, region,
                         countryCode, sector, department));
@@ -220,5 +235,21 @@ public class AlertReportAction extends BaseListAction {
     public void setDepartment(Department department) {
         this.department = department;
     }
+    
+	public Integer getReportMinutesOld() {
+		return reportMinutesOld;
+	}
+
+	public Date getReportTimestamp() {
+		return reportTimestamp;
+	}
+
+	public void setReportMinutesOld(Integer reportMinutesOld) {
+		this.reportMinutesOld = reportMinutesOld;
+	}
+
+	public void setReportTimestamp(Date reportTimestamp) {
+		this.reportTimestamp = reportTimestamp;
+	}
 
 }
