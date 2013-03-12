@@ -53,7 +53,7 @@ sub spawnChildren {
     wlog("Spawning children");
     for ( my $i = 0; $i < $maxChildren; $i++ ) {
         my $customer = shift @customerIds;
-        next if !defined $customer;
+        last if( !defined $customer && scalar @customerIds == 0);
         my ($date, $customerId) = each %$customer;
         if ( isCustomerRunning($customerId) == 1 ) {
             next;
@@ -90,7 +90,7 @@ sub keepTicking {
         for ( my $i = $children; $i < $maxChildren; $i++ ) {
             wlog("running $i");
             my $customer = shift @customerIds;
-            next if !defined $customer;
+            last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
             if ( isCustomerRunning( $customerId ) == 1 ) {
                 next;
