@@ -1,4 +1,4 @@
-package Recon::Recover::Recovery;
+package Recon::Recover::RecoveryNEW;
 
 use strict;
 use Base::Utils;
@@ -108,6 +108,17 @@ sub run {
 					  . ':No reconcile history' );
 				next;
 			}
+			if ( $reconcileH->machineLevel == 1 ) {
+				$self->report( 'Account Number:'
+					  . $self->customer->accountNumber
+					  . ':Software Lpar:'
+					  . $softwareLpar->name
+					  . ':Software:'
+					  . $software->name
+					  . ':Reconciled on the machine level' );
+
+				#				next;
+			}
 
 			if ( $self->restoreManual == 0 ) {
 				if ( $reconcileH->manualBreak == 1 ) {
@@ -147,8 +158,17 @@ sub run {
 						  . ':Current reconcile is manual' );
 					next;
 				}
-
-				$self->breakReconcile( $reconcile->id );
+				if ( $reconcileH->machineLevel == 0 ) {
+					$self->breakReconcile( $reconcile->id );
+				} else {
+					$self->report( 'Account Number:'
+						  . $self->customer->accountNumber
+						  . ':Software Lpar:'
+						  . $softwareLpar->name
+						  . ':Software:'
+						  . $software->name
+						  . ':Not breaking reconcile because at machine level' );					
+				}
 
 			}
 
@@ -192,7 +212,6 @@ sub run {
 	}
 
 }
-
 
 sub recoverMapsByReconcileH {
 	my ( $self, $reconcileHId, $reconcileId ) = @_;
@@ -416,7 +435,7 @@ sub queryInstalledSoftwareIds {
             and is.discrepancy_type_id != 3
             and is.discrepancy_type_id != 5 
             and is.status = 'ACTIVE'            
-            and not exists(select 1 from reconcile r, reconcile_type rt where r.installed_software_id = is.id and r.reconcile_type_id = rt.id and rt.is_manual = 0) 
+            and not exists(select 1 from reconcile r, reconcile_type rt where r.installed_software_id = is.id and r.reconcile_type_id = rt.id and rt.is_manual = 1) 
             and not exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id and rh.manual_break = 1) 
             and exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id) 
     };
@@ -635,4 +654,3 @@ sub report {
 }
 
 1;
-
