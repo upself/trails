@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $maxChildren        = 150;
+my $maxChildren        = 50;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
@@ -61,9 +61,7 @@ sub spawnChildren {
         elsif ( canProcess( $customerId, $masters, $members ) ) {
             newChild( $customerId, $date, 0 );
         }
-        else {
-            newChild( $customerId, $date, 1 );
-        }
+
         if ( scalar @customerIds == 0 ) {
             last;
         }
@@ -97,14 +95,20 @@ sub keepTicking {
             }
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
+            }else{
+               wlog("ingore pool process for $customerId");
             }
-            else { 
-                newChild( $customerId, $date, 1 );
-            }
+
             if ( scalar @customerIds == 0 ) {
                 last;
             }
         }
+        
+        if(scalar @customerIds == 0){
+            wlog("loop of customer array finished will sleep 300");
+            sleep 300;
+            wlog("after 300 sleep");   
+        }    
     }
 }
 
