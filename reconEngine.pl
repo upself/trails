@@ -85,6 +85,10 @@ sub keepTicking {
             sleep;
             wlog("done sleeping");
         }
+        
+         @customerIds = getReconCustomerQueue( $connection, $testMode );
+        ( $masters, $members ) = getPoolCustomers($connection);
+        
         for ( my $i = $children; $i < $maxChildren; $i++ ) {
             wlog("running $i");
             my $customer = shift @customerIds;
