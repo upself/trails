@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $maxChildren        = 50;
+my $maxChildren        = 150;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
@@ -84,10 +84,12 @@ sub keepTicking {
             wlog("sleeping");
             sleep;
             
+            wlog("beofre reset array size:". scalar @customerIds);
             my $connection = Database::Connection->new('trails');
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             ( $masters, $members ) = getPoolCustomers($connection);
             $connection->disconnect;
+            wlog("end reset array size:". scalar @customerIds);
             
             wlog("done sleeping");
         }
@@ -392,7 +394,7 @@ sub queryDistinctCustomerIdsFromQueueFifo {
           a.customer_id  = c.customer_id 
           and a.customer_id != 999999
           and c.customer_type_id not in (172, 173, 222, 224, 217)
-          and date(a.record_time)<=\'2013-03-05\'
+          and date(a.record_time)<=\'2013-03-12\'
                 group by
                     a.customer_id
                     ,date(a.record_time)
