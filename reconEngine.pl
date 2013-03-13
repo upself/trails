@@ -83,10 +83,13 @@ sub keepTicking {
         if ( $children >= $maxChildren ) {
             wlog("sleeping");
             sleep;
-            wlog("done sleeping");
             
+            my $connection = Database::Connection->new('trails');
             @customerIds = getReconCustomerQueue( $connection, $testMode );
-           ( $masters, $members ) = getPoolCustomers($connection);
+            ( $masters, $members ) = getPoolCustomers($connection);
+            $connection->disconnect;
+            
+            wlog("done sleeping");
         }
         
         
