@@ -327,7 +327,7 @@ sub getReconCustomerQueue {
     for(my $phase = 0; $phase < 5; $phase++){
         my $id;
         my $recordTime;
-        $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($testMode, $phase) );
+        $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($phase) );
         my $sth = $connection->sql->{distinctCustomerIdsFromQueueFifo};
         $sth->bind_columns( \$id, \$recordTime );
         $sth->execute();
