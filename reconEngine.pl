@@ -106,7 +106,7 @@ sub keepTicking {
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
             }else{
-               wlog("ingore pool process for $customerId, $date");
+               wlog("r79 ingore pool process for $customerId, $date");
             }
 
             if ( scalar @customerIds == 0 ) {
@@ -399,17 +399,10 @@ sub emea {
          v.customer_id
          ,date(v.record_time) 
      from 
-        v_recon_queue v,
-        customer c, 
-        country_code cc, 
-        region reg, 
-        geography geo 
+        v_recon_queue v
     where 
-        v.customer_id  = c.customer_id  
-        and c.country_code_id  = cc. id 
-        and cc.region_id  = reg.id 
-        and reg.geography_id = geo.id 
-        and geo.name = \'EMEA\'
+        v.customer_id  in (4918,2963,5798,3654,4017,4102,4209,5116,5704,7643,8992,9743,12031,13550)
+        and date(v.record_time)<=\'2013-03-05\'
     group by
          v.customer_id
          ,date(v.record_time) 
