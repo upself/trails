@@ -394,8 +394,7 @@ sub queryDistinctCustomerIdsFromQueueFifo {
           a.customer_id  = c.customer_id 
           and a.customer_id != 999999
           and c.customer_type_id not in (172, 173, 222, 224, 217)
-          and date(a.record_time)<=\'2013-03-12\'
-                group by
+          group by
                     a.customer_id
                     ,date(a.record_time)
                 order by date(a.record_time)
