@@ -106,7 +106,7 @@ sub keepTicking {
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
             }else{
-               wlog("ingore pool process for $customerId");
+               wlog("ingore pool process for $customerId, $date");
             }
 
             if ( scalar @customerIds == 0 ) {
