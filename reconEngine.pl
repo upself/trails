@@ -32,6 +32,8 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
+my $rNo = 'reversion:80';
+
 my $maxChildren        = 150;
 my %runningCustomerIds = ();
 my %children           = ();
@@ -50,7 +52,7 @@ endJob($systemScheduleStatus);
 exit;
 
 sub spawnChildren {
-    wlog("Spawning children");
+    wlog("$rNo Spawning children");
     for ( my $i = 0; $i < $maxChildren; $i++ ) {
         my $customer = shift @customerIds;
         last if( !defined $customer && scalar @customerIds == 0);
@@ -69,7 +71,7 @@ sub spawnChildren {
 }
 
 sub keepTicking {
-    wlog("Keep on ticking");
+    wlog("$rNo Keep on ticking");
     my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
@@ -81,22 +83,22 @@ sub keepTicking {
              $connection->disconnect;
         }
         if ( $children >= $maxChildren ) {
-            wlog("sleeping");
+            wlog("$rNo sleeping");
             sleep;
             
-            wlog("beofre reset array size:". scalar @customerIds);
+            wlog("$rNo beofre reset array size:". scalar @customerIds);
             my $connection = Database::Connection->new('trails');
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             ( $masters, $members ) = getPoolCustomers($connection);
             $connection->disconnect;
-            wlog("end reset array size:". scalar @customerIds);
+            wlog("$rNo end reset array size:". scalar @customerIds);
             
-            wlog("done sleeping");
+            wlog("$rNo done sleeping");
         }
         
         
         for ( my $i = $children; $i < $maxChildren; $i++ ) {
-            wlog("running $i");
+            wlog("$rNo running $i");
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
@@ -106,7 +108,7 @@ sub keepTicking {
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
             }else{
-               wlog("r79 ingore pool process for $customerId, $date");
+               wlog("$rNo ingore pool process for $customerId, $date");
             }
 
             if ( scalar @customerIds == 0 ) {
@@ -115,9 +117,9 @@ sub keepTicking {
         }
         
         if(scalar @customerIds == 0){
-            wlog("loop of customer array finished will sleep 300");
+            wlog("$rNo loop of customer array finished will sleep 300");
             sleep 300;
-            wlog("after 300 sleep");   
+            wlog("$rNo after 300 sleep");   
         }    
     }
 }
@@ -126,7 +128,7 @@ sub isCustomerRunning {
     my $customerId = shift;
     my $result     = 0;
     if ( exists $runningCustomerIds{$customerId} ) {
-        wlog("$customerId already running, skipping");
+        wlog("$rNo $customerId already running, skipping");
         $result = 1;
     }
     return $result;
@@ -176,7 +178,7 @@ sub newChild {
     my $poolRunning = shift;
     my $pid;
 
-    wlog("spawning $customerId, $date, $poolRunning");
+    wlog("$rNo spawning $customerId, $date, $poolRunning");
     my $sigset = POSIX::SigSet->new(SIGINT);
     sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
@@ -189,9 +191,9 @@ sub newChild {
     }
 
     if ( scalar @customerIds == 0 ) {
-       wlog("sleeping 5");
+       wlog("$rNo sleeping 5");
        sleep 300;
-       wlog("done sleeping 5");
+       wlog("$rNo done sleeping 5");
     }
 
     my $reconEngine = new Recon::ReconEngineCustomer( $customerId, $date, $poolRunning );
@@ -199,7 +201,7 @@ sub newChild {
 
     sleep 300;
 
-    wlog("Child $customerId, $date, $poolRunning complete");
+    wlog("$rNo Child $customerId, $date, $poolRunning complete");
     exit;
 }
 
@@ -207,7 +209,7 @@ sub newSoftwareChild {
     my $softwareId = shift;
     my $pid;
 
-    wlog("spawning software: $softwareId");
+    wlog("$rNo spawning software: $softwareId");
     my $sigset = POSIX::SigSet->new(SIGINT);
     sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
@@ -221,7 +223,7 @@ sub newSoftwareChild {
     my $reconEngine = new Recon::ReconEngineSoftware( $softwareId );
     $reconEngine->recon;
 
-    wlog("Child software: $softwareId complete");
+    wlog("$rNo Child software: $softwareId complete");
     exit;
 }
 
@@ -324,18 +326,19 @@ sub getReconCustomerQueue {
     my @customers;
     my %customerIdDateHash = ();
     
-    for(my $phase = 0; $phase < 5; $phase++){
+    for( my $phase = 0; $phase < 4; $phase++){
         my $id;
         my $recordTime;
         $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($phase) );
-        my $sth = $connection->sql->{distinctCustomerIdsFromQueueFifo};
+        my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'.$phase};
         $sth->bind_columns( \$id, \$recordTime );
         $sth->execute();
     
         while ( $sth->fetchrow_arrayref ) {
-            my $keys  = $id.'|'.$date;
-        
+            my $keys  = $id.'|'.$recordTime;
+            
             if($customerIdDateHash{$keys}){
+             dlog("keys=".$keys);
              next;
             }else{
                my %data;
@@ -343,8 +346,11 @@ sub getReconCustomerQueue {
                push @customers, \%data;
                $customerIdDateHash{$keys} = 1;
             }
-           $sth->finish;
         }
+        
+       $sth->finish;
+       
+       dlog("phase $phase array size:".scalar @customers);
     }
     dlog("end getDistinctCustomerIdsFromQueueFifo");
 
@@ -361,14 +367,14 @@ sub queryDistinctCustomerIdsFromQueueFifo {
       $query = emea();
     }elsif($phase == 2){
       $query = normal();
-    }elsif($phase == 4){
+    }elsif($phase == 3){
       $query = workstation();
     }
     
-    $query .='wit ur';
+    $query .='with ur';
     
     dlog($query);
-    return ( 'distinctCustomerIdsFromQueueFifo', $query );
+    return ( 'distinctCustomerIdsFromQueueFifo'.$phase, $query );
 }
 
 
@@ -381,7 +387,7 @@ sub p1Account {
     from
        v_recon_queue a
     where
-       a.customer_id = 12476
+       a.customer_id in ( 12476,9754)
     group by
        a.customer_id
       ,date(a.record_time)
@@ -451,7 +457,8 @@ sub workstation {
      group by
        a.customer_id
        ,date(a.record_time)
-     order by date(a.record_time)
+     order by 
+       date(a.record_time)
     ';
  return $query;
 }
