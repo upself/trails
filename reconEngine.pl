@@ -321,23 +321,146 @@ sub queryMasterPoolCustomers {
 sub getReconCustomerQueue {
     my ( $connection, $testMode ) = @_;
 
-    my $id;
-    my $recordTime;
     my @customers;
-    $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($testMode) );
-    my $sth = $connection->sql->{distinctCustomerIdsFromQueueFifo};
-    $sth->bind_columns( \$id, \$recordTime );
-    $sth->execute();
-    while ( $sth->fetchrow_arrayref ) {
-        my %data;
-        $data{$recordTime} = $id;
-        push @customers, \%data;
+    my %customerIdDateHash = ();
+    
+    for(my $phase = 0; $phase < 5; $phase++){
+        my $id;
+        my $recordTime;
+        $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($testMode, $phase) );
+        my $sth = $connection->sql->{distinctCustomerIdsFromQueueFifo};
+        $sth->bind_columns( \$id, \$recordTime );
+        $sth->execute();
+    
+        while ( $sth->fetchrow_arrayref ) {
+            my $keys  = $id.'|'.$date;
+        
+            if($customerIdDateHash{$keys}){
+             next;
+            }else{
+               my %data;
+               $data{$recordTime} = $id;
+               push @customers, \%data;
+               $customerIdDateHash{$keys} = 1;
+            }
+           $sth->finish;
+        }
     }
-    $sth->finish;
-
     dlog("end getDistinctCustomerIdsFromQueueFifo");
 
     return @customers;
+}
+
+sub queryDistinctCustomerIdsFromQueueFifo {
+    my $phase = shift;
+
+    my $query = undef;
+    if($phase == 0){
+      $query = p1Account();
+    }elsif($phase == 1){
+      $query = emea();
+    }elsif($phase == 2){
+      $query = normal();
+    }elsif($phase == 4){
+      $query = workstation();
+    }
+    
+    $query .='wit ur';
+    
+    dlog($query);
+    return ( 'distinctCustomerIdsFromQueueFifo', $query );
+}
+
+
+sub p1Account {
+
+ my $query = '
+    select
+       a.customer_id
+      ,date(a.record_time)
+    from
+       v_recon_queue a
+    where
+       a.customer_id = 12476
+    group by
+       a.customer_id
+      ,date(a.record_time)
+    order by 
+       date(a.record_time)
+    ';
+  
+ return $query;
+}
+
+sub emea {
+
+ my $query = '
+     select 
+         v.customer_id
+         ,date(v.record_time) 
+     from 
+        v_recon_queue v,
+        customer c, 
+        country_code cc, 
+        region reg, 
+        geography geo 
+    where 
+        v.customer_id  = c.customer_id  
+        and c.country_code_id  = cc. id 
+        and cc.region_id  = reg.id 
+        and reg.geography_id = geo.id 
+        and geo.name = \'EMEA\'
+    group by
+         v.customer_id
+         ,date(v.record_time) 
+    order by 
+        date(v.record_time)
+    ';
+ return $query;
+}
+
+
+sub normal {
+ 
+ my $query = '
+    select
+       a.customer_id
+      ,date(a.record_time)
+    from
+       v_recon_queue a, 
+       customer c
+    where
+      a.customer_id  = c.customer_id 
+      and a.customer_id != 999999
+      and c.customer_type_id not in (172, 173, 222, 224, 217)
+    group by
+      a.customer_id
+     ,date(a.record_time)
+    order by 
+      date(a.record_time)
+    ';
+ return $query;
+}
+
+sub workstation {
+ 
+ my $query = '
+     select
+         a.customer_id
+        ,date(a.record_time)
+     from
+       v_recon_queue a, 
+       customer c
+     where
+       a.customer_id  = c.customer_id 
+       and a.customer_id != 999999
+       and c.customer_type_id in (172, 173, 222, 224, 217)
+     group by
+       a.customer_id
+       ,date(a.record_time)
+     order by date(a.record_time)
+    ';
+ return $query;
 }
 
 sub getReconSoftwareQueue {
@@ -371,37 +494,6 @@ sub querySoftwareIdsFromQueueFifo {
         with ur
     ';
     return ( 'softwareIdsFromQueueFifo', $query );
-}
-
-sub queryDistinctCustomerIdsFromQueueFifo {
-    my $testMode = shift;
-
-    my $query = '
-        select
-            a.customer_id
-            ,date(a.record_time)
-        from
-            v_recon_queue a, 
-            customer c
-    ';
-    if ( $testMode == 1 ) {
-        $query .= '
-        where a.customer_id in ('
-            . $cfgMgr->testCustomerIdsAsString() . ')';
-    }
-    $query .= '
-        where
-          a.customer_id  = c.customer_id 
-          and a.customer_id != 999999
-          and c.customer_type_id not in (172, 173, 222, 224, 217)
-          group by
-                    a.customer_id
-                    ,date(a.record_time)
-                order by date(a.record_time)
-                with ur
-    ';
-    dlog($query);
-    return ( 'distinctCustomerIdsFromQueueFifo', $query );
 }
 
 sub getMinCustomerDate {
