@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'reversion:80';
+my $rNo = 'revision80';
 
 my $maxChildren        = 150;
 my %runningCustomerIds = ();
@@ -364,11 +364,11 @@ sub queryDistinctCustomerIdsFromQueueFifo {
     if($phase == 0){
       $query = p1Account();
     }elsif($phase == 1){
-      $query = emea();
-    }elsif($phase == 2){
       $query = normal();
-    }elsif($phase == 3){
+    }elsif($phase == 2){
       $query = workstation();
+    }elsif($phase == 3){
+      $query = sixNine();
     }
     
     $query .='with ur';
@@ -398,7 +398,7 @@ sub p1Account {
  return $query;
 }
 
-sub emea {
+sub sixNine {
 
  my $query = '
      select 
@@ -407,8 +407,7 @@ sub emea {
      from 
         v_recon_queue v
     where 
-        v.customer_id  in (4918,2963,5798,3654,4017,4102,4209,5116,5704,7643,8992,9743,12031,13550)
-        and date(v.record_time)<=\'2013-03-05\'
+        v.customer_id  = 999999
     group by
          v.customer_id
          ,date(v.record_time) 
