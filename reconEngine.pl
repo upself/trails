@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'revision84';
+my $rNo = 'revision87';
 
 my $maxChildren        = 150;
 my %runningCustomerIds = ();
@@ -235,6 +235,7 @@ sub REAPER {
         foreach my $customerId ( keys %runningCustomerIds ) {
             if ( $stiff == $runningCustomerIds{$customerId} ) {
                 delete $runningCustomerIds{$customerId};
+                wlog("$rNo reaped $customerId ");
             }
         }
     }
@@ -329,6 +330,8 @@ sub getReconCustomerQueue {
     for( my $phase = 0; $phase < 4; $phase++){
         my $id;
         my $recordTime;
+        wlog("$rNO start building customer id array for $phase");
+        
         $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($phase) );
         my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'.$phase};
         $sth->bind_columns( \$id, \$recordTime );
@@ -349,6 +352,8 @@ sub getReconCustomerQueue {
         }
         
        $sth->finish;
+
+       wlog("$rNO end building customer id array for $phase");
        
        dlog("phase $phase array size:".scalar @customers);
     }
