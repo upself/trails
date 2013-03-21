@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'revision80';
+my $rNo = 'revision84';
 
 my $maxChildren        = 150;
 my %runningCustomerIds = ();
@@ -98,7 +98,7 @@ sub keepTicking {
         
         
         for ( my $i = $children; $i < $maxChildren; $i++ ) {
-            wlog("$rNo running $i");
+            ilog("$rNo running $i");
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
@@ -108,7 +108,7 @@ sub keepTicking {
             elsif ( canProcess( $customerId, $masters, $members ) ) {
                 newChild( $customerId, $date, 0 );
             }else{
-               wlog("$rNo ingore pool process for $customerId, $date");
+               ilog("$rNo ingore pool process for $customerId, $date");
             }
 
             if ( scalar @customerIds == 0 ) {
@@ -117,8 +117,8 @@ sub keepTicking {
         }
         
         if(scalar @customerIds == 0){
-            wlog("$rNo loop of customer array finished will sleep 300");
-            sleep 300;
+            wlog("$rNo loop of customer array finished will sleep till");
+            sleep;
             wlog("$rNo after 300 sleep");   
         }    
     }
@@ -128,7 +128,7 @@ sub isCustomerRunning {
     my $customerId = shift;
     my $result     = 0;
     if ( exists $runningCustomerIds{$customerId} ) {
-        wlog("$rNo $customerId already running, skipping");
+        ilog("$rNo $customerId already running, skipping");
         $result = 1;
     }
     return $result;
@@ -199,9 +199,11 @@ sub newChild {
     my $reconEngine = new Recon::ReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 300;
-
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
+
+    
+    sleep 30;
+
     exit;
 }
 
