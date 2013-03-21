@@ -199,10 +199,8 @@ sub newChild {
     my $reconEngine = new Recon::ReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    wlog("$rNo Child $customerId, $date, $poolRunning complete");
-
-    
     sleep 30;
+    wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
 }
