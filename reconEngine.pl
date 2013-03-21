@@ -330,7 +330,7 @@ sub getReconCustomerQueue {
     for( my $phase = 0; $phase < 4; $phase++){
         my $id;
         my $recordTime;
-        wlog("$rNO start building customer id array for $phase");
+        wlog("$rNo start building customer id array for $phase");
         
         $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($phase) );
         my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'.$phase};
@@ -353,7 +353,7 @@ sub getReconCustomerQueue {
         
        $sth->finish;
 
-       wlog("$rNO end building customer id array for $phase");
+       wlog("$rNo end building customer id array for $phase");
        
        dlog("phase $phase array size:".scalar @customers);
     }
