@@ -117,9 +117,9 @@ sub keepTicking {
         }
         
         if(scalar @customerIds == 0){
-            wlog("$rNo loop of customer array finished will sleep till");
+            wlog("$rNo loop of customer array finished will sleep till end of child");
             sleep;
-            wlog("$rNo after 300 sleep");   
+            wlog("$rNo waked up");   
         }    
     }
 }
