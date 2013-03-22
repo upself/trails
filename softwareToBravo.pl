@@ -40,6 +40,8 @@ my $connection = Database::Connection->new('staging');
 my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
+my $rNo = "revision 95"
+
 daemonize();
 spawnChildren();
 keepTicking();
@@ -47,7 +49,7 @@ endJob($systemScheduleStatus);
 exit;
 
 sub spawnChildren {
-    wlog("Spawning children");
+    wlog("$rNo Spawning children");
     for ( my $i = 0; $i < $maxChildren; $i++ ) {
         my $customer = shift @customerIds;
         my ( $date, $customerId ) = each %$customer;
@@ -62,8 +64,8 @@ sub spawnChildren {
 }
 
 sub keepTicking {
-    wlog("Keep on ticking");
-    my $count = 4;
+    wlog("$rNo Keep on ticking");
+    my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
              my $connection = Database::Connection->new('staging');
@@ -71,12 +73,12 @@ sub keepTicking {
              $connection->disconnect;
         }
         if ( $children >= $maxChildren ) {
-            wlog("sleeping");
+            wlog("$rNo sleeping");
             sleep;
-            wlog("done sleeping");
+            wlog("$rNo done sleeping");
         }
         for ( my $i = $children; $i < $maxChildren; $i++ ) {
-            wlog("running $i");
+            wlog("$rNo running $i");
             my $customer = shift @customerIds;
             my ( $date, $customerId ) = each %$customer;
             if ( isCustomerRunning( $customerId, $date ) == 1 ) {
@@ -100,9 +102,9 @@ sub isCustomerRunning {
     my $customerId = shift;
     my $date       = shift;
     my $result     = 0;
-    wlog("Checking $customerId, $date");
+    wlog("$rNo Checking $customerId, $date");
     if ( exists $runningCustomerIds{$customerId}{$date} ) {
-        wlog("$customerId, $date is running");
+        wlog("$rNo $customerId, $date is running");
         $result = 1;
     }
     return $result;
@@ -114,7 +116,7 @@ sub newChild {
     my $phase      = shift;
     my $pid;
 
-    wlog("spawning $customerId, $date, $phase");
+    wlog("$rNo spawning $customerId, $date, $phase");
     my $sigset = POSIX::SigSet->new(SIGINT);
     sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
@@ -131,7 +133,7 @@ sub newChild {
     my $swassetConnection = Database::Connection->new('swasset');
 
     my @lpars = findSoftwareLparsByCustomerIdByDate( $customerId, $date, $phase, $stagingConnection );
-    wlog( "Child $customerId, $date, " . scalar @lpars . " running -- $phase" );
+    wlog( "$rNo Child $customerId, $date, " . scalar @lpars . " running -- $phase" );
     foreach my $id (@lpars) {
         my $loader = new BRAVO::SoftwareLoader( $stagingConnection, $trailsConnection, $swassetConnection );
         $loader->load(
@@ -146,7 +148,7 @@ sub newChild {
     $stagingConnection->disconnect;
     $trailsConnection->disconnect;
     $swassetConnection->disconnect;
-    wlog( "Child $customerId, $date," . scalar @lpars . " done -- $phase" );
+    wlog( "$rNo Child $customerId, $date," . scalar @lpars . " done -- $phase" );
     exit;
 }
 
