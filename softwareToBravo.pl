@@ -63,7 +63,7 @@ sub spawnChildren {
 
 sub keepTicking {
     wlog("Keep on ticking");
-    my $count = 0;
+    my $count = 4;
     while (1) {
         if ( scalar @customerIds == 0 ) {
              my $connection = Database::Connection->new('staging');
