@@ -63,7 +63,7 @@ sub spawnChildren {
 
 sub keepTicking {
     wlog("Keep on ticking");
-    my $count = 0;
+    my $count = 4;
     while (1) {
         if ( scalar @customerIds == 0 ) {
              my $connection = Database::Connection->new('staging');
@@ -87,7 +87,7 @@ sub keepTicking {
             if ( scalar @customerIds == 0 ) {
                 sleep 5;
                 $count++;
-                if ( $count > 5 ) {
+                if ( $count > 6 ) {
                     $count = 0;
                 }
                 last;
@@ -259,76 +259,72 @@ sub querySoftwareLparCustomers {
         left outer join scan_record c on
             b.scan_record_id = c.id
     ';
-    if ( $count == 0 ) {
+    if ( $count == 1 ) {
         $query .= '
         left outer join software_manual sm on
             c.id = sm.scan_record_id
         ';
     }
-    elsif ( $count == 1 ) {
+    elsif ( $count == 2 ) {
         $query .= '
         left outer join software_dorana sd on
             c.id = sd.scan_record_id
         ';
     }
-    elsif ( $count == 2 ) {
+    elsif ( $count == 3 ) {
         $query .= '
         left outer join software_tlcmz st on
             c.id = st.scan_record_id
         ';
     }
-    elsif ( $count == 3 ) {
+    elsif ( $count == 4 ) {
         $query .= '
         left outer join software_filter sf on
             c.id = sf.scan_record_id
         ';
     }
-    elsif ( $count == 4 ) {
+    elsif ( $count == 5 ) {
         $query .= '
         left outer join software_signature ss on
             c.id = ss.scan_record_id
         ';
     }
-    elsif ( $count == 5 ) {
+    elsif ( $count == 6 ) {
         $query .= '
         left outer join scan_software_item si on
             c.id = si.scan_record_id
         ';
     }
     my $clause = 'where';
-    $query .= ' ' . $clause . '  a.customer_id in (
-    5304,6782,8571,8611,8808,9206,9416,9754,11959,12335,13561,13651,13799,13816,13818,14172,14501,15315,15323,
-    8621,8996,9363,12031,13767
-    ) 
-    and ( (
+    $query .= ' ' . $clause . ' ( (
         a.action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
-    if ( $count == 0 ) {
+    if ( $count == 1 ) {
         $query .= '
                 or sm.action != \'COMPLETE\'
             ';
     }
-    elsif ( $count == 1 ) {
+    elsif ( $count == 2 ) {
         $query .= '
                 or sd.action != \'COMPLETE\'
             ';
     }
-    elsif ( $count == 2 ) {
+    elsif ( $count == 3 ) {
         $query .= '
                 or st.action != \'COMPLETE\'
             ';
     }
-    elsif ( $count == 3 ) {
+    elsif ( $count == 4 ) {
         $query .= '
                 or sf.action != \'COMPLETE\'
             ';
     }
-    elsif ( $count == 4 ) {
+    elsif ( $count == 5 ) {
         $query .= '
                 or ss.action != \'COMPLETE\'
             ';
     }
-    elsif ( $count == 5 ) {
+    elsif ( $count == 6 ) {
         ### 0-COMPLETE 1-UPDATE 2-DELETE
         $query .= '
                 or si.action != 0  
@@ -395,37 +391,37 @@ sub querySoftwareLparsByCustomerIdByDate {
         left outer join scan_record c on
             b.scan_record_id = c.id
     ';
-    if ( $phase == 0 ) {
+    if ( $phase == 1 ) {
         $query .= '
         left outer join software_manual sm on
             c.id = sm.scan_record_id
         ';
     }
-    elsif ( $phase == 1 ) {
+    elsif ( $phase == 2 ) {
         $query .= '
         left outer join software_dorana sd on
             c.id = sd.scan_record_id
         ';
     }
-    elsif ( $phase == 2 ) {
+    elsif ( $phase == 3 ) {
         $query .= '
         left outer join software_tlcmz st on
             c.id = st.scan_record_id
         ';
     }
-    elsif ( $phase == 3 ) {
+    elsif ( $phase == 4 ) {
         $query .= '
         left outer join software_filter sf on
             c.id = sf.scan_record_id
         ';
     }
-    elsif ( $phase == 4 ) {
+    elsif ( $phase == 5 ) {
         $query .= '
         left outer join software_signature ss on
             c.id = ss.scan_record_id
         ';
     }
-    elsif ( $phase == 5 ) {
+    elsif ( $phase == 6 ) {
         $query .= '
         left outer join scan_software_item si on
             c.id = si.scan_record_id
@@ -438,32 +434,32 @@ sub querySoftwareLparsByCustomerIdByDate {
             and (a.action != \'COMPLETE\'
             or b.action != \'COMPLETE\'
         ';
-    if ( $phase == 0 ) {
+    if ( $phase == 1 ) {
         $query .= '
                 or sm.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 1 ) {
+    elsif ( $phase == 2 ) {
         $query .= '
                 or sd.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 2 ) {
+    elsif ( $phase == 3 ) {
         $query .= '
                 or st.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 3 ) {
+    elsif ( $phase == 4 ) {
         $query .= '
                 or sf.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 4 ) {
+    elsif ( $phase == 5 ) {
         $query .= '
                 or ss.action != \'COMPLETE\'
             ';
     }
-    elsif ( $phase == 5 ) {
+    elsif ( $phase == 6 ) {
         ### 0-COMPLETE 1-UPDATE 2-DELETE
         $query .= '
                 or si.action != 0
