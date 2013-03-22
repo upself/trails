@@ -327,145 +327,65 @@ sub getReconCustomerQueue {
     my @customers;
     my %customerIdDateHash = ();
     
-    for( my $phase = 0; $phase < 4; $phase++){
-        my $id;
-        my $recordTime;
-        wlog("$rNo start building customer id array for $phase");
+    my $id;
+    my $recordTime;
+    wlog("$rNo start building customer id array");
         
-        $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($phase) );
-        my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'.$phase};
-        $sth->bind_columns( \$id, \$recordTime );
-        $sth->execute();
+    $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo() );
+    my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'};
+    $sth->bind_columns( \$id, \$recordTime );
+    $sth->execute();
     
-        while ( $sth->fetchrow_arrayref ) {
-            my $keys  = $id.'|'.$recordTime;
-            
-            if($customerIdDateHash{$keys}){
-             dlog("keys=".$keys);
-             next;
-            }else{
-               my %data;
-               $data{$recordTime} = $id;
-               push @customers, \%data;
-               $customerIdDateHash{$keys} = 1;
-            }
-        }
+    while ( $sth->fetchrow_arrayref ) {
+        my $keys  = $id.'|'.$recordTime;
         
-       $sth->finish;
-
-       wlog("$rNo end building customer id array for $phase");
-       
-       dlog("phase $phase array size:".scalar @customers);
+        if($customerIdDateHash{$keys}){
+         dlog("keys=".$keys."exist ingore");
+         next;
+        }else{
+           my %data;
+           $data{$recordTime} = $id;
+           push @customers, \%data;
+           $customerIdDateHash{$keys} = 1;
+        }
     }
+        
+    $sth->finish;
+
+    wlog("$rNo end building customer id array");
+       
+    dlog("array size:".scalar @customers);
     dlog("end getDistinctCustomerIdsFromQueueFifo");
 
     return @customers;
 }
 
 sub queryDistinctCustomerIdsFromQueueFifo {
-    my $phase = shift;
+    my $testMode = shift;
 
-    my $query = undef;
-    if($phase == 0){
-      $query = p1Account();
-    }elsif($phase == 1){
-      $query = normal();
-    }elsif($phase == 2){
-      $query = workstation();
-    }elsif($phase == 3){
-      $query = sixNine();
+    my $query = '
+        select
+            a.customer_id
+            ,date(a.record_time)
+        from
+            v_recon_queue a
+    ';
+    if ( $testMode == 1 ) {
+        $query .= '
+        where a.customer_id in ('
+            . $cfgMgr->testCustomerIdsAsString() . ')';
     }
-    
-    $query .='with ur';
-    
+    $query .= '
+                group by
+                    a.customer_id
+                    ,date(a.record_time)
+                order by date(a.record_time)
+                with ur
+    ';
     dlog($query);
-    return ( 'distinctCustomerIdsFromQueueFifo'.$phase, $query );
+    return ( 'distinctCustomerIdsFromQueueFifo', $query );
 }
 
-
-sub p1Account {
-
- my $query = '
-    select
-       a.customer_id
-      ,date(a.record_time)
-    from
-       v_recon_queue a
-    where
-       a.customer_id in ( 12476,9754)
-    group by
-       a.customer_id
-      ,date(a.record_time)
-    order by 
-       date(a.record_time)
-    ';
-  
- return $query;
-}
-
-sub sixNine {
-
- my $query = '
-     select 
-         v.customer_id
-         ,date(v.record_time) 
-     from 
-        v_recon_queue v
-    where 
-        v.customer_id  = 999999
-    group by
-         v.customer_id
-         ,date(v.record_time) 
-    order by 
-        date(v.record_time)
-    ';
- return $query;
-}
-
-
-sub normal {
- 
- my $query = '
-    select
-       a.customer_id
-      ,date(a.record_time)
-    from
-       v_recon_queue a, 
-       customer c
-    where
-      a.customer_id  = c.customer_id 
-      and a.customer_id != 999999
-      and c.customer_type_id not in (172, 173, 222, 224, 217)
-    group by
-      a.customer_id
-     ,date(a.record_time)
-    order by 
-      date(a.record_time)
-    ';
- return $query;
-}
-
-sub workstation {
- 
- my $query = '
-     select
-         a.customer_id
-        ,date(a.record_time)
-     from
-       v_recon_queue a, 
-       customer c
-     where
-       a.customer_id  = c.customer_id 
-       and a.customer_id != 999999
-       and c.customer_type_id in (172, 173, 222, 224, 217)
-     group by
-       a.customer_id
-       ,date(a.record_time)
-     order by 
-       date(a.record_time)
-    ';
- return $query;
-}
 
 sub getReconSoftwareQueue {
     my ( $connection) = @_;
