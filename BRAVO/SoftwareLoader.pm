@@ -429,7 +429,7 @@ sub load {
 
                         dlog("bravo software lpar identical to staging software lpar, not saving");
 
-                        if ( $self->loadDeltaOnly == 0 ) {
+                        if ( $self->loadDeltaOnly == 0 && $bravoSoftwareLpar->customerId ne '999999' ) {
 
                             ###Call the recon engine if this is a full load even if
                             ###there were no changes to save.
@@ -507,14 +507,16 @@ sub load {
                             $bravoSoftwareLpar->save($self->bravoConnection);
                             $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'UPDATE'}++;
                             dlog("saved bravo software lpar object");
-
+                           
+                           if ( $bravoSoftwareLpar->customerId ne '999999'){
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo software lpar object");
                             my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
                             $queue->add;
                             $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
                             dlog("called recon engine for bravo software lpar object");
-
+                             }
+                             
                             ###If we are inactivating this software lpar, then
                             ###we must inactivate all installed software, and
                             ###delete all installed sigs, filters, manual, etc.
@@ -529,7 +531,7 @@ sub load {
                 else {
                     dlog("not saving bravo software lpar object per flag");
 
-                    if ( $self->loadDeltaOnly == 0 && defined $bravoSoftwareLpar->id ) {
+                    if ( $self->loadDeltaOnly == 0 && defined $bravoSoftwareLpar->id && $bravoSoftwareLpar->customerId ne '999999') {
 
                         ###Call the recon engine if this is a full load even if
                         ###there were no changes to save.
@@ -1250,7 +1252,8 @@ sub load {
                         $bravoInstalledSoftware->save($self->bravoConnection);
                         $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
                         dlog("saved bravo installed software object");
-
+                        
+                        if ( $bravoSoftwareLpar->customerId ne '999999'){
                         ###Call the recon engine for the object.
                         dlog("calling recon engine for bravo installed software object");
                         my $queue =
@@ -1258,6 +1261,7 @@ sub load {
                         $queue->add;
                         $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
                         dlog("called recon engine for bravo installed software object");
+                        }
                     }
                 }
                 else {
@@ -1331,6 +1335,7 @@ sub load {
                             $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
                             dlog("saved bravo installed software object");
 
+                            if ( $bravoSoftwareLpar->customerId ne '999999' ){
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo installed software object");
                             my $queue =
@@ -1338,7 +1343,8 @@ sub load {
                             $queue->add;
                             $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
                             dlog("called recon engine for bravo installed software object");
-
+                            }
+                            
                             ###Check if this was the last installed software on the associated
                             ###software lpar and inactivate/recon the lpar if it was the last.
                             my $instSwCount =
@@ -1347,7 +1353,7 @@ sub load {
                                                                                           $bravoSoftwareLpar->id );
                             dlog("installed software count for software lpar=$instSwCount");
 
-                            if ( defined $instSwCount && $instSwCount == 0 ) {
+                            if ( defined $instSwCount && $instSwCount == 0 && $bravoSoftwareLpar->customerId ne '999999' ) {
                                 ###Call the recon engine for the object.
                                 dlog("calling recon engine for bravo software lpar object");
                                 my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
