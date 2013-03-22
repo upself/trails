@@ -40,7 +40,7 @@ my $connection = Database::Connection->new('staging');
 my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
-my $rNo = "revision 95"
+my $rNo = "revision 96"
 
 daemonize();
 spawnChildren();
@@ -298,7 +298,11 @@ sub querySoftwareLparCustomers {
         ';
     }
     my $clause = 'where';
-    $query .= ' ' . $clause . ' ( (
+    $query .= ' ' . $clause . '  a.customer_id in (
+    5304,6782,8571,8611,8808,9206,9416,9754,11959,12335,13561,13651,13799,13816,13818,14172,14501,15315,15323,
+    8621,8996,9363,12031,13767
+    ) 
+    and ( (
         a.action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
     if ( $count == 1 ) {
