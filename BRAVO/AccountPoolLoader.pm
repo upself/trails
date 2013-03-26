@@ -207,11 +207,14 @@ sub applyDelta {
         else {
             if ( $self->applyChanges == 1 ) {
                 $self->list->{$key}->save($connection);
-                my $customer = new BRAVO::OM::Customer();
-                $customer->id( $self->list->{$key}->memberAccountId );
-                $customer->getById($connection);
-                my $queue = Recon::Queue->new( $connection, $customer );
-                $queue->add;
+                
+                
+                ### comment following for the ticket #25 in trac.
+                #my $customer = new BRAVO::OM::Customer();
+                #$customer->id( $self->list->{$key}->memberAccountId );
+                #$customer->getById($connection);
+                #my $queue = Recon::Queue->new( $connection, $customer );
+                #$queue->add;
             }
 
             $self->list->{$key}->action('COMPLETE');
