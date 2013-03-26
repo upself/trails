@@ -31,6 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
+my $rNo = "revision 101";
 my $maxChildren        = 50;
 my %runningCustomerIds = ();
 my %children           = ();
@@ -40,7 +41,6 @@ my $connection = Database::Connection->new('staging');
 my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
-my $rNo = "revision 101";
 
 daemonize();
 spawnChildren();
@@ -220,10 +220,10 @@ sub getStagingQueue {
  my ( $connection, $count ) = @_;
 
  my @customers;
- my %customerIdDateHash;
+ my %customerIdDateHash = ();
 
  for ( my $p = 0 ; $p < 2 ; $p++ ) {
-  wlog("$rNo end building customer id array for $p");
+  wlog("$rNo start building customer id array for $p");
   ###Prepare query to pull software lpar ids from staging
   dlog("preparing software lpar ids query");
   $connection->prepareSqlQueryAndFields(
@@ -239,7 +239,7 @@ sub getStagingQueue {
   my %rec;
   dlog("binding columns for software lpar ids query");
   $sth->bind_columns( map { \$rec{$_} }
-     @{ $connection->sql->{ 'softwareLparCustomersFields' . $p } } );
+     @{ $connection->sql->{ 'softwareLparCustomers' . $p . 'Fields' } } );
   dlog("binded columns for software lpar ids query");
 
   ###Excute the query
