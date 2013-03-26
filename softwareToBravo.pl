@@ -32,7 +32,7 @@ my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
 my $rNo                = "revision 105";
-my $maxChildren        = 50;
+my $maxChildren        = 100;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
