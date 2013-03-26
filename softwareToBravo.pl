@@ -40,7 +40,7 @@ my $connection = Database::Connection->new('staging');
 my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
-my $rNo = "revision 96";
+my $rNo = "revision 101";
 
 daemonize();
 spawnChildren();
@@ -220,44 +220,74 @@ sub getStagingQueue {
  my ( $connection, $count ) = @_;
 
  my @customers;
+ my %customerIdDateHash;
 
- ###Prepare query to pull software lpar ids from staging
- dlog("preparing software lpar ids query");
- $connection->prepareSqlQueryAndFields( querySoftwareLparCustomers($count) );
- dlog("prepared software lpar ids query");
+ for ( my $p = 0 ; $p < 2 ; $p++ ) {
+  wlog("$rNo end building customer id array for $p");
+  ###Prepare query to pull software lpar ids from staging
+  dlog("preparing software lpar ids query");
+  $connection->prepareSqlQueryAndFields(
+   querySoftwareLparCustomers( $count, $p ) );
+  dlog("prepared software lpar ids query");
 
- ###Get the statement handle
- dlog("getting sth for software lpar ids query");
- my $sth = $connection->sql->{softwareLparCustomers};
- dlog("got sth for software lpar ids query");
+  ###Get the statement handle
+  dlog("getting sth for software lpar ids query");
+  my $sth = $connection->sql->{ 'softwareLparCustomers' . $p };
+  dlog("got sth for software lpar ids query");
 
- ###Bind our columns
- my %rec;
- dlog("binding columns for software lpar ids query");
- $sth->bind_columns( map { \$rec{$_} }
-    @{ $connection->sql->{softwareLparCustomersFields} } );
- dlog("binded columns for software lpar ids query");
+  ###Bind our columns
+  my %rec;
+  dlog("binding columns for software lpar ids query");
+  $sth->bind_columns( map { \$rec{$_} }
+     @{ $connection->sql->{ 'softwareLparCustomersFields' . $p } } );
+  dlog("binded columns for software lpar ids query");
 
- ###Excute the query
- ilog("executing software lpar ids query");
- $sth->execute();
- ilog("executed software lpar ids query");
+  ###Excute the query
+  ilog("executing software lpar ids query");
+  $sth->execute();
+  ilog("executed software lpar ids query");
 
- while ( $sth->fetchrow_arrayref ) {
-  cleanValues( \%rec );
+  while ( $sth->fetchrow_arrayref ) {
+   cleanValues( \%rec );
 
-  my %data;
-  $data{ $rec{date} } = $rec{customerId};
-  push @customers, \%data;
+   my $keys = $rec{customerId} . '|' . $rec{date};
+   if ( $customerIdDateHash{$keys} ) {
+    dlog( "keys=" . $keys );
+    next;
+   }
+   else {
+    my %data;
+    $data{ $rec{date} } = $rec{customerId};
+    push @customers, \%data;
+    $customerIdDateHash{$keys} = 1;
+   }
+  }
+  wlog("$rNo end building customer id array for $p");
  }
 
  return @customers;
 }
 
 sub querySoftwareLparCustomers {
- my ($count) = @_;
- my @fields  = (qw( customerId date ));
- my $query   = '
+ my ( $count, $p ) = @_;
+ my @fields = (qw( customerId date ));
+
+ my $query = undef;
+ if ( $p == 0 ) {
+  $query = p1Query($count);
+ }
+ elsif ( $p == 1 ) {
+ }
+
+ dlog("querySoftwareLparCustomers$p=$query");
+
+ return ( 'softwareLparCustomers' . $p, $query, \@fields );
+}
+
+sub p1Query {
+ my $count = shift;
+
+ my $query = '
         select
             a.customer_id
             ,date(a.scan_time)
@@ -303,13 +333,13 @@ sub querySoftwareLparCustomers {
             c.id = si.scan_record_id
         ';
  }
- my $clause = 'where';
- $query .= ' ' . $clause . '  a.customer_id in (
+ my $clause = '';
+ $query .= '  where a.customer_id in (
     5304,6782,8571,8611,8808,9206,9416,9754,11959,12335,13561,13651,13799,13816,13818,14172,14501,15315,15323,
     8621,8996,9363,12031,13767,12576,12577,12719,12720,2961,2960,5798,2963
     
     ) 
-    and ( (
+    and (
         a.action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
  if ( $count == 1 ) {
@@ -343,8 +373,8 @@ sub querySoftwareLparCustomers {
                 or si.action != 0  
             ';
  }
- $query .= '))';
- $clause = 'and';
+
+ $query .= ')';
 
  $query .= '
         group by
@@ -354,8 +384,103 @@ sub querySoftwareLparCustomers {
             date(a.scan_time)
         with ur
     ';
- dlog("querySoftwareLparCustomers=$query");
- return ( 'softwareLparCustomers', $query, \@fields );
+
+ return $query;
+}
+
+sub p2Query {
+ my $count = shift;
+
+ my $query = '
+        select
+            a.customer_id
+            ,date(a.scan_time)
+        from software_lpar a
+        left outer join software_lpar_map b on
+            a.id = b.software_lpar_id
+        left outer join scan_record c on
+            b.scan_record_id = c.id
+    ';
+ if ( $count == 1 ) {
+  $query .= '
+        left outer join software_manual sm on
+            c.id = sm.scan_record_id
+        ';
+ }
+ elsif ( $count == 2 ) {
+  $query .= '
+        left outer join software_dorana sd on
+            c.id = sd.scan_record_id
+        ';
+ }
+ elsif ( $count == 3 ) {
+  $query .= '
+        left outer join software_tlcmz st on
+            c.id = st.scan_record_id
+        ';
+ }
+ elsif ( $count == 4 ) {
+  $query .= '
+        left outer join software_filter sf on
+            c.id = sf.scan_record_id
+        ';
+ }
+ elsif ( $count == 5 ) {
+  $query .= '
+        left outer join software_signature ss on
+            c.id = ss.scan_record_id
+        ';
+ }
+ elsif ( $count == 6 ) {
+  $query .= '
+        left outer join scan_software_item si on
+            c.id = si.scan_record_id
+        ';
+ }
+ $query .= ' where a.action != \'COMPLETE\'
+        or b.action != \'COMPLETE\' ';
+ if ( $count == 1 ) {
+  $query .= '
+                or sm.action != \'COMPLETE\'
+            ';
+ }
+ elsif ( $count == 2 ) {
+  $query .= '
+                or sd.action != \'COMPLETE\'
+            ';
+ }
+ elsif ( $count == 3 ) {
+  $query .= '
+                or st.action != \'COMPLETE\'
+            ';
+ }
+ elsif ( $count == 4 ) {
+  $query .= '
+                or sf.action != \'COMPLETE\'
+            ';
+ }
+ elsif ( $count == 5 ) {
+  $query .= '
+                or ss.action != \'COMPLETE\'
+            ';
+ }
+ elsif ( $count == 6 ) {
+  ### 0-COMPLETE 1-UPDATE 2-DELETE
+  $query .= '
+                or si.action != 0  
+            ';
+ }
+
+ $query .= '
+        group by
+            a.customer_id
+            ,date(a.scan_time)
+        order by
+            date(a.scan_time)
+        with ur
+    ';
+
+ return $query;
 }
 
 sub findSoftwareLparsByCustomerIdByDate {
