@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision 101";
+my $rNo                = "revision 105";
 my $maxChildren        = 50;
 my %runningCustomerIds = ();
 my %children           = ();
@@ -76,9 +76,7 @@ sub keepTicking {
    my $connection = Database::Connection->new('staging');
    @customerIds = getStagingQueue( $connection, $count );
    $connection->disconnect;
-   wlog("$rNo end reset array size:". scalar @customerIds);
-   
-   
+
    wlog("$rNo sleeping");
    sleep;
    wlog("$rNo done sleeping");
