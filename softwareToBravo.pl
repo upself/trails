@@ -277,6 +277,7 @@ sub querySoftwareLparCustomers {
   $query = p1Query($count);
  }
  elsif ( $p == 1 ) {
+  $query = p2Query($count);
  }
 
  dlog("querySoftwareLparCustomers$p=$query");
