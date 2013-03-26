@@ -40,7 +40,7 @@ my $connection = Database::Connection->new('staging');
 my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
-my $rNo = "revision 96"
+my $rNo = "revision 96";
 
 daemonize();
 spawnChildren();

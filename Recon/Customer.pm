@@ -124,6 +124,7 @@ sub queryHardwareIdsByCustomerId {
         where 
             h.customer_id = ?
             and not exists (select 1 from recon_hardware rh where rh.hardware_id = h.id)
+        with ur
     };
 
     return ( 'hardwareIdsByCustomerId', $query, \@fields );
@@ -158,6 +159,7 @@ sub queryHardwareLparIdsByCustomerId {
             and hl.customer_id = ?
             and h.customer_id = ?
             and not exists (select 1 from recon_hw_lpar rhl where rhl.hardware_lpar_id  = hl.id)
+       with ur
     };
 
     return ( 'hardwareLparIdsByCustomerId', $query, \@fields );
@@ -187,6 +189,7 @@ sub querySoftwareLparIdsByCustomerId {
         where 
             sl.customer_id = ?
             and not exists (select 1 from recon_sw_lpar rsl where rsl.software_lpar_id  = sl.id)
+        with ur
     };
     return ( 'softwareLparIdsByCustomerId', $query, \@fields );
 }
@@ -216,6 +219,7 @@ sub queryInstalledSwIdsByCustomerId {
         where 
             sl.customer_id = ?
             and not exists (select 1 from recon_installed_sw ris where ris.installed_software_id = is.id)
+        with ur
     };
     return ( 'installedSwIdsByCustomerId', $query, \@fields );
 }
@@ -245,6 +249,7 @@ sub queryLicenseIdsByCustomerId {
         where 
             l.customer_id = ?
             and not exists (select 1 from recon_license rl where rl.license_id  = l.id)
+        with ur
     };
     return ( 'licenseIdsByCustomerId', $query, \@fields );
 }

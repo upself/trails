@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'revision87';
+my $rNo = 'revision89';
 
 my $maxChildren        = 150;
 my %runningCustomerIds = ();
@@ -331,7 +331,7 @@ sub getReconCustomerQueue {
     my $recordTime;
     wlog("$rNo start building customer id array");
         
-    $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo() );
+    $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($testMode) );
     my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'};
     $sth->bind_columns( \$id, \$recordTime );
     $sth->execute();
