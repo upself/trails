@@ -8,6 +8,10 @@ public class Result {
 
 	public static final String SUMMARY_TOTAL = "0";
 
+	public static final String SUMMARY_CUSTOMER_TOTAL = "01";
+
+	public static final String THREAD_QTY = "02";
+
 	public static final String P11 = "1";
 
 	public static final String P12 = "2";
@@ -18,23 +22,29 @@ public class Result {
 
 	public static final String P23 = "5";
 
-	public static final Object P24 = "6";
+	public static final String P24 = "6";
 
-	public static final Object P31 = "7";
+	public static final String P31 = "7";
 
-	public static final Object P32 = "8";
+	public static final String P32 = "8";
 
-	public static final Object P33 = "9";
+	public static final String P33 = "9";
 
-	public static final Object P34 = "10";
+	public static final String P34 = "10";
 
-	public static final Object P41 = "11";
+	public static final String P41 = "11";
 
-	public static final Object P42 = "12";
+	public static final String P42 = "12";
 
-	public static final Object P51 = "13";
+	public static final String P51 = "13";
 
-	public static final Object P52 = "14";
+	public static final String P52 = "14";
+
+	public static final String P53 = "15";
+
+	public static final String P54 = "16";
+
+	public static final String P61 = "17";
 
 	private StringBuffer result = new StringBuffer();
 
@@ -44,6 +54,16 @@ public class Result {
 		result.append("Summary: \n");
 		result.append("Total Records in full queue:"
 				+ parameter.get(SUMMARY_TOTAL) + "\n");
+
+		result.append("Number of accounts in full queue:"
+				+ parameter.get(SUMMARY_CUSTOMER_TOTAL) + "\n");
+
+		result.append("Number of running Threads: \n");
+		List threadQty = (List) parameter.get(THREAD_QTY);
+		for (int i = 0; i < threadQty.size(); i++) {
+			result.append(threadQty.get(i) + "\n");
+		}
+
 		result.append("\n");
 
 		p1();
@@ -51,15 +71,30 @@ public class Result {
 		p3();
 		p4();
 		p5();
+		p6();//staging software lpar qty in staging.
 
+	}
+
+	private void p6() {
+		result.append("\nInscope software lpar qty in staging:"
+				+ parameter.get(P61)+"\n");
 	}
 
 	private void p5() {
 
 		result.append("\nSpecial (temp):" + parameter.get(P51) + " \n");
 
-		result.append("- Full volume for pooled account: \n");
+		result.append("- Full volume for pooled account (before Mar. 20th): \n");
 		List full = (List) parameter.get(P52);
+		for (int i = 0; i < full.size(); i++) {
+			TableQty t = (TableQty) full.get(i);
+			result.append(t.getName() + "," + t.getQty() + "\n");
+		}
+
+		result.append("\nSpecial (temp):" + parameter.get(P53) + " \n");
+
+		result.append("- Full volume for pooled account (before Mar. 20th):\n");
+		full = (List) parameter.get(P54);
 		for (int i = 0; i < full.size(); i++) {
 			TableQty t = (TableQty) full.get(i);
 			result.append(t.getName() + "," + t.getQty() + "\n");
