@@ -32,7 +32,7 @@ my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
 my $rNo                = "comment:2:ticket:28 ";
-my $maxChildren        = 1;
+my $maxChildren        = 150;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
@@ -268,7 +268,7 @@ sub getStagingQueue {
   }
   wlog("$rNo end building customer id array for $p");
  }
- wlog('Loaded customer/date combinations :' . scalar @customers );
+ wlog( 'Loaded customer/date combinations :' . scalar @customers );
  wlog("Running Threads : $children ");
 
  return @customers;
