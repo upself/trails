@@ -31,8 +31,8 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision 105";
-my $maxChildren        = 100;
+my $rNo                = "comment:2:ticket:28 ";
+my $maxChildren        = 1;
 my %runningCustomerIds = ();
 my %children           = ();
 my $children;
@@ -82,7 +82,7 @@ sub keepTicking {
    wlog("$rNo done sleeping");
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
-   wlog("$rNo running $i");
+   dlog("$rNo running $i");
    my $customer = shift @customerIds;
    my ( $date, $customerId ) = each %$customer;
    if ( isCustomerRunning( $customerId, $date ) == 1 ) {
@@ -106,9 +106,9 @@ sub isCustomerRunning {
  my $customerId = shift;
  my $date       = shift;
  my $result     = 0;
- wlog("$rNo Checking $customerId, $date");
+ dlog("$rNo Checking $customerId, $date");
  if ( exists $runningCustomerIds{$customerId}{$date} ) {
-  wlog("$rNo $customerId, $date is running");
+  dlog("$rNo $customerId, $date is running");
   $result = 1;
  }
  return $result;
@@ -268,6 +268,8 @@ sub getStagingQueue {
   }
   wlog("$rNo end building customer id array for $p");
  }
+ wlog('Loaded customer/date combinations :' . scalar @customers );
+ wlog("Running Threads : $children ");
 
  return @customers;
 }
@@ -284,68 +286,59 @@ sub querySoftwareLparCustomers {
   $query = p2Query($count);
  }
 
- dlog("querySoftwareLparCustomers$p=$query");
+ dlog(" querySoftwareLparCustomers $p= $query ");
 
- return ( 'softwareLparCustomers' . $p, $query, \@fields );
+ return ( ' softwareLparCustomers ' . $p, $query, \@fields );
 }
 
 sub p1Query {
  my $count = shift;
 
  my $query = '
-        select
-            a.customer_id
-            ,date(a.scan_time)
-        from software_lpar a
-        left outer join software_lpar_map b on
-            a.id = b.software_lpar_id
-        left outer join scan_record c on
-            b.scan_record_id = c.id
-    ';
+    select a . customer_id,
+  date( a . scan_time ) from software_lpar a left outer
+    join software_lpar_map b on a . id =
+    b . software_lpar_id left outer join scan_record c on b . scan_record_id = c
+    . id ';
  if ( $count == 1 ) {
   $query .= '
-        left outer join software_manual sm on
-            c.id = sm.scan_record_id
-        ';
+    left outer join software_manual sm on c . id = sm . scan_record_id ';
  }
  elsif ( $count == 2 ) {
   $query .= '
-        left outer join software_dorana sd on
-            c.id = sd.scan_record_id
-        ';
+    left outer join software_dorana sd on c . id = sd . scan_record_id ';
  }
  elsif ( $count == 3 ) {
   $query .= '
-        left outer join software_tlcmz st on
-            c.id = st.scan_record_id
-        ';
+    left outer join software_tlcmz st on c . id = st . scan_record_id ';
  }
  elsif ( $count == 4 ) {
   $query .= '
-        left outer join software_filter sf on
-            c.id = sf.scan_record_id
-        ';
+    left outer join software_filter sf on c . id = sf . scan_record_id ';
  }
  elsif ( $count == 5 ) {
   $query .= '
-        left outer join software_signature ss on
-            c.id = ss.scan_record_id
-        ';
+    left outer join software_signature ss on c . id = ss . scan_record_id ';
  }
  elsif ( $count == 6 ) {
   $query .= '
-        left outer join scan_software_item si on
-            c.id = si.scan_record_id
-        ';
+    left outer join scan_software_item si on c . id = si . scan_record_id ';
  }
  my $clause = '';
- $query .= '  where a.customer_id in (
-    5304,6782,8571,8611,8808,9206,9416,9754,11959,12335,13561,13651,13799,13816,13818,14172,14501,15315,15323,
-    8621,8996,9363,12031,13767,12576,12577,12719,12720,2961,2960,5798,2963
-    
-    ) 
+ $query .= ' where a . customer_id in(
+   5304, 6782, 8571, 8611, 8808, 9206, 9416, 9754, 11959, 12335, 13561, 13651,
+   13799, 13816, 13818, 14172, 14501, 15315, 15323,
+   8621, 8996, 9363, 12031, 13767, 12576, 12577, 12719, 12720, 2961, 2960, 5798,
+   2963 ';
+
+ ###added for comment:2:ticket:28
+ $query .=
+', 8664, 8672, 13444, 13454, 13546, 14373, 14472, 15167, 7081, 7112, 8666, 8668,
+   8689, 11498, 12137, 13331, 13457 ';
+ $query .= '
+    )
     and (
-        a.action != \'COMPLETE\'
+   a . action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
  if ( $count == 1 ) {
   $query .= '
@@ -494,27 +487,27 @@ sub findSoftwareLparsByCustomerIdByDate {
  my @lparIds;
 
  ###Prepare query to pull software lpar ids from staging
- dlog("preparing software lpar ids query");
+ dlog(" preparing software lpar ids query ");
  $connection->prepareSqlQueryAndFields(
   querySoftwareLparsByCustomerIdByDate($phase) );
- dlog("prepared software lpar ids query");
+ dlog(" prepared software lpar ids query ");
 
  ###Get the statement handle
- dlog("getting sth for software lpar ids query");
+ dlog(" getting sth for software lpar ids query ");
  my $sth = $connection->sql->{softwareLparsByCustomerIdByDate};
- dlog("got sth for software lpar ids query");
+ dlog(" got sth for software lpar ids query ");
 
  ###Bind our columns
  my %rec;
- dlog("binding columns for software lpar ids query");
+ dlog(" binding columns for software lpar ids query ");
  $sth->bind_columns( map { \$rec{$_} }
     @{ $connection->sql->{softwareLparsByCustomerIdByDateFields} } );
- dlog("binded columns for software lpar ids query");
+ dlog(" binded columns for software lpar ids query ");
 
  ###Excute the query
- ilog("executing software lpar ids query");
+ ilog(" executing software lpar ids query ");
  $sth->execute( $customerId, $date );
- ilog("executed software lpar ids query");
+ ilog(" executed software lpar ids query ");
 
  while ( $sth->fetchrow_arrayref ) {
   cleanValues( \%rec );
