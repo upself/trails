@@ -10,7 +10,7 @@ public class Result {
 
 	public static final String SUMMARY_CUSTOMER_TOTAL = "01";
 
-	public static final String THREAD_QTY = "02";
+	public static final String RECON_THREAD_QTY = "02";
 
 	public static final String P11 = "1";
 
@@ -36,21 +36,24 @@ public class Result {
 
 	public static final String P42 = "12";
 
-	public static final String P51 = "13";
-
-	public static final String P52 = "14";
-
-	public static final String P53 = "15";
-
-	public static final String P54 = "16";
-
 	public static final String P61 = "17";
+
+	public static final String P62 = "62";
+
+	public static final String SW_TO_BRAVO_THREAD_QTY = "63";
+
+	public static final String P71 = "71";
+
+	public static final String P72 = "72";
+
+	public static final String P73 = "73";
 
 	private StringBuffer result = new StringBuffer();
 
 	private Map parameter = new HashMap();
 
 	public void build() {
+		result.append("--- Recon Engine ---\n");
 		result.append("Summary: \n");
 		result.append("Total Records in full queue:"
 				+ parameter.get(SUMMARY_TOTAL) + "\n");
@@ -59,7 +62,7 @@ public class Result {
 				+ parameter.get(SUMMARY_CUSTOMER_TOTAL) + "\n");
 
 		result.append("Number of running Threads: \n");
-		List threadQty = (List) parameter.get(THREAD_QTY);
+		List threadQty = (List) parameter.get(RECON_THREAD_QTY);
 		for (int i = 0; i < threadQty.size(); i++) {
 			result.append(threadQty.get(i) + "\n");
 		}
@@ -70,36 +73,39 @@ public class Result {
 		p2();
 		p3();
 		p4();
-		p5();
-		p6();//staging software lpar qty in staging.
+
+		// software to bravo.
+		result.append("\n--- softwareToBravo ---\n");
+		p6();
+
+		p7();
+
+	}
+
+	private void p7() {
+		result.append("Priority 1: Special Accounts\n");
+		displayAccountDateQty(P71);
+
+		result.append("- Full volume for Priority 1:\n");
+		result.append("Priority software lpar qty in staging:"
+				+ parameter.get(P72) + "\n");
+		result.append("Priority software lpar qty in staging (before March 27th):"
+				+ parameter.get(P73) + "\n");
 
 	}
 
 	private void p6() {
-		result.append("\nInscope software lpar qty in staging:"
-				+ parameter.get(P61)+"\n");
-	}
+		result.append("Total Records in full queue(phase 0):"
+				+ parameter.get(P61) + "\n");
+		result.append("Number of accounts in full queue(phase 0):"
+				+ parameter.get(P62) + "\n");
 
-	private void p5() {
+		result.append("Number of running Threads:\n");
 
-		result.append("\nSpecial (temp):" + parameter.get(P51) + " \n");
-
-		result.append("- Full volume for pooled account (before Mar. 20th): \n");
-		List full = (List) parameter.get(P52);
-		for (int i = 0; i < full.size(); i++) {
-			TableQty t = (TableQty) full.get(i);
-			result.append(t.getName() + "," + t.getQty() + "\n");
+		List threadQty = (List) parameter.get(SW_TO_BRAVO_THREAD_QTY);
+		for (int i = 0; i < threadQty.size(); i++) {
+			result.append(threadQty.get(i) + "\n");
 		}
-
-		result.append("\nSpecial (temp):" + parameter.get(P53) + " \n");
-
-		result.append("- Full volume for pooled account (before Mar. 20th):\n");
-		full = (List) parameter.get(P54);
-		for (int i = 0; i < full.size(); i++) {
-			TableQty t = (TableQty) full.get(i);
-			result.append(t.getName() + "," + t.getQty() + "\n");
-		}
-
 	}
 
 	private void p4() {
@@ -122,13 +128,7 @@ public class Result {
 		result.append("- Total records in queue:" + parameter.get(P32) + "\n");
 		result.append("- First 10 Accounts in queue:\n");
 
-		List topTen = (List) parameter.get(P33);
-		for (int i = 0; i < topTen.size(); i++) {
-			AccountDateQty l = (AccountDateQty) topTen.get(i);
-			result.append(l.getIndex() + "," + l.getCustomerId() + ","
-					+ l.getAccountNumber() + "," + l.getRecordDate() + ","
-					+ l.getQty() + "," + l.getAccountName() + "\n");
-		}
+		displayAccountDateQty(P33);
 
 		result.append("- Full volume for Priority 3: \n");
 		List full = (List) parameter.get(P34);
@@ -137,6 +137,16 @@ public class Result {
 			result.append(t.getName() + "," + t.getQty() + "\n");
 		}
 
+	}
+
+	private void displayAccountDateQty(String pName) {
+		List t = (List) parameter.get(pName);
+		for (int i = 0; i < t.size(); i++) {
+			AccountDateQty l = (AccountDateQty) t.get(i);
+			result.append(l.getIndex() + "," + l.getCustomerId() + ","
+					+ l.getAccountNumber() + "," + l.getRecordDate() + ","
+					+ l.getQty() + "," + l.getAccountName() + "\n");
+		}
 	}
 
 	private void p1() {

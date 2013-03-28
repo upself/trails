@@ -7,15 +7,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.ibm.staging.template.AccountDateQty;
+import com.ibm.staging.template.Customer;
 import com.ibm.staging.template.Result;
 import com.ibm.staging.template.TableQty;
 
@@ -38,12 +39,28 @@ public class Summary {
 	private static String query41 = "select count(*) from v_recon_queue where customer_id  = 999999 with ur";
 	private static String query42 = "select v.table,count(*) from v_recon_queue v where customer_id  = 999999 group by v.table with ur";
 
-	private static String query51 = "select v.customer_id, count(*) from v_recon_queue v where v.customer_id in (select master_account_id from account_pool) or v.customer_id in (select member_account_id from account_pool) group by v.customer_id order by count(*) desc fetch first 1 rows only with ur";
-	private static String query52 = "select table, count(*) from v_recon_queue where customer_id in (select member_account_id from account_pool where master_account_id  = ?) and date(record_time) <= '2013-03-20' group by table";
+	private static String query61 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
+	private static String query62 = "select count(distinct a.customer_id) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
+	private static String query71 = "select a.customer_id, date(a.scan_time) , count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323)  group by a.customer_id, date(a.scan_time) order by count(*) desc with ur";
 
-	private static String query61 = "select count(*) from software_lpar where action ='UPDATE' and customer_id in (5304, 6782, 8571, 8611, 8808, 9206, 9416, 9754, 11959, 12335, 13561, 13651, 13799, 13816, 13818, 14172, 14501, 15315, 15323, 13767,8621,8996,9363,12031) with ur";
+	private static String query72 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323) with ur";
+	private static String query73 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323) and date(a.scan_time) <= '2013-03-27' with ur";
+
+	private static String queryCustomerCache = "select customer_id, customer_name, account_number  from customer with ur";
+
+	private static Map customerMap = new HashMap();
 
 	public static void main(String[] args) {
+		start();
+
+	}
+
+	private static void start() {
+		Statement stmt = null;
+		Statement stagingStmt = null;
+		ResultSet rs = null;
+		Connection stagingConn = null, bravoConn = null;
+
 		try {
 			Result result = new Result();
 			Map parameter = result.getParameter();
@@ -51,24 +68,44 @@ public class Summary {
 			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
 
 			String bravoURL = "jdbc:db2:TRAILS";
-			Connection bravoConn = DriverManager.getConnection(bravoURL,
-					"eaadmin", "Bearw00n");
+			bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
+					"Bearw00n");
 
 			String stagingURL = "jdbc:db2:STAGING";
-			Connection stagingConn = DriverManager.getConnection(stagingURL,
-					"eaadmin", "apr03db2");
-			Statement stagingStmt = stagingConn.createStatement();
+			stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
+					"apr03db2");
+			stagingStmt = stagingConn.createStatement();
+
+			// -----------test start ---------------------------------
 
 			// Class.forName("com.ibm.db2.jcc.DB2Driver").newInstance();
-			// String url =
+			// String bravoURL =
 			// "jdbc:db2://dst20lp05.boulder.ibm.com:50010/TRAILSPD";
-			// Connection conn = DriverManager.getConnection(url, "eaadmin",
+			// bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
 			// "may2012a");
+			//
+			// String stagingURL =
+			// "jdbc:db2://tap2.raleigh.ibm.com:50000/STAGING";
+			// stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
+			// "apr03db2");
+			// stagingStmt = stagingConn.createStatement();
 
-			Statement stmt = bravoConn.createStatement();
+			// -----------test end---------------------------------
+
+			stmt = bravoConn.createStatement();
 
 			// summary
-			ResultSet rs = stmt.executeQuery(summaryFullQty);
+			rs = stmt.executeQuery(queryCustomerCache);
+			while (rs.next()) {
+				Customer c = new Customer();
+				c.setCustomerId(rs.getLong(1));
+				c.setCustomerName(rs.getString(2));
+				c.setAccountNumber(rs.getLong(3));
+
+				customerMap.put(rs.getString(1), c);
+			}
+
+			rs = stmt.executeQuery(summaryFullQty);
 			while (rs.next()) {
 				parameter.put(Result.SUMMARY_TOTAL, rs.getString(1));
 			}
@@ -78,7 +115,10 @@ public class Summary {
 				parameter.put(Result.SUMMARY_CUSTOMER_TOTAL, rs.getString(1));
 			}
 
-			fetchThreadQty(parameter);
+			fetchThreadQty(parameter, "/home/zyizhang/reconThreadQty.txt",
+					Result.RECON_THREAD_QTY);
+			fetchThreadQty(parameter, "/home/zyizhang/swToBravoThreadQty.txt",
+					Result.SW_TO_BRAVO_THREAD_QTY);
 
 			// p1
 			p1(parameter, stmt);
@@ -91,17 +131,13 @@ public class Summary {
 			//
 			p4(parameter, stmt);
 
-			p5(parameter, stmt, bravoConn);
-
 			// staging
 			p6(parameter, stagingStmt);
 
+			p7(parameter, stagingStmt);
+
 			result.build();
 			result.output();
-
-			rs.close();
-			stmt.close();
-			bravoConn.close();
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -111,6 +147,51 @@ public class Summary {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+				stagingStmt.close();
+				bravoConn.close();
+				stagingConn.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	private static void p7(Map parameter, Statement stagingStmt)
+			throws SQLException {
+
+		ResultSet rs;
+		rs = stagingStmt.executeQuery(query71);
+		int i = 1;
+		List rList = new ArrayList();
+		while (rs.next()) {
+			AccountDateQty l = new AccountDateQty();
+			l.setIndex(i++);
+			l.setCustomerId(rs.getLong(1));
+
+			Customer c = (Customer) customerMap.get(rs.getString(1));
+			l.setAccountNumber(c.getAccountNumber());
+			l.setAccountName(c.getCustomerName());
+			l.setRecordDate(rs.getDate(2));
+			l.setQty(rs.getInt(3));
+
+			rList.add(l);
+		}
+		parameter.put(Result.P71, rList);
+
+		rs = stagingStmt.executeQuery(query72);
+		while (rs.next()) {
+			parameter.put(Result.P72, rs.getString(1));
+		}
+
+		rs = stagingStmt.executeQuery(query73);
+		while (rs.next()) {
+			parameter.put(Result.P73, rs.getString(1));
 		}
 
 	}
@@ -122,10 +203,15 @@ public class Summary {
 			parameter.put(Result.P61, rs.getString(1));
 		}
 
+		rs = stagingStmt.executeQuery(query62);
+		while (rs.next()) {
+			parameter.put(Result.P62, rs.getString(1));
+		}
+
 	}
 
-	private static void fetchThreadQty(Map parameter) {
-		String fileName = "/home/zyizhang/reconThreadQty.txt";
+	private static void fetchThreadQty(Map parameter, String fileName,
+			String pName) {
 
 		File file = new File(fileName);
 
@@ -151,36 +237,8 @@ public class Summary {
 			}
 		}
 
-		parameter.put(Result.THREAD_QTY, threadsQty);
+		parameter.put(pName, threadsQty);
 
-	}
-
-	private static void p5(Map parameter, Statement stmt, Connection conn)
-			throws SQLException {
-		parameter.put(Result.P51, "9000");
-		poolSummary(parameter, conn, "9000", Result.P52);
-
-		parameter
-				.put(Result.P53, "9286 DIAGEO GREAT BRITAN---GBDIAGEO---WKSTN");
-		poolSummary(parameter, conn, "9286", Result.P54);
-	}
-
-	private static void poolSummary(Map parameter, Connection conn,
-			String poolCustomerId, String pName) throws SQLException {
-		ResultSet rs;
-		PreparedStatement ps = conn.prepareStatement(query52);
-		ps.setString(1, poolCustomerId);
-		rs = ps.executeQuery();
-
-		List tableQtyList = new ArrayList();
-		while (rs.next()) {
-			TableQty tableQty = new TableQty();
-			tableQty.setName(rs.getString(1));
-			tableQty.setQty(rs.getInt(2));
-
-			tableQtyList.add(tableQty);
-		}
-		parameter.put(pName, tableQtyList);
 	}
 
 	private static void p4(Map parameter, Statement stmt) throws SQLException {
@@ -245,23 +303,9 @@ public class Summary {
 	}
 
 	private static void p1(Map parameter, Statement stmt) throws SQLException {
+		writeAccountDateQty(parameter, stmt, Result.P11, p1List);
+
 		ResultSet rs;
-		rs = stmt.executeQuery(p1List);
-		int i = 1;
-		List p1ListR = new ArrayList();
-		while (rs.next()) {
-			AccountDateQty l = new AccountDateQty();
-			l.setIndex(i++);
-			l.setCustomerId(rs.getLong(1));
-			l.setAccountNumber(rs.getLong(2));
-			l.setAccountName(rs.getString(3));
-			l.setRecordDate(rs.getDate(4));
-			l.setQty(rs.getInt(5));
-
-			p1ListR.add(l);
-		}
-		parameter.put(Result.P11, p1ListR);
-
 		rs = stmt.executeQuery(p1TableQty);
 		List p1TableQty = new ArrayList();
 		while (rs.next()) {
@@ -272,6 +316,26 @@ public class Summary {
 			p1TableQty.add(tableQty);
 		}
 		parameter.put(Result.P12, p1TableQty);
+	}
+
+	private static void writeAccountDateQty(Map parameter, Statement stmt,
+			String pName, String query) throws SQLException {
+		ResultSet rs;
+		rs = stmt.executeQuery(query);
+		int i = 1;
+		List rList = new ArrayList();
+		while (rs.next()) {
+			AccountDateQty l = new AccountDateQty();
+			l.setIndex(i++);
+			l.setCustomerId(rs.getLong(1));
+			l.setAccountNumber(rs.getLong(2));
+			l.setAccountName(rs.getString(3));
+			l.setRecordDate(rs.getDate(4));
+			l.setQty(rs.getInt(5));
+
+			rList.add(l);
+		}
+		parameter.put(pName, rList);
 	}
 
 	private static void p2(Map parameter, Statement stmt) throws SQLException {
