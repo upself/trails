@@ -46,8 +46,6 @@ public class Result {
 
 	public static final String P72 = "72";
 
-	public static final String P73 = "73";
-
 	private StringBuffer result = new StringBuffer();
 
 	private Map parameter = new HashMap();
@@ -89,8 +87,6 @@ public class Result {
 		result.append("- Full volume for Priority 1:\n");
 		result.append("Priority software lpar qty in staging:"
 				+ parameter.get(P72) + "\n");
-		result.append("Priority software lpar qty in staging (before March 27th):"
-				+ parameter.get(P73) + "\n");
 
 	}
 

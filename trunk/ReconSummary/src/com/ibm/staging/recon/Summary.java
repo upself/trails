@@ -41,10 +41,9 @@ public class Summary {
 
 	private static String query61 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
 	private static String query62 = "select count(distinct a.customer_id) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
-	private static String query71 = "select a.customer_id, date(a.scan_time) , count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323)  group by a.customer_id, date(a.scan_time) order by count(*) desc with ur";
+	private static String query71 = "select a.customer_id, date(a.scan_time) , count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2960,2961,2963,2981,2991,5304,5798,6266,6782,7049,7076,7081,7088,7090,7097,7109,7112,7114,7128,7160,7199,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9102,9206,9363,9416,9473,9514,9590,9754,11034,11472,11498,11804,11959,12031,12137,12335,12350,12496,12508,13331,13444,13454,13457,13546,13561,13651,13767,13792,13799,13816,13818,14015,14075,14172,14373,14472,14501,14536,15167,15323)  group by a.customer_id, date(a.scan_time) order by count(*) desc with ur";
 
-	private static String query72 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323) with ur";
-	private static String query73 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(2568,2960,2960,2961,2961,2963,2963,2991,5304,5798,5798,6782,7076,7081,7088,7090,7097,7109,7112,7114,7128,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9206,9363,9416,9473,9754,11498,11959,12031,12137,12335,13331,13444,13454,13457,13546,13561,13651,13767,13799,13816,13818,14172,14172,14373,14472,14501,15167,15323) and date(a.scan_time) <= '2013-03-27' with ur";
+	private static String query72 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where (a.action != 'COMPLETE' or b.action != 'COMPLETE') and a.customer_id in(337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2960,2961,2963,2981,2991,5304,5798,6266,6782,7049,7076,7081,7088,7090,7097,7109,7112,7114,7128,7160,7199,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9102,9206,9363,9416,9473,9514,9590,9754,11034,11472,11498,11804,11959,12031,12137,12335,12350,12496,12508,13331,13444,13454,13457,13546,13561,13651,13767,13792,13799,13816,13818,14015,14075,14172,14373,14472,14501,14536,15167,15323) with ur";
 
 	private static String queryCustomerCache = "select customer_id, customer_name, account_number  from customer with ur";
 
@@ -187,11 +186,6 @@ public class Summary {
 		rs = stagingStmt.executeQuery(query72);
 		while (rs.next()) {
 			parameter.put(Result.P72, rs.getString(1));
-		}
-
-		rs = stagingStmt.executeQuery(query73);
-		while (rs.next()) {
-			parameter.put(Result.P73, rs.getString(1));
 		}
 
 	}
