@@ -273,6 +273,7 @@ sub queryReconQueueByCustomerId {
         where
             a.customer_id = ?
             and date(record_time) = ?
+            and a.table != \'RECON_CUSTOMER\'
     ';
     dlog("queryReconQueueByCustomerId=$query");
     return ( 'reconQueueByCustomerId', $query, \@fields );

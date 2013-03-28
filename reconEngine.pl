@@ -376,6 +376,9 @@ sub queryDistinctCustomerIdsFromQueueFifo {
             . $cfgMgr->testCustomerIdsAsString() . ')';
     }
     $query .= '
+                where 
+                 a.table!=\'RECON_CUSTOMER\'
+                
                 group by
                     a.customer_id
                     ,date(a.record_time)

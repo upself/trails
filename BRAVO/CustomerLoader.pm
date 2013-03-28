@@ -252,11 +252,9 @@ sub applyDelta {
             $self->list->{$key}->save($connection)
                 if ( $self->applyChanges == 1 );
 
-            if ( $self->list->{$key}->action eq 'RECONUPDATE' ) {
-                ### comment following for the ticket #25 in trac.
-                #my $queue
-                #    = Recon::Queue->new( $connection, $self->list->{$key} );
-                # $queue->add;
+            if ( $self->list->{$key}->action eq 'RECONUPDATE' ) {               
+               my $queue = Recon::Queue->new( $connection, $self->list->{$key} );
+               $queue->add;
             }
         }
     }
