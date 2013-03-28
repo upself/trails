@@ -143,7 +143,7 @@ sub load {
 
         ###Excute the query
         ilog("executing software lpar data query");
-        $sth->execute( $self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId);
+        $sth->execute( $self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId);
         ilog("executed software lpar data query");
 
         ###Helper variables to store the currently processing software lpar object.
@@ -814,7 +814,11 @@ sub load {
                           . $bravoInstalledType->toString() );
                 }
                 else {
-                    if( $rec{installedSoftwareType} eq 'TAD4Z' ){                    
+                    if( $rec{installedSoftwareType} eq 'TAD4Z' ){
+                     
+                      $stagingInstalledType->lastUsed('1970-01-01')
+                         if(!defined $stagingInstalledType->lastUsed || '' eq $stagingInstalledType->lastUsed );
+                      
                       $bravoInstalledType->lastUsed($stagingInstalledType->lastUsed);
                       $bravoInstalledType->useCount($stagingInstalledType->useCount);
                     }
