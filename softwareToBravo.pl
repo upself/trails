@@ -64,7 +64,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 6;
+ my $count = 0;
  while (1) {
   if ( scalar @customerIds == 0 ) {
    my $connection = Database::Connection->new('staging');
@@ -348,6 +348,7 @@ sub p1Query {
  9102,9206,9363,9416,9473,9514,9590,9754,11034,11472,11498,11804,11959,
  12031,12137,12335,12350,12496,12508,13331,13444,13454,13457,13546,13561,13651,
  13767,13792,13799,13816,13818,14015,14075,14172,14373,14472,14501,14536,15167,15323
+ ,14939,14182
  )
     and (
         a.action != \'COMPLETE\'
