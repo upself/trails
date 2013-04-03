@@ -38,7 +38,7 @@ my %runningCustomerIds = ();
 my %children           = ();
 
 my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 0 );
+my @customerIds = getStagingQueue( $connection, 6 );
 $connection->disconnect;
 
 daemonize();
@@ -55,7 +55,7 @@ sub spawnChildren {
   if ( isCustomerRunning( $customerId, $date ) == 1 ) {
    next;
   }
-  newChild( $customerId, $date, 0 );
+  newChild( $customerId, $date, 6 );
   if ( scalar @customerIds == 0 ) {
    last;
   }
@@ -64,7 +64,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 0;
+ my $count = 6;
  while (1) {
   if ( scalar @customerIds == 0 ) {
    my $connection = Database::Connection->new('staging');
