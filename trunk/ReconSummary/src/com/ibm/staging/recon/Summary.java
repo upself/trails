@@ -41,9 +41,9 @@ public class Summary {
 
 	private static String query61 = "select count(*) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
 	private static String query62 = "select count(distinct a.customer_id) from software_lpar a left outer join software_lpar_map b on a.id = b.software_lpar_id left outer join scan_record c on b.scan_record_id = c.id where a.action != 'COMPLETE' or b.action != 'COMPLETE' with ur";
-	private static String query71 = "select a.customer_id  ,date(a.scan_time)  ,count(*)  from software_lpar a  left outer join software_lpar_map b on  a.id = b.software_lpar_id  left outer join scan_record c on  b.scan_record_id = c.id    left outer join scan_software_item si on  c.id = si.scan_record_id  where a.customer_id in (337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2960,2961,2963,2981,2991,5304,5798,6266,6782,7049,7076,7081,7088,7090,7097,7109,7112,7114,7128,7160,7199,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9102,9206,9363,9416,9473,9514,9590,9754,11034,11472,11498,11804,11959,12031,12137,12335,12350,12496,12508,13331,13444,13454,13457,13546,13561,13651,13767,13792,13799,13816,13818,14015,14075,14172,14373,14472,14501,14536,15167,15323)  and (  a.action != 'COMPLETE'  or b.action != 'COMPLETE'  or si.action != 0  )  group by  a.customer_id  ,date(a.scan_time)  order by  a.customer_id, date(a.scan_time)  with ur";
+	private static String query71 = "select a.customer_id  ,date(a.scan_time)  ,count(*)  from software_lpar a  left outer join software_lpar_map b on  a.id = b.software_lpar_id  left outer join scan_record c on  b.scan_record_id = c.id    left outer join scan_software_item si on  c.id = si.scan_record_id  where a.customer_id in (337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2963,2981,2991,3947,5825,7049,7160,7199,7649,7651,8621,9102,9204,9206,9514,9754,11034,11472,11804,11860,12350,12476,12496,13792,14075,14182,14536,14543,14939,15246)  and (  a.action != 'COMPLETE'  or b.action != 'COMPLETE'  or si.action != 0  )  group by  a.customer_id  ,date(a.scan_time)  order by  a.customer_id, date(a.scan_time)  with ur";
 
-	private static String query72 = "select count(*)  from software_lpar a  left outer join software_lpar_map b on  a.id = b.software_lpar_id  left outer join scan_record c on  b.scan_record_id = c.id    left outer join scan_software_item si on  c.id = si.scan_record_id  where a.customer_id in (337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2960,2961,2963,2981,2991,5304,5798,6266,6782,7049,7076,7081,7088,7090,7097,7109,7112,7114,7128,7160,7199,8571,8611,8621,8664,8666,8668,8672,8689,8808,8996,9102,9206,9363,9416,9473,9514,9590,9754,11034,11472,11498,11804,11959,12031,12137,12335,12350,12496,12508,13331,13444,13454,13457,13546,13561,13651,13767,13792,13799,13816,13818,14015,14075,14172,14373,14472,14501,14536,15167,15323)  and (  a.action != 'COMPLETE'  or b.action != 'COMPLETE'  or si.action != 0  )  with ur";
+	private static String query72 = "select count(*)  from software_lpar a  left outer join software_lpar_map b on  a.id = b.software_lpar_id  left outer join scan_record c on  b.scan_record_id = c.id    left outer join scan_software_item si on  c.id = si.scan_record_id  where a.customer_id in (337,414,479,503,514,532,758,1034,1206,1471,2568,2605,2676,2692,2876,2928,2963,2981,2991,3947,5825,7049,7160,7199,7649,7651,8621,9102,9204,9206,9514,9754,11034,11472,11804,11860,12350,12476,12496,13792,14075,14182,14536,14543,14939,15246)  and (  a.action != 'COMPLETE'  or b.action != 'COMPLETE'  or si.action != 0  )  with ur";
 
 	private static String queryCustomerCache = "select customer_id, customer_name, account_number  from customer with ur";
 
@@ -65,28 +65,30 @@ public class Summary {
 			Result result = new Result();
 			Map parameter = result.getParameter();
 
-			// Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
-			//
-			// String bravoURL = "jdbc:db2:TRAILS";
-			// bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
-			// "Bearw00n");
-			//
-			// String stagingURL = "jdbc:db2:STAGING";
-			// stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
-			// "apr03db2");
-			// stagingStmt = stagingConn.createStatement();
+			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
 
-			// -----------test start ---------------------------------
-
-			Class.forName("com.ibm.db2.jcc.DB2Driver").newInstance();
-			String bravoURL = "jdbc:db2://dst20lp05.boulder.ibm.com:50010/TRAILSPD";
+			String bravoURL = "jdbc:db2:TRAILS";
 			bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
-					"may2012a");
+					"Bearw00n");
 
-			String stagingURL = "jdbc:db2://tap2.raleigh.ibm.com:50000/STAGING";
+			String stagingURL = "jdbc:db2:STAGING";
 			stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
 					"apr03db2");
 			stagingStmt = stagingConn.createStatement();
+
+			// -----------test start ---------------------------------
+
+			// Class.forName("com.ibm.db2.jcc.DB2Driver").newInstance();
+			// String bravoURL =
+			// "jdbc:db2://dst20lp05.boulder.ibm.com:50010/TRAILSPD";
+			// bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
+			// "may2012a");
+			//
+			// String stagingURL =
+			// "jdbc:db2://tap2.raleigh.ibm.com:50000/STAGING";
+			// stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
+			// "apr03db2");
+			// stagingStmt = stagingConn.createStatement();
 
 			// -----------test end---------------------------------
 
