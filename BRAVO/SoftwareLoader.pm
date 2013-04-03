@@ -2257,7 +2257,7 @@ sub updateStagingInstalledType{
     if($action eq 'COMPLETE'){
       $stagingInstalledType->action(0);
     }elsif($action eq 'CATALOG MISSING'){
-      wlog("staging installed type catalog missing");
+      dlog("staging installed type catalog missing");
       $stagingInstalledType->action(3);
     }
    
