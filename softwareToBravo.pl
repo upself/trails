@@ -379,9 +379,9 @@ sub p1Query {
             ';
  }
  elsif ( $count == 6 ) {
-  ### 0-COMPLETE 1-UPDATE 2-DELETE
+  ### 0-COMPLETE 1-UPDATE 2-DELETE 3-CATALOG MISSING
   $query .= '
-                or si.action != 0  
+                or si.action in (1,2)
             ';
  }
 
@@ -478,7 +478,7 @@ sub p2Query {
  elsif ( $count == 6 ) {
   ### 0-COMPLETE 1-UPDATE 2-DELETE
   $query .= '
-                or si.action != 0  
+                or si.action in (1,2)
             ';
  }
 
@@ -611,9 +611,9 @@ sub querySoftwareLparsByCustomerIdByDate {
             ';
  }
  elsif ( $phase == 6 ) {
-  ### 0-COMPLETE 1-UPDATE 2-DELETE
+  ### 0-COMPLETE 1-UPDATE 2-DELETE 3-CATALOG MISSING
   $query .= '
-                or si.action != 0
+                or si.action in (1,2)
             ';
  }
  $query .= ')';

@@ -671,7 +671,7 @@ sub load {
               $scanSwItem->getById($self->stagingConnection);
               
               if(!defined $scanSwItem->guid){
-                die  die "Invalid tadz scan item: " . $scanSwItem->toString . "\n";
+                die "Invalid tadz scan item: " . $scanSwItem->toString . "\n";
               }
               
               dlog($scanSwItem->toString);
@@ -691,6 +691,7 @@ sub load {
               if(!defined $kbDefId){
                 my $gudi = $scanSwItem->guid;
                 dlog("mainframe items not loaded by catalog loader under guid id $gudi");
+                $self->updateStagingInstalledType($scanSwItem, 'CATALOG MISSING');
                 next;
               }
                             
@@ -1415,25 +1416,11 @@ sub load {
 
             ###Staging software type logic.
             if ( $stagingInstalledType->action eq 'UPDATE' ) {
-
-                ###Mark as complete.
-                $stagingInstalledType->action('COMPLETE');
-                dlog("marked staging installed type action as complete");
-                
-                ###Convert the string type action to integer.
-                if( $self->applyChanges == 1 && 
-                    $stagingInstalledType->isa("Staging::OM::ScanSoftwareItem")){
-                    dlog("it is TADZ data type, convert the action from string to integer.");
-                    $stagingInstalledType->action(0);                                              
-                }
                 
                 ###Save if applyChanges is true.
                 if ( $self->applyChanges == 1 ) {
-                   
-                    dlog("saving staging installed type object");                    
-                    $stagingInstalledType->save($self->stagingConnection);
+                    $self->updateStagingInstalledType($stagingInstalledType, 'COMPLETE');
                     $statistics{'STAGING'}{ $rec{installedSoftwareType} }{'STATUS_COMPLETE'}++;
-                    dlog("saved staging installed type object");
                 }
 
             }
@@ -2163,6 +2150,7 @@ sub getTad4zQuery {
                   when d.action=0 then \'COMPLETE\'
                   when d.action=1 then \'UPDATE\'
                   when d.action=2 then \'DELETE\'
+                  when d.action=3 then \'UPDATE\'
                  end
                 ,c.users
                 ,\'\'
@@ -2256,6 +2244,31 @@ sub queryGetProductIdByVersionId {
         select product_id from mainframe_version where id =  ?
     ';
     return ('getProductId', $query);
+}
+
+sub updateStagingInstalledType{
+  my($self,$stagingInstalledType, $action) = @_;
+  
+  dlog("marked staging installed type action as complete");
+  ###it is TADZ data type, convert the action from string to integer
+  if($stagingInstalledType->isa("Staging::OM::ScanSoftwareItem")){
+   
+    #0-COMPLETE, 1-UPDATE, 2-DELETE, 3-CATALOGMISSING
+    if($action eq 'COMPLETE'){
+      $stagingInstalledType->action(0);
+    }elsif($action eq 'CATALOG MISSING'){
+      wlog("staging installed type catalog missing");
+      $stagingInstalledType->action(3);
+    }
+   
+  }else{
+     $stagingInstalledType->action($action);
+  }
+                   
+  dlog("saving staging installed type object");                    
+  $stagingInstalledType->save($self->stagingConnection);
+  dlog("saved staging installed type object");
+ 
 }
 1;
 
