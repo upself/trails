@@ -51,7 +51,7 @@ public class Result {
 	private Map parameter = new HashMap();
 
 	public void build() {
-		result.append("report revision 14\n");
+		result.append("report revision 15\n");
 		result.append("--- Recon Engine ---\n");
 		result.append("Summary: \n");
 		result.append("Total Records in full queue:"
