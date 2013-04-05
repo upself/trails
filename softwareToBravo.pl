@@ -31,14 +31,14 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "ticket 32 ";
+my $rNo                = "ticket 32";
 my $children           =0;
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
 my %children           = ();
 
 my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 6 );
+my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
 daemonize();
@@ -55,7 +55,7 @@ sub spawnChildren {
   if ( isCustomerRunning( $customerId, $date ) == 1 ) {
    next;
   }
-  newChild( $customerId, $date, 6 );
+  newChild( $customerId, $date, 0 );
   if ( scalar @customerIds == 0 ) {
    last;
   }
@@ -64,7 +64,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 6;
+ my $count = 0;
  while (1) {
   if ( scalar @customerIds == 0 ) {
    my $connection = Database::Connection->new('staging');
@@ -92,10 +92,7 @@ sub keepTicking {
    newChild( $customerId, $date, $count );
    if ( scalar @customerIds == 0 ) {
     sleep 5;
-    $count++;
-    if ( $count > 6 ) {
-     $count = 0;
-    }
+    $count = 0;
     last;
    }
   }
@@ -349,7 +346,7 @@ sub p1Query {
                9590,9754,11034,11472,11498,11804,11860,11959,12031,12058,12137,12335,
                12350,12476,12496,12508,13331,13444,13454,13457,13546,13561,13651,13767,
                13792,13799,13816,13818,14015,14075,14172,14182,14373,14472,14501,14536,
-               14543,14939,15167,15246,15302,15323,12543,14346
+               14543,14939,15167,15246,15302,15323,12543,14346,14940
        )
     and (
         a.action != \'COMPLETE\'
