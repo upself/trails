@@ -5,6 +5,7 @@ use Base::Utils;
 use Compress::Zlib;
 use Database::Connection;
 use Scan::Delegate::ScanDelegate;
+use Staging::Delegate::ScanRecordDelegate;
 use Text::CSV_XS;
 
 ###TODO this probably should be broken out into respective delegates...its getting big
@@ -1463,7 +1464,7 @@ sub queryTAD4ZDeltaData {
    with ur
      ";
 
-    return ( 'tad4zData', $query );
+    return ( 'tad4zDeltaData', $query );
 }
 
 1;
