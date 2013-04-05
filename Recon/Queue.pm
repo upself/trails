@@ -135,6 +135,8 @@ sub addSoftwareLparToQueue {
 	my $self = shift;
 
 	ilog("Entering addSoftwareLparToQueue method of Recon::Queue");
+	
+	return  if( $self->object->customerId == 999999 );
 
 	ilog("Checking for existing software lpar in queue");
 	my $recon = new Recon::OM::ReconSoftwareLpar();
@@ -164,6 +166,8 @@ sub addInstalledSoftwareToQueue {
 	ilog("Entering addInstalledSoftwareToQueue method of Recon::Queue");
 
 	croak 'Software Lpar not defined' if !defined $self->subObject;
+	
+	return if( $self->subObject->customerId == 999999);
 
 	ilog("Checking for existing installed software in queue");
 	my $recon = new Recon::OM::ReconInstalledSoftware();
