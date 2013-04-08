@@ -184,7 +184,7 @@ sub doDelta {
             }
         }
         else {
-            elog('outsource profile does not exist in cndb');
+            elog('outsource profile does not exist in cndb,id is' . $key);
 
             #			die('outsource profile deleted from CNDB');
         }
