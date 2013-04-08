@@ -6,30 +6,36 @@ import java.sql.SQLException;
 
 public class DBPool {
 
-	public Connection getBravoConnection() throws SQLException {
+	public final static DBPool INSTANCE = new DBPool();
 
+	private Connection bravoConn, stagingConn;
+
+	private DBPool() {
 		try {
 			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
+			String bravoURL = "jdbc:db2:TRAILS";
+			bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
+					"Bearw00n");
+
+			String stagingURL = "jdbc:db2:STAGING";
+			stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
+					"apr03db2");
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		String bravoURL = "jdbc:db2:TRAILS";
-		return DriverManager.getConnection(bravoURL, "eaadmin", "Bearw00n");
-
 	}
 
-	public Connection getStagingConnection() throws SQLException {
-		String stagingURL = "jdbc:db2:STAGING";
-		return DriverManager.getConnection(stagingURL, "eaadmin", "apr03db2");
-
+	public Connection getBravoConnection() {
+		return bravoConn;
 	}
 
+	public Connection getStagingConnection() {
+		return stagingConn;
+	}
 }
