@@ -88,7 +88,7 @@ sub getBankAccountByName {
 }
 
 sub getBankAccounts {
-    my ($self) = @_;
+    my ($self,$ntadz) = @_;
 
     my @data;
 
@@ -96,7 +96,11 @@ sub getBankAccounts {
     my $trailsConnection = Database::Connection->new('trails');
 
     ###Prepare the query
-    $trailsConnection->prepareSqlQuery( $self->queryBankAccounts() );
+    if (defined $ntadz && $ntadz eq 1){
+     $trailsConnection->prepareSqlQuery( $self->queryNTadzBankAccounts() );
+    } else {
+      $trailsConnection->prepareSqlQuery( $self->queryBankAccounts() );
+    }
 
     ###Define the fields
     my @fields = (qw(name));
@@ -138,6 +142,26 @@ sub queryBankAccounts {
 
     return ( 'bankAccounts', $query );
 }
+
+sub queryNTadzBankAccounts {
+    my $query = '
+        select
+            ba.name
+        from
+            bank_account ba
+        where
+            ba.status = \'ACTIVE\'
+            and ba.data_type = \'INVENTORY\' 
+            and ba.type !=\'TADZ\'
+        order by
+            ba.connection_status
+            ,ba.record_time
+	    ,ba.name
+    ';
+
+    return ( 'bankAccounts', $query );
+}
+
 sub getBankAccountsByType {
     my ($self,$type) = @_;
 
