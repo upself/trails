@@ -48,6 +48,7 @@ public class LDAPSearch {
 		} else {
 			System.out.println(rc.getMessage());
 		}
+		CWA2.cleanup();
 		CWA2 = null;
 
 	}
