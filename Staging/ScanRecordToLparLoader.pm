@@ -1467,8 +1467,8 @@ sub doDelta {
                 dlog('SoftwareLpar is defined');
 
                 if ( defined $slm->id ) {
-                    elog('SoftwareLparMap is invalid');
-                    die 'SoftwareLparMap is invalid';
+                    elog('SoftwareLparMap is invalid,'.$slm->id );
+                    die 'SoftwareLparMap is invalid, '.$slm->id ;
                 }
                 else {
                     dlog('SoftwareLparMap is not defined');
