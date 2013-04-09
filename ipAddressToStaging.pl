@@ -83,9 +83,10 @@ eval {
     while (1) {
 
         my @bankAccounts;
+        my $ntadz = 1;
         eval {
             ###Get the current software lpar batches to process.
-            @bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccounts;
+            @bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccounts($ntadz);
         };
         if ($@) {
             die $@;
