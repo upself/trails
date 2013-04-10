@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision 128";
+my $rNo                = "revision 129";
 my $children           =0;
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
@@ -80,6 +80,8 @@ sub keepTicking {
    wlog("$rNo sleeping");
    sleep;
    wlog("$rNo done sleeping");
+   
+   $count = 6;
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
    dlog("$rNo running $i");
@@ -90,8 +92,10 @@ sub keepTicking {
     next;
    }
    if ( scalar @customerIds == 0 ) {
-    sleep 5;
-    $count = 6;
+     sleep 5;
+     if($count>6){
+       $count = 0;
+     }
     last;
    }else{
     newChild( $customerId, $date, $count );
