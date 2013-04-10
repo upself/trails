@@ -93,6 +93,7 @@ sub keepTicking {
    }
    if ( scalar @customerIds == 0 ) {
      sleep 5;
+     $count++;
      if($count>6){
        $count = 0;
      }
