@@ -98,7 +98,7 @@ eval {
             next if $name eq 'TLCMZ';
             next if $name eq 'SWDISCRP';
             next if $name eq 'DORANA';     
-            next if $name eq 'WASSTDB';
+            next if $name eq 'SWASSTDB';
 
             if ( $testMode == 1 ) {
                 next
