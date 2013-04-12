@@ -74,6 +74,8 @@ sub getDisconnectedSoftwareSignatureData {
         dlog('looping through gzip lines');
         my @fields
             = (qw (computerId swareSigId fileName fileSize acqTime path));
+            
+        my  %existsSignatures = ();
         while ( $gz->gzreadline($line) > 0 ) {
             my $status = $tsv->parse($line);
 
@@ -108,8 +110,19 @@ sub getDisconnectedSoftwareSignatureData {
             if ( !exists $signatureList{$softwareId}{$softwareSignatureId}
                 { $scanMap->{ $rec{computerId} } } )
             {
+             
+                my $action = 'UPDATE';
+                if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' ){
+                   my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
+                   if($existsSignatures{$key}){
+                      $action= 'COMPLETE';
+                   }else{
+                     $existsSignatures{$key} = 1;
+                  }
+                }
+                
                 $signatureList{$softwareId}{$softwareSignatureId}
-                    { $scanMap->{ $rec{computerId} } }{'action'} = 'UPDATE';
+                    { $scanMap->{ $rec{computerId} } }{'action'} = $action;
                 $signatureList{$softwareId}{$softwareSignatureId}
                     { $scanMap->{ $rec{computerId} } }{'id'} = 0;
                 $signatureList{$softwareId}{$softwareSignatureId}
@@ -175,6 +188,9 @@ sub getConnectedSoftwareSignatureData {
 
     ###Execute the query
     $sth->execute();
+    
+    
+    my %existsSignatures=();
 
     while ( $sth->fetchrow_arrayref ) {
 
@@ -205,11 +221,23 @@ sub getConnectedSoftwareSignatureData {
 
         ###Add the hardware to the list
 
-        if ( !exists $signatureList{$softwareId}{$softwareSignatureId}
+       if ( !exists $signatureList{$softwareId}{$softwareSignatureId}
             { $scanMap->{ $rec{computerId} } } )
         {
+            my $action = 'UPDATE';
+            if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' ){
+             
+               my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
+               if($existsSignatures{$key}){
+                  $action= 'COMPLETE';
+               }else{
+                 $existsSignatures{$key} = 1;
+               }
+            }
+            
             $signatureList{$softwareId}{$softwareSignatureId}
-                { $scanMap->{ $rec{computerId} } }{'action'} = 'UPDATE';
+                  { $scanMap->{ $rec{computerId} } }{'action'} = $action;
+            
             $signatureList{$softwareId}{$softwareSignatureId}
                 { $scanMap->{ $rec{computerId} } }{'id'} = 0;
             $signatureList{$softwareId}{$softwareSignatureId}
