@@ -273,11 +273,11 @@ sub queryReconQueueByCustomerId {
         where
             a.customer_id = ?
             and date(record_time) = ?
-            and a.table != \'RECON_CUSTOMER\' 
+            and (a.table != \'RECON_CUSTOMER\' 
             or (
                date(a.record_time) <= \'2013-04-14\'
                and a.table=\'RECON_CUSTOMER\' 
-               and a.customer_id not in ( 7200,9754,12145)
+               and a.customer_id not in ( 7200,9754,12145))
             )
     ';
     dlog("queryReconQueueByCustomerId=$query");
