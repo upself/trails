@@ -188,12 +188,12 @@ sub doDelta {
                         ->{'id'} = $rec{id};
 
                     #Get all the keys even though there should only be one
-                    my $path =
-                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
-                        ->{'path'};
+                    my $path =  $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
+                    my $action= $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
 
-                    if (    ( $path eq "null" && ( !defined $rec{path} ) )
-                         || ( stringEqual( $path, $rec{path} ) ) )
+                    if (   ( ( $path eq "null" && ( !defined $rec{path} ) ) || ( stringEqual( $path, $rec{path} ) ) )
+                            &&  ($rec{action} eq 'COMPLETE' || stringEqual($action,$rec{action}) )
+                       )
                     {
 
                         # path hasn't changed
@@ -204,13 +204,13 @@ sub doDelta {
                             ->{ $rec{scanRecordId} };
                     }
                     else {
-                        if ( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40' ) {
-                            dlog("Setting record to update since path has changed");
-                            $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                                ->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
-                            $self->SUPER::incrUpdateCnt();
+                        if ( $self->SUPER::bankAccountName ne 'S03INV40' ) {
+                            dlog("Setting record to update since path has changed");                         
+                            $self->SUPER::incrUpdateCnt()
+                                      if($action eq 'UPDATE');
                         }
                         else {
+                            dlog('delete S03INV40');
                             delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
                                 ->{ $rec{scanRecordId} };
                         }

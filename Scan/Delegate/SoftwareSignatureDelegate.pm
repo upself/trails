@@ -116,8 +116,10 @@ sub getDisconnectedSoftwareSignatureData {
                    my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
                    if($existsSignatures{$key}){
                       $action= 'COMPLETE';
+                      dlog('processed srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
                    }else{
                      $existsSignatures{$key} = 1;
+                     dlog('new srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
                   }
                 }
                 
@@ -229,9 +231,12 @@ sub getConnectedSoftwareSignatureData {
              
                my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
                if($existsSignatures{$key}){
-                  $action= 'COMPLETE';
+                  $action= 'COMPLETE';                  
+                  dlog('processed srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
+                  
                }else{
                  $existsSignatures{$key} = 1;
+                 dlog('new srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
                }
             }
             
