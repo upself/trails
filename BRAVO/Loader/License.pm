@@ -198,11 +198,7 @@ sub buildBravoLicense {
     $bravoLicense->cpuSerial( $self->stagingLicense->cpuSerial );
     $bravoLicense->licenseStatus( $self->stagingLicense->licenseStatus );
     $bravoLicense->extSrcId( $self->stagingLicense->extSrcId );
-    if( $self->stagingLicense->action eq 'DELETE' ) {
-   	$bravoLicense->status( 'INACTIVE' );
-    } else {
-    $bravoLicense->status( $self->stagingLicense->status );
-    }  
+    $bravoLicense->status( $self->stagingLicense->status );  
     $bravoLicense->agreementType( $self->stagingLicense->agreementType );
     $bravoLicense->environment($self->stagingLicense->environment);
     $bravoLicense->lparName($self->stagingLicense->lparName);
