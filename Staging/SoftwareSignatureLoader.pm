@@ -189,31 +189,22 @@ sub doDelta {
 
                     #Get all the keys even though there should only be one
                     my $path =  $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
-                    my $action= $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
-
-                    if (   ( ( $path eq "null" && ( !defined $rec{path} ) ) || ( stringEqual( $path, $rec{path} ) ) )
-                            &&  ($rec{action} eq 'COMPLETE' || stringEqual($action,$rec{action}) )
-                       )
+                    my $scanAction= $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
+                    
+                    if($self->pathChanged($path, $rec{path}))
                     {
-
-                        # path hasn't changed
-                        dlog("No update necessary");
-
-                        #Exists in the file, no update necessary
-                        delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                            ->{ $rec{scanRecordId} };
-                    }
-                    else {
-                        if ( $self->SUPER::bankAccountName ne 'S03INV40' ) {
-                            dlog("Setting record to update since path has changed");                         
-                            $self->SUPER::incrUpdateCnt()
-                                      if($action eq 'UPDATE');
-                        }
-                        else {
-                            dlog('delete S03INV40');
-                            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
-                                ->{ $rec{scanRecordId} };
-                        }
+                      $self->updateForPath($rec{action});
+                    }else{
+                       my $bankAccountType = $self->SUPER::bankAccount->type;
+                       if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D'){
+                          if($scanAction eq 'COMPLETE' && $rec{action} eq 'UPDATE' ){
+                            dlog("set the action back to complete");
+                          }else{
+                            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+                          }
+                       }else{
+                         $self->updateForPath($rec{action});
+                       }
                     }
                 }
                 else {
@@ -264,6 +255,43 @@ sub doDelta {
     $sth->finish;
 
     $self->list($signatureList);
+}
+
+sub pathChanged{
+   my ($self,$scanPath, $stagingPath ) = @_;
+   
+   $scanPath=undef 
+      if $scanPath eq "null";
+      
+   if(defined $scanPath){
+      if(defined $stagingPath){
+         if(stringEqual( $scanPath, $stagingPath) ){
+            return 0;
+         }else{
+            return 1;
+         }
+      }else{
+        return 1;
+      }
+   }else{
+      if(defined $stagingPath){
+         return 1;
+      }else{
+         return 0;
+      }
+   }
+}
+
+sub updateForPath{
+    my ($self,$stagingAction) = @_;
+   
+   if( $stagingAction eq 'COMPLETE'&& $self->SUPER::bankAccountName ne 'S03INV40'){
+    dlog("Setting record to update since path has changed");
+    $self->list->{ $rec{softwareId} }->{$rec{softwareSignatureId}}->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
+    $self->SUPER::incrUpdateCnt();
+   }else{
+    delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+   }
 }
 
 sub applyDelta {
