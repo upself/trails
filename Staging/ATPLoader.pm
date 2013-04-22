@@ -363,6 +363,8 @@ sub doDelta {
                 }
 
                 $hardwareLpar->status('INACTIVE');
+                $hardwareLpar->lparStatus('INACTIVE') 
+                    if  (!defined $rec{lparStatus} || $rec{lparStatus} eq "null" || '' eq $rec{lparStatus});
             }
 
             $self->hardwareLpar->{$lparKey} = $hardwareLpar;
