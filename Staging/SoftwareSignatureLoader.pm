@@ -191,19 +191,23 @@ sub doDelta {
                     my $path =  $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
                     my $scanAction= $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
                     
-                    if($self->pathChanged($path, $rec{path}))
+                    my $bankAccountType = $self->SUPER::bankAccount->type;
+                    if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
                     {
-                      $self->updateForPath($rec{action});
+                      if( stringEqual( $rec{action}, $scanAction)){
+                         delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+                      }
                     }else{
-                       my $bankAccountType = $self->SUPER::bankAccount->type;
-                       if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D'){
-                          if($scanAction eq 'COMPLETE' && $rec{action} eq 'UPDATE' ){
-                            dlog("set the action back to complete");
+                       if($self->pathChanged($path, $rec{path})){
+                          if( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40'){
+                              dlog("Setting record to update since path has changed");
+                              $self->list->{ $rec{softwareId} }->{$rec{softwareSignatureId}}->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
+                              $self->SUPER::incrUpdateCnt();
                           }else{
                             delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                           }
                        }else{
-                         $self->updateForPath($rec{action});
+                         delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                        }
                     }
                 }
@@ -279,18 +283,6 @@ sub pathChanged{
       }else{
          return 0;
       }
-   }
-}
-
-sub updateForPath{
-    my ($self,$stagingAction) = @_;
-   
-   if( $stagingAction eq 'COMPLETE'&& $self->SUPER::bankAccountName ne 'S03INV40'){
-    dlog("Setting record to update since path has changed");
-    $self->list->{ $rec{softwareId} }->{$rec{softwareSignatureId}}->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
-    $self->SUPER::incrUpdateCnt();
-   }else{
-    delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
    }
 }
 
