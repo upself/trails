@@ -273,7 +273,16 @@ sub buildBravoHardwareLpar {
     $bravoHardwareLpar->customerId( $self->stagingHardwareLpar->customerId );
     $bravoHardwareLpar->hardwareId( $self->bravoHardware->id );
     $bravoHardwareLpar->status( $self->stagingHardwareLpar->status );
-    $bravoHardwareLpar->lparStatus( $self->stagingHardwareLpar->lparStatus );
+    
+    my $action = $self->stagingHardwareLpar->action;
+    my $lparStatus = $self->stagingHardwareLpar->lparStatus;
+    if('DELETE' eq $action &&  
+       (!defined $lparStatus || "null" eq $lparStatus || '' eq $lparStatus)){
+      $bravoHardwareLpar->lparStatus('INACTIVE');
+    }else{
+      $bravoHardwareLpar->lparStatus( $self->stagingHardwareLpar->lparStatus );
+    }
+    
     $bravoHardwareLpar->extId( $self->stagingHardwareLpar->extId );
     $bravoHardwareLpar->techImageId( $self->stagingHardwareLpar->techImageId );
     $bravoHardwareLpar->serverType( $self->stagingHardwareLpar->serverType );
