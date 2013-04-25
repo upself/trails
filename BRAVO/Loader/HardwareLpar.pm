@@ -74,9 +74,10 @@ sub logic {
 
         ###Set the new bravo hardware lpar id to the old id
         $self->bravoHardwareLpar->id( $bravoHardwareLpar->id );
-
+        dlog('found matched bravo hw lpar with staging');
         ###Set to save the bravo hardware lpar if they are not equal
         if ( !$bravoHardwareLpar->equals( $self->bravoHardwareLpar ) ) {
+            dlog('staging hw lpar and bravo not same');
             $self->saveBravoHardwareLpar(1);
             
             if (    $self->bravoHardwareLpar->lparStatus eq 'HWCOUNT'
@@ -113,8 +114,10 @@ sub logic {
                 $self->reconDeep(1);
             }
         }
+        
     }
     else {
+        dlog('new hw lpar from staging');
         ###This is a new record
 
         ###Set to save the hardware
@@ -161,6 +164,7 @@ sub save {
 
     ###Save the license if we're supposed to
     if ( $self->saveBravoHardwareLpar == 1 ) {
+        dlog('saving hwlpar '.$self->bravoHardwareLpar->toString);
         $self->bravoHardwareLpar->save( $self->bravoConnection );
         $self->addToCount( 'TRAILS', 'HARDWARE_LPAR', 'UPDATE' );
     }
@@ -290,6 +294,7 @@ sub buildBravoHardwareLpar {
     $bravoHardwareLpar->partMSU( $self->stagingHardwareLpar->partMSU );
 
     $self->bravoHardwareLpar($bravoHardwareLpar);
+    dlog('build hw lpar from staging '.$bravoHardwareLpar->toString);
 }
 
 sub stagingConnection {
