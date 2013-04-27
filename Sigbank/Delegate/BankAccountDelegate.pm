@@ -87,6 +87,70 @@ sub getBankAccountByName {
     return $ba;
 }
 
+sub getBankAccountById {
+    my ( $self, $id ) = @_;
+
+    dlog('Start getBankAccountById method');
+    dlog("id=$id");
+
+    ###Get the trails connection
+    my $trailsConnection = Database::Connection->new('trails');
+
+    ###Prepare the query
+    $trailsConnection->prepareSqlQueryAndFields( $self->queryBankAccountById() );
+
+    ###Get the statement handle
+    my $sth = $trailsConnection->sql->{bankAccountById};
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $trailsConnection->sql->{bankAccountByIdFields} } );
+    dlog('Columns binded');
+
+    ###Execute the query
+    dlog("Exectuing query");
+    $sth->execute($id);
+    $sth->fetchrow_arrayref;
+    $sth->finish;
+
+    ###Create a new bank account object and set
+    my $ba = new Sigbank::OM::BankAccount();
+    $ba->id( $rec{id} );
+    $ba->name( $rec{name} );
+    $ba->description( $rec{description} );
+    $ba->type( $rec{type} );
+    $ba->version( $rec{version} );
+    $ba->connectionType( $rec{connectionType} );
+    $ba->connectionStatus( $rec{connectionStatus} );
+    $ba->dataType( $rec{dataType} );
+    $ba->databaseType( $rec{databaseType} );
+    $ba->databaseVersion( $rec{databaseVersion} );
+    $ba->databaseName( $rec{databaseName} );
+    $ba->databaseSchema( $rec{databaseSchema} );
+    $ba->databaseIp( $rec{databaseIp} );
+    $ba->databasePort( $rec{databasePort} );
+    $ba->databaseUser( $rec{databaseUser} );
+    $ba->databasePassword( $rec{databasePassword} );
+    $ba->socks( $rec{socks} );
+    $ba->tunnel( $rec{tunnel} );
+    $ba->tunnelPort( $rec{tunnelPort} );
+    $ba->authenticatedData( $rec{authenticatedData} );
+    $ba->syncSig( $rec{syncSig} );
+    $ba->comments( $rec{comments} );
+    $ba->remoteUser( $rec{remoteUser} );
+    $ba->recordTime( $rec{recordTime} );
+    $ba->status( $rec{status} );
+    dlog( $ba->toString );
+
+    ###Close the connection
+    $trailsConnection->disconnect;
+
+    dlog('End getBankAccountById method');
+
+    ###Return the bank account
+    return $ba;
+}
+
 sub getBankAccounts {
     my ($self,$ntadz) = @_;
 
@@ -279,5 +343,70 @@ sub queryBankAccountByName {
     ';
 
     return ( 'bankAccountByName', $query, \@fields );
+}
+sub queryBankAccountById {
+    my @fields = (
+        qw(
+          id
+          name
+          description
+          type
+          version
+          connectionType
+          connectionStatus
+          dataType
+          databaseType
+          databaseVersion
+          databaseName
+          databaseSchema
+          databaseIp
+          databasePort
+          databaseUser
+          databasePassword
+          socks
+          tunnel
+          tunnelPort
+          authenticatedData
+          syncSig
+          comments
+          remoteUser
+          recordTime
+          status)
+    );
+
+    my $query = '
+        select
+            id
+            ,name
+            ,description
+            ,type
+            ,version
+            ,connection_type
+            ,connection_status
+            ,data_type
+            ,database_type
+            ,database_version
+            ,database_name
+            ,database_schema
+            ,database_ip
+            ,database_port
+            ,database_user
+            ,database_password
+            ,socks
+            ,tunnel
+            ,tunnel_port
+            ,authenticated_data
+            ,sync_sig
+            ,comments
+            ,remote_user
+            ,record_time
+            ,status
+        from
+            bank_account
+        where
+            id = ?
+    ';
+
+    return ( 'bankAccountById', $query, \@fields );
 }
 1;
