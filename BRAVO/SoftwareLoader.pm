@@ -1235,7 +1235,10 @@ sub load {
                         $bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'MISSING'} );
                     }
                     elsif($rec{installedSoftwareType} eq 'TAD4Z'){
-                        $bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'TADZ'} );
+                    	# only set TADz the first time
+                    	if ( ! defined $bravoInstalledSoftware->discrepancyTypeId ) {
+                        	$bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'TADZ'} );
+                        }
                     }else{
                         if ( defined $bravoInstalledSoftware->discrepancyTypeId ) {
                             if ( $bravoInstalledSoftware->discrepancyTypeId
