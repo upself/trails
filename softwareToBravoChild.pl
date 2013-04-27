@@ -189,7 +189,7 @@ sub querySoftwareLparsByCustomerIdByDate {
         }
         elsif ( $phase == 6 ) {
             $query .= '
-                or si.action != \'COMPLETE\'
+                or si.action != 0
             ';
         }
         $query .= ')';

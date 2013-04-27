@@ -1480,6 +1480,12 @@ sub querySoftwareLparIds {
             c.id = ss.scan_record_id
         ';
     }
+    elsif ( $count == 6 ) {
+        $query .= '
+        left outer join scan_sofware_item si on
+            c.id = si.scan_record_id
+        ';
+    }
     my $clause = 'where';
     if ( $deltaOnly == 1 ) {
         $query .= ' ' . $clause . ' ( (
@@ -1508,6 +1514,11 @@ sub querySoftwareLparIds {
         elsif ( $count == 5 ) {
             $query .= '
                 or ss.action != \'COMPLETE\'
+            ';
+        }
+        elsif ( $count == 6 ) {
+            $query .= '
+                or si.action != 0
             ';
         }
         $query .= '))';
