@@ -1482,7 +1482,7 @@ sub querySoftwareLparIds {
     }
     elsif ( $count == 6 ) {
         $query .= '
-        left outer join scan_sofware_item si on
+        left outer join scan_software_item si on
             c.id = si.scan_record_id
         ';
     }
