@@ -688,6 +688,12 @@ sub load {
               ###4. it's mainframe_version get the product_id from it as the software_id.
               
               $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guid);
+              if(!defined $kbDefId){
+                my $gudi = $scanSwItem->guid;
+                dlog("mainframe items not loaded by catalog loader under guid id $gudi");
+                $self->updateStagingInstalledType($scanSwItem, 'CATALOG MISSING');
+                next;
+              }
                             
               my $versionId = undef;
               $versionId = $self->getMainframeVersionIdByFeatureId($self->bravoConnection, $kbDefId);
@@ -695,16 +701,8 @@ sub load {
               if(!defined $versionId){
               ### mainframe feature not exsits, it is mainframe version.
                 $versionId = $kbDefId;
-              }   
-                                       
+              }                            
               $softwareId = $self->getProductIdByVersionId($self->bravoConnection, $versionId);
-              
-              if(!defined $softwareId){
-                my $gudi = $scanSwItem->guid;
-                dlog("mainframe items not loaded by catalog loader under guid id $gudi");
-                $self->updateStagingInstalledType($scanSwItem, 'CATALOG MISSING');
-                next;
-              }
               
             }else{
               $softwareId = $rec{softwareId};
