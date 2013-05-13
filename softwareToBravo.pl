@@ -64,7 +64,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 6;
+ my $count = 0;
  while (1) {
   if ( scalar @customerIds == 0 ) {
    my $connection = Database::Connection->new('staging');
@@ -81,7 +81,6 @@ sub keepTicking {
    sleep;
    wlog("$rNo done sleeping");
    
-   $count = 0;
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
    dlog("$rNo running $i");
