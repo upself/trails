@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'revision146';
+my $rNo = 'revision166';
 
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
@@ -381,8 +381,8 @@ sub queryDistinctCustomerIdsFromQueueFifo {
 
 				or ( 
    					a.table=\'RECON_CUSTOMER\' 
-   					and  date(a.record_time) <= \'2013-04-14\' 
-   					and a.customer_id not in ( 7200,9754,12145) 
+   					and  date(a.record_time) <= \'2013-05-12\' 
+   					and a.customer_id not in ( 7200,9754,11497,12145) 
 				) 
                 group by
                     a.customer_id
