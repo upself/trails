@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision 138";
+my $rNo                = "revision 183";
 my $children           =0;
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
@@ -81,7 +81,6 @@ sub keepTicking {
    sleep;
    wlog("$rNo done sleeping");
    
-   $count = 6;
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
    dlog("$rNo running $i");
@@ -271,7 +270,7 @@ sub getStagingQueue {
   }
   wlog("$rNo end building customer id array for $p");
  }
- wlog( $rNo.' Loaded customer/date combinations :' . scalar @customers );
+ wlog( $rNo.' Loaded customer/date combinations :' . scalar @customers. 'Phase :'.$count );
  wlog("$rNo Running Threads : $children ");
 
  return @customers;
