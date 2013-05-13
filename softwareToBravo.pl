@@ -81,6 +81,7 @@ sub keepTicking {
    sleep;
    wlog("$rNo done sleeping");
    
+   $count = 0;
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
    dlog("$rNo running $i");
