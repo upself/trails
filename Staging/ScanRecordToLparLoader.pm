@@ -1715,38 +1715,38 @@ sub getCustomerId {
         my %customerIds;
         
         # Are we a TADz scan? If so, use LPAR_NAME+SERIAL to match else UNKNOWN account
-#        my $bankAccount = Sigbank::OM::BankAccount->new;
-    	my $bankAccount = Sigbank::Delegate::BankAccountDelegate->getBankAccountById($sr->bankAccountId);
-    	if ($bankAccount->type eq "TADZ") {
-    		my $match4 = 0;
-    		dlog("applying TADz HW->SW matching logic for customer_id");
-        	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
-            	foreach my $fqhn ( keys %{$ref} ) {
-            		my $hwSerial4 = "";
-            		my $hwSerial5 = "";
-            		if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
-            			$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
-            			$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
-            			
-            		}
-            		if ( defined $sr->serialNumber ) {
-            			my $swSerial4 = substr $sr->serialNumber, -4;
-            			my $swSerial5 = substr $sr->serialNumber, -5;
-            			if ( $hwSerial5 eq $swSerial5 ) {
-            				return $ref->{$fqhn}->{'customerId'};
-            			}
-            			if ( $hwSerial4 eq $swSerial4 ) {
-            				$match4 =  $ref->{$fqhn}->{'customerId'};
-            			}
-            		}
-            	}
-        	
-        	}
-        	if ( $match4 > 0 ) {
-        		return $match4;
-        	}
-    		return 999999;
-    	} 
+# This was commented out to take the change out -- until we stop getBankAccountById and use a hash
+#    	my $bankAccount = Sigbank::Delegate::BankAccountDelegate->getBankAccountById($sr->bankAccountId);
+#    	if ($bankAccount->type eq "TADZ") {
+#    		my $match4 = 0;
+#    		dlog("applying TADz HW->SW matching logic for customer_id");
+#        	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
+#            	foreach my $fqhn ( keys %{$ref} ) {
+#            		my $hwSerial4 = "";
+#            		my $hwSerial5 = "";
+#            		if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
+#            			$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
+#            			$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
+#            			
+#            		}
+#            		if ( defined $sr->serialNumber ) {
+#            			my $swSerial4 = substr $sr->serialNumber, -4;
+#            			my $swSerial5 = substr $sr->serialNumber, -5;
+#            			if ( $hwSerial5 eq $swSerial5 ) {
+#            				return $ref->{$fqhn}->{'customerId'};
+#            			}
+#            			if ( $hwSerial4 eq $swSerial4 ) {
+#            				$match4 =  $ref->{$fqhn}->{'customerId'};
+#            			}
+#            		}
+#            	}
+#        	
+#        	}
+#        	if ( $match4 > 0 ) {
+#        		return $match4;
+#        	}
+#    		return 999999;
+#    	} 
 
         #Loop through all the matches
         foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
