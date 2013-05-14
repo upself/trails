@@ -35,7 +35,8 @@ sub load {
 	my $job = $self->SUPER::bankAccountName . " SCAN SOFTWARE ITEM PULL";
 
 	$self->SUPER::load( \%args, $job );
-
+	my $bankAccount =$self->SUPER::bankAccount;
+    dlog(' bankaccount id '. $bankAccount->id);
 	ilog('Acquiring the staging connection');
 	my $stagingConnection = Database::Connection->new('staging');
 	ilog('Staging connection acquired');
@@ -47,7 +48,7 @@ sub load {
 		ilog('Source data prepared');
 
 		ilog('Performing the delta');
-		$self->doDelta($stagingConnection);
+		$self->doDelta($stagingConnection, $bankAccount->id);
 		ilog('Delta complete');
 
         ###Check if we have crossed the delete threshold     
@@ -117,7 +118,7 @@ sub prepareSourceData {
 }
 
 sub doDelta {
-	my ( $self, $connection ) = @_;
+	my ( $self, $connection, $bankAccountId ) = @_;
 
 	dlog('Start doDelta method');
 
@@ -135,11 +136,11 @@ sub doDelta {
 
 	dlog('Preparing staging scanSoftwareItem query');
 	$connection->prepareSqlQuery(
-		Staging::Delegate::StagingDelegate->queryScanSoftwareItemData( $self->SUPER::loadDeltaOnly ) );
+		Staging::Delegate::StagingDelegate->queryScanSoftwareItemData( $self->SUPER::loadDeltaOnly, $bankAccountId ) );
 	dlog("Prepared staging scanSoftwareItem query");
 
 	###Define our fields
-	my @fields = (qw(id scanRecordId guId lastUsed useCount action));
+	my @fields = (qw(id scanRecordId guId lastUsed useCount action bankAccountId));
 
 	###Get the statement handle
 	my $sth = $connection->sql->{scanSoftwareItemData};
@@ -171,8 +172,7 @@ sub doDelta {
 		$st->useCount( $rec{useCount} );
 		$st->action( $rec{action} );
 		dlog( $st->toString );
-
-		if ( $self->list->{$key} ) {
+		if ( exists $self->list->{$key} ) {
 			dlog("Scan software item exists in bank account");
 
 			###Set the id
@@ -217,7 +217,7 @@ sub doDelta {
 			$self->list->{$key} = $st;
 		}
 
-		dlog( $self->list->{$key} );
+		dlog( $self->list->{$key}->toString() );
 	}
 	$sth->finish;
 
