@@ -27,6 +27,7 @@ sub new {
                  _lpar           => undef,
                  _maps           => undef,
                  _inclusionMap   => undef,
+                 _tadzAccountMap   => undef,
                  _updateCntSlm   => 0,
                  _completeCntSlm => 0,
                  _deleteCntSlm   => 0,
@@ -162,6 +163,10 @@ sub prepareMappings {
     ilog('Obtaining bank account inclusion map');
     $self->inclusionMap( BRAVO::Delegate::BRAVODelegate->getBankAccountInclusionMap($bravoConnection) );
     ilog('Obtained bank account exception map');
+
+    ilog('Obtaining TADz bank account map');
+    $self->tadzAccountMap( Sigbank::Delegate::BankAccountDelegate->getBankAccountIdsByType('TADZ') );
+    ilog('Obtained TADz bank account map');
 
     dlog('End prepareMappings method');
 }
@@ -1717,36 +1722,36 @@ sub getCustomerId {
         # Are we a TADz scan? If so, use LPAR_NAME+SERIAL to match else UNKNOWN account
 # This was commented out to take the change out -- until we stop getBankAccountById and use a hash
 #    	my $bankAccount = Sigbank::Delegate::BankAccountDelegate->getBankAccountById($sr->bankAccountId);
-#    	if ($bankAccount->type eq "TADZ") {
-#    		my $match4 = 0;
-#    		dlog("applying TADz HW->SW matching logic for customer_id");
-#        	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
-#            	foreach my $fqhn ( keys %{$ref} ) {
-#            		my $hwSerial4 = "";
-#            		my $hwSerial5 = "";
-#            		if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
-#            			$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
-#            			$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
-#            			
-#            		}
-#            		if ( defined $sr->serialNumber ) {
-#            			my $swSerial4 = substr $sr->serialNumber, -4;
-#            			my $swSerial5 = substr $sr->serialNumber, -5;
-#            			if ( $hwSerial5 eq $swSerial5 ) {
-#            				return $ref->{$fqhn}->{'customerId'};
-#            			}
-#            			if ( $hwSerial4 eq $swSerial4 ) {
-#            				$match4 =  $ref->{$fqhn}->{'customerId'};
-#            			}
-#            		}
-#            	}
-#        	
-#        	}
-#        	if ( $match4 > 0 ) {
-#        		return $match4;
-#        	}
-#    		return 999999;
-#    	} 
+    	if ( $self->isTADz($sr->bankAccountId) == 1 ) {
+    		my $match4 = 0;
+    		dlog("applying TADz HW->SW matching logic for customer_id");
+        	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
+            	foreach my $fqhn ( keys %{$ref} ) {
+            		my $hwSerial4 = "";
+            		my $hwSerial5 = "";
+            		if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
+            			$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
+            			$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
+            			
+            		}
+            		if ( defined $sr->serialNumber ) {
+            			my $swSerial4 = substr $sr->serialNumber, -4;
+            			my $swSerial5 = substr $sr->serialNumber, -5;
+            			if ( $hwSerial5 eq $swSerial5 ) {
+            				return $ref->{$fqhn}->{'customerId'};
+            			}
+            			if ( $hwSerial4 eq $swSerial4 ) {
+            				$match4 =  $ref->{$fqhn}->{'customerId'};
+            			}
+            		}
+            	}
+        	
+        	}
+        	if ( $match4 > 0 ) {
+        		return $match4;
+        	}
+    		return 999999;
+    	} 
 
         #Loop through all the matches
         foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
@@ -1963,6 +1968,20 @@ sub hwLparMap {
     return ( $self->{_hwLparMap} );
 }
 
+sub isTADz {
+	my ( $self, $bankAccountId ) = @_;
+	my $tadzFlag = 0;
+	foreach my $realTadz ( @{$self->tadzAccountMap} ) {
+		if ( $realTadz == $bankAccountId ) {
+			$tadzFlag = 1;
+			dlog("$realTadz eq $bankAccountId -- I am TADZ");
+			return $tadzFlag;
+		}
+	}
+	dlog ("$bankAccountId is not TADZ");
+	return $tadzFlag;	
+}
+
 sub customerMap {
     my ( $self, $suffix, $prefix, $objectIdMap, $nameMap, $namePrefixMap, $customerAcctMap ) = @_;
 
@@ -2033,6 +2052,12 @@ sub inclusionMap {
     my ( $self, $value ) = @_;
     $self->{_inclusionMap} = $value if defined($value);
     return ( $self->{_inclusionMap} );
+}
+
+sub tadzAccountMap {
+    my ( $self, $value ) = @_;
+    $self->{_tadzAccountMap} = $value if defined($value);
+    return ( $self->{_tadzAccountMap} );
 }
 
 sub testMode {
