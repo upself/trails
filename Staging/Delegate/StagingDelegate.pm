@@ -2840,28 +2840,31 @@ sub queryStagingScanRecordsBySoftwareLpar {
 }
 
 sub queryScanSoftwareItemData {
-	my ( $deltaOnly ) = @_;
+	my ($self, $deltaOnly, $bankAccountId) = @_;
 	my $query = '
         select
-            id
-            ,scan_record_id
-            ,guid
-            ,last_used
-            ,use_count
-            ,action
+            a.id
+            ,a.scan_record_id
+            ,a.guid
+            ,a.last_used
+            ,a.use_count
+            ,a.action
+            ,b.bank_account_id
         from
-            scan_software_item 
-
-    ';
-	my $clause = 'where';
+            scan_software_item a
+           ,scan_record b 
+     where a.scan_record_id=b.id and b.bank_account_id = ' . $bankAccountId ;
+	my $clause = ' and ' ;
 
 	if ( $deltaOnly == 1 ) {
 		$query .= '
         ' . $clause . '
-            action != 0
-        ';
+            a.action != 0
+         with ur ';
+	}else {
+		$query .= ' with ur';
 	}
-
+   dlog($query);
 	return ( 'scanSoftwareItemData', $query );
 }
 
