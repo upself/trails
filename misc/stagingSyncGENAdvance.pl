@@ -31,9 +31,11 @@ my $stagingConnection = Database::Connection->new('staging');
 
 use vars qw (
   $opt_a
+  $opt_h
 );
 
-getopt("a");
+getopt("ah");
+
 
 open LOG, ">>$logFile";
 if ($opt_a) {
@@ -41,7 +43,13 @@ if ($opt_a) {
 	print LOG "Working on $accountNumber \n";
 eval {
 	###Get software lpar id list
-	my @softwareLparIds = getSoftwareLparIds($bravoConnection,$accountNumber);
+	my @softwareLparIds ;
+	if ($opt_h) {
+		print LOG "Working on hostname $opt_h \n";
+		   	 @softwareLparIds = getSoftwareLparIds($bravoConnection,$accountNumber,$opt_h);
+	} else {
+			 @softwareLparIds = getSoftwareLparIds($bravoConnection,$accountNumber);
+	}
 
 	###Perform healthchecks customer at a time
 	foreach my $softwareLparId (@softwareLparIds) {
@@ -73,31 +81,50 @@ $stagingConnection->disconnect;
 exit 0;
 
 sub usage {
-	print "$0 -a <account_number> \n";
+	print "$0 -a <account_number> [ -h <hostname>]\n";
 	exit 0;
 }
 
 sub getSoftwareLparIds {
-	my ($bravoConnection,$accountNumber) = @_;
+	my ($bravoConnection,$accountNumber,$hostname) = @_;
 
 	###Array to return
 	my @softwareLparIds = ();
 
 	###Prepare and execute query
-	$bravoConnection->prepareSqlQueryAndFields(
-		querySoftwareLparIds() );
-	my $sth = $bravoConnection->sql->{softwareLparIds};
+
 	my %rec;
 	my $lparcount = 0 ;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $bravoConnection->sql->{softwareLparIdsFields} } );
-	$sth->execute($accountNumber);
-	while ( $sth->fetchrow_arrayref ) {
+
+    if (defined $hostname){
+        $bravoConnection->prepareSqlQueryAndFields(
+		querySoftwareLparByName() );
+	    my $sth = $bravoConnection->sql->{softwareLparId};
+    	$sth->execute($accountNumber,$hostname); 
+    	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $bravoConnection->sql->{softwareLparIdFields} } );
+		while ( $sth->fetchrow_arrayref ) {
 	##print "found " . $rec{id};
 	    $lparcount++;
 		push @softwareLparIds, $rec{id};
 	}
 	$sth->finish;
+    }
+    else {
+    	$bravoConnection->prepareSqlQueryAndFields(
+		querySoftwareLparIds() );
+	    my $sth = $bravoConnection->sql->{softwareLparIds};
+    	$sth->execute($accountNumber);
+    	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $bravoConnection->sql->{softwareLparIdsFields} } );
+		while ( $sth->fetchrow_arrayref ) {
+	##print "found " . $rec{id};
+	    $lparcount++;
+		push @softwareLparIds, $rec{id};
+	}
+	$sth->finish;
+    }
+
     print LOG "Found $lparcount lpars \n" ;
 	return @softwareLparIds;
 }
@@ -116,6 +143,23 @@ sub querySoftwareLparIds {
         and c.account_number = ?
     ';
 	return ( 'softwareLparIds', $query, \@fields );
+}
+
+sub querySoftwareLparByName {
+	my @fields = qw(
+	  id
+	);
+	my $query = '
+        select
+            sl.id
+        from software_lpar sl
+        join customer c on c.customer_id = sl.customer_id 
+        where sl.status = \'ACTIVE\'
+        and c.status = \'ACTIVE\'
+        and c.account_number = ?
+        and sl.name = ?
+    ';
+	return ( 'softwareLparId', $query, \@fields );
 }
 
 sub executeHchk {
@@ -147,11 +191,11 @@ sub executeHchk {
 		  @{ $stagingConnection->sql->{stagingSoftwareDataByCustomerIdFields} }
 	);
 	$stagingSth->execute( $customerId, $name, $customerId, $name, $customerId, $name, $customerId, $name,
-		$customerId, $name, $customerId, $name);
+		$customerId, $name, $customerId, $name, $customerId, $name);
 	while ( $stagingSth->fetchrow_arrayref ) {
 
 		###Only want rows with valid software line item
-		next unless defined $stagingRec{softwareId};
+		###next unless defined $stagingRec{softwareId};
 
 
 		###Get the sw lpar key
@@ -211,11 +255,11 @@ sub executeHchk {
 	$bravoSth->bind_columns( map { \$bravoRec{$_} } @{$fields} );
 
 	$bravoSth->execute( $customerId, $name, $customerId, $name, $customerId, $name, $customerId, $name,
-		$customerId, $name, $customerId, $name );
+		$customerId, $name, $customerId, $name, $customerId, $name );
 	while ( $bravoSth->fetchrow_arrayref ) {
 
 		###Only want rows with valid software line item
-		next unless defined $bravoRec{softwareId};
+		###next unless defined $bravoRec{softwareId};
 
 
 		###Get the key
@@ -235,9 +279,25 @@ sub executeHchk {
 
 		###Compare to staging data
 		if ( defined $stagingInstalledSoftware{$key} ) {
-
-			###Set the found flag
+           
+           if (  $bravoRec{itType} ne 'ORPHAN' ){
+           	###Set the found flag
 			$stagingInstalledSoftware{$key}->{found} = 1;
+           }
+           else {           my $lparKey    = $customerId . '|' . $bravoRec{name};
+           	                print LOG " Orphan,Inactive $bravoRec{id} \n ";
+                        	my $StaingSWLpar = new Staging::OM::SoftwareLpar();
+                        	$StaingSWLpar->id($stagingSoftwareLpars{$lparKey}->{slId});
+                        	$StaingSWLpar->getById($stagingConnection);
+                        	my $isOrphanLpar = isOrphanLparById( $stagingConnection, $StaingSWLpar->id );
+                          	if ($isOrphanLpar == 0 and defined $StaingSWLpar){
+                        		print LOG " Orpahn Delete " . $StaingSWLpar->id . "\n ";
+                        	$StaingSWLpar->action('DELETE');
+                        	$StaingSWLpar->save($stagingConnection); 
+                        	}
+                        	inactiveOrphanSwLpar($bravoConnection,$bravoRec{id});
+           }
+			
 		}
 		else {
   
@@ -255,7 +315,7 @@ sub executeHchk {
 				$StagingLparStatus = 'EXIST';
 				if (
 					defined $stagingSoftwareLpars{$lparKey}
-					->{ $bravoRec{bankAccountId} } and defined $stagingSoftwareLpars{$lparKey}
+					->{ $bravoRec{bankAccountId} } and  $stagingSoftwareLpars{$lparKey}
 					->{ $bravoRec{bankAccountId} }->{scanRecordId} ne '' )
 				{
 					$baStatus   = 'EXIST';
@@ -338,6 +398,9 @@ sub executeHchk {
                         	if ($bravoRec{itType} eq 'MANUAL'){$bravoRec{bankAccountId} = 5 ;}
                            BRAVO::Delegate::BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
                                $bravoConnection, $bravoRec{id}, $bravoRec{bankAccountId}); 
+                            if ($bravoRec{itType} eq 'ORPHAN'){
+                            	inactiveOrphanSwLpar($bravoConnection,$bravoRec{id});
+                            }
                         }elsif ($StagingLparStatus eq 'EXIST' and $baStatus eq 'NO' ) {
                         	print LOG " EXIST|NO,Inactive $bravoRec{id} \n ";
                         	if ($bravoRec{itType} eq 'MANUAL'){$bravoRec{bankAccountId} = 5 ;}
@@ -350,8 +413,13 @@ sub executeHchk {
                         	$StaingSWLpar->action('DELETE');
                         	$StaingSWLpar->save($stagingConnection); 
                         	}
-                        	BRAVO::Delegate::BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
+                        	if (defined $bravoRec{bankAccountId} and $bravoRec{bankAccountId} ne '' ){
+                        		BRAVO::Delegate::BRAVODelegate->inactivateInstalledSoftwaresBySoftwareLparIdAndBankAccountId(
                                $bravoConnection, $bravoRec{id}, $bravoRec{bankAccountId});
+                        	} elsif ( $bravoRec{itType} eq 'ORPHAN'){
+                        		inactiveOrphanSwLpar($bravoConnection,$bravoRec{id});
+                        	}
+                        	
                         }
 		}
 	}
@@ -454,6 +522,21 @@ sub executeHchk {
                 }            
 	}
 }
+
+sub inactiveOrphanSwLpar{
+	   my ( $connection, $swlparId) = @_;
+	    ###Get software lpar object.
+        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+        $softwareLpar->id( $swlparId );
+        $softwareLpar->getById($connection);
+         ###Set sw lpar to inactive.
+            $softwareLpar->status('INACTIVE');
+            $softwareLpar->save($connection);
+            ###Call the recon engine for the sw lpar object.
+            my $queue = Recon::Queue->new( $connection, $softwareLpar );
+            $queue->add;
+}
+
 sub getScanRecordCountByKey {
 	my ( $connection, $lparkey, $bankAccountIds) = @_;
     my %rec;
@@ -676,6 +759,30 @@ sub queryStagingSoftwareDataByCustomerId {
             left outer join software_dorana d on d.scan_record_id = c.id
             where a.customer_id = ?
             and a.name = ?
+         union 
+            select
+             a.id
+            ,a.name
+            ,a.scan_time
+            ,a.status
+            ,a.action
+            ,c.id
+            ,CHAR(c.bank_account_id)
+            ,c.scan_time
+            ,c.action
+            ,d.id
+            ,CHAR(d.software_id)
+            ,\'ORPHAN\'
+            ,0
+            ,d.action
+        from software_lpar a
+            left outer join software_lpar_map b on b.software_lpar_id = a.id
+            left outer join scan_record c on c.id = b.scan_record_id
+            left outer join software_manual d on d.scan_record_id = c.id
+            where a.customer_id = ?
+            and a.name = ?
+            and a.action =\'COMPLETE\'
+            and not exists (select 1 from software_lpar_map slmc where slmc.software_lpar_id=a.id )
         with ur
     ';
 	return ( 'stagingSoftwareDataByCustomerId', $query, \@fields );
@@ -746,7 +853,7 @@ sub queryBravoSoftwareDataByCustomerId {
         	,CHAR(it.bank_account_id)
         from software_lpar sl
         	join installed_software is on is.software_lpar_id = sl.id
-        	join installed_sa_product it on it.installed_software_id = is.id
+            join installed_sa_product it on it.installed_software_id = is.id
         	where sl.customer_id = ?
                 and sl.name = ?
         	and sl.status = \'ACTIVE\'
@@ -764,9 +871,9 @@ sub queryBravoSoftwareDataByCustomerId {
         	,it.USE_COUNT
         	,CHAR(it.bank_account_id)
         from software_lpar sl
-        	join installed_software is on is.software_lpar_id = sl.id
-        	join installed_tadz it on it.installed_software_id = is.id
-        	join kb_definition kb on it.mainframe_feature_id=kb.id
+        	 join installed_software is on is.software_lpar_id = sl.id
+        	 join installed_tadz it on it.installed_software_id = is.id
+             join kb_definition kb on it.mainframe_feature_id=kb.id
         	where sl.customer_id = ?
                 and sl.name = ?
         	and sl.status = \'ACTIVE\'
@@ -813,6 +920,26 @@ sub queryBravoSoftwareDataByCustomerId {
 	        and not exists (select 1 from installed_sa_product it where it.installed_software_id = is.id)
 	        and not exists (select 1 from installed_dorana_product it where it.installed_software_id = is.id)
 	        and not exists (select 1 from installed_tadz it where it.installed_software_id = is.id)
+	    union 
+	    select distinct
+                sl.id
+        	,sl.name
+        	,\'\' 
+        	,0
+        	,\'\' 
+        	,\'1970-01-01 00:00:00.000000\'
+        	,\'\'
+        	,\'ORPHAN\'
+        	,0
+        	,\'\'
+        from software_lpar sl
+	        join installed_software is on is.software_lpar_id = sl.id
+	        where sl.customer_id = ?
+                and sl.name = ?
+        	and sl.status = \'ACTIVE\'
+	        and is.status = \'INACTIVE\' 
+	        and not exists (select 1 from installed_software isc where isc.status=\'ACTIVE\' and isc.software_lpar_id=sl.id )
+	        group by sl.id,sl.name
 	    with ur
     ';
 	return ( 'bravoSoftwareDataByCustomerId', $query, \@fields );
