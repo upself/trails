@@ -115,6 +115,14 @@ sub logic {
             }
         }
         
+        
+        if( $self->stagingHardwareLpar->action eq 'DELETE'  && 
+            ($self->bravoHardwareLpar->status ne 'INACTIVE' || $self->bravoHardwareLpar->lparStatus ne 'INACTIVE')){
+           $self->bravoHardwareLpar->status('INACTIVE');
+           $self->bravoHardwareLpar->lparStatus('INACTIVE');
+           $self->saveBravoHardwareLpar(1);
+        } 
+        
     }
     else {
         dlog('new hw lpar from staging');
