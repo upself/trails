@@ -12,22 +12,22 @@ use Text::CSV_XS;
 ###TODO need to take into account processor counts for bank accounts other than tcm
 
 sub getScanRecordData {
-    my ( $self, $connection, $bankAccount, $delta, $mapService ) = @_;
+    my ( $self, $connection, $bankAccount, $delta ) = @_;
 
     dlog('In the getScanRecordData method');
 
     if ( $bankAccount->connectionType eq 'CONNECTED' ) {
-        return $self->getConnectedScanRecordData( $connection, $bankAccount, $delta, $mapService );
+        return $self->getConnectedScanRecordData( $connection, $bankAccount, $delta );
     }
     elsif ( $bankAccount->connectionType eq 'DISCONNECTED' ) {
-        return $self->getDisconnectedScanRecordData( $bankAccount, $delta, $mapService );
+        return $self->getDisconnectedScanRecordData( $bankAccount, $delta );
     }
 
     die('This is neither a connected or disconnected bank account');
 }
 
 sub getDisconnectedScanRecordData {
-    my ( $self, $bankAccount, $delta, $mapService ) = @_;
+    my ( $self, $bankAccount, $delta ) = @_;
 
     dlog('in the getDisconnectedScanRecordData method');
 
@@ -121,7 +121,7 @@ sub getDisconnectedScanRecordData {
             $rec{users}          = 0;
             $rec{authenticated}  = 2;
 
-            my $sr = $self->buildScanRecord( \%rec, $bankAccount, $mapService );
+            my $sr = $self->buildScanRecord( \%rec, $bankAccount );
             next if ( !defined $sr );
 
             ###Add the scan record to the list
@@ -272,7 +272,7 @@ sub getCustomerId {
 }
 
 sub getConnectedScanRecordData {
-    my ( $self, $connection, $bankAccount, $delta, $mapService ) = @_;
+    my ( $self, $connection, $bankAccount, $delta ) = @_;
 
     my $max;
 
@@ -396,7 +396,7 @@ sub getConnectedScanRecordData {
     my %scanList;
     dlog('looping through query results');
     while ( $sth->fetchrow_arrayref ) {
-        my $sr = $self->buildScanRecord( \%rec, $bankAccount, $mapService );
+        my $sr = $self->buildScanRecord( \%rec, $bankAccount );
         next if ( !defined $sr );
 
         ###Add the hardware to the list
@@ -413,7 +413,7 @@ sub getConnectedScanRecordData {
 }
 
 sub buildScanRecord {
-    my ( $self, $rec, $bankAccount, $mapService ) = @_;
+    my ( $self, $rec, $bankAccount ) = @_;
 
     cleanValues($rec);
     upperValues($rec);
@@ -685,7 +685,7 @@ sub buildScanRecord {
     $scanRecord->caseSerial( $rec->{caseSerial} );
     $scanRecord->caseAssetTag( $rec->{caseAssetTag} );
     $scanRecord->powerOnPassword( $rec->{powerOnPassword} );
-    $scanRecord->customerId($self->getCustomerId($scanRecord,$mapService));
+  #  $scanRecord->customerId($self->getCustomerId($scanRecord,$mapService));
 
     dlog( $scanRecord->toString );
 
