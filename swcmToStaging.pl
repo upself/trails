@@ -7,11 +7,12 @@ use Base::Utils;
 use Staging::SWCMLoader;
 use Base::ConfigManager;
 use Tap::NewPerl; 
+use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 ###Globals
 my $logfile       = "/var/staging/logs/swcmToStaging/swcmToStaging.log";
 my $pidFile       = "/tmp/swcmToStaging.pid";
-my $configFile          = "/opt/staging/v2/config/swcmToStagingConfig.txt";
+my $configFile    = "/opt/staging/v2/config/swcmToStagingConfig.txt";
 
 ###Initialize properties
 my $cfgMgr =  Base::ConfigManager->instance($configFile);
@@ -50,12 +51,24 @@ logging_level($cfgMgr->debugLevel);
 ###Set the logfile
 logfile($logfile);
 
+my $eventTypeName = 'SWCMTOSTAGING_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+
 ###Wrap everything in an eval so we can capture in logfile.
 eval {
 	###Execute loader once, and then continue to execute
 	###based on existance of pid file.
 	$| = 1;
 	my $loader;
+
+    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+	###Notify Event Engine that we are starting.
+    dlog("eventTypeName=$eventTypeName");
+    ilog("starting $eventTypeName event status");
+    $eventObject = EventLoaderDelegate->start($eventTypeName);
+    ilog("started $eventTypeName event status");
+  	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+
 	while (1) {
 
 		###Load hardware and hardware lpar data
@@ -74,6 +87,22 @@ eval {
 if ($@) {
 	elog($@);
 	die $@;
+
+    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+	###Notify the Event Engine that we had an error
+    ilog("erroring $eventTypeName event status");
+    EventLoaderDelegate->error($eventObject,$eventTypeName);
+    ilog("errored $eventTypeName event status");
+	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+}
+else {
+
+    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+    ###Notify the Event Engine that we are stopping
+    ilog("stopping $eventTypeName event status");
+	EventLoaderDelegate->stop($eventObject,$eventTypeName);
+    ilog("stopped $eventTypeName event status");
+	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 }
 
 exit 0;
