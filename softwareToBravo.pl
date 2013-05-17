@@ -31,9 +31,9 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision 164";
+my $rNo                = "revision184";
 my $children           =0;
-my $maxChildren        = 100;
+my $maxChildren        = 135;
 my %runningCustomerIds = ();
 my %children           = ();
 
