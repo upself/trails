@@ -368,12 +368,6 @@ sub process{
         ###Trigger event logic
         eventLogging();
         
-		#For testing purpose start
-		if($loopIndex==3){
-		  last;
-		}
-        #For testing purpose end
-        
 		sleep $sleepPeriod;
     }
 }
@@ -643,15 +637,15 @@ sub eventRuleCheck{
 			     }
 			 }
 			 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
-			 elsif(($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $ATPTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "ATPTOSTAGING_START_STOP_SCRIPT"
+			 elsif((($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $ATPTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "ATPTOSTAGING_START_STOP_SCRIPT"
                  ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $SWCMTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "SWCMTOSTAGING_START_STOP_SCRIPT"
 	             ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $MOVEMAINFRAME_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "MOVEMAINFRAME_START_STOP_SCRIPT"
 				 ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $BRAVOREPORTFORK_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "BRAVOREPORTFORK_START_STOP_SCRIPT"
                  ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $STAGINGMOVE_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "STAGINGMOVE_START_STOP_SCRIPT"
-	         ){
+	            )&&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                   my $getEventDataConvertedSQL = $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL;
 				  my $eventRecordCnt = 0;#set 0 as the initial value for Event Record Count
-                  my $serverMode = $metaRuleParameter1;#server mode - for example: TAP
+                  my $ruleServerMode = $metaRuleParameter1;#server mode - for example: TAP
 				  my $loaderCronNumber = $metaRuleParameter2;#loader cron number - for example: 48(Hours)
 				  my $ruleTitle = $metaRuleTitle;#rule title - for example: Loader Running Status on @1 Server
 				  my $loaderNotStartedMessage = $metaRuleParameter3;#loader not started message - for example: Loader @2 did not start as setup in cron for every @3 hours. Last start at @4 Last stop at @5.
@@ -705,7 +699,7 @@ sub eventRuleCheck{
                       
 					  if($eventDataAllCnt!=0){#trigger event rule check only if the loader has been ran before
 						  $processedRuleTitle = $ruleTitle;
-						  $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+						  $processedRuleTitle =~ s/\@1/$ruleServerMode/g;#replace @1 with server mode value - for example: TAP
 					      push @startAndStopScriptsEmailAlertArray,"$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into start and stop scripts email alert array
 					      print LOG "$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
                       
@@ -763,7 +757,7 @@ sub eventRuleCheck{
 				  else{#$eventRecordCnt > 0 case
 				     if($loaderErrorFlag){#support loader error run case
 					    $processedRuleTitle = $ruleTitle;
-						$processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+						$processedRuleTitle =~ s/\@1/$ruleServerMode/g;#replace @1 with server mode value - for example: TAP
 					    push @startAndStopScriptsEmailAlertArray,"$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into start and stop scripts email alert array
 					    print LOG "$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
 
@@ -1027,9 +1021,9 @@ sub setDBConnInfo{
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
 
-	   $staging_db_url      = "";
-       $staging_db_userid   = "";
-       $staging_db_password = ""
+	   $staging_db_url      = "dbi:DB2:STAGING";
+       $staging_db_userid   = "eaadmin";
+       $staging_db_password = "apr03db2"
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
 	   $trails_db_url      = "dbi:DB2:TRAILSPD";
@@ -1045,9 +1039,9 @@ sub setDBConnInfo{
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
 
-	   $staging_db_url      = "";
-       $staging_db_userid   = "";
-       $staging_db_password = ""
+	   $staging_db_url      = "dbi:DB2:STAGINGR";
+       $staging_db_userid   = "eaadmin";
+       $staging_db_password = "apr03db2"
 	}
 	elsif($SERVER_MODE eq $TAPMF){#TAPMF Server
 	   #TBD
