@@ -33,6 +33,8 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 	private final String REPORT_NAME_ALERT_HARDWARE_LPAR = "alertHardwareLpar";
 
 	private final String REPORT_NAME_ALERT_SOFTWARE_LPAR = "alertSoftwareLpar";
+	
+	private final String REPORT_NAME_ACCOUNT_DATA_EXCEPTIONS = "accountDataExceptions";
 
 	private final String REPORT_NAME_ALERT_UNLICENSED_IBM_SW =
 			"alertUnlicensedIbmSw";
@@ -204,7 +206,10 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_SOFTWARE_LPAR)) {
 			return new AlertSoftwareLparReport(pReportService,
 					pServletOutputStream);
-		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_IBM_SW)) {
+		} else if (psName.equalsIgnoreCase(REPORT_NAME_ACCOUNT_DATA_EXCEPTIONS)) {
+			return new AccountDataExceptionsReport(pReportService,
+					pServletOutputStream);
+		}  else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_IBM_SW)) {
 			return new AlertUnlicensedIbmSwReport(pReportService,
 					pServletOutputStream);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_ISV_SW)) {

@@ -39,8 +39,12 @@ public class ReportServiceImpl implements ReportService {
     private final String[] ALERT_SW_LPAR_REPORT_COLUMN_HEADERS = { "Status",
             "Hostname", "Bios serial", "Create date/time", "Age", "Assignee",
             "Assignee comments", "Assigned date/time" };
+    private final String ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME = "Account Data Exceptions report";
     private final String ALERT_UNLICENSED_IBM_SW_REPORT_NAME = "Unlicensed IBM SW alert report";
     private final String ALERT_UNLICENSED_ISV_SW_REPORT_NAME = "Unlicensed ISV SW alert report";
+    private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_COLUMN_HEADERS = {
+             "DATA EXCEPTION TYPE", "HOST NAME","SCAN TIME","CREATION TIME","BIOS SERIAL","OS NAME","ASSIGNEE","COMMENT"
+             };
     private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
             "Status", "Installed SW product name", "Number of instances",
             "Create date/time", "Age" };
@@ -111,6 +115,7 @@ public class ReportServiceImpl implements ReportService {
     private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
     private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id ORDER BY SL.Name ASC";
     private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SI.Name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Item SI, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = SI.Id GROUP BY SI.Name) AS TEMP ORDER BY Software_Item_Name ASC";
+    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTIONS_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId";
     private final String WORKSTATION_ACCOUNTS_REPORT_NAME = "Workstation accounts with non-workstations report";
     private final String[] WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
             "Account #", "Account name", "Account type", "Geography", "Region",
@@ -206,6 +211,23 @@ public class ReportServiceImpl implements ReportService {
         lsrReport.close();
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public void getAccountDataExceptionsReport(Account pAccount,
+            PrintWriter pPrintWriter) throws HibernateException, Exception {
+        ScrollableResults lsrReport = ((Session) getEntityManager()
+                .getDelegate()).createSQLQuery(SQL_QUERY_ACCOUNT_DATAEXCEPTIONS_Report)
+                .setLong("open", 1)
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+
+        printHeader(ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME, pAccount.getAccount(),
+        		ACCOUNT_DATA_EXCEPTIONS_REPORT_COLUMN_HEADERS, pPrintWriter);
+        while (lsrReport.next()) {
+            pPrintWriter.println(outputData(lsrReport.get()));
+        }
+        lsrReport.close();
+    }
+    
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertUnlicensedIbmSwReport(Account pAccount,
             PrintWriter pPrintWriter) throws HibernateException, Exception {
