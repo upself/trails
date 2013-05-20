@@ -69,6 +69,8 @@ my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $bravoConnection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $customerIds;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 ###############################################################################
 ### Basic Checks
@@ -107,11 +109,13 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 	logit("starting $eventTypeName event status", $logFile);
     $eventObject = EventLoaderDelegate->start($eventTypeName);
     logit("started $eventTypeName event status", $logFile);
+
+	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
-my $bravoConnection = getConnection('traherp', $trailsSqlFile);
+   $bravoConnection = getConnection('traherp', $trailsSqlFile);#Define $bravoConnection var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
-my $customerIds = getDistinctBravoCustomerIds();
+   $customerIds = getDistinctBravoCustomerIds();#Define $customerIds var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 $bravoConnection->disconnect;
 
@@ -134,25 +138,23 @@ while ($children != 0) {
 
 };#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
+#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 if ($@) {
-    die $@;
-
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 	###Notify the Event Engine that we had an error
 	logit("erroring $eventTypeName event status", $logFile);
     EventLoaderDelegate->error($eventObject,$eventTypeName);
 	logit("errored $eventTypeName event status", $logFile);
-	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+
+    die $@;
 }
 else {
 
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
     ###Notify the Event Engine that we are stopping
 	logit("stopping $eventTypeName event status", $logFile);
 	EventLoaderDelegate->stop($eventObject,$eventTypeName);
 	logit("stopped $eventTypeName event status", $logFile);
-	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 }
+#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 
 # End of Program
 exit 0;
@@ -228,6 +230,14 @@ sub getConnection {
         pageit('stagingImport.pl' . $@);
         $connection->disconnect;
         $bravoConnection->disconnect if (defined $bravoConnection);
+
+        #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start 
+        ###Notify the Event Engine that we had an error
+	    logit("erroring $eventTypeName event status", $logFile);
+        EventLoaderDelegate->error($eventObject,$eventTypeName);
+	    logit("errored $eventTypeName event status", $logFile);
+		#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+
         die;
     }
     logit("$database connection acquired", $logFile);

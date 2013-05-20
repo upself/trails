@@ -67,6 +67,8 @@ eval {
     ilog("starting $eventTypeName event status");
     $eventObject = EventLoaderDelegate->start($eventTypeName);
     ilog("started $eventTypeName event status");
+
+	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
     #Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
     while (1) {
@@ -86,15 +88,16 @@ eval {
     }
 };
 if ($@) {
-    elog($@);
-    die $@;
-
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+    
+	#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 	###Notify the Event Engine that we had an error
     ilog("erroring $eventTypeName event status");
 	EventLoaderDelegate->error($eventObject,$eventTypeName);
     ilog("errored $eventTypeName event status");
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+
+    elog($@);
+    die $@;   
 }
 else {
 

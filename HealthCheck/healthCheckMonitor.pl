@@ -653,6 +653,7 @@ sub eventRuleCheck{
 				  my $loaderFailedMessage = $metaRuleParameter5;#loader failed message - for example: Loader @2 ran failed at @3.
 				  my $loaderFailedHandlingInstructionCode = $metaRuleParameter6;#loader failed handling instruction code - for example: E-TBS-ATS-002 
                   my $loaderName = $metaRuleParameter7;#loader name - for example: atpToStaging.pl
+				  my $loaderAlwaysRunFailesMessage = $metaRuleParameter8;#loader always run failes message - for example: Loader @2 always runs failed. There is no successful run record which has been found for it.
 
                   my $processedRuleTitle;#var used to store processed rule title
 				  my $processedRuleMessage;#var used to store processed rule message
@@ -740,13 +741,19 @@ sub eventRuleCheck{
 							 }
                           }#end while(my @eventRow = $getEventAllData->fetchrow_array())
 						  $getEventAllData->finish;
+                          
+						  if($startTimeForTheLastSuccessRunFindFlag && $endTimeForTheLastSuccessRunFindFlag){#support the last successfully ran record has been found case
+							 $processedRuleMessage = $loaderNotStartedMessage;
+                             $processedRuleMessage =~ s/\@2/$loaderName/g;#replace @2 with loader name - for example: atpToStaging.pl
+                             $processedRuleMessage =~ s/\@3/$loaderCronNumber/g;#replace @3 with loader cron number - for example: 48(Hours)
+                             $processedRuleMessage =~ s/\@4/$startTimeForTheLastSuccessRun/g;#replace @4 with loader last successfully run start time - for example: 2013-05-10-04.29.38.000000
+						     $processedRuleMessage =~ s/\@5/$endTimeForTheLastSuccessRun/g;#replace @5 with loader last successfully run end time - for example: 2013-05-10-04.31.08.000000
+                          }
+						  else{#support the last successfully ran record has not been found case
+						     $processedRuleMessage = $loaderAlwaysRunFailesMessage;
+                             $processedRuleMessage =~ s/\@2/$loaderName/g;#replace @2 with loader name - for example: atpToStaging.pl
+						  }
 
-                          $processedRuleMessage = $loaderNotStartedMessage;
-                          $processedRuleMessage =~ s/\@2/$loaderName/g;#replace @2 with loader name - for example: atpToStaging.pl
-                          $processedRuleMessage =~ s/\@3/$loaderCronNumber/g;#replace @3 with loader cron number - for example: 48(Hours)
-                          $processedRuleMessage =~ s/\@4/$startTimeForTheLastSuccessRun/g;#replace @4 with loader last successfully run start time - for example: 2013-05-10-04.29.38.000000
-						  $processedRuleMessage =~ s/\@5/$endTimeForTheLastSuccessRun/g;#replace @5 with loader last successfully run end time - for example: 2013-05-10-04.31.08.000000
-                    
 					      push @startAndStopScriptsEmailAlertArray,"$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n\n";#append event rule message into start and stop scripts email alert array
 					      print LOG "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
 

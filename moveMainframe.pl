@@ -18,6 +18,8 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
     $eventObject = EventLoaderDelegate->start($eventTypeName);
     #ilog("started $eventTypeName event status");
     #print "started $eventTypeName event status\n";
+
+	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
 	# Main
@@ -48,15 +50,15 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 if ($@) {
-    #elog($@);
-    die $@;
-
-	###Notify the Event Engine that we had an error
+    ###Notify the Event Engine that we had an error
     #ilog("erroring $eventTypeName event status");
 	#print "erroring $eventTypeName event status\n";
     EventLoaderDelegate->error($eventObject,$eventTypeName);
     #ilog("errored $eventTypeName event status");
 	#print "errored $eventTypeName event status\n";
+	
+	#elog($@);
+    die $@;
 }
 else {
 

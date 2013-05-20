@@ -267,6 +267,8 @@ Log::Log4perl->easy_init(
     INFO "starting $eventTypeName event status";
     $eventObject = EventLoaderDelegate->start($eventTypeName);
     INFO "started $eventTypeName event status";
+
+    sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
     #Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
 INFO 'Beginning run!';
@@ -467,12 +469,13 @@ INFO '===> Finished!';
 
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 if ($@) {
-    die $@;
-
+    
     ###Notify the Event Engine that we had an error
     INFO "erroring $eventTypeName event status";
     EventLoaderDelegate->error($eventObject,$eventTypeName);
     INFO "errored $eventTypeName event status";   
+
+    die $@;
 }
 else {
 
