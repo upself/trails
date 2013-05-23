@@ -31,14 +31,14 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision184";
+my $rNo                = "revision185";
 my $children           =0;
 my $maxChildren        = 135;
 my %runningCustomerIds = ();
 my %children           = ();
 
 my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 6 );
+my @customerIds = getStagingQueue( $connection, 5 );
 $connection->disconnect;
 
 daemonize();
@@ -55,7 +55,7 @@ sub spawnChildren {
   if ( isCustomerRunning( $customerId, $date ) == 1 ) {
    next;
   }
-  newChild( $customerId, $date, 6 );
+  newChild( $customerId, $date, 0 );
   if ( scalar @customerIds == 0 ) {
    last;
   }
@@ -64,7 +64,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 0;
+ my $count = 5;
  while (1) {
   if ( scalar @customerIds == 0 ) {
    my $connection = Database::Connection->new('staging');
@@ -72,15 +72,9 @@ sub keepTicking {
    $connection->disconnect;
   }
   if ( $children >= $maxChildren ) {
-
-   my $connection = Database::Connection->new('staging');
-   @customerIds = getStagingQueue( $connection, $count );
-   $connection->disconnect;
-
    wlog("$rNo sleeping");
    sleep;
    wlog("$rNo done sleeping");
-   
   }
   for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
    dlog("$rNo running $i");
@@ -634,4 +628,3 @@ sub querySoftwareLparsByCustomerIdByDate {
     ';
  return ( 'softwareLparsByCustomerIdByDate', $query, \@fields );
 }
-
