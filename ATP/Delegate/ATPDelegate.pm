@@ -166,24 +166,24 @@ sub getData {
         $hardware->model( $rec{model} );
         $hardware->classification( $rec{classification} );
         $hardware->chips( $rec{chips} );
-        # $hardware->processorType( $rec{processorType} );
+        $hardware->processorType( $rec{processorType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
         dlog( $hardware->toString );
 
         ###Add substr to cut down processorType
-        my $temProcessorType = $rec{processorType};
-        my $temSerialNumber = $rec{serial};
-        my $string_length = length( $temProcessorType);
-        if ( $string_length > 16 ) {
-                elog("ProcessorType $temProcessorType ,serialNumber $temSerialNumber is longer than 16, cut it off !");
-                my $newProcessorType =  substr $temProcessorType, 0, 16 ;
-                elog("newProcessorType $newProcessorType ");
-                $hardware->processorType( $newProcessorType );
-        }
-        else {
-                $hardware->processorType( $rec{processorType} );
-        }
+#        my $temProcessorType = $rec{processorType};
+#        my $temSerialNumber = $rec{serial};
+#        my $string_length = length( $temProcessorType);
+#        if ( $string_length > 16 ) {
+#                elog("ProcessorType $temProcessorType ,serialNumber $temSerialNumber is longer than 16, cut it off !");
+#                my $newProcessorType =  substr $temProcessorType, 0, 16 ;
+#                elog("newProcessorType $newProcessorType ");
+#                $hardware->processorType( $newProcessorType );
+#        }
+#        else {
+#                $hardware->processorType( $rec{processorType} );
+#        }
 
 
         
