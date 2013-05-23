@@ -31,14 +31,14 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision185";
+my $rNo                = "revision187";
 my $children           =0;
 my $maxChildren        = 135;
 my %runningCustomerIds = ();
 my %children           = ();
 
 my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 5 );
+my @customerIds = getStagingQueue( $connection, 0 );
 $connection->disconnect;
 
 daemonize();
