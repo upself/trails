@@ -26,6 +26,11 @@
 # 2013-05-13  Liu Hai(Larry) 1.2.3           HealthCheck and Monitor Module - Phase 2B: Optimize HealthCheck Monitor Module Logic Code to refer Event object
 #                                                                                       Go on implementing phase 2B Event Rule Check Business Logic
 # 2013-05-16  Liu Hai(Larry) 1.2.4           HealthCheck and Monitor Module - Phase 2B: Optimize Event ALL Data Query SQL to get the first 100 row records from all row records
+###################################################################################################################################################################################################
+#                                            Phase 3 Development Formal Tag: 'Added by Larry for HealthCheck And Monitor Module - Phase 3'
+# 2013-05-20  Liu Hai(Larry) 1.3.0           HealthCheck and Monitor Module - Phase 3: File System Threshold Monitoring
+# 2013-05-23  Liu Hai(Larry) 1.3.1           HealthCheck and Monitor Module - Phase 3: Add Bravo/Trails Server Mode Support
+# 2013-05-24  Liu Hai(Larry) 1.3.2           HealthCheck and Monitor Module - Phase 3: Add Alert Email Signature Feature Support
 # 
 
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
@@ -66,6 +71,10 @@ my $TAP          = "TAP";#TAP Server for toStaging Loaders
 my $TAP2         = "TAP2";#TAP2 Testing Server
 my $TAP3         = "TAP3";#TAP3 Server for toBravo Loaders
 my $TAPMF        = "TAPMF";#TAPMF Server
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+my $BRAVO        = "BRAVO";#BRAVO Server
+my $TRAILS       = "TRAILS";#TRAILS Server
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 my $SERVER_MODE  = $configServerMode;#Set Server Mode Value from configuration file
 
 #HealthCheck and Minitor Module Trigger Interval Time
@@ -188,6 +197,12 @@ my $MOVEMAINFRAME_START_STOP_SCRIPT         = "MOVEMAINFRAME_START_STOP_SCRIPT";
 my $BRAVOREPORTFORK_START_STOP_SCRIPT       = "BRAVOREPORTFORK_START_STOP_SCRIPT";#EVENT_TYPE_ID = 5
 my $STAGINGMOVE_START_STOP_SCRIPT           = "STAGINGMOVE_START_STOP_SCRIPT";#EVENT_TYPE_ID = 6
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+#File System Monitoring - Event Group Name
+my $FILE_SYSTEM_MONITORING                  = "FILE_SYSTEM_MONITORING";#EVENT_GROUP_ID = 2
+#File System Monitoring - its children Event Type Name
+my $FILE_SYSTEM_THRESHOLD_MONITORING        = "FILE_SYSTEM_THRESHOLD_MONITORING";#EVENT_TYPE_ID = 7
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 
 #Event Group ID and its children Event IDs
 #Trails/Bravo Core Scripts
@@ -200,6 +215,11 @@ my $MOVEMAINFRAME_START_STOP_SCRIPT_EVENT_TYPE_ID    = 4;
 my $BRAVOREPORTFORK_START_STOP_SCRIPT_EVENT_TYPE_ID  = 5;
 my $STAGINGMOVE_START_STOP_SCRIPT_EVENT_TYPE_ID      = 6;
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+#File System Monitoring
+my $FILE_SYSTEM_MONITORING_EVENT_GROUP_ID          = 2;
+my $FILE_SYSTEM_THRESHOLD_MONITORING_EVENT_TYPE_ID   = 7;
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 
 #Continuous Run Scripts Special Check List
 my $CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt";#Added by Larry for HealthCheck And Monitor Module - Phase 2B
@@ -224,6 +244,18 @@ my $LOADER_STARTED_STATUS_CODE = "STARTED";
 my $LOADER_ERRORED_STATUS_CODE = "ERRORED";
 my $LOADER_STOPPED_STATUS_CODE = "STOPPED";
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+#File System Information Definition Indexes
+my $TOTAL_DISK_INDEX    = 1;
+my $USED_DISK_INDEX     = 2;
+my $FREE_DISK_INDEX     = 3;
+my $USED_DISK_PCT_INDEX = 4;
+my $FILE_SYSTEM_INDEX   = 5;
+#Event Trigger Rule File System Definition Indexes
+my $EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX = 0;
+my $EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX   = 1;
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
@@ -322,11 +354,12 @@ sub loadEventMetaData{
 
   $getEventMetaData->finish;
   #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","1","CONTINUOUS_RUN_SCRIPTS")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","2","ATPTOSTAGING_START_STOP_SCRIPT")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","3","SWCMTOSTAGING_START_STOP_SCRIPT")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","4","MOVEMAINFRAME_START_STOP_SCRIPT")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","5","BRAVOREPORTFORK_START_STOP_SCRIPT")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","6","STAGINGMOVE_START_STOP_SCRIPT")];
+  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","2","ATPTOSTAGING_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","3","SWCMTOSTAGING_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","4","MOVEMAINFRAME_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","5","BRAVOREPORTFORK_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","6","STAGINGMOVE_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+  #push @eventMetaRecords, [("2","FILE_SYSTEM_MONITORING","7","FILE_SYSTEM_THRESHOLD_MONITORING")];#Added by Larry for HealthCheck And Monitor Module - Phase 3
   #Comment out temp for phase 2a1 without DB table created end
 }
 
@@ -367,6 +400,12 @@ sub process{
      	$loopIndex++;
         ###Trigger event logic
         eventLogging();
+        
+		#For testing purpose start
+		if($loopIndex==3){
+		  last;
+		}
+        #For testing purpose end
         
 		sleep $sleepPeriod;
     }
@@ -410,6 +449,8 @@ sub eventLogging{
       
      #Send Out Alert Email
 	 if($emailFullContent ne ""){#Send email only email content has value
+		#Append Alert Email Signature Into Email Content
+        appendAlertEmailSignatureIntoEmailContent();#Added by Larry for HealthCheck And Monitor Module - Phase 3
         sendAlertEmail($emailSubjectInfo,$emailToAddressList,$emailCcAddressList,$emailFullContent);
      }
 
@@ -492,6 +533,13 @@ sub eventLogicProcess{
 	  eventRuleCheck($groupName,$eventName,0);
    }
    #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+   #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+   elsif($groupName eq $FILE_SYSTEM_MONITORING && $eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
+  	  #For Event Type "FILE_SYSTEM_THRESHOLD_MONITORING",the eventValue value is not needed.
+	  #So set 0 for eventValue var
+	  eventRuleCheck($groupName,$eventName,0);
+   }
+   #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
    #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
    #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
    #Add 'New Event Group' + 'New Event Type' business logic here
@@ -784,6 +832,106 @@ sub eventRuleCheck{
 				  }#end else #$eventRecordCnt > 0 case
           	 }
 			 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+			 #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+             elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
+         		 my $serverMode = $SERVER_MODE;#var used to store server mode - for example: 'TAP'
+				 my $monitorFileSystemList;#var used to store monitor file system list - for example: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%' 
+                 my @monitorFileSystemListArray;#array used to store monitor file system list array
+				 my $fileSystemDefinition;#var used to store one monitoring file system definition - for example: '/db2/cndb~95%'
+				 my @fileSystemDefinitionArray;#array used to store the parsed file system definition- for ecxample: '(/db2/cndb,95%)'
+				 my $fileSystem;#var used to store one monitoring file system - for example: '/db2/cndb'
+				 my $threshold;#var used to store one monitoring file system threshold - for example: '95%'
+                 my $usedPct;#var used to store the current used file system percentage - for example: 6%
+				 my @fileSystemEmailAlertMessageArray = ();#array used to store the file system email alert messages
+				 my $fileSystemEmailAlertMessageCount;#var used to store the count of the file system email alert messages
+
+				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Filespace monitoring on @1 Server'
+				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Filespace equal to or above @2 for @3 has been reached.'
+				 my $processedRuleHandlingInstructionCode;#var used to store processed rule handling instruction code - for example: 'E-FSM-FST-001'
+				 
+                 $processedRuleTitle = $metaRuleTitle;
+                 $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                 push @fileSystemEmailAlertMessageArray, "$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				 print LOG "The Processed Rule Title: {$processedRuleTitle}\n";
+
+                 $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                 push @fileSystemEmailAlertMessageArray, "$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				 print LOG "The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+			     if($serverMode eq $metaRuleParameter1){#TAP Server
+                    $monitorFileSystemList = $metaRuleParameter2;#Filesystem Monitor List: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%'
+				 }
+				 elsif($serverMode eq $metaRuleParameter3){#BRAVO Server
+                    $monitorFileSystemList = $metaRuleParameter4;#Filesystem Monitor List: '/opt/bravo~90%'/var/bravo~95%'/var/ftp/scan~90%'
+				 }
+                 elsif($serverMode eq $metaRuleParameter5){#TRAILS Server
+					$monitorFileSystemList = $metaRuleParameter6;#Filesystem Monitor List: '/opt/trails~90%'/var/trails~95%'
+				 }
+				 elsif($serverMode eq $metaRuleParameter7){#TAP3 Server
+                    $monitorFileSystemList = $metaRuleParameter8;#TBD for TAP3
+				 }
+                 elsif($serverMode eq $metaRuleParameter9){#TAP2 Server
+                    $monitorFileSystemList = $metaRuleParameter10;#TBD for TAP2
+				 }
+
+				 print LOG "File System Monitor Server Mode: {$serverMode}\n";
+                 print LOG "File System Monitor List: {$monitorFileSystemList}\n";
+                   
+				 @monitorFileSystemListArray = split(/\'/,$monitorFileSystemList);
+				 foreach $fileSystemDefinition (@monitorFileSystemListArray){#go loop for file system list array
+                   print LOG "File System Definition: {$fileSystemDefinition}\n";
+                   @fileSystemDefinitionArray = split(/\~/,$fileSystemDefinition);
+                   $fileSystem = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#file system - for example: '/db2/cndb'
+                   $fileSystem = trim($fileSystem);#Remove space chars
+				   print LOG "File System: {$fileSystem}\n";
+                   $threshold = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#file system monitoring threshold - for example: '95%'
+                   $threshold = trim($threshold);#Remove space chars
+                   print LOG "Threshold: {$threshold}\n";
+
+				   my $matchedFileSystem = `df -h|grep $fileSystem`;
+				   chomp $matchedFileSystem;#remove the return line char
+                   $matchedFileSystem = trim($matchedFileSystem);#Remove space chars
+				   if($matchedFileSystem ne ""){
+				      print LOG "Matched File System: {$matchedFileSystem} for File System: {$fileSystem}\n";
+					 
+					  #Sample Record: {12G  9.5G  1.7G  86% /db2/cndb}
+                      $usedPct = `df -h|grep $fileSystem|awk '{print \$$USED_DISK_PCT_INDEX;}'`;#$USED_DISK_PCT_INDEX = 4;
+                      chomp $usedPct;
+                      $usedPct = trim($usedPct);
+					  print LOG "The File System Used Percentage: {$usedPct} for File System: {$fileSystem}\n";
+
+					  if($usedPct ge $threshold){#if the current used file system percentage >= file system defined threshold value, then trigger the event rule alert message
+					     print LOG "The File System Used Percentage: {$usedPct} is great then or equal to the file system defined threshold value: {$threshold}\n";
+
+						 $processedRuleMessage = $metaRuleMessage;
+                         $processedRuleMessage =~ s/\@2/$usedPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
+                         $processedRuleMessage =~ s/\@3/$fileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
+                         $processedRuleMessage =~ s/\@4/$threshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%' 
+
+						 push @fileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
+                         print LOG "The Processed Rule Message: {$processedRuleMessage}\n";
+					  }
+				   }
+				   else{#the file system doesn't exist
+				     print LOG "File System: {$fileSystem} doesn't exist for $serverMode server.\n";
+				   }
+
+                 }
+				 
+				 #append file system email alert messages into the email content
+                 $fileSystemEmailAlertMessageCount = scalar(@fileSystemEmailAlertMessageArray);
+                 if($fileSystemEmailAlertMessageCount > 0){#append email content if has file system email alert message
+                    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                    foreach my $fileSystemEmailAlertMessage (@fileSystemEmailAlertMessageArray){#go loop for file system email alert message
+	                   $emailFullContent.="$fileSystemEmailAlertMessage";#append file system email alert message into email content
+                    }  
+	                $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+                 }
+
+                 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+                 print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+			 }
+             #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     
@@ -1060,6 +1208,26 @@ sub setDBConnInfo{
        $staging_db_userid   = "";
        $staging_db_password = ""
 	}
+	#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+	elsif($SERVER_MODE eq $BRAVO){#BRAVO Server
+       $trails_db_url      = "dbi:DB2:TRAILS";
+       $trails_db_userid   = "eaadmin";
+       $trails_db_password = "Green8ay";
+
+	   $staging_db_url      = "dbi:DB2:STAGING";
+       $staging_db_userid   = "eaadmin";
+       $staging_db_password = "apr03db2"
+    }
+	elsif($SERVER_MODE eq $TRAILS){#TRAILS Server
+       $trails_db_url      = "dbi:DB2:TRAILS";
+       $trails_db_userid   = "eaadmin";
+       $trails_db_password = "Green8ay";
+
+	   $staging_db_url      = "dbi:DB2:STAGING";
+       $staging_db_userid   = "eaadmin";
+       $staging_db_password = "apr03db2"
+    }
+	#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 }
 
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
@@ -1075,3 +1243,16 @@ sub appendStartAndStopScriptEmailAlertsIntoEmailContent{
    }
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+#This method is used to append alert email signature into the end of email content
+sub appendAlertEmailSignatureIntoEmailContent{
+   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+   $emailFullContent.="The following are some very useful Resource Links:\n";
+   $emailFullContent.="Error/Warning Event Instruction Codes Mapping List Wiki Link:\n";
+   $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Error%20or%20Warning%20Event%20Instruction%20Codes%20Mapping%20List\n\n";
+   $emailFullContent.="Filesystem Monitoring Threshold Definition List Wiki Link:\n";
+   $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Filesystem%20Monitoring\n\n";
+   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+}
+#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
