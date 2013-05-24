@@ -920,7 +920,7 @@ sub eventRuleCheck{
 				 
 				 #append file system email alert messages into the email content
                  $fileSystemEmailAlertMessageCount = scalar(@fileSystemEmailAlertMessageArray);
-                 if($fileSystemEmailAlertMessageCount > 0){#append email content if has file system email alert message
+                 if($fileSystemEmailAlertMessageCount > 2){#append email content if has file system email alert message. Please note that here the fileSystemEmailAlertMessageCount should > 2, not > 0, because of the event rule title and event rule handling instruction code have been added into this array already.
                     $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
                     foreach my $fileSystemEmailAlertMessage (@fileSystemEmailAlertMessageArray){#go loop for file system email alert message
 	                   $emailFullContent.="$fileSystemEmailAlertMessage";#append file system email alert message into email content
