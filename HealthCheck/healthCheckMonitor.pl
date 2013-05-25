@@ -401,12 +401,6 @@ sub process{
         ###Trigger event logic
         eventLogging();
         
-		#For testing purpose start
-		if($loopIndex==3){
-		  last;
-		}
-        #For testing purpose end
-        
 		sleep $sleepPeriod;
     }
 }
