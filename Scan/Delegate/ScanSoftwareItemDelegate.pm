@@ -95,7 +95,7 @@ sub queryScanSoftwareItemData {
 SELECT N.node_key
      , case when P.feature_guid is null then P.version_guid else P.feature_guid end
      , MAX(PU.PERIOD)       AS LASTUSED
-     , case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end   AS TOTAL
+     , bigint(case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end)   AS TOTAL
   FROM PRODUCT_INSTALL        AS PI
   JOIN PRODUCT                AS P  ON P.SW_KEY      = PI.SW_KEY
   JOIN SYSTEM                 AS S  ON S.SYSTEM_KEY  = PI.SYSTEM_KEY
