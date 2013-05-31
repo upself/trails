@@ -25,7 +25,7 @@ public interface ReportService {
 	void getAlertUnlicensedIbmSwReport(Account pAccount,
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 	
-	void getAccountDataExceptionsReport(Account pAccount,
+	void getAccountDataExceptionReport(Account pAccount, String pAlertCode,
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
 	void getAlertUnlicensedIsvSwReport(Account pAccount,

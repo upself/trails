@@ -54,7 +54,7 @@ public class ReportServiceImpl implements ReportService {
             "HW serial", "HW machine type", "Owner", "Country", "Asset type",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
-            "Effective processor count", "Installed SW product name",
+            "Effective processor count", "Installed SW product name", "SW Owner",
             "Alert assignee", "Alert assignee comment", "Inst SW manufacturer",
             "Inst SW validation status", "Reconciliation action",
             "Reconciliation user", "Reconciliation date/time",
@@ -115,7 +115,7 @@ public class ReportServiceImpl implements ReportService {
     private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
     private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id ORDER BY SL.Name ASC";
     private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SI.Name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Item SI, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = SI.Id GROUP BY SI.Name) AS TEMP ORDER BY Software_Item_Name ASC";
-    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTIONS_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId";
+    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
     private final String WORKSTATION_ACCOUNTS_REPORT_NAME = "Workstation accounts with non-workstations report";
     private final String[] WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
             "Account #", "Account name", "Account type", "Geography", "Region",
@@ -212,12 +212,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public void getAccountDataExceptionsReport(Account pAccount,
+    public void getAccountDataExceptionReport(Account pAccount, String pAlertCode,
             PrintWriter pPrintWriter) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
-                .getDelegate()).createSQLQuery(SQL_QUERY_ACCOUNT_DATAEXCEPTIONS_Report)
+                .getDelegate()).createSQLQuery(SQL_QUERY_ACCOUNT_DATAEXCEPTION_Report)
                 .setLong("open", 1)
                 .setLong("customerId", pAccount.getId())
+                .setString("alertCode", pAlertCode)
                 .scroll(ScrollMode.FORWARD_ONLY);
 
         printHeader(ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME, pAccount.getAccount(),
@@ -286,7 +287,7 @@ public class ReportServiceImpl implements ReportService {
             boolean pbIBMOwnedIBMManagedSearchChecked,
             boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
             throws HibernateException, Exception {
-        String lsBaseSelectAndFromClause = "select "
+        String lsBaseSelectClauseOne = "select "
                 + "CASE WHEN AUS.Open = 0 THEN 'Blue' "
                 + "WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 90 THEN 'Red' "
                 + "WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 45 THEN 'Yellow' "
@@ -308,7 +309,10 @@ public class ReportServiceImpl implements ReportService {
                 + ",h.chips as hwChips "
                 + ",case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount "
                 + ",instSi.name as instSwName "
-                + ",aus.remote_user as alertAssignee "
+                ;
+        String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
+        String lsBaseSelectClauseThree = ", '' as swOwner";
+        String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
                 + ",aus.comments as alertAssComments "
                 + ",instSwMan.name as instSwManName "
                 + ",dt.name as instSwDiscrepName "
@@ -331,7 +335,9 @@ public class ReportServiceImpl implements ReportService {
                 + ",l.po_number " + ",l.cpu_serial "
                 + ",case when l.ibm_owned = 0 then 'Customer' "
                 + "when l.ibm_owned = 1 then 'IBM' " + "else '' end "
-                + ",l.ext_src_id " + ",l.record_time " + "from  "
+                + ",l.ext_src_id " + ",l.record_time " 
+                ;
+        String lsBaseFromClause =  "from  "
                 + "eaadmin.software_lpar sl "
                 + "left outer join eaadmin.software_lpar_eff sle on "
                 + "sl.id = sle.software_lpar_id "
@@ -399,8 +405,8 @@ public class ReportServiceImpl implements ReportService {
             if (pbCustomerOwnedCustomerManagedSearchChecked
                     || pbCustomerOwnedIBMManagedSearchChecked
                     || pbIBMOwnedIBMManagedSearchChecked) {
-                lsbSql.append(lsBaseSelectAndFromClause)
-                        .append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id ")
+                lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseTwo+lsBaseSelectClauseFour + lsBaseFromClause)
+                        .append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
                         .append(lsBaseWhereClause);
 
                 if (pbCustomerOwnedCustomerManagedSearchChecked) {
@@ -427,13 +433,13 @@ public class ReportServiceImpl implements ReportService {
                                 : "");
             }
             if (pbTitlesNotSpecifiedInContractScopeSearchChecked) {
-                lsbSql.append(lsBaseSelectAndFromClause)
+                lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseThree +lsBaseSelectClauseFour+ lsBaseFromClause)
                         .append(" ")
                         .append(lsBaseWhereClause)
                         .append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.Software_Id = instSi.Id AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
             }
         } else {
-            lsbSql.append(lsBaseSelectAndFromClause).append(" ")
+            lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseThree+lsBaseSelectClauseFour + lsBaseFromClause).append(" ")
                     .append(lsBaseWhereClause).append(" ");
         }
         lsbSql.append("ORDER BY sl.name");
