@@ -34,7 +34,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 
 	private final String REPORT_NAME_ALERT_SOFTWARE_LPAR = "alertSoftwareLpar";
 	
-	private final String REPORT_NAME_ACCOUNT_DATA_EXCEPTIONS = "accountDataExceptions";
+	private final String REPORT_NAME_ACCOUNT_DATA_EXCEPTION = "accountDataException";
 
 	private final String REPORT_NAME_ALERT_UNLICENSED_IBM_SW =
 			"alertUnlicensedIbmSw";
@@ -81,6 +81,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 			HttpServletResponse pHttpServletResponse) throws ServletException,
 			IOException {
 		String lsName = this.getParameter(pHttpServletRequest, "name");
+		String lsCode = this.getParameter(pHttpServletRequest, "code");
 		UserSession lUserSession = ((UserSession) pHttpServletRequest.getSession()
 				.getAttribute("userSession"));
 
@@ -106,7 +107,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 						"filename=").append(lsName).append(
 						lAccount != null ? lAccount.getAccount().toString() : "").append(
 						".tsv").toString());
-				lReportBase = getReport(lsName, lReportService,
+				lReportBase = getReport(lsName, lsCode, lReportService,
 						pHttpServletResponse.getOutputStream(), pHttpServletRequest);
 
 				if (lReportBase != null) {
@@ -135,7 +136,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 		return lsParameter;
 	}
 
-	private ReportBase getReport(String psName, ReportService pReportService,
+	private ReportBase getReport(String psName, String psCode, ReportService pReportService,
 			ServletOutputStream pServletOutputStream,
 			HttpServletRequest pHttpServletRequest) throws Exception {
 		if (psName.equalsIgnoreCase(REPORT_NAME_FULL_RECONCILIATION)
@@ -206,8 +207,8 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_SOFTWARE_LPAR)) {
 			return new AlertSoftwareLparReport(pReportService,
 					pServletOutputStream);
-		} else if (psName.equalsIgnoreCase(REPORT_NAME_ACCOUNT_DATA_EXCEPTIONS)) {
-			return new AccountDataExceptionsReport(pReportService,
+		} else if (psName.equalsIgnoreCase(REPORT_NAME_ACCOUNT_DATA_EXCEPTION)) {
+			return new AccountDataExceptionsReport(pReportService, psCode,
 					pServletOutputStream);
 		}  else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_IBM_SW)) {
 			return new AlertUnlicensedIbmSwReport(pReportService,

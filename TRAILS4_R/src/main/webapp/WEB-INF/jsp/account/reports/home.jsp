@@ -1,4 +1,5 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="sx" uri="/struts-dojo-tags"%>
 
 <s:if test="hasErrors()">
 	<s:actionerror />
@@ -30,9 +31,6 @@
 	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.tsv?name=alertExpiredScan">Outdated SW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/accountDataExceptions<s:property value="%{#attr.account.account}" />.tsv?name=accountDataExceptions">Data Exceptions</a>
-</span>
-<span class="download-link">
 	<a href="/TRAILS/report/download/alertUnlicensedIbmSw<s:property value="%{#attr.account.account}" />.tsv?name=alertUnlicensedIbmSw">Unlicensed IBM SW alert</a>
 </span>
 <span class="download-link">
@@ -44,6 +42,15 @@
 <span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionSummary<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionSummary">Pending customer decision reconciled summary alert</a>
 </span>
+
+
+<h2 class="bar-blue-med-light">Data Exception Reports</h2><br />
+<sx:head />
+<s:url id="alertUrl" namespace="/account/alert" action="alertList"/>
+<div class="callout">
+<sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
+</sx:div>
+</div>
 
 <h2 class="bar-blue-med-light">Miscellaneous reports</h2><br />
 <span class="download-link">

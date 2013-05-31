@@ -12,15 +12,15 @@ import com.ibm.asset.trails.service.ReportService;
 
 public class AccountDataExceptionsReport extends ReportBase {
 
-	public AccountDataExceptionsReport(ReportService pReportService,
+	public AccountDataExceptionsReport(ReportService pReportService, String pCode,
 			OutputStream pOutputStream) {
-		super(pReportService, pOutputStream);
+		super(pReportService, pOutputStream, pCode);
 	}
 
 	@Override
 	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
 			throws HibernateException, Exception {
-		super.getReportService().getAccountDataExceptionsReport(pAccount,
+		super.getReportService().getAccountDataExceptionReport(pAccount, super.getAlertCode(),
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

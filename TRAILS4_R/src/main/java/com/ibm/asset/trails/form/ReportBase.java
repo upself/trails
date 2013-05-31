@@ -14,6 +14,8 @@ public abstract class ReportBase {
 	private ReportService reportService;
 
 	private OutputStream outputStream;
+	
+	private String alertCode;
 
 	private boolean customerOwnedCustomerManagedSearchChecked = false;
 
@@ -28,6 +30,14 @@ public abstract class ReportBase {
 
 		setReportService(pReportService);
 		setOutputStream(pOutputStream);
+	}
+	
+	public ReportBase(ReportService pReportService, OutputStream pOutputStream, String pAlertCode) {
+		super();
+
+		setReportService(pReportService);
+		setOutputStream(pOutputStream);
+		setAlertCode(pAlertCode);
 	}
 
 	public ReportBase(ReportService pReportService, OutputStream pOutputStream,
@@ -51,6 +61,10 @@ public abstract class ReportBase {
 	public OutputStream getOutputStream() {
 		return outputStream;
 	}
+	
+	public String getAlertCode() {
+		return alertCode;
+	}
 
 	public ReportService getReportService() {
 		return reportService;
@@ -62,6 +76,10 @@ public abstract class ReportBase {
 
 	public void setReportService(ReportService reportService) {
 		this.reportService = reportService;
+	}
+	
+	public void setAlertCode(String alertCode) {
+		this.alertCode = alertCode;
 	}
 
 	public boolean isCustomerOwnedCustomerManagedSearchChecked() {
