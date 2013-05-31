@@ -364,7 +364,7 @@ sub doDelta {
                     if ( $sr->action eq 'UPDATE' ) {
                         dlog('ScanRecord is marked as update');
 
-                        if ( $oldSl->action eq 'UPDATE' ) {
+                        if ( $oldSl->action eq 'UPDATE' ) { #NOTE Start of check invalid software_lpar_map #1
                             dlog('SoftwareLpar is marked as update');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -409,8 +409,8 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
-                        elsif ( $oldSl->action eq 'COMPLETE' ) {
+                        }  #NOTE end of invalid software_lpar_map block #1
+                        elsif ( $oldSl->action eq 'COMPLETE' ) { #NOTE start of invalid software_lpar_map block #2
                             dlog('SoftwareLpar is marked as complete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -692,9 +692,9 @@ sub doDelta {
                             else {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
-                            }
-                        }
-                        elsif ( $oldSl->action eq 'DELETE' ) {
+                            } 
+                        } #NOTE end of invalid software_lpar_map block #2
+                        elsif ( $oldSl->action eq 'DELETE' ) { #NOTE start of invalid software_lpar_map block #3
                             dlog('SoftwareLpar is marked as delete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -749,7 +749,7 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
+                        } #NOTE end of invalid software_lpar_map block #3
                         else {
                             elog('SoftwareLpar is invalid');
                             die 'SoftwareLpar is invalid';
@@ -758,7 +758,7 @@ sub doDelta {
                     elsif ( $sr->action eq 'COMPLETE' ) {
                         dlog('ScanRecord is marked as complete');
 
-                        if ( $oldSl->action eq 'UPDATE' ) {
+                        if ( $oldSl->action eq 'UPDATE' ) { #NOTE start of invalid software_lpar_map block #4
                             dlog('SoftwareLpar is marked as update');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -804,8 +804,8 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
-                        elsif ( $oldSl->action eq 'COMPLETE' ) {
+                        } #NOTE: end of invalid software_lpar_map block #4
+                        elsif ( $oldSl->action eq 'COMPLETE' ) { #NOTE start of invalid software_lpar_map block #5
                             dlog('SoftwareLpar is marked as complete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -1060,8 +1060,8 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
-                        elsif ( $oldSl->action eq 'DELETE' ) {
+                        } #NOTE: end of invalid software_lpar_map block #5
+                        elsif ( $oldSl->action eq 'DELETE' ) { #NOTE: start of invalid software_lpar_map block #6
                             dlog('SoftwareLpar is marked as delete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -1110,7 +1110,7 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
+                        } #NOTE: end of invalid software_lpar map block #6
                         else {
                             elog('SoftwareLpar is invalid');
                             die 'SoftwareLpar is invalid';
@@ -1119,7 +1119,7 @@ sub doDelta {
                     elsif ( $sr->action eq 'DELETE' ) {
                         dlog('ScanRecord is marked as delete');
 
-                        if ( $oldSl->action eq 'UPDATE' ) {
+                        if ( $oldSl->action eq 'UPDATE' ) { #NOTE start of invalid software_lpar map #7
                             dlog('SoftwareLpar is marked as update');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -1170,8 +1170,8 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
-                        elsif ( $oldSl->action eq 'COMPLETE' ) {
+                        } #NOTE end of invalid software_lpar map #7
+                        elsif ( $oldSl->action eq 'COMPLETE' ) { #NOTE start of invalid software_lpar map #8
                             dlog('SoftwareLpar is marked as complete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -1263,8 +1263,8 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
-                        elsif ( $oldSl->action eq 'DELETE' ) {
+                        } #NOTE: end of invalid software_lpar_map #8
+                        elsif ( $oldSl->action eq 'DELETE' ) { #NOTE start of invalid software_lpar_map #9
                             dlog('SoftwareLpar is marked as delete');
 
                             if ( $slm->action eq 'COMPLETE' ) {
@@ -1313,7 +1313,7 @@ sub doDelta {
                                 elog('SoftwareLparMap is invalid');
                                 die 'SoftwareLparMap is invalid';
                             }
-                        }
+                        } #NOTE end of software_lpar_map is invalid block #9
                         else {
                             elog('SoftwareLpar is invalid');
                             die 'SoftwareLpar is invalid';
@@ -1473,10 +1473,10 @@ sub doDelta {
             if ( defined $oldSl->id ) {
                 dlog('SoftwareLpar is defined');
 
-                if ( defined $slm->id ) {
+                if ( defined $slm->id ) { #NOTE simple invalid software_lpar_map test
                     elog("SoftwareLparMap is invalid, $slm->id" );
                     die "SoftwareLparMap is invalid, $slm->id" ;
-                }
+                } #NOTE simple invalid software_lpar_map ends here
                 else {
                     dlog('SoftwareLparMap is not defined');
 
