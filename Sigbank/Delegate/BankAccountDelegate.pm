@@ -161,7 +161,9 @@ sub getBankAccounts {
 
     ###Prepare the query
     if (defined $ntadz && $ntadz eq 1){
-     $trailsConnection->prepareSqlQuery( $self->queryNTadzBankAccounts() );
+      $trailsConnection->prepareSqlQuery( $self->queryNTadzBankAccounts() );
+    }elsif(defined $ntadz && $ntadz eq 2){
+      $trailsConnection->prepareSqlQuery( $self->queryOrderedBankAccounts() );
     } else {
       $trailsConnection->prepareSqlQuery( $self->queryBankAccounts() );
     }
@@ -225,6 +227,32 @@ sub queryNTadzBankAccounts {
 
     return ( 'bankAccounts', $query );
 }
+
+###feature added by ticket:131
+sub queryOrderedBankAccounts {
+    my $query = '
+
+select a.name from   
+(select ba.name,ba.connection_status,row_number() over(order by max(baj.end_time) asc nulls first) as timeNo
+from
+eaadmin.bank_account ba left outer join eaadmin.bank_account_job baj
+on (ba.id =  baj.bank_account_id and baj.name like \'%SIGNATURE PULL (FULL)%\')
+where
+ba.status = \'ACTIVE\'
+and ba.data_type = \'INVENTORY\'
+and ba.type !=\'TADZ\'
+group by 
+ba.connection_status
+,ba.name
+order by 
+ba.connection_status
+,timeNo
+,ba.name) as a
+    ';
+
+    return ( 'bankAccounts', $query );
+}
+
 
 sub getBankAccountsByType {
     my ($self,$type) = @_;
