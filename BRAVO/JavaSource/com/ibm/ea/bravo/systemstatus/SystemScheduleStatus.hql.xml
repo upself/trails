@@ -10,7 +10,7 @@
 
 	<query name="selectBankAccountJobList">
 		<![CDATA[
-			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount
+			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount BA where BA.status ='ACTIVE'
 		]]>
 	</query>
 
