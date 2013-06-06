@@ -136,14 +136,7 @@ public abstract class SoftwareSignatureDelegate extends Delegate {
 					softwareSignature.getProduct().getId())) {
 				errors.add("fileName", new ActionMessage(
 						"errors.software.signature.duplicate"));
-
-				if (!ssByNameAndSize.getProduct().getProductId()
-						.equals(softwareSignature.getProduct().getProductId())) {
-					errors.add("fileName", new ActionMessage(
-							"errors.software.signature.software"));
-				}
-
-				return errors;
+			return errors;
 			}
 
 			// Update the software signature id to the one that exists, this

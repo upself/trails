@@ -31,7 +31,7 @@
 		where
 			s.fileName = :fileName 
 			and s.fileSize = :fileSize
-
+            and s.status='ACTIVE'
 		]]>
 	</query>
 
