@@ -124,7 +124,7 @@ use HTTP::Request::Common;
 use LWP::UserAgent;                                                                      
                                                                                          
 # db access                                                                              
-use IBM::Schema::BRAVORP;                                                                  
+use IBM::Schema::BRAVO;                                                                  
                                                                                          
 ###############################################################################          
 ### Define Script Variables                                                              
@@ -191,7 +191,7 @@ sub logit {
 }                                                                            
                                                                                          
 logit( "Acquiring bravo database handle", $logFile );                                    
-my $bravo = IBM::Schema::BRAVORP->easy_connect;                                            
+my $bravo = IBM::Schema::BRAVO->easy_connect;                                            
 my $dbh   = $bravo->storage->dbh;                                                        
 logit( "Bravo Database handle acquired", $logFile );                                     
 
