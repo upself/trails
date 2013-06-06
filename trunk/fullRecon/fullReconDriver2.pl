@@ -12,7 +12,8 @@ use vars qw (
 
 getopt("r");
 
-
+$user = "USER_ID";
+$passwd = "PASSWORD";
 
 $reportDir = "/gsa/pokgsa/projects/a/amsd/adp/accounts/e/alerts/";
 $tmpDir = "/home/dbryson/fullRecon/";
@@ -62,7 +63,7 @@ foreach $key ( keys %regions ) {
 #	$region   = $value;
 #	$regionId = $key;
 	$makeList = "
-connect to traherp user dbryson using oct03new;
+connect to traherp user dbryson using apr10new;
 set schema eaadmin;
 export to $region of del 
 select customer_id from customer where country_code_id in
@@ -86,7 +87,7 @@ select customer_id from customer where country_code_id in
 
 		$selectFullReconSQL = 
 		"
-connect to traherp user dbryson using oct03new;
+connect to traherp user $user using $password;
 set schema eaadmin;
 
 export to $customerId of del modified by coldel0x09 
@@ -202,53 +203,6 @@ ORDER BY sl.name
 with ur
 ;";
 		
-		# old query
-#SELECT sl_customer.account_number,
-#CASE 
-#	WHEN AUS.Open = 0 THEN 'Blue' 
-#	WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 90 THEN 'Red' 
-#	WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 45 THEN 'Yellow' 
-#	ELSE 'Green' END, 
-#DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time), SL.Name AS SL_Name, H.Serial, MT.Name AS MT_Name, 
-#H.Country, H.Owner, MT.Type, H.Processor_Count AS H_Processor_Count, VSLP.Processor_Count AS VSLP_Processor_Count, 
-#H.Chips AS Chips, SI.Name, AUS.Remote_User AS AUS_Remote_User, AUS.Record_Time AS AUS_Record_Time, AUS.Comments, 
-#RT.Name AS RT_Name, R.Remote_User AS R_Remote_User, R.Record_Time AS R_Record_Time, 
-#CASE 
-#	R.Reconcile_Type_ID WHEN 3 THEN R.Comments 
-#	WHEN 4 THEN SI2.Name WHEN 7 THEN SI2.Name 
-#	WHEN 8 THEN SI2.Name ELSE '' END, 
-#C.Account_Number, L.Prod_Name, 
-#CASE LENGTH(RTRIM(SI.Name)) WHEN 0 THEN 'No' ELSE 'Yes' END, 
-#L.Full_Desc, L.Version, CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description), LRM.Used_Quantity, 
-#CASE 
-#	COALESCE(R.Machine_Level, -1) WHEN -1 THEN '' 
-#	WHEN 0 THEN 'No' ELSE 'Yes' END, 
-#REPLACE(RTRIM(CHAR(DATE(L.Expire_Date), USA)), '/', '-'), L.PO_Number, L.CPU_Serial, 
-#CASE L.IBM_Owned WHEN 0 THEN 'Customer' WHEN 1 THEN 'IBM' ELSE '' END, 
-#L.Ext_Src_Id, M.Name AS M_Name, DT.Name AS DT_Name, L.Record_Time AS L_Record_Time 
-#FROM EAADMIN.Alert_Unlicensed_Sw AUS, 
-#EAADMIN.Installed_Software IS LEFT OUTER JOIN EAADMIN.Reconcile R ON R.Installed_Software_Id = IS.Id 
-#LEFT OUTER JOIN EAADMIN.Reconcile_Type RT ON RT.Id = Reconcile_Type_Id 
-#LEFT OUTER JOIN EAADMIN.Installed_Software IS2 ON IS2.Id = R.Parent_Installed_Software_Id 
-#LEFT OUTER JOIN EAADMIN.Software_Item SI2 ON SI2.Id = IS2.Software_Id 
-#left outer join reconcile_used_license rul on rul.reconcile_id = r.id 
-#LEFT OUTER JOIN USED_LICENSE LRM ON LRM.id = rul.used_license_id 
-#LEFT OUTER JOIN EAADMIN.License L ON L.Id = LRM.License_Id 
-#LEFT OUTER JOIN EAADMIN.Capacity_Type CT ON CT.Code = L.Cap_Type 
-#LEFT OUTER JOIN EAADMIN.Customer C ON C.Customer_Id = L.Customer_Id, 
-#eaadmin.customer sl_customer,
-#EAADMIN.Software_Lpar SL, EAADMIN.HW_SW_Composite HSC, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H, 
-#EAADMIN.Machine_Type MT, EAADMIN.V_Software_Lpar_Processor VSLP, EAADMIN.Software_Item SI, 
-#EAADMIN.Product P, EAADMIN.Manufacturer M, EAADMIN.Discrepancy_Type DT
-#WHERE IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND 
-#SL.Customer_Id = $customerId 
-#and sl.customer_id = sl_customer.customer_id
-#AND HSC.Software_Lpar_Id = SL.Id 
-#AND HL.Id = HSC.Hardware_Lpar_Id AND H.Id = HL.Hardware_Id AND MT.Id = H.Machine_Type_Id 
-#AND VSLP.Id = SL.Id AND SI.Id = IS.Software_Id AND P.Id = SI.Id AND M.Id = P.Manufacturer_Id 
-#AND DT.Id = IS.Discrepancy_Type_Id AND 
-#(AUS.Open = 1 OR (AUS.Open = 0 AND R.Id IS NOT NULL))
-#with ur;
 
 		system( "echo \"" . $selectFullReconSQL . "\"> /home/dbryson/tmp.sql" );
 
