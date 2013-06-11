@@ -275,8 +275,7 @@ sub queryReconQueueByCustomerId {
             and date(record_time) = ?
             and (a.table != \'RECON_CUSTOMER\' 
             or (
-               date(a.record_time) <= \'2013-05-12\'
-               and a.table=\'RECON_CUSTOMER\' 
+               a.table=\'RECON_CUSTOMER\' 
                and a.customer_id not in ( 7200,9754,11497,12145))
             )
     ';

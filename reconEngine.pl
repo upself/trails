@@ -381,7 +381,6 @@ sub queryDistinctCustomerIdsFromQueueFifo {
 
 				or ( 
    					a.table=\'RECON_CUSTOMER\' 
-   					and  date(a.record_time) <= \'2013-05-12\' 
    					and a.customer_id not in ( 7200,9754,11497,12145) 
 				) 
                 group by
