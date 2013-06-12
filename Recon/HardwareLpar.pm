@@ -7,6 +7,7 @@ use BRAVO::OM::Hardware;
 use Recon::Lpar;
 use Recon::AlertHardwareLpar;
 use Recon::AlertZeroHWProcessorCount;
+use Recon::AlertZeroHwChipCount;
 use Recon::Hardware;
 
 sub new {
@@ -69,6 +70,9 @@ sub recon {
     
     my $alertZeorHwProCount =new Recon::AlertZeroHWProcessorCount($self->connection,$reconLpar->hardware,$self->hardwareLpar);
     $alertZeorHwProCount->recon;
+    
+    my $alertZeorHWChipsCount =new Recon::AlertZeroHwChipCount($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    $alertZeorHWChipsCount->recon;
     ilog("Alert logic complete");
 
     ###Call recon on items we have designated to reconcile from the recon logic
