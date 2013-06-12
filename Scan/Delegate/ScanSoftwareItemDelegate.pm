@@ -103,15 +103,15 @@ SELECT N.node_key
                                   AND PU.SYSTEM_KEY = PI.SYSTEM_KEY
   JOIN SYSTEM_NODE            AS SN ON SN.SYSTEM_KEY = PI.SYSTEM_KEY
   JOIN NODE                   AS N  ON N.NODE_KEY    = SN.NODE_KEY
+  join (select node_key, max(last_update_time) as my_update from system_node group by node_key) as mapping on mapping.node_key = n.node_key and mapping.my_update = sn.last_update_time
   WHERE  PI.UNINSTALL_DATE IS NULL
     AND P.PRODUCT_NAME <> \'SCRT_ONLY\'
-    AND P.SW_TYPE = \'FEATURE\'
     AND N.node_type = \'LPAR\'
   GROUP BY  N.node_key
-		 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
+                 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
   ORDER BY  N.node_key
-		 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
-  WITH ur
+                 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
+  WITH ur;
     ';
 
 	return ( 'scanSoftwareItemData', $query );
