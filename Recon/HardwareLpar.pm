@@ -6,6 +6,7 @@ use Carp qw( croak );
 use BRAVO::OM::Hardware;
 use Recon::Lpar;
 use Recon::AlertHardwareLpar;
+use Recon::AlertZeroHWProcessorCount;
 use Recon::Hardware;
 
 sub new {
@@ -63,9 +64,11 @@ sub recon {
 
     ###Run the alert logic
     ilog("Performing alert logic");
-    my $alert = Recon::AlertHardwareLpar->new( $self->connection,   $reconLpar->hardware,
-                                               $self->hardwareLpar, $reconLpar->softwareLpar );
+    my $alert = Recon::AlertHardwareLpar->new( $self->connection,$reconLpar->hardware,$self->hardwareLpar, $reconLpar->softwareLpar );
     $alert->recon;
+    
+    my $alertZeorHwProCount =new Recon::AlertZeroHWProcessorCount($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    $alertZeorHwProCount->recon;
     ilog("Alert logic complete");
 
     ###Call recon on items we have designated to reconcile from the recon logic
