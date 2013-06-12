@@ -11,7 +11,7 @@ use Recon::OM::AlertSoftwareLparNew;
 
 our @ISA = qw(Recon::AlertHWLpar);
 
-sub needOpenAlert(){
+sub needOpenAlert(){ 
   my $self = shift;
  
    my $query = "
@@ -43,5 +43,6 @@ and hl.id  = ?
 sub getAlertTypeId(){
   return 15;
 }
+
 
 1;
