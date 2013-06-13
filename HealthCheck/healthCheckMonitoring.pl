@@ -39,6 +39,10 @@
 #                                                                                                    The name of pidFile has been changed to 'healthCheckMonitoring.pid' from 'healthCheckMonitor.pid'
 #                                                                                                    The name of configFile has been changed to 'healthCheckMonitoring.properties' from 'healthCheckMonitor.properties'
 # 2013-05-30  Liu Hai(Larry) 1.4.1           HealthCheck and Monitoring Service Component - Phase 4: A new feature to support that there is no alert message generated case. A server running with correct email needs to be sent to notify team that HealthCheck and Monitoring Service Compoment is running correctly and well. 
+###################################################################################################################################################################################################
+#                                            Phase 5 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 5'
+# 2013-06-04  Liu Hai(Larry) 1.5.0           HealthCheck and Monitoring Service Component - Phase 5: Develop Database Monitoring - CNDB Customer TME_OBJECT_ID Basic Architecture
+# 2013-06-05  Liu Hai(Larry) 1.5.1           HealthCheck and Monitoring Service Component - Phase 5: Refacor the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails')
 #
 
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
@@ -102,12 +106,6 @@ my $staging_db_url;
 my $staging_db_userid;
 my $staging_db_password;
 my $staging_connection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
-my $trailsrp_dbh = "";#set empty string as the default value
-my $trailsrp_db_url = "";#set empty string as the default value
-my $trailsrp_db_userid = "";#set empty string as the default value
-my $trailsrp_db_password = "";#set empty string as the default value
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
 my @row;
 my @row2;
 my $totalCnt;
@@ -121,9 +119,7 @@ my $DB_ENV;
 #DB Handler Objects
 my $getTotalRecordsInQueue;
 my $getTotalCustomersInQueue;
-my $getEventMetaData;
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
-my $getEventDataForCertainTime;
 my $getEventAllDataCnt;
 my $getEventAllData;
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
@@ -143,6 +139,9 @@ my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVE
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
 my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+my $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL = "SELECT ACCOUNT_NUMBER, TME_OBJECT_ID FROM CUSTOMER WHERE TME_OBJECT_ID LIKE '%#1%'";# #1 parameter is used to replace with searching key for example: 'DEFAULT'
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 #The Index Definition For Result Fields
 #Total Records Index
@@ -229,6 +228,9 @@ my $DATABASE_MONITORING                     = "DATABASE_MONITORING";#EVENT_GROUP
 #Database Monitoring - its children Event Type Name
 my $TRAILSRP_DB_APPLY_GAP_MONITORING        = "TRAILSRP_DB_APPLY_GAP_MONITORING";#EVENT_TYPE_ID = 8
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING  = "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING";#EVENT_TYPE_ID = 9
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 #Event Group ID and its children Event IDs
 #Trails/Bravo Core Scripts
@@ -251,6 +253,9 @@ my $FILE_SYSTEM_THRESHOLD_MONITORING_EVENT_TYPE_ID   = 7;
 my $DATABASE_MONITORING_EVENT_GROUP_ID               = 3;
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_EVENT_TYPE_ID   = 8;
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING_EVENT_TYPE_ID = 9;
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 #Continuous Run Scripts Special Check List
 my $CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt";#Added by Larry for HealthCheck And Monitor Module - Phase 2B
@@ -294,6 +299,12 @@ my $TRAILSRP_DB_CURRENT_TIME_INDEX   = 0;
 my $TRAILSRP_DB_LAST_SYN_TIME_INDEX  = 1;
 my $TRAILSRP_DB_APPLY_GAP_INDEX      = 2;
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+#CNDB Customer Indexes
+my $CNDB_CUSTOMER_ACCOUNT_NUMBER_INDEX = 0;
+my $CNDB_CUSTOMER_TME_OBJECT_ID_INDEX  = 1;
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
@@ -365,8 +376,6 @@ sub init{
     $getTotalRecordsInQueue = $trails_dbh->prepare($GET_TOTAL_RECORDS_IN_QUEUE_SQL);
     #Get Total Customers In Queue
     $getTotalCustomersInQueue = $trails_dbh->prepare($GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL);
-	#Get Event Meta Data
-    $getEventMetaData = $staging_dbh->prepare($GET_EVENT_META_DATA_SQL);
 	
     #Load Event Meta Data
     loadEventMetaData();
@@ -377,19 +386,10 @@ sub init{
 
 #This method is used to load event meta data
 sub loadEventMetaData{
-  $getEventMetaData->execute();
+  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
+  @eventMetaRecords = getEventMetaDataFunction($staging_connection);
+  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
 
-  while(@row2 = $getEventMetaData->fetchrow_array()){
-    my @eventMetaRecord;
-    push @eventMetaRecord, $row2[$EVENT_GROUP_ID_INDEX];
-    push @eventMetaRecord, $row2[$EVENT_GROUP_NAME_INDEX];
-    push @eventMetaRecord, $row2[$EVENT_ID_INDEX];
-    push @eventMetaRecord, $row2[$EVENT_NAME_INDEX];
-  
-  	push @eventMetaRecords, [@eventMetaRecord];
-  }
-
-  $getEventMetaData->finish;
   #Add mock event meta data here to support DB cannot be connected case
   #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","1","CONTINUOUS_RUN_SCRIPTS")];
   #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","2","ATPTOSTAGING_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
@@ -399,6 +399,7 @@ sub loadEventMetaData{
   #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","6","STAGINGMOVE_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
   #push @eventMetaRecords, [("2","FILE_SYSTEM_MONITORING","7","FILE_SYSTEM_THRESHOLD_MONITORING")];#Added by Larry for HealthCheck And Monitor Module - Phase 3
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","8","TRAILSRP_DB_APPLY_GAP_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4
+  #push @eventMetaRecords, [("3","DATABASE_MONITORING","9","CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5
 }
 
 #This method is used to load event rule and email information definition
@@ -588,6 +589,13 @@ sub eventLogicProcess{
 	  eventRuleCheck($groupName,$eventName,0);
    }
    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING"
+  	  #For Event Type "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING",the eventValue value is not needed.
+	  #So set 0 for eventValue var
+	  eventRuleCheck($groupName,$eventName,0);
+   }
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
    #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
    #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
    #Add 'New Event Group' + 'New Event Type' business logic here
@@ -766,23 +774,23 @@ sub eventRuleCheck{
 				  my $loaderErrorTime;#var used to store loader error time
 				  
 				  $getEventDataConvertedSQL =~ s/\#1/$loaderCronNumber/g;
-                  print LOG "Converted SQL: $getEventDataConvertedSQL\n";
-				 
-				  #Get Event Data For Certain Time
-                  $getEventDataForCertainTime = $staging_dbh->prepare($getEventDataConvertedSQL);
-	              $getEventDataForCertainTime->execute($triggerEventGroup,$triggerEventName);
-
-				  while(my @row = $getEventDataForCertainTime->fetchrow_array()){
+                  print LOG "Converted Get Event Data SQL: $getEventDataConvertedSQL\n";
+				  
+				  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
+                  #Get Event Data For Certain Time
+             	  my @eventRows = getEventDataForCertainTimeFunction($staging_connection,$triggerEventGroup,$triggerEventName,$getEventDataConvertedSQL);
+                  
+				  foreach my $eventRow (@eventRows){
 			          $eventRecordCnt++;
-                      $loaderStatusCode = trim($row[$EVENT_VALUE_DATA_INDEX]);#Remove space chars for loader status code
+					  $loaderStatusCode = trim($eventRow->[$EVENT_VALUE_DATA_INDEX]);#Remove space chars for loader status code
 					  if($loaderStatusCode eq $LOADER_ERRORED_STATUS_CODE#"ERRORED" Loader Status Code
 					  &&($eventRecordCnt == 1)){#check if the first record
 					     $loaderErrorFlag = 1;
-                         $loaderErrorTime = $row[$EVENT_RECORD_TIME_DATA_INDEX];#get the loader error time
+                         $loaderErrorTime = $eventRow->[$EVENT_RECORD_TIME_DATA_INDEX];#get the loader error time
 						 print LOG "{Error Time: $loaderErrorTime} for {Loader Name: $loaderName} has been found.\n";
 					  }
-				  }#end while(my @row = $getEventDataForCertainTime->fetchrow_array())
-                  $getEventDataForCertainTime->finish;
+				  }#end foreach my $eventRow (@eventRows)
+				  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
                   
 				  if($eventRecordCnt==0){#It means that the loader has not started yet
             
@@ -997,6 +1005,7 @@ sub eventRuleCheck{
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Message: $errorEventRuleMessage\n";
                  my $errorEventRuleHandlingInstructionCode = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TRP-001'
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code: $errorEventRuleHandlingInstructionCode\n";
+				 my $trailsrp_connection;#var used to store TrailsRP DB connection object
 				 my @trailsRPDBApplyGapRow;#array used to store trailsRP DB apply gap row
 			     my $trailsRPDBCurrentTime;#var used to store trailsRP DB current time - for example: 2013-05-28-05.39.55.103602
             	 my $trailsRPDBLastSYNTime;#var used to store trailsRP DB last syn time - for example: 2013-05-28-05.39.31.701318
@@ -1009,24 +1018,24 @@ sub eventRuleCheck{
 				 my $trailsRPDBApplyGapHours;#var used to store trailsRP DB apply gap hours - for example: 5 hours
 				 my $trailsRPDBApplyGapMins;#var used to store trailsRP DB apply gap mins - for example: 5 mins
 				 my $trailsRPDBApplyGapRemainingSecs;#var used to store trailsRP DB apply gap remaining secs: $trailsRPDBApplyGapRemainingSecs =$trailsRPDBApplyGapSecs%3600 - for example: 360 seconds 
-			
+			      
 				 #move all the DB operations within the business logic scope for Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
-                 #connect to DB
-	             $trailsrp_dbh = DBI->connect( "$trailsrp_db_url", "$trailsrp_db_userid", "$trailsrp_db_password" ) || die "TrailsRP connection failed with error: $DBI::errstr";
-                 #get TrailsRP DB SQL execute object
-                 $getTrailsRPDBApplyGap = $trailsrp_dbh->prepare($GET_TRAILSRP_DB_APPLY_GAP_SQL);
-				 #execute SQL statement
-				 $getTrailsRPDBApplyGap->execute();
-				 #fetch result row
-                 @trailsRPDBApplyGapRow = $getTrailsRPDBApplyGap->fetchrow_array();
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
+				 #Get TrailsRP DB Connection 
+                 $trailsrp_connection = Database::Connection->new('trailsrp');
+
+                 #Get TrailsRP DB Apply Gap Row
+				 @trailsRPDBApplyGapRow = getTrailsRPDBApplyGapFunction($trailsrp_connection);
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
+             
 				 #get trailsRP DB current time, last syn time and apply gap seconds
                  $trailsRPDBCurrentTime = $trailsRPDBApplyGapRow[$TRAILSRP_DB_CURRENT_TIME_INDEX];
                  $trailsRPDBLastSYNTime = $trailsRPDBApplyGapRow[$TRAILSRP_DB_LAST_SYN_TIME_INDEX];
 				 $trailsRPDBApplyGapSecs = $trailsRPDBApplyGapRow[$TRAILSRP_DB_APPLY_GAP_INDEX];
-				 #release TrailsRP DB SQL execute object
-                 $getTrailsRPDBApplyGap->finish;
-				 #disconnect DB
-	             $trailsrp_dbh->disconnect();
+
+                 #Disconnect TrailsRP DB Connection 
+				 $trailsrp_connection->disconnect();
+
 				 print LOG "{TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
                  
                  $processedRuleTitle = $metaRuleTitle;
@@ -1084,6 +1093,73 @@ sub eventRuleCheck{
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";		
              }
              #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+             elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING"
+				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+				 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
+				 print LOG "CNDB Customer TME_OBJECT_ID Monitoring - Server Mode: {$serverMode}\n";
+				 my $searchKeyword = $metaRuleParameter2;#var used to store search keyword - for example: DEFAULT
+                 print LOG "CNDB Customer TME_OBJECT_ID Monitoring - Search Keyword: {$searchKeyword}\n";
+				 
+				 my $getCNDBCustomerTMEObjectIDSQL = $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL;
+				 my $cndb_connection;#var used to store CNDB connection object
+				 my @customerRows;#array used to store customer rows object
+				 my $customerRowsCnt;#var used to store the number of customer rows object
+				 my $customerRow;#var used to store customerRow memory address
+				 my $accountNumber;#var used to store account number
+				 my $tmeObjectID;#var used to store TME_Object_ID
+
+				 my $processedRuleTitle;#var used to store processed rule title - for example: 'CNDB Customer TME_OBJECT_ID Monitoring on @1 Server'
+				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Bank Account @2 contains the reserved TME_OBJECT_ID values: @3'
+				 my $processedRuleHandlingInstructionCode;#var used to store processed rule handling instruction code - for example: 'W-DBM-CCT-001'
+                
+         		 $getCNDBCustomerTMEObjectIDSQL =~ s/\#1/$searchKeyword/g;
+                 print LOG "CNDB Customer TME_OBJECT_ID Monitoring - Converted Get CNDB Customer TMEObjectID SQL: {$getCNDBCustomerTMEObjectIDSQL}\n";
+
+                 $processedRuleTitle = $metaRuleTitle;
+                 $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                 print LOG "CNDB Customer TME_OBJECT_ID Monitoring - The Processed Event Rule Title: {$processedRuleTitle}\n"; 
+
+                 #Get CNDB Connection
+                 $cndb_connection = Database::Connection->new('cndb');
+                    
+                 #Get Customer Rows Object
+				 @customerRows = getCNDBCustomerTMEObjectIDFunction($cndb_connection,$getCNDBCustomerTMEObjectIDSQL);
+                 
+				 #Calculate the number of Customer Rows Object
+                 $customerRowsCnt = scalar(@customerRows);
+             
+			     if($customerRowsCnt > 0){#judge if has customer rows 
+                    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			        $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                    
+				    $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+			        print LOG "CNDB Customer TME_OBJECT_ID Monitoring - The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                    $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+			
+					foreach $customerRow (@customerRows){
+                        $accountNumber = $customerRow->[$CNDB_CUSTOMER_ACCOUNT_NUMBER_INDEX];
+					    print LOG "CNDB Customer TME_OBJECT_ID Monitoring - Account Number: {$accountNumber}\n";
+					    $tmeObjectID = $customerRow->[$CNDB_CUSTOMER_TME_OBJECT_ID_INDEX];
+                        print LOG "CNDB Customer TME_OBJECT_ID Monitoring - TME_Object_ID: {$tmeObjectID}\n";
+                        
+						$processedRuleMessage = $metaRuleMessage;
+     					$processedRuleMessage =~ s/\@2/$accountNumber/g;#replace @2 with account number value - for example: 152880
+						$processedRuleMessage =~ s/\@3/$searchKeyword/g;#replace @3 with search keyword value - for example: DEFAULT
+                        $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+                        print LOG "CNDB Customer TME_OBJECT_ID Monitoring - The Processed Event Rule Message: {$processedRuleMessage}\n";
+				    }#end foreach $customerRow (@customerRows)
+
+                    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+                 }#end if($customerRowsCnt > 0)
+				 
+				 #Disconnect CNDB Connection 
+				 $cndb_connection->disconnect();
+                 
+				 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+                 print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";		
+             }
+             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End 
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     
@@ -1338,13 +1414,7 @@ sub setDBConnInfo{
 
 	   $staging_db_url      = "dbi:DB2:STAGING";
        $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2";
-       
-	   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
-       $trailsrp_db_url      = "dbi:DB2:TRAHERP";
-       $trailsrp_db_userid   = "eaadmin";
-       $trailsrp_db_password = "Green8ay";
-	   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+       $staging_db_password = "apr03db2"; 
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
 	   $trails_db_url      = "dbi:DB2:TRAILSPD";
@@ -1354,12 +1424,6 @@ sub setDBConnInfo{
        $staging_db_url      = "dbi:DB2:STAGING";
        $staging_db_userid   = "eaadmin";
        $staging_db_password = "apr03db2";
-
-       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start  
-	   $trailsrp_db_url      = "dbi:DB2:TRAILSRP";
-       $trailsrp_db_userid   = "eaadmin";
-       $trailsrp_db_password = "may2012a";
-       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End   
 	}
     elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	   $trails_db_url      = "dbi:DB2:TRAILS";
@@ -1437,3 +1501,88 @@ sub appendServerNormalRunningInfoIntoEmailContent{
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 }
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
+#my $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID AND E.RECORD_TIME >= CURRENT TIMESTAMP - #1 HOURS AND E.RECORD_TIME <= CURRENT TIMESTAMP ORDER BY E.RECORD_TIME DESC WITH UR";# #1 parameter is used to replace with job cron number
+sub getEventDataForCertainTimeFunction{
+  my ($connection, $eventGroup, $eventName, $querySQL) = @_;
+  my @eventRows = ();
+  my @eventRow;
+  $connection->prepareSqlQuery(queryEventDataForCertainTime($querySQL));
+  my $sth = $connection->sql->{eventDataForCertainTimeSQL};
+
+  $sth->execute($eventGroup,$eventName);
+  while (@eventRow = $sth->fetchrow_array()){
+     push @eventRows, [@eventRow];  
+  }
+  $sth->finish;
+  return @eventRows;
+}
+
+sub queryEventDataForCertainTime{
+  my $query = shift;
+  print LOG "[queryEventDataForCertainTime] Query SQL: {$query}\n";
+  return ('eventDataForCertainTimeSQL', $query);
+}
+
+#my $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL = "SELECT ACCOUNT_NUMBER, TME_OBJECT_ID FROM CUSTOMER WHERE TME_OBJECT_ID LIKE '%#1%'";# #1 parameter is used to replace with searching key for example: 'DEFAULT'
+sub getCNDBCustomerTMEObjectIDFunction{
+  my ($connection, $querySQL) = @_;
+  my @customerRows = ();
+  my @customerRow;
+  $connection->prepareSqlQuery(queryCNDBCustomerTMEObjectID($querySQL));
+  my $sth = $connection->sql->{cndbCustomerTMEObjectIDSQL};
+
+  $sth->execute();
+  while (@customerRow = $sth->fetchrow_array()){
+     push @customerRows, [@customerRow];  
+  }
+  $sth->finish;
+  return @customerRows;
+}
+
+sub queryCNDBCustomerTMEObjectID{
+  my $query = shift;
+  print LOG "[queryCNDBCustomerTMEObjectID] Query SQL: {$query}\n";
+  return ('cndbCustomerTMEObjectIDSQL', $query);
+}
+
+#my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
+sub getTrailsRPDBApplyGapFunction{
+  my $connection = shift;
+  my @trailsRPDBApplyGapRow;
+  $connection->prepareSqlQuery(queryTrailsRPDBApplyGap());
+  my $sth = $connection->sql->{trailsRPDBApplyGapSQL};
+
+  $sth->execute();
+  @trailsRPDBApplyGapRow = $sth->fetchrow_array();
+  $sth->finish;
+  return @trailsRPDBApplyGapRow;
+}
+
+sub queryTrailsRPDBApplyGap{
+  print LOG "[queryTrailsRPDBApplyGap] Query SQL: {$GET_TRAILSRP_DB_APPLY_GAP_SQL}\n";
+  return ('trailsRPDBApplyGapSQL', $GET_TRAILSRP_DB_APPLY_GAP_SQL);
+}
+
+#my $GET_EVENT_META_DATA_SQL = "SELECT EG.EVENT_GROUP_ID, EG.NAME, ET.EVENT_ID, ET.NAME FROM EVENT_GROUP EG, EVENT_TYPE ET WHERE EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID ORDER BY EG.EVENT_GROUP_ID, ET.EVENT_ID WITH UR";
+sub getEventMetaDataFunction{
+  my $connection = shift;
+  my @eventMetaRecords = ();
+  my @eventMetaRecord;
+  $connection->prepareSqlQuery(queryEventMetaData());
+  my $sth = $connection->sql->{eventMetaDataSQL};
+
+  $sth->execute();
+   while (@eventMetaRecord = $sth->fetchrow_array()){
+     push @eventMetaRecords, [@eventMetaRecord];  
+  }
+  $sth->finish;
+  return @eventMetaRecords;
+}
+
+sub queryEventMetaData{
+  print LOG "[queryEventMetaData] Query SQL: {$GET_EVENT_META_DATA_SQL}\n";
+  return ('eventMetaDataSQL', $GET_EVENT_META_DATA_SQL);
+}
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End

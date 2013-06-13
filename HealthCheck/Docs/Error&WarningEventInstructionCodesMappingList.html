@@ -9,12 +9,12 @@
       <table width='90%' border='1'>
 		<tr bgcolor='lightgray'>
 		    <td colspan='3' align='center'><font size='4'><b>Error/Warning Event Instruction Codes Mapping List</b></td>
-		<tr>
+		</tr>
         <tr bgcolor='lightgray'>
 		    <td width='20%'><b>Error/Warning Event Instruction Code</b></td>
             <td width='40%'><b>Handling Instruction</b></td>
 			<td width='40%'><b>Comments</b></td>
-		<tr>
+		</tr>
          <tr>
 		    <td>E-TBS-CRS-001</td>
             <td>Review log of Loader, Re-Start the loader</td>
@@ -23,7 +23,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               CRS = Continuous Run Scripts<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-ATS-001</td>
             <td>Review log of Loader atpToStaging.pl, Check the Cron Configuration, Start the loader</td>
@@ -32,7 +32,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               ATS = atpToStaging Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-ATS-002</td>
             <td>Review log of Loader atpToStaging.pl, Fix error and then Restart the loader</td>
@@ -41,7 +41,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               ATS = atpToStaging Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
          <tr>
 		    <td>E-TBS-STS-001</td>
             <td>Review log of Loader swcmToStaging.pl, Check the Cron Configuration, Start the loader</td>
@@ -50,7 +50,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               STS = swcmToStaging Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-STS-002</td>
             <td>Review log of Loader swcmToStaging.pl, Fix error and then Restart the loader</td>
@@ -59,7 +59,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               STS = swcmToStaging Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-MMF-001</td>
             <td>Review log of Loader moveMainframe.pl, Check the Cron Configuration, Start the loader</td>
@@ -68,7 +68,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               MMF = moveMainframe Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-MMF-002</td>
             <td>Review log of Loader moveMainframe.pl, Fix error and then Restart the loader</td>
@@ -77,7 +77,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               MMF = moveMainframe Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-BRF-001</td>
             <td>Review log of Loader bravoReportFork-old_script.pl, Check the Cron Configuration, Start the loader</td>
@@ -86,7 +86,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               BRF = Bravo Report Folk Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-BRF-002</td>
             <td>Review log of Loader bravoReportFork-old_script.pl, Fix error and then Restart the loader</td>
@@ -95,7 +95,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               BRF = Bravo Report Folk Start/Stop Scrip<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-SMV-001</td>
             <td>Review log of Loader staging-move, Check the Cron Configuration, Start the loader</td>
@@ -104,7 +104,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               SMV = staging-move Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-TBS-SMV-002</td>
             <td>Review log of Loader staging-move, Fix error and then Restart the loader</td>
@@ -113,7 +113,7 @@
 			  TBS = Trails/Bravo Scripts<br>
               SMV = staging-move Start/Stop Script<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-FSM-FST-001</td>
             <td>Please refer the following wiki link to see how to do action:<br>
@@ -124,7 +124,7 @@
 			  FSM = File System Monitoring<br>
               FST = File System Threshold Monitoring<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>W-DBM-TRP-001</td>
             <td>Raise a ticket to the DBA team</td>
@@ -133,7 +133,7 @@
 			  DBM = Database Monitoring<br>
               TRP = TrailsRP DB Apply Gap Monitoring<br> 
 			</td>
-		 <tr>
+		 </tr>
 		 <tr>
 		    <td>E-DBM-TRP-001</td>
             <td>Raise a ticket to the DBA team</td>
@@ -142,7 +142,24 @@
 			  DBM = Database Monitoring<br>
               TRP = TrailsRP DB Apply Gap Monitoring<br> 
 			</td>
+		 </tr>
 		 <tr>
+		    <td>W-DBM-CCT-001</td>
+            <td>
+			  Raise a service request in Global Asset Problem and Requirements Database<br>
+					<li><font size= '2'>Tool = CNDB Changes for SW</font></li>
+					<li><font size= '2'>Type = Service Request</font></li>
+					<li><font size= '2'>Approver = Adam Trnka</font></li>
+					<li><font size= '2'>Priority = 3</font></li>
+					<li><font size= '2'>Summary = 'CNDB UPDATE FOR ACCOUNT-ID-HERE' where ACCOUNT-ID-HERE is the actual Account ID as reported by monitor.</font></li>
+					<li><font size= '2'>Supporting Details = Please correct the TME_OBJECT_ID for acconts and remove the "DEFAULT" values</font></li>
+            </td> 
+			<td>
+			  W = Warning<br>
+			  DBM = Database Monitoring<br>
+              CCT = CNDB Customer TME_OBJECT_ID Monitoring<br> 
+			</td>
+		 </tr>
 	  </table>
    </body>
 </html>
