@@ -1387,7 +1387,8 @@ sub queryTAD4ZData {
       ,'' as objectId
       ,hw_model
       ,hw_serial
-,case when scan_table.scan_date is null then node.last_update_time else scan_table.scan_date end as effective_scanTime
+      ,case when scan_table.scan_date is null then node.last_update_time 
+        else scan_table.scan_date end as effective_scanTime
       ,0 as users
       ,2 as authenticated
       ,0 as isManual
@@ -1414,25 +1415,18 @@ sub queryTAD4ZData {
       ,'' as caseSerNum
       ,'' as caseAssetTag
 from system_node
-join node on node.node_key = system_node.node_key
-join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
-as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-join system on system.system_key = system_node.system_key
-left outer join (
-SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
-
-    FROM TIQHISTORY AS LP
-
-        WHERE LP.FINVID = 1
-
-            AND LP.FOSNAME <> ''
-
+     join node on node.node_key = system_node.node_key
+     join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
+     as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
+     join system on system.system_key = system_node.system_key
+     left outer join (
+       SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
+       FROM TIQHISTORY AS LP
+       WHERE LP.FINVID = 1 AND LP.FOSNAME <> ''
     GROUP BY LP.FOSNAME
     ORDER BY LP.FOSNAME
-
-) as scan_table on scan_table.sid = system.sid
+    ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\'
-
     WITH ur
      ";
 
@@ -1447,7 +1441,8 @@ sub queryTAD4ZDeltaData {
       ,'' as objectId
       ,hw_model
       ,hw_serial
-,case when scan_table.scan_date is null then node.last_update_time else scan_table.scan_date end as effective_scanTime
+      ,case when scan_table.scan_date is null then node.last_update_time 
+          else scan_table.scan_date end as effective_scanTime
       ,0 as users
       ,2 as authenticated
       ,0 as isManual
@@ -1474,22 +1469,16 @@ sub queryTAD4ZDeltaData {
       ,'' as caseSerNum
       ,'' as caseAssetTag
 from system_node
-join node on node.node_key = system_node.node_key
-join (select node_key, max(last_update_time) as my_time from system_node group by node_key) as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-join system on system.system_key = system_node.system_key
-left outer join (
-SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
-
-    FROM TIQHISTORY AS LP
-
-        WHERE LP.FINVID = 1
-
-            AND LP.FOSNAME <> ''
-
+      join node on node.node_key = system_node.node_key
+      join (select node_key, max(last_update_time) as my_time from system_node group by node_key) as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
+      join system on system.system_key = system_node.system_key
+      left outer join (
+        SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
+        FROM TIQHISTORY AS LP
+        WHERE LP.FINVID = 1 AND LP.FOSNAME <> ''
     GROUP BY LP.FOSNAME
     ORDER BY LP.FOSNAME
-
-) as scan_table on scan_table.sid = system.sid
+    ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\'
       and node.last_update_time > ?
    with ur
