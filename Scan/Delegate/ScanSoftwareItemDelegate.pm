@@ -92,8 +92,9 @@ sub buildScanSoftwareItem {
 
 sub queryScanSoftwareItemData {
 	my $query = '
+(
 SELECT N.node_key
-     , case when P.feature_guid is null then P.version_guid else P.feature_guid end
+     , P.feature_guid as guid
      , MAX(PU.PERIOD)       AS LASTUSED
      , bigint(case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end)   AS TOTAL
   FROM PRODUCT_INSTALL        AS PI
@@ -106,11 +107,42 @@ SELECT N.node_key
   join (select node_key, max(last_update_time) as my_update from system_node group by node_key) as mapping on mapping.node_key = n.node_key and mapping.my_update = sn.last_update_time
   WHERE  PI.UNINSTALL_DATE IS NULL
     AND P.PRODUCT_NAME <> \'SCRT_ONLY\'
-    AND N.node_type = \'LPAR\'
+AND P.SW_TYPE = \'FEATURE\' 
+    AND N.node_type = \'LPAR\' 
   GROUP BY  N.node_key
-                 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
+		 , p.feature_guid
   ORDER BY  N.node_key
-                 , case when P.feature_guid is null then P.version_guid else P.feature_guid end
+		 , p.feature_guid)
+    union
+(
+SELECT N.node_key
+     , P.version_guid guid
+     , MAX(PU.PERIOD)       AS LASTUSED
+     , bigint(case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end)   AS TOTAL
+  FROM PRODUCT_INSTALL        AS PI
+  JOIN PRODUCT                AS P  ON P.SW_KEY      = PI.SW_KEY
+  JOIN SYSTEM                 AS S  ON S.SYSTEM_KEY  = PI.SYSTEM_KEY
+  LEFT OUTER JOIN PRODUCT_USE            AS PU ON PU.SW_KEY     = PI.SW_KEY
+                                  AND PU.SYSTEM_KEY = PI.SYSTEM_KEY
+  JOIN SYSTEM_NODE            AS SN ON SN.SYSTEM_KEY = PI.SYSTEM_KEY
+  JOIN NODE                   AS N  ON N.NODE_KEY    = SN.NODE_KEY
+  join (select node_key, max(last_update_time) as my_update from system_node group by node_key) as mapping on mapping.node_key = n.node_key and mapping.my_update = sn.last_update_time
+  WHERE  PI.UNINSTALL_DATE IS NULL
+    AND P.PRODUCT_NAME <> \'SCRT_ONLY\'
+AND P.SW_TYPE = \'VERSION\' 
+    AND N.node_type = \'LPAR\'
+    and p.version_guid not in (SELECT distinct P2.version_guid
+  FROM PRODUCT_INSTALL        AS PI2
+  JOIN PRODUCT                AS P2  ON P2.SW_KEY      = PI2.SW_KEY
+  WHERE  PI2.UNINSTALL_DATE IS NULL
+    AND P2.PRODUCT_NAME <> \'SCRT_ONLY\'
+AND P2.SW_TYPE = \'FEATURE\' 
+and PI.system_key = PI2.system_key
+  )
+  GROUP BY  N.node_key
+		 , p.version_guid
+  ORDER BY  N.node_key
+		 , p.version_guid)
   WITH ur;
     ';
 
