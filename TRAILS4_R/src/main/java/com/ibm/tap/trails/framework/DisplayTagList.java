@@ -12,7 +12,7 @@ public class DisplayTagList implements PaginatedList {
 
 	private List list = new ArrayList();
 
-	private int objectsPerPage = 50;
+	private int objectsPerPage = 99999;
 
 	private int pageNumber;
 
