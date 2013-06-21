@@ -26,8 +26,11 @@ public class HardwareLpar {
 
 	@Column(name = "NAME")
 	private String name;
+	
+	@Column(name = "EXT_ID")
+	private String extId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "HARDWARE_ID")
 	private Hardware hardware;
 
@@ -43,6 +46,15 @@ public class HardwareLpar {
 	@Column(name = "LPAR_STATUS")
 	private String lparStatus;
 
+	@Column(name = "SPLA")
+	private String spla;
+	
+	@Column(name = "SYSPLEX")
+	private String sysplex;
+	
+	@Column(name = "INTERNET_ICC_FLAG")
+	private String internetIccFlag;
+	
 	public Account getAccount() {
 		return account;
 	}
@@ -73,6 +85,14 @@ public class HardwareLpar {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getExtId() {
+		return extId;
+	}
+
+	public void setExtId(String extId) {
+		this.extId = extId;
 	}
 
 	public Date getRecordTime() {
@@ -105,5 +125,29 @@ public class HardwareLpar {
 
 	public void setLparStatus(String lparStatus) {
 		this.status = lparStatus;
+	}
+	
+	public String getSpla() {
+		return this.spla;
+	}
+
+	public void setSpla(String spla) {
+		this.spla = spla;
+	}
+	
+	public String getSysplex() {
+		return this.sysplex;
+	}
+
+	public void setSysplex(String sysplex) {
+		this.sysplex = sysplex;
+	}
+	
+	public String getInternetIccFlag() {
+		return this.internetIccFlag;
+	}
+
+	public void setInternetIccFlag(String internetIccFlag) {
+		this.internetIccFlag = internetIccFlag;
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.dao.DataExceptionTypeEnum;
 import com.ibm.asset.trails.service.ReportService;
 
 @Service
@@ -42,9 +43,12 @@ public class ReportServiceImpl implements ReportService {
     private final String ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME = "Account Data Exceptions report";
     private final String ALERT_UNLICENSED_IBM_SW_REPORT_NAME = "Unlicensed IBM SW alert report";
     private final String ALERT_UNLICENSED_ISV_SW_REPORT_NAME = "Unlicensed ISV SW alert report";
-    private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_COLUMN_HEADERS = {
+    private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_SWLPAR_COLUMN_HEADERS = {
              "DATA EXCEPTION TYPE", "HOST NAME","SCAN TIME","CREATION TIME","BIOS SERIAL","OS NAME","ASSIGNEE","COMMENT"
              };
+    private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_HWLPAR_COLUMN_HEADERS = {
+            "DATA EXCEPTION TYPE", "HOST NAME","SERIAL","CREATION TIME","HW PROCESSORS","HW EXT ID","HW CHIPS","ASSIGNEE","COMMENT"
+            };
     private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
             "Status", "Installed SW product name", "Number of instances",
             "Create date/time", "Age" };
@@ -52,6 +56,7 @@ public class ReportServiceImpl implements ReportService {
     private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
             "Alert status", "Alert opened", "Alert duration", "SW LPAR name",
             "HW serial", "HW machine type", "Owner", "Country", "Asset type",
+            "SPLA","SysPlex","Internet ICC Flag","Mast Processor Type","Processor Manufacturer","Mast Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
             "Effective processor count", "Installed SW product name", "SW Owner",
@@ -67,7 +72,7 @@ public class ReportServiceImpl implements ReportService {
             "License last updated" };
     private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
     private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
-            "Machine type", "Hostname", "Asset type","Hardware Status","Lpar Status","Composite" };
+            "Machine type", "Hostname", "Asset type","SPLA","SysPlex","Internet ICC Flag","Mast Processor Type","Processor Manufacturer","Mast Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED","Hardware Status","Lpar Status","Composite" };
     private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
     private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
             "Software product name", "Manufacturer", "Vendor managed",
@@ -115,7 +120,8 @@ public class ReportServiceImpl implements ReportService {
     private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
     private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id ORDER BY SL.Name ASC";
     private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SI.Name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Item SI, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = SI.Id GROUP BY SI.Name) AS TEMP ORDER BY Software_Item_Name ASC";
-    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
+    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWLPAR_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
+    private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_HWLPAR_Report = "SELECT  AT.Name as DataException_Type, HL.Name as Lpar_Name,  Hw.SERIAL as Serial, A.Creation_time, HW.PROCESSOR_COUNT,HL.EXT_ID,HW.CHIPS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Hardware_Lpar AHL, hardware_Lpar HL,hardware HW where A.open=:open and A.alert_type_id=AT.id and AHL.id=A.id and AHL.hardware_lpar_id=HL.id and HL.hardware_id=HW.id and HL.customer_id= :customerId and AT.code= :alertCode order by A.Creation_time";
     private final String WORKSTATION_ACCOUNTS_REPORT_NAME = "Workstation accounts with non-workstations report";
     private final String[] WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
             "Account #", "Account name", "Account type", "Geography", "Region",
@@ -214,15 +220,31 @@ public class ReportServiceImpl implements ReportService {
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAccountDataExceptionReport(Account pAccount, String pAlertCode,
             PrintWriter pPrintWriter) throws HibernateException, Exception {
+    	String sql_query_data_exception = null ;
+		String[] header_of_data_exception = null ;
+    	for(DataExceptionTypeEnum l : DataExceptionTypeEnum.values()){  
+    		if (pAlertCode.equals(l.name().toString())){
+    			if(l.getLevel().equals("SWLPAR")){
+    				sql_query_data_exception = SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWLPAR_Report;
+    				header_of_data_exception = ACCOUNT_DATA_EXCEPTIONS_REPORT_SWLPAR_COLUMN_HEADERS;
+    			}
+                if(l.getLevel().equals("HWLPAR")){
+                	sql_query_data_exception = SQL_QUERY_ACCOUNT_DATAEXCEPTION_HWLPAR_Report;
+                	header_of_data_exception = ACCOUNT_DATA_EXCEPTIONS_REPORT_HWLPAR_COLUMN_HEADERS;
+    			}
+    		}
+        }  
+    	
+    	
         ScrollableResults lsrReport = ((Session) getEntityManager()
-                .getDelegate()).createSQLQuery(SQL_QUERY_ACCOUNT_DATAEXCEPTION_Report)
+                .getDelegate()).createSQLQuery(sql_query_data_exception)
                 .setLong("open", 1)
                 .setLong("customerId", pAccount.getId())
                 .setString("alertCode", pAlertCode)
                 .scroll(ScrollMode.FORWARD_ONLY);
 
         printHeader(ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME, pAccount.getAccount(),
-        		ACCOUNT_DATA_EXCEPTIONS_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		header_of_data_exception, pPrintWriter);
         while (lsrReport.next()) {
             pPrintWriter.println(outputData(lsrReport.get()));
         }
@@ -303,6 +325,15 @@ public class ReportServiceImpl implements ReportService {
                 + ",h.owner as hwOwner "
                 + ",h.country as hwCountry "
                 + ",mt.type as hwAssetType "
+                + ",hl.SPLA"
+                + ",hl.SYSPLEX"
+                + ",hl.INTERNET_ICC_FLAG"
+                + ",h.MAST_PROCESSOR_TYPE"
+                + ",h.PROCESSOR_MANUFACTURER"
+                + ",h.PROCESSOR_MODEL"
+                + ",h.NBR_CORES_PER_CHIP"
+                + ",h.NBR_OF_CHIPS_MAX"
+                + ",h.SHARED"
                 + ",h.hardware_status"
                 + ",hl.lpar_status"
                 + ",h.processor_count as hwProcCount "
@@ -462,7 +493,7 @@ public class ReportServiceImpl implements ReportService {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate())
                 .createSQLQuery(
-                        "SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
+                        "SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,HL.SPLA,HL.SYSPLEX,HL.INTERNET_ICC_FLAG,H.MAST_PROCESSOR_TYPE,H.PROCESSOR_MANUFACTURER,H.PROCESSOR_MODEL,H.NBR_CORES_PER_CHIP,H.NBR_OF_CHIPS_MAX,H.SHARED,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
                 .setLong("customerId", pAccount.getId())
                 .scroll(ScrollMode.FORWARD_ONLY);
 

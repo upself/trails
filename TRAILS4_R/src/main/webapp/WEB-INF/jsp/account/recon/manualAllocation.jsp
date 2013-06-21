@@ -81,16 +81,23 @@ confirmation page. Click on cancel to return to the workspace.</p>
 		<display:column property="hostname" title="Hostname" />
 		<display:column property="serial" title="Serial" />
 		<display:column property="country" title="Country" />
-		<display:column property="owner" title="Owner" />
+		<display:column property="owner" title="HW Owner" />
 		<display:column property="assetType" title="Asset type" />
+		<display:column property="productInfoName" title="SW Name" />
+		<display:column property="processorManufacturer" title="Proc mfg" />
+		<display:column property="mastProcessorType" title="Proc type" />
+		<display:column property="mastProcessorModel" title="Proc model" />
+		<display:column property="nbrCoresPerChip" title="cores per chip" />
+		<display:column property="chips" title=" HW chip" />
 		<display:column property="hardwareProcessorCount"
-			title="Hardware processor count" />
-		<display:column property="processorCount" title="Processor count" />
-		<display:column property="chips" title="Chips" />
-		<display:column property="hardwareStatus" title="Hardware Status" />
-		<display:column property="lparStatus" title="Lpar Status" />
-		<display:column property="productInfoName" title="Software name" />
-		<display:column property="reconcileTypeName" title="Reconcile type" />
+			title="HW proc" />
+		<display:column property="nbrOfChipsMax" title=" # chips max" />
+		<display:column property="shared" title="Shared" />
+		<display:column property="processorCount" title="LPAR proc" />
+		<display:column property="sysplex" title="Sysplex" />
+		<display:column property="spla" title="SPLA" />
+		<display:column property="internetIccFlag" title="Internet Acc" />
+		<display:column property="reconcileTypeName" title="Recon type" />
 		<display:column property="assignee" title="Assignee" />
 	</display:table> </small>
 	<br />

@@ -15,7 +15,7 @@
 			<interceptor-ref name="accountStack" />
 			<result type="tiles">tiles.account.exception.overview</result>
 		</action>
-		<action name="swlpar*" method="input" class="softwareLpar{1}ExpAction">
+		<action name="lpar*" method="input" class="lpar{1}ExpAction">
 			<interceptor-ref name="accountStack" />
 			<result type="redirectAction">
 				<param name="actionName">paginatedList</param>
@@ -25,45 +25,45 @@
 				<param name="sort">${sort}</param>
 			</result>
 			<result name="input" type="tiles">
-				tiles.account.exception.swlpar{1}
+				tiles.account.exception.lpar{1}
 			</result>
 		</action>
-		<action name="exceptionSoftwareLparHistory" class="alertSwlparHistory">
+		<action name="exception*History" class="alert{1}History">
 			<result type="tiles">tiles.exception.history.popup</result>
 		</action>
 
-		<action name="exceptionSoftwareLparUnassign" method="unassign"
-			class="alertSwlparAjaxAction">
+		<action name="exception*Unassign" method="unassign"
+			class="alert{1}AjaxAction">
 			<result name="success" type="tiles">
-				tiles.account.exception.assigment.result
+				tiles.account.exception.assigment.{1}.result
 			</result>
 		</action>
 
-		<action name="exceptionSoftwareLparAssign" method="assign"
-			class="alertSwlparAjaxAction">
+		<action name="exception*Assign" method="assign"
+			class="alert{1}AjaxAction">
 			<result name="success" type="tiles">
-				tiles.account.exception.assigment.result
+				tiles.account.exception.assigment.{1}.result
 			</result>
 		</action>
 
-		<action name="exceptionSoftwareLparUpdate" method="update"
-			class="alertSwlparAjaxAction">
+		<action name="exception*Update" method="update"
+			class="alert{1}AjaxAction">
 			<result name="success" type="tiles">
-				tiles.account.exception.assigment.result
+				tiles.account.exception.assigment.{1}.result
 			</result>
 		</action>
 
-		<action name="exceptionSoftwareLparAssignAll" method="assignAll"
-			class="alertSwlparAjaxAction">
+		<action name="exception*AssignAll" method="assignAll"
+			class="alert{1}AjaxAction">
 			<result name="success" type="tiles">
-				tiles.account.exception.assigment.result
+				tiles.account.exception.assigment.{1}.result
 			</result>
 		</action>
 
-		<action name="exceptionSoftwareLparUnAssignAll" method="unassignAll"
-			class="alertSwlparAjaxAction">
+		<action name="exception*UnassignAll" method="unassignAll"
+			class="alert{1}AjaxAction">
 			<result name="success" type="tiles">
-				tiles.account.exception.assigment.result
+				tiles.account.exception.assigment.{1}.result
 			</result>
 		</action>
 

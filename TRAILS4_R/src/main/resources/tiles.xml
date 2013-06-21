@@ -62,26 +62,32 @@
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
 				icon="account" />
-			<!--
-				CPA - Commenting out code because we are not ready for this new
-				alert <item value="Expired maintenance"
-				link="/account/alerts/alertExpiredMaint.htm" icon="account" />
-			-->
+			<!-- CPA - Commenting out code because we are not ready for this new alert 
+				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
+				icon="account" /> -->
 		</put-list-attribute>
 		<put-list-attribute name="/account/exceptions/home.htm">
 			<item value="Overview" link="/account/exceptions/overview.htm"
 				icon="account" />
-			<item value="SW LPAR NO PROCESSOR" link="/account/exceptions/swlparZEROPROC.htm"
+			<item value="SW LPAR NO PROCESSOR" link="/account/exceptions/lparZEROPROC.htm"
 				icon="account" />
-			<item value="SW LPAR INVALID SCANTIME" link="/account/exceptions/swlparNULLTIME.htm"
+			<item value="SW LPAR INVALID SCANTIME" link="/account/exceptions/lparNULLTIME.htm"
 				icon="account" />
-			<item value="SW LPAR NO OS" link="/account/exceptions/swlparNOOS.htm"
+			<item value="SW LPAR NO OS" link="/account/exceptions/lparNOOS.htm"
 				icon="account" />
-			<item value="SW LPAR NO SOFTWARE" link="/account/exceptions/swlparNOSW.htm"
+			<item value="SW LPAR NO SOFTWARE" link="/account/exceptions/lparNOSW.htm"
 				icon="account" />
-			<item value="SW LPAR NO LICENSABLE PRODUCTS" link="/account/exceptions/swlparNOLP.htm"
+			<item value="SW LPAR NO LICENSABLE PRODUCTS" link="/account/exceptions/lparNOLP.htm"
 				icon="account" />
-			<item value="SW LPAR NO CUSTOMER" link="/account/exceptions/swlparNOCUST.htm"
+			<item value="SW LPAR NO CUSTOMER" link="/account/exceptions/lparNOCUST.htm"
+				icon="account" />
+			<item value="HW BOX NO PROCESSOR" link="/account/exceptions/lparHWNPRC.htm"
+				icon="account" />
+			<item value="HW BOX NO CHIP" link="/account/exceptions/lparHWNCHP.htm"
+				icon="account" />
+			<item value="HW LPAR NO PROCESSOR TYPE" link="/account/exceptions/lparNPRCTYP.htm"
+				icon="account" />
+			<item value="HW LPAR NO CPU MODEL" link="/account/exceptions/lparNCPMDL.htm"
 				icon="account" />
 		</put-list-attribute>
 		<put-list-attribute name="/account/license/license.htm">
@@ -1185,7 +1191,7 @@
 		<put-attribute name="keywords" value="TRAILS PVU mapping success" />
 	</definition>
 
-	<definition name="tiles.account.exception.swlparZEROPROC"
+	<definition name="tiles.account.exception.lparZEROPROC"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1196,7 +1202,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with 0 processors" />
 	</definition>
-	<definition name="tiles.account.exception.swlparNULLTIME"
+	<definition name="tiles.account.exception.lparNULLTIME"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1207,7 +1213,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 	</definition>
-	<definition name="tiles.account.exception.swlparNOOS"
+	<definition name="tiles.account.exception.lparNOOS"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1218,7 +1224,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no operating system" />
 	</definition>
-	<definition name="tiles.account.exception.swlparNOSW"
+	<definition name="tiles.account.exception.lparNOSW"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1229,7 +1235,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no software" />
 	</definition>
-	<definition name="tiles.account.exception.swlparNOLP"
+	<definition name="tiles.account.exception.lparNOLP"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1240,7 +1246,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no licensable products" />
 	</definition>
-	<definition name="tiles.account.exception.swlparNOCUST"
+	<definition name="tiles.account.exception.lparNOCUST"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
@@ -1251,6 +1257,51 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no customer" />
 	</definition>
+	
+	<definition name="tiles.account.exception.lparHWNPRC"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="headInsert" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoProcessor.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account data exception hardware box no processor" />
+		<put-attribute name="keywords"
+			value="TRAILS account data exception hardware box no processor" />
+	</definition>
+	<definition name="tiles.account.exception.lparHWNCHP"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="headInsert" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoChip.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account data exception hardware box no chip" />
+		<put-attribute name="keywords"
+			value="TRAILS account data exception hardware box no chip" />
+	</definition>
+	<definition name="tiles.account.exception.lparNPRCTYP"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="headInsert" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoProcessorType.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account data exception hardware lpar no processor type" />
+		<put-attribute name="keywords"
+			value="TRAILS account data exception hardware lpar no processor type" />
+	</definition>
+	<definition name="tiles.account.exception.lparNCPMDL"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="headInsert" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoCpuModel.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account data exception hardware lpar no cpu model" />
+		<put-attribute name="keywords"
+			value="TRAILS account data exception hardware lpar no cpu model" />
+	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/overview.jsp" />
@@ -1260,8 +1311,11 @@
 			value="TRAILS account data exception overview" />
 	</definition>
 
-	<definition name="tiles.account.exception.assigment.result"
-		template="/WEB-INF/jsp/account/exception/assigmentStatus.jsp" />
+	<definition name="tiles.account.exception.assigment.Hwlpar.result"
+		template="/WEB-INF/jsp/account/exception/hwlparAssigmentStatus.jsp" />
+		
+	<definition name="tiles.account.exception.assigment.Swlpar.result"
+		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
 
 	<definition name="tiles.admin.alertCause.list" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"

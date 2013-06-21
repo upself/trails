@@ -42,7 +42,7 @@
 		</s:if>
 		<s:else>
 			<s:url id="alertUrl" namespace="/account/exceptions"
-				action="swlpar%{code}" includeParams="none" />
+				action="lpar%{code}" includeParams="none" />
 			<tr>
 				<td><s:property value="total" /></td>
 				<td><s:a href="%{alertUrl}">

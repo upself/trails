@@ -17,7 +17,7 @@ per data exception type.</p>
 		cellspacing="1" cellpadding="0">
 		<display:column title="Data exception">
 			<s:url id="alertUrl" namespace="/account/exceptions"
-				action="swlpar%{#attr.row.alertType.code}" includeParams="none" />
+				action="%{#attr.row.url}" includeParams="none" />
 			<s:a href="%{alertUrl}">
 				<s:property value="%{#attr.row.name}" />
 			</s:a>

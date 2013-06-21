@@ -103,10 +103,17 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 
 			try {
 				pHttpServletResponse.setContentType("application/vnd.ms-excel");
+				if(lsCode != null){
 				pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
-						"filename=").append(lsName).append(
+						"filename=").append(lsName).append(lsCode).append(
 						lAccount != null ? lAccount.getAccount().toString() : "").append(
 						".tsv").toString());
+				} else {
+					pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
+							"filename=").append(lsName).append(
+							lAccount != null ? lAccount.getAccount().toString() : "").append(
+							".tsv").toString());
+				}
 				lReportBase = getReport(lsName, lsCode, lReportService,
 						pHttpServletResponse.getOutputStream(), pHttpServletRequest);
 

@@ -14,8 +14,10 @@ public class DataExceptionReportActionForm {
 	private Long total;
 
 	private DataExceptionType alertType;
-	
+
 	private Account account;
+
+	private String url;
 
 	public DataExceptionReportActionForm(Long id, String name, Long assigned,
 			Long total, DataExceptionType alertType) {
@@ -24,13 +26,24 @@ public class DataExceptionReportActionForm {
 		this.assigned = assigned;
 		this.total = total;
 		this.alertType = alertType;
+		initUrl();
 	}
+
 	public DataExceptionReportActionForm(Account account, Long assigned,
 			Long total, DataExceptionType alertType) {
 		this.account = account;
 		this.assigned = assigned;
 		this.total = total;
 		this.alertType = alertType;
+		initUrl();
+	}
+
+	private void initUrl() {
+		if (this.alertType.getId() < 13) {
+			this.url = "swlpar" + alertType.getCode();
+		} else {
+			this.url = "hwlpar" + alertType.getCode();
+		}
 	}
 
 	public Long getId() {
@@ -40,7 +53,7 @@ public class DataExceptionReportActionForm {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -72,11 +85,17 @@ public class DataExceptionReportActionForm {
 	public void setAlertType(DataExceptionType alertType) {
 		this.alertType = alertType;
 	}
+
 	public void setAccount(Account account) {
 		this.account = account;
 	}
+
 	public Account getAccount() {
 		return account;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 }

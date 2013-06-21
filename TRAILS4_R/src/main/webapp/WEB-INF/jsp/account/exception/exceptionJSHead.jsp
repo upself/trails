@@ -81,6 +81,12 @@ function popupBravoSl(accountId,lparName,swId) {
   void(0);
 }
 
+function popupBravoHl(accountId,lparName,hwId) {
+	  newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&hwId=' + hwId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+	  newWin.focus(); 
+	  void(0);
+}
+
 String.prototype.trim= function(){  
     return this.replace(/(^\s*)|(\s*$)/g, "");  
 }
@@ -191,15 +197,15 @@ function updateAll(){
 	var params={};
 	params["comments"]=comments;
 
-	$("input[id^=swlpar_list_assign]").each(function(i){
+	$("input[id^=lpar_list_assign]").each(function(i){
 		params[$(this).attr("name")]=$(this).attr("checked");
 	});
 	
-	$("input[id^=swlpar_list_beenAssigned]").each(function(i){
+	$("input[id^=lpar_list_beenAssigned]").each(function(i){
 		params[$(this).attr("name")]=$(this).val();
 	});
 
-	$("input[id^=swlpar_list_id]").each(function(i){
+	$("input[id^=lpar_list_id]").each(function(i){
 		params[$(this).attr("name")]=$(this).val();
 		showProgress($(this).val());
 	});

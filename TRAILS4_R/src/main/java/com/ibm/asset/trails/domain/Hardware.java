@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -69,6 +70,24 @@ public class Hardware {
     @Column(name = "CHIPS")
     private Integer chips;
 
+    @Column(name = "MAST_PROCESSOR_TYPE")
+	private String mastProcessorType;
+	
+    @Column(name = "PROCESSOR_MANUFACTURER")
+	private String processorManufacturer;
+	
+    @Column(name = "PROCESSOR_MODEL")
+	private String mastProcessorModel;
+	
+    @Column(name = "NBR_CORES_PER_CHIP")
+	private BigDecimal nbrCoresPerChip;
+	
+    @Column(name = "NBR_OF_CHIPS_MAX")
+	private BigDecimal nbrOfChipsMax;
+	
+    @Column(name = "SHARED")
+	private String shared;
+	
     public String getCountry() {
         return country;
     }
@@ -195,5 +214,53 @@ public class Hardware {
     public void setChips(Integer chips) {
         this.chips = chips;
     }
+    
+	public String getMastProcessorType() {
+		return mastProcessorType;
+	}
+
+	public void setMastProcessorType(String mastProcessorType) {
+		this.mastProcessorType = mastProcessorType;
+	}
+	
+	public String getProcessorManufacturer() {
+		return processorManufacturer;
+	}
+
+	public void setProcessorManufacturer(String processorManufacturer) {
+		this.processorManufacturer = processorManufacturer;
+	}
+	
+	public String getMastProcessorModel() {
+		return mastProcessorModel;
+	}
+
+	public void setMastProcessorModel(String mastProcessorModel) {
+		this.mastProcessorModel = mastProcessorModel;
+	}
+	
+	public BigDecimal getNbrCoresPerChip() {
+		return nbrCoresPerChip;
+	}
+
+	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
+		this.nbrCoresPerChip = nbrCoresPerChip;
+	}
+	
+	public BigDecimal getNbrOfChipsMax() {
+		return nbrOfChipsMax;
+	}
+
+	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
+		this.nbrOfChipsMax = nbrOfChipsMax;
+	}
+	
+	public String getShared() {
+		return shared;
+	}
+
+	public void setShared(String shared) {
+		this.shared = shared;
+	}
 
 }

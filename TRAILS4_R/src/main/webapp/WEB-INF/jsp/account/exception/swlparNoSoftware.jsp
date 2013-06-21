@@ -26,7 +26,7 @@ active installed software.</p>
 		<s:fielderror theme="simple" />
 	</s:if></div>
 
-	<s:form action="swlparNOSW" method="post" theme="simple">
+	<s:form action="lparNOSW" method="post" theme="simple">
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
@@ -36,10 +36,10 @@ active installed software.</p>
 		<div class="button-bar">
 		<div class="buttons"><span class="button-blue"> <input
 			type="button" value="Assign all"
-			onclick="javascript:showDx('exceptionSoftwareLparAssignAll.htm')" />
+			onclick="javascript:showDx('exceptionSwlparAssignAll.htm')" />
 
 		<input type="button" value="Unassign all"
-			onclick="javascript:showDx('exceptionSoftwareLparUnAssignAll.htm')" />
+			onclick="javascript:showDx('exceptionSwlparUnassignAll.htm')" />
 		</span></div>
 		<br />
 		</div>
@@ -47,26 +47,26 @@ active installed software.</p>
 		<display:table name="data" class="basic-table" id="row"
 			summary="SoftwareLpar No Software"
 			decorator="org.displaytag.decorator.TotalTableDecorator"
-			cellspacing="2" cellpadding="0" requestURI="swlparNOSW.htm">
+			cellspacing="2" cellpadding="0" requestURI="lparNOSW.htm">
 			<display:column title="Action<br>to be taken:">
 				<s:div id="id_assignment_action_%{#attr.row.id}">
 					<s:if test="%{#attr.row.assignee==userSession.remoteUser}">
 						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="swlpar_list_id_%{#attr.row.id}" />
+							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
 						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="true" id="swlpar_list_beenAssigned_%{#attr.row.id}" />
+							value="true" id="lpar_list_beenAssigned_%{#attr.row.id}" />
 						<s:url id="unassign"
-							value="javascript:showDl('exceptionSoftwareLparUnassign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
+							value="javascript:showDl('exceptionSwlparUnassign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
 							includeContext="false" includeParams="none" />
 						<s:a id="unassign_%{#attr.row.id}" href="%{unassign}">unassign</s:a>
 					</s:if>
 					<s:else>
 						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="swlpar_list_id_%{#attr.row.id}" />
+							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
 						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="false" id="swlpar_list_beenAssigned_%{#attr.row.id}" />
+							value="false" id="lpar_list_beenAssigned_%{#attr.row.id}" />
 						<s:url id="assign"
-							value="javascript:showDl('exceptionSoftwareLparAssign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
+							value="javascript:showDl('exceptionSwlparAssign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
 							includeContext="false" includeParams="none" />
 						<s:a id="assign_%{#attr.row.id}" href="%{assign}">assign</s:a>
 					</s:else>
@@ -96,7 +96,7 @@ active installed software.</p>
 			</display:column>
 			<display:column title="Comments">
 				<s:url id="commentsUrl"
-					value="javascript:displayPopUp('exceptionSoftwareLparHistory.htm?alertId=%{#attr.row.id}')"
+					value="javascript:displayPopUp('exceptionSwlparHistory.htm?alertId=%{#attr.row.id}')"
 					includeContext="false" includeParams="none" />
 				<s:a id="view_%{#attr.row.id}" href="%{commentsUrl}">View</s:a>
 			</display:column>

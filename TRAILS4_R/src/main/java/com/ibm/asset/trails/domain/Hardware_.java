@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.metamodel.SingularAttribute;
@@ -23,4 +24,10 @@ public class Hardware_ {
 	public static volatile SingularAttribute<Hardware, String> processorModel;
 	public static volatile SingularAttribute<Hardware, String> processorBrand;
 	public static volatile SingularAttribute<Hardware, Integer> chips;
+	public static volatile SingularAttribute<Hardware, String> mastProcessorType;
+	public static volatile SingularAttribute<Hardware, String> processorManufacturer;
+	public static volatile SingularAttribute<Hardware, String> mastProcessorModel;
+	public static volatile SingularAttribute<Hardware, BigDecimal> nbrCoresPerChip;
+	public static volatile SingularAttribute<Hardware, BigDecimal> nbrOfChipsMax;
+	public static volatile SingularAttribute<Hardware, String> shared;
 }

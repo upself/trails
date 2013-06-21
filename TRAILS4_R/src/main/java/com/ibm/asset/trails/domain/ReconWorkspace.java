@@ -1,233 +1,323 @@
 package com.ibm.asset.trails.domain;
 
 import java.io.Serializable;
-
+import java.math.BigDecimal;
 
 public class ReconWorkspace implements Serializable {
 
-    /**
+	/**
 	 * 
 	 */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    // TODO called it this because of hibernate would not use the correct
-    // mapping in where clause
-    private Integer           alertAgeI;
+	// TODO called it this because of hibernate would not use the correct
+	// mapping in where clause
+	private Integer alertAgeI;
 
-    private String            hostname;
+	private String hostname;
 
-    private String            serial;
+	private String serial;
 
-    private String            country;
+	private String country;
 
-    private String            owner;
+	private String owner;
 
-    private String            assetType;
+	private String assetType;
 
-    private Integer           processorCount;
+	private Integer processorCount;
 
-    private String            productInfoName;
+	private String productInfoName;
 
-    private Long              reconcileTypeId;
+	private Long reconcileTypeId;
 
-    private String            reconcileTypeName;
+	private String reconcileTypeName;
 
-    private String            assignee;
+	private String assignee;
 
-    private Long              installedSoftwareId;
+	private Long installedSoftwareId;
 
-    private boolean           selected;
+	private boolean selected;
 
-    private Long              alertId;
+	private Long alertId;
 
-    private Long              reconcileId;
+	private Long reconcileId;
 
-    private Long              productInfoId;
+	private Long productInfoId;
 
-    private Integer           hardwareProcessorCount;
+	private Integer hardwareProcessorCount;
 
-    private Integer           chips;
-    
-    private String            hardwareStatus;
-    
-    private String            lparStatus;
+	private Integer chips;
 
-    public Integer getAlertAgeI() {
-        return alertAgeI;
-    }
+	private String hardwareStatus;
 
-    public void setAlertAgeI(Integer alertAgeI) {
-        this.alertAgeI = alertAgeI;
-    }
+	private String lparStatus;
 
-    public String getAssetType() {
-        return assetType;
-    }
+	private String spla;
 
-    public void setAssetType(String assetType) {
-        this.assetType = assetType;
-    }
+	private String sysplex;
 
-    public String getAssignee() {
-        return assignee;
-    }
+	private String internetIccFlag;
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
+	private String mastProcessorType;
 
-    public String getCountry() {
-        return country;
-    }
+	private String processorManufacturer;
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+	private String mastProcessorModel;
 
-    public String getHostname() {
-        return hostname;
-    }
+	private BigDecimal nbrCoresPerChip;
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+	private BigDecimal nbrOfChipsMax;
 
-    public String getOwner() {
-        return owner;
-    }
+	private String shared;
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
+	public Integer getAlertAgeI() {
+		return alertAgeI;
+	}
 
-    public String getSerial() {
-        return serial;
-    }
+	public void setAlertAgeI(Integer alertAgeI) {
+		this.alertAgeI = alertAgeI;
+	}
 
-    public void setSerial(String serial) {
-        this.serial = serial;
-    }
+	public String getAssetType() {
+		return assetType;
+	}
 
-    public String getProductInfoName() {
-        return productInfoName;
-    }
+	public void setAssetType(String assetType) {
+		this.assetType = assetType;
+	}
 
-    public void setProductInfoName(String productInfoName) {
-        this.productInfoName = productInfoName;
-    }
+	public String getAssignee() {
+		return assignee;
+	}
 
-    public Long getReconcileTypeId() {
-        return reconcileTypeId;
-    }
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
+	}
 
-    public void setReconcileTypeId(Long reconcileTypeId) {
-        this.reconcileTypeId = reconcileTypeId;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public String getReconcileTypeName() {
-        return reconcileTypeName;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public void setReconcileTypeName(String reconcileTypeName) {
-        this.reconcileTypeName = reconcileTypeName;
-    }
+	public String getHostname() {
+		return hostname;
+	}
 
-    public Integer getProcessorCount() {
-        return processorCount;
-    }
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
 
-    public void setProcessorCount(Integer processorCount) {
-        this.processorCount = processorCount;
-    }
+	public String getOwner() {
+		return owner;
+	}
 
-    public Long getInstalledSoftwareId() {
-        return installedSoftwareId;
-    }
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
-    public void setInstalledSoftwareId(Long installedSoftwareId) {
-        this.installedSoftwareId = installedSoftwareId;
-    }
+	public String getSerial() {
+		return serial;
+	}
 
-    public boolean isSelected() {
-        return selected;
-    }
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
+	public String getProductInfoName() {
+		return productInfoName;
+	}
 
-    public Long getAlertId() {
-        return alertId;
-    }
+	public void setProductInfoName(String productInfoName) {
+		this.productInfoName = productInfoName;
+	}
 
-    public void setAlertId(Long alertId) {
-        this.alertId = alertId;
-    }
+	public Long getReconcileTypeId() {
+		return reconcileTypeId;
+	}
 
-    public Long getReconcileId() {
-        return reconcileId;
-    }
+	public void setReconcileTypeId(Long reconcileTypeId) {
+		this.reconcileTypeId = reconcileTypeId;
+	}
 
-    public void setReconcileId(Long reconcileId) {
-        this.reconcileId = reconcileId;
-    }
+	public String getReconcileTypeName() {
+		return reconcileTypeName;
+	}
 
-    public Long getProductInfoId() {
-        return productInfoId;
-    }
+	public void setReconcileTypeName(String reconcileTypeName) {
+		this.reconcileTypeName = reconcileTypeName;
+	}
 
-    public void setProductInfoId(Long productInfoId) {
-        this.productInfoId = productInfoId;
-    }
+	public Integer getProcessorCount() {
+		return processorCount;
+	}
 
-    public Integer getHardwareProcessorCount() {
-        return hardwareProcessorCount;
-    }
+	public void setProcessorCount(Integer processorCount) {
+		this.processorCount = processorCount;
+	}
 
-    public void setHardwareProcessorCount(Integer hardwareProcessorCount) {
-        this.hardwareProcessorCount = hardwareProcessorCount;
-    }
+	public Long getInstalledSoftwareId() {
+		return installedSoftwareId;
+	}
 
-    public String getAlertStatus() {
-        if (reconcileId != null) {
-            return "<font class=\"blue-med\">Blue</font>";
-        } else if (getAlertAgeI() > AlertView.red) {
-            return "<font class=\"alert-stop\">Red</font>";
-        } else if (getAlertAgeI() > AlertView.yellow) {
-            return "<font class=\"orange-med\">Yellow</font>";
-        }
+	public void setInstalledSoftwareId(Long installedSoftwareId) {
+		this.installedSoftwareId = installedSoftwareId;
+	}
 
-        return "<font class=\"alert-go\">Green</font>";
-    }
+	public boolean isSelected() {
+		return selected;
+	}
 
-    /**
-     * @return the chips
-     */
-    public Integer getChips() {
-        return chips;
-    }
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
 
-    /**
-     * @param chips
-     *            the chips to set
-     */
-    public void setChips(Integer chips) {
-        this.chips = chips;
-    }
-    
-    public String getHardwareStatus() {
-        return hardwareStatus;
-    }
+	public Long getAlertId() {
+		return alertId;
+	}
 
-    public void setHardwareStatus(String hardwareStatus) {
-        this.hardwareStatus = hardwareStatus;
-    }
-    
-    public String getLparStatus() {
-        return lparStatus;
-    }
+	public void setAlertId(Long alertId) {
+		this.alertId = alertId;
+	}
 
-    public void setLparStatus(String lparStatus) {
-        this.lparStatus = lparStatus;
-    }
+	public Long getReconcileId() {
+		return reconcileId;
+	}
+
+	public void setReconcileId(Long reconcileId) {
+		this.reconcileId = reconcileId;
+	}
+
+	public Long getProductInfoId() {
+		return productInfoId;
+	}
+
+	public void setProductInfoId(Long productInfoId) {
+		this.productInfoId = productInfoId;
+	}
+
+	public Integer getHardwareProcessorCount() {
+		return hardwareProcessorCount;
+	}
+
+	public void setHardwareProcessorCount(Integer hardwareProcessorCount) {
+		this.hardwareProcessorCount = hardwareProcessorCount;
+	}
+
+	public String getAlertStatus() {
+		if (reconcileId != null) {
+			return "<font class=\"blue-med\">Blue</font>";
+		} else if (getAlertAgeI() > AlertView.red) {
+			return "<font class=\"alert-stop\">Red</font>";
+		} else if (getAlertAgeI() > AlertView.yellow) {
+			return "<font class=\"orange-med\">Yellow</font>";
+		}
+
+		return "<font class=\"alert-go\">Green</font>";
+	}
+
+	/**
+	 * @return the chips
+	 */
+	public Integer getChips() {
+		return chips;
+	}
+
+	/**
+	 * @param chips
+	 *            the chips to set
+	 */
+	public void setChips(Integer chips) {
+		this.chips = chips;
+	}
+
+	public String getHardwareStatus() {
+		return hardwareStatus;
+	}
+
+	public void setHardwareStatus(String hardwareStatus) {
+		this.hardwareStatus = hardwareStatus;
+	}
+
+	public String getLparStatus() {
+		return lparStatus;
+	}
+
+	public void setLparStatus(String lparStatus) {
+		this.lparStatus = lparStatus;
+	}
+	
+	public String getSpla() {
+		return this.spla;
+	}
+
+	public void setSpla(String spla) {
+		this.spla = spla;
+	}
+	
+	public String getSysplex() {
+		return this.sysplex;
+	}
+
+	public void setSysplex(String sysplex) {
+		this.sysplex = sysplex;
+	}
+	
+	public String getInternetIccFlag() {
+		return this.internetIccFlag;
+	}
+
+	public void setInternetIccFlag(String internetIccFlag) {
+		this.internetIccFlag = internetIccFlag;
+	}
+	
+	public String getMastProcessorType() {
+		return mastProcessorType;
+	}
+
+	public void setMastProcessorType(String mastProcessorType) {
+		this.mastProcessorType = mastProcessorType;
+	}
+	
+	public String getProcessorManufacturer() {
+		return processorManufacturer;
+	}
+
+	public void setProcessorManufacturer(String processorManufacturer) {
+		this.processorManufacturer = processorManufacturer;
+	}
+	
+	public String getMastProcessorModel() {
+		return mastProcessorModel;
+	}
+
+	public void setMastProcessorModel(String mastProcessorModel) {
+		this.mastProcessorModel = mastProcessorModel;
+	}
+	
+	public BigDecimal getNbrCoresPerChip() {
+		return nbrCoresPerChip;
+	}
+
+	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
+		this.nbrCoresPerChip = nbrCoresPerChip;
+	}
+	
+	public BigDecimal getNbrOfChipsMax() {
+		return nbrOfChipsMax;
+	}
+
+	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
+		this.nbrOfChipsMax = nbrOfChipsMax;
+	}
+	
+	public String getShared() {
+		return shared;
+	}
+
+	public void setShared(String shared) {
+		this.shared = shared;
+	}
 }
