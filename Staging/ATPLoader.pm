@@ -203,9 +203,15 @@ sub doDelta {
         $hardware->classification( $rec{classification} );
         $hardware->chips( $rec{chips} );
         $hardware->processorType( $rec{processorType} );
+        $hardware->mastProcessorType( $rec{mastProcessorType} );
         $hardware->serverType( $rec{serverType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
+        $hardware->processorManufacturer( $rec{processorManufacturer} );
+        $hardware->processorModel( $rec{processorModel} );
+        $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
+        $hardware->nbrOfChipsMax( $rec{nbrOfChipsMax} );
+        $hardware->shared( $rec{shared} );
         dlog( $hardware->toString );
 
         if ( defined $self->hardware->{$key} ) {
@@ -303,6 +309,9 @@ sub doDelta {
         $hardwareLpar->serverType( $rec{serverType} );
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
+        $hardwareLpar->spla( $rec{spla} );
+        $hardwareLpar->sysplex( $rec{sysplex} );
+        $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
 
         dlog( $hardwareLpar->toString );
 

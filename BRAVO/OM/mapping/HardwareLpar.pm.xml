@@ -13,6 +13,9 @@
 		default="ATP" />
 	<property name="recordTime" type="scalar" sql-name="record_time" />
 	<property name="extId" type="scalar" equals="true" sql-name="ext_id" />
+	<property name="spla" type="scalar" equals="true" sql-name="spla" />
+	<property name="sysplex" type="scalar" equals="true" sql-name="sysplex" />
+	<property name="internetIccFlag" type="scalar" equals="true" sql-name="internet_icc_flag" />
 	<property name="techImageId" type="scalar" equals="true"
 		sql-name="tech_image_id" />
 	<property name="serverType" type="scalar" equals="true"

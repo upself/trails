@@ -21,6 +21,12 @@ sub new {
         ,_classification => undef
         ,_chips => undef
         ,_processorType => undef
+        ,_mastProcessorType => undef
+        ,_processorManufacturer => undef
+        ,_processorModel => undef
+        ,_nbrCoresPerChip => undef
+        ,_nbrOfChipsMax => undef
+        ,_shared => undef
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
         ,_action => undef
@@ -135,6 +141,48 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->mastProcessorType && defined $object->mastProcessorType) {
+        $equal = 1 if $self->mastProcessorType eq $object->mastProcessorType;
+    }
+    $equal = 1 if (!defined $self->mastProcessorType && !defined $object->mastProcessorType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->processorManufacturer && defined $object->processorManufacturer) {
+        $equal = 1 if $self->processorManufacturer eq $object->processorManufacturer;
+    }
+    $equal = 1 if (!defined $self->processorManufacturer && !defined $object->processorManufacturer);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->processorModel && defined $object->processorModel) {
+        $equal = 1 if $self->processorModel eq $object->processorModel;
+    }
+    $equal = 1 if (!defined $self->processorModel && !defined $object->processorModel);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->nbrCoresPerChip && defined $object->nbrCoresPerChip) {
+        $equal = 1 if $self->nbrCoresPerChip eq $object->nbrCoresPerChip;
+    }
+    $equal = 1 if (!defined $self->nbrCoresPerChip && !defined $object->nbrCoresPerChip);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->nbrOfChipsMax && defined $object->nbrOfChipsMax) {
+        $equal = 1 if $self->nbrOfChipsMax eq $object->nbrOfChipsMax;
+    }
+    $equal = 1 if (!defined $self->nbrOfChipsMax && !defined $object->nbrOfChipsMax);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->shared && defined $object->shared) {
+        $equal = 1 if $self->shared eq $object->shared;
+    }
+    $equal = 1 if (!defined $self->shared && !defined $object->shared);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->cpuMIPS && defined $object->cpuMIPS) {
         $equal = 1 if $self->cpuMIPS eq $object->cpuMIPS;
     }
@@ -239,6 +287,42 @@ sub processorType {
     my $self = shift;
     $self->{_processorType} = shift if scalar @_ == 1;
     return $self->{_processorType};
+}
+
+sub mastProcessorType {
+    my $self = shift;
+    $self->{_mastProcessorType} = shift if scalar @_ == 1;
+    return $self->{_mastProcessorType};
+}
+
+sub processorManufacturer {
+    my $self = shift;
+    $self->{_processorManufacturer} = shift if scalar @_ == 1;
+    return $self->{_processorManufacturer};
+}
+
+sub processorModel {
+    my $self = shift;
+    $self->{_processorModel} = shift if scalar @_ == 1;
+    return $self->{_processorModel};
+}
+
+sub nbrCoresPerChip {
+    my $self = shift;
+    $self->{_nbrCoresPerChip} = shift if scalar @_ == 1;
+    return $self->{_nbrCoresPerChip};
+}
+
+sub nbrOfChipsMax {
+    my $self = shift;
+    $self->{_nbrOfChipsMax} = shift if scalar @_ == 1;
+    return $self->{_nbrOfChipsMax};
+}
+
+sub shared {
+    my $self = shift;
+    $self->{_shared} = shift if scalar @_ == 1;
+    return $self->{_shared};
 }
 
 sub cpuMIPS {
@@ -355,6 +439,36 @@ sub toString {
         $s .= $self->{_processorType};
     }
     $s .= ",";
+    $s .= "mastProcessorType=";
+    if (defined $self->{_mastProcessorType}) {
+        $s .= $self->{_mastProcessorType};
+    }
+    $s .= ",";
+    $s .= "processorManufacturer=";
+    if (defined $self->{_processorManufacturer}) {
+        $s .= $self->{_processorManufacturer};
+    }
+    $s .= ",";
+    $s .= "processorModel=";
+    if (defined $self->{_processorModel}) {
+        $s .= $self->{_processorModel};
+    }
+    $s .= ",";
+    $s .= "nbrCoresPerChip=";
+    if (defined $self->{_nbrCoresPerChip}) {
+        $s .= $self->{_nbrCoresPerChip};
+    }
+    $s .= ",";
+    $s .= "nbrOfChipsMax=";
+    if (defined $self->{_nbrOfChipsMax}) {
+        $s .= $self->{_nbrOfChipsMax};
+    }
+    $s .= ",";
+    $s .= "shared=";
+    if (defined $self->{_shared}) {
+        $s .= $self->{_shared};
+    }
+    $s .= ",";
     $s .= "cpuMIPS=";
     if (defined $self->{_cpuMIPS}) {
         $s .= $self->{_cpuMIPS};
@@ -412,6 +526,12 @@ sub save {
             ,$self->classification
             ,$self->chips
             ,$self->processorType
+            ,$self->mastProcessorType
+            ,$self->processorManufacturer
+            ,$self->processorModel
+            ,$self->nbrCoresPerChip
+            ,$self->nbrOfChipsMax
+            ,$self->shared
             ,$self->cpuMIPS
             ,$self->cpuMSU
             ,$self->action
@@ -439,6 +559,12 @@ sub save {
             ,$self->classification
             ,$self->chips
             ,$self->processorType
+            ,$self->mastProcessorType
+            ,$self->processorManufacturer
+            ,$self->processorModel
+            ,$self->nbrCoresPerChip
+            ,$self->nbrOfChipsMax
+            ,$self->shared
             ,$self->cpuMIPS
             ,$self->cpuMSU
             ,$self->action
@@ -470,12 +596,24 @@ sub queryInsert {
             ,classification
             ,chips
             ,processor_type
+            ,mast_processor_type
+            ,processor_manufacturer
+            ,processor_model
+            ,nbr_cores_per_chip
+            ,nbr_of_chips_max
+            ,shared
             ,cpu_mips
             ,cpu_msu
             ,action
             ,update_date
         ) values (
             ?
+            ,?
+            ,?
+            ,?
+            ,?
+            ,?
+            ,?
             ,?
             ,?
             ,?
@@ -516,6 +654,12 @@ sub queryUpdate {
             ,classification = ?
             ,chips = ?
             ,processor_type = ?
+            ,mast_processor_type = ?
+            ,processor_manufacturer = ?
+            ,processor_model = ?
+            ,nbr_cores_per_chip = ?
+            ,nbr_of_chips_max = ?
+            ,shared = ?
             ,cpu_mips = ?
             ,cpu_msu = ?
             ,action = ?
@@ -566,6 +710,12 @@ sub getById {
     my $classification;
     my $chips;
     my $processorType;
+    my $mastProcessorType;
+    my $processorManufacturer;
+    my $processorModel;
+    my $nbrCoresPerChip;
+    my $nbrOfChipsMax;
+    my $shared;
     my $cpuMIPS;
     my $cpuMSU;
     my $action;
@@ -585,6 +735,12 @@ sub getById {
         ,\$classification
         ,\$chips
         ,\$processorType
+        ,\$mastProcessorType
+        ,\$processorManufacturer
+        ,\$processorModel
+        ,\$nbrCoresPerChip
+        ,\$nbrOfChipsMax
+        ,\$shared
         ,\$cpuMIPS
         ,\$cpuMSU
         ,\$action
@@ -609,6 +765,12 @@ sub getById {
     $self->classification($classification);
     $self->chips($chips);
     $self->processorType($processorType);
+    $self->mastProcessorType($mastProcessorType);
+    $self->processorManufacturer($processorManufacturer);
+    $self->processorModel($processorModel);
+    $self->nbrCoresPerChip($nbrCoresPerChip);
+    $self->nbrOfChipsMax($nbrOfChipsMax);
+    $self->shared($shared);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
     $self->action($action);
@@ -633,6 +795,12 @@ sub queryGetById {
             ,classification
             ,chips
             ,processor_type
+            ,mast_processor_type
+            ,processor_manufacturer
+            ,processor_model
+            ,nbr_cores_per_chip
+            ,nbr_of_chips_max
+            ,shared
             ,cpu_mips
             ,cpu_msu
             ,action

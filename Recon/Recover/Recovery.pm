@@ -234,12 +234,18 @@ sub recoverMapsByReconcileH {
 		$sth->fetchrow_arrayref;
 		$sth->finish;
 		my $usedLicenseId;
-
+    
 		if ( defined $id ) {
-			$usedLicenseId = $id;
-
+	    my $RehwSerial = getHwSerailNumberByReconcileId($reconcileId);
+        my $UlhwSerial = getHwSerailNumberByUsedLicenseId($id);
+            if (!defined $UlhwSerial){
+            	$usedLicenseId = $id;
+            }
+		   else (defined $UlhwSerial && $RehwSerial eq $UlhwSerial ){
+		   	    $usedLicenseId = $id;
+			}
 		}
-		else {
+		if (!defined $usedLicenseId) {
 			my $usedLicense = new Recon::OM::UsedLicense();
 			$usedLicense->licenseId( $rec{licenseId} );
 			$usedLicense->capacityTypeId( $rec{capType} );
@@ -255,6 +261,84 @@ sub recoverMapsByReconcileH {
 
 	}
 	$sth->finish;
+}
+
+sub getHwSerailNumberByReconcileId {
+		my ( $self,  $reconcileId ) = @_;
+
+	$self->connection->prepareSqlQueryAndFields(
+		queryHwSerailNumberByReconcileId() );
+	my $sth = $self->connection->sql->{HwSerailNumberByReconcileId};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{hwSerailNumberByReconcileId} } );
+	$sth->execute($reconcileId);
+	return  $rec{serial};
+	$sth->finish;
+}
+
+sub queryHwSerailNumberByReconcileId {
+    my $query  = '
+        select
+            hw.SERIAL as serial
+        from
+            reconcile rc
+            join installed_software is 
+            join software_lpar sl
+            join sw_hw_composite shc
+            join hardware_lpar hl
+            join hardware hw
+        where
+            rc.installed_software_id=is.id
+        and is.software_lpar_id=sl.id
+        and shc.software_lpar_id=sl.id
+        and shc.hardware_lpar_id=hl.id
+        and hl.hardware_id=hw.id
+        and rc.machine_level = 1
+        and rc.id = ?
+        with ur
+    ';
+    return ( 'hwSerailNumberByReconcileId', $query );
+}
+
+sub getHwSerailNumberByUsedLicenseId {
+		my ( $self,  $id ) = @_;
+
+	$self->connection->prepareSqlQueryAndFields(
+		queryHwSerailNumberByUsedLicenseId() );
+	my $sth = $self->connection->sql->{HwSerailNumberByUsedLicenseId};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{hwSerailNumberByUsedLicenseIdFields} } );
+	$sth->execute($id);
+	return  $rec{serial};
+	$sth->finish;
+}
+
+sub queryHwSerailNumberByUsedLicenseId {
+    my $query  = '
+        select
+            hw.SERIAL as serial
+        from
+            reconcile rc
+            join installed_software is 
+            join software_lpar sl
+            join sw_hw_composite shc
+            join hardware_lpar hl
+            join hardware hw
+            join reconcile_used_license rul
+        where
+            rc.installed_software_id=is.id
+        and is.software_lpar_id=sl.id
+        and shc.software_lpar_id=sl.id
+        and shc.hardware_lpar_id=hl.id
+        and hl.hardware_id=hw.id
+        and rul.reconcile_id=rc.id
+        and rc.machine_level = 1
+        and rul.USED_LICENSE_ID = ?
+        with ur
+    ';
+    return ( 'hwSerailNumberByUsedLicenseId', $query );
 }
 
 sub queryUsedLicense {

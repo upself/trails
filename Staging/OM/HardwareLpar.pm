@@ -12,6 +12,9 @@ sub new {
         ,_hardwareId => undef
         ,_status => undef
         ,_extId => undef
+        ,_spla => undef
+        ,_sysplex => undef
+        ,_internetIccFlag => undef
         ,_techImageId => undef
         ,_serverType => undef
         ,_lparStatus => undef
@@ -57,6 +60,27 @@ sub equals {
         $equal = 1 if $self->extId eq $object->extId;
     }
     $equal = 1 if (!defined $self->extId && !defined $object->extId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->spla && defined $object->spla) {
+        $equal = 1 if $self->spla eq $object->spla;
+    }
+    $equal = 1 if (!defined $self->spla && !defined $object->spla);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->sysplex && defined $object->sysplex) {
+        $equal = 1 if $self->sysplex eq $object->sysplex;
+    }
+    $equal = 1 if (!defined $self->sysplex && !defined $object->sysplex);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->internetIccFlag && defined $object->internetIccFlag) {
+        $equal = 1 if $self->internetIccFlag eq $object->internetIccFlag;
+    }
+    $equal = 1 if (!defined $self->internetIccFlag && !defined $object->internetIccFlag);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -138,6 +162,24 @@ sub extId {
     my $self = shift;
     $self->{_extId} = shift if scalar @_ == 1;
     return $self->{_extId};
+}
+
+sub spla {
+    my $self = shift;
+    $self->{_spla} = shift if scalar @_ == 1;
+    return $self->{_spla};
+}
+
+sub sysplex {
+    my $self = shift;
+    $self->{_sysplex} = shift if scalar @_ == 1;
+    return $self->{_sysplex};
+}
+
+sub internetIccFlag {
+    my $self = shift;
+    $self->{_internetIccFlag} = shift if scalar @_ == 1;
+    return $self->{_internetIccFlag};
 }
 
 sub techImageId {
@@ -233,6 +275,21 @@ sub toString {
         $s .= $self->{_extId};
     }
     $s .= ",";
+    $s .= "spla=";
+    if (defined $self->{_spla}) {
+        $s .= $self->{_spla};
+    }
+    $s .= ",";
+    $s .= "sysplex=";
+    if (defined $self->{_sysplex}) {
+        $s .= $self->{_sysplex};
+    }
+    $s .= ",";
+    $s .= "internetIccFlag=";
+    if (defined $self->{_internetIccFlag}) {
+        $s .= $self->{_internetIccFlag};
+    }
+    $s .= ",";
     $s .= "techImageId=";
     if (defined $self->{_techImageId}) {
         $s .= $self->{_techImageId};
@@ -301,6 +358,9 @@ sub save {
             ,$self->hardwareId
             ,$self->status
             ,$self->extId
+            ,$self->spla
+            ,$self->sysplex
+            ,$self->internetIccFlag
             ,$self->techImageId
             ,$self->serverType
             ,$self->lparStatus
@@ -322,6 +382,9 @@ sub save {
             ,$self->hardwareId
             ,$self->status
             ,$self->extId
+            ,$self->spla
+            ,$self->sysplex
+            ,$self->internetIccFlag
             ,$self->techImageId
             ,$self->serverType
             ,$self->lparStatus
@@ -347,6 +410,9 @@ sub queryInsert {
             ,hardware_id
             ,status
             ,ext_id
+            ,spla
+            ,sysplex
+            ,internet_icc_flag
             ,tech_image_id
             ,server_type
             ,lpar_status
@@ -356,6 +422,9 @@ sub queryInsert {
             ,update_date
         ) values (
             ?
+            ,?
+            ,?
+            ,?
             ,?
             ,?
             ,?
@@ -381,6 +450,9 @@ sub queryUpdate {
             ,hardware_id = ?
             ,status = ?
             ,ext_id = ?
+            ,spla = ?
+            ,sysplex = ?
+            ,internet_icc_flag = ?
             ,tech_image_id = ?
             ,server_type = ?
             ,lpar_status = ?
@@ -425,6 +497,9 @@ sub getById {
     my $hardwareId;
     my $status;
     my $extId;
+    my $spla;
+    my $sysplex;
+    my $internetIccFlag;
     my $techImageId;
     my $serverType;
     my $lparStatus;
@@ -438,6 +513,9 @@ sub getById {
         ,\$hardwareId
         ,\$status
         ,\$extId
+        ,\$spla
+        ,\$sysplex
+        ,\$internetIccFlag
         ,\$techImageId
         ,\$serverType
         ,\$lparStatus
@@ -456,6 +534,9 @@ sub getById {
     $self->hardwareId($hardwareId);
     $self->status($status);
     $self->extId($extId);
+    $self->spla($spla);
+    $self->sysplex($sysplex);
+    $self->internetIccFlag($internetIccFlag);
     $self->techImageId($techImageId);
     $self->serverType($serverType);
     $self->lparStatus($lparStatus);
@@ -474,6 +555,9 @@ sub queryGetById {
             ,hardware_id
             ,status
             ,ext_id
+            ,spla
+            ,sysplex
+            ,internet_icc_flag
             ,tech_image_id
             ,server_type
             ,lpar_status

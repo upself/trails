@@ -167,10 +167,16 @@ sub getData {
         $hardware->classification( $rec{classification} );
         $hardware->chips( $rec{chips} );
         $hardware->processorType( $rec{processorType} );
+        $hardware->mastProcessorType( $rec{mastProcessorType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
+        $hardware->processorManufacturer( $rec{processorManufacturer} );
+        $hardware->processorModel( $rec{processorModel} );
+        $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
+        $hardware->nbrOfChipsMax( $rec{nbrOfChipsMax} );
+        $hardware->shared( $rec{shared} );
         dlog( $hardware->toString );
-
+            
         ###Add substr to cut down processorType
 #        my $temProcessorType = $rec{processorType};
 #        my $temSerialNumber = $rec{serial};
@@ -227,7 +233,10 @@ sub getData {
         $hardwareLpar->lparStatus( $rec{lparStatus} );
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
-
+        $hardwareLpar->spla( $rec{spla} );
+        $hardwareLpar->sysplex( $rec{sysplex} );
+        $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
+           
         dlog( $hardwareLpar->toString );
 
         ###Add our hardware lpar to the list
@@ -303,12 +312,21 @@ sub queryATPData {
             classification
             chips
             processorType
+            mastProcessorType
             serverType
             lparStatus
             cpuMIPS
             cpuMSU
             partMIPS
-            partMSU)
+            partMSU
+            processorManufacturer
+            processorModel
+            shared
+            nbrCoresPerChip
+            nbrOfChipsMax
+            spla
+            sysplex
+            internetIccFlag)
     );
     my $query = '
         select
@@ -341,12 +359,21 @@ sub queryATPData {
             ,rtrim(ltrim(classification))
             ,processor_chip
             ,rtrim(ltrim(processor_type))
+            ,rtrim(ltrim(mast_processor_type))
             ,rtrim(ltrim(server_type))
             ,rtrim(ltrim(lpar_status))
             ,CAST(cpu_mips AS INTEGER)
             ,CAST(cpu_msu AS INTEGER)
             ,CAST(part_mips AS INTEGER)
             ,CAST(part_msu AS INTEGER)
+            ,ltrim(rtrim(PROCESSOR_MANUFACTURER))
+			,ltrim(rtrim(PROCESSOR_MODEL))
+			,ltrim(rtrim(SHARED))
+			,CAST(NBR_CORES_PER_CHIP AS DECIMAL(3,0))
+			,CAST(NBR_OF_CHIPS_MAX AS DECIMAL(4,0))
+			,ltrim(rtrim(SPLA))
+			,ltrim(rtrim(SYSPLEX))
+			,ltrim(rtrim(INTERNET_ACC_FLAG ))
         from
             atpprod.bravo
     ';
@@ -386,12 +413,21 @@ sub queryATPDeltaData {
             classification
             chips
             processorType
+            mastProcessorType
             serverType
             lparStatus
             cpuMIPS
             cpuMSU
             partMIPS
-            partMSU)
+            partMSU
+            processorManufacturer
+            processorModel
+            shared
+            nbrCoresPerChip
+            nbrOfChipsMax
+            spla
+            sysplex
+            internetIccFlag)
     );
     my $query = '
         select
@@ -424,12 +460,21 @@ sub queryATPDeltaData {
             ,rtrim(ltrim(classification))
             ,processor_chip
             ,rtrim(ltrim(processor_type))
+            ,rtrim(ltrim(mast_processor_type))
             ,rtrim(ltrim(server_type))
             ,rtrim(ltrim(lpar_status))
             ,CAST(cpu_mips AS INTEGER)
             ,CAST(cpu_msu AS INTEGER)
             ,CAST(part_mips AS INTEGER)
             ,CAST(part_msu AS INTEGER)
+            ,ltrim(rtrim(PROCESSOR_MANUFACTURER))
+			,ltrim(rtrim(PROCESSOR_MODEL))
+			,ltrim(rtrim(SHARED))
+			,CAST(NBR_CORES_PER_CHIP AS FLOAT)
+			,CAST(NBR_OF_CHIPS_MAX AS FLOAT)
+			,ltrim(rtrim(SPLA))
+			,ltrim(rtrim(SYSPLEX))
+			,ltrim(rtrim(INTERNET_ACC_FLAG ))
         from
             atpprod.bravo
         where  

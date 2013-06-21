@@ -654,8 +654,14 @@ sub queryHardwareData {
             classification
             chips
             processorType
+            mastProcessorType
             cpuMIPS
             cpuMSU
+            processorManufacturer
+            processorModel
+            shared
+            nbrCoresPerChip
+            nbrOfChipsMax
             lparId
             name
             lparCustomerId
@@ -667,6 +673,9 @@ sub queryHardwareData {
             techImageId
             partMIPS
             partMSU
+            spla
+            sysplex
+            internetIccFlag
             effId
             effProcessorCount
             effStatus
@@ -691,8 +700,14 @@ sub queryHardwareData {
             ,a.classification
             ,a.chips
             ,a.processor_type
+            ,a.mast_processor_type
             ,a.cpu_mips
             ,a.cpu_msu
+            ,a.processor_manufacturer
+            ,a.processor_model
+            ,a.shared
+            ,a.nbr_cores_per_chip
+            ,a.nbr_of_chips_max
             ,b.id
             ,b.name
             ,b.customer_id
@@ -704,6 +719,9 @@ sub queryHardwareData {
             ,b.tech_image_id
             ,b.part_mips
             ,b.part_msu
+            ,b.spla
+            ,b.sysplex
+            ,b.internet_icc_flag
             ,c.id
             ,c.processor_count
             ,c.status
