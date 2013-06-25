@@ -43,6 +43,10 @@
 #                                            Phase 5 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 5'
 # 2013-06-04  Liu Hai(Larry) 1.5.0           HealthCheck and Monitoring Service Component - Phase 5: Develop Database Monitoring - CNDB Customer TME_OBJECT_ID Basic Architecture
 # 2013-06-05  Liu Hai(Larry) 1.5.1           HealthCheck and Monitoring Service Component - Phase 5: Refacor the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails')
+###################################################################################################################################################################################################
+#                                            Phase 6 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 6'
+# 2013-06-18  Liu Hai(Larry) 1.6.0           HealthCheck and Monitoring Service Component - Phase 6: Go on refactoring the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails')
+# 2013-06-21  Liu Hai(Larry) 1.6.1           HealthCheck and Monitoring Service Component - Phase 6: Refactor FileSystem Monitoring Function for Bravo/Trails Server using SFTP way 
 #
 
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
@@ -101,10 +105,6 @@ my $trails_dbh;
 my $trails_db_url;
 my $trails_db_userid;
 my $trails_db_password;
-my $staging_dbh;
-my $staging_db_url;
-my $staging_db_userid;
-my $staging_db_password;
 my $staging_connection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my @row;
 my @row2;
@@ -119,13 +119,6 @@ my $DB_ENV;
 #DB Handler Objects
 my $getTotalRecordsInQueue;
 my $getTotalCustomersInQueue;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
-my $getEventAllDataCnt;
-my $getEventAllData;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
-my $getTrailsRPDBApplyGap;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
 
 #SQL Statements
 my $GET_TOTAL_RECORDS_IN_QUEUE_SQL      = "SELECT COUNT(*) FROM V_RECON_QUEUE WITH UR";
@@ -306,6 +299,22 @@ my $CNDB_CUSTOMER_ACCOUNT_NUMBER_INDEX = 0;
 my $CNDB_CUSTOMER_TME_OBJECT_ID_INDEX  = 1;
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+my $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG   = "Y";
+my $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_OFF_FLAG  = "N";
+my $REMOTE_FILE_SFTP_GET_METHOD                         = "SFTP";
+my $REMOTE_FILE_GSA_GET_METHOD                          = "GSA";
+my $BRAVO_SERVER_FILE_SYSTEM_INFO_FILE                  = "/home/liuhaidl/working/scripts/bravoServerFileSystemUsedDiskInfo.txt";
+my $TRAILS_SERVER_FILE_SYSTEM_INFO_FILE                 = "/home/liuhaidl/working/scripts/trailsServerFileSystemUsedDiskInfo.txt";
+#File System Information Definition Indexes for 6 Fields
+my $FILE_SYSTEM_MOUNT_INDEX_6_FIELDS                    = 1;
+my $TOTAL_DISK_INDEX_6_FIELDS                           = 2;
+my $USED_DISK_INDEX_6_FIELDS                            = 3;
+my $FREE_DISK_INDEX_6_FIELDS                            = 4;
+my $USED_DISK_PCT_INDEX_6_FIELDS                        = 5;
+my $FILE_SYSTEM_INDEX_6_FIELDS                          = 6;
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
 ###Initialize properties
@@ -356,7 +365,6 @@ sub init{
 
     #connect to DB
 	$trails_dbh = DBI->connect( "$trails_db_url", "$trails_db_userid", "$trails_db_password" ) || die "Trails connection failed with error: $DBI::errstr";
-    $staging_dbh = DBI->connect( "$staging_db_url", "$staging_db_userid", "$staging_db_password" ) || die "Staging connection failed with error: $DBI::errstr";
 
     #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
     #get DB connection object
@@ -452,7 +460,6 @@ sub postProcess{
 	close LOG;
 	#Disconnect DB
 	$trails_dbh->disconnect();
-	$staging_dbh->disconnect();
 	$staging_connection->disconnect();#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 }
 
@@ -794,12 +801,10 @@ sub eventRuleCheck{
                   
 				  if($eventRecordCnt==0){#It means that the loader has not started yet
             
-					  #Get the total count for certain event rule type 
-					  $getEventAllDataCnt = $staging_dbh->prepare($GET_EVENT_ALL_DATA_COUNT_SQL);
-                      $getEventAllDataCnt->execute($triggerEventGroup,$triggerEventName);
-                      @totalCntRow = $getEventAllDataCnt->fetchrow_array();
-					  $eventDataAllCnt = $totalCntRow[$EVENT_ALL_DATA_TOTAL_CNT_INDEX];
-                      $getEventAllDataCnt->finish;
+			          #Get the total count for certain event rule type 
+					  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
+					  $eventDataAllCnt = getEventAllDataCountFunction($staging_connection,$triggerEventGroup,$triggerEventName);
+					  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
 					  print LOG "{Total Count: $eventDataAllCnt} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}\n";
                       
 					  if($eventDataAllCnt!=0){#trigger event rule check only if the loader has been ran before
@@ -813,12 +818,12 @@ sub eventRuleCheck{
                           print LOG "$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
 					  
                           #Get the start time and stop time of the last successfully run for certain loader
-					      $getEventAllData = $staging_dbh->prepare($GET_EVENT_ALL_DATA_SQL);
-                          $getEventAllData->execute($triggerEventGroup,$triggerEventName);
-                          
-						  while(my @eventRow = $getEventAllData->fetchrow_array()){
-			                
-							 $loaderStatusCode = trim($eventRow[$EVENT_VALUE_DATA_INDEX]);#Remove space chars for loader status code
+						  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
+					      my @eventAllDataRows = getEventAllDataFunction($staging_connection,$triggerEventGroup,$triggerEventName);
+						  
+						  foreach my $eventRow (@eventAllDataRows){
+						
+							 $loaderStatusCode = trim($eventRow->[$EVENT_VALUE_DATA_INDEX]);#Remove space chars for loader status code
 							 print LOG "{Loader Status Code: $loaderStatusCode}\n";
                             
 							 #Terminate the loop when the last successfully run start time and end time for loader have been found
@@ -829,12 +834,12 @@ sub eventRuleCheck{
                          
 							 if($loaderStatusCode eq $LOADER_STOPPED_STATUS_CODE){#"STOPPED" Loader Status Code
 							    $endTimeForTheLastSuccessRunFindFlag = 1;
-                                $endTimeForTheLastSuccessRun =  $eventRow[$EVENT_RECORD_TIME_DATA_INDEX];#get the last successfully run end time
+                                $endTimeForTheLastSuccessRun =  $eventRow->[$EVENT_RECORD_TIME_DATA_INDEX];#get the last successfully run end time
 							 }
                              elsif($loaderStatusCode eq $LOADER_STARTED_STATUS_CODE#"STARTED" Loader Status Code
 							     &&($endTimeForTheLastSuccessRunFindFlag == 1)){#The "STOPPED" record has been found already   	
                                 $startTimeForTheLastSuccessRunFindFlag = 1; 							   
-                                $startTimeForTheLastSuccessRun =  $eventRow[$EVENT_RECORD_TIME_DATA_INDEX];#get the last successfully run start time 
+                                $startTimeForTheLastSuccessRun =  $eventRow->[$EVENT_RECORD_TIME_DATA_INDEX];#get the last successfully run start time 
                              }
 							 else{
 							    #Reset the last run start time and end time flags and values
@@ -843,8 +848,8 @@ sub eventRuleCheck{
                                 $endTimeForTheLastSuccessRun = "";
                                 $startTimeForTheLastSuccessRun = "";
 							 }
-                          }#end while(my @eventRow = $getEventAllData->fetchrow_array())
-						  $getEventAllData->finish;
+                          }#end foreach my $eventRow (@eventAllDataRows)
+						  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
                           
 						  if($startTimeForTheLastSuccessRunFindFlag && $endTimeForTheLastSuccessRunFindFlag){#support the last successfully ran record has been found case
 							 $processedRuleMessage = $loaderNotStartedMessage;
@@ -891,7 +896,7 @@ sub eventRuleCheck{
 			 #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
              elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
          		 my $serverMode = $SERVER_MODE;#var used to store server mode - for example: 'TAP'
-				 my $monitorFileSystemList;#var used to store monitor file system list - for example: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%' 
+				 my $monitorFileSystemList = "";#var used to store monitor file system list - for example: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%' #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6
                  my @monitorFileSystemListArray;#array used to store monitor file system list array
 				 my $fileSystemDefinition;#var used to store one monitoring file system definition - for example: '/db2/cndb~95%'
 				 my @fileSystemDefinitionArray;#array used to store the parsed file system definition- for ecxample: '(/db2/cndb,95%)'
@@ -900,6 +905,28 @@ sub eventRuleCheck{
                  my $usedPct;#var used to store the current used file system percentage - for example: 6%
 				 my @fileSystemEmailAlertMessageArray = ();#array used to store the file system email alert messages
 				 my $fileSystemEmailAlertMessageCount;#var used to store the count of the file system email alert messages
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+				 my $remoteServerFileSystemMonitoringFlag = $metaRuleParameter7;#var used to store the remote server file system monitor flag 'Y' or 'N' 
+				 my $remoteFileGetMethod = $metaRuleParameter8;#var used to store the remote file get method for Bravo/Trails server. For example, SFTP or GSA
+				 #Vars Definition for Bravo Server
+				 my @bravoServerFileSystemRecords = ();
+				 my @bravoServerFileSystemRecord;
+                 my $bravoServerMonitoringFileSystemList;#var used to store bravo server monitoring file system list - "/opt/bravo~90%'/var/bravo~95%'/var/ftp/scan~90%"
+                 my @bravoServerMonitoringFileSystemListArray;#array used to store bravo server monitoring file system list array - ("/opt/bravo~90%","/var/bravo~95%","/var/ftp/scan~90%") 
+				 my @parsedBravoServerMonitoringFileSystemArray;#array used to store parsed bravo server monitoring file system array - for example, ("/opt/bravo","90"%)
+                 my @parsedBravoServerMonitoringFileSystemListArray;#array used to store parsed bravo server monitoring file system list array - (("/opt/bravo","90%"),("/var/bravo","95%"),("/var/ftp/scan","90%"))
+                 my @bravoServerFileSystemEmailAlertMessageArray = ();#array used to store the bravo server file system email alert messages
+				 my $bravoServerFileSystemEmailAlertMessageArrayCount;#var used to store the count of the bravo server file system email alert messages
+				 #Vars Definition for Trails Server
+                 my @trailsServerFileSystemRecords = ();
+				 my @trailsServerFileSystemRecord;
+                 my $trailsServerMonitoringFileSystemList;#var used to store trails server monitoring file system list - "/opt/trails~90%'/var/trails~95%"
+                 my @trailsServerMonitoringFileSystemListArray;#array used to store trails server monitoring file system list array - ("/opt/trails~90%","/var/trails~95%") 
+				 my @parsedTrailsServerMonitoringFileSystemArray;#array used to store parsed trails server monitoring file system array - for example, ("/opt/trails","90"%)
+                 my @parsedTrailsServerMonitoringFileSystemListArray;#array used to store parsed trails server monitoring file system list array - (("/opt/trails","90%"),("/var/trails","95%"))
+                 my @trailsServerFileSystemEmailAlertMessageArray = ();#array used to store the trails server file system email alert messages
+				 my $trailsServerFileSystemEmailAlertMessageArrayCount;#var used to store the count of the trails server file system email alert messages
+			     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Filespace monitoring on @1 Server'
 				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Filespace equal to or above @2 for @3 has been reached.'
@@ -923,64 +950,323 @@ sub eventRuleCheck{
                  elsif($serverMode eq $metaRuleParameter5){#TRAILS Server
 					$monitorFileSystemList = $metaRuleParameter6;#Filesystem Monitor List: '/opt/trails~90%'/var/trails~95%'
 				 }
-				 elsif($serverMode eq $metaRuleParameter7){#TAP3 Server
-                    $monitorFileSystemList = $metaRuleParameter8;#TBD for TAP3
-				 }
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+				 #elsif($serverMode eq $metaRuleParameter7){#TAP3 Server
+                 #   $monitorFileSystemList = $metaRuleParameter8;#TBD for TAP3
+				 #}
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
                  elsif($serverMode eq $metaRuleParameter9){#TAP2 Server
                     $monitorFileSystemList = $metaRuleParameter10;#TBD for TAP2
 				 }
 
 				 print LOG "File System Monitor Server Mode: {$serverMode}\n";
                  print LOG "File System Monitor List: {$monitorFileSystemList}\n";
-                   
-				 @monitorFileSystemListArray = split(/\'/,$monitorFileSystemList);
-				 foreach $fileSystemDefinition (@monitorFileSystemListArray){#go loop for file system list array
-                   print LOG "File System Definition: {$fileSystemDefinition}\n";
-                   @fileSystemDefinitionArray = split(/\~/,$fileSystemDefinition);
-                   $fileSystem = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#file system - for example: '/db2/cndb'
-                   $fileSystem = trim($fileSystem);#Remove space chars
-				   print LOG "File System: {$fileSystem}\n";
-                   $threshold = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#file system monitoring threshold - for example: '95%'
-                   $threshold = trim($threshold);#Remove space chars
-                   print LOG "Threshold: {$threshold}\n";
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+		         print LOG "Remote Server File System Monitor Flag: {$remoteServerFileSystemMonitoringFlag}\n";
+				
+				 if($monitorFileSystemList ne ""){#only do file system using percentage check when monitroing file system list has been defined for target server for example, TAP
+				    @monitorFileSystemListArray = split(/\'/,$monitorFileSystemList);
+				    foreach $fileSystemDefinition (@monitorFileSystemListArray){#go loop for file system list array
+                      print LOG "File System Definition: {$fileSystemDefinition}\n";
+                      @fileSystemDefinitionArray = split(/\~/,$fileSystemDefinition);
+                      $fileSystem = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#file system - for example: '/db2/cndb'
+                      $fileSystem = trim($fileSystem);#Remove space chars
+				      print LOG "File System: {$fileSystem}\n";
+                      $threshold = $fileSystemDefinitionArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#file system monitoring threshold - for example: '95%'
+                      $threshold = trim($threshold);#Remove space chars
+                      print LOG "Threshold: {$threshold}\n";
 
-				   my $matchedFileSystem = `df -h|grep $fileSystem`;
-				   chomp $matchedFileSystem;#remove the return line char
-                   $matchedFileSystem = trim($matchedFileSystem);#Remove space chars
-				   if($matchedFileSystem ne ""){
-				      print LOG "Matched File System: {$matchedFileSystem} for File System: {$fileSystem}\n";
+				      if($serverMode eq $TAP || $serverMode eq $TAP2){#If TAP or TAP2 server, then the information of file system using percentage is gotten from local server directly  
+				         my $matchedFileSystem = `df -h|grep $fileSystem`;
+				         chomp $matchedFileSystem;#remove the return line char
+                         $matchedFileSystem = trim($matchedFileSystem);#Remove space chars
+				         if($matchedFileSystem ne ""){
+				            print LOG "Matched File System: {$matchedFileSystem} for File System: {$fileSystem}\n";
 					 
-					  #Sample Record: {12G  9.5G  1.7G  86% /db2/cndb}
-                      $usedPct = `df -h|grep $fileSystem|awk '{print \$$USED_DISK_PCT_INDEX;}'`;#$USED_DISK_PCT_INDEX = 4;
-                      chomp $usedPct;
-                      $usedPct = trim($usedPct);
-					  print LOG "The File System Used Percentage: {$usedPct} for File System: {$fileSystem}\n";
+					        #Sample Record: {12G  9.5G  1.7G  86% /db2/cndb}
+                            $usedPct = `df -h|grep $fileSystem|awk '{print \$$USED_DISK_PCT_INDEX;}'`;#$USED_DISK_PCT_INDEX = 4;
+                            chomp $usedPct;
+                            $usedPct = trim($usedPct);
+					        print LOG "The File System Used Percentage: {$usedPct} for File System: {$fileSystem}\n";
 
-					  if($usedPct ge $threshold){#if the current used file system percentage >= file system defined threshold value, then trigger the event rule alert message
-					     print LOG "The File System Used Percentage: {$usedPct} is great then or equal to the file system defined threshold value: {$threshold}\n";
+					        if(compareUsedDiskPctWithFileSystemThreshold($usedPct,$threshold) >=0){#if the current used file system percentage >= file system defined threshold value, then trigger the event rule alert message #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6
+					           print LOG "The File System Used Percentage: {$usedPct} is great then or equal to the file system defined threshold value: {$threshold}\n";
 
-						 $processedRuleMessage = $metaRuleMessage;
-                         $processedRuleMessage =~ s/\@2/$usedPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
-                         $processedRuleMessage =~ s/\@3/$fileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
-                         $processedRuleMessage =~ s/\@4/$threshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%' 
+						       $processedRuleMessage = $metaRuleMessage;
+                               $processedRuleMessage =~ s/\@2/$usedPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
+                               $processedRuleMessage =~ s/\@3/$fileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
+                               $processedRuleMessage =~ s/\@4/$threshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%' 
 
-						 push @fileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
-                         print LOG "The Processed Rule Message: {$processedRuleMessage}\n";
-					  }
-				   }
-				   else{#the file system doesn't exist
-				     print LOG "File System: {$fileSystem} doesn't exist for $serverMode server.\n";
-				   }
+						       push @fileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
+                               print LOG "The Processed Rule Message: {$processedRuleMessage}\n";
+					        }#end if($usedPct ge $threshold) 
+				         }#end if($matchedFileSystem ne "") 
+				         else{#the file system doesn't exist
+				           print LOG "File System: {$fileSystem} doesn't exist for $serverMode server.\n";
+				         }#end else
+				      }#end if($serverMode eq $TAP || $serverMode eq $TAP2)
+				    }#end foreach $fileSystemDefinition (@monitorFileSystemListArray)
+				 }#end if($monitorFileSystemList ne "")
 
-                 }
-				 
+                 if($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG){# $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG = "Y"
+                    print LOG "The Remote Server File System Monitoring Function has been turned on for Bravo and Trails servers.\n";
+                    print LOG "Remote File Get Method: {$remoteFileGetMethod}\n";
+					
+					#Bravo Server File System Used Disk Monitoring Logic Feature Start 
+					$bravoServerMonitoringFileSystemList = $metaRuleParameter4;#Bravo Server - Filesystem Monitoring List: "/opt/bravo~90%'/var/bravo~95%'/var/ftp/scan~90%"
+             		if($bravoServerMonitoringFileSystemList ne ""){
+                       @bravoServerMonitoringFileSystemListArray = split(/\'/,$bravoServerMonitoringFileSystemList);
+				       foreach my $bravoServerMonitoringFileSystemDefinition (@bravoServerMonitoringFileSystemListArray){#go loop for file system list array
+                          print LOG "Bravo Server - Monitoring File System Definition: {$bravoServerMonitoringFileSystemDefinition}\n";
+                          @parsedBravoServerMonitoringFileSystemArray = split(/\~/,$bravoServerMonitoringFileSystemDefinition);
+                          my $bravoServerMonitoringFileSystem = $parsedBravoServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#monitoring file system - for example: "/opt/bravo"
+                          $bravoServerMonitoringFileSystem = trim($bravoServerMonitoringFileSystem);#Remove space chars
+				          print LOG "Bravo Server - Monitoring File System: {$bravoServerMonitoringFileSystem}\n";
+                          my $bravoServerMonitoringFileSystemThreshold = $parsedBravoServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#monitoring file system threshold - for example: "90%"
+                          $bravoServerMonitoringFileSystemThreshold = trim($bravoServerMonitoringFileSystemThreshold);#Remove space chars
+                          print LOG "Bravo Server - Monitoring File System Threshold: {$bravoServerMonitoringFileSystemThreshold}\n";
+
+						  push @parsedBravoServerMonitoringFileSystemListArray, [@parsedBravoServerMonitoringFileSystemArray];
+                       }#end 
+
+                       #Read File System Using Percentage Information of the download files from Bravo and Trails Servers
+					   #Open Bravo Server File System Information File Handler
+				       open(BRAVO_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER, "<", $BRAVO_SERVER_FILE_SYSTEM_INFO_FILE ) or die "Bravo Server File System Information File {$BRAVO_SERVER_FILE_SYSTEM_INFO_FILE} doesn't exist. Perl script exits due to this reason.";
+                       #Read Record From Bravo Server File System Information File
+					   while (my $bravoServerFileSystemUsedPctInfoRecord = <BRAVO_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER>){
+						  @bravoServerFileSystemRecord = ();#Reset @bravoServerFileSystemRecord Object Array to be Empty Every Time
+
+					      chomp $bravoServerFileSystemUsedPctInfoRecord;
+						  #Remove before and after space chars of a string
+						  $bravoServerFileSystemUsedPctInfoRecord = trim($bravoServerFileSystemUsedPctInfoRecord);
+						  print LOG "Bravo Server - File System Used Percentage Information Record: {$bravoServerFileSystemUsedPctInfoRecord}\n";
+                          my $bravoServerColumnCnt = `echo $bravoServerFileSystemUsedPctInfoRecord|awk '{print NF;}'`;
+						  chomp $bravoServerColumnCnt;
+                          $bravoServerColumnCnt = trim($bravoServerColumnCnt);
+						  print LOG "Bravo Server - The Number of Columns for File System Used Percentage Information Record: {$bravoServerColumnCnt}\n";
+
+	                      my $bravoServerUsedDiskPct;
+                          my $bravoServerFileSystem;
+						
+						  if($bravoServerColumnCnt == 5){
+						     $bravoServerUsedDiskPct = `echo $bravoServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX;}'`;
+							 $bravoServerFileSystem = `echo $bravoServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX;}'`;
+						   }
+						   elsif($bravoServerColumnCnt == 6){
+						     $bravoServerUsedDiskPct = `echo $bravoServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX_6_FIELDS;}'`;
+							 $bravoServerFileSystem = `echo $bravoServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX_6_FIELDS;}'`;
+						   }
+						  
+                           chomp $bravoServerFileSystem;
+                           $bravoServerFileSystem = trim($bravoServerFileSystem);
+	                       print LOG "Bravo Server - File System: {$bravoServerFileSystem}\n";
+						   push @bravoServerFileSystemRecord, $bravoServerFileSystem;
+
+						   chomp $bravoServerUsedDiskPct;
+                           $bravoServerUsedDiskPct = trim($bravoServerUsedDiskPct);
+	                       print LOG "Bravo Server - Used Disk Percentage: {$bravoServerUsedDiskPct}\n";
+						   push @bravoServerFileSystemRecord, $bravoServerUsedDiskPct;
+
+                           push @bravoServerFileSystemRecords, [@bravoServerFileSystemRecord]; 
+                       }#end of while
+
+                       #Close Bravo Server File System Information File Handler
+					   close BRAVO_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER;
+					   
+					   #Compare the Defined File System Monitoring Threshold with the Current File System Used Percentage Value
+					   my $parsedBravoServerMonitoringFileSystemListArrayCnt = scalar(@parsedBravoServerMonitoringFileSystemListArray);
+					   print LOG "Bravo Server - The Count of Defined Monitoring File System List: {$parsedBravoServerMonitoringFileSystemListArrayCnt}\n";
+					   my $bravoServerFileSystemRecordsCnt = scalar(@bravoServerFileSystemRecords);
+                       print LOG "Bravo Server - The Count of File System List: {$bravoServerFileSystemRecordsCnt}\n";
+					   if(($parsedBravoServerMonitoringFileSystemListArrayCnt > 0)
+					    &&($bravoServerFileSystemRecordsCnt > 0)){#only go loop file system list array when the count of it is > 0
+					       
+						   foreach my $parsedBravoServerMonitoringFileSystemArrayAddress (@parsedBravoServerMonitoringFileSystemListArray){
+                           my $bravoServerMonitoringFileSystem = trim($parsedBravoServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                           print LOG "Bravo Server - the Defined Monitoring File System: {$bravoServerMonitoringFileSystem}\n";
+						   my $bravoServerMonitoringFileSystemThreshold = trim($parsedBravoServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+                          
+                           foreach my $bravoServerFileSystemRecordAddress (@bravoServerFileSystemRecords){
+						      my $bravoServerFileSystem = trim($bravoServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                              print LOG "Bravo Server - the Current File System: {$bravoServerFileSystem}\n";
+							  my $bravoServerUsedDiskPct = trim($bravoServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+							  if($bravoServerMonitoringFileSystem eq $bravoServerFileSystem){#judge if the current file system is the defined monitoring file system 
+							     print LOG "Bravo Server - the Current File System: {$bravoServerFileSystem} is equal to the Defined Monitoring File System: {$bravoServerMonitoringFileSystem}\n";
+							     print LOG "Bravo Server - the Current File System Used Disk Percentage: {$bravoServerUsedDiskPct}\n";
+								 print LOG "Bravo Server - the Defined Monitoring File System Threshold: {$bravoServerMonitoringFileSystemThreshold}\n";
+
+								 if(compareUsedDiskPctWithFileSystemThreshold($bravoServerUsedDiskPct,$bravoServerMonitoringFileSystemThreshold) >=0){
+								    print LOG "Bravo Server - the Current File System Used Disk Percentage: {$bravoServerUsedDiskPct} is great then or equal to the Defined Monitoring File System Threshold: {$bravoServerMonitoringFileSystemThreshold}\n";
+                                    
+									$processedRuleMessage = $metaRuleMessage;
+                                    $processedRuleMessage =~ s/\@2/$bravoServerUsedDiskPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
+                                    $processedRuleMessage =~ s/\@3/$bravoServerMonitoringFileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
+                                    $processedRuleMessage =~ s/\@4/$bravoServerMonitoringFileSystemThreshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%'
+									
+                                    push @bravoServerFileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage";
+                                 }
+							  }#end if($bravoServerMonitoringFileSystem eq $bravoServerFileSystem)
+						   }#end foreach my $bravoServerFileSystemRecordAddress (@bravoServerFileSystemRecords)
+					   }#end foreach my $parsedBravoServerMonitoringFileSystemArrayAddress (@parsedBravoServerMonitoringFileSystemListArray)
+					   }#end if($parsedBravoServerMonitoringFileSystemListArrayCnt > 0)
+                    }#end if($bravoServerMonitoringFileSystemList ne "")
+                    #Bravo Server File System Used Disk Monitoring Logic Feature End
+					
+                    #Trails Server File System Used Disk Monitoring Logic Feature Start
+                    $trailsServerMonitoringFileSystemList = $metaRuleParameter6;#Trails Server - Filesystem Monitoring List: "/opt/trails~90%'/var/trails~95%"
+             		if($trailsServerMonitoringFileSystemList ne ""){
+                       @trailsServerMonitoringFileSystemListArray = split(/\'/,$trailsServerMonitoringFileSystemList);
+				       foreach my $trailsServerMonitoringFileSystemDefinition (@trailsServerMonitoringFileSystemListArray){#go loop for file system list array
+                          print LOG "Trails Server - Monitoring File System Definition: {$trailsServerMonitoringFileSystemDefinition}\n";
+                          @parsedTrailsServerMonitoringFileSystemArray = split(/\~/,$trailsServerMonitoringFileSystemDefinition);
+                          my $trailsServerMonitoringFileSystem = $parsedTrailsServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#monitoring file system - for example: "/opt/trails"
+                          $trailsServerMonitoringFileSystem = trim($trailsServerMonitoringFileSystem);#Remove space chars
+				          print LOG "Trails Server - Monitoring File System: {$trailsServerMonitoringFileSystem}\n";
+                          my $trailsServerMonitoringFileSystemThreshold = $parsedTrailsServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#monitoring file system threshold - for example: "90%"
+                          $trailsServerMonitoringFileSystemThreshold = trim($trailsServerMonitoringFileSystemThreshold);#Remove space chars
+                          print LOG "Trails Server - Monitoring File System Threshold: {$trailsServerMonitoringFileSystemThreshold}\n";
+
+						  push @parsedTrailsServerMonitoringFileSystemListArray, [@parsedTrailsServerMonitoringFileSystemArray];
+                       }#end 
+
+                       #Read File System Using Percentage Information of the download files from Trails and Trails Servers
+					   #Open Trails Server File System Information File Handler
+				       open(TRAILS_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER, "<", $TRAILS_SERVER_FILE_SYSTEM_INFO_FILE ) or die "Trails Server File System Information File {$TRAILS_SERVER_FILE_SYSTEM_INFO_FILE} doesn't exist. Perl script exits due to this reason.";
+                       #Read Record From Trails Server File System Information File
+					   while (my $trailsServerFileSystemUsedPctInfoRecord = <TRAILS_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER>){
+						  @trailsServerFileSystemRecord = ();#Reset @trailsServerFileSystemRecord Object Array to be Empty Every Time
+
+					      chomp $trailsServerFileSystemUsedPctInfoRecord;
+						  #Remove before and after space chars of a string
+						  $trailsServerFileSystemUsedPctInfoRecord = trim($trailsServerFileSystemUsedPctInfoRecord);
+						  print LOG "Trails Server - File System Used Percentage Information Record: {$trailsServerFileSystemUsedPctInfoRecord}\n";
+                          my $trailsServerColumnCnt = `echo $trailsServerFileSystemUsedPctInfoRecord|awk '{print NF;}'`;
+						  chomp $trailsServerColumnCnt;
+                          $trailsServerColumnCnt = trim($trailsServerColumnCnt);
+						  print LOG "Trails Server - The Number of Columns for File System Used Percentage Information Record: {$trailsServerColumnCnt}\n";
+
+	                      my $trailsServerUsedDiskPct;
+                          my $trailsServerFileSystem;
+						
+						  if($trailsServerColumnCnt == 5){
+						     $trailsServerUsedDiskPct = `echo $trailsServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX;}'`;
+							 $trailsServerFileSystem = `echo $trailsServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX;}'`;
+						   }
+						   elsif($trailsServerColumnCnt == 6){
+						     $trailsServerUsedDiskPct = `echo $trailsServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX_6_FIELDS;}'`;
+							 $trailsServerFileSystem = `echo $trailsServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX_6_FIELDS;}'`;
+						   }
+						  
+                           chomp $trailsServerFileSystem;
+                           $trailsServerFileSystem = trim($trailsServerFileSystem);
+	                       print LOG "Trails Server - File System: {$trailsServerFileSystem}\n";
+						   push @trailsServerFileSystemRecord, $trailsServerFileSystem;
+
+						   chomp $trailsServerUsedDiskPct;
+                           $trailsServerUsedDiskPct = trim($trailsServerUsedDiskPct);
+	                       print LOG "Trails Server - Used Disk Percentage: {$trailsServerUsedDiskPct}\n";
+						   push @trailsServerFileSystemRecord, $trailsServerUsedDiskPct;
+
+                           push @trailsServerFileSystemRecords, [@trailsServerFileSystemRecord]; 
+                       }#end of while
+
+                       #Close Trails Server File System Information File Handler
+					   close TRAILS_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER;
+					   
+					   #Compare the Defined File System Monitoring Threshold with the Current File System Used Percentage Value
+					   my $parsedTrailsServerMonitoringFileSystemListArrayCnt = scalar(@parsedTrailsServerMonitoringFileSystemListArray);
+					   print LOG "Trails Server - The Count of Defined Monitoring File System List: {$parsedTrailsServerMonitoringFileSystemListArrayCnt}\n";
+					   my $trailsServerFileSystemRecordsCnt = scalar(@trailsServerFileSystemRecords);
+                       print LOG "Trails Server - The Count of File System List: {$trailsServerFileSystemRecordsCnt}\n";
+					   if(($parsedTrailsServerMonitoringFileSystemListArrayCnt > 0)
+					    &&($trailsServerFileSystemRecordsCnt > 0)){#only go loop file system list array when the count of it is > 0
+					       
+						   foreach my $parsedTrailsServerMonitoringFileSystemArrayAddress (@parsedTrailsServerMonitoringFileSystemListArray){
+                           my $trailsServerMonitoringFileSystem = trim($parsedTrailsServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                           print LOG "Trails Server - the Defined Monitoring File System: {$trailsServerMonitoringFileSystem}\n";
+						   my $trailsServerMonitoringFileSystemThreshold = trim($parsedTrailsServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+                          
+                           foreach my $trailsServerFileSystemRecordAddress (@trailsServerFileSystemRecords){
+						      my $trailsServerFileSystem = trim($trailsServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                              print LOG "Trails Server - the Current File System: {$trailsServerFileSystem}\n";
+							  my $trailsServerUsedDiskPct = trim($trailsServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+							  if($trailsServerMonitoringFileSystem eq $trailsServerFileSystem){#judge if the current file system is the defined monitoring file system 
+							     print LOG "Trails Server - the Current File System: {$trailsServerFileSystem} is equal to the Defined Monitoring File System: {$trailsServerMonitoringFileSystem}\n";
+							     print LOG "Trails Server - the Current File System Used Disk Percentage: {$trailsServerUsedDiskPct}\n";
+								 print LOG "Trails Server - the Defined Monitoring File System Threshold: {$trailsServerMonitoringFileSystemThreshold}\n";
+
+								 if(compareUsedDiskPctWithFileSystemThreshold($trailsServerUsedDiskPct,$trailsServerMonitoringFileSystemThreshold) >=0){
+								    print LOG "Trails Server - the Current File System Used Disk Percentage: {$trailsServerUsedDiskPct} is great then or equal to the Defined Monitoring File System Threshold: {$trailsServerMonitoringFileSystemThreshold}\n";
+                                    
+									$processedRuleMessage = $metaRuleMessage;
+                                    $processedRuleMessage =~ s/\@2/$trailsServerUsedDiskPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
+                                    $processedRuleMessage =~ s/\@3/$trailsServerMonitoringFileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
+                                    $processedRuleMessage =~ s/\@4/$trailsServerMonitoringFileSystemThreshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%'
+									
+                                    push @trailsServerFileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage";
+                                 }
+							  }#end if($trailsServerMonitoringFileSystem eq $bravoServerFileSystem)
+						   }#end foreach my $bravoServerFileSystemRecordAddress (@bravoServerFileSystemRecords)
+					   }#end foreach my $parsedTrailsServerMonitoringFileSystemArrayAddress (@parsedTrailsServerMonitoringFileSystemListArray)
+					   }#end if($parsedTrailsServerMonitoringFileSystemListArrayCnt > 0)
+                    }#end if($trailsServerMonitoringFileSystemList ne "") 
+                    #Trails Server File System Used Disk Monitoring Logic Feature End
+
+				 }#end if($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG)
+				 else{
+				    print LOG "The Remote Server File System Monitroing Function has been turned off for Bravo and Trails servers.\n";  
+				 }#end else
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End 
+				  
 				 #append file system email alert messages into the email content
                  $fileSystemEmailAlertMessageCount = scalar(@fileSystemEmailAlertMessageArray);
                  if($fileSystemEmailAlertMessageCount > 2){#append email content if has file system email alert message. Please note that here the fileSystemEmailAlertMessageCount should > 2, not > 0, because of the event rule title and event rule handling instruction code have been added into this array already.
                     $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
                     foreach my $fileSystemEmailAlertMessage (@fileSystemEmailAlertMessageArray){#go loop for file system email alert message
 	                   $emailFullContent.="$fileSystemEmailAlertMessage";#append file system email alert message into email content
-                    }  
+                    }
+					
+                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+					#Append Bravo Server File System Alert Messages into Email Content
+					$bravoServerFileSystemEmailAlertMessageArrayCount = scalar(@bravoServerFileSystemEmailAlertMessageArray);
+					if($bravoServerFileSystemEmailAlertMessageArrayCount > 0){
+					   $emailFullContent.="\n";#append a new break line into email content
+                       
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$BRAVO/g;#replace @1 with BRAVO server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Bravo Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Bravo Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray){#go loop for bravo server file system email alert message
+	                      $emailFullContent.="$bravoServerFileSystemEmailAlertMessage\n";#append bravo server file system email alert message into email content
+                          print LOG "Bravo Server - The Processed Rule Message: {$bravoServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray)
+					}
+
+					#Append Trails Server File System Alert Messages into Email Content
+                    $trailsServerFileSystemEmailAlertMessageArrayCount = scalar(@trailsServerFileSystemEmailAlertMessageArray);
+					if($trailsServerFileSystemEmailAlertMessageArrayCount > 0){
+					   $emailFullContent.="\n";#append a new break line into email content
+                       
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$TRAILS/g;#replace @1 with TRAILS server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Trails Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Trails Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray){#go loop for trails server file system email alert message
+	                      $emailFullContent.="$trailsServerFileSystemEmailAlertMessage\n";#append trails server file system email alert message into email content
+                          print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
+					}
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 	                $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
                  }
 
@@ -1411,57 +1697,33 @@ sub setDBConnInfo{
        $trails_db_url      = "dbi:DB2:TRAILS";
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
-
-	   $staging_db_url      = "dbi:DB2:STAGING";
-       $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2"; 
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
 	   $trails_db_url      = "dbi:DB2:TRAILSPD";
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "may2012a";
-
-       $staging_db_url      = "dbi:DB2:STAGING";
-       $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2";
 	}
     elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	   $trails_db_url      = "dbi:DB2:TRAILS";
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
-
-	   $staging_db_url      = "dbi:DB2:STAGINGR";
-       $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2";
 	}
 	elsif($SERVER_MODE eq $TAPMF){#TAPMF Server
 	   #TBD
 	   $trails_db_url      = "";
        $trails_db_userid   = "";
        $trails_db_password = "";
-
-	   $staging_db_url      = "";
-       $staging_db_userid   = "";
-       $staging_db_password = "";
 	}
 	#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
 	elsif($SERVER_MODE eq $BRAVO){#BRAVO Server
        $trails_db_url      = "dbi:DB2:TRAILS";
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
-
-	   $staging_db_url      = "dbi:DB2:STAGING";
-       $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2";
     }
 	elsif($SERVER_MODE eq $TRAILS){#TRAILS Server
        $trails_db_url      = "dbi:DB2:TRAILS";
        $trails_db_userid   = "eaadmin";
        $trails_db_password = "Green8ay";
-
-	   $staging_db_url      = "dbi:DB2:STAGING";
-       $staging_db_userid   = "eaadmin";
-       $staging_db_password = "apr03db2";
     }
 	#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 }
@@ -1574,7 +1836,7 @@ sub getEventMetaDataFunction{
   my $sth = $connection->sql->{eventMetaDataSQL};
 
   $sth->execute();
-   while (@eventMetaRecord = $sth->fetchrow_array()){
+  while (@eventMetaRecord = $sth->fetchrow_array()){
      push @eventMetaRecords, [@eventMetaRecord];  
   }
   $sth->finish;
@@ -1586,3 +1848,91 @@ sub queryEventMetaData{
   return ('eventMetaDataSQL', $GET_EVENT_META_DATA_SQL);
 }
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
+#my $GET_EVENT_ALL_DATA_COUNT_SQL = "SELECT COUNT(*) FROM EVENT E JOIN EVENT_TYPE ET ON ET.EVENT_ID = E.EVENT_ID JOIN EVENT_GROUP EG ON EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID WHERE EG.NAME = ? AND ET.NAME = ? WITH UR";
+sub getEventAllDataCountFunction{
+  my $connection = shift;
+  my $eventGroupName = shift;
+  my $eventTypeName = shift;
+  my @eventAllDataCountRow;
+  my $eventAllDataCount;
+  
+  $connection->prepareSqlQuery(queryEventAllDataCount());
+  my $sth = $connection->sql->{eventAllDataCountSQL};
+
+  $sth->execute($eventGroupName,$eventTypeName);
+  @eventAllDataCountRow = $sth->fetchrow_array();
+  $eventAllDataCount = $eventAllDataCountRow[$EVENT_ALL_DATA_TOTAL_CNT_INDEX];  
+  
+  $sth->finish;
+  return $eventAllDataCount;
+}
+
+sub queryEventAllDataCount{
+  print LOG "[queryEventAllDataCount] Query SQL: {$GET_EVENT_ALL_DATA_COUNT_SQL}\n";
+  return ('eventAllDataCountSQL', $GET_EVENT_ALL_DATA_COUNT_SQL);
+}
+
+#my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID ORDER BY E.RECORD_TIME DESC FETCH FIRST 100 ROWS ONLY WITH UR";
+sub getEventAllDataFunction{
+  my $connection = shift;
+  my $eventGroupName = shift;
+  my $eventTypeName = shift;
+  my @eventAllDataRecords = ();
+  my @eventAllDataRecord;
+  
+  $connection->prepareSqlQuery(queryEventAllData());
+  my $sth = $connection->sql->{eventAllDataSQL};
+
+  $sth->execute($eventGroupName,$eventTypeName);
+  while (@eventAllDataRecord = $sth->fetchrow_array()){
+     push @eventAllDataRecords, [@eventAllDataRecord];  
+  }
+  
+  $sth->finish;
+  return @eventAllDataRecords;
+}
+
+sub queryEventAllData{
+  print LOG "[queryEventAllData] Query SQL: {$GET_EVENT_ALL_DATA_SQL}\n";
+  return ('eventAllDataSQL', $GET_EVENT_ALL_DATA_SQL);
+}
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+#The following method is used to compare the used disk percentage with the defined file system threshold
+sub compareUsedDiskPctWithFileSystemThreshold{
+   my $usedDiskPct = shift;
+   my $fileSystemThreshold = shift;
+   my $usedDiskPctValue;
+   my $fileSystemThresholdValue;
+   my $compareResultValue;
+   
+   $usedDiskPct = trim($usedDiskPct);#for example, 96%
+   print LOG "The Used Disk Percentage: {$usedDiskPct}\n";
+   $fileSystemThreshold = trim($fileSystemThreshold);#for example, 90%
+   print LOG "The Defined File System Threshold: {$fileSystemThreshold}\n";
+   
+   $usedDiskPctValue = substr($usedDiskPct,0,length($usedDiskPct)-1);#for example, 96
+   print LOG "The Used Disk Percentage Value: {$usedDiskPctValue}\n";
+   
+   $fileSystemThresholdValue = substr($fileSystemThreshold,0,length($fileSystemThreshold)-1);#for example, 90
+   print LOG "The Defined File System Threshold Value: {$fileSystemThresholdValue}\n";
+
+   if($usedDiskPctValue > $fileSystemThresholdValue){
+      $compareResultValue = 1;
+      print LOG "The Used Disk Percentage Value: {$usedDiskPctValue} > The Defined File System Threshold Value: {$fileSystemThresholdValue}. The Compare Result Return Value: {$compareResultValue}\n";
+   }
+   elsif($usedDiskPctValue == $fileSystemThresholdValue){
+      $compareResultValue = 0;
+      print LOG "The Used Disk Percentage Value: {$usedDiskPctValue} == The Defined File System Threshold Value: {$fileSystemThresholdValue}. The Compare Result Return Value: {$compareResultValue}\n";
+   }
+   elsif($usedDiskPctValue < $fileSystemThresholdValue){
+      $compareResultValue = -1;
+      print LOG "The Used Disk Percentage Value: {$usedDiskPctValue} < The Defined File System Threshold Value: {$fileSystemThresholdValue}. The Compare Result Return Value: {$compareResultValue}\n";
+   }
+  
+   return $compareResultValue;
+}
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
