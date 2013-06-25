@@ -364,7 +364,7 @@ public class ShowConfirmation extends AccountBaseAction {
             if (recon.getReconcileType().getId() == 1) {
                 licenseService.freePoolWithParentPaginatedList(getData(),
                         getUserSession().getAccount(), getStartIndex(),
-                        getData().getObjectsPerPage(), getSort(), getDir());
+                        getData().getObjectsPerPage(), getSort(), getDir(),null);
             }
 
             list = recon.getList();

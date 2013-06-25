@@ -52,7 +52,7 @@ public class LicenseAction extends AccountReportBaseAction {
     public String doFreePool() {
         getLicenseService().freePoolWithParentPaginatedList(getData(),
                 getAccount(), getStartIndex(), getData().getObjectsPerPage(),
-                getSort(), getDir());
+                getSort(), getDir(),null);
 
         setRequestURI("licenseFreePool.htm");
         return "freepool";

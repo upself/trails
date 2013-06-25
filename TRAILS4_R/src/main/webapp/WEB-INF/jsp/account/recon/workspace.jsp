@@ -1,7 +1,12 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<script src="${pageContext.request.contextPath}/js/jquery.js"
+	type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
+	type="text/javascript"></script>
 <script type="text/javascript">
+
 	function popupBravoSl(id) {
 		newWin = window
 				.open(
@@ -28,26 +33,169 @@
 				.open(page, 'PopUpWindow',
 						'left=200,top=180,resizable=yes,scrollbars=yes,width=700,height=500');
 	}
+	
+	
+	function rcnTypSltChng(objSelect){
+		var value = objSelect.value;
+		if(value == 1){
+	        $("#filterSpan").after('<input id="btnAddFltr" type="button" value="+filter" onclick="addFltr()"/>');
+		}else{
+			$("#btnAddFltr").remove();
+			$("div.fltr").empty();
+		}
+	}
+	
+    
+	function addFltr(){
+		
+		var filter = '<div class="fltr">'+
+		'<div class="clear"></div>'+
+	    '<div class="hrule-dots"></div>'+
+	    '<div class="clear"></div>'+ 
+		'<input type="button" value="delete" onclick="delFltr(this)"/>'+
+		' Capacity Type:';
+		 $.ajax({
+		   url:"${pageContext.request.contextPath}/account/recon/getCapcityTypes.htm",
+	       async:false,
+	       beforeSend: function(){
+	    	 $("#filters").html("loading capacity types...");  
+	       },
+	       success: function (data,result){
+	    	 filter+=data+'</br></br>';
+	       },
+	       complete: function(){
+	    	 $("#filters").empty();  
+	       }
+	     });
+		 filter+=
+		' Manufacturer(s): <input type="text" name="manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'+
+		' Product name(s):<input type="text" name="productName" autocomplete="off" onKeyUp="keyup(this)"/>'+ 
+		' PO number(s):<input type="text" name="poNo"/>'+
+		' SWCM ID:<input type="text" name="swcmId"/>'+
+		'</div>';
+
+	    
+		 $("#filters").after(filter);
+	}
+	
+	function delFltr(fltr){
+		$(fltr).parent("div").empty();
+	}
+	
+	$(document.body).click(function(event) {
+		var liveSearch=$("#jquery-live-search");
+		if(liveSearch.length){
+			var clicked = $(event.target);
+			if (!(clicked.is("#jquery-live-search") || clicked.parents("#jquery-live-search").length || clicked.is(this))) {
+				liveSearch.slideUp();
+			}
+		}
+	});
+	
+	var lastValue='';
+	
+	function keyup(type){
+		var value=$.trim(type.value);
+   		if(value==$.trim('')||value=='' || value==lastValue){
+           return;
+		}
+		lastValue = value;
+		
+		var liveSearch=$("#jquery-live-search");
+	
+		if(!liveSearch.length){
+			liveSearch = $("<div id='jquery-live-search'></div>").appendTo(document.body).hide().slideUp(0);
+		}
+		
+		var inputPos = $(type).position();
+		var inputHeight = $(type).outerHeight();
+		
+		liveSearch.css({
+			"position":"absolute",
+			"top":inputPos.top+inputHeight+"px",
+			"left":inputPos.left+"px"
+		});
+		
+		if (this.timer) {
+			clearTimeout(this.timer);
+		}
+		
+       this.timer = setTimeout(function(){
+		   
+    	   $.ajax({
+    			 url:"${pageContext.request.contextPath}/account/recon/quickSearch.htm",
+    			 async:true,
+    			 type:"POST",
+    			 data:{key:value,label:type.name},
+    			 beforeSend:function(){
+    				 liveSearch.empty();
+    				 liveSearch.append("searching...").fadeIn(400);
+    			 },
+    			 error:function(){
+    				 liveSearch.empty();
+    				 liveSearch.append("error").fadeIn(400);
+    			 },
+    			 success:function(data,status){
+    				 liveSearch.empty();
+    				 if(!data.length){
+    					 liveSearch.append("no matched item found.")
+    				 }else{
+    				     liveSearch.append(data);
+    				 }
+    				 liveSearch.show("slow");
+    				 
+    				 var over={
+    				    "color":"white",
+    				    "background":"blue"
+    				 };
+    				 
+    				 var out={
+    					"color":"black",
+    					"background":"white"
+    				 };
+    				 
+    				 $("li.prompt").hover(function(){
+    					  $(this).css(over);
+    				 }, function(){
+    					 $(this).css(out);
+    				 });
+    				 
+    				 $("li.prompt").click(function(){
+    					  type.value = $(this).text();
+    				 });
+    			 }
+    		   })
+       },1000);
+		
+    }
+	
+
 </script>
 
 <s:url id="freepool" action="licenseFreePool"
 	namespace="/account/license" includeContext="true" includeParams="none">
 </s:url>
 
-<h1>Reconcile workspace: <s:property value="account.name" />(<s:property
-	value="account.account" />)</h1>
+<h1>
+	Reconcile workspace:
+	<s:property value="account.name" />
+	(
+	<s:property value="account.account" />
+	)
+</h1>
 <p class="confidential">IBM Confidential</p>
 <br />
 <p>The results from your reconciliation workspace settings are
-displayed below. Select an action to take by using the dropdown box
-below and then select the assets in which you would like to use for the
-basis of your action. The actions, manual license allocation and
-included with other product, will only accept a single line item
-selection. Once your selection is complete, depress the "GO" button to
-be taken to the next screen.</p>
+	displayed below. Select an action to take by using the dropdown box
+	below and then select the assets in which you would like to use for the
+	basis of your action. The actions, manual license allocation and
+	included with other product, will only accept a single line item
+	selection. Once your selection is complete, depress the "GO" button to
+	be taken to the next screen.</p>
 <br />
-<div style="float: right"><s:include
-	value="/WEB-INF/jsp/include/reportModule.jsp" /></div>
+<div style="float: right">
+	<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
+</div>
 <br />
 <br />
 <div class="hrule-dots"></div>
@@ -60,24 +208,33 @@ be taken to the next screen.</p>
 	<s:hidden name="page" value="%{#attr.page}" />
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
-	<div class="float-left" style="width: 75%;"><label for="action_1">Action:</label>
-	<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
-		listKey="id" listValue="name" headerKey="" headerValue="Select one"
-		id="action_1" /> <span class="button-blue"> <s:submit value="GO"
-		id="go-btn" alt="Submit" /> </span></div>
+	<div class="float-left" style="width: 75%;">
+		<label for="action_1">Action:</label>
+		<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
+			listKey="id" listValue="name" headerKey="" headerValue="Select one"
+			id="action_1" onchange="rcnTypSltChng(this)" />
+		<span class="button-blue"> <s:submit value="GO" id="go-btn"
+				alt="Submit" />
+		</span>
+	</div>
 	<div class="clear"></div>
+
+	<div id="filterSpan"></div>
+	<div id="filters"></div>
 	<br />
 
 	<div class="clear"></div>
 	<div class="hrule-dots"></div>
 	<div class="clear"></div>
-	<div class="float-left" style="width: 25%;"><a
-		href="javascript:popupFreePool('${freepool}')">License free pool</a></div>
+	<div class="float-left" style="width: 25%;">
+		<a href="javascript:popupFreePool('${freepool}')">License free
+			pool</a>
+	</div>
 	<div class="clear"></div>
 	<br />
 
 	<display:table name="data" class="basic-table" id="row"
-	    summary="Reconciliation Query Results"
+		summary="Reconciliation Query Results"
 		decorator="org.displaytag.decorator.TotalTableDecorator"
 		cellspacing="1" cellpadding="0" style="font-size:.8em"
 		requestURI="workspace.htm">

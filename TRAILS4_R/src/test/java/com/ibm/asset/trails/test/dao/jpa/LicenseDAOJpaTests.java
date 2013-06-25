@@ -54,7 +54,7 @@ public class LicenseDAOJpaTests {
         String dir = "asc";
 
         dao.freePoolWithParentPaginatedList(data, accountId, startIndex,
-                objectsPerPage, sort, dir);
+                objectsPerPage, sort, dir,null);
 
         assertEquals(data.getFullListSize(), 1286);
         assertEquals(data.getList().size(), objectsPerPage);

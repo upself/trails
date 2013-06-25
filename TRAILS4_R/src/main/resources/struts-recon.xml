@@ -246,9 +246,13 @@
 			</result>
 			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-                tiles.account.recon.workspace.pendingCustomerDecision
-            </result>
+				tiles.account.recon.workspace.pendingCustomerDecision
+			</result>
 		</action>
+
+
+		<action name="getCapcityTypes" method="getCapcityTypes" class="reconAjaxAction"></action>
+		<action name="quickSearch" method="quickSearch" class="reconAjaxAction"></action>
 
 	</package>
 

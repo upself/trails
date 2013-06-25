@@ -76,15 +76,24 @@
 		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl">
 	</bean>
 
+	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
+
+	<bean id="reconAjaxAction" class="com.ibm.asset.trails.action.ReconAjaxAction">
+		<property name="licenseService" ref="licenseService" />
+	</bean>
+
+
 	<bean id="reportService" class="com.ibm.asset.trails.service.impl.ReportServiceImpl" />
 
 	<bean id="pvuService" class="com.ibm.asset.trails.service.impl.PvuServiceImpl" />
 
-	<bean id="alertCauseService" class="com.ibm.asset.trails.service.impl.DataExceptionCauseServiceImpl">
+	<bean id="alertCauseService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionCauseServiceImpl">
 		<property name="alertCauseDao" ref="alertCauseDao" />
 	</bean>
 
-	<bean id="alertTypeService" class="com.ibm.asset.trails.service.impl.DataExceptionTypeServiceImpl">
+	<bean id="alertTypeService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionTypeServiceImpl">
 	</bean>
 
 	<bean id="entityManagerFactory"
@@ -366,9 +375,11 @@
 	</bean>
 
 	<!--exceptions configuration -->
-	<bean id="alertSoftwareLparDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionSoftwareLparDaoJpa" />
-	
-	<bean id="alertHardwareLparDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionHardwareLparDaoJpa" />
+	<bean id="alertSoftwareLparDao"
+		class="com.ibm.asset.trails.dao.jpa.DataExceptionSoftwareLparDaoJpa" />
+
+	<bean id="alertHardwareLparDao"
+		class="com.ibm.asset.trails.dao.jpa.DataExceptionHardwareLparDaoJpa" />
 
 	<bean id="alertHistoryDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionHistoryDaoJpa" />
 
@@ -379,11 +390,11 @@
 		<property name="alertSoftwareLparDao" ref="alertSoftwareLparDao" />
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 	</bean>
-	
+
 	<bean id="alertHwlparService"
 		class="com.ibm.asset.trails.service.impl.DataExceptionHardwareLparServiceImpl">
 		<property name="alertHardwareLparDao" ref="alertHardwareLparDao" />
-		<property name="alertHistoryDao" ref="alertHistoryDao" />	
+		<property name="alertHistoryDao" ref="alertHistoryDao" />
 	</bean>
 
 	<bean id="alertSwlparHistoryService"
@@ -392,107 +403,95 @@
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 		<property name="lparType" value="swLpar" />
 	</bean>
-	
+
 	<bean id="alertHwlparHistoryService"
 		class="com.ibm.asset.trails.service.impl.DataExceptionHistoryServiceImpl">
 		<property name="alertLparDao" ref="alertHardwareLparDao" />
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 		<property name="lparType" value="hwLpar" />
 	</bean>
-	
+
 	<bean id="alertSwlparHistory" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertHistoryAction">
 		<property name="historyService" ref="alertSwlparHistoryService" />
 	</bean>
-	
+
 	<bean id="alertHwlparHistory" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertHistoryAction">
 		<property name="historyService" ref="alertHwlparHistoryService" />
 	</bean>
 
 	<bean id="lparZEROPROCExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="ZEROPROC" />
 	</bean>
 	<bean id="lparNULLTIMEExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NULLTIME" />
 	</bean>
 	<bean id="lparNOOSExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NOOS" />
 	</bean>
 	<bean id="lparNOSWExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NOSW" />
 	</bean>
 	<bean id="lparNOLPExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NOLP" />
 	</bean>
 	<bean id="lparNOCUSTExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NOCUST" />
 	</bean>
-		
+
 	<bean id="lparHWNPRCExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.HardwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.HardwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="hardwareLparExpService" ref="alertHwlparService" />
 		<property name="alertTypeCode" value="HWNPRC" />
 	</bean>
 	<bean id="lparHWNCHPExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.HardwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.HardwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="hardwareLparExpService" ref="alertHwlparService" />
 		<property name="alertTypeCode" value="HWNCHP" />
 	</bean>
-		<bean id="lparNPRCTYPExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.HardwareLparExpAction"
-		parent="bravoServerName">
+	<bean id="lparNPRCTYPExpAction" scope="prototype"
+		class="com.ibm.asset.trails.action.HardwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="hardwareLparExpService" ref="alertHwlparService" />
 		<property name="alertTypeCode" value="NPRCTYP" />
 	</bean>
 	<bean id="lparNCPMDLExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.HardwareLparExpAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.HardwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="hardwareLparExpService" ref="alertHwlparService" />
 		<property name="alertTypeCode" value="NCPMDL" />
 	</bean>
-	
-	
+
+
 	<bean id="alertSwlparAjaxAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparAjaxAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.SoftwareLparAjaxAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="alertSoftwareLparService" ref="alertSwlparService" />
 	</bean>
-	
+
 	<bean id="alertHwlparAjaxAction" scope="prototype"
-		class="com.ibm.asset.trails.action.HardwareLparAjaxAction"
-		parent="bravoServerName">
+		class="com.ibm.asset.trails.action.HardwareLparAjaxAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
 		<property name="alertHardwareLparService" ref="alertHwlparService" />
 	</bean>
@@ -500,14 +499,14 @@
 	<bean class="com.ibm.asset.trails.aspect.DataExceptionHistoryAspect">
 		<property name="historyService" ref="alertSwlparHistoryService" />
 	</bean>
-	
+
 	<bean class="com.ibm.asset.trails.aspect.DataExceptionHistoryAspect">
 		<property name="historyService" ref="alertHwlparHistoryService" />
 	</bean>
 
 	<bean id="accountAlertActionNew" class="com.ibm.asset.trails.action.AccountDataExceptionAction">
 	</bean>
-	
+
 	<bean id="adminAction" class="com.ibm.asset.trails.action.AdminAction">
 	</bean>
 </beans>
