@@ -9,6 +9,7 @@ package com.ibm.ea.bravo.hardware;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.machinetype.MachineType;
@@ -58,6 +59,18 @@ public class Hardware implements Serializable {
 	private String model;
 
 	private String serverType;
+	
+	private String mastProcessorType;
+	
+	private String processorManufacturer;
+	
+	private String processorModel;
+	
+	private BigDecimal nbrCoresPerChip;
+	
+	private BigDecimal nbrOfChipsMax;
+	
+	private String shared;
 	
 	private Integer cpuMIPS;
 	
@@ -250,5 +263,53 @@ public class Hardware implements Serializable {
 
 	public void setProcessorCount(Integer processorCount) {
 		this.processorCount = processorCount;
+	}
+	
+	public String getMastProcessorType() {
+		return mastProcessorType;
+	}
+
+	public void setMastProcessorType(String mastProcessorType) {
+		this.mastProcessorType = mastProcessorType;
+	}
+	
+	public String getProcessorManufacturer() {
+		return processorManufacturer;
+	}
+
+	public void setProcessorManufacturer(String processorManufacturer) {
+		this.processorManufacturer = processorManufacturer;
+	}
+	
+	public String getProcessorModel() {
+		return processorModel;
+	}
+
+	public void setProcessorModel(String processorModel) {
+		this.processorModel = processorModel;
+	}
+	
+	public BigDecimal getNbrCoresPerChip() {
+		return nbrCoresPerChip;
+	}
+
+	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
+		this.nbrCoresPerChip = nbrCoresPerChip;
+	}
+	
+	public BigDecimal getNbrOfChipsMax() {
+		return nbrOfChipsMax;
+	}
+
+	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
+		this.nbrOfChipsMax = nbrOfChipsMax;
+	}
+	
+	public String getShared() {
+		return shared;
+	}
+
+	public void setShared(String shared) {
+		this.shared = shared;
 	}
 }

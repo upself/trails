@@ -6,6 +6,8 @@
  */
 package com.ibm.ea.bravo.hardware;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionErrors;
@@ -68,6 +70,20 @@ public class FormHardware extends FormBase {
 	
 	private String serverType;
 	
+	private String owner;
+	
+	private String mastProcessorType;
+	
+	private String processorManufacturer;
+	
+	private String processorModel;
+	
+	private BigDecimal nbrCoresPerChip;
+	
+	private BigDecimal nbrOfChipsMax;
+	
+	private String shared;
+	
 	private Integer cpuMIPS;
 	
 	private Integer cpuMSU;
@@ -78,7 +94,15 @@ public class FormHardware extends FormBase {
 	
 	private String lparStatus;
 	
+	private String lparStatusIcon;
+	
 	private String hardwareStatus;
+	
+	private String sysplex;
+	
+	private String spla;
+	
+	private String internetIccFlag;
 	
 	public String getServerType() {
 		return serverType;
@@ -132,8 +156,48 @@ public class FormHardware extends FormBase {
 		return lparStatus;
 	}
 	
+	public void setLparStatus(String lparStatus) {
+		this.lparStatus = lparStatus;
+	}
+	
+	public String getLparStatusIcon() {
+		return lparStatusIcon;
+	}
+	
+	public void setLparStatusIcon(String lparStatusIcon) {
+		this.lparStatusIcon = lparStatusIcon;
+	}
+	
 	public String getHardwareStatus() {
 		return hardwareStatus;
+	}
+	
+	public void setHardwareStatus(String hardwareStatus) {
+		this.hardwareStatus = hardwareStatus;
+	}
+	
+	public String getSysplex() {
+		return sysplex;
+	}
+	
+	public void setSysplex(String sysplex) {
+		this.sysplex = sysplex;
+	}
+	
+	public String getSpla() {
+		return spla;
+	}
+	
+	public void setSpla(String spla) {
+		this.spla = spla;
+	}
+	
+	public String getInternetIccFlag() {
+		return internetIccFlag;
+	}
+	
+	public void setInternetIccFlag(String internetIccFlag) {
+		this.internetIccFlag = internetIccFlag;
 	}
 
 	public FormHardware() {
@@ -183,24 +247,35 @@ public class FormHardware extends FormBase {
 
 			// initialize other fields
 			this.lparName = hardwareLpar.getName();
+			this.lparStatusIcon = hardwareLpar.getStatusIcon();
 			this.status = hardwareLpar.getStatus();
 			this.extId = hardwareLpar.getExtId();
 			this.techImageId = hardwareLpar.getTechImageId();
 			this.partMIPS = hardwareLpar.getPartMIPS();
 			this.partMSU = hardwareLpar.getPartMSU();
 			this.lparStatus = hardwareLpar.getLparStatus();
-
+			this.sysplex = hardwareLpar.getSysplex();
+			this.spla = hardwareLpar.getSpla();
+			this.internetIccFlag = hardwareLpar.getInternetIccFlag();
 			if (hardwareLpar.getHardware() != null) {
 				this.hardware = hardwareLpar.getHardware();
 				this.machineType = hardwareLpar.getHardware().getMachineType()
-						.getId().toString();
+						.getName();
+				this.assetType = hardwareLpar.getHardware().getMachineType()
+						.getType();
 				this.serial = hardwareLpar.getHardware().getSerial();
 				this.country = hardwareLpar.getHardware().getCountry();
 				this.processorCount = hardwareLpar.getHardware()
 						.getProcessorCount();
 				this.chips = hardwareLpar.getHardware().getChips();
+				this.owner = hardwareLpar.getHardware().getOwner();
 				this.serverType = hardwareLpar.getServerType();
-				this.assetType = hardwareLpar.getHardware().getMachineType().getType();
+				this.mastProcessorType = hardwareLpar.getHardware().getMastProcessorType();
+				this.processorManufacturer = hardwareLpar.getHardware().getProcessorManufacturer();
+				this.processorModel = hardwareLpar.getHardware().getProcessorModel();
+				this.nbrCoresPerChip = hardwareLpar.getHardware().getNbrCoresPerChip();
+				this.nbrOfChipsMax = hardwareLpar.getHardware().getNbrOfChipsMax();
+				this.shared = hardwareLpar.getHardware().getShared();
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
 				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
@@ -479,6 +554,14 @@ public class FormHardware extends FormBase {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getOwner() {
+		return this.owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
 	public String getExtId() {
 		return extId;
@@ -502,5 +585,53 @@ public class FormHardware extends FormBase {
 
 	public void setProcessorCount(Integer processorCount) {
 		this.processorCount = processorCount;
+	}
+	
+	public String getMastProcessorType() {
+		return mastProcessorType;
+	}
+
+	public void setMastProcessorType(String mastProcessorType) {
+		this.mastProcessorType = mastProcessorType;
+	}
+	
+	public String getProcessorManufacturer() {
+		return processorManufacturer;
+	}
+
+	public void setProcessorManufacturer(String processorManufacturer) {
+		this.processorManufacturer = processorManufacturer;
+	}
+	
+	public String getProcessorModel() {
+		return processorModel;
+	}
+
+	public void setProcessorModel(String processorModel) {
+		this.processorModel = processorModel;
+	}
+	
+	public BigDecimal getNbrCoresPerChip() {
+		return nbrCoresPerChip;
+	}
+
+	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
+		this.nbrCoresPerChip = nbrCoresPerChip;
+	}
+	
+	public BigDecimal getNbrOfChipsMax() {
+		return nbrOfChipsMax;
+	}
+
+	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
+		this.nbrOfChipsMax = nbrOfChipsMax;
+	}
+	
+	public String getShared() {
+		return shared;
+	}
+
+	public void setShared(String shared) {
+		this.shared = shared;
 	}
 }

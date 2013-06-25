@@ -37,6 +37,12 @@ public class HardwareLpar {
 	
 	private String lparStatus;
 	
+	private String spla;
+	
+	private String sysplex;
+	
+	private String internetIccFlag;
+	
 	private Set<AuthorizedProduct> authorizedProducts;
 
 	public String getServerType() {
@@ -127,6 +133,30 @@ public class HardwareLpar {
 		this.softwareLpar = softwareLpar;
 	}
 
+	public String getSpla() {
+		return this.spla;
+	}
+
+	public void setSpla(String spla) {
+		this.spla = spla;
+	}
+	
+	public String getSysplex() {
+		return this.sysplex;
+	}
+
+	public void setSysplex(String sysplex) {
+		this.sysplex = sysplex;
+	}
+	
+	public String getInternetIccFlag() {
+		return this.internetIccFlag;
+	}
+
+	public void setInternetIccFlag(String internetIccFlag) {
+		this.internetIccFlag = internetIccFlag;
+	}
+	
 	public String getStatus() {
 		return this.status;
 	}

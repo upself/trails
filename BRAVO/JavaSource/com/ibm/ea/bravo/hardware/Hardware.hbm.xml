@@ -56,6 +56,18 @@
 
 		<property name="model" column="MODEL" length="16" />
 		
+		<property name="mastProcessorType" column="MAST_PROCESSOR_TYPE" length="32" />
+		
+		<property name="processorManufacturer" column="PROCESSOR_MANUFACTURER" length="64" />
+		
+		<property name="processorModel" column="PROCESSOR_MODEL" length="32" />
+		
+		<property name="nbrCoresPerChip" column="NBR_CORES_PER_CHIP" type="java.math.BigDecimal" />
+		
+		<property name="nbrOfChipsMax" column="NBR_OF_CHIPS_MAX" type="java.math.BigDecimal" />
+		
+		<property name="shared" column="SHARED" length="2" />
+		
 		<property name="serverType" column="SERVER_TYPE" length="15" />
 		
 		<property name="cpuMIPS" column="CPU_MIPS"

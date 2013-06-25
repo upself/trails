@@ -380,6 +380,15 @@
 				,hardware_lpar.tech_image_id as tech_image_id
 				,hardware.chips as chips
 				,hardware.server_type as server_type
+				,hardware_lpar.spla as SPLA
+				,hardware_lpar.sysplex as sysplex
+				,hardware_lpar.internet_Icc_Flag as internetIccFlag
+				,hardware.Mast_Processor_Type as mastProcessorType
+				,hardware.processor_Manufacturer as processorManufacturer
+				,hardware.processor_Model as processorModel
+				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
+				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared as shared
 				,hardware.cpu_mips 
 				,hardware.cpu_msu 
 				,hardware_lpar.part_mips
@@ -430,6 +439,15 @@
 				,hardware_lpar.tech_image_id as tech_image_id
 				,hardware.chips as chips
 				,hardware.server_type as server_type
+				,hardware_lpar.spla as SPLA
+				,hardware_lpar.sysplex as sysplex
+				,hardware_lpar.internet_Icc_Flag as internetIccFlag
+				,hardware.Mast_Processor_Type as mastProcessorType
+				,hardware.processor_Manufacturer as processorManufacturer
+				,hardware.processor_Model as processorModel
+				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
+				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared as shared
 				,hardware.cpu_mips 
                 ,hardware.cpu_msu 
                 ,hardware_lpar.part_mips
@@ -475,6 +493,15 @@
 				,'' as tech_image_id
 				,0 as chips
 				,'' as server_type
+				,'' as SPLA
+				,'' as sysplex
+				,'' as internetIccFlag
+				,hardware.Mast_Processor_Type as mastProcessorType
+				,hardware.processor_Manufacturer as processorManufacturer
+				,hardware.processor_Model as processorModel
+				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
+				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared as shared
 				,hardware.cpu_mips 
                 ,hardware.cpu_msu 
                 ,0 as part_mips

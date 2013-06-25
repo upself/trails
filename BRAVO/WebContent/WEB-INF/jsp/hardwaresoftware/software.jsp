@@ -12,8 +12,7 @@
 		<tr>
 			<th class="blue-med" width="1%"></th>
 			<th class="blue-med">Name</th>
-			<th class="blue-med">Processors</th>
-			<th class="blue-med">Effective Processors</th>
+			<th class="blue-med">Proc</th>
 			<th class="blue-med">BIOS Serial</th>
 			<th class="blue-med">Scan Time</th>
 			<th class="blue-med">Acquisition Time</th>
@@ -48,10 +47,6 @@
 					</html:link> </font></td>
 					<td><font class="orange-dark"><c:out
 						value="${lpar.softwareLpar.processorCount}" /></font></td>
-					<td><font class="orange-dark"> <c:if
-						test="${(lpar.softwareLpar.softwareLparEff != null) && (lpar.softwareLpar.softwareLparEff.status == 'ACTIVE')}">
-						<c:out value="${lpar.softwareLpar.softwareLparEff.processorCount}" />
-					</c:if></td>
 					<td><font class="orange-dark"><c:out
 						value="${lpar.softwareLpar.biosSerial}" /></font></td>
 					<td><font class="orange-dark"><c:out
