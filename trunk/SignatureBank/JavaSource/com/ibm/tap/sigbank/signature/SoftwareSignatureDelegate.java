@@ -231,6 +231,18 @@ public abstract class SoftwareSignatureDelegate extends Delegate {
 
 		return result;
 	}
+	
+	public static SoftwareSignature getAllSoftwareSignature(String fileName,
+			int fileSize, SoftwareSignature result, Session session)
+			throws HibernateException, NamingException {
+
+		result = (SoftwareSignature) session
+				.getNamedQuery("allSoftwareSignaturesByFileNameFileSize")
+				.setString("fileName", fileName)
+				.setInteger("fileSize", fileSize).uniqueResult();
+
+		return result;
+	}
 
 	public static void save(SoftwareSignature ss, String remoteUser,
 			Session session) throws HibernateException, NamingException,
@@ -612,7 +624,7 @@ public abstract class SoftwareSignatureDelegate extends Delegate {
 		if(productName.contains(",") && productName.startsWith("\"") && productName.endsWith("\""))
 			productName = productName.substring(1, productName.lastIndexOf("\""));
 		
-		product = ProductDelegate.getProductByName(productName, product, session);
+		product = ProductDelegate.getNonTadzProductByName(productName, product, session);
 
 		if (product != null) {
 			if (product.getDeleted()) {
@@ -677,7 +689,7 @@ public abstract class SoftwareSignatureDelegate extends Delegate {
 
 		SoftwareSignature softwareSignatureExist = null;
 		softwareSignatureExist = SoftwareSignatureDelegate
-				.getSoftwareSignature(ssf.getFileName(),
+				.getAllSoftwareSignature(ssf.getFileName(),
 						new Integer(ssf.getFileSize()).intValue(),
 						softwareSignatureExist, session);
 

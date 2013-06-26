@@ -181,6 +181,19 @@ public abstract class ProductDelegate extends Delegate {
 					productName).uniqueResult();
 		return result;
 	}
+	
+	public static Product getNonTadzProductByName(String productName, Product result,
+			Session session) {
+
+		productName = productName.toUpperCase();
+		result = (Product) session.getNamedQuery("nonTadzProductByNameFirstSearch")
+				.setString("productName", productName).uniqueResult();
+		if (result == null)
+			result = (Product) session.getNamedQuery(
+					"nonTadzProductByNameSecondSearch").setString("productName",
+					productName).uniqueResult();
+		return result;
+	}
 
 	public static SoftwareForm setUpdateForm(String softwareId)
 			throws IllegalAccessException, InvocationTargetException,

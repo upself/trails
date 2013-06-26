@@ -34,6 +34,18 @@
             and s.status='ACTIVE'
 		]]>
 	</query>
+	
+	<query name="allSoftwareSignaturesByFileNameFileSize">
+		<![CDATA[
+		from SoftwareSignature s
+
+		join fetch s.product
+
+		where
+			s.fileName = :fileName 
+			and s.fileSize = :fileSize
+		]]>
+	</query>
 
 	<query name="softwareSignaturesHistory">
 		<![CDATA[

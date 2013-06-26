@@ -541,7 +541,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		if(productName.contains(",") && productName.startsWith("\"") && productName.endsWith("\""))
 			productName = productName.substring(1, productName.lastIndexOf("\""));
 		
-		product = ProductDelegate.getProductByName(productName, product, session);
+		product = ProductDelegate.getNonTadzProductByName(productName, product, session);
 		if (product != null) {
 			if (product.getDeleted()) {
 				session.close();
