@@ -916,7 +916,7 @@ sub eventRuleCheck{
 				 my @parsedBravoServerMonitoringFileSystemArray;#array used to store parsed bravo server monitoring file system array - for example, ("/opt/bravo","90"%)
                  my @parsedBravoServerMonitoringFileSystemListArray;#array used to store parsed bravo server monitoring file system list array - (("/opt/bravo","90%"),("/var/bravo","95%"),("/var/ftp/scan","90%"))
                  my @bravoServerFileSystemEmailAlertMessageArray = ();#array used to store the bravo server file system email alert messages
-				 my $bravoServerFileSystemEmailAlertMessageArrayCount;#var used to store the count of the bravo server file system email alert messages
+				 my $bravoServerFileSystemEmailAlertMessageArrayCount = 0;#var used to store the count of the bravo server file system email alert messages
 				 #Vars Definition for Trails Server
                  my @trailsServerFileSystemRecords = ();
 				 my @trailsServerFileSystemRecord;
@@ -925,7 +925,7 @@ sub eventRuleCheck{
 				 my @parsedTrailsServerMonitoringFileSystemArray;#array used to store parsed trails server monitoring file system array - for example, ("/opt/trails","90"%)
                  my @parsedTrailsServerMonitoringFileSystemListArray;#array used to store parsed trails server monitoring file system list array - (("/opt/trails","90%"),("/var/trails","95%"))
                  my @trailsServerFileSystemEmailAlertMessageArray = ();#array used to store the trails server file system email alert messages
-				 my $trailsServerFileSystemEmailAlertMessageArrayCount;#var used to store the count of the trails server file system email alert messages
+				 my $trailsServerFileSystemEmailAlertMessageArrayCount = 0;#var used to store the count of the trails server file system email alert messages
 			     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Filespace monitoring on @1 Server'
@@ -1008,7 +1008,8 @@ sub eventRuleCheck{
 				    }#end foreach $fileSystemDefinition (@monitorFileSystemListArray)
 				 }#end if($monitorFileSystemList ne "")
 
-                 if($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG){# $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG = "Y"
+                 if(($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG) #$REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG = "Y"
+                  &&($serverMode eq $TAP || $serverMode eq $TAP2)){#Only TAP or TAP2 Server can trigger the remote server file system monitoring logic
                     print LOG "The Remote Server File System Monitoring Function has been turned on for Bravo and Trails servers.\n";
                     print LOG "Remote File Get Method: {$remoteFileGetMethod}\n";
 					
@@ -1268,7 +1269,86 @@ sub eventRuleCheck{
 					}
 					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 	                $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-                 }
+                 }#end if($fileSystemEmailAlertMessageCount > 2)
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+				 else{
+				    $bravoServerFileSystemEmailAlertMessageArrayCount = scalar(@bravoServerFileSystemEmailAlertMessageArray);
+				    $trailsServerFileSystemEmailAlertMessageArrayCount = scalar(@trailsServerFileSystemEmailAlertMessageArray);
+                    if(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0)){
+					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                       #Append Bravo Server File System Alert Messages into Email Content
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$BRAVO/g;#replace @1 with BRAVO server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Bravo Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Bravo Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray){#go loop for bravo server file system email alert message
+	                      $emailFullContent.="$bravoServerFileSystemEmailAlertMessage\n";#append bravo server file system email alert message into email content
+                          print LOG "Bravo Server - The Processed Rule Message: {$bravoServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray)    
+                       
+					   #Append Trails Server File System Alert Messages into Email Content
+                       $emailFullContent.="\n";#append a new break line into email content
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$TRAILS/g;#replace @1 with TRAILS server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Trails Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Trails Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray){#go loop for trails server file system email alert message
+	                      $emailFullContent.="$trailsServerFileSystemEmailAlertMessage\n";#append trails server file system email alert message into email content
+                          print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
+
+					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}#end if($bravoServerFileSystemEmailAlertMessageArrayCount > 0 && $trailsServerFileSystemEmailAlertMessageArrayCount > 0)
+					elsif(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount == 0)){
+					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                       #Append Bravo Server File System Alert Messages into Email Content
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$BRAVO/g;#replace @1 with BRAVO server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Bravo Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Bravo Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray){#go loop for bravo server file system email alert message
+	                      $emailFullContent.="$bravoServerFileSystemEmailAlertMessage\n";#append bravo server file system email alert message into email content
+                          print LOG "Bravo Server - The Processed Rule Message: {$bravoServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray)
+					   
+                       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}#end elsif(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount == 0))
+                    elsif(($bravoServerFileSystemEmailAlertMessageArrayCount == 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0)){
+					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                       #Append Trails Server File System Alert Messages into Email Content
+                 	   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$TRAILS/g;#replace @1 with TRAILS server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Trails Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Trails Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray){#go loop for trails server file system email alert message
+	                      $emailFullContent.="$trailsServerFileSystemEmailAlertMessage\n";#append trails server file system email alert message into email content
+                          print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
+					   
+					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}#end elsif(($bravoServerFileSystemEmailAlertMessageArrayCount == 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0))
+				 }#end else
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
