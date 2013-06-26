@@ -65,7 +65,7 @@
 			<td><font class="orange-dark"><c:out
 						value="${lpar.hardwareLpar.hardware.owner}" /></font></td>
 			<td><font class="orange-dark"><c:out
-						value="${hardware.hardwareStatus}" /></font></td>
+						value="${lpar.hardwareLpar.hardware.hardwareStatus}" /></font></td>
 			<c:if test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
 				<td><font class="orange-dark"><c:out
 							value="${lpar.hardwareLpar.hardware.cpuMIPS}" /></font></td>
