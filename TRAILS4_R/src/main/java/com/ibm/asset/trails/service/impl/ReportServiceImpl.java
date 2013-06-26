@@ -56,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
     private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
             "Alert status", "Alert opened", "Alert duration", "SW LPAR name",
             "HW serial", "HW machine type", "Owner", "Country", "Asset type",
-            "SPLA","SysPlex","Internet ICC Flag","Mast Processor Type","Processor Manufacturer","Mast Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED",
+            "SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
             "Effective processor count", "Installed SW product name", "SW Owner",
@@ -72,7 +72,7 @@ public class ReportServiceImpl implements ReportService {
             "License last updated" };
     private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
     private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
-            "Machine type", "Hostname", "Asset type","SPLA","SysPlex","Internet ICC Flag","Mast Processor Type","Processor Manufacturer","Mast Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED","Hardware Status","Lpar Status","Composite" };
+            "Machine type", "Hostname", "Asset type","SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED","Hardware Status","Lpar Status","Composite" };
     private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
     private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
             "Software product name", "Manufacturer", "Vendor managed",
