@@ -69,10 +69,10 @@ public class ReconAjaxAction implements ServletResponseAware, SessionAware {
 		List<String> list = null;
 		if (label.indexOf("productName") != -1) {
 			list = licenseService.getProductNameByAccount(
-					usrSession.getAccount(), "%" + key + "%");
+					usrSession.getAccount(), "%" + key.toUpperCase() + "%");
 		} else if (label.indexOf("manufacturer") != -1) {
 			list = licenseService.getManufacturerNameByAccount(
-					usrSession.getAccount(), "%" + key + "%");
+					usrSession.getAccount(), "%" + key.toUpperCase() + "%");
 
 		}
 

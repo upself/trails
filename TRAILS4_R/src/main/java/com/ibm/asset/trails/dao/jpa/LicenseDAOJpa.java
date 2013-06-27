@@ -329,8 +329,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				List<Predicate> orPredicates = new ArrayList<Predicate>();
 				for (String mnfctrStr : filterMnfctr) {
 					orPredicates.add(cb.like(
-							manufacturer.get(Manufacturer_.manufacturerName),
-							mnfctrStr));
+							cb.upper(manufacturer.get(Manufacturer_.manufacturerName)),
+							mnfctrStr.toUpperCase()));
 				}
 				predicates.add(cb.or(orPredicates
 						.toArray(new Predicate[orPredicates.size()])));
@@ -341,8 +341,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			if (productName != null && productName.size() > 0) {
 				List<Predicate> orPredicates = new ArrayList<Predicate>();
 				for (String prodStr : productName) {
-					orPredicates.add(cb.like(productInfo.get(Product_.name),
-							prodStr));
+					orPredicates.add(cb.like(cb.upper(productInfo.get(Product_.name)),
+							prodStr.toUpperCase()));
 				}
 				predicates.add(cb.or(orPredicates
 						.toArray(new Predicate[orPredicates.size()])));
@@ -352,8 +352,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			if (poNo != null && poNo.size() > 0) {
 				List<Predicate> orPredicates = new ArrayList<Predicate>();
 				for (String poStr : poNo) {
-					orPredicates.add(cb.like(license.get(License_.poNumber),
-							poStr));
+					orPredicates.add(cb.like(cb.upper(license.get(License_.poNumber)),
+							poStr.toUpperCase()));
 				}
 				predicates.add(cb.or(orPredicates
 						.toArray(new Predicate[orPredicates.size()])));
@@ -363,8 +363,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			if (swcmId != null && swcmId.size() > 0) {
 				List<Predicate> orPredicates = new ArrayList<Predicate>();
 				for (String swcmStr : swcmId) {
-					orPredicates.add(cb.like(license.get(License_.extSrcId),
-							swcmStr));
+					orPredicates.add(cb.like(cb.upper(license.get(License_.extSrcId)),
+							swcmStr.toUpperCase()));
 				}
 				predicates.add(cb.or(orPredicates
 						.toArray(new Predicate[orPredicates.size()])));
