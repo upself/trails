@@ -39,7 +39,7 @@ public class LicenseServiceImpl extends
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public void freePoolWithParentPaginatedList(DisplayTagList data,
 			Account account, int startIndex, int objectsPerPage, String sort,
-			String dir, LicenseFilter filter) {
+			String dir, List<LicenseFilter> filter) {
 		dao.freePoolWithParentPaginatedList(data, account.getId(), startIndex,
 				objectsPerPage, sort, dir, filter);
 	}

@@ -28,6 +28,8 @@ public class ReconAjaxAction implements ServletResponseAware, SessionAware {
 
 	private String label;
 
+	private String index;
+
 	public void setServletResponse(HttpServletResponse response) {
 		this.response = response;
 	}
@@ -41,7 +43,7 @@ public class ReconAjaxAction implements ServletResponseAware, SessionAware {
 		List<CapacityType> types = licenseService.getCapacityTypeList();
 
 		StringBuffer result = new StringBuffer();
-		result.append("<select name=\"capcityType\">");
+		result.append("<select name=\"filter[" + index + "].capcityType\">");
 		result.append("<option value=-1 selected=\"selected\"></option>");
 		for (CapacityType type : types) {
 			result.append("<option value=" + type.getCode() + ">"
@@ -65,10 +67,10 @@ public class ReconAjaxAction implements ServletResponseAware, SessionAware {
 		UserSession usrSession = (UserSession) session
 				.get(UserSession.USER_SESSION);
 		List<String> list = null;
-		if ("productName".equals(label)) {
+		if (label.indexOf("productName") != -1) {
 			list = licenseService.getProductNameByAccount(
 					usrSession.getAccount(), "%" + key + "%");
-		} else if ("manufacturer".equals(label)) {
+		} else if (label.indexOf("manufacturer") != -1) {
 			list = licenseService.getManufacturerNameByAccount(
 					usrSession.getAccount(), "%" + key + "%");
 
@@ -98,5 +100,9 @@ public class ReconAjaxAction implements ServletResponseAware, SessionAware {
 
 	public void setSession(Map<String, Object> session) {
 		this.session = session;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
 	}
 }

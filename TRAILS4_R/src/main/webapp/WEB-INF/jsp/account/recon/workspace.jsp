@@ -45,7 +45,7 @@
 		}
 	}
 	
-    
+    var fltrCntr = 0;
 	function addFltr(){
 		
 		var filter = '<div class="fltr">'+
@@ -57,6 +57,7 @@
 		 $.ajax({
 		   url:"${pageContext.request.contextPath}/account/recon/getCapcityTypes.htm",
 	       async:false,
+	       data:{index:fltrCntr},
 	       beforeSend: function(){
 	    	 $("#filters").html("loading capacity types...");  
 	       },
@@ -68,14 +69,15 @@
 	       }
 	     });
 		 filter+=
-		' Manufacturer(s): <input type="text" name="manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'+
-		' Product name(s):<input type="text" name="productName" autocomplete="off" onKeyUp="keyup(this)"/>'+ 
-		' PO number(s):<input type="text" name="poNo"/>'+
-		' SWCM ID:<input type="text" name="swcmId"/>'+
+		' Manufacturer(s): <input type="text" name="filter['+fltrCntr+'].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'+
+		' Product name(s):<input type="text" name="filter['+fltrCntr+'].productName" autocomplete="off" onKeyUp="keyup(this)"/>'+ 
+		' PO number(s):<input type="text" name="filter['+fltrCntr+'].poNo"/>'+
+		' SWCM ID:<input type="text" name="filter['+fltrCntr+'].swcmId"/>'+
 		'</div>';
 
 	    
 		 $("#filters").after(filter);
+		 fltrCntr++;
 	}
 	
 	function delFltr(fltr){

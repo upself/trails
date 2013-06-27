@@ -30,7 +30,7 @@ public class ShowQuestion extends AccountBaseAction {
 
 	private Long reconcileTypeId;
 
-	private LicenseFilter filter;
+	private List<LicenseFilter> filter;
 
 	// TODO just going to admit this is pure laziness
 	// due to the license free pool being way to large to not paginate
@@ -46,68 +46,61 @@ public class ShowQuestion extends AccountBaseAction {
 	}
 
 	public class LicenseFilter {
+		private String manufacturer;
+		private Integer capcityType;
+		private String productName;
+		private String poNo;
+		private String swcmId;
 
-		private List<String> manufacturer;
-		private List<Integer> capcityType;
-		private List<String> productName;
-		private List<String> poNo;
-		private List<String> swcmId;
-
-		public void setCapcityType(List<String> capcityType) {
-			this.capcityType = new ArrayList<Integer>();
-			for (String str : capcityType) {
-				Integer tmp = Integer.valueOf(str);
-				if (tmp == -1) {
-					continue;
-				}
-				this.capcityType.add(tmp);
+		private String fuzzed(String str) {
+			if (str != null && !"".equals(str)) {
+				return "%" + str.trim() + "%";
+			} else {
+				return null;
 			}
 		}
-		public List<Integer> getCapcityType() {
+
+		public String getManufacturer() {
+			return manufacturer;
+		}
+
+		public void setManufacturer(String manufacturer) {
+			this.manufacturer = fuzzed(manufacturer);
+		}
+
+		public Integer getCapcityType() {
 			return capcityType;
 		}
-		
-		public void setSwcmId(List<String> swcmId) {
-			this.swcmId = trim(swcmId);
+
+		public void setCapcityType(String capcityType) {
+			Integer tmp = Integer.valueOf(capcityType);
+			this.capcityType = tmp;
 		}
-		public List<String> getSwcmId() {
+
+		public String getProductName() {
+			return productName;
+		}
+
+		public void setProductName(String productName) {
+			this.productName = fuzzed(productName);
+		}
+
+		public String getPoNo() {
+			return poNo;
+		}
+
+		public void setPoNo(String poNo) {
+			this.poNo = fuzzed(poNo);
+		}
+
+		public String getSwcmId() {
 			return swcmId;
 		}
 
-		public List<String> getManufacturer() {
-			return manufacturer;
-		}
-		public void setManufacturer(List<String> manufacturer) {
-			this.manufacturer = trim(manufacturer);
+		public void setSwcmId(String swcmId) {
+			this.swcmId = fuzzed(swcmId);
 		}
 
-		
-
-		public List<String> getProductName() {
-			return productName;
-		}
-		public void setProductName(List<String> productName) {
-			this.productName = trim(productName);
-		}
-
-		public List<String> getPoNo() {
-			return poNo;
-		}
-		public void setPoNo(List<String> poNo) {
-			this.poNo = trim(poNo);
-		}
-
-		private List<String> trim(List<String> list) {
-			List<String> result = new ArrayList<String>();
-			for (String str : list) {
-				String trimed = str.trim();
-				if ("".equals(trimed)) {
-					continue;
-				}
-				result.add(trimed);
-			}
-			return result;
-		}
 	}
 
 	@Override
@@ -125,7 +118,7 @@ public class ShowQuestion extends AccountBaseAction {
 			licenseService.freePoolWithParentPaginatedList(getData(),
 					getUserSession().getAccount(), getStartIndex(), getData()
 							.getObjectsPerPage(), getSort(), getDir(), this
-							.getLicenseFilter());
+							.getFilter());
 		} else if (recon.getReconcileType().getId().intValue() == 2) {
 			// customer owned
 
@@ -276,31 +269,12 @@ public class ShowQuestion extends AccountBaseAction {
 		this.flag = flag;
 	}
 
-	private LicenseFilter getLicenseFilter() {
-		if (this.filter == null) {
-			this.filter = new LicenseFilter();
-		}
-		return this.filter;
+	public List<LicenseFilter> getFilter() {
+		return filter;
 	}
 
-	public void setManufacturer(List<String> manufacturer) {
-		getLicenseFilter().setManufacturer(manufacturer);
-	}
-
-	public void setCapcityType(List<String> capcityType) {
-		getLicenseFilter().setCapcityType(capcityType);
-	}
-
-	public void setProductName(List<String> productName) {
-		getLicenseFilter().setProductName(productName);
-	}
-
-	public void setPoNo(List<String> poNo) {
-		getLicenseFilter().setPoNo(poNo);
-	}
-
-	public void setSwcmId(List<String> swcmId) {
-		getLicenseFilter().setSwcmId(swcmId);
+	public void setFilter(List<LicenseFilter> filter) {
+		this.filter = filter;
 	}
 
 }

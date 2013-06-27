@@ -14,7 +14,7 @@ public interface LicenseDAO extends BaseEntityDAO<License, Long> {
 			String dir);
 
 	void freePoolWithParentPaginatedList(DisplayTagList data, Long accountId,
-			int startIndex, int objectsPerPage, String sort, String dir,LicenseFilter filter);
+			int startIndex, int objectsPerPage, String sort, String dir,List<LicenseFilter> filter);
 
 	List<CapacityType> getCapacityTypeList();
 

@@ -11,7 +11,8 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 public interface LicenseService extends BaseEntityService<License, Long> {
 
 	void freePoolWithParentPaginatedList(DisplayTagList list, Account pAccount,
-			int piStartIndex, int piObjectsPerPage, String psSort, String psDir,LicenseFilter filter);
+			int piStartIndex, int piObjectsPerPage, String psSort,
+			String psDir, List<LicenseFilter> filter);
 
 	void freePoolWithoutParentPaginatedList(DisplayTagList list,
 			Account pAccount, int piStartIndex, int piObjectsPerPage,
@@ -25,6 +26,7 @@ public interface LicenseService extends BaseEntityService<License, Long> {
 			int piObjectsPerPage, String psSort, String psDir);
 
 	List<String> getProductNameByAccount(Account pAccount, String key);
+
 	List<String> getManufacturerNameByAccount(Account pAccount, String key);
 
 }

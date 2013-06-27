@@ -44,6 +44,12 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		implements LicenseDAO {
 
+	private static final int FILTER_MANUFACTURER = 0;
+	private static final int FILTER_PRODUCT_NAME = 1;
+	private static final int FILTER_SWCM_ID = 2;
+	private static final int FILTER_CPACITY_TYPE = 3;
+	private static final int FILTER_PO_NUMBER = 4;
+
 	public void freePoolWithoutParentPaginatedList(DisplayTagList data,
 			Long accountId, int startIndex, int objectsPerPage, String sort,
 			String dir) {
@@ -150,7 +156,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 	public void freePoolWithParentPaginatedList(DisplayTagList data,
 			Long accountId, int startIndex, int objectsPerPage, String sort,
-			String dir, LicenseFilter filter) {
+			String dir, List<LicenseFilter> filters) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> sq = cb.createQuery(Long.class);
 		Root<AccountPool> accountPool = sq.from(AccountPool.class);
@@ -166,7 +172,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		List<Long> accountIds = tq.getResultList();
 		accountIds.add(accountId);
 
-		Long total = findFreePoolWithParentTotal(accountIds, accountId, filter);
+		Long total = findFreePoolWithParentTotal(accountIds, accountId, filters);
 		data.setFullListSize(total.intValue());
 
 		CriteriaQuery<LicenseDisplay> q = cb.createQuery(LicenseDisplay.class);
@@ -183,39 +189,11 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
-		if (filter != null) {
-			List<Integer> filterCapType = filter.getCapcityType();
-			if (filterCapType != null && filterCapType.size() > 0) {
-				predicates.add(capacityType.get(CapacityType_.code).in(
-						filterCapType));
-			}
-
-			List<String> filterMnfctr = filter.getManufacturer();
-			if (filterMnfctr != null && filterMnfctr.size() > 0) {
-				predicates.add(manufacturer.get(Manufacturer_.manufacturerName)
-						.in(filterMnfctr));
-			}
-
-			List<String> productName = filter.getProductName();
-			if (productName != null && productName.size() > 0) {
-				predicates.add(productInfo.get(Product_.name).in(productName));
-			}
-
-			List<String> poNo = filter.getPoNo();
-			if (poNo != null && poNo.size() > 0) {
-				predicates.add(license.get(License_.poNumber).in(poNo));
-			}
-
-			List<String> swcmId = filter.getSwcmId();
-			if (swcmId != null && swcmId.size() > 0) {
-				predicates.add(license.get(License_.extSrcId).in(swcmId));
-			}
-		}
+		convertFiltersToPredicates(filters, cb, license, productInfo,
+				manufacturer, capacityType, predicates);
 
 		predicates.add(account.get(Account_.id).in(accountIds));
-
 		predicates.add(cb.equal(license.get(License_.status), "ACTIVE"));
-
 		predicates.add(cb.or(cb.and(cb.equal(
 				account.get(Account_.softwareFinancialResponsibility), "IBM"),
 				cb.equal(license.get(License_.ibmOwned), true)), cb.and(cb
@@ -327,8 +305,102 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		data.setList(result);
 	}
 
+	private void convertFiltersToPredicates(List<LicenseFilter> filters,
+			CriteriaBuilder cb, Root<License> license,
+			Join<License, ProductInfo> productInfo,
+			Join<ProductInfo, Manufacturer> manufacturer,
+			Join<License, CapacityType> capacityType, List<Predicate> predicates) {
+		
+		if (filters != null && filters.size() > 0) {
+			List<Integer> filterCapType = new ArrayList<Integer>();
+			for (LicenseFilter fltr : filters) {
+				if (fltr.getCapcityType() != -1) {
+					filterCapType.add(fltr.getCapcityType());
+				}
+			}
+			if (filterCapType != null && filterCapType.size() > 0) {
+				predicates.add(capacityType.get(CapacityType_.code).in(
+						filterCapType));
+			}
+
+			List<String> filterMnfctr = grabStringFilter(filters,
+					FILTER_MANUFACTURER);
+			if (filterMnfctr != null && filterMnfctr.size() > 0) {
+				List<Predicate> orPredicates = new ArrayList<Predicate>();
+				for (String mnfctrStr : filterMnfctr) {
+					orPredicates.add(cb.like(
+							manufacturer.get(Manufacturer_.manufacturerName),
+							mnfctrStr));
+				}
+				predicates.add(cb.or(orPredicates
+						.toArray(new Predicate[orPredicates.size()])));
+			}
+
+			List<String> productName = grabStringFilter(filters,
+					FILTER_PRODUCT_NAME);
+			if (productName != null && productName.size() > 0) {
+				List<Predicate> orPredicates = new ArrayList<Predicate>();
+				for (String prodStr : productName) {
+					orPredicates.add(cb.like(productInfo.get(Product_.name),
+							prodStr));
+				}
+				predicates.add(cb.or(orPredicates
+						.toArray(new Predicate[orPredicates.size()])));
+			}
+
+			List<String> poNo = grabStringFilter(filters, FILTER_PO_NUMBER);
+			if (poNo != null && poNo.size() > 0) {
+				List<Predicate> orPredicates = new ArrayList<Predicate>();
+				for (String poStr : poNo) {
+					orPredicates.add(cb.like(license.get(License_.poNumber),
+							poStr));
+				}
+				predicates.add(cb.or(orPredicates
+						.toArray(new Predicate[orPredicates.size()])));
+			}
+
+			List<String> swcmId = grabStringFilter(filters, FILTER_SWCM_ID);
+			if (swcmId != null && swcmId.size() > 0) {
+				List<Predicate> orPredicates = new ArrayList<Predicate>();
+				for (String swcmStr : swcmId) {
+					orPredicates.add(cb.like(license.get(License_.extSrcId),
+							swcmStr));
+				}
+				predicates.add(cb.or(orPredicates
+						.toArray(new Predicate[orPredicates.size()])));
+			}
+		}
+	}
+
+	private List<String> grabStringFilter(List<LicenseFilter> filters, int type) {
+		List<String> strFilters = new ArrayList<String>();
+		for (LicenseFilter fltr : filters) {
+
+			String str = null;
+			switch (type) {
+			case FILTER_MANUFACTURER:
+				str = fltr.getManufacturer();
+				break;
+			case FILTER_PO_NUMBER:
+				str = fltr.getPoNo();
+				break;
+			case FILTER_SWCM_ID:
+				str = fltr.getSwcmId();
+				break;
+			case FILTER_PRODUCT_NAME:
+				str = fltr.getProductName();
+				break;
+			}
+
+			if (str != null && !"".equals(str)) {
+				strFilters.add(str);
+			}
+		}
+		return strFilters;
+	}
+
 	private Long findFreePoolWithParentTotal(List<Long> accountIds,
-			Long accountId, LicenseFilter filter) {
+			Long accountId, List<LicenseFilter> filters) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> q = cb.createQuery(Long.class);
 		Root<License> licenseOuter = q.from(License.class);
@@ -345,38 +417,13 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				.join(License_.capacityType);
 		Join<License, UsedLicense> usedLicense = license.join(
 				License_.usedLicenses, JoinType.LEFT);
-		
+
 		sq.select(license.get(License_.id));
 
 		List<Predicate> predicates = new ArrayList<Predicate>();
-		if (filter != null) {
-			List<Integer> filterCapType = filter.getCapcityType();
-			if (filterCapType != null && filterCapType.size() > 0) {
-				predicates.add(capacityType.get(CapacityType_.code).in(
-						filterCapType));
-			}
-
-			List<String> filterMnfctr = filter.getManufacturer();
-			if (filterMnfctr != null && filterMnfctr.size() > 0) {
-				predicates.add(manufacturer.get(Manufacturer_.manufacturerName)
-						.in(filterMnfctr));
-			}
-
-			List<String> productName = filter.getProductName();
-			if (productName != null && productName.size() > 0) {
-				predicates.add(productInfo.get(Product_.name).in(productName));
-			}
-
-			List<String> poNo = filter.getPoNo();
-			if (poNo != null && poNo.size() > 0) {
-				predicates.add(license.get(License_.poNumber).in(poNo));
-			}
-
-			List<String> swcmId = filter.getSwcmId();
-			if (swcmId != null && swcmId.size() > 0) {
-				predicates.add(license.get(License_.extSrcId).in(swcmId));
-			}
-		}
+		
+		convertFiltersToPredicates(filters, cb, license, productInfo,
+				manufacturer, capacityType, predicates);
 
 		predicates.add(account.get(Account_.id).in(accountIds));
 		predicates.add(cb.equal(license.get(License_.status), "ACTIVE"));
