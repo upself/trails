@@ -68,7 +68,7 @@ sub isProcessorCountZero {
 	my $procCount;
 	my $effCount;
 	$self->connection->prepareSqlQuery( $self->queryIsProcessorCountZero() );
-	my $sth = $self->connection->sql->{isProcessorCountZero};
+	my $sth = $self->connection->sql->{isSwProcessorCountZero};
 	$sth->bind_columns( \$procCount, \$effCount );
 	$sth->execute( $self->softwareLpar->id );
 	$sth->fetchrow_arrayref;
@@ -96,7 +96,7 @@ sub queryIsProcessorCountZero {
         where
             sl.id = ?
     ';
-	return ( 'isProcessorCountZero', $query );
+	return ( 'isSwProcessorCountZero', $query );
 }
 
 sub getAlert {

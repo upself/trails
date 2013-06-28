@@ -1,6 +1,7 @@
-package AlertHwLparNoCpuModel;
+package Recon::AlertHwLparNoCpuModel;
 
 use strict;
+use Recon::AlertHWLpar;
 use Base::Utils;
 use Carp qw( croak );
 use BRAVO::OM::Customer;

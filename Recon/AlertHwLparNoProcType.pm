@@ -1,6 +1,7 @@
-package AlertHwLparNoProcType;
+package Recon::AlertHwLparNoProcType;
 
 use strict;
+use Recon::AlertHWLpar;
 use Base::Utils;
 use Carp qw( croak );
 use BRAVO::OM::Customer;

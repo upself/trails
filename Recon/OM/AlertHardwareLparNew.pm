@@ -7,6 +7,7 @@ sub new {
     my ($class) = @_;
     my $self = {
         _id => undef
+        ,_idF => undef
         ,_hardwareLparId => undef
         ,_idField => 'id'
         ,_table => 'alert_hardware_lpar'
@@ -49,6 +50,12 @@ sub id {
     return $self->{_id};
 }
 
+sub idF {
+    my $self = shift;
+    $self->{_idF} = shift if scalar @_ == 1;
+    return $self->{_idF};
+}
+
 sub hardwareLparId {
     my $self = shift;
     $self->{_hardwareLparId} = shift if scalar @_ == 1;
@@ -73,6 +80,11 @@ sub toString {
     $s .= "id=";
     if (defined $self->{_id}) {
         $s .= $self->{_id};
+    }
+    $s .= ",";
+    $s .= "idF=";
+    if (defined $self->{_idF}) {
+        $s .= $self->{_idF};
     }
     $s .= ",";
     $s .= "hardwareLparId=";
@@ -103,7 +115,8 @@ sub save {
         my $id;
         $sth->bind_columns(\$id);
         $sth->execute(
-            $self->hardwareLparId
+            $self->idF
+            ,$self->hardwareLparId
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -113,7 +126,8 @@ sub save {
         $connection->prepareSqlQuery($self->queryUpdate);
         my $sth = $connection->sql->{updateAlertHardwareLparNew};
         $sth->execute(
-            $self->hardwareLparId
+            $self->idF
+            ,$self->hardwareLparId
             ,$self->id
         );
         $sth->finish;
@@ -127,9 +141,11 @@ sub queryInsert {
         from
             final table (
         insert into alert_hardware_lpar (
-            hardware_lpar_id
+            id
+            ,hardware_lpar_id
         ) values (
             ?
+            ,?
         ))
     ';
     return ('insertAlertHardwareLparNew', $query);
@@ -139,7 +155,8 @@ sub queryUpdate {
     my $query = '
         update alert_hardware_lpar
         set
-            hardware_lpar_id = ?
+            id = ?
+            ,hardware_lpar_id = ?
         where
             id = ?
     ';
@@ -173,8 +190,10 @@ sub getByBizKey {
     $connection->prepareSqlQuery($self->queryGetByBizKey());
     my $sth = $connection->sql->{getByBizKeyAlertHardwareLparNew};
     my $id;
+    my $idF;
     $sth->bind_columns(
         \$id
+        ,\$idF
     );
     $sth->execute(
         $self->hardwareLparId
@@ -182,12 +201,14 @@ sub getByBizKey {
     $sth->fetchrow_arrayref;
     $sth->finish;
     $self->id($id);
+    $self->idF($idF);
 }
 
 sub queryGetByBizKey {
     my $query = '
         select
             id
+            ,id
         from
             alert_hardware_lpar
         where
@@ -200,15 +221,18 @@ sub getById {
     my($self, $connection) = @_;
     $connection->prepareSqlQuery($self->queryGetById());
     my $sth = $connection->sql->{getByIdKeyAlertHardwareLparNew};
+    my $idF;
     my $hardwareLparId;
     $sth->bind_columns(
-        \$hardwareLparId
+        \$idF
+        ,\$hardwareLparId
     );
     $sth->execute(
         $self->id
     );
     my $found = $sth->fetchrow_arrayref;
     $sth->finish;
+    $self->idF($idF);
     $self->hardwareLparId($hardwareLparId);
     return (defined $found) ? 1 : 0;
 }
@@ -216,7 +240,8 @@ sub getById {
 sub queryGetById {
     my $query = '
         select
-            hardware_lpar_id
+            id
+            ,hardware_lpar_id
         from
             alert_hardware_lpar
         where

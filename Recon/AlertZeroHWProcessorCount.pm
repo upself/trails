@@ -1,13 +1,9 @@
 package Recon::AlertZeroHWProcessorCount;
 
 use strict;
+use Recon::AlertHWLpar;
 use Base::Utils;
 use Carp qw( croak );
-use BRAVO::OM::Customer;
-use Recon::Validation;
-use Recon::OM::Alert;
-use Recon::OM::AlertHistory;
-use Recon::OM::AlertHardwareLparNew;
 
 our @ISA = qw(Recon::AlertHWLpar);
 
@@ -23,14 +19,16 @@ where
 h.id  = hl.hardware_id 
 and hl.id  = ?
    ";
-   
+    dlog("query=$query");
     my $procCount=undef;
-    $self->connection->prepareSqlQuery(('isProcessorCountZero',$query));
-	my $sth = $self->connection->sql->{isProcessorCountZero};
+    $self->connection->prepareSqlQuery(('isHwProcessorCountZero',$query));
+	my $sth = $self->connection->sql->{isHwProcessorCountZero};
 	$sth->bind_columns( \$procCount );
 	$sth->execute( $self->hardwareLpar->id );
 	$sth->fetchrow_arrayref;
 	$sth->finish;
+	
+	dlog("process count $procCount");
 	
 	if(defined $procCount && $procCount>0){
 	 return 0;
@@ -43,7 +41,6 @@ and hl.id  = ?
 sub getAlertTypeId(){
   return 13;
 }
-
 
 
 1;

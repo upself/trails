@@ -1,4 +1,4 @@
-package Recon::AlertZeroHWProcessorCount;
+package Recon::AlertHWLpar;
 
 use strict;
 use Base::Utils;
@@ -69,15 +69,14 @@ sub openAlert {
 
     dlog("Acquiring hardware lpar");
     
-    my $alertHwLpar = new Recon::OM::AlertHardwareLparNew();
-    $alertHwLpar->hardwareLparId( $self->hardwareLpar->id );
-    $alertHwLpar->getByBizKey( $self->connection );
+    my $alertId = $self->getAlertIdByHwlparIdAlertType;
     
     my $alert=undef;
-    if(defined $alertHwLpar->id){
-     $alert = new Recon::OM::Alert();
-     $alert->id($alertHwLpar->id);
-     $alert->getByKey($self->connection);
+    if(defined $alertId){
+       dlog("Alert already exists fetch it by id: $alertId");
+       $alert = new Recon::OM::Alert();
+       $alert->id($alertId);
+       $alert->getById($self->connection);
     }
     
      return if(defined $alert && $alert->open==1);    
@@ -95,25 +94,52 @@ sub openAlert {
 	 $alert->comment('Auto Open');
 	 $alert->save( $self->connection );
 	 
-	 if(!defined $alertHwLpar->id ){
-	  $alertHwLpar->id($alert->id);
+	 if(!defined $alertId){
+	  my $alertHwLpar =  new Recon::OM::AlertHardwareLparNew();
+	  $alertHwLpar->idF($alert->id);
+	  $alertHwLpar->hardwareLparId($self->hardwareLpar->id);
 	  $alertHwLpar->save($self->connection);
 	 }
 }
 
+sub getAlertIdByHwlparIdAlertType{
+ my $self = shift;
+ 
+   my $query = "
+ select 
+     a.id 
+ from 
+     alert a, 
+     alert_hardware_lpar ahl
+ where 
+     a.id =  ahl.id
+     and a.alert_type_id = ? 
+     and ahl.hardware_lpar_id  = ? 
+     with ur
+   ";
+   
+    my $alertId=undef;
+    $self->connection->prepareSqlQuery(('alertIdByHwlparIdAlertType',$query));
+	my $sth = $self->connection->sql->{alertIdByHwlparIdAlertType};
+	$sth->bind_columns( \$alertId );
+	$sth->execute($self->getAlertTypeId, $self->hardwareLpar->id );
+	$sth->fetchrow_arrayref;
+	$sth->finish;
+	
+	return $alertId;
+}
+
 
 sub closeAlert {
-    my $self = @_;
+    my $self =shift;
 
-    my $alertHwLpar = new Recon::OM::AlertHardwareLparNew();
-    $alertHwLpar->hardwareLparId( $self->hardwareLpar->id );
-    $alertHwLpar->getByBizKey( $self->connection );
+    my $alertId = $self->getAlertIdByHwlparIdAlertType;
     
     #alert not exists. 
-    return if(!defined $alertHwLpar->id);
+    return if(!defined $alertId);
     
     my $alert = new Recon::OM::Alert();
-    $alert->id($alertHwLpar->id);
+    $alert->id($alertId);
     $alert->getById($self->connection);
 
     return if ( defined $alert->id && $alert->open == 0 );

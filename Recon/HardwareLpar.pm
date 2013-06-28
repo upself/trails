@@ -8,6 +8,8 @@ use Recon::Lpar;
 use Recon::AlertHardwareLpar;
 use Recon::AlertZeroHWProcessorCount;
 use Recon::AlertZeroHwChipCount;
+use Recon::AlertHwLparNoCpuModel;
+use Recon::AlertHwLparNoProcType;
 use Recon::Hardware;
 
 sub new {
@@ -68,11 +70,17 @@ sub recon {
     my $alert = Recon::AlertHardwareLpar->new( $self->connection,$reconLpar->hardware,$self->hardwareLpar, $reconLpar->softwareLpar );
     $alert->recon;
     
-    my $alertZeorHwProCount =new Recon::AlertZeroHWProcessorCount($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    my $alertZeorHwProCount =Recon::AlertZeroHWProcessorCount->new($self->connection,$reconLpar->hardware,$self->hardwareLpar);
     $alertZeorHwProCount->recon;
     
-    my $alertZeorHWChipsCount =new Recon::AlertZeroHwChipCount($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    my $alertZeorHWChipsCount =Recon::AlertZeroHwChipCount->new($self->connection,$reconLpar->hardware,$self->hardwareLpar);
     $alertZeorHWChipsCount->recon;
+    
+    my $alertNoCpuModel =Recon::AlertHwLparNoCpuModel->new($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    $alertNoCpuModel->recon;
+    
+    my $alertNoProcType =Recon::AlertHwLparNoProcType->new($self->connection,$reconLpar->hardware,$self->hardwareLpar);
+    $alertNoProcType->recon;
     ilog("Alert logic complete");
 
     ###Call recon on items we have designated to reconcile from the recon logic

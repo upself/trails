@@ -1,13 +1,9 @@
 package Recon::AlertZeroHwChipCount;
 
 use strict;
+use Recon::AlertHWLpar;
 use Base::Utils;
 use Carp qw( croak );
-use BRAVO::OM::Customer;
-use Recon::Validation;
-use Recon::OM::Alert;
-use Recon::OM::AlertHistory;
-use Recon::OM::AlertSoftwareLparNew;
 
 our @ISA = qw(Recon::AlertHWLpar);
 
