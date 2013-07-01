@@ -342,7 +342,7 @@ public class ReportServiceImpl implements ReportService {
                 + ",instSi.name as instSwName "
                 ;
         String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
-        String lsBaseSelectClauseThree = ", '' as swOwner";
+        String lsBaseSelectClauseThree = ", 'N/A' as swOwner";
         String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
                 + ",aus.comments as alertAssComments "
                 + ",instSwMan.name as instSwManName "
@@ -464,7 +464,7 @@ public class ReportServiceImpl implements ReportService {
                                 : "");
             }
             if (pbTitlesNotSpecifiedInContractScopeSearchChecked) {
-                lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseTwo +lsBaseSelectClauseFour+ lsBaseFromClause)
+                lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseThree +lsBaseSelectClauseFour+ lsBaseFromClause)
                         .append(" ")
                         .append(lsBaseWhereClause)
                         .append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.Software_Id = instSi.Id AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
@@ -473,7 +473,7 @@ public class ReportServiceImpl implements ReportService {
             lsbSql.append(lsBaseSelectClauseOne+lsBaseSelectClauseThree+lsBaseSelectClauseFour + lsBaseFromClause).append(" ")
                     .append(lsBaseWhereClause).append(" ");
         }
-        lsbSql.append("ORDER BY sl.name");
+        lsbSql.append("ORDER BY 4");
         lsrReport = ((Session) getEntityManager().getDelegate())
                 .createSQLQuery(lsbSql.toString())
                 .setLong("customerId", pAccount.getId())
