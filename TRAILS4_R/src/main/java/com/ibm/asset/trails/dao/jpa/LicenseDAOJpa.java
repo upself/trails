@@ -15,7 +15,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.hibernate.Session;
-import org.hibernate.mapping.Array;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
@@ -32,7 +31,6 @@ import com.ibm.asset.trails.domain.LicenseDisplay;
 import com.ibm.asset.trails.domain.License_;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.Manufacturer_;
-import com.ibm.asset.trails.domain.Product;
 import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.ProductInfo_;
 import com.ibm.asset.trails.domain.Product_;
@@ -43,12 +41,6 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 @Repository
 public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		implements LicenseDAO {
-
-	private static final int FILTER_MANUFACTURER = 0;
-	private static final int FILTER_PRODUCT_NAME = 1;
-	private static final int FILTER_SWCM_ID = 2;
-	private static final int FILTER_CPACITY_TYPE = 3;
-	private static final int FILTER_PO_NUMBER = 4;
 
 	public void freePoolWithoutParentPaginatedList(DisplayTagList data,
 			Long accountId, int startIndex, int objectsPerPage, String sort,
@@ -310,93 +302,55 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			Join<License, ProductInfo> productInfo,
 			Join<ProductInfo, Manufacturer> manufacturer,
 			Join<License, CapacityType> capacityType, List<Predicate> predicates) {
-		
+
 		if (filters != null && filters.size() > 0) {
-			List<Integer> filterCapType = new ArrayList<Integer>();
+
+			List<Predicate> orConnected = new ArrayList<Predicate>();
 			for (LicenseFilter fltr : filters) {
-				if (fltr.getCapcityType() != -1) {
-					filterCapType.add(fltr.getCapcityType());
+
+				List<Predicate> andConnected = new ArrayList<Predicate>();
+				Integer capcityType = fltr.getCapcityType();
+				if (capcityType != -1) {
+					andConnected.add(cb.equal(
+							capacityType.get(CapacityType_.code), capcityType));
 				}
-			}
-			if (filterCapType != null && filterCapType.size() > 0) {
-				predicates.add(capacityType.get(CapacityType_.code).in(
-						filterCapType));
+
+				String fltrMnfctr = fltr.getManufacturer();
+				if (fltrMnfctr != null && !"".equals(fltrMnfctr)) {
+					andConnected.add(cb.like(cb.upper(manufacturer
+							.get(Manufacturer_.manufacturerName)), fltrMnfctr
+							.toUpperCase()));
+				}
+
+				String fltrPrdctNm = fltr.getProductName();
+				if (fltrPrdctNm != null && !"".equals(fltrPrdctNm)) {
+					andConnected.add(cb.like(
+							cb.upper(productInfo.get(Product_.name)),
+							fltrPrdctNm.toUpperCase()));
+				}
+
+				String fltrPoNo = fltr.getPoNo();
+				if (fltrPoNo != null && !"".equals(fltrPoNo)) {
+					andConnected.add(cb.like(
+							cb.upper(license.get(License_.poNumber)),
+							fltrPoNo.toUpperCase()));
+				}
+
+				String fltrSwcmId = fltr.getSwcmId();
+				if (fltrSwcmId != null && !"".equals(fltrSwcmId)) {
+					andConnected.add(cb.like(
+							cb.upper(license.get(License_.extSrcId)),
+							fltrSwcmId.toUpperCase()));
+				}
+
+				orConnected.add(cb.and(andConnected
+						.toArray(new Predicate[andConnected.size()])));
 			}
 
-			List<String> filterMnfctr = grabStringFilter(filters,
-					FILTER_MANUFACTURER);
-			if (filterMnfctr != null && filterMnfctr.size() > 0) {
-				List<Predicate> orPredicates = new ArrayList<Predicate>();
-				for (String mnfctrStr : filterMnfctr) {
-					orPredicates.add(cb.like(
-							cb.upper(manufacturer.get(Manufacturer_.manufacturerName)),
-							mnfctrStr.toUpperCase()));
-				}
-				predicates.add(cb.or(orPredicates
-						.toArray(new Predicate[orPredicates.size()])));
-			}
+			predicates.add(cb.or(orConnected.toArray(new Predicate[orConnected
+					.size()])));
 
-			List<String> productName = grabStringFilter(filters,
-					FILTER_PRODUCT_NAME);
-			if (productName != null && productName.size() > 0) {
-				List<Predicate> orPredicates = new ArrayList<Predicate>();
-				for (String prodStr : productName) {
-					orPredicates.add(cb.like(cb.upper(productInfo.get(Product_.name)),
-							prodStr.toUpperCase()));
-				}
-				predicates.add(cb.or(orPredicates
-						.toArray(new Predicate[orPredicates.size()])));
-			}
-
-			List<String> poNo = grabStringFilter(filters, FILTER_PO_NUMBER);
-			if (poNo != null && poNo.size() > 0) {
-				List<Predicate> orPredicates = new ArrayList<Predicate>();
-				for (String poStr : poNo) {
-					orPredicates.add(cb.like(cb.upper(license.get(License_.poNumber)),
-							poStr.toUpperCase()));
-				}
-				predicates.add(cb.or(orPredicates
-						.toArray(new Predicate[orPredicates.size()])));
-			}
-
-			List<String> swcmId = grabStringFilter(filters, FILTER_SWCM_ID);
-			if (swcmId != null && swcmId.size() > 0) {
-				List<Predicate> orPredicates = new ArrayList<Predicate>();
-				for (String swcmStr : swcmId) {
-					orPredicates.add(cb.like(cb.upper(license.get(License_.extSrcId)),
-							swcmStr.toUpperCase()));
-				}
-				predicates.add(cb.or(orPredicates
-						.toArray(new Predicate[orPredicates.size()])));
-			}
 		}
-	}
-
-	private List<String> grabStringFilter(List<LicenseFilter> filters, int type) {
-		List<String> strFilters = new ArrayList<String>();
-		for (LicenseFilter fltr : filters) {
-
-			String str = null;
-			switch (type) {
-			case FILTER_MANUFACTURER:
-				str = fltr.getManufacturer();
-				break;
-			case FILTER_PO_NUMBER:
-				str = fltr.getPoNo();
-				break;
-			case FILTER_SWCM_ID:
-				str = fltr.getSwcmId();
-				break;
-			case FILTER_PRODUCT_NAME:
-				str = fltr.getProductName();
-				break;
-			}
-
-			if (str != null && !"".equals(str)) {
-				strFilters.add(str);
-			}
-		}
-		return strFilters;
 	}
 
 	private Long findFreePoolWithParentTotal(List<Long> accountIds,
@@ -421,7 +375,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		sq.select(license.get(License_.id));
 
 		List<Predicate> predicates = new ArrayList<Predicate>();
-		
+
 		convertFiltersToPredicates(filters, cb, license, productInfo,
 				manufacturer, capacityType, predicates);
 
