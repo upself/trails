@@ -331,14 +331,14 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 				String fltrPoNo = fltr.getPoNo();
 				if (fltrPoNo != null && !"".equals(fltrPoNo)) {
-					andConnected.add(cb.like(
+					andConnected.add(cb.equal(
 							cb.upper(license.get(License_.poNumber)),
 							fltrPoNo.toUpperCase()));
 				}
 
 				String fltrSwcmId = fltr.getSwcmId();
 				if (fltrSwcmId != null && !"".equals(fltrSwcmId)) {
-					andConnected.add(cb.like(
+					andConnected.add(cb.equal(
 							cb.upper(license.get(License_.extSrcId)),
 							fltrSwcmId.toUpperCase()));
 				}

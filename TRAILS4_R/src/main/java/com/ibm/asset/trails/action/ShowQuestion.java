@@ -52,7 +52,8 @@ public class ShowQuestion extends AccountBaseAction {
 		private String poNo;
 		private String swcmId;
 
-		private String fuzzed(String str) {
+		private String fuzzed(String s) {
+			String str = s.trim();
 			if (str != null && !"".equals(str)) {
 				return "%" + str.trim() + "%";
 			} else {
@@ -90,7 +91,12 @@ public class ShowQuestion extends AccountBaseAction {
 		}
 
 		public void setPoNo(String poNo) {
-			this.poNo = fuzzed(poNo);
+			String p = poNo.trim();
+			if (p != null && !"".equals(p)) {
+				this.poNo = p;
+			} else {
+				this.poNo = null;
+			}
 		}
 
 		public String getSwcmId() {
@@ -98,7 +104,12 @@ public class ShowQuestion extends AccountBaseAction {
 		}
 
 		public void setSwcmId(String swcmId) {
-			this.swcmId = fuzzed(swcmId);
+			String s = swcmId.trim();
+			if (s != null && !"".equals(s)) {
+				this.swcmId = s;
+			} else {
+				this.swcmId = null;
+			}
 		}
 
 	}
