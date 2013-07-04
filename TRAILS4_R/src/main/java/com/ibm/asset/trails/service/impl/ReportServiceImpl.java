@@ -342,7 +342,7 @@ public class ReportServiceImpl implements ReportService {
                 + ",instSi.name as instSwName "
                 ;
         String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
-        String lsBaseSelectClauseThree = ", 'N/A' as swOwner";
+        String lsBaseSelectClauseThree = ", 'Not specified' as swOwner";
         String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
                 + ",aus.comments as alertAssComments "
                 + ",instSwMan.name as instSwManName "
