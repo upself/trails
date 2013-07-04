@@ -33,6 +33,7 @@ and hl.id  = ?
 	$sth->fetchrow_arrayref;
 	$sth->finish;
 	
+	$procType = trim($procType);
 	if(defined $procType && '' ne $procType){
 	 return 0;
 	}else{

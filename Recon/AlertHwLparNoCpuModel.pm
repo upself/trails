@@ -33,6 +33,8 @@ and hl.id  = ?
 	$sth->fetchrow_arrayref;
 	$sth->finish;
 	
+	
+	$cpuModel = trim($cpuModel);
 	if(defined $cpuModel && '' ne $cpuModel){
 	 return 0;
 	}else{
