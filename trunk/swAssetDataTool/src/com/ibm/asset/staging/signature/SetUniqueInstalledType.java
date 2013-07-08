@@ -5,13 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.ibm.asset.common.DBPool;
 import com.ibm.asset.common.FileContentReader;
 import com.ibm.asset.common.TestDBPool;
-import com.ibm.xtq.ast.nodes.CompElemConstructor;
 
 public class SetUniqueInstalledType {
 

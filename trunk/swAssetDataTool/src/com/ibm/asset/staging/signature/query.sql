@@ -1,7 +1,7 @@
 select
-ss.id,
 ss.scan_record_id,
-ss.software_id
+ss.software_id,
+count(*)
 from
 scan_record sr,
 software_lpar_map slm,
@@ -11,7 +11,7 @@ where
 sr.id = slm.scan_record_id
 and slm.software_lpar_id = sl.id
 and ss.scan_record_id = sr.id
-and sl.customer_id  = 2602
+and sl.customer_id  = 642
 and sr.bank_account_id in (
 51,54,64,71,72,76,246,270,396,566,619,620,631,
 660,663,672,673,674,675,676,681,685,686,687,689,
@@ -33,4 +33,9 @@ and sr.bank_account_id in (
 1092,1094,1095,1096,1097,1098,1099,1100,1101,1102,
 1103,1104,1106,1107,1108,1109
 )
+group by 
+ss.scan_record_id,
+ss.software_id
+order by
+count(*) desc
 with ur

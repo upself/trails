@@ -15,7 +15,7 @@ public class DBPool {
 			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
 			String bravoURL = "jdbc:db2:TRAILS";
 			bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
-					"Green8ay");
+					"Tear9faD");
 
 			String stagingURL = "jdbc:db2:STAGING";
 			stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
