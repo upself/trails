@@ -2886,5 +2886,318 @@ sub queryScanSoftwareItemData {
 	return ( 'scanSoftwareItemData', $query );
 }
 
+
+sub getScanRecordHdiskBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+
+	my @scanRecordIds = ();
+
+	###Prepare query to pull  ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for hdisk query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordHdiskIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for hdisk query");
+
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for hdisk query");
+	my $sth = $connection->sql->{scanRecordHdiskIds};
+	dlog("got sth for Scan Record ids for hdisk query");
+
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for hdisk query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordHdiskIdsFields} } );
+	dlog("binded columns for Scan Record ids for hdisk query");
+
+	###Excute the query
+	ilog("executing Scan Record ids for hdisk query");
+	$sth->execute();
+	ilog("executed Scan Record ids for hdisk query");
+
+	while ( $sth->fetchrow_arrayref ) {
+
+		###Clean record values
+		cleanValues( \%rec );
+
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
+
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
+
+	return @idBatches;
+}
+
+sub queryScanRecordHdiskIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
+        select
+            a.id
+        from 
+            scan_record a 
+            join hdisk b on b.scan_record_id = a.id
+        where
+            a.action = \'COMPLETE\'
+    ';
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+        ' . $clause . ' (
+            b.action != \'COMPLETE\')
+        ';
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
+        group by
+            a.id
+        order by
+            a.id
+        with ur
+    ';
+	dlog("queryScanRecordHdiskIds=$query");
+	return ( 'scanRecordHdiskIds', $query, \@fields );
+}
+
+
+sub getScanRecordMemModBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+
+	my @scanRecordIds = ();
+
+	###Prepare query to pull Scan Record ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for memmod query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordMemModIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for memmod query");
+
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for memmod query");
+	my $sth = $connection->sql->{scanRecordMemModIds};
+	dlog("got sth for Scan Record ids for memmod query");
+
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for memmod query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordMemModIdsFields} } );
+	dlog("binded columns for Scan Record ids for memmod query");
+
+	###Excute the query
+	ilog("executing Scan Record ids for memmod query");
+	$sth->execute();
+	ilog("executed Scan Record ids for memmod query");
+
+	while ( $sth->fetchrow_arrayref ) {
+
+		###Clean record values
+		cleanValues( \%rec );
+
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
+
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
+
+	return @idBatches;
+}
+
+sub queryScanRecordMemModIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
+        select
+            distinct a.id
+        from 
+            scan_record a 
+            join mem_mod b on b.scan_record_id = a.id
+        where
+            a.action = \'COMPLETE\'
+    ';
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+        ' . $clause . ' (
+            b.action != \'COMPLETE\')
+        ';
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
+        order by
+            a.id
+        with ur
+    ';
+	dlog("queryScanRecordMemModIds=$query");
+	return ( 'scanRecordMemModIds', $query, \@fields );
+}
+
+sub getScanRecordIpBatches {
+	my ( $self, $connection, $testMode, $loadDeltaOnly, $maxLparsInQuery ) = @_;
+
+	my @scanRecordIds = ();
+
+	###Prepare query to pull  ids from staging for Ip addresses
+	dlog("preparing Scan Record ids for ip addresses query");
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScanRecordIpIds( $testMode, $loadDeltaOnly ) );
+	dlog("prepared Scan Record ids for ip addresses query");
+
+	###Get the statement handle
+	dlog("getting sth for Scan Record ids for ip addresses query");
+	my $sth = $connection->sql->{scanRecordIpIds};
+	dlog("got sth for Scan Record ids for ip addresses query");
+
+	###Bind our columns
+	my %rec;
+	dlog("binding columns for Scan Record ids for ip addresses query");
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $connection->sql->{scanRecordIpIdsFields} } );
+	dlog("binded columns for Scan Record ids for ip addresses query");
+
+	###Excute the query
+	ilog("executing Scan Record ids for ip addresses query");
+	$sth->execute();
+	ilog("executed Scan Record ids for ip addresses query");
+
+	while ( $sth->fetchrow_arrayref ) {
+
+		###Clean record values
+		cleanValues( \%rec );
+
+		push( @scanRecordIds, $rec{id} );
+	}
+	ilog( "got scan Record ids, count: " . scalar(@scanRecordIds) );
+	ilog( "min id=" . $scanRecordIds[0] );
+	ilog( "max id=" . $scanRecordIds[$#scanRecordIds] );
+
+	###
+	###Calculate the batches of MaxLparsInQuery.
+	###
+	my @idBatches = ();
+	my $firstIndex;
+	my $lastIndex;
+	for ( my $i = 0 ; $i <= $#scanRecordIds ; $i++ ) {
+		if ( $i == 0 ) {
+			$firstIndex = 0;
+		}
+		elsif ( $firstIndex < $i && $i < $lastIndex ) {
+			next;
+		}
+		elsif ( $lastIndex == $#scanRecordIds ) {
+			last;
+		}
+		else {
+			$firstIndex = $lastIndex + 1;
+		}
+		$lastIndex = $firstIndex + $maxLparsInQuery - 1;
+		$lastIndex =
+		  ( $lastIndex > $#scanRecordIds ) ? $#scanRecordIds : $lastIndex;
+		push( @idBatches,
+			"$scanRecordIds[$firstIndex],$scanRecordIds[$lastIndex]" );
+	}
+	ilog( "id batches count: " . scalar(@idBatches) );
+
+	return @idBatches;
+}
+
+sub queryScanRecordIpIds {
+	my ( $self, $testMode, $deltaOnly ) = @_;
+	my @fields = (qw( id ));
+	my $query  = '
+        select
+            distinct a.id
+        from 
+            scan_record a 
+            join ip_address b on b.scan_record_id = a.id
+        where
+            a.action = \'COMPLETE\'
+    ';
+	my $clause = 'and';
+	if ( $deltaOnly == 1 ) {
+		$query .= '
+        ' . $clause . ' (
+            b.action != \'COMPLETE\')
+        ';
+		$clause = 'and';
+	}
+	if ( $testMode == 1 ) {
+		$query .= '
+                and a.customer_id in ('
+		  . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+	}
+	$query .= '
+        order by
+            a.id
+        with ur
+    ';
+	dlog("queryScanRecordIpIds=$query");
+	return ( 'scanRecordIpIds', $query, \@fields );
+}
+
 1;
 
