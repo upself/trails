@@ -208,15 +208,12 @@ sub getByBizKey {
     my $sth = $connection->sql->{getByBizKeyPvuMap};
     my $id;
     my $pvuId;
-    my $truncatedBrand;
-    $truncatedBrand = substr $self->processorBrand, 0, 16 ;
     $sth->bind_columns(
         \$id
         ,\$pvuId
     );
     $sth->execute(
-#        $self->processorBrand
-		$truncatedBrand
+        $self->processorBrand
         ,$self->processorModel
         ,$self->machineTypeId
     );
