@@ -119,7 +119,7 @@ sub setDBInfo {
             $dbs{'staging'}{'user'}     = 'eaadmin';
             $dbs{'staging'}{'name'}     = 'STAGING';
 
-            $dbs{'trails'}{'password'} = 'Green8ay';
+            $dbs{'trails'}{'password'} = 'Tear9faD';
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
@@ -136,10 +136,16 @@ sub setDBInfo {
             $dbs{'sims'}{'name'}     = 'SIMS';
 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-            $dbs{'trailsrp'}{'password'} = 'Green8ay';
+            $dbs{'trailsrp'}{'password'} = 'Tear9faD';
             $dbs{'trailsrp'}{'user'}     = 'eaadmin';
             $dbs{'trailsrp'}{'name'}     = 'TRAHERP'; 
             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
+
+			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
+            $dbs{'trailsst'}{'password'} = 'Tear9faD';
+            $dbs{'trailsst'}{'user'}     = 'eaadmin';
+            $dbs{'trailsst'}{'name'}     = 'TRAHEST'; 
+			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
