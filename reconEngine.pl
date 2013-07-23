@@ -32,7 +32,7 @@ logfile($logfile);
 my $job                  = 'RECON ENGINE';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo = 'revision184';
+my $rNo = 'revision233';
 
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
@@ -334,7 +334,8 @@ sub getReconCustomerQueue {
     
     for (my $phase=0; $phase<2; $phase++){
      
-        my $qName,$query = undef;
+        my $qName = undef;
+        my $query = undef;
         
         if($phase == 0){
            ($qName,$query) = queryPriorityCustomerIds();
@@ -343,7 +344,7 @@ sub getReconCustomerQueue {
             
         }
         
-        dlog("pahse $phase, qname $qName, query $query");
+        wlog("phase $phase, qname $qName, query $query");
      
         $connection->prepareSqlQuery($qName,$query);
         my $sth = $connection->sql->{$qName};
