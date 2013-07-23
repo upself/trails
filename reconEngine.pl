@@ -330,27 +330,42 @@ sub getReconCustomerQueue {
     my $id;
     my $recordTime;
     wlog("$rNo start building customer id array");
-        
-    $connection->prepareSqlQuery( queryDistinctCustomerIdsFromQueueFifo($testMode) );
-    my $sth = $connection->sql->{'distinctCustomerIdsFromQueueFifo'};
-    $sth->bind_columns( \$id, \$recordTime );
-    $sth->execute();
     
-    while ( $sth->fetchrow_arrayref ) {
-        my $keys  = $id.'|'.$recordTime;
+    
+    for (my $phase=0; $phase<2; $phase++){
+     
+        my $qName,$query = undef;
         
-        if($customerIdDateHash{$keys}){
-         dlog("keys=".$keys."exist ingore");
-         next;
-        }else{
-           my %data;
-           $data{$recordTime} = $id;
-           push @customers, \%data;
-           $customerIdDateHash{$keys} = 1;
+        if($phase == 0){
+           ($qName,$query) = queryPriorityCustomerIds();
+        }elsif($phase == 1){
+           ($qName,$query) = queryDistinctCustomerIdsFromQueueFifo($testMode);
+            
         }
-    }
         
-    $sth->finish;
+        dlog("pahse $phase, qname $qName, query $query");
+     
+        $connection->prepareSqlQuery($qName,$query);
+        my $sth = $connection->sql->{$qName};
+        $sth->bind_columns( \$id, \$recordTime );
+        $sth->execute();
+    
+        while ( $sth->fetchrow_arrayref ) {
+            my $keys  = $id.'|'.$recordTime;
+        
+            if($customerIdDateHash{$keys}){
+             dlog("keys=".$keys."exist ingore");
+             next;
+            }else{
+               my %data;
+               $data{$recordTime} = $id;
+               push @customers, \%data;
+               $customerIdDateHash{$keys} = 1;
+            }
+        }
+        
+        $sth->finish;
+    }    
 
     wlog("$rNo end building customer id array");
        
@@ -359,6 +374,29 @@ sub getReconCustomerQueue {
 
     return @customers;
 }
+
+
+sub queryPriorityCustomerIds{
+   my $query = '
+      select
+            a.customer_id
+            ,date(a.record_time)
+        from
+            v_recon_queue a
+        where 
+            a.table!=\'RECON_CUSTOMER\'
+            and a.customer_id in (14939,642)
+        group by
+            a.customer_id
+            ,date(a.record_time)
+        order by date(a.record_time)
+        with ur
+   ';
+   
+   
+   return ('queryPriorityCustomerIds', $query);
+}
+
 
 sub queryDistinctCustomerIdsFromQueueFifo {
     my $testMode = shift;
