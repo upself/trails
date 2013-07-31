@@ -620,7 +620,7 @@ public abstract class SoftwareSignatureDelegate extends Delegate {
 		ssf.setChangeJustification(f[10]);
 
 		Product product = null;
-		String productName = f[7].trim();
+		String productName = f[7];
 		if(productName.contains(",") && productName.startsWith("\"") && productName.endsWith("\""))
 			productName = productName.substring(1, productName.lastIndexOf("\""));
 		

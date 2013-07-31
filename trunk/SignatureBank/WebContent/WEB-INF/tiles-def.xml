@@ -59,6 +59,11 @@
 	<definition name=".view.software" extends=".basic.layout">
 		<put name="content" value="/WEB-INF/jsp/admin/software/ViewSoftware.jsp" />
 	</definition>
+	
+	<!-- Invalid Software -->
+	<definition name=".invalid.software" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/software/InvalidSoftware.jsp" />
+	</definition>
 
 	<!-- Manufacturer Home -->
 	<definition name=".manufacturer" extends=".basic.layout">

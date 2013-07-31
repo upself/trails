@@ -18,8 +18,8 @@
 	<table cellspacing="0" cellpadding="0" class="sign-in-table">
 		<tr>
 			<td><label for="softwareName">Software Name:</label></td>
-			<td><html:text name="softwareForm" property="softwareName"
-				styleClass="input" readonly="true" /></td>
+			<td><pre><html:text name="softwareForm" property="softwareName"
+				styleClass="input" readonly="true" /></pre></td>
 		</tr>
 		<tr>
 			<td><label for="manufacturer">Software Manufacturer: </label></td>

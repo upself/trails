@@ -82,7 +82,7 @@ when complete.</p>
 		</display:column>
 		<display:column title="Status" property="statusImage"
 			headerClass="blue-med" />
-		<display:column title="Filter Name" property="softwareName"
+		<display:column title="Filter Name" property="softwareName" style="white-space:pre;"
 			headerClass="blue-med" href="/SignatureBank/UpdateSoftwareFilter.do"
 			paramId="id" paramProperty="softwareFilterId" />
 		<display:column title="Filter version" property="softwareVersion"

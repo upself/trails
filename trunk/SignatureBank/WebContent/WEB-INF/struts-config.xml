@@ -95,7 +95,7 @@
 		<action path="/AddSoftware"
 			type="com.ibm.tap.sigbank.software.ActionSoftware"
 			parameter="addSoftware">
-			<forward name="success" path=".view.software"></forward>
+			<forward name="success" path=".invalid.software"></forward>
 		</action>
 
 		<action path="/UpdateSoftwareSoftwareCategorySave" type="com.ibm.tap.sigbank.software.ActionProduct"

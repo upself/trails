@@ -23,8 +23,8 @@ in to complete the form.
 			<td class="t1"><label for="softwareName">*Software Name:</label></td>
 			<td>
 			<div class="input-note">maximum 128 characters</div>
-			<html:text styleId="softwareName" property="softwareName"
-				styleClass="input" size="128" /></td>
+			<pre><html:text styleId="softwareName" property="softwareName"
+				styleClass="input" size="128" /></pre></td>
 		</tr>
 		<tr>
 			<td class="t1"><label for="manufacturerId">Manufacturer:</label></td>
@@ -62,7 +62,7 @@ in to complete the form.
 <display:table name="report" class="bravo" id="row">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:caption>Software Report</display:caption>
-	<display:column title="Software Name" property="name"
+	<display:column title="Software Name" property="name" style="white-space:pre;"
 		headerClass="blue-med" href="ViewSoftware.do" paramId="id"
 		paramProperty="id" />
 	<c:if test="${row.productInfo.licensable}">

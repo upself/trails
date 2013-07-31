@@ -537,7 +537,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		sff.setChangeJustification(f[7]);
 
 		Product product = null;
-		String productName = f[4].trim();
+		String productName = f[4];
 		if(productName.contains(",") && productName.startsWith("\"") && productName.endsWith("\""))
 			productName = productName.substring(1, productName.lastIndexOf("\""));
 		

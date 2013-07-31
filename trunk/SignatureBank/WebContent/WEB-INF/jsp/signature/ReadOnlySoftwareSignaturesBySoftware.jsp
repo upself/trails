@@ -35,7 +35,7 @@
 		<display:caption>Assigned Software Signatures</display:caption>
 		<display:column title="Status" property="statusImage"
 			headerClass="blue-med" />
-		<display:column title="File Name" property="fileName"
+		<display:column title="File Name" property="fileName" style="white-space:pre;"
 			headerClass="blue-med" />
 		<display:column title="File Size" property="fileSize"
 			headerClass="blue-med" />
