@@ -123,7 +123,7 @@ sub setDBInfo {
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
-            $dbs{'cndb'}{'password'} = 'APR29db2@#';
+            $dbs{'cndb'}{'password'} = 'JUL25db2#';
             $dbs{'cndb'}{'user'}     = 'cndb';
             $dbs{'cndb'}{'name'}     = 'CNDBR';
 
