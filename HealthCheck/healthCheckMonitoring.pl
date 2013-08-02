@@ -53,6 +53,10 @@
 # 2013-07-04  Liu Hai(Larry) 1.7.1           HealthCheck and Monitoring Service Component - Phase 7: Develop Database Monitoring - TrailsRP DB Apply Gap Monitoring Feature 2 Basic Architecture
 # 2013-07-11  Liu Hai(Larry) 1.7.2           HealthCheck and Monitoring Service Component - Phase 7: Go on refactoring the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails') 
 #                                                                                                    Add DB Exception Feature Support
+###################################################################################################################################################################################################
+#                                            Phase 7A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A'
+# 2013-08-01  Liu Hai(Larry) 1.7.3           HealthCheck and Monitoring Service Component - Phase 7A: Add the synctime is null case for TrailsRP Replication Error Email Support Feature
+#                                                                                                     Adjust the email content for TrailsRP Replication Success Email more meaningful 
 #
 
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
@@ -1443,6 +1447,13 @@ sub eventRuleCheck{
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Message: {$errorEventRuleMessage}\n";
                  my $errorEventRuleHandlingInstructionCode = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TRP-001'
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code: {$errorEventRuleHandlingInstructionCode}\n";
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
+				 my $errorEventRuleMessageForReplicationFailed = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
+				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Message For Replication Failed: {$errorEventRuleMessageForReplicationFailed}\n";
+                 my $errorEventRuleHandlingInstructionCodeForReplicationFailed = $metaRuleParameter9;#var used to store error event rule handling instruction code for replication failed - for example: 'E-DBM-TRP-002'
+				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code For Replication Failed: {$errorEventRuleHandlingInstructionCodeForReplicationFailed}\n";
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
+
 				 my $trailsrp_connection;#var used to store TrailsRP DB connection object
 				 my @trailsRPDBApplyGapRow;#array used to store trailsRP DB apply gap row
 			     my $trailsRPDBCurrentTime;#var used to store trailsRP DB current time - for example: 2013-05-28-05.39.55.103602
@@ -1475,59 +1486,82 @@ sub eventRuleCheck{
 
                     #Disconnect TrailsRP DB Connection 
 				    $trailsrp_connection->disconnect();
-
-				    print LOG "{TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
+                    
+					if(defined $trailsRPDBLastSYNTime){#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A  
+				      print LOG "{TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
                  
-                    $processedRuleTitle = $metaRuleTitle;
-                    $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
-                    print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
+                      $processedRuleTitle = $metaRuleTitle;
+                      $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                      print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
 			    
-				    if(($trailsRPDBApplyGapSecs > $warningTrailsRPDBApplyGap) && ($trailsRPDBApplyGapSecs <= $errorTrailsRPDBApplyGap)){#trailsRP DB Apply Waining Gap has been reached
-                       print LOG "{TrailsRP DB Apply Waining Gap: $trailsRPDBApplyGapSecs} has been reached with {Warning Apply Gap Threshold: $warningTrailsRPDBApplyGap}\n";
+				      if(($trailsRPDBApplyGapSecs > $warningTrailsRPDBApplyGap) && ($trailsRPDBApplyGapSecs <= $errorTrailsRPDBApplyGap)){#trailsRP DB Apply Waining Gap has been reached
+                         print LOG "{TrailsRP DB Apply Waining Gap: $trailsRPDBApplyGapSecs} has been reached with {Warning Apply Gap Threshold: $warningTrailsRPDBApplyGap}\n";
 				   		
-                       $processedRuleHandlingInstructionCode = $warningEventRuleHandlingInstructionCode;
-                       print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                         $processedRuleHandlingInstructionCode = $warningEventRuleHandlingInstructionCode;
+                         print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
 
-                       $processedRuleMessage = $warningEventRuleMessage;
-                       $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB warning apply gap hours
-					   print LOG "The calculated TrailsRP DB Warning Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
-					   $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB warning apply gap remaining seconds
-                       print LOG "The calculated TrailsRP DB Warning Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
-                       $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB warning apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "The calculated TrailsRP DB Warning Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
-                       $processedRuleMessage =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB warning apply gap hours - for example: 5(hours)
-                       $processedRuleMessage =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB warning apply gap mins - for example: 5(mins)  
-                       print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+                         $processedRuleMessage = $warningEventRuleMessage;
+                         $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB warning apply gap hours
+					     print LOG "The calculated TrailsRP DB Warning Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
+					     $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB warning apply gap remaining seconds
+                         print LOG "The calculated TrailsRP DB Warning Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
+                         $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB warning apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "The calculated TrailsRP DB Warning Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
+                         $processedRuleMessage =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB warning apply gap hours - for example: 5(hours)
+                         $processedRuleMessage =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB warning apply gap mins - for example: 5(mins)  
+                         print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
 
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
-                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
-				       $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-				    }#end if(($trailsRPDBApplyGapSecs > $warningTrailsRPDBApplyGap) && ($trailsRPDBApplyGapSecs <= $errorTrailsRPDBApplyGap)) 
-				    elsif($trailsRPDBApplyGapSecs > $errorTrailsRPDBApplyGap){#trailsRP DB Apply Error Gap has been reached
-                       print LOG "{TrailsRP DB Apply Error Gap: $trailsRPDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $errorTrailsRPDBApplyGap}\n";
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			             $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                         $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				      }#end if(($trailsRPDBApplyGapSecs > $warningTrailsRPDBApplyGap) && ($trailsRPDBApplyGapSecs <= $errorTrailsRPDBApplyGap)) 
+				      elsif($trailsRPDBApplyGapSecs > $errorTrailsRPDBApplyGap){#trailsRP DB Apply Error Gap has been reached
+                         print LOG "{TrailsRP DB Apply Error Gap: $trailsRPDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $errorTrailsRPDBApplyGap}\n";
 					
-                       $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCode;
-					   print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                         $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCode;
+					     print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
 
-                       $processedRuleMessage =  $errorEventRuleMessage;
-					   $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB error apply gap hours
-					   print LOG "The calculated TrailsRP DB Error Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
-					   $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB error apply gap remaining seconds
-                       print LOG "The calculated TrailsRP DB Error Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
-                       $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "The calculated TrailsRP DB Error Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
-                       $processedRuleMessage =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB error apply gap hours - for example: 10(hours)
-                       $processedRuleMessage =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB error apply gap mins - for example: 10(mins)  
-                       print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+                         $processedRuleMessage =  $errorEventRuleMessage;
+					     $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB error apply gap hours
+					     print LOG "The calculated TrailsRP DB Error Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
+					     $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB error apply gap remaining seconds
+                         print LOG "The calculated TrailsRP DB Error Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
+                         $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "The calculated TrailsRP DB Error Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
+                         $processedRuleMessage =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB error apply gap hours - for example: 10(hours)
+                         $processedRuleMessage =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB error apply gap mins - for example: 10(mins)  
+                         print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
 				
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
-                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
-				       $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-				    }#end elsif($trailsRPDBApplyGapSecs > $errorTrailsRPDBApplyGap) 
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			             $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                         $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				      }#end elsif($trailsRPDBApplyGapSecs > $errorTrailsRPDBApplyGap)
+					}#end if(defined $trailsRPDBLastSYNTime)#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
+					#Support the synctime is null case
+					else{
+					   
+					  $processedRuleTitle = $metaRuleTitle;
+                      $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                      print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
+                      
+                      $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCodeForReplicationFailed;
+					  print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                      $processedRuleMessage =  $errorEventRuleMessageForReplicationFailed;
+					  print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+
+                      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			          $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                      $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				      $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
 					
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
@@ -1639,6 +1673,13 @@ sub eventRuleCheck{
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Message: {$errorEventRuleMessage}\n";
                  my $errorEventRuleHandlingInstructionCode = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TST-001'
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code: {$errorEventRuleHandlingInstructionCode}\n";
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
+				 my $errorEventRuleMessageForReplicationFailed = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
+				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Message For Replication Failed: {$errorEventRuleMessageForReplicationFailed}\n";
+                 my $errorEventRuleHandlingInstructionCodeForReplicationFailed = $metaRuleParameter9;#var used to store error event rule handling instruction code for replication failed - for example: 'E-DBM-TST-002'
+				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code For Replication Failed: {$errorEventRuleHandlingInstructionCodeForReplicationFailed}\n";
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
+				  
 				 my $trailsst_connection;#var used to store TrailsST DB connection object
 				 my @trailsSTDBApplyGapRow;#array used to store trailsST DB apply gap row
 			     my $trailsSTDBCurrentTime;#var used to store trailsST DB current time - for example: 2013-05-28-05.39.55.103602
@@ -1671,60 +1712,83 @@ sub eventRuleCheck{
 
                     #Disconnect TrailsST DB Connection 
 				    $trailsst_connection->disconnect();
-
-				    print LOG "{TrailsST Database Apply Gap Seconds: $trailsSTDBApplyGapSecs} from {LAST_SYN_TIME: $trailsSTDBLastSYNTime} with {CURRENT_TIME: $trailsSTDBCurrentTime}\n";
+                    
+					if(defined $trailsSTDBLastSYNTime){#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
+				      print LOG "{TrailsST Database Apply Gap Seconds: $trailsSTDBApplyGapSecs} from {LAST_SYN_TIME: $trailsSTDBLastSYNTime} with {CURRENT_TIME: $trailsSTDBCurrentTime}\n";
                  
-                    $processedRuleTitle = $metaRuleTitle;
-                    $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
-                    print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
+                      $processedRuleTitle = $metaRuleTitle;
+                      $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                      print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
 			    
-				    if(($trailsSTDBApplyGapSecs > $warningTrailsSTDBApplyGap) && ($trailsSTDBApplyGapSecs <= $errorTrailsSTDBApplyGap)){#trailsST DB Apply Waining Gap has been reached
-                       print LOG "{TrailsST DB Apply Waining Gap: $trailsSTDBApplyGapSecs} has been reached with {Warning Apply Gap Threshold: $warningTrailsSTDBApplyGap}\n";
+				      if(($trailsSTDBApplyGapSecs > $warningTrailsSTDBApplyGap) && ($trailsSTDBApplyGapSecs <= $errorTrailsSTDBApplyGap)){#trailsST DB Apply Waining Gap has been reached
+                         print LOG "{TrailsST DB Apply Waining Gap: $trailsSTDBApplyGapSecs} has been reached with {Warning Apply Gap Threshold: $warningTrailsSTDBApplyGap}\n";
 				   		
-                       $processedRuleHandlingInstructionCode = $warningEventRuleHandlingInstructionCode;
-                       print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                         $processedRuleHandlingInstructionCode = $warningEventRuleHandlingInstructionCode;
+                         print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
 
-                       $processedRuleMessage = $warningEventRuleMessage;
-                       $trailsSTDBApplyGapHours = int($trailsSTDBApplyGapSecs/3600);#calculate the trailsST DB warning apply gap hours
-					   print LOG "The calculated TrailsST DB Warning Apply Gap Hours: {$trailsSTDBApplyGapHours}\n";
-					   $trailsSTDBApplyGapRemainingSecs = $trailsSTDBApplyGapSecs%3600;#calculate the trailsST DB warning apply gap remaining seconds
-                       print LOG "The calculated TrailsST DB Warning Apply Gap Remaining Seconds: {$trailsSTDBApplyGapRemainingSecs}\n"; 
-                       $trailsSTDBApplyGapMins =  int($trailsSTDBApplyGapRemainingSecs/60) + 1;#calculate the trailsST DB warning apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "The calculated TrailsST DB Warning Apply Gap Mins: {$trailsSTDBApplyGapMins}\n";
-                       $processedRuleMessage =~ s/\@2/$trailsSTDBApplyGapHours/g;#replace @2 with trailsST DB warning apply gap hours - for example: 5(hours)
-                       $processedRuleMessage =~ s/\@3/$trailsSTDBApplyGapMins/g;#replace @3 with trailsST DB warning apply gap mins - for example: 5(mins)  
-                       print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+                         $processedRuleMessage = $warningEventRuleMessage;
+                         $trailsSTDBApplyGapHours = int($trailsSTDBApplyGapSecs/3600);#calculate the trailsST DB warning apply gap hours
+					     print LOG "The calculated TrailsST DB Warning Apply Gap Hours: {$trailsSTDBApplyGapHours}\n";
+					     $trailsSTDBApplyGapRemainingSecs = $trailsSTDBApplyGapSecs%3600;#calculate the trailsST DB warning apply gap remaining seconds
+                         print LOG "The calculated TrailsST DB Warning Apply Gap Remaining Seconds: {$trailsSTDBApplyGapRemainingSecs}\n"; 
+                         $trailsSTDBApplyGapMins =  int($trailsSTDBApplyGapRemainingSecs/60) + 1;#calculate the trailsST DB warning apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "The calculated TrailsST DB Warning Apply Gap Mins: {$trailsSTDBApplyGapMins}\n";
+                         $processedRuleMessage =~ s/\@2/$trailsSTDBApplyGapHours/g;#replace @2 with trailsST DB warning apply gap hours - for example: 5(hours)
+                         $processedRuleMessage =~ s/\@3/$trailsSTDBApplyGapMins/g;#replace @3 with trailsST DB warning apply gap mins - for example: 5(mins)  
+                         print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
 
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
-                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
-				       $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-				    }#end if(($trailsSTDBApplyGapSecs > $warningTrailsSTDBApplyGap) && ($trailsSTDBApplyGapSecs <= $errorTrailsSTDBApplyGap)) 
-				    elsif($trailsSTDBApplyGapSecs > $errorTrailsSTDBApplyGap){#trailsST DB Apply Error Gap has been reached
-                       print LOG "{TrailsST DB Apply Error Gap: $trailsSTDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $errorTrailsSTDBApplyGap}\n";
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			             $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                         $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				      }#end if(($trailsSTDBApplyGapSecs > $warningTrailsSTDBApplyGap) && ($trailsSTDBApplyGapSecs <= $errorTrailsSTDBApplyGap)) 
+				      elsif($trailsSTDBApplyGapSecs > $errorTrailsSTDBApplyGap){#trailsST DB Apply Error Gap has been reached
+                         print LOG "{TrailsST DB Apply Error Gap: $trailsSTDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $errorTrailsSTDBApplyGap}\n";
 					
-                       $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCode;
-					   print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                         $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCode;
+					     print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
 
-                       $processedRuleMessage =  $errorEventRuleMessage;
-					   $trailsSTDBApplyGapHours = int($trailsSTDBApplyGapSecs/3600);#calculate the trailsST DB error apply gap hours
-					   print LOG "The calculated TrailsST DB Error Apply Gap Hours: {$trailsSTDBApplyGapHours}\n";
-					   $trailsSTDBApplyGapRemainingSecs = $trailsSTDBApplyGapSecs%3600;#calculate the trailsST DB error apply gap remaining seconds
-                       print LOG "The calculated TrailsST DB Error Apply Gap Remaining Seconds: {$trailsSTDBApplyGapRemainingSecs}\n"; 
-                       $trailsSTDBApplyGapMins =  int($trailsSTDBApplyGapRemainingSecs/60) + 1;#calculate the trailsST DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "The calculated TrailsST DB Error Apply Gap Mins: {$trailsSTDBApplyGapMins}\n";
-                       $processedRuleMessage =~ s/\@2/$trailsSTDBApplyGapHours/g;#replace @2 with trailsST DB error apply gap hours - for example: 10(hours)
-                       $processedRuleMessage =~ s/\@3/$trailsSTDBApplyGapMins/g;#replace @3 with trailsST DB error apply gap mins - for example: 10(mins)  
-                       print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+                         $processedRuleMessage =  $errorEventRuleMessage;
+					     $trailsSTDBApplyGapHours = int($trailsSTDBApplyGapSecs/3600);#calculate the trailsST DB error apply gap hours
+					     print LOG "The calculated TrailsST DB Error Apply Gap Hours: {$trailsSTDBApplyGapHours}\n";
+					     $trailsSTDBApplyGapRemainingSecs = $trailsSTDBApplyGapSecs%3600;#calculate the trailsST DB error apply gap remaining seconds
+                         print LOG "The calculated TrailsST DB Error Apply Gap Remaining Seconds: {$trailsSTDBApplyGapRemainingSecs}\n"; 
+                         $trailsSTDBApplyGapMins =  int($trailsSTDBApplyGapRemainingSecs/60) + 1;#calculate the trailsST DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "The calculated TrailsST DB Error Apply Gap Mins: {$trailsSTDBApplyGapMins}\n";
+                         $processedRuleMessage =~ s/\@2/$trailsSTDBApplyGapHours/g;#replace @2 with trailsST DB error apply gap hours - for example: 10(hours)
+                         $processedRuleMessage =~ s/\@3/$trailsSTDBApplyGapMins/g;#replace @3 with trailsST DB error apply gap mins - for example: 10(mins)  
+                         print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
 				
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
-                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
-				       $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
-				       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-				    }#end elsif($trailsSTDBApplyGapSecs > $errorTrailsSTDBApplyGap) 
-					
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			             $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                         $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				      }#end elsif($trailsSTDBApplyGapSecs > $errorTrailsSTDBApplyGap)
+					}#end if(defined $trailsSTDBLastSYNTime)#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
+					#Support the synctime is null case
+					else{
+					   
+					  $processedRuleTitle = $metaRuleTitle;
+                      $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+                      print LOG "The Processed Event Rule Title: {$processedRuleTitle}\n";
+                      
+                      $processedRuleHandlingInstructionCode = $errorEventRuleHandlingInstructionCodeForReplicationFailed;
+					  print LOG "The Processed Event Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                      $processedRuleMessage =  $errorEventRuleMessageForReplicationFailed;
+					  print LOG "The Processed Event Rule Message: {$processedRuleMessage}\n";
+
+                      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			          $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+                      $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";#append event rule handling instruction code into email content  
+				      $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
+				      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
+
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 				 };#end eval
@@ -1749,13 +1813,13 @@ sub eventRuleCheck{
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Error Email Title: {$errorEmailTitle}\n";
 				 my $errorEmailToPersonList = $metaRuleParameter4;#var used to store Error Email To Person List - for example: 'liuhaidl@cn.ibm.com,HDRUST@de.ibm.com,Petr_Soufek@cz.ibm.com,dbryson@us.ibm.com,AMTS@cz.ibm.com,stammelw@us.ibm.com'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Error Email To Person List: {$errorEmailToPersonList}\n";
-                 my $errorEmailContentMessage = $metaRuleParameter5;#var used to store Error Email Content Message - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@2 hrs and @3 mins>'
+                 my $errorEmailContentMessage = $metaRuleParameter5;#var used to store Error Email Content Message - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@1 hrs and @2 mins>'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Error Email Content Message: {$errorEmailContentMessage}\n";
 				 my $successEmailTitle = $metaRuleParameter6;#var used to store Success Email Title - for example: 'TRAILSRP Replication - SUCCESS'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Success Email Title: {$successEmailTitle}\n";
 				 my $successEmailToPersonList = $metaRuleParameter7;#var used to store Success Email To Person List - for example: 'liuhaidl@cn.ibm.com,HDRUST@de.ibm.com,Petr_Soufek@cz.ibm.com,dbryson@us.ibm.com,AMTS@cz.ibm.com,stammelw@us.ibm.com'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Success Email To Person List: {$successEmailToPersonList}\n";
-                 my $successEmailContentMessage = $metaRuleParameter8;#var used to store Success Email Content Message - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@2 hrs and @3 mins>'
+                 my $successEmailContentMessage = $metaRuleParameter8;#var used to store Success Email Content Message - for example: 'Apply Gap is within @1 hours [Configured Threshold Value]. Current Apply Gap is: <@2 hrs and @3 mins>'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Success Email Content Message: {$successEmailContentMessage}\n";
 				 my $alwaysSendEmailFlag = $metaRuleParameter9;#var used to store Always Send Email Flag - for example: 'Y'
                  print LOG "TrailsRP DB Apply Gap Monitoring 2 - Always Send Email Flag: {$alwaysSendEmailFlag}\n";
@@ -1778,9 +1842,11 @@ sub eventRuleCheck{
 			     
 				 my $sendEmailTitle;#var used to store send email title - for example: 'TRAILSRP Replication - SUCCESS'
 				 my $sendEmailToPersonList;#var used to store send email to person list - 'liuhaidl@cn.ibm.com,HDRUST@de.ibm.com,Petr_Soufek@cz.ibm.com,dbryson@us.ibm.com,AMTS@cz.ibm.com,stammelw@us.ibm.com'
-				 my $processedSendEmailContent;#var used to store processed send email content - for example: 'Apply Gap of TrailsRP too high. Current Apply Gap is: <@2 hrs and @3 mins>'
+				 my $processedSendEmailContent;#var used to store processed send email content - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@1 hrs and @2 mins>'
                  my $finalSendEmailContent;#var used to store final send email content
                  
+                 my $defineApplyGapErrorThresholdHours;#var used to store the define apply gap error threshold hours
+
 				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
 				 eval{  
 				    #Get TrailsRP DB Connection 
@@ -1796,75 +1862,114 @@ sub eventRuleCheck{
 
                     #Disconnect TrailsRP DB Connection 
 				    $trailsrp_connection->disconnect();
-				    print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
-            	   
-                    if(($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold)#trailsRP DB Apply Error Gap has been reached
-				     &&($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
-				     &&($eventTriggerDay eq $currentDay)){#trigger to send trailsRP DB Apply Error Email on Monday for every week  
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP DB Apply Gap: $trailsRPDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $applyGapErrorThreshold}\n";
+				    
+					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
+					if(defined $trailsRPDBLastSYNTime){
+					  print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
+            	    
+                      if(($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold)#trailsRP DB Apply Error Gap has been reached
+				       &&($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
+				       &&($eventTriggerDay eq $currentDay)){#trigger to send trailsRP DB Apply Error Email on Monday for every week  
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP DB Apply Gap: $trailsRPDBApplyGapSecs} has been reached with {Error Apply Gap Threshold: $applyGapErrorThreshold}\n";
                     
-				       $sendEmailTitle = $errorEmailTitle;
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email Title: {$sendEmailTitle}\n";
+				         $sendEmailTitle = $errorEmailTitle;
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email Title: {$sendEmailTitle}\n";
 
-                       $sendEmailToPersonList = $errorEmailToPersonList;
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email To Person List: {$sendEmailToPersonList}\n";
+                         $sendEmailToPersonList = $errorEmailToPersonList;
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email To Person List: {$sendEmailToPersonList}\n";
                     
-                       $processedSendEmailContent = $errorEmailContentMessage;
-                       $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB error apply gap hours
-			           print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
-				       $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB error apply gap remaining seconds
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
-                       $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
-                       $processedSendEmailContent =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB error apply gap hours - for example: 50(hours)
-                       $processedSendEmailContent =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB error apply gap mins - for example: 5(mins)  
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Processed Send Error Email Content: {$processedSendEmailContent}\n";
-
-                       $finalSendEmailContent.="------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $finalSendEmailContent.="$processedSendEmailContent\n";
-                       $finalSendEmailContent.="------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			     
-			           #Send TrailsRP DB Apply Gap Email
-			           sendEmail($sendEmailTitle,$sendEmailToPersonList,"",$finalSendEmailContent);
+                         $processedSendEmailContent = $errorEmailContentMessage;
+                         $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB error apply gap hours
+			             print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
+				         $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB error apply gap remaining seconds
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
+                         $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB error apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Error Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
+                         $processedSendEmailContent =~ s/\@1/$trailsRPDBApplyGapHours/g;#replace @1 with trailsRP DB error apply gap hours - for example: 50(hours)
+                         $processedSendEmailContent =~ s/\@2/$trailsRPDBApplyGapMins/g;#replace @2 with trailsRP DB error apply gap mins - for example: 5(mins)
+						 $processedSendEmailContent .="\n";
+                         $processedSendEmailContent .="Please see the following WIKI link for instructions:\n";
+                         $processedSendEmailContent .="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Handling%20Instruction%20for%20TrailsRP%20and%20TrailsST%20DBs";
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Processed Send Error Email Content: {$processedSendEmailContent}\n";
+                         
+						 $finalSendEmailContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                         $finalSendEmailContent.="$processedSendEmailContent\n";
+                         $finalSendEmailContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                      
+			             #Send TrailsRP DB Apply Gap Email
+			             sendEmail($sendEmailTitle,$sendEmailToPersonList,"",$finalSendEmailContent);
 					
-					   #Set the TrailsRP DB Email Send Flag to "Y"
-					   $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
-					   print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
-		            }#end if($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold)
-				    elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold)#trailsRP DB Apply Error Gap has not been reached
-					    &&($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG)#only send trailsRP success email when $alwaysSendEmailFlag = 'Y'
-					    &&($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
-                        &&($eventTriggerDay eq $currentDay)){#trigger to send trailsRP DB Apply Error Email on Monday for every week  
-				       print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP DB Apply Gap: $trailsRPDBApplyGapSecs} has not been reached with {Error Apply Gap Threshold: $applyGapErrorThreshold}\n";
-                    
-					   $sendEmailTitle = $successEmailTitle;
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Success Email Title: {$sendEmailTitle}\n";
+					     #Set the TrailsRP DB Email Send Flag to "Y"
+					     $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
+					     print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
+		              }#end if($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold)
+				      elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold)#trailsRP DB Apply Error Gap has not been reached
+					      &&($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG)#only send trailsRP success email when $alwaysSendEmailFlag = 'Y'
+					      &&($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
+                          &&($eventTriggerDay eq $currentDay)){#trigger to send trailsRP DB Apply Error Email on Monday for every week  
+				         print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP DB Apply Gap: $trailsRPDBApplyGapSecs} has not been reached with {Error Apply Gap Threshold: $applyGapErrorThreshold}\n";
 
-                       $sendEmailToPersonList = $successEmailToPersonList;
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Success Email To Person List: {$sendEmailToPersonList}\n";  
+						 $sendEmailTitle = $successEmailTitle;
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Success Email Title: {$sendEmailTitle}\n";
 
-                       $processedSendEmailContent = $successEmailContentMessage;
-                       $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB success apply gap hours
-			           print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
-				       $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB success apply gap remaining seconds
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
-                       $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB success apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
-                       $processedSendEmailContent =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB success apply gap hours - for example: 5(hours)
-                       $processedSendEmailContent =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB success apply gap mins - for example: 5(mins)  
-                       print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Processed Send Success Email Content: {$processedSendEmailContent}\n";
+                         $sendEmailToPersonList = $successEmailToPersonList;
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Success Email To Person List: {$sendEmailToPersonList}\n";  
 
-                       $finalSendEmailContent.="------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-			           $finalSendEmailContent.="$processedSendEmailContent\n";
-                       $finalSendEmailContent.="------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                         $processedSendEmailContent = $successEmailContentMessage;
+						 $defineApplyGapErrorThresholdHours = int($applyGapErrorThreshold/3600);#calculate the trailsRP DB define apply gap error threshold hours
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Define Apply Gap Error Threshold Hours: {$defineApplyGapErrorThresholdHours}\n"; 
+                         $trailsRPDBApplyGapHours = int($trailsRPDBApplyGapSecs/3600);#calculate the trailsRP DB success apply gap hours
+			             print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Hours: {$trailsRPDBApplyGapHours}\n";
+				         $trailsRPDBApplyGapRemainingSecs = $trailsRPDBApplyGapSecs%3600;#calculate the trailsRP DB success apply gap remaining seconds
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Remaining Seconds: {$trailsRPDBApplyGapRemainingSecs}\n"; 
+                         $trailsRPDBApplyGapMins =  int($trailsRPDBApplyGapRemainingSecs/60) + 1;#calculate the trailsRP DB success apply gap remaining mins - please note that here we need to always + 1 min to support the remaning seconds < 60 seconds case 
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The calculated TrailsRP DB Success Apply Gap Mins: {$trailsRPDBApplyGapMins}\n";
+                         $processedSendEmailContent =~ s/\@1/$defineApplyGapErrorThresholdHours/g;#replace @1 with trailsRP DB define apply gap error threshold hours - for example: 48(hours)
+						 $processedSendEmailContent =~ s/\@2/$trailsRPDBApplyGapHours/g;#replace @2 with trailsRP DB success apply gap hours - for example: 5(hours)
+                         $processedSendEmailContent =~ s/\@3/$trailsRPDBApplyGapMins/g;#replace @3 with trailsRP DB success apply gap mins - for example: 5(mins)  
+                         print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Processed Send Success Email Content: {$processedSendEmailContent}\n";
+
+                         $finalSendEmailContent.="------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			             $finalSendEmailContent.="$processedSendEmailContent\n";
+                         $finalSendEmailContent.="------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
 			     
-			           #Send TrailsRP DB Apply Gap Email
-			           sendEmail($sendEmailTitle,$sendEmailToPersonList,"",$finalSendEmailContent);
+			             #Send TrailsRP DB Apply Gap Email
+			             sendEmail($sendEmailTitle,$sendEmailToPersonList,"",$finalSendEmailContent);
 					
-					   #Set the TrailsRP DB Email Send Flag to "Y"
-					   $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
-					   print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
-				    }#end elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold) && ($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG))  
+					     #Set the TrailsRP DB Email Send Flag to "Y"
+					     $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
+					     print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
+				      }#end elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold) && ($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG))
+					}#end if(defined $trailsRPDBLastSYNTime)
+					#Support the synctime is null case
+					else{
+                      if($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG){#only send trailsRP DB Apply Error Email Once a time
+					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - TrailsRP DB Apply Gap Last SYN Time is NULL\n";
+
+					    $sendEmailTitle = $errorEmailTitle;
+                        print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email Title: {$sendEmailTitle}\n";
+
+                        $sendEmailToPersonList = $errorEmailToPersonList;
+                        print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Send Error Email To Person List: {$sendEmailToPersonList}\n";
+                    
+                        $processedSendEmailContent.= "Replication FAILED: ";
+					    $processedSendEmailContent.= "please see the following WIKI link for instructions:\n";
+                        $processedSendEmailContent.= "https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Handling%20Instruction%20for%20TrailsRP%20and%20TrailsST%20DBs";
+					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - The Processed Send Error Email Content: {$processedSendEmailContent}\n";
+
+                        $finalSendEmailContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			            $finalSendEmailContent.="$processedSendEmailContent\n";
+                        $finalSendEmailContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+
+                        #Send TrailsRP DB Apply Gap Email
+			            sendEmail($sendEmailTitle,$sendEmailToPersonList,"",$finalSendEmailContent);
+					
+					    #Set the TrailsRP DB Email Send Flag to "Y"
+					    $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
+					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
+                      }#end if($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) 
+					}#end else
+                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
             
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
