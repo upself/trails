@@ -135,14 +135,45 @@ sub doDelta {
         wlog('scanlist is zero');
         return;
     }
+    #set the limt.
+    $self->limit(100000);
+    my $qty = $self->getStagingSignatureQty($connection,  $self->SUPER::bankAccount->id );
+    
+    if($qty > $self->limit){
+      my $idSegments = $self->getStagingSignatureIds($connection,  $self->SUPER::bankAccount->id );
+      my @segments = @{$idSegments};
+      
+      for(my $i = 0;$i<scalar @segments;$i++){
+          if($i <= 0){
+              dlog('execute less than');
+              dlog("segment, end=$segments[$i]");
+              $self->compare($connection, undef,$segments[$i]);
+          }else{
+              dlog('execute between');
+              dlog("segment,start=$segments[$i-1], end=$segments[$i]");
+              $self->compare($connection, $segments[$i-1],$segments[$i]);
+          }
+      }
+    }else{
+      $self->compare($connection, undef,undef);
+    }
+}
 
-    my $signatureList = $self->list;
+
+sub compare{
+     my ( $self, $connection, $start, $end ) = @_;
+     
+     my $signatureList = $self->list;
 
     ###Loop through the staging query
     ###Prepare the necessary sql
-
-    $connection->prepareSqlQuery( Staging::Delegate::StagingDelegate->querySoftwareSignatureData() );
-
+    
+    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureData() )
+                                                                   if(!defined $start && !defined $end);
+    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureDataLessThan() )
+                                                                   if(!defined $start && defined $end);
+    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureDataBetween() )
+                                                                   if(defined $start && defined $end);
     ###Define our fields
     my @fields = (qw(id softwareSignatureId softwareId action path scanRecordId scanRecordAction));
 
@@ -154,8 +185,14 @@ sub doDelta {
     $sth->bind_columns( map { \$rec{$_} } @fields );
 
     ###Excute the query
-    $sth->execute( $self->SUPER::bankAccount->id );
-    
+    $sth->execute( $self->SUPER::bankAccount->id )
+                        if(!defined $start && !defined $end);
+                        
+    $sth->execute( $self->SUPER::bankAccount->id,$end )
+                        if(!defined $start && defined $end);
+                        
+    $sth->execute( $self->SUPER::bankAccount->id,$start, $end )
+                        if(defined $start && defined $end);
     my @tempSigArray;
     while ( $sth->fetchrow_arrayref ) {
 
@@ -260,7 +297,80 @@ sub doDelta {
     
     $self->applyTemp($signatureList,\@tempSigArray, $connection)
           if(scalar @tempSigArray >0);
-    $self->list($signatureList);
+}
+
+sub getStagingSignatureQty{
+    my ( $self, $connection, $bankAccountId ) = @_;
+    my $query = '
+      select count(*) 
+       from software_signature s, scan_record sr
+      where
+       sr.bank_account_id  = ?
+       and s.scan_record_id  = sr.id
+      with ur
+    ';
+    $connection->prepareSqlQuery('getStagingSignatureQty',$query);
+    my $sth = $connection->sql->{getStagingSignatureQty};
+    my $qty;
+    $sth->bind_columns(\$qty);
+    $sth->execute($bankAccountId);
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    
+    return $qty;
+}
+
+
+sub getStagingSignatureIds{
+ 
+   dlog('start build the segment array');
+   my ( $self, $connection, $bankAccountId ) = @_;
+   my $query = '
+      select s.id
+       from software_signature s, scan_record sr
+      where
+       sr.bank_account_id  = ?
+       and s.scan_record_id  = sr.id
+	  order 
+	   by s.id asc
+      with ur
+   ';
+   
+   dlog('query='.$query);
+     
+    my @idArray=();
+   
+    $connection->prepareSqlQuery('getStagingSignatureIds',$query);
+    my $sth = $connection->sql->{getStagingSignatureIds};
+    my $sigId;
+    $sth->bind_columns(\$sigId);
+    $sth->execute($bankAccountId);
+    my $counter = 0;
+    
+    my $lastId;
+    my $lastIdInArray;
+    my $limit = $self->limit;
+    
+    while( $sth->fetchrow_arrayref )
+    {
+      $counter++;
+      if($counter >= $limit){
+         dlog("add signature into array, $sigId");
+         push @idArray, $sigId;
+         $counter = 0;
+         $lastIdInArray = $sigId;
+      }
+      $lastId = $sigId;
+      dlog("counter=$counter, limit=$limit, signatureId=$sigId");
+    }
+    $sth->finish;
+    
+    if($lastId ne $lastIdInArray){
+      push @idArray, $lastId;
+    }
+    
+    dlog('end build the segment array. '.scalar @idArray);
+    return \@idArray;
 }
 
 sub applyTemp{
@@ -270,12 +380,12 @@ sub applyTemp{
     foreach my $item (@{$signatures}){
       $item->save($connection);
       delete $signatureList->{$item->softwareId}->{$item->softwareSignatureId}->{$item->scanRecordId};
+      $self->addToCount( 'STAGING', 'SIGNATURE', 'TEMP_' . $item->action );
     }
     
     @{$signatures} = ();
-    
     dlog("end temp applying");
- 
+    dlog('applied DELETE='.$self->count->{STAGING}->{SIGNATURE}->{TEMP_DELETE}.' ,UPDATE='.$self->count->{STAGING}->{SIGNATURE}->{TEMP_UPDATE});
 }
 
 
@@ -354,6 +464,12 @@ sub applyDelta {
                 my $action = $self->list->{$key}->{$sigId}->{$srId}->{'action'};
                 my $id     = $self->list->{$key}->{$sigId}->{$srId}->{'id'};
                 my $path   = $self->list->{$key}->{$sigId}->{$srId}->{'path'};
+                
+                 
+                if (!defined $action){
+                    elog("action is null softwareId=$key, softwareSigantureId=$sigId, scanRecordId=$srId");
+                    next;
+                }
 
                 dlog("Applying id=$id");
                 my $ss = new Staging::OM::SoftwareSignature();
@@ -452,5 +568,13 @@ sub list {
     $self->{_list} = $value if defined($value);
     return ( $self->{_list} );
 }
+
+sub limit {
+    my ( $self, $value ) = @_;
+    $self->{_limit} = $value if defined($value);
+    return ( $self->{_limit} );
+}
+
+
 1;
 
