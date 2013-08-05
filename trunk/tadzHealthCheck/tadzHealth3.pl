@@ -104,9 +104,25 @@ my $stmt3 =
 "select eaadmin.software_lpar.status, eaadmin.software_lpar.name, bios_serial, scantime, account_number,
 customer_name, match_method, eaadmin.software_lpar.id,
 eaadmin.country_code.code,
-eaadmin.geography.name
+eaadmin.geography.name, \'NA\'
 from eaadmin.software_lpar
 left outer join eaadmin.hw_sw_composite on eaadmin.software_lpar.id = eaadmin.hw_sw_composite.software_lpar_id
+join eaadmin.customer on eaadmin.software_lpar.customer_id = eaadmin.customer.customer_id
+left join eaadmin.country_code on eaadmin.customer.country_code_id = eaadmin.country_code.id
+left outer join eaadmin.region on eaadmin.country_code.region_id = eaadmin.region.id
+left outer join eaadmin.geography on eaadmin.region.geography_id = eaadmin.geography.id
+where eaadmin.software_lpar.name = ? and eaadmin.software_lpar.customer_id = ?
+with ur";
+
+my $stmt3 =
+"select eaadmin.software_lpar.status, eaadmin.software_lpar.name, bios_serial, scantime, eaadmin.customer.account_number,
+customer_name, match_method, eaadmin.software_lpar.id,
+eaadmin.country_code.code,
+eaadmin.geography.name, eaadmin.hardware.serial
+from eaadmin.software_lpar
+left outer join eaadmin.hw_sw_composite on eaadmin.software_lpar.id = eaadmin.hw_sw_composite.software_lpar_id
+left outer join eaadmin.hardware_lpar on eaadmin.hw_sw_composite.hardware_lpar_id = eaadmin.hardware_lpar.id
+left outer join eaadmin.hardware on eaadmin.hardware.id = eaadmin.hardware_lpar.hardware_id
 join eaadmin.customer on eaadmin.software_lpar.customer_id = eaadmin.customer.customer_id
 left join eaadmin.country_code on eaadmin.customer.country_code_id = eaadmin.country_code.id
 left outer join eaadmin.region on eaadmin.country_code.region_id = eaadmin.region.id
@@ -129,6 +145,7 @@ while ( my ( $stageId, $swLpar ) = each %stageLpar ) {
 	my $countryCode;
 	my $geography;
 	my $matchMade;
+	my $hardwareSerial;
 	$sth3->bind_col( 1,  \$status );
 	$sth3->bind_col( 2,  \$LparName );
 	$sth3->bind_col( 3,  \$biosSerial );
@@ -139,6 +156,7 @@ while ( my ( $stageId, $swLpar ) = each %stageLpar ) {
 	$sth3->bind_col( 8,  \$slId );
 	$sth3->bind_col( 9,  \$countryCode );
 	$sth3->bind_col( 10, \$geography );
+	$sth3->bind_col( 11, \$hardwareSerial );
 
 	if ( $sth3->fetch ) {
 		if ( defined $matchMethod ) {
@@ -146,6 +164,7 @@ while ( my ( $stageId, $swLpar ) = each %stageLpar ) {
 		}
 		else {
 			$matchMade = "NOT MATCHED";
+			$hardwareSerial = "NA";
 		}
 		$stageLpar{$stageId}{trailsSL}              = $slId;
 		$stageLpar{$stageId}{trailsStatus}        = $status;
@@ -155,6 +174,7 @@ while ( my ( $stageId, $swLpar ) = each %stageLpar ) {
 		$stageLpar{$stageId}{trailsAccountNumber} = $accountNumber;
 		$stageLpar{$stageId}{trailsCustomerName}  = $customerName;
 		$stageLpar{$stageId}{trailsMatchMethod}   = $matchMade;
+		$stageLpar{$stageId}{trailsHardwareSerial} = $hardwareSerial;
 		if ( defined $countryCode && length($countryCode) > 1 ) {
 			$stageLpar{$stageId}{trailsCountryCode} = $countryCode;
 			$stageLpar{$stageId}{trailsGeography}   = $geography;
@@ -178,7 +198,7 @@ open REPORT, ">$0" . ".txt";
 
 print REPORT
 "S-action,S-name,S-serial,S-serial4,S-serial5,S-bankAccountId,S-bankAccountName,T-Status,T-LparName,"
-  . "T-BiosSerial,T-ScanTime,T-AccountNumber,T-CustomerName,T-MatchMethod,T-CountryCode,T-Geography\n";
+  . "T-BiosSerial,T-ScanTime,T-AccountNumber,T-CustomerName,T-MatchMethod,T-CountryCode,T-Geography,T-hardwareSerial\n";
 
 # print the information we have
 while ( my ( $slNumPrint, $swLparPrint ) = each %stageLpar ) {
@@ -198,7 +218,8 @@ while ( my ( $slNumPrint, $swLparPrint ) = each %stageLpar ) {
 		print REPORT $stageLpar{$slNumPrint}{trailsCustomerName} . ",";
 		print REPORT $stageLpar{$slNumPrint}{trailsMatchMethod} . ",";
 		print REPORT $stageLpar{$slNumPrint}{trailsCountryCode} . ",";
-		print REPORT $stageLpar{$slNumPrint}{trailsGeography};
+		print REPORT $stageLpar{$slNumPrint}{trailsGeography} . ",";
+		print REPORT $stageLpar{$slNumPrint}{trailsHardwareSerial};
 	}
 	else {
 		print REPORT "NA,";

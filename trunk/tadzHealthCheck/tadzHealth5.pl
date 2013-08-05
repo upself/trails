@@ -77,6 +77,16 @@ while ( my ($bNum, $bAccount) = each %bankAccounts ) {
 	 from system, system_node, node where 
 	system.system_key = system_node.system_key and node.node_key = system_node.node_key and node_type = \'LPAR\'
 	order by lpar_name WITH ur";
+	my $query = "with mapping (node_key, last_update_time) as (select node_key, max(last_update_time) from
+	system_node group by node_key)
+	select node.node_key, sid, lpar_name, sysplex,hw_model,hw_serial
+	 from system, node, system_node, mapping
+	where system.system_key = system_node.system_key 
+	and node.node_key = system_node.node_key 
+	and system_node.last_update_time = mapping.last_update_time
+	and system_node.node_key = mapping.node_key
+	and node_type = \'LPAR\'
+	order by lpar_name WITH ur";
   	my $queryHandle = $dbhToCheck->prepare($query);
   	$queryHandle->execute();
   
