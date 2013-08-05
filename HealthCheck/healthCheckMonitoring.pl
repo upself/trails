@@ -1902,7 +1902,7 @@ sub eventRuleCheck{
 					     #Set the TrailsRP DB Email Send Flag to "Y"
 					     $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
 					     print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
-		              }#end if($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold)
+		              }#end if(($trailsRPDBApplyGapSecs >= $applyGapErrorThreshold) && ($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) && ($eventTriggerDay eq $currentDay))
 				      elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold)#trailsRP DB Apply Error Gap has not been reached
 					      &&($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG)#only send trailsRP success email when $alwaysSendEmailFlag = 'Y'
 					      &&($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
@@ -1939,11 +1939,12 @@ sub eventRuleCheck{
 					     #Set the TrailsRP DB Email Send Flag to "Y"
 					     $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
 					     print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
-				      }#end elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold) && ($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG))
+				      }#end elsif(($trailsRPDBApplyGapSecs < $applyGapErrorThreshold) && ($alwaysSendEmailFlag eq $SEND_ALL_EMAIL_FLAG)) && ($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) && ($eventTriggerDay eq $currentDay)) 
 					}#end if(defined $trailsRPDBLastSYNTime)
 					#Support the synctime is null case
 					else{
-                      if($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG){#only send trailsRP DB Apply Error Email Once a time
+                      if(($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG)#only send trailsRP DB Apply Error Email Once a time
+					   &&($eventTriggerDay eq $currentDay)){#only trigger this event rule on Monday
 					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - TrailsRP DB Apply Gap Last SYN Time is NULL\n";
 
 					    $sendEmailTitle = $errorEmailTitle;
@@ -1967,7 +1968,7 @@ sub eventRuleCheck{
 					    #Set the TrailsRP DB Email Send Flag to "Y"
 					    $trailsRPDBEmailSendFlag = $TRAILSRP_DB_EMAIL_SENT_FLAG;
 					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
-                      }#end if($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) 
+                      }#end if(($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) && ($eventTriggerDay eq $currentDay)) 
 					}#end else
                     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
             
