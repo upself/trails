@@ -38,7 +38,7 @@ my %runningCustomerIds = ();
 my %children           = ();
 
 my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 0 );
+my @customerIds = getStagingQueue( $connection, 5 );
 $connection->disconnect;
 
 daemonize();
