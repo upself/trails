@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision187";
+my $rNo                = "revision241";
 my $children           =0;
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
@@ -55,7 +55,7 @@ sub spawnChildren {
   if ( isCustomerRunning( $customerId, $date ) == 1 ) {
    next;
   }
-  newChild( $customerId, $date, 0 );
+  newChild( $customerId, $date, 5 );
   if ( scalar @customerIds == 0 ) {
    last;
   }
