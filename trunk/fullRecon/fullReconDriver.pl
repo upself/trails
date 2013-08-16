@@ -7,14 +7,15 @@ use File::Copy;
 use Getopt::Std;
 use Config::Properties::Simple;
 use File::Basename;
+use lib "/opt/reports/bin";
+use Report;
 
-my $thisReportName = $0;
-my $thisUser = getlogin;
-my $profileFile = "/home/$thisUser" . "/report.properties";
-my ($fileName, $fileDirectory) = fileparse($thisReportName, ".pl");
-my $individualTempFileName = "MY_REPORT_TEMP_" . $fileName;
+my $report = new Report();
+$report->initReportingSystem;
 
-my $cfg = Config::Properties::Simple->new(file => $profileFile); 
+my $fileName = $report->thisReport;
+my $fileDirectory = $report->thisDir;
+
 
 use vars qw (
     $opt_r
@@ -22,25 +23,22 @@ use vars qw (
 
 getopt("r");
 
-my $reportDatabase = $cfg->getProperty('reportDatabase');
-my $reportDatabaseUser = $cfg->getProperty('reportDatabaseUser');
-my $reportDatabasePassword = $cfg->getProperty('reportDatabasePassword');
+my $reportDatabase = $report->reportDatabase;
+my $reportDatabaseUser = $report->reportDatabaseUser;
+my $reportDatabasePassword = $report->reportDatabasePassword;
 
-my $db2profile = $cfg->getProperty('db2profile');
-my $tmpDir = $cfg->getProperty("tmpDir");
-
-my $gsaUser = $cfg->getProperty("gsaUser");
-my $gsaPassword = $cfg->getProperty("gsaPassword");
+my $tmpDir = $report->tmpDir;
 
 $reportDir = "/gsa/pokgsa/projects/a/amsd/adp/accounts/e/alerts/";
-$tmpDir = "$tmpDir";
+#only for testing cron safely
+$reportDir = "/opt/reports/test/";
 
-system ("echo $gsaPassword | gsa_login -c pokgsa -p $gsaUser");
-system (". $db2profile");
+$thisDir = $report->thisDir;
+
 
 chdir $reportDir;
 
-open( RUNERR, ">" . $fileName . "_run_err.log" );
+open( RUNERR, ">" . $reportDir . $fileName . "_run_err.log" );
 $rundate = `date`;
 print RUNERR "++++++++++++\n$rundate\n";
 
@@ -81,10 +79,12 @@ if ( $opt_r ) {
 foreach $key ( keys %regions ) {
 	$region = $key;
 	$regionId = $regions{$key};
+	my $regionFile = $tmpDir . $region;
+	my $regionDataFile = $reportDir . $region . ".tsv";
 	$makeList = "
 connect to $reportDatabase user $reportDatabaseUser using $reportDatabasePassword;
 set schema eaadmin;
-export to $region of del 
+export to $regionFile of del 
 select customer_id from customer where country_code_id in
 (select id from eaadmin.country_code where region_id = $regionId
 ) and status = 'ACTIVE' with ur;
@@ -92,25 +92,26 @@ select customer_id from customer where country_code_id in
 my $fileSQL = $tmpDir . "/" . $fileName . "_tmp.sql" ;
 	system( "echo \" $makeList . \" > $fileSQL" );
 	$generateFiles = "db2 -tvf $fileSQL";
-	$compressFile = "zip " . $region . ".zip $region" . ".tsv";
+	$compressFile = "zip " . $reportDir . $region . ".zip $regionDataFile";
 	system($generateFiles);
-	$makeheader    = "cat " . $fileDirectory . $fileName . "_header.txt > " . $region . ".tsv";
+	$makeheader    = "cat " . $fileDirectory . $fileName . "_header.txt > $regionDataFile";
 	system($makeheader);
 
-	open( INPUT, "<" . $region )
+	open( INPUT, "<" . $regionFile )
 	  or die "Cannot open $region";
 
 	while (<INPUT>) {
 		chomp;
 		$customerId = $_;
 		$customerId =~ s/\n|\r|\f//gm;
+		my $customerFile = $tmpDir . $customerId;
 
 		$selectFullReconSQL = 
 		"
 connect to $reportDatabase user $reportDatabaseUser using $reportDatabasePassword;
 set schema eaadmin;
 
-export to $customerId of del modified by coldel0x09 
+export to $customerFile of del modified by coldel0x09 
 SELECT sl_customer.account_number,
 CASE WHEN AUS.Open = 0 THEN 'Blue' 
 WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 90 THEN 'Red' 
@@ -238,22 +239,22 @@ with ur
 
 		$assetCommandLine = "db2 -tvf $fileSQL";
 		$reformatCommand  =
-		  "cat " . "$customerId >> $region" . ".tsv";
+		  "cat " . "$customerFile >> $regionDataFile";
 		print $reformatCommand . "\n";
 		system($assetCommandLine);
 		if ( $? >= 8 ) {
 			print RUNERR "failed to run -- Customer Number $customerId \n";
 		}
 		system($reformatCommand);
-		unlink $customerId;
+		unlink $customerFile;
 
 	}
 
 	close INPUT;
-	system( "date >> " . $region . ".tsv" );
+	system( "date >> $regionDataFile" );
 	system($compressFile);
-	unlink($region . ".tsv");
-	unlink($region);
+	unlink($regionDataFile);
+	unlink($regionFile);
 	
 }
 
