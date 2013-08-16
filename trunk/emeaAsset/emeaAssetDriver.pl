@@ -3,31 +3,89 @@
 # IBM Confidential -- INTERNAL USE ONLY
 # programmer: dbryson@us.ibm.com
 # ========================================================
+use File::Copy;
+use Config::Properties::Simple;
+use File::Basename;
+use DBI;
 
-$reportDir = "/home/dbryson/asset_emea/";
-chdir $reportDir;
-$rundate = `date`;
-$generateFiles = "db2 -tvf /home/dbryson/asset_emea/makeList.sql";
-system($generateFiles);
-$makeheader = "cat header.txt > $reportDir" . "emea_asset.tsv";
+
+
+my $thisReportName = $0;
+# getlogin will NOT work when ran from cron
+my ($login, $pass, $uid, $gid) = getpwuid($<);
+my $thisUser = $login;
+my $profileFile    = "/home/$thisUser" . "/report.properties";
+my ( $fileName, $fileDirectory ) = fileparse( $thisReportName, ".pl" );
+my $individualTempFileName = "MY_REPORT_TEMP_" . $fileName;
+
+my $cfg = Config::Properties::Simple->new( file => $profileFile );
+
+my $reportDatabase         = $cfg->getProperty('reportDatabase');
+my $reportDatabaseUser     = $cfg->getProperty('reportDatabaseUser');
+my $reportDatabasePassword = $cfg->getProperty('reportDatabasePassword');
+
+my $db2profile = $cfg->getProperty('db2profile');
+my $tmpDir     = $cfg->getProperty("tmpDir");
+
+my $gsaUser     = $cfg->getProperty("gsaUser");
+my $gsaPassword = $cfg->getProperty("gsaPassword");
+
+$reportDir = "/gsa/pokgsa/projects/e/emea_assets/";
+
+# for testing
+$reportDir = "/opt/reports/bin/";
+$tmpDir    = "$tmpDir";
+
+my $listFile = $reportDir . "emea_list.txt";
+my $dataFile = $reportDir . "emea_asset.tsv";
+
+$makeheader = "cat " . $fileDirectory . $fileName . "_header.txt > $dataFile";
 system($makeheader);
 
-open( INPUT, "<" . "/home/dbryson/asset_emea/emea_list.txt" )
-  or die "Cannot open emea_list.txt";
-open( RUNERR, ">/home/dbryson/asset_emea/run_err.log" );
+system("echo $gsaPassword | gsa_login -c pokgsa -p $gsaUser");
+system(". $db2profile");
+
+# chdir $reportDir;
+
+open( RUNERR, ">" . $fileName . "_run_err.log" );
+$rundate = `date`;
 print RUNERR "++++++++++++\n$rundate\n";
 
-while (<INPUT>) {
-	chomp;
-	$account_id = $_;
-	$account_id =~ s/\n|\r|\f//gm;
-# removed references to hardware_lpar_type
+#$rundate = `date`;
+my $dbh = DBI->connect(
+	"dbi:DB2:$reportDatabase", "$reportDatabaseUser",
+	"$reportDatabasePassword", { RaiseError => 1 }
+);
 
-	$selectArchiveSQL = "
-connect to traherp user dbryson using apr10new;
-set schema eaadmin;
+# set schema
+my $sth1 = $dbh->prepare("set schema eaadmin");
+$sth1->execute;
 
-export to $reportDir$account_id of del modified by coldel0x09 
+$generateFilesSQL =
+"select account_number from customer where country_code_id in (select id from eaadmin.country_code where region_id in (select id from eaadmin.region where geography_id = 2)) with ur";
+
+my @accountNumbers;
+
+my $sth = $dbh->prepare($generateFilesSQL);
+$sth->execute();
+
+open( CSV, ">> $dataFile" );
+
+while ( $array_ref = $sth->fetchrow_arrayref ) {
+	foreach my $col (@$array_ref) {
+		push( @accountNumbers, $col );
+	}
+}
+
+$sth->finish;
+
+my $counter = 0;
+print "Number of accounts to process: \n" . scalar @accountNumbers . "\n";
+
+foreach my $accountNumber (@accountNumbers) {
+	print $accountNumber . "\n";
+	my $account_id = $accountNumber;
+	my $getDataSQL = "
 			select 
 				customer.account_number as account_number
 				,customer.customer_name as customer_name
@@ -144,26 +202,38 @@ export to $reportDir$account_id of del modified by coldel0x09
 				and customer.customer_id = hardware.customer_id
 				and hardware.hardware_status <> 'REMOVED'
 				and not exists( select 1 from hardware_lpar a where a.hardware_id = hardware.id )
-    with ur;
-";
-	system( "echo \"" . $selectArchiveSQL . "\"> tmp.sql" );
+    with ur";
+	my $sth3 = $dbh->prepare($getDataSQL);
+	$sth3->execute();
+	my @recordSet;
+	while ( $array_ref = $sth3->fetchrow_arrayref ) {
+		push( @recordSet, [@$array_ref] );
+	}
+	$sth3->finish;
+	foreach $rec (@recordSet) {
+		my $colNumber = 0;
+		foreach my $col (@$rec) {
 
-	$assetCommandLine = "db2 -tvf $reportDir" . "tmp.sql";
-	$reformatCommand  =
-	  "cat $reportDir" . "$account_id >> $reportDir" . "emea_asset.tsv";
-#	print $assetCommandLine . "\n";
-	print $reformatCommand . "\n";
-	system($assetCommandLine);
-	if ($? >= 8 )
-	{
-        	print RUNERR "failed to run -- Account Number $account_id\n";
-	} 
-	system($reformatCommand);
-	unlink $account_id;
+# required to keep the formatting consistent after completely encapsulating into perl on 8-2-2013
+			if ( $colNumber++ == 13 ) {
+				$col =~ tr/\-//d;
+			}
+			print CSV $col . "\t";
+		}
+		print CSV "\n";
+	}
+	$counter++;
 
+	#    if ($counter > 5 ) {
+	#    	$sth3->finish;
+	#    	$sth1->finish;
+	#    	$dbh->disconnect();
+	#    	close CVS;
+	#    	exit;
+	#    }
 }
-
-close INPUT;
+$sth1->finish;
+$dbh->disconnect();
+close CVS;
 close RUNERR;
-system( "date >> $reportDir" . "emea_asset.tsv" );
-
+system("date >> $dataFile");
