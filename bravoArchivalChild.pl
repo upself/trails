@@ -26,14 +26,9 @@ open( STDOUT, "/dev/null" )
   or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
 open( STDERR, "/dev/null" )
   or die "ERROR: Unable to direct STDERR to /dev/null: $!";
-
-my $tmpDir         = "/var/bravo/archive";                           
-my $ageDaysArchive = 120;
+                        
+my $ageDaysArchive = 365;
 my $ageDaysDelete  = $ageDaysArchive + 1;
-my $gsaHost        = "pokgsa.ibm.com";
-my $gsaUser        = "eaadmin";
-my $gsaPasswd      = "may11db2";
-my $gsaDir         = "gsa/pokgsa/projects/a/amdata-archive/bravo";
 
 my $connection = Database::Connection->new('trails');
 my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday ) = localtime();
@@ -51,13 +46,12 @@ eval {
     $customer->getById($connection);
     dlog( $customer->toString );
     
-    my $archiveFile = "$tmpDir/" . $customer->accountNumber . "$today.txt";
 
     dlog('Creating new archive object');
     my $archive = new BRAVO::Archive::Archive(
                                                $connection,  $cfgMgr->testMode, $customer,
-                                               $archiveFile, $ageDaysDelete,    $gsaHost,
-                                               $gsaDir,      $gsaUser,          $gsaPasswd
+                                               $ageDaysDelete
+                                            
     );
     dlog('Archive object created');
 

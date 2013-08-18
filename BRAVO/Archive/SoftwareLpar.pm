@@ -88,7 +88,7 @@ sub deleteSoftwareLparProcessor {
         my $processor = new BRAVO::OM::Processor();
         $processor->id($id);
         $processor->getById( $self->connection );
-        ilog( $processor->toString );
+        dlog( $processor->toString );
 
         $processor->delete( $self->connection );
     }
@@ -103,7 +103,7 @@ sub deleteSoftwareLparMemMod {
         my $memMod = new BRAVO::OM::MemMod();
         $memMod->id($id);
         $memMod->getById( $self->connection );
-        ilog( $memMod->toString );
+        dlog( $memMod->toString );
 
         $memMod->delete( $self->connection );
     }
@@ -118,7 +118,7 @@ sub deleteSoftwareLparIpAddress {
         my $ipAddress = new BRAVO::OM::IpAddress();
         $ipAddress->id($id);
         $ipAddress->getById( $self->connection );
-        ilog( $ipAddress->toString );
+        dlog( $ipAddress->toString );
 
         $ipAddress->delete( $self->connection );
     }
@@ -133,7 +133,7 @@ sub deleteSoftwareLparHdisk {
         my $hdisk = new BRAVO::OM::Hdisk();
         $hdisk->id($id);
         $hdisk->getById( $self->connection );
-        ilog( $hdisk->toString );
+        dlog( $hdisk->toString );
 
         $hdisk->delete( $self->connection );
     }
@@ -148,7 +148,7 @@ sub deleteSoftwareLparAdc {
         my $adc = new BRAVO::OM::Adc();
         $adc->id($id);
         $adc->getById( $self->connection );
-        ilog( $adc->toString );
+        dlog( $adc->toString );
 
         $adc->delete( $self->connection );
     }
@@ -160,7 +160,7 @@ sub deleteAlertExpiredScan {
     my $alertExpiredScan = new Recon::OM::AlertExpiredScan();
     $alertExpiredScan->softwareLparId( $self->softwareLpar->id );
     $alertExpiredScan->getByBizKey( $self->connection );
-    ilog( $alertExpiredScan->toString );
+    dlog( $alertExpiredScan->toString );
 
     if ( defined $alertExpiredScan->id ) {
 
@@ -181,7 +181,7 @@ sub deleteAlertExpiredScanHistory {
         my $alertExpiredScanH = new Recon::OM::AlertExpiredScanHistory();
         $alertExpiredScanH->id($id);
         $alertExpiredScanH->getById( $self->connection );
-        ilog( $alertExpiredScanH->toString );
+        dlog( $alertExpiredScanH->toString );
 
         $alertExpiredScanH->delete( $self->connection );
     }
@@ -193,7 +193,7 @@ sub deleteAlertSoftwareLpar {
     my $alertSoftwareLpar = new Recon::OM::AlertSoftwareLpar();
     $alertSoftwareLpar->softwareLparId( $self->softwareLpar->id );
     $alertSoftwareLpar->getByBizKey( $self->connection );
-    ilog( $alertSoftwareLpar->toString );
+    dlog( $alertSoftwareLpar->toString );
 
     if ( defined $alertSoftwareLpar->id ) {
 
@@ -214,7 +214,7 @@ sub deleteAlertSoftwareLparHistory {
         my $alertSoftwareLparH = new Recon::OM::AlertSoftwareLparHistory();
         $alertSoftwareLparH->id($id);
         $alertSoftwareLparH->getById( $self->connection );
-        ilog( $alertSoftwareLparH->toString );
+        dlog( $alertSoftwareLparH->toString );
 
         $alertSoftwareLparH->delete( $self->connection );
     }
@@ -227,7 +227,7 @@ sub deleteEffectiveProcessor {
     my $effectiveProcessor = new BRAVO::OM::SoftwareLparEff();
     $effectiveProcessor->softwareLparId( $self->softwareLpar->id );
     $effectiveProcessor->getByBizKey( $self->connection );
-    ilog( $effectiveProcessor->toString );
+    dlog( $effectiveProcessor->toString );
 
     if ( defined $effectiveProcessor->id ) {
 
@@ -248,7 +248,7 @@ sub deleteEffectiveProcessorHistory {
         my $effectiveProcessorH = new BRAVO::OM::SoftwareLparEffHistory();    
         $effectiveProcessorH->id($id);
         $effectiveProcessorH->getById( $self->connection );
-        ilog( $effectiveProcessorH->toString );
+        dlog( $effectiveProcessorH->toString );
 
         $effectiveProcessorH->delete( $self->connection );
     }

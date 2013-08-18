@@ -48,6 +48,10 @@ sub archive {
     $self->deleteAlertHardwareLpar;
     ilog('Deleted alert hardware lpar');
 
+    ilog('Deleting hardware lpar Software Lpar composite');
+    $self->deleteHwSwComposite;
+    ilog('Deleted hardware lpar Software Lpar composite');
+    
     ilog('Deleting hardware lpar');
     $self->deleteHardwareLpar;
     ilog('Deleted hardware lpar');
@@ -62,7 +66,7 @@ sub deleteContactLpar {
         my $contactLpar = new BRAVO::OM::ContactLpar();
         $contactLpar->id($id);
         $contactLpar->getById( $self->connection );
-        ilog( $contactLpar->toString );
+        dlog( $contactLpar->toString );
 
         $contactLpar->delete( $self->connection );
     }
@@ -74,7 +78,7 @@ sub deleteHardwareLparEff {
     my $hardwareLparEff = new BRAVO::OM::HardwareLparEff();
     $hardwareLparEff->hardwareLparId( $self->hardwareLpar->id );
     $hardwareLparEff->getByBizKey( $self->connection );
-    ilog( $hardwareLparEff->toString );
+    dlog( $hardwareLparEff->toString );
 
     if ( defined $hardwareLparEff->id ) {
         $hardwareLparEff->delete( $self->connection );
@@ -87,13 +91,13 @@ sub deleteAlertHardwareLpar {
     my $alertHardwareLpar = new Recon::OM::AlertHardwareLpar();
     $alertHardwareLpar->hardwareLparId( $self->hardwareLpar->id );
     $alertHardwareLpar->getByBizKey( $self->connection );
-    ilog( $alertHardwareLpar->toString );
+    dlog( $alertHardwareLpar->toString );
 
     if ( defined $alertHardwareLpar->id ) {
 
-        ilog('Deleting alert hardware lpar history');
+        dlog('Deleting alert hardware lpar history');
         $self->deleteAlertHardwareLparHistory( $alertHardwareLpar->id );
-        ilog('Deleted alert hardware lpar history');
+        dlog('Deleted alert hardware lpar history');
 
         $alertHardwareLpar->delete( $self->connection );
     }
@@ -108,10 +112,27 @@ sub deleteAlertHardwareLparHistory {
         my $alertHardwareLparH = new Recon::OM::AlertHardwareLparHistory();
         $alertHardwareLparH->id($id);
         $alertHardwareLparH->getById( $self->connection );
-        ilog( $alertHardwareLparH->toString );
+        dlog( $alertHardwareLparH->toString );
 
         $alertHardwareLparH->delete( $self->connection );
     }
+}
+
+sub deleteHwSwComposite {
+    my  $self =shift ;
+    
+        $self->connection->prepareSqlQuery(  $self->queryDeleteHwSwComposite );
+         my $sth =  $self->connection->sql->{deleteHwSwComposite};
+        $sth->execute(  $self->hardwareLpar->id  );
+        $sth->finish;
+}
+
+sub queryDeleteHwSwComposite {
+    my  $self =shift ;
+    my $query = '	
+		delete from hw_Sw_composite where hardware_lpar_id = ?
+	';
+    return ( 'deleteHwSwComposite', $query );
 }
 
 sub deleteHardwareLpar {

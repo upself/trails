@@ -5,7 +5,10 @@ use Base::Utils;
 use Carp qw( croak );
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use Recon::OM::AlertUnlicensedSoftware;
+use Recon::OM::ReconcileH;
 use Recon::OM::AlertUnlicensedSoftwareHistory;
+use Recon::OM::ReconcileUsedLicenseHistory;
+use Recon::OM::UsedLicenseHistory;
 use BRAVO::OM::InstalledFilter;
 use BRAVO::OM::InstalledSignature;
 use BRAVO::OM::InstalledDorana;
@@ -38,37 +41,41 @@ sub validate {
 sub archive {
     my $self = shift;
 
-    ilog('Deleting software discrepancy history');
+    dlog('Deleting software discrepancy history');
     $self->deleteSoftwareDiscrepancyHistory;
-    ilog('Deleted software discrepancy history');
+    dlog('Deleted software discrepancy history');
 
-    ilog('Deleting alert unlicensed software');
+    dlog('Deleting alert unlicensed software');
     $self->deleteAlertUnlicensedSoftware;
-    ilog('Deleted alert unlicensed software');
+    dlog('Deleted alert unlicensed software');
 
-    ilog('Deleting installed filters');
+    dlog('Deleting installed filters');
     $self->deleteInstalledFilters;
-    ilog('Deleted installed filters');
+    dlog('Deleted installed filters');
 
-    ilog('Deleting installed signatures');
+    dlog('Deleting installed signatures');
     $self->deleteInstalledSignatures;
-    ilog('Deleted installed signatures');
+    dlog('Deleted installed signatures');
 
-    ilog('Deleting installed dorana products');
+    dlog('Deleting installed dorana products');
     $self->deleteInstalledDoranas;
-    ilog('Deleted installed dorana products');
+    dlog('Deleted installed dorana products');
 
-    ilog('Deleting installed sa products');
+    dlog('Deleting installed sa products');
     $self->deleteInstalledSas;
-    ilog('Deleted installed sa products');
+    dlog('Deleted installed sa products');
     
-    ilog('Deleting installed sa products');
+    dlog('Deleting installed sa products');
     $self->deleteInstalledSoftwareEff;
-    ilog('Deleted installed sa products');
+    dlog('Deleted installed sa products');
+      
+    dlog('Deleting reconcile history record');
+    $self->deleteInstalledSoftwareReconcileH;
+    dlog('Deleted reconcile history record');
 
-    ilog('Deleting installed software');
+    dlog('Deleting installed software');
     $self->deleteInstalledSoftware;
-    ilog('Deleted installed software');
+    dlog('Deleted installed software');
 }
 
 sub deleteSoftwareDiscrepancyHistory {
@@ -80,7 +87,7 @@ sub deleteSoftwareDiscrepancyHistory {
         my $softwareDiscrepancyH = new BRAVO::OM::SoftwareDiscrepancyHistory();
         $softwareDiscrepancyH->id($id);
         $softwareDiscrepancyH->getById( $self->connection );
-        ilog( $softwareDiscrepancyH->toString );
+        dlog( $softwareDiscrepancyH->toString );
 
         $softwareDiscrepancyH->delete( $self->connection );
     }
@@ -92,13 +99,13 @@ sub deleteAlertUnlicensedSoftware {
     my $alertUnlicensedSoftware = new Recon::OM::AlertUnlicensedSoftware();
     $alertUnlicensedSoftware->installedSoftwareId( $self->installedSoftware->id );
     $alertUnlicensedSoftware->getByBizKey( $self->connection );
-    ilog( $alertUnlicensedSoftware->toString );
+    dlog( $alertUnlicensedSoftware->toString );
 
     if ( defined $alertUnlicensedSoftware->id ) {
 
-        ilog('Deleting alert unlicensed software history');
+        dlog('Deleting alert unlicensed software history');
         $self->deleteAlertUnlicensedSoftwareHistory( $alertUnlicensedSoftware->id );
-        ilog('Deleted alert unlicensed software history');
+        dlog('Deleted alert unlicensed software history');
 
         $alertUnlicensedSoftware->delete( $self->connection );
     }
@@ -113,7 +120,7 @@ sub deleteAlertUnlicensedSoftwareHistory {
         my $alertUnlicensedSoftwareH = new Recon::OM::AlertUnlicensedSoftwareHistory();
         $alertUnlicensedSoftwareH->id($id);
         $alertUnlicensedSoftwareH->getById( $self->connection );
-        ilog( $alertUnlicensedSoftwareH->toString );
+        dlog( $alertUnlicensedSoftwareH->toString );
 
         $alertUnlicensedSoftwareH->delete( $self->connection );
     }
@@ -128,7 +135,7 @@ sub deleteInstalledFilters {
         my $filter = new BRAVO::OM::InstalledFilter();
         $filter->id($id);
         $filter->getById( $self->connection );
-        ilog( $filter->toString );
+        dlog( $filter->toString );
 
         $filter->delete( $self->connection );
     }
@@ -143,7 +150,7 @@ sub deleteInstalledSignatures {
         my $signature = new BRAVO::OM::InstalledSignature();
         $signature->id($id);
         $signature->getById( $self->connection );
-        ilog( $signature->toString );
+        dlog( $signature->toString );
 
         $signature->delete( $self->connection );
     }
@@ -158,7 +165,7 @@ sub deleteInstalledDoranas {
         my $dorana = new BRAVO::OM::InstalledDorana();
         $dorana->id($id);
         $dorana->getById( $self->connection );
-        ilog( $dorana->toString );
+        dlog( $dorana->toString );
 
         $dorana->delete( $self->connection );
     }
@@ -173,7 +180,7 @@ sub deleteInstalledSas {
         my $sa = new BRAVO::OM::InstalledTLCMZ();
         $sa->id($id);
         $sa->getById( $self->connection );
-        ilog( $sa->toString );
+        dlog( $sa->toString );
 
         $sa->delete( $self->connection );
     }
@@ -201,12 +208,90 @@ sub deleteInstalledSoftwareEff {
     dlog('Statement handle closed');
 }
 
+sub deleteInstalledSoftwareReconcileH {
+    my $self = shift;
 
+    my @ids = $self->getReconcileHIds;
+
+    foreach my $id (@ids) {
+        my $reconh = new Recon::OM::ReconcileH();
+        $reconh->id($id);
+        $reconh->getById( $self->connection );
+        dlog( $reconh->toString );
+        $self->deleteReconcileUsedLicenseHistory($id);
+        $reconh->delete( $self->connection );
+    }
+}
+
+sub deleteReconcileUsedLicenseHistory {
+    my $self = shift;
+    my $rhid = shift;
+
+    my @ids = $self->getReconcileUsedLicenseHIds($rhid);
+        my $rulh = new Recon::OM::ReconcileUsedLicenseHistory();
+        $rulh->reconcileId($rhid);
+        $rulh->getById( $self->connection );
+        dlog( $rulh->toString );
+    foreach my $ulhid (@ids) {
+        $self->deleteUsedLicenseHistory($ulhid);
+    }
+        $rulh->delete( $self->connection );
+}
+
+sub deleteUsedLicenseHistory {
+    my $self = shift;
+    my $ulhid = shift;  
+        my $ulh = new Recon::OM::UsedLicenseHistory();
+        $ulh->id($ulhid);
+        $ulh->getById( $self->connection );
+        dlog( $ulh->toString );
+        $ulh->delete( $self->connection );
+}
 
 sub deleteInstalledSoftware {
     my $self = shift;
+    my $existReconcile = $self->checkReconcile;
+    if (!$existReconcile) {
+    	 $self->installedSoftware->delete( $self->connection );
+    } else {
+    	mlog( "Installed_software constricted to a reconcile");
+    	mlog( $self->installedSoftware->toString );
+    }
+   
+}
 
-    $self->installedSoftware->delete( $self->connection );
+sub checkReconcile {
+	my $self = shift;
+    my @ids;	
+    my $existReconcile = 0 ;
+    $self->connection->prepareSqlQueryAndFields( $self->queryInstalledSoftwareReconcile );
+    my $sth = $self->connection->sql->{installedSoftwareReconcileIds};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{ installedSoftwareReconcileIdsFields } } );
+    $sth->execute( $self->installedSoftware->id );
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+        $existReconcile = 1 ;
+    }
+    $sth->finish;
+    return $existReconcile
+}
+
+sub queryInstalledSoftwareReconcile {
+    my $self = shift;
+    my @fields = (qw(id));
+    my $query = qq{
+		select
+            id
+		from 
+            reconcile
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryInstalledSoftwareReconcileIds=$query");
+    return ( 'installedSoftwareReconcileIds', $query, \@fields );
 }
 
 sub getSoftwareDiscrepancyHistoryIds {
@@ -477,6 +562,116 @@ sub queryInstalledSaIds {
 
     dlog("queryInstalledSaIds=$query");
     return ( 'installedSaIds', $query, \@fields );
+}
+
+sub getReconcileHIds {
+    my $self = shift;
+
+    my @ids;
+
+    dlog('Preparing reconcile history query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryReconcileHIds );
+    dlog('Prepared reconcile history query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{reconcileHIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{reconcileHIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $self->installedSoftware->id );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+sub getReconcileUsedLicenseHIds {
+    my $self = shift;
+    my $rhid = shift;
+
+    my @ids;
+
+    dlog('Preparing reconcile used license history query');
+    $self->connection->prepareSqlQueryAndFields( $self->queryReconcileUsedLicenseHIds );
+    dlog('Prepared reconcile used license history query');
+
+    dlog('Obtaining statement handle');
+    my $sth = $self->connection->sql->{reconcileUsedLicenseHIds};
+    dlog('Statement handle obtained');
+
+    dlog('Binding columns');
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{reconcileUsedLicenseHIdsFields} } );
+    dlog('Columns binded');
+
+    dlog('Executing query');
+    $sth->execute( $rhid );
+    dlog('Executed query');
+
+    dlog('Looping through resultset');
+    while ( $sth->fetchrow_arrayref ) {
+        dlog( $rec{id} );
+        push @ids, $rec{id};
+    }
+    dlog('Loop complete');
+
+    dlog('Closing statement handle');
+    $sth->finish;
+    dlog('Statement handle closed');
+
+    return @ids;
+}
+
+
+sub queryReconcileHIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            id
+		from 
+            reconcile_h
+		where
+			installed_software_id = ?
+        };
+
+    dlog("queryReconcileHIds=$query");
+    return ( 'reconcileHIds', $query, \@fields );
+}
+
+sub queryReconcileUsedLicenseHIds {
+    my $self = shift;
+
+    my @fields = (qw(id));
+
+    my $query = qq{
+		select
+            H_USED_LICENSE_ID
+		from 
+            h_reconcile_used_license
+		where
+			H_RECONCILE_ID = ?
+        };
+
+    dlog("queryReconcileUsedLicenseHIds=$query");
+    return ( 'reconcileUsedLicenseHIds', $query, \@fields );
 }
 
 sub getAlertUnlicensedSoftwareHistoryIds {

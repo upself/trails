@@ -8,7 +8,6 @@ sub new {
     my $self = {
         _reconcileId => undef
         ,_usedLicenseId => undef
-        ,_id => undef
     };
     bless $self, $class;
     return $self;
@@ -47,12 +46,6 @@ sub usedLicenseId {
     return $self->{_usedLicenseId};
 }
 
-sub id {
-    my $self = shift;
-    $self->{_id} = shift if scalar @_ == 1;
-    return $self->{_id};
-}
-
 sub toString {
     my ($self) = @_;
     my $s = "[ReconcileUsedLicenseHistory] ";
@@ -64,11 +57,6 @@ sub toString {
     $s .= "usedLicenseId=";
     if (defined $self->{_usedLicenseId}) {
         $s .= $self->{_usedLicenseId};
-    }
-    $s .= ",";
-    $s .= "id=";
-    if (defined $self->{_id}) {
-        $s .= $self->{_id};
     }
     $s .= ",";
     chop $s;
@@ -95,9 +83,8 @@ sub save {
         $connection->prepareSqlQuery($self->queryUpdate);
         my $sth = $connection->sql->{updateReconcileUsedLicenseHistory};
         $sth->execute(
-            $self->reconcileId
-            ,$self->usedLicenseId
-            ,$self->id
+            $self->usedLicenseId
+            ,$self->reconcileId
         );
         $sth->finish;
     }
@@ -106,7 +93,7 @@ sub save {
 sub queryInsert {
     my $query = '
         select
-            reconcile_id
+            rtrim(ltrim(cast(char(h_reconcile_id) as varchar(255))))
         from
             final table (
         insert into h_reconcile_used_license (
@@ -124,10 +111,9 @@ sub queryUpdate {
     my $query = '
         update h_reconcile_used_license
         set
-            h_reconcile_id = ?
-            ,h_used_license_id = ?
+            h_used_license_id = ?
         where
-            reconcile_id = ?
+            h_reconcile_id = ?
     ';
     return ('updateReconcileUsedLicenseHistory', $query);
 }
@@ -135,11 +121,11 @@ sub queryUpdate {
 sub delete {
     my($self, $connection) = @_;
     ilog("deleting: ".$self->toString());
-    if( defined $self->id ) {
+    if( defined $self->reconcileId ) {
         $connection->prepareSqlQuery($self->queryDelete());
         my $sth = $connection->sql->{deleteReconcileUsedLicenseHistory};
         $sth->execute(
-            $self->id
+            $self->reconcileId
         );
         $sth->finish;
     }
@@ -149,7 +135,7 @@ sub queryDelete {
     my $query = '
         delete from h_reconcile_used_license
         where
-            reconcile_id = ?
+            h_reconcile_id = ?
     ';
     return ('deleteReconcileUsedLicenseHistory', $query);
 }
@@ -158,9 +144,7 @@ sub getByBizKey {
     my($self, $connection) = @_;
     $connection->prepareSqlQuery($self->queryGetByBizKey());
     my $sth = $connection->sql->{getByBizKeyReconcileUsedLicenseHistory};
-    my $id;
     $sth->bind_columns(
-        \$id
     );
     $sth->execute(
         $self->reconcileId
@@ -168,13 +152,11 @@ sub getByBizKey {
     );
     $sth->fetchrow_arrayref;
     $sth->finish;
-    $self->id($id);
 }
 
 sub queryGetByBizKey {
     my $query = '
         select
-            reconcile_id
         from
             h_reconcile_used_license
         where
@@ -182,6 +164,35 @@ sub queryGetByBizKey {
             and h_used_license_id = ?
     ';
     return ('getByBizKeyReconcileUsedLicenseHistory', $query);
+}
+
+sub getById {
+    my($self, $connection) = @_;
+    $connection->prepareSqlQuery($self->queryGetById());
+    my $sth = $connection->sql->{getByIdKeyReconcileUsedLicenseHistory};
+    my $usedLicenseId;
+    $sth->bind_columns(
+        \$usedLicenseId
+    );
+    $sth->execute(
+        $self->reconcileId
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    $self->usedLicenseId($usedLicenseId);
+    return (defined $found) ? 1 : 0;
+}
+
+sub queryGetById {
+    my $query = '
+        select
+            h_used_license_id
+        from
+            h_reconcile_used_license
+        where
+            h_reconcile_id = ?
+    ';
+    return ('getByIdKeyReconcileUsedLicenseHistory', $query);
 }
 
 1;

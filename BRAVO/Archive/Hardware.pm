@@ -57,7 +57,7 @@ sub deleteContactHardware {
         my $contactHardware = new BRAVO::OM::ContactHardware();
         $contactHardware->id($id);
         $contactHardware->getById( $self->connection );
-        ilog( $contactHardware->toString );
+        dlog( $contactHardware->toString );
 
         $contactHardware->delete( $self->connection );
     }
@@ -69,13 +69,13 @@ sub deleteAlertHardware {
     my $alertHardware = new Recon::OM::AlertHardware();
     $alertHardware->hardwareId( $self->hardware->id );
     $alertHardware->getByBizKey( $self->connection );
-    ilog( $alertHardware->toString );
+    dlog( $alertHardware->toString );
 
     if ( defined $alertHardware->id ) {
 
-        ilog('Deleting alert hardware history');
+        dlog('Deleting alert hardware history');
         $self->deleteAlertHardwareHistory( $alertHardware->id );
-        ilog('Alert hardware history deleted');
+        dlog('Alert hardware history deleted');
 
         $alertHardware->delete( $self->connection );
     }
@@ -90,7 +90,7 @@ sub deleteAlertHardwareHistory {
         my $alertHardwareH = new Recon::OM::AlertHardwareHistory();
         $alertHardwareH->id($id);
         $alertHardwareH->getById( $self->connection );
-        ilog( $alertHardwareH->toString );
+        dlog( $alertHardwareH->toString );
 
         $alertHardwareH->delete( $self->connection );
     }

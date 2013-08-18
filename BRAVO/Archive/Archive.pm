@@ -4,7 +4,6 @@ use strict;
 use Base::Utils;
 use Carp qw( croak );
 use IO::File;
-use Archive::Zip;
 use Net::FTP;
 use BRAVO::OM::HardwareLpar;
 use BRAVO::Archive::HardwareLpar;
@@ -16,21 +15,13 @@ use BRAVO::OM::SoftwareLpar;
 use BRAVO::Archive::SoftwareLpar;
 
 sub new {
-    my ($class, $connection, $testMode, $customer, $archiveFile,
-        $age,   $host,       $dir,      $user,     $password
+    my ($class, $connection, $testMode, $customer, $age
     ) = @_;
     my $self = {
         _connection  => $connection,
         _testMode    => $testMode,
         _customer    => $customer,
-        _archiveFile => $archiveFile,
         _age         => $age,
-        _host        => $host,
-        _dir         => $dir,
-        _user        => $user,
-        _password    => $password,
-        _fileHandle  => undef,
-        _isArchive   => 0
     };
     bless $self, $class;
     dlog("instantiated self");
@@ -52,70 +43,62 @@ sub validate {
 
 sub archive {
     my $self = shift;
-
-    ilog('Creating file handle');
-    $self->createFileHandle;
-    ilog('File handle created');
     
-    ilog('Archiving hardware lpar objects');
+    mlog('Archiving hardware lpar objects');
     $self->archiveHardwareLpar;
-    ilog('Archived hardware lpar objects');
+    mlog('Archived hardware lpar objects');
 
-    ilog('Archiving hardware objects');
+    mlog('Archiving hardware objects');
     $self->archiveHardware;
-    ilog('Archived hardware objects');
+    mlog('Archived hardware objects');
 
-    ilog('Archiving software objects');
+    mlog('Archiving software objects');
     $self->archiveInstalledSoftware;
-    ilog('Archived software objects');
+    mlog('Archived software objects');
     
-    ilog('Archiving software objects');
+    mlog('Archiving software objects');
     $self->archiveSoftwareLpar;
-    ilog('Archived software objects');
-
-    ilog('Closing file handle');
-    $self->closeFileHandle;
-    ilog('File handle closed');
-
-    ilog('Checking for a non-zero size archive file');
-    if ( $self->isArchive == 1 ) {
-        ilog('Archive file has records');
-
-        ilog('Creating zip file');
-        $self->zipFile;
-        ilog('Zip file created');
-
-        ilog('Transferring file');
-        $self->ftpFile if $self->testMode == 0;
-        ilog('File transferred');
-    }
-    else {
-        ilog('Archive file is less than 0 bytes');
-        unlink $self->archiveFile;
-    }
+    mlog('Archived software objects');
 }
 
-sub createFileHandle {
-    my $self = shift;
-
-    my $fh = new IO::File "> " . $self->archiveFile;
-
-    $self->fileHandle($fh);
+sub exec_sql_rc {
+	my $self = shift;
+    my $dbconnection = shift;
+    my $methodName = shift;
+    my $method = shift;  
+    my @rs = ();
+    dlog(" ***$methodName ***$method **  ");
+    eval {
+            $dbconnection->prepareSqlQuery( $methodName,$method );
+            my $sth = $dbconnection->sql->{ $methodName };
+            if ( $methodName eq 'installedSwCount'){
+            	  $sth->execute( $self->customer->id, $self->age , $self->age );
+            }
+            else{
+            	  $sth->execute( $self->customer->id, $self->age );
+            }
+        push @rs, [ @{ $sth->{NAME} } ];
+        while (my @row = $sth->fetchrow_array()) {
+            push @rs, [ @row ];
+        }
+        $sth->finish();
+    };
+    if ($@) {
+        die "Unable to execute sql command ($method): $@\n";
+    }
+    return @rs;
 }
 
 sub archiveHardwareLpar {
     my $self = shift;
-
-    my $fh = $self->fileHandle;
-
-    print $fh $self->customer->toString . "\n";
-
+    my @count = $self->exec_sql_rc( $self->connection, $self->queryHardwareLparCount );
+    mlog('Archiving amount of hardware lpars is ' . $count[1][0] );
     my @lparIds = $self->getHardwareLparIds;
     foreach my $id (@lparIds) {
         my $hardwareLpar = new BRAVO::OM::HardwareLpar();
         $hardwareLpar->id($id);
         $hardwareLpar->getById( $self->connection );
-        ilog( $hardwareLpar->toString );
+        dlog( $hardwareLpar->toString );
 
         dlog('Archiving hardware lpar');
         my $hardwareLparArchive
@@ -123,47 +106,41 @@ sub archiveHardwareLpar {
             $hardwareLpar );
         $hardwareLparArchive->archive;
         dlog('Hardware lpar archived');
-        $self->isArchive(1);
-        print $fh $hardwareLparArchive->log . "\n";
+        dlog($hardwareLparArchive->log);
     }
 
 }
 
 sub archiveHardware {
     my $self = shift;
-
-    my $fh = $self->fileHandle;
-
-    print $fh $self->customer->toString . "\n";
-
+    my @count = $self->exec_sql_rc( $self->connection, $self->queryHardwareCount );
+    mlog('Archiving amount of hardwares  is ' . $count[1][0] );
     my @hardwareIds = $self->getHardwareIds;
     foreach my $id (@hardwareIds) {
         my $hardware = new BRAVO::OM::Hardware();
         $hardware->id($id);
         $hardware->getById( $self->connection );
-        ilog( $hardware->toString );
+        dlog( $hardware->toString );
 
         dlog('Archiving hardware');
         my $hardwareArchive
             = new BRAVO::Archive::Hardware( $self->connection, $hardware );
         $hardwareArchive->archive;
         dlog('Hardware archived');
-        $self->isArchive(1);
-        print $fh $hardwareArchive->log . "\n";
+        dlog($hardwareArchive->log);
     }
 }
 
 sub archiveInstalledSoftware {
     my $self = shift;
-
-    my $fh = $self->fileHandle;
-
+    my @count = $self->exec_sql_rc( $self->connection, $self->queryInstalledSwCount );
+    mlog('Archiving amount of Installed Softwares  is ' . $count[1][0] );
     my @installedSoftwareIds = $self->getInstalledSoftwareIds;
     foreach my $id (@installedSoftwareIds) {
         my $installedSoftware = new BRAVO::OM::InstalledSoftware();
         $installedSoftware->id($id);
         $installedSoftware->getById( $self->connection );
-        ilog( $installedSoftware->toString );
+        dlog( $installedSoftware->toString );
 
         dlog('Archiving installed software');
         my $installedSoftwareArchive
@@ -171,72 +148,30 @@ sub archiveInstalledSoftware {
             $installedSoftware );
         $installedSoftwareArchive->archive;
         dlog('Installed software archived');
-        $self->isArchive(1);
-        print $fh $installedSoftwareArchive->log . "\n";
+        dlog($installedSoftwareArchive->log);
     }
 
 }
 
 sub archiveSoftwareLpar {
     my $self = shift;
-
-    my $fh = $self->fileHandle;
-
+    my @count = $self->exec_sql_rc( $self->connection, $self->querySoftwareLparCount );
+    mlog('Archiving amount of Software Lpars  is ' . $count[1][0] );
     my @softwareLparIds = $self->getSoftwareLparIds;
     foreach my $id (@softwareLparIds) {
         my $softwareLpar = new BRAVO::OM::SoftwareLpar();
         $softwareLpar->id($id);
         $softwareLpar->getById( $self->connection );
-        ilog( $softwareLpar->toString );
+        dlog( $softwareLpar->toString );
 
-        ilog('Archiving software lpar');
+        dlog('Archiving software lpar');
         my $softwareLparArchive
             = new BRAVO::Archive::SoftwareLpar( $self->connection,
             $softwareLpar );
         $softwareLparArchive->archive;
         dlog('Software lpar archived');
-        $self->isArchive(1);
-        print $fh $softwareLparArchive->log . "\n";
+        dlog($softwareLparArchive->log);
     }
-}
-
-sub closeFileHandle {
-    my $self = shift;
-
-    $self->fileHandle->close;
-}
-
-sub zipFile {
-    my $self = shift;
-
-    my $zip  = Archive::Zip->new();
-    my $file = $zip->addFile( $self->archiveFile );
-
-    if ( $zip->writeToFileNamed( $self->archiveFile . '.zip' )
-        != Archive::Zip::AZ_OK() )
-    {
-        elog( 'Could not write to zip file ' . $self->archiveFile . '.zip' );
-        die "Error in archive creation!";
-    }
-
-    unlink $self->archiveFile;
-}
-
-sub ftpFile {
-    my $self = shift;
-
-    my $ftp = Net::FTP->new( $self->host, Debug => 0 )
-        or die "Unable to connect to " . $self->host . ": $@";
-    $ftp->login( $self->user, $self->password )
-        or die "Unable to login ", $ftp->message;
-    $ftp->cwd( $self->dir )
-        or die "Unable to change working directory ", $ftp->message;
-    $ftp->put( $self->archiveFile . '.zip' )
-        or die "Put file " . $self->archiveFile . ".zip failed ",
-        $ftp->message;
-    $ftp->quit;
-
-    unlink $self->archiveFile . ".zip";
 }
 
 sub getHardwareLparIds {
@@ -270,6 +205,23 @@ sub getHardwareLparIds {
     dlog('Closed statement handle');
 
     return @ids;
+}
+
+sub queryHardwareLparCount {
+    my $self = shift;
+    my $query = qq{
+		select
+            count(id)
+		from
+		    hardware_lpar
+		where
+			customer_id = ?
+            and status = 'INACTIVE'
+            and days(current timestamp) - days(record_time) > ?
+        };
+
+    dlog("queryHardwareLparCount=$query");
+    return ( 'hardwareLparCount', $query );
 }
 
 sub queryHardwareLparIds {
@@ -329,6 +281,28 @@ sub getHardwareIds {
     return @ids;
 }
 
+sub queryHardwareCount {
+    my $self = shift;
+
+    my $query = qq{
+		select
+            count(h.id)
+		from
+		    hardware h
+		where
+			h.customer_id = ?
+            and status = 'INACTIVE'
+            and hardware_status = 'REMOVED'
+            and days(current timestamp) - days(record_time) > ?
+            and not exists(select 1 from hardware_lpar hl where
+                h.id = hl.hardware_id and h.customer_id
+                != hl.customer_id)
+        };
+
+    dlog("queryHardwareCount=$query");
+    return ( 'hardwareCount', $query );
+}
+
 sub queryHardwareIds {
     my $self = shift;
 
@@ -345,7 +319,7 @@ sub queryHardwareIds {
             and hardware_status = 'REMOVED'
             and days(current timestamp) - days(record_time) > ?
             and not exists(select 1 from hardware_lpar hl where
-                h.hardware_id = hl.hardware_id and h.customer_id
+                h.id = hl.hardware_id and h.customer_id
                 != hl.customer_id)
         };
 
@@ -391,6 +365,32 @@ sub getInstalledSoftwareIds {
     return @ids;
 }
 
+sub queryInstalledSwCount {
+    my $self = shift;
+    my $query = qq{
+		select
+            count(is.id)
+		from
+		    software_lpar sl
+            ,installed_software is
+            ,software s
+		where
+			sl.customer_id = ?
+			and sl.id = is.software_lpar_id
+			and is.software_id = s.software_id
+            and ( 
+                    (is.status = 'INACTIVE' and days(current timestamp) - days(is.record_time) > ?) 
+                    or 
+                    (sl.status = 'INACTIVE' and days(current timestamp) - days(sl.record_time) > ?)
+                    or
+                    (s.status = 'INACTIVE')
+                 )
+        };
+
+    dlog("queryInstalledSwCount=$query");
+    return ( 'installedSwCount', $query );
+}
+
 sub queryInstalledSoftwareIds {
     my $self = shift;
 
@@ -412,8 +412,8 @@ sub queryInstalledSoftwareIds {
                     or 
                     (sl.status = 'INACTIVE' and days(current timestamp) - days(sl.record_time) > ?)
                     or
-                    (s.status = 'INACTIVE'
-                )
+                    (s.status = 'INACTIVE')
+                 )
         };
 
     dlog("queryInstalledSoftwareIds=$query");
@@ -458,6 +458,25 @@ sub getSoftwareLparIds {
     return @ids;
 }
 
+sub querySoftwareLparCount {
+    my $self = shift;
+    my $query = qq{
+		select
+            count(id)
+		from
+		    software_lpar a
+		where
+			a.customer_id = ?
+            and a.status = 'INACTIVE'
+            and not exists(select 1 from installed_software is where
+                is.software_lpar_id=a.id)
+            and days(current timestamp) - days(a.record_time) > ?
+        };
+
+    dlog("querySoftwareLparCount=$query");
+    return ( 'softwareLparCount', $query);
+}
+
 sub querySoftwareLparIds {
     my $self = shift;
 
@@ -467,11 +486,13 @@ sub querySoftwareLparIds {
 		select
             id
 		from
-		    software_lpar
+		    software_lpar a
 		where
-			customer_id = ?
-            and status = 'INACTIVE'
-            and days(current timestamp) - days(record_time) > ?
+			a.customer_id = ?
+            and a.status = 'INACTIVE'
+            and not exists(select 1 from installed_software is where
+                is.software_lpar_id=a.id)
+            and days(current timestamp) - days(a.record_time) > ?
         };
 
     dlog("querySoftwareLparIds=$query");
@@ -490,58 +511,16 @@ sub customer {
     return ( $self->{_customer} );
 }
 
-sub archiveFile {
-    my ( $self, $value ) = @_;
-    $self->{_archiveFile} = $value if defined($value);
-    return ( $self->{_archiveFile} );
-}
-
 sub age {
     my ( $self, $value ) = @_;
     $self->{_age} = $value if defined($value);
     return ( $self->{_age} );
 }
 
-sub host {
-    my ( $self, $value ) = @_;
-    $self->{_host} = $value if defined($value);
-    return ( $self->{_host} );
-}
-
-sub dir {
-    my ( $self, $value ) = @_;
-    $self->{_dir} = $value if defined($value);
-    return ( $self->{_dir} );
-}
-
-sub user {
-    my ( $self, $value ) = @_;
-    $self->{_user} = $value if defined($value);
-    return ( $self->{_user} );
-}
-
-sub password {
-    my ( $self, $value ) = @_;
-    $self->{_password} = $value if defined($value);
-    return ( $self->{_password} );
-}
-
-sub fileHandle {
-    my ( $self, $value ) = @_;
-    $self->{_fileHandle} = $value if defined($value);
-    return ( $self->{_fileHandle} );
-}
-
 sub testMode {
     my ( $self, $value ) = @_;
     $self->{_testMode} = $value if defined($value);
     return ( $self->{_testMode} );
-}
-
-sub isArchive {
-    my ( $self, $value ) = @_;
-    $self->{_isArchive} = $value if defined($value);
-    return ( $self->{_isArchive} );
 }
 
 1;

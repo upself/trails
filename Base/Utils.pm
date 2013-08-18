@@ -41,6 +41,7 @@ my $tmpLogFile = "/tmp/";
     rollLog
     elog
     wlog
+    mlog
     ilog
     dlog
     logMsg
@@ -239,6 +240,14 @@ sub ilog {
     my $msg = shift;
     my ( $pkg, $file, $line ) = caller;
     $logger->info( format_log( "INFO", $pkg, $file, $line, $msg ) );
+}
+
+sub mlog {
+	 return unless ( $DEBUG_LEVEL eq "error"
+        || $DEBUG_LEVEL eq "debug" );
+    my $msg = shift;
+    my ( $pkg, $file, $line ) = caller;
+    $logger->log( $ERROR, format_log( "MESSAGE", $pkg, $file, $line, $msg ) );
 }
 
 sub dlog {
