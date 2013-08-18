@@ -670,7 +670,7 @@ sub load {
               $scanSwItem->id( $rec{installedSoftwareTypeTableId} );
               $scanSwItem->getById($self->stagingConnection);
               
-              if(!defined $scanSwItem->guid){
+              if(!defined $scanSwItem->guId){
                 die "Invalid tadz scan item: " . $scanSwItem->toString . "\n";
               }
               
@@ -687,9 +687,9 @@ sub load {
               ###3. it's mainframe_feature get the version id from it.
               ###4. it's mainframe_version get the product_id from it as the software_id.
               
-              $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guid);
+              $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guId);
               if(!defined $kbDefId){
-                my $gudi = $scanSwItem->guid;
+                my $gudi = $scanSwItem->guId;
                 dlog("mainframe items not loaded by catalog loader under guid id $gudi");
                 $self->updateStagingInstalledType($scanSwItem, 'CATALOG MISSING');
                 next;
