@@ -151,6 +151,7 @@ sub queryAddExpiredLicsToQueue {
 			and l.status = \'ACTIVE\'
 			and days(l.expire_date) - days(current timestamp) < 0
 			and not exists (select 1 from alert_expired_maint aem where aem.license_id = l.id and open = 1)
+			and not exists (select 1 from recon_license rl where rl.license_id=l.id)
 	';
     if ( $testMode == 1 ) {
         $query .= '
@@ -171,6 +172,7 @@ sub queryAddExpiredLicsToQueue {
 			and l.status = \'ACTIVE\'
 			and days(l.expire_date) - days(current timestamp) >= 0
 			and exists (select 1 from alert_expired_maint aem where aem.license_id = l.id and open = 1)
+			and not exists (select 1 from recon_license rl where rl.license_id=l.id)
 	';
     if ( $testMode == 1 ) {
         $query .= '
