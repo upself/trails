@@ -201,13 +201,13 @@ LINE:	while (<INPUTFILE>) {
 			   \$customerIdf,
 			   \$actNumberf,
 			   \$hostAndswf,);
-			   $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
-			   if($get_discrepancy_sw_lpar->fetchrow_arrayref ){
+			  my $rct = $get_discrepancy_sw_lpar->execute($actNumber,$swlparId);
+			   if(defined $rct ){
 			   
 			   while ( $get_discrepancy_sw_lpar->fetchrow_arrayref ) {
 			   	print LOG "Software id is $swIdf , softwarelpar id is $swlparIdf \n";
 			     $get_manual_queue->execute($swIdf,$swlparIdf);
-			     if (@qrow = $get_manual_queue->fetchrow_array()) 
+			     if ( @qrow = $get_manual_queue->fetchrow_array()) 
 			     {
 			       	$softwareId = $qrow[0];
 			     	$softwLparId = $qrow[1];
@@ -254,7 +254,7 @@ LINE:	while (<INPUTFILE>) {
 			   	
 			   	print LOG "Software id is $swId , softwarelpar id is $swlparId, this is a empty sw lpar \n";
 			     $get_manual_queue->execute($swId,$swlparId);
-			     if (@qrow = $get_manual_queue->fetchrow_array()) 
+			     if ( @qrow = $get_manual_queue->fetchrow_array()) 
 			     {
 			       	$softwareId = $qrow[0];
 			     	$softwLparId = $qrow[1];
@@ -305,7 +305,7 @@ LINE:	while (<INPUTFILE>) {
 			 {
 			    	print LOG "It is only discrepancy software deletion! \n";
 		            $get_manual_queue->execute($swId,$swlparId);
-			      if ( my @qrow = $get_manual_queue->fetchrow_array() ) 
+			      if (  @qrow = $get_manual_queue->fetchrow_array() ) 
 			      {
 			     	$softwareId = $qrow[0];
 			     	$softwLparId = $qrow[1];
