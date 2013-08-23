@@ -1387,8 +1387,11 @@ sub queryTAD4ZData {
       ,'' as objectId
       ,hw_model
       ,hw_serial
-      ,case when scan_table.scan_date is null then node.last_update_time 
-        else scan_table.scan_date end as effective_scanTime
+      ,case when scan_table.myfostype is null then node.last_update_time
+      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
+      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
+      else node.last_update_time
+        end as effective_scanTime
       ,0 as users
       ,2 as authenticated
       ,0 as isManual
@@ -1420,11 +1423,14 @@ from system_node
      as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
      join system on system.system_key = system_node.system_key
      left outer join (
-       SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
+SELECT  LP.FOSNAME as sid, 
+        MAX(LP.FOSTYPE) as myfostype, 
+        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
+        MAX(LP.FIQDATE) as myfiqdate
        FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> ''
-    GROUP BY LP.FOSNAME
-    ORDER BY LP.FOSNAME
+       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
+       GROUP BY LP.FOSNAME, LP.FINVID
+       ORDER BY SID, myfoslastbootdate
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\'
     WITH ur
@@ -1441,8 +1447,11 @@ sub queryTAD4ZDeltaData {
       ,'' as objectId
       ,hw_model
       ,hw_serial
-      ,case when scan_table.scan_date is null then node.last_update_time 
-          else scan_table.scan_date end as effective_scanTime
+      ,case when scan_table.myfostype is null then node.last_update_time
+      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
+      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
+      else node.last_update_time
+        end as effective_scanTime
       ,0 as users
       ,2 as authenticated
       ,0 as isManual
@@ -1473,11 +1482,14 @@ from system_node
       join (select node_key, max(last_update_time) as my_time from system_node group by node_key) as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
       join system on system.system_key = system_node.system_key
       left outer join (
-        SELECT LP.FOSNAME as sid, MAX(LP.FIQDATE) as scan_date
-        FROM TIQHISTORY AS LP
-        WHERE LP.FINVID = 1 AND LP.FOSNAME <> ''
-    GROUP BY LP.FOSNAME
-    ORDER BY LP.FOSNAME
+SELECT  LP.FOSNAME as sid, 
+        MAX(LP.FOSTYPE) as myfostype, 
+        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
+        MAX(LP.FIQDATE) as myfiqdate
+       FROM TIQHISTORY AS LP
+       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
+       GROUP BY LP.FOSNAME, LP.FINVID
+       ORDER BY SID, myfoslastbootdate
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\'
       and node.last_update_time > ?
