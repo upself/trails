@@ -594,7 +594,16 @@ sub buildScanRecord {
         if ( length( $rec->{powerOnPassword} ) > 64 ) {
             $rec->{powerOnPassword} = undef;
         }
+    	# emergency fix for ticket #177 for osSub and extId
+        if ( length( $rec->{osSub} ) > 32 ) {
+            $rec->{osSub} = undef;
+        }
+        if ( length( $rec->{extId} ) > 8 ) {
+            $rec->{extId} = undef;
+        }
     }
+    
+    
 
     ###Set integer fields to undef if they are not integers
     $rec->{users} = undef
