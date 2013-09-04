@@ -1329,7 +1329,7 @@ sub querySoftwareSignatureData {
     
     dlog("normal query=$query");
 
-    return ( 'softwareSignatureData', $query );
+    return ( 'softwareSignatureData1', $query );
 }
 
 
@@ -1353,7 +1353,7 @@ sub querySoftwareSignatureDataLessThan {
         with ur
     ';
     dlog("less than query=$query");
-    return ( 'softwareSignatureData', $query );
+    return ( 'softwareSignatureData2', $query );
 }
 
 sub querySoftwareSignatureDataBetween {
@@ -1377,7 +1377,7 @@ sub querySoftwareSignatureDataBetween {
         with ur
     ';
     dlog("between query=$query");
-    return ( 'softwareSignatureData', $query );
+    return ( 'softwareSignatureData3', $query );
 }
 
 sub querySoftwareManualData {

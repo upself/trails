@@ -155,6 +155,10 @@ sub spawnScript {
     }
     else {
         ###I am the child, i *CANNOT* return only exit
+        if($name eq 'TD4DSTANDALONE2 '){
+          exit 0;
+        }
+        
         my $cmd =
             "$childScript -b $name -f $fullLoadPeriodHours"
           . " -t $testMode -d $loadDeltaOnly -a $applyChanges -l $childLog -c $configFile";
