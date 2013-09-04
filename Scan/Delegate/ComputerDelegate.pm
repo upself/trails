@@ -594,56 +594,44 @@ sub buildScanRecord {
         if ( length( $rec->{powerOnPassword} ) > 64 ) {
             $rec->{powerOnPassword} = undef;
         }
-    	# emergency fix for ticket #177 for osSub and extId
-        if ( length( $rec->{osSub} ) > 32 ) {
-            $rec->{osSub} = undef;
-        }
-        if ( length( $rec->{extId} ) > 8 ) {
-            $rec->{extId} = undef;
-        }
     }
     
-    
-
+    ###Integer fields cannot be any larger than 2147483647
     ###Set integer fields to undef if they are not integers
     $rec->{users} = undef
-        if ( !( $rec->{users} =~ /^\d+$/ ) );
+        if ( !( $rec->{users} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{osMajor} = undef
-        if ( !( $rec->{osMajor} =~ /^\d+$/ ) );
+        if ( !( $rec->{osMajor} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{osMinor} = undef
-        if ( !( $rec->{osMinor} =~ /^\d+$/ ) );
+        if ( !( $rec->{osMinor} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{memory} = undef
-        if ( !( $rec->{memory} =~ /^\d+$/ ) );
+        if ( !( $rec->{memory} =~ /^\d+$/ )   || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{disk} = undef
-        if ( !( $rec->{disk} =~ /^\d+$/ ) );
+        if ( !( $rec->{disk} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{dedicatedProcessors} = undef
-        if ( !( $rec->{dedicatedProcessors} =~ /^\d+$/ ) );
+        if ( !( $rec->{dedicatedProcessors} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{totalProcessors} = undef
-        if ( !( $rec->{totalProcessors} =~ /^\d+$/ ) );
+        if ( !( $rec->{totalProcessors} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{sharedProcessors} = undef
-        if ( !( $rec->{sharedProcessors} =~ /^\d+$/ ) );
+        if ( !( $rec->{sharedProcessors} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{processorType} = undef
-        if ( !( $rec->{processorType} =~ /^\d+$/ ) );
+        if ( !( $rec->{processorType} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{dedicatedProcByCores} = undef
-        if ( !( $rec->{dedicatedProcByCores} =~ /^\d+$/ ) );
+        if ( !( $rec->{dedicatedProcByCores} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{totalProcByCores} = undef
-        if ( !( $rec->{totalProcByCores} =~ /^\d+$/ ) );
+        if ( !( $rec->{totalProcByCores} =~ /^\d+$/ )  || $rec->{sharedProcByCores} > 2147483647 );
     $rec->{sharedProcByCores} = undef
-        if ( !( $rec->{sharedProcByCores} =~ /^\d+$/ ) );
+        if ( !( $rec->{sharedProcByCores} =~ /^\d+$/ ) || $rec->{sharedProcByCores} > 2147483647 );
 
     $rec->{physicalTotalKb} = undef
-        if ( !( $rec->{physicalTotalKb} =~ /^\d+$/ ) );
+        if ( !( $rec->{physicalTotalKb} =~ /^\d+$/ ) ||  $rec->{physicalTotalKb} > 2147483647 );
     $rec->{virtualMemory} = undef
-        if ( !( $rec->{virtualMemory} =~ /^\d+$/ ) );
+        if ( !( $rec->{virtualMemory} =~ /^\d+$/ )  ||  $rec->{virtualMemory} > 2147483647 );
     $rec->{physicalFreeMemory} = undef
-        if ( !( $rec->{physicalFreeMemory} =~ /^\d+$/ ) );
+        if ( !( $rec->{physicalFreeMemory} =~ /^\d+$/ )  ||  $rec->{physicalFreeMemory} > 2147483647 );
     $rec->{virtualFreeMemory} = undef
-        if ( !( $rec->{virtualFreeMemory} =~ /^\d+$/ ) );
+        if ( !( $rec->{virtualFreeMemory} =~ /^\d+$/ )  ||  $rec->{virtualFreeMemory} > 2147483647 );
 
-    ###Integer fields cannot be any larger than 2147483647
-    ###Adding these as I see them..so far looks like errors in the file input
-    $rec->{osMinor} = undef if ( $rec->{osMinor} > 2147483647 );
-    $rec->{osMajor} = undef if ( $rec->{osMajor} > 2147483647 );
 
     ###Build the scan record
     my $scanRecord = new Staging::OM::ScanRecord();
