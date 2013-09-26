@@ -455,18 +455,36 @@ sub doDelta {
         dlog( $self->effProcessor->{$lparKey}->toString );
     }
     $sth->finish();
+   
+    if (   ( $hwDelCount > 5000 )
+		|| ( $hwLparDelCount > 5000 )
+		|| ( $effDelCount > 5000 ) )
+	{
+		elog(
+"hwDelCount=$hwDelCount, $hwLparDelCount=hwLparDelCount, $effDelCount=effDelCount"
+		);
 
-    if (    ( $hwDelCount > 5000 )
-         || ( $hwLparDelCount > 5000 )
-         || ( $effDelCount > 5000 ) )
-    {
-        elog("hwDelCount=$hwDelCount, $hwLparDelCount=hwLparDelCount, $effDelCount=effDelCount");
-        foreach my $key ( keys %{ $self->hardwareLpar } ) {
-            elog( $self->hardwareLpar->{$key}->customerId . '|' . $self->hardwareLpar->{$key}->name )
-                if $self->hardwareLpar->{$key}->action eq 'DELETE';
-        }
-        die('Too many deletes');
-    }
+		# List hardwareLpar if too many deletes
+		if ( $hwLparDelCount > 5000 ) {
+			foreach my $key ( keys %{ $self->hardwareLpar } ) {
+				elog(   $self->hardwareLpar->{$key}->customerId . '|'
+					  . $self->hardwareLpar->{$key}->name )
+				  if $self->hardwareLpar->{$key}->action eq 'DELETE';
+			}
+		}
+
+		if ( $hwDelcount > 5000 ) {
+
+			# List hardware if too many deletes
+			foreach my $key ( keys %{ $self->hardware } ) {
+				elog(   $self->hardware->{$key}->customerId . '|'
+					  . $self->hardware->{$key}->serial )
+				  if $self->hardware->{$key}->action eq 'DELETE';
+			}
+		}
+
+		die('Too many deletes');
+	}
 
     dlog('End doDelta method');
 }
