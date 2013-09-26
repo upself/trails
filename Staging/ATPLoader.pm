@@ -473,7 +473,7 @@ sub doDelta {
 			}
 		}
 
-		if ( $hwDelcount > 5000 ) {
+		if ( $hwDelCount > 5000 ) {
 
 			# List hardware if too many deletes
 			foreach my $key ( keys %{ $self->hardware } ) {
