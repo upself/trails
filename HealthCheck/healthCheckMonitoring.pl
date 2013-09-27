@@ -56,7 +56,12 @@
 ###################################################################################################################################################################################################
 #                                            Phase 7A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A'
 # 2013-08-01  Liu Hai(Larry) 1.7.3           HealthCheck and Monitoring Service Component - Phase 7A: Add the synctime is null case for TrailsRP Replication Error Email Support Feature
-#                                                                                                     Adjust the email content for TrailsRP Replication Success Email more meaningful 
+#                                                                                                    Adjust the email content for TrailsRP Replication Success Email more meaningful 
+###################################################################################################################################################################################################
+#                                            Phase 8 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8'
+# 2013-09-26  Liu Hai(Larry) 1.8.0           HealthCheck and Monitoring Service Component - Phase 8: Design and Develop Application Monitoring - Web Application Running Status Check Basic Architecture and Business Logic
+# 2013-09-27  Liu Hai(Larry) 1.8.1           HealthCheck and Monitoring Service Component - Phase 8: Add Some Testing Function Codes only for TAP2 Testing Server
+#                                                                                                    
 #
 
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
@@ -233,6 +238,12 @@ my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING  = "CNDB_CUSTOMER_TME_OBJECT_ID_MONIT
 my $TRAILSST_DB_APPLY_GAP_MONITORING        = "TRAILSST_DB_APPLY_GAP_MONITORING";#EVENT_TYPE_ID = 10
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_2      = "TRAILSRP_DB_APPLY_GAP_MONITORING_2";#EVENT_TYPE_ID = 11
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
+#Application Monitoring - Event Group Name
+my $APPLICATION_MONITORING                  = "APPLICATION_MONITORING";#EVENT_GROUP_ID = 4
+#Application Monitoring - its children Event Type Name
+my $WEBAPP_RUNNING_STATUS_CHECK_MONITORING  = "WEBAPP_RUNNING_STATUS_CHECK_MONITORING";#EVENT_TYPE_ID = 12
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
 
 #Event Group ID and its children Event IDs
 #Trails/Bravo Core Scripts
@@ -349,6 +360,23 @@ my $HME_ERROR_EMAIL_TXT            = "HealthCheck and Monitoring Engine Startup 
 my $hme_error_mail_message;
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
+#Web Application Check Configuration Value Definition Indexes
+my $WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX        = 0;#For example: 'Bravo'
+my $WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX    = 1;#For example: '15' seconds - CONNECT_TIMEOUT stands for the max http request time
+my $WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX           = 2;#For example: '20' seconds - MAX_TIME stands for the max transfer time
+my $WEBAPP_CHECK_CONFIG_VALUE_URL                      = 3;#For example: 'http://bravo.boulder.ibm.com/BRAVO/home.do'
+
+#Web Application CURL Unix Command
+my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
+
+my $FALSE = 0;#For perl, 0 = false
+my $TRUE  = 1;#For perl, 1 = true
+
+#HTTP OK Code
+my $HTTP_OK_CODE = "200";
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
+
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
 ###Initialize properties
@@ -436,6 +464,7 @@ sub loadEventMetaData{
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","9","CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","10","TRAILSST_DB_APPLY_GAP_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","11","TRAILSRP_DB_APPLY_GAP_MONITORING_2")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
+  #push @eventMetaRecords, [("4","APPLICATION_MONITORING","12","WEBAPP_RUNNING_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8
 }
 
 #This method is used to load event rule and email information definition
@@ -475,6 +504,15 @@ sub process{
      	$loopIndex++;
         ###Trigger event logic
         eventLogging();
+        
+		#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
+		#For Testing Purpose on TAP2 Server only Start
+		#For TAP2 Testing Server, only let HealthCheck and Monitoring Engine run 3 times for testing purpose
+		if(($SERVER_MODE eq $TAP2) && ($loopIndex==3)){
+		  last;
+		}
+        #For Testing Purpose on TAP2 Server only End
+		#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server End
         
 		sleep $sleepPeriod;
     }
@@ -679,6 +717,13 @@ sub eventLogicProcess{
 	  eventRuleCheck($groupName,$eventName,0);
    }
    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
+   elsif($groupName eq $APPLICATION_MONITORING && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING){#Event Group: "APPLICATION_MONITORING" + Event Type: "WEBAPP_RUNNING_STATUS_CHECK_MONITORING"
+  	  #For Event Type "WEBAPP_RUNNING_STATUS_CHECK_MONITORING",the eventValue value is not needed.
+	  #So set 0 for eventValue var
+	  eventRuleCheck($groupName,$eventName,0);
+   } 
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End 
    #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
    #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
    #Add 'New Event Group' + 'New Event Type' business logic here
@@ -793,7 +838,7 @@ sub eventRuleCheck{
 					}
                     #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 
-					chomp($returnProcessNum);;#remove the return line char
+					chomp($returnProcessNum);#remove the return line char
                     $returnProcessNum--;#decrease the unix command itself from the total calculated process number
 					$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                   	print LOG "[$currentTimeStamp]Return Process Number is $returnProcessNum for linux command \"ps \-ef\|grep $loaderName\|grep start\|wc -l\".\n";
@@ -1998,6 +2043,110 @@ sub eventRuleCheck{
                  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
 			 } 
              #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
+             elsif(($triggerEventGroup eq $APPLICATION_MONITORING && $triggerEventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING)#Event Group: "APPLICATION_MONITORING" + Event Type: "WEBAPP_RUNNING_STATUS_CHECK_MONITORING"
+				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+                 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
+				 print LOG "Web Application Running Status Check Monitoring - The Server Mode: {$serverMode}\n";
+				 my $webAppsCheckConfigValues = $metaRuleParameter2;#var used to store web application check configuration values - for example: "TAP2^Bravo~15~20~http://bravo.boulder.ibm.com/BRAVO/home.do'Trails~15~20~http://trails.boulder.ibm.com/TRAILS/"
+				 print LOG "Web Application Running Status Check Monitoring - The Web Applications Check Configuration Values: {$webAppsCheckConfigValues}\n";
+
+				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Web Applications Running Status Check on @1 Server'
+				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Web Application @2 is currently not running.'
+				 my $processedRuleHandlingInstructionCode;#var used to store processed rule handling instruction code - for example: 'E-APM-WAC-001'
+                 my @webAppErrorMessageArray = ();#array used to store webApp Error Message - For example: 'Web Application Bravo is currently not running.'
+				 my $webAppErrorMessageArrayCnt;#var used to store the count of webApp Error Message
+				
+                 my @webAppsCheckConfigValuesArray = split(/\'/,$webAppsCheckConfigValues);
+				 foreach my $webAppsCheckConfigValuesArrayItem (@webAppsCheckConfigValuesArray){
+				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Values: {$webAppsCheckConfigValuesArrayItem}\n";
+				 
+				   $processedRuleMessage = $metaRuleMessage;#Reset to metaRuleMessage for every loop
+                   
+                   my $processedCURL = $WEBAPP_CURL_COMMAND;#Reset CURL initial value for every loop
+
+				   my @webAppsCheckConfigValuesArrayItemArray = split(/\~/,$webAppsCheckConfigValuesArrayItem);
+
+				   my $webAppName = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX];
+                   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - webAppName: {$webAppName}\n";
+				  
+				   my $connectTimeout = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX];
+				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - connectTimeout: {$connectTimeout}\n";
+				   $processedCURL =~ s/\@connectTimeout/$connectTimeout/g;#replace @connectTimeout with connect timeout value - for example: 15
+				  
+				   my $maxTime = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX];
+				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - maxTime: {$maxTime}\n";
+				   $processedCURL =~ s/\@maxTime/$maxTime/g;#replace @maxTime with maxTime value - for example: 20
+				  
+				   my $url = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_URL];
+				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - url: {$url}\n";
+                   $processedCURL =~ s/\@url/$url/g;#replace @url with URL value - for example: http://bravo.boulder.ibm.com/BRAVO/home.do
+
+                   print LOG "Web Application Running Status Check Monitoring - The Processed Unix Command CURL: {$processedCURL}\n";
+
+                   #Invoke the processed CURL unix command
+				   my @webReturnMsgs = `$processedCURL`;
+                   my $webAppRunningFlag = $FALSE;#Set false as the inital value
+                    
+                   print LOG "Web Application Running Status Check Monitoring - Start to check Web Return Message with HTTP_OK_CODE: {$HTTP_OK_CODE}\n"; 
+                   foreach my $webReturnMsg (@webReturnMsgs){
+					 trim($webReturnMsg);#Remove before and after space chars of a string
+                     $webReturnMsg =~ s/[\r\n]//g;#Remove \r\n chars for HTML data line. Please note that HTML data line default uses '\r\n' as the ending chars. 
+					 print LOG "Web Application Running Status Check Monitoring - Web Return Message: {$webReturnMsg}\n";
+					
+					 if($webReturnMsg =~ /$HTTP_OK_CODE/){#Judge if the web return message includes HTTP_OK_CODE '200'
+                       $webAppRunningFlag = $TRUE;
+					   last;
+					 }
+                   }#end foreach my $webReturnMsg (@webReturnMsgs)
+
+				   if($webAppRunningFlag == $TRUE){
+                     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
+					 #For Testing Purpose on TAP2 Server only Start
+					 #For TAP2 Testing Server, whatever there are actual webApp Error Messages or not, always generates webApp Error Messages about Alert Email Content for testing purpose 
+					 if($SERVER_MODE eq $TAP2){
+                       $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+					   push @webAppErrorMessageArray, $processedRuleMessage;
+					 }
+					 #For Testing Purpose on TAP2 Server only End
+					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server End
+				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n";  
+				   }
+				   else{
+					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+					 push @webAppErrorMessageArray, $processedRuleMessage;
+				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";  
+				   }
+         		 }#end foreach my $webAppsCheckConfigValuesArrayItem (@webAppsCheckConfigValuesArray)
+                 
+				 #Calculate the count of webApp Error Message
+				 $webAppErrorMessageArrayCnt = scalar(@webAppErrorMessageArray);
+				 
+                 $processedRuleTitle = $metaRuleTitle;
+                 $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
+				 print LOG "Web Application Running Status Check Monitoring - The Processed Rule Title: {$processedRuleTitle}\n";
+
+				 #Generate the alert email content when $webAppErrorMessageArrayCnt >0  
+				 if($webAppErrorMessageArrayCnt >0){
+				   
+                   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+				   $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+                   
+         		   $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                   $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				   print LOG "Web Application Running Status Check Monitoring - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+                   
+				   foreach $processedRuleMessage (@webAppErrorMessageArray){
+                     $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
+                     print LOG "Web Application Running Status Check Monitoring - The Processed Rule Message: {$processedRuleMessage}\n";
+				   }
+				   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				 }
+				   
+				 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+                 print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+		     }#end elsif(($triggerEventGroup eq $APPLICATION_MONITORING && $triggerEventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
+             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     
