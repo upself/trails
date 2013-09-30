@@ -61,6 +61,7 @@
 #                                            Phase 8 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8'
 # 2013-09-26  Liu Hai(Larry) 1.8.0           HealthCheck and Monitoring Service Component - Phase 8: Design and Develop Application Monitoring - Web Application Running Status Check Basic Architecture and Business Logic
 # 2013-09-27  Liu Hai(Larry) 1.8.1           HealthCheck and Monitoring Service Component - Phase 8: Add Some Testing Function Codes only for TAP2 Testing Server
+# 2013-09-30  Liu Hai(Larry) 1.8.2           HealthCheck and Monitoring Service Component - Phase 8: Add HTTP 403 Forbidden Return Code for Trails Web Application to understand this case that Trails Web Applcation is also running 
 #                                                                                                    
 #
 
@@ -374,7 +375,11 @@ my $FALSE = 0;#For perl, 0 = false
 my $TRUE  = 1;#For perl, 1 = true
 
 #HTTP OK Code
-my $HTTP_OK_CODE = "200";
+my $HTTP_OK_CODE        = "200";
+#HTTP FORBIDDEN Code
+#To support this HTTP return code for Trails Web Application, the Trails Web Application is running if this HTTP code has been returned
+my $HTTP_FORBIDDEN_CODE = "403";
+
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
 
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
@@ -2088,13 +2093,14 @@ sub eventRuleCheck{
 				   my @webReturnMsgs = `$processedCURL`;
                    my $webAppRunningFlag = $FALSE;#Set false as the inital value
                     
-                   print LOG "Web Application Running Status Check Monitoring - Start to check Web Return Message with HTTP_OK_CODE: {$HTTP_OK_CODE}\n"; 
+                   print LOG "Web Application Running Status Check Monitoring - Start to check Web Return Message with HTTP_OK_CODE: {$HTTP_OK_CODE} or HTTP_FORBIDDEN_CODE: {$HTTP_FORBIDDEN_CODE}\n"; 
                    foreach my $webReturnMsg (@webReturnMsgs){
 					 trim($webReturnMsg);#Remove before and after space chars of a string
                      $webReturnMsg =~ s/[\r\n]//g;#Remove \r\n chars for HTML data line. Please note that HTML data line default uses '\r\n' as the ending chars. 
 					 print LOG "Web Application Running Status Check Monitoring - Web Return Message: {$webReturnMsg}\n";
 					
-					 if($webReturnMsg =~ /$HTTP_OK_CODE/){#Judge if the web return message includes HTTP_OK_CODE '200'
+					 if($webReturnMsg =~ /$HTTP_OK_CODE/#Judge if the web return message includes HTTP_OK_CODE '200'
+					  ||$webReturnMsg =~ /$HTTP_FORBIDDEN_CODE/){#Judge if the web return message includes HTTP_FORBIDDEN_CODE '403'
                        $webAppRunningFlag = $TRUE;
 					   last;
 					 }
