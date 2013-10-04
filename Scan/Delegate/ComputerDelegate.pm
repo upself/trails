@@ -5,6 +5,7 @@ use Base::Utils;
 use Compress::Zlib;
 use Database::Connection;
 use Scan::Delegate::ScanDelegate;
+use Scan::Delegate::ScanTADzDelegate;
 use Staging::Delegate::ScanRecordDelegate;
 use Text::CSV_XS;
 
@@ -301,7 +302,7 @@ sub getConnectedScanRecordData {
             $sth = $connection->sql->{computerDoranaDeltaData};
         }
         elsif ( $bankAccount->type eq 'TADZ' ) {
-            $connection->prepareSqlQuery( queryTAD4ZDeltaData() );
+            $connection->prepareSqlQuery( queryTAD4ZDeltaData($bankAccount) );
             $sth = $connection->sql->{tad4zDeltaData};
         }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
@@ -333,7 +334,7 @@ sub getConnectedScanRecordData {
             $sth = $connection->sql->{computerDoranaData};
         }
         elsif ( $bankAccount->type eq 'TADZ' ) {
-            $connection->prepareSqlQuery( queryTAD4ZData() );
+            $connection->prepareSqlQuery( queryTAD4ZData($bankAccount) );
             $sth = $connection->sql->{tad4zData};
         }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
@@ -371,6 +372,15 @@ sub getConnectedScanRecordData {
                 virtualMemory physicalFreeMemory virtualFreeMemory)
         );
     }
+    elsif ($bankAccount->type eq 'TADZ' ) {
+        @fields = (
+            qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
+                osName osType osMajor osMinor osSub osInst userName manufacture biosModel alias physicalTotalKb
+                virtualMemory physicalFreeMemory virtualFreeMemory biosDate biosSerialNumber biosUniqueId boardSerial
+                caseSerial caseAssetTag extId techImgId )
+        );
+    }
+
     else {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
@@ -391,6 +401,11 @@ sub getConnectedScanRecordData {
     }
     else {
         $sth->execute();
+    }
+    
+    # only load the techImgId list IF TADz
+    if ( $bankAccount->type eq 'TADZ' ) {
+    	ScanTADzDelegate->loadTechImgId();
     }
 
     my %scanList;
@@ -417,6 +432,7 @@ sub buildScanRecord {
 
     cleanValues($rec);
     upperValues($rec);
+    
 
     dlog( $rec->{scanTime} );
     ###fix the scantime
@@ -683,6 +699,9 @@ sub buildScanRecord {
     $scanRecord->caseAssetTag( $rec->{caseAssetTag} );
     $scanRecord->powerOnPassword( $rec->{powerOnPassword} );
   #  $scanRecord->customerId($self->getCustomerId($scanRecord,$mapService));
+    if ( $bankAccount->type eq 'TADZ' ) {
+    	ScanTADzDelegate->mapTSID($scanRecord, $bankAccount);
+    }
 
     dlog( $scanRecord->toString );
 
@@ -1377,121 +1396,20 @@ sub queryComputerDoranaData {
 }
 
 sub queryTAD4ZData {
-    my $query = "
-	select
-     node.node_key
-      ,lpar_name
-      ,'' as objectId
-      ,hw_model
-      ,hw_serial
-      ,case when scan_table.myfostype is null then node.last_update_time
-      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
-      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
-      else node.last_update_time
-        end as effective_scanTime
-      ,0 as users
-      ,2 as authenticated
-      ,0 as isManual
-      ,0 as authProc
-      ,0 as processor
-      ,'' as osName
-      ,'' as osType
-      ,'' as osMajorVers
-      ,'' as osMinorVers
-      ,'' as osSubVers
-      ,'' as osInstDate
-      ,'' as userName
-      ,'' as biosManufacturer
-      ,'' as biosModel
-      ,'' as computerAlias
-      ,'' as physicalTotalKb
-      ,'' as virtTotalKb
-      ,'' as physicalFreeKb
-      ,'' as virtFreeKb
-      ,'' as biosDate
-      ,'' as biosSerial
-      ,'' as sysUuid
-      ,'' as boardSerNum
-      ,'' as caseSerNum
-      ,'' as caseAssetTag
-from system_node
-     join node on node.node_key = system_node.node_key
-     join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
-     as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-     join system on system.system_key = system_node.system_key
-     left outer join (
-SELECT  LP.FOSNAME as sid, 
-        MAX(LP.FOSTYPE) as myfostype, 
-        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
-        MAX(LP.FIQDATE) as myfiqdate
-       FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
-       GROUP BY LP.FOSNAME, LP.FINVID
-       ORDER BY SID, myfoslastbootdate
-    ) as scan_table on scan_table.sid = system.sid
-where node_type = \'LPAR\'
-    WITH ur
-     ";
+    my ( $self, $bankAccount ) = @_;
+	my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
+
+    my $query = ScanTADzDelegate->getCorrectSQL($infra, 0);
 
     return ( 'tad4zData', $query );
 }
 
 sub queryTAD4ZDeltaData {
-    my $query = "
-	select
-     node.node_key
-      ,lpar_name
-      ,'' as objectId
-      ,hw_model
-      ,hw_serial
-      ,case when scan_table.myfostype is null then node.last_update_time
-      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
-      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
-      else node.last_update_time
-        end as effective_scanTime
-      ,0 as users
-      ,2 as authenticated
-      ,0 as isManual
-      ,0 as authProc
-      ,0 as processor
-      ,'' as osName
-      ,'' as osType
-      ,'' as osMajorVers
-      ,'' as osMinorVers
-      ,'' as osSubVers
-      ,'' as osInstDate
-      ,'' as userName
-      ,'' as biosManufacturer
-      ,'' as biosModel
-      ,'' as computerAlias
-      ,'' as physicalTotalKb
-      ,'' as virtTotalKb
-      ,'' as physicalFreeKb
-      ,'' as virtFreeKb
-      ,'' as biosDate
-      ,'' as biosSerial
-      ,'' as sysUuid
-      ,'' as boardSerNum
-      ,'' as caseSerNum
-      ,'' as caseAssetTag
-from system_node
-      join node on node.node_key = system_node.node_key
-      join (select node_key, max(last_update_time) as my_time from system_node group by node_key) as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-      join system on system.system_key = system_node.system_key
-      left outer join (
-SELECT  LP.FOSNAME as sid, 
-        MAX(LP.FOSTYPE) as myfostype, 
-        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
-        MAX(LP.FIQDATE) as myfiqdate
-       FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
-       GROUP BY LP.FOSNAME, LP.FINVID
-       ORDER BY SID, myfoslastbootdate
-    ) as scan_table on scan_table.sid = system.sid
-where node_type = \'LPAR\'
-      and node.last_update_time > ?
-   with ur
-     ";
+    my ( $self, $bankAccount ) = @_;
+	my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
+
+    my $query = ScanTADzDelegate->getCorrectSQL($infra, 1);
+
 
     return ( 'tad4zDeltaData', $query );
 }

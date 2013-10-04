@@ -202,19 +202,47 @@ sub getCorrectSQL {
 # remember to pull ONLY unique ones that are 4 characters and hardware_lpar is valid
 # and this needs to be an array with both lpar name and customer id
 sub loadTechImgId {
-	$techImgIdMap{"AAAA"} = ["DONNIE", 1];
-	$techImgIdMap{"BBBB"} = ["BILL", 2];
-	$techImgIdMap{"CCCC"} = ["HOLGER", 3];
-	return 3;
-	# SQL code to load TechImgId
-# select hardware_lpar.tech_image_id, hardware_lpar.name, hardware_lpar.customer_id
-#from hardware_lpar, hardware where hardware_lpar.hardware_id = hardware.id
-#and hardware.status = 'ACTIVE' and hardware_lpar.status = 'ACTIVE' and
-#hardware.hardware_status != 'HWCOUNT' and hardware_lpar.lpar_status != 'HW_COUNT'
-#and length(hardware_lpar.tech_image_id) = 4 and hardware_lpar.tech_image_id not in (
-#select tech_image_id from hardware_lpar group by tech_image_id having count(*) > 1) with ur;
+	my ($self, $connection) = @_;
+	
+    $connection->prepareSqlQuery( $self->queryTechImgIdData );
+	
+    my @fields = (qw(techImgId lparName customerId ));
 
 
+    ###Get the statement handle
+    my $sth = $connection->sql->{techImgIdData};
+
+    ###Bind the columns
+    my %rec = ();
+    $sth->bind_columns( map { \$rec{$_} } @fields );
+
+    ###Execute the query
+    dlog('Retrieving software filters from bank account');
+    $sth->execute();
+    my $counter = 0;
+    while ( $sth->fetchrow_arrayref ) {
+    	$techImgIdMap{ $rec{techImgId} } = [ $rec{lparName} , $rec{customerId}];
+    	++$counter;
+
+    }
+    
+    $sth->finish;
+    
+	return $counter;
+
+}
+
+sub queryTechImgIdData {
+    my $query = '
+ select hardware_lpar.tech_image_id, hardware_lpar.name, hardware_lpar.customer_id
+from hardware_lpar, hardware where hardware_lpar.hardware_id = hardware.id
+and hardware.status = \'ACTIVE\' and hardware_lpar.status = \'ACTIVE\' and
+hardware.hardware_status != \'HW_COUNT\' and hardware_lpar.lpar_status != \'HW_COUNT\'
+and length(hardware_lpar.tech_image_id) = 4 and hardware_lpar.tech_image_id not in (
+select tech_image_id from hardware_lpar group by tech_image_id having count(*) > 1) with ur;
+    ';
+
+    return ( 'techImgIdData', $query );
 }
 
 # check to see if the customer_id has been stored into the objectId and return it if it has else 0
