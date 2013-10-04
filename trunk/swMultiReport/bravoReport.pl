@@ -191,7 +191,7 @@ sub logit {
 }                                                                            
                                                                                          
 logit( "Acquiring bravo database handle", $logFile );                                    
-my $bravo = IBM::Schema::BRAVO->easy_connect;                                            
+my $bravo = IBM::Schema::SWMULTI->easy_connect;                                            
 my $dbh   = $bravo->storage->dbh;                                                        
 logit( "Bravo Database handle acquired", $logFile );                                     
 
