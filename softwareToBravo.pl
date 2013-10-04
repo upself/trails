@@ -34,6 +34,7 @@ my $systemScheduleStatus = startJob($job);
 my $rNo                = "revision241";
 my $children           =0;
 my $maxChildren        = 100;
+my $segmentSize        = 200;
 my %runningCustomerIds = ();
 my %children           = ();
 
@@ -52,12 +53,18 @@ sub spawnChildren {
  for ( my $i = 0 ; $i < $maxChildren ; $i++ ) {
   my $customer = shift @customerIds;
   my ( $date, $customerId ) = each %$customer;
-  if ( isCustomerRunning( $customerId, $date ) == 1 ) {
-   next;
-  }
-  newChild( $customerId, $date, 5 );
-  if ( scalar @customerIds == 0 ) {
-   last;
+  my $connection = Database::Connection->new('staging');
+  my @lparIds = findSoftwareLparsByCustomerIdByDate($customerId,$date,5,$connection);
+  $connection->disconnect;
+  foreach my $segLparIds (@lparIds){
+      dlog('size of @$segLparIds='.@$segLparIds);
+      if ( isCustomerRunning( $customerId, $date, $segLparIds ) == 1 ) {
+       next;
+      }
+      newChild( $customerId, $date, 5, $segLparIds);
+      if ( scalar @customerIds == 0 ) {
+       last;
+      }
   }
  }
 }
@@ -80,19 +87,26 @@ sub keepTicking {
    dlog("$rNo running $i");
    my $customer = shift @customerIds;
    my ( $date, $customerId ) = each %$customer;
-   if ( isCustomerRunning( $customerId, $date ) == 1 ) {
-    $i--;
-    next;
-   }
-   if ( scalar @customerIds == 0 ) {
-     sleep 5;
-     $count++;
-     if($count>6){
-       $count = 0;
-     }
-    last;
-   }else{
-    newChild( $customerId, $date, $count );
+   my $connection = Database::Connection->new('staging');
+   my @lparIds = findSoftwareLparsByCustomerIdByDate($customerId,$date,5,$connection);
+   $connection->disconnect;
+   foreach my $segLparIds (@lparIds){
+       if ( isCustomerRunning( $customerId,$date, $segLparIds ) == 1 ) {
+        $i--;
+        next;
+       }
+       if ( scalar @customerIds == 0 ) {
+         dlog('scalar @customerIds == 0');
+         sleep 5;
+         $count++;
+         if($count>6){
+           $count = 0;
+         }
+        last;
+       }else{
+        dlog('new child');
+        newChild( $customerId, $date, $count, $segLparIds );
+       }
    }
   }
  }
@@ -101,71 +115,80 @@ sub keepTicking {
 sub isCustomerRunning {
  my $customerId = shift;
  my $date       = shift;
- my $result     = 0;
- dlog("$rNo Checking $customerId, $date");
- if ( exists $runningCustomerIds{$customerId}{$date} ) {
-  dlog("$rNo $customerId, $date is running");
-  $result = 1;
- }
- return $result;
+ my $swlparIds  = shift;
+ 
+ 
+ return 0
+   if(!defined $runningCustomerIds{$customerId}{$date});
+   
+ dlog($rNo.' Checking'.'$customerId='.$customerId.'$date='.$date);
+ foreach my $lparIds (@$swlparIds) {
+      if(exists $runningCustomerIds{$customerId}{$date}{$lparIds}){
+         dlog("$rNo $customerId, $date, $lparIds is running");     
+         return 1;
+      }
+  }
+ return 0;
 }
 
 sub newChild {
  my $customerId = shift;
  my $date       = shift;
  my $phase      = shift;
+ my $lparsRef      = shift;
  my $pid;
 
- wlog("$rNo spawning $customerId, $date, $phase");
- my $sigset = POSIX::SigSet->new(SIGINT);
- sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
- die "Cannot fork child: $!\n" unless defined( $pid = fork );
- if ($pid) {
-  $children{$pid} = 1;
-  $children++;
-  $runningCustomerIds{$customerId}{$date} = $pid;
-  ilog("forked new child, we now have $children children");
-  return;
- }
+  wlog("$rNo spawning $customerId, $date, $phase");
+  my $sigset = POSIX::SigSet->new(SIGINT);
+  sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
+  die "Cannot fork child: $!\n" unless defined( $pid = fork );
+  my @lpars=@$lparsRef;
+ 
+  if ($pid) {
+    $children{$pid} = 1;
+    $children++;
+    foreach my $lparId (@lpars) {
+      $runningCustomerIds{$customerId}{$date}{$lparId} = $pid;
+    }
+    ilog("forked new child, we now have $children children");
+    return;
+  }
+ 
+  foreach my $lparId (@lpars) {
+     wlog("$rNo Child $customerId, $date, $lparId" . scalar @lpars . " running -- $phase" );
+     my $stagingConnection = Database::Connection->new('staging');
+     my $trailsConnection  = Database::Connection->new('trails');
+     my $swassetConnection = Database::Connection->new('swasset');
 
- my $stagingConnection = Database::Connection->new('staging');
- my $trailsConnection  = Database::Connection->new('trails');
- my $swassetConnection = Database::Connection->new('swasset');
 
- my @lpars =
-   findSoftwareLparsByCustomerIdByDate( $customerId, $date, $phase,
-  $stagingConnection );
- wlog(
-  "$rNo Child $customerId, $date, " . scalar @lpars . " running -- $phase" );
- foreach my $id (@lpars) {
-  my $loader =
-    new BRAVO::SoftwareLoader( $stagingConnection, $trailsConnection,
-   $swassetConnection );
-  $loader->load(
-   LoadDeltaOnly => 1,
-   ApplyChanges  => 1,
-   CustomerId    => $customerId,
-   LparId        => $id,
-   Phase         => 1
-  );
- }
+     my $loader = new BRAVO::SoftwareLoader( $stagingConnection, $trailsConnection, $swassetConnection );
+     $loader->load(
+       LoadDeltaOnly => 1,
+       ApplyChanges  => 1,
+       CustomerId    => $customerId,
+       LparId        => $lparId,
+       Phase         => 1
+     );
 
- $stagingConnection->disconnect;
- $trailsConnection->disconnect;
- $swassetConnection->disconnect;
- wlog( "$rNo Child $customerId, $date," . scalar @lpars . " done -- $phase" );
+     $stagingConnection->disconnect;
+     $trailsConnection->disconnect;
+     $swassetConnection->disconnect;
+     wlog( "$rNo Child $customerId, $date, $lparId" . scalar @lpars . " done -- $phase" );
+  }
  exit;
 }
 
 sub REAPER {
  my $stiff;
  while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
-  warn("child $stiff terminated -- status $?");
-  $children--;
+ warn("child $stiff terminated -- status $?");
+ $children--;
   foreach my $customerId ( keys %runningCustomerIds ) {
-   foreach my $date ( keys %{ $runningCustomerIds{$customerId} } ) {
-    if ( $stiff == $runningCustomerIds{$customerId}{$date} ) {
-     delete $runningCustomerIds{$customerId}{$date};
+   foreach my $date ( keys %{$runningCustomerIds{$customerId}}) {
+    foreach my $lparId (keys %{$runningCustomerIds{$customerId}{$date}}){
+     if( $stiff == $runningCustomerIds{$customerId}{$date}{$lparId}){
+        delete $runningCustomerIds{$customerId}{$date}{$lparId};
+     }
     }
    }
   }
@@ -262,9 +285,10 @@ sub getStagingQueue {
     $customerIdDateHash{$keys} = 1;
    }
   }
+  $sth->finish;
   wlog("$rNo end building customer id array for $p");
  }
- wlog( $rNo.' Loaded customer/date combinations :' . scalar @customers. 'Phase :'.$count );
+ wlog( $rNo.' Loaded customer/date combinations :' . scalar @customers. ' Phase :'.$count );
  wlog("$rNo Running Threads : $children ");
 
  return @customers;
@@ -523,12 +547,30 @@ sub findSoftwareLparsByCustomerIdByDate {
  ilog("executing software lpar ids query");
  $sth->execute( $customerId, $date );
  ilog("executed software lpar ids query");
-
+ 
+ 
+ my $counter = 0;
+ my @tempArray;
  while ( $sth->fetchrow_arrayref ) {
   cleanValues( \%rec );
-  push @lparIds, $rec{id};
+  if($counter >= $segmentSize){
+    dlog('$counter='.$counter);
+    push @lparIds, [@tempArray];
+    $counter = 0;
+    @tempArray=();
+    dlog('hit max segment size, push into @lparIds');
+  }
+  push @tempArray, $rec{id};
+  $counter++;
+  dlog('$counter='.$counter);
  }
-
+ $sth->finish;
+ dlog('left @tempArray size is '.scalar @tempArray);
+ if(scalar @tempArray >0){
+   push @lparIds, [@tempArray];
+   dlog('push into @lparIds');
+ }
+ dlog('@lparIds size is '.scalar @lparIds);
  return @lparIds;
 }
 
@@ -623,8 +665,9 @@ sub querySoftwareLparsByCustomerIdByDate {
         group by
             a.id
         order by
-            a.id
+            a.id asc
         with ur
     ';
+ dlog('$query='.$query);
  return ( 'softwareLparsByCustomerIdByDate', $query, \@fields );
 }
