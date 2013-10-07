@@ -63,8 +63,8 @@ SELECT  LP.FOSNAME as sid,
         MAX(LP.FIQDATE) as myfiqdate,
         LP.FOSVERSION AS TSID
        FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
-       GROUP BY LP.FOSNAME, LP.FINVID
+       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\' 
+       GROUP BY LP.FOSNAME, LP.FINVID,LP.FOSVERSION
        ORDER BY SID, myfoslastbootdate
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\' ";
@@ -119,8 +119,8 @@ SELECT  LP.FOSNAME as sid,
         MAX(LP.FIQDATE) as myfiqdate,
         LP.FOSVERSION AS TSID
        FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> '' AND LP.FOSTYPE <> '' 
-       GROUP BY LP.FOSNAME, LP.FINVID
+       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\' 
+       GROUP BY LP.FOSNAME, LP.FINVID, LP.FOSVERSION
        ORDER BY SID, myfoslastbootdate
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\' ";
@@ -204,7 +204,7 @@ sub getCorrectSQL {
 sub loadTechImgId {
 	my ($self, $connection) = @_;
 	
-    $connection->prepareSqlQuery( $self->queryTechImgIdData );
+    $connection->prepareSqlQuery( $self->queryTechImgIdData() );
 	
     my @fields = (qw(techImgId lparName customerId ));
 
@@ -217,7 +217,7 @@ sub loadTechImgId {
     $sth->bind_columns( map { \$rec{$_} } @fields );
 
     ###Execute the query
-    dlog('Retrieving software filters from bank account');
+    dlog('Retrieving valid hardware tech_img_id map');
     $sth->execute();
     my $counter = 0;
     while ( $sth->fetchrow_arrayref ) {
@@ -227,6 +227,7 @@ sub loadTechImgId {
     }
     
     $sth->finish;
+    dlog("Loaded techImgId records: " . $counter);
     
 	return $counter;
 

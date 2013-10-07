@@ -42,7 +42,7 @@ sub load {
     
     if ( $self->SUPER::bankAccount->type eq 'TADZ' ) {
     	ilog('TADz bank account -- loading techImgId');
-    	ScanTADzDelegate->loadTechImgId(stagingConnection);
+    	ScanTADzDelegate->loadTechImgId($stagingConnection);
     }
     
 

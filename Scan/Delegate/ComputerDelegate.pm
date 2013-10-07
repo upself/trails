@@ -9,8 +9,12 @@ use Scan::Delegate::ScanTADzDelegate;
 use Staging::Delegate::ScanRecordDelegate;
 use Text::CSV_XS;
 
+# String to hold the correct TADz SQL
+my $tadzSQL;
+
 ###TODO this probably should be broken out into respective delegates...its getting big
 ###TODO need to take into account processor counts for bank accounts other than tcm
+
 
 sub getScanRecordData {
     my ( $self, $connection, $bankAccount, $delta ) = @_;
@@ -302,7 +306,10 @@ sub getConnectedScanRecordData {
             $sth = $connection->sql->{computerDoranaDeltaData};
         }
         elsif ( $bankAccount->type eq 'TADZ' ) {
-            $connection->prepareSqlQuery( queryTAD4ZDeltaData($bankAccount) );
+        	dlog("Performing Delta query for TADZ " . $bankAccount->name);
+			my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
+    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 1);
+            $connection->prepareSqlQuery( queryTAD4ZDeltaData() );
             $sth = $connection->sql->{tad4zDeltaData};
         }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
@@ -334,7 +341,10 @@ sub getConnectedScanRecordData {
             $sth = $connection->sql->{computerDoranaData};
         }
         elsif ( $bankAccount->type eq 'TADZ' ) {
-            $connection->prepareSqlQuery( queryTAD4ZData($bankAccount) );
+			my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
+    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 0);
+        	dlog("Performing full query for TADZ " . $bankAccount->name);
+            $connection->prepareSqlQuery( queryTAD4ZData() );
             $sth = $connection->sql->{tad4zData};
         }
         elsif ( $bankAccount->authenticatedData eq 'Y' ) {
@@ -404,9 +414,9 @@ sub getConnectedScanRecordData {
     }
     
     # only load the techImgId list IF TADz
-    if ( $bankAccount->type eq 'TADZ' ) {
-    	ScanTADzDelegate->loadTechImgId();
-    }
+#    if ( $bankAccount->type eq 'TADZ' ) {
+#    	ScanTADzDelegate->loadTechImgId();
+#    }
 
     my %scanList;
     dlog('looping through query results');
@@ -1396,19 +1406,21 @@ sub queryComputerDoranaData {
 }
 
 sub queryTAD4ZData {
-    my ( $self, $bankAccount ) = @_;
-	my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
-
-    my $query = ScanTADzDelegate->getCorrectSQL($infra, 0);
+	
+	if ( length($tadzSQL) < 10 ) {
+		elog("TADZ SQL was not properly prepared");
+	}
+    my $query = $tadzSQL;
 
     return ( 'tad4zData', $query );
 }
 
 sub queryTAD4ZDeltaData {
-    my ( $self, $bankAccount ) = @_;
-	my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
+	if ( length($tadzSQL) < 10 ) {
+		elog("TADZ SQL was not properly prepared");
+	}
 
-    my $query = ScanTADzDelegate->getCorrectSQL($infra, 1);
+    my $query = $tadzSQL;
 
 
     return ( 'tad4zDeltaData', $query );
