@@ -2,6 +2,7 @@ package com.ibm.staging.recon;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.ibm.staging.template.AccountDateQty;
 import com.ibm.staging.template.Customer;
@@ -50,16 +52,23 @@ public class Summary {
 	private static Map customerMap = new HashMap();
 
 	public static void main(String[] args) {
-		start();
-		// System.out.println(query71);
-
+		start(args[0]);
 	}
 
-	private static void start() {
+	private static void start(String path) {
 		Statement stmt = null;
 		Statement stagingStmt = null;
 		ResultSet rs = null;
 		Connection stagingConn = null, bravoConn = null;
+
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileInputStream(new File(path)));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		try {
 			Result result = new Result();
@@ -67,30 +76,16 @@ public class Summary {
 
 			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
 
-			String bravoURL = "jdbc:db2:TRAILS";
-			bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
-					"Green8ay");
+			bravoConn = DriverManager.getConnection(
+					prop.getProperty("bravoDBUrl"),
+					prop.getProperty("brvaoDBUser"),
+					prop.getProperty("bravoDBPassword"));
 
-			String stagingURL = "jdbc:db2:STAGING";
-			stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
-					"apr03db2");
+			stagingConn = DriverManager.getConnection(
+					prop.getProperty("stagingDBURL"),
+					prop.getProperty("stagingDBUser"),
+					prop.getProperty("stagingDBPassword"));
 			stagingStmt = stagingConn.createStatement();
-
-			// -----------test start ---------------------------------
-
-			// Class.forName("com.ibm.db2.jcc.DB2Driver").newInstance();
-			// String bravoURL =
-			// "jdbc:db2://dst20lp05.boulder.ibm.com:50010/TRAILSPD";
-			// bravoConn = DriverManager.getConnection(bravoURL, "eaadmin",
-			// "may2012a");
-			//
-			// String stagingURL =
-			// "jdbc:db2://tap2.raleigh.ibm.com:50000/STAGING";
-			// stagingConn = DriverManager.getConnection(stagingURL, "eaadmin",
-			// "apr03db2");
-			// stagingStmt = stagingConn.createStatement();
-
-			// -----------test end---------------------------------
 
 			stmt = bravoConn.createStatement();
 
