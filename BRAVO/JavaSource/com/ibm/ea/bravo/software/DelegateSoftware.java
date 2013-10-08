@@ -46,11 +46,11 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		list = session.getNamedQuery("softwareLparsSearch").setEntity(
-				"customer", account.getCustomer()).setString("name",
-				"%" + search.toUpperCase() + "%").setParameterList(
-				"hardwareStatus", hardwareStatus).setParameterList("status",
-				status).list();
+		list = session.getNamedQuery("softwareLparsSearch")
+				.setEntity("customer", account.getCustomer())
+				.setString("name", "%" + search.toUpperCase() + "%")
+				.setParameterList("hardwareStatus", hardwareStatus)
+				.setParameterList("status", status).list();
 
 		closeSession(session);
 
@@ -64,8 +64,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		list = session.getNamedQuery("softwareLparsSearchAll").setString(
-				"name", "%" + search.toUpperCase() + "%").list();
+		list = session.getNamedQuery("softwareLparsSearchAll")
+				.setString("name", "%" + search.toUpperCase() + "%").list();
 
 		closeSession(session);
 
@@ -74,9 +74,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 	public static SoftwareLpar getSoftwareLpar(String softwareLparId)
 			throws Exception {
-		logger
-				.debug("SoftwareLpar.getSoftwareLpar(String) = "
-						+ softwareLparId);
+		logger.debug("SoftwareLpar.getSoftwareLpar(String) = " + softwareLparId);
 
 		if (EaUtils.isBlank(softwareLparId))
 			return null;
@@ -107,9 +105,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		softwareLpar = (SoftwareLpar) session.getNamedQuery(
-				"softwareLparByIdWithHardwareLparData").setLong(
-				"softwareLparId", softwareLparId).uniqueResult();
+		softwareLpar = (SoftwareLpar) session
+				.getNamedQuery("softwareLparByIdWithHardwareLparData")
+				.setLong("softwareLparId", softwareLparId).uniqueResult();
 
 		closeSession(session);
 
@@ -124,8 +122,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("softwareLparsByAccount").setEntity(
-					"customer", account.getCustomer()).list();
+			list = session.getNamedQuery("softwareLparsByAccount")
+					.setEntity("customer", account.getCustomer()).list();
 
 			closeSession(session);
 		} catch (Exception e) {
@@ -153,10 +151,10 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			softwareLpar = (SoftwareLpar) session.getNamedQuery(
-					"softwareLparByAccountByName").setEntity("customer",
-					account.getCustomer()).setString("name",
-					lparName.toUpperCase()).uniqueResult();
+			softwareLpar = (SoftwareLpar) session
+					.getNamedQuery("softwareLparByAccountByName")
+					.setEntity("customer", account.getCustomer())
+					.setString("name", lparName.toUpperCase()).uniqueResult();
 
 			closeSession(session);
 
@@ -232,9 +230,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			software = (InstalledSoftware) session.getNamedQuery(
-					"installedSoftwaresById").setLong("id", Long.parseLong(id))
-					.uniqueResult();
+			software = (InstalledSoftware) session
+					.getNamedQuery("installedSoftwaresById")
+					.setLong("id", Long.parseLong(id)).uniqueResult();
 
 			closeSession(session);
 
@@ -254,9 +252,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		size = (Long) session.getNamedQuery("softwaresSearchCount").setString(
-				"name", "%" + search.toUpperCase() + "%").setString(
-				"manufacturer", "%" + search.toUpperCase() + "%")
+		size = (Long) session.getNamedQuery("softwaresSearchCount")
+				.setString("name", "%" + search.toUpperCase() + "%")
+				.setString("manufacturer", "%" + search.toUpperCase() + "%")
 				.uniqueResult();
 
 		closeSession(session);
@@ -272,8 +270,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 			Session session = getSession();
 
 			ArrayList<Product> products = (ArrayList<Product>) session
-					.getNamedQuery("softwareByName").setString("name",
-							softwareName).list();
+					.getNamedQuery("softwareByName")
+					.setString("name", softwareName).list();
 			if (products.size() > 0)
 				software = products.get(0);
 
@@ -296,9 +294,10 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		list = session.getNamedQuery("softwaresSearch").setString("name",
-				"%" + search.toUpperCase() + "%").setString("manufacturer",
-				"%" + search.toUpperCase() + "%").list();
+		list = session.getNamedQuery("softwaresSearch")
+				.setString("name", "%" + search.toUpperCase() + "%")
+				.setString("manufacturer", "%" + search.toUpperCase() + "%")
+				.list();
 
 		closeSession(session);
 
@@ -337,9 +336,10 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 			Session session = getSession();
 			String hqlDelete = "delete BankAccountInclusion where customerId = :customerId and bankAccountId = :bankAccountId";
 			Transaction tx = session.beginTransaction();
-			int deletedEntities = session.createQuery(hqlDelete).setLong(
-					"customerId", new Long(customerId)).setLong(
-					"bankAccountId", new Long(bankAccountId)).executeUpdate();
+			int deletedEntities = session.createQuery(hqlDelete)
+					.setLong("customerId", new Long(customerId))
+					.setLong("bankAccountId", new Long(bankAccountId))
+					.executeUpdate();
 
 			tx.commit();
 			closeSession(session);
@@ -362,8 +362,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		list = session.getNamedQuery("customerBankAccount").setLong(
-				"customerId", new Long(search)).list();
+		list = session.getNamedQuery("customerBankAccount")
+				.setLong("customerId", new Long(search)).list();
 
 		logger.debug("found " + list.size());
 
@@ -374,18 +374,16 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 	public static List<BankAccountInclusion> getBankInclusion(String search)
 			throws Exception {
-		logger
-				.debug("DelegateSoftware.getBankInclusion customerId = "
-						+ search);
+		logger.debug("DelegateSoftware.getBankInclusion customerId = " + search);
 		List<BankAccountInclusion> list = null;
 
 		if (EaUtils.isBlank(search))
 			return list;
 
 		Session session = getSession();
-		Customer customer = (Customer) session.getNamedQuery(
-				"customerByAccountId").setLong("accountId",
-				Long.parseLong(search)).uniqueResult();
+		Customer customer = (Customer) session
+				.getNamedQuery("customerByAccountId")
+				.setLong("accountId", Long.parseLong(search)).uniqueResult();
 		Set<BankAccountInclusion> bankInclusionSet = customer
 				.getBankInclusions();
 		list = new ArrayList<BankAccountInclusion>(bankInclusionSet);
@@ -415,8 +413,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			software = (Product) session.getNamedQuery("softwareById").setLong(
-					"id", id).uniqueResult();
+			software = (Product) session.getNamedQuery("softwareById")
+					.setLong("id", id).uniqueResult();
 
 			closeSession(session);
 		} catch (Exception e) {
@@ -434,8 +432,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			// create the lpar if necessary
 			if (software.getSoftwareLpar() == null) {
-				Account account = DelegateAccount.getAccount(software
-						.getAccountId(), request);
+				Account account = DelegateAccount.getAccount(
+						software.getAccountId(), request);
 
 				SoftwareLpar softwareLpar = new SoftwareLpar();
 				softwareLpar.setCustomer(account.getCustomer());
@@ -549,8 +547,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			// create the lpar if necessary
 			if (software.getSoftwareLpar() == null) {
-				Account account = DelegateAccount.getAccount(software
-						.getAccountId(), request);
+				Account account = DelegateAccount.getAccount(
+						software.getAccountId(), request);
 
 				SoftwareLpar softwareLpar = new SoftwareLpar();
 				softwareLpar.setCustomer(account.getCustomer());
@@ -708,10 +706,10 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		if (software != null && softwareLpar != null) {
 			Session session = getSession();
 
-			installedSoftware = (InstalledSoftware) session.getNamedQuery(
-					"installedSoftwareBySoftwareBySoftwareLpar").setEntity(
-					"software", software).setEntity("softwareLpar",
-					softwareLpar).uniqueResult();
+			installedSoftware = (InstalledSoftware) session
+					.getNamedQuery("installedSoftwareBySoftwareBySoftwareLpar")
+					.setEntity("software", software)
+					.setEntity("softwareLpar", softwareLpar).uniqueResult();
 
 			closeSession(session);
 		}
@@ -733,9 +731,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery(
-					"installedSignaturesByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			list = session
+					.getNamedQuery("installedSignaturesByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
@@ -785,9 +783,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery(
-					"installedSaProductsByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			list = session
+					.getNamedQuery("installedSaProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
@@ -812,9 +810,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery(
-					"installedDoranaProductsByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			list = session
+					.getNamedQuery("installedDoranaProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
@@ -865,9 +863,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery(
-					"installedVmProductsByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			list = session
+					.getNamedQuery("installedVmProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
@@ -877,10 +875,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static List<InstalledTadz> getTadzProducts(
-			String installedSoftwareId) {
+	public static List<InstalledTadz> getTadzProducts(String installedSoftwareId) {
 		List<InstalledTadz> tadzlist = new ArrayList<InstalledTadz>();
 		List<InstalledTadz> mvlist = new ArrayList<InstalledTadz>();
 		List<InstalledTadz> mflist = new ArrayList<InstalledTadz>();
@@ -894,32 +891,32 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			mvlist = session.getNamedQuery(
-					"installedTadzMvProductsByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			mvlist = session
+					.getNamedQuery("installedTadzMvProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
 		} catch (Exception e) {
 			logger.error(e, e);
 		}
-		
+
 		tadzlist.addAll(mvlist);
-		
+
 		try {
 
 			Session session = getSession();
 
-			mflist = session.getNamedQuery(
-					"installedTadzMfProductsByInstalledSoftware").setEntity(
-					"installedSoftware", installedSoftware).list();
+			mflist = session
+					.getNamedQuery("installedTadzMfProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
 
 		} catch (Exception e) {
 			logger.error(e, e);
 		}
-		
+
 		tadzlist.addAll(mflist);
 
 		return tadzlist;
@@ -937,9 +934,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			count = (Long) session.getNamedQuery(
-					"softwareStatisticsBySoftwareLpar").setEntity(
-					"softwareLpar", softwareLpar).uniqueResult();
+			count = (Long) session
+					.getNamedQuery("softwareStatisticsBySoftwareLpar")
+					.setEntity("softwareLpar", softwareLpar).uniqueResult();
 
 			softwareStatistics.setInstalledSoftwareCount(new Integer(count
 					.intValue()));
@@ -1085,9 +1082,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		softwareLpar = (SoftwareLpar) session.getNamedQuery(
-				"softwareLparWithHistoryById").setLong("softwareLparId",
-				softwareLparId).uniqueResult();
+		softwareLpar = (SoftwareLpar) session
+				.getNamedQuery("softwareLparWithHistoryById")
+				.setLong("softwareLparId", softwareLparId).uniqueResult();
 
 		closeSession(session);
 
@@ -1109,8 +1106,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("lparBankAccounts").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("lparBankAccounts")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1121,21 +1118,52 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		return list;
 	}
 
-	public static Integer searchLparNoCompositeSize(String search)
+	public static Integer searchLparNameNoCompositeSize(String search)
 			throws HibernateException, Exception {
 		Integer count = null;
 
 		Session session = getSession();
 
 		count = (Integer) session.createCriteria(SoftwareLpar.class)
-				.setProjection(Projections.rowCount()).setFetchMode("customer",
-						FetchMode.JOIN)
-				.add(Restrictions.isNull("hardwareLpar")).add(
-						Restrictions.disjunction().add(
-								Restrictions.like("name", search,
-										MatchMode.ANYWHERE)).add(
-								Restrictions.like("biosSerial", search,
-										MatchMode.ANYWHERE))).uniqueResult();
+				.setProjection(Projections.rowCount())
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.eq("name", search)).uniqueResult();
+
+		session.close();
+
+		return count;
+	}
+
+	public static Integer searchLparNameFuzzyNoCompositeSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
+
+		Session session = getSession();
+
+		count = (Integer) session.createCriteria(SoftwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.like("name", search, MatchMode.START))
+				.uniqueResult();
+
+		session.close();
+
+		return count;
+	}
+
+	public static Integer searchLparSerialNoCompositeSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
+
+		Session session = getSession();
+
+		count = (Integer) session.createCriteria(SoftwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.eq("biosSerial", search)).uniqueResult();
 
 		session.close();
 
@@ -1143,21 +1171,77 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<SoftwareLpar> searchLparNoComposite(String search)
+	public static List<SoftwareLpar> searchLparNameNoComposite(String search)
 			throws HibernateException, Exception {
 		logger.debug("DelegateComposite.search");
 		List<SoftwareLpar> list = null;
 
 		Session session = getSession();
 
-		list = session.createCriteria(SoftwareLpar.class).setFetchMode(
-				"customer", FetchMode.JOIN).add(
-				Restrictions.isNull("hardwareLpar")).add(
-				Restrictions.disjunction().add(
-						Restrictions.like("name", search, MatchMode.ANYWHERE))
-						.add(
-								Restrictions.like("biosSerial", search,
-										MatchMode.ANYWHERE))).list();
+		list = session.createCriteria(SoftwareLpar.class)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.eq("name", search)).list();
+
+		session.close();
+
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<SoftwareLpar> searchLparNameFuzzyNoComposite(
+			String search) throws HibernateException, Exception {
+		logger.debug("DelegateComposite.search");
+		List<SoftwareLpar> list = null;
+
+		Session session = getSession();
+
+		list = session
+				.createCriteria(SoftwareLpar.class)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.disjunction().add(
+						Restrictions.like("name", search, MatchMode.START)))
+				.list();
+
+		session.close();
+
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<SoftwareLpar> searchLparSerialNoComposite(String search)
+			throws HibernateException, Exception {
+		logger.debug("DelegateComposite.search");
+		List<SoftwareLpar> list = null;
+
+		Session session = getSession();
+
+		list = session.createCriteria(SoftwareLpar.class)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.eq("biosSerial", search)).list();
+
+		session.close();
+
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<SoftwareLpar> searchLparSerialFuzzyNoComposite(
+			String search) throws HibernateException, Exception {
+		logger.debug("DelegateComposite.search");
+		List<SoftwareLpar> list = null;
+
+		Session session = getSession();
+
+		list = session
+				.createCriteria(SoftwareLpar.class)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNull("hardwareLpar"))
+				.add(Restrictions.disjunction().add(
+						Restrictions.like("biosSerial", search,
+								MatchMode.ANYWHERE))).list();
 
 		session.close();
 
@@ -1172,26 +1256,28 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 		if (search.length() >= 3) {
-			list = session.createCriteria(SoftwareLpar.class).add(
-					Restrictions.isNull("hardwareLpar")).add(
-					Restrictions.eq("customer", account.getCustomer())).add(
-					Restrictions.in("status", status)).add(
-					Restrictions.disjunction().add(
-							Restrictions.like("name", search,
-									MatchMode.ANYWHERE).ignoreCase()).add(
-							Restrictions.like("biosSerial", search,
+			list = session
+					.createCriteria(SoftwareLpar.class)
+					.add(Restrictions.isNull("hardwareLpar"))
+					.add(Restrictions.eq("customer", account.getCustomer()))
+					.add(Restrictions.in("status", status))
+					.add(Restrictions
+							.disjunction()
+							.add(Restrictions.like("name", search,
+									MatchMode.ANYWHERE).ignoreCase())
+							.add(Restrictions.like("biosSerial", search,
 									MatchMode.ANYWHERE).ignoreCase())).list();
 		} else {
-			list = session.createCriteria(SoftwareLpar.class).add(
-					Restrictions.isNull("hardwareLpar")).add(
-					Restrictions.eq("customer", account.getCustomer())).add(
-					Restrictions.in("status", status))
-					.add(
-							Restrictions.disjunction().add(
-									Restrictions.eq("name", search)
-											.ignoreCase()).add(
-									Restrictions.eq("biosSerial", search)
-											.ignoreCase())).list();
+			list = session
+					.createCriteria(SoftwareLpar.class)
+					.add(Restrictions.isNull("hardwareLpar"))
+					.add(Restrictions.eq("customer", account.getCustomer()))
+					.add(Restrictions.in("status", status))
+					.add(Restrictions
+							.disjunction()
+							.add(Restrictions.eq("name", search).ignoreCase())
+							.add(Restrictions.eq("biosSerial", search)
+									.ignoreCase())).list();
 		}
 		session.close();
 
@@ -1206,8 +1292,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		Session session = getSession();
 
 		count = (Long) session.getNamedQuery("getLparNoCompByCustByStatusSize")
-				.setEntity("customer", account.getCustomer()).setParameterList(
-						"status", status).uniqueResult();
+				.setEntity("customer", account.getCustomer())
+				.setParameterList("status", status).uniqueResult();
 
 		closeSession(session);
 
@@ -1222,9 +1308,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		Session session = getSession();
 
-		list = session.getNamedQuery("getLparNoCompByCustByStatus").setEntity(
-				"customer", account.getCustomer()).setParameterList("status",
-				status).list();
+		list = session.getNamedQuery("getLparNoCompByCustByStatus")
+				.setEntity("customer", account.getCustomer())
+				.setParameterList("status", status).list();
 
 		closeSession(session);
 
@@ -1242,8 +1328,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("getSoftwareLparIPAddress").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("getSoftwareLparIPAddress")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1265,8 +1351,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("getSoftwareLparHDisk").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("getSoftwareLparHDisk")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1288,8 +1374,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("getSoftwareLparMemMod").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("getSoftwareLparMemMod")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1311,8 +1397,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("getSoftwareLparADC").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("getSoftwareLparADC")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1334,8 +1420,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		try {
 			Session session = getSession();
 
-			list = session.getNamedQuery("getSoftwareLparProcessor").setEntity(
-					"softwareLpar", softwareLpar).list();
+			list = session.getNamedQuery("getSoftwareLparProcessor")
+					.setEntity("softwareLpar", softwareLpar).list();
 
 			closeSession(session);
 
@@ -1397,8 +1483,11 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		try {
 			Session session = getSession();
-			maualQueue =(ManualQueue)session.createCriteria(ManualQueue.class).add(Restrictions.eq("softwareLparId",softwareLparId))
-			.add(Restrictions.eq("softwareId",softwareId)).uniqueResult();
+			maualQueue = (ManualQueue) session
+					.createCriteria(ManualQueue.class)
+					.add(Restrictions.eq("softwareLparId", softwareLparId))
+					.add(Restrictions.eq("softwareId", softwareId))
+					.uniqueResult();
 			closeSession(session);
 		} catch (Exception e) {
 			logger.error(e, e);

@@ -23,284 +23,440 @@ import com.ibm.ea.bravo.software.SoftwareLpar;
 
 public abstract class DelegateComposite extends HibernateDelegate {
 
-    private static final Logger logger = Logger
-                                               .getLogger(DelegateComposite.class);
+	private static final Logger logger = Logger
+			.getLogger(DelegateComposite.class);
 
-    @SuppressWarnings("unchecked")
-    public static List<SoftwareLpar> search(String search, Account account,
-            List<String> hardwareStatus, List<String> status) throws Exception {
-        logger.debug("DelegateComposite.search");
-        List<SoftwareLpar> list = null;
+	@SuppressWarnings("unchecked")
+	public static List<SoftwareLpar> search(String search, Account account,
+			List<String> hardwareStatus, List<String> status) throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<SoftwareLpar> list = null;
 
-        Session session = getSession();
-        if (search.length() >= 3) {
-            list = session.createCriteria(HardwareLpar.class).createAlias(
-                    "softwareLpar", "sl").createAlias("hardware", "h")
-                    .setFetchMode("softwareLpar", FetchMode.JOIN).setFetchMode(
-                            "hardware", FetchMode.JOIN).setFetchMode(
-                            "hardware.machineType", FetchMode.JOIN).add(
-                            Restrictions.eq("customer", account.getCustomer()))
-                    .add(Restrictions.in("h.hardwareStatus", hardwareStatus))
-                    .add(Restrictions.in("status", status)).add(
-                            Restrictions.disjunction().add(
-                                    Restrictions.like("sl.name", search,
-                                            MatchMode.ANYWHERE).ignoreCase())
-                                    .add(
-                                            Restrictions.like("name", search,
-                                                    MatchMode.ANYWHERE)
-                                                    .ignoreCase()).add(
-                                            Restrictions.like("sl.biosSerial",
-                                                    search, MatchMode.ANYWHERE)
-                                                    .ignoreCase()).add(
-                                            Restrictions.like("h.serial",
-                                                    search, MatchMode.ANYWHERE)
-                                                    .ignoreCase())).list();
-        } else {
-            list = session.createCriteria(HardwareLpar.class).createAlias(
-                    "softwareLpar", "sl").createAlias("hardware", "h")
-                    .setFetchMode("softwareLpar", FetchMode.JOIN).setFetchMode(
-                            "hardware", FetchMode.JOIN).setFetchMode(
-                            "hardware.machineType", FetchMode.JOIN).add(
-                            Restrictions.eq("customer", account.getCustomer()))
-                    .add(Restrictions.in("h.hardwareStatus", hardwareStatus))
-                    .add(Restrictions.in("status", status)).add(
-                            Restrictions.disjunction().add(
-                                    Restrictions.eq("sl.name", search)
-                                            .ignoreCase()).add(
-                                    Restrictions.eq("name", search)
-                                            .ignoreCase()).add(
-                                    Restrictions.eq("sl.biosSerial", search)
-                                            .ignoreCase()).add(
-                                    Restrictions.eq("h.serial", search)
-                                            .ignoreCase())).list();
-        }
+		Session session = getSession();
+		if (search.length() >= 3) {
+			list = session
+					.createCriteria(HardwareLpar.class)
+					.createAlias("softwareLpar", "sl")
+					.createAlias("hardware", "h")
+					.setFetchMode("softwareLpar", FetchMode.JOIN)
+					.setFetchMode("hardware", FetchMode.JOIN)
+					.setFetchMode("hardware.machineType", FetchMode.JOIN)
+					.add(Restrictions.eq("customer", account.getCustomer()))
+					.add(Restrictions.in("h.hardwareStatus", hardwareStatus))
+					.add(Restrictions.in("status", status))
+					.add(Restrictions
+							.disjunction()
+							.add(Restrictions.like("sl.name", search,
+									MatchMode.ANYWHERE).ignoreCase())
+							.add(Restrictions.like("name", search,
+									MatchMode.ANYWHERE).ignoreCase())
+							.add(Restrictions.like("sl.biosSerial", search,
+									MatchMode.ANYWHERE).ignoreCase())
+							.add(Restrictions.like("h.serial", search,
+									MatchMode.ANYWHERE).ignoreCase())).list();
+		} else {
+			list = session
+					.createCriteria(HardwareLpar.class)
+					.createAlias("softwareLpar", "sl")
+					.createAlias("hardware", "h")
+					.setFetchMode("softwareLpar", FetchMode.JOIN)
+					.setFetchMode("hardware", FetchMode.JOIN)
+					.setFetchMode("hardware.machineType", FetchMode.JOIN)
+					.add(Restrictions.eq("customer", account.getCustomer()))
+					.add(Restrictions.in("h.hardwareStatus", hardwareStatus))
+					.add(Restrictions.in("status", status))
+					.add(Restrictions
+							.disjunction()
+							.add(Restrictions.eq("sl.name", search)
+									.ignoreCase())
+							.add(Restrictions.eq("name", search).ignoreCase())
+							.add(Restrictions.eq("sl.biosSerial", search)
+									.ignoreCase())
+							.add(Restrictions.eq("h.serial", search)
+									.ignoreCase())).list();
+		}
 
-        session.close();
-        return list;
+		session.close();
+		return list;
 
-    }
+	}
 
-    public static Integer searchSoftwareLparSize(String search)
-            throws HibernateException, Exception {
-        Integer count = null;
+	public static Integer searchSoftwareLparNameSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
 
-        Session session = getSession();
+		Session session = getSession();
 
-        count = (Integer) session.createCriteria(HardwareLpar.class)
-                .setProjection(Projections.rowCount()).createAlias(
-                        "softwareLpar", "sl").setFetchMode("softwareLpar",
-                        FetchMode.JOIN)
-                .setFetchMode("hardware", FetchMode.JOIN).setFetchMode(
-                        "hardware.machineType", FetchMode.JOIN).setFetchMode(
-                        "customer", FetchMode.JOIN).add(
-                        Restrictions.disjunction().add(
-                                Restrictions.like("sl.name", search,
-                                        MatchMode.ANYWHERE)).add(
-                                Restrictions.like("sl.biosSerial", search,
-                                        MatchMode.ANYWHERE))).uniqueResult();
+		count = (Integer) session.createCriteria(HardwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.eq("sl.name", search)).uniqueResult();
 
-        session.close();
+		session.close();
 
-        return count;
-    }
+		return count;
+	}
 
-    /**
-     * @param search
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static List<HardwareLpar> searchSoftwareLpar(String search)
-            throws Exception {
-        logger.debug("DelegateComposite.search");
-        List<HardwareLpar> list = null;
+	public static Integer searchSoftwareLparNameFuzzySize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
 
-        Session session = getSession();
+		Session session = getSession();
 
-        list = session.createCriteria(HardwareLpar.class).createAlias(
-                "softwareLpar", "sl").setFetchMode("softwareLpar",
-                FetchMode.JOIN).setFetchMode("hardware", FetchMode.JOIN)
-                .setFetchMode("hardware.machineType", FetchMode.JOIN)
-                .setFetchMode("customer", FetchMode.JOIN).add(
-                        Restrictions.disjunction().add(
-                                Restrictions.like("sl.name", search,
-                                        MatchMode.ANYWHERE)).add(
-                                Restrictions.like("sl.biosSerial", search,
-                                        MatchMode.ANYWHERE))).list();
+		count = (Integer) session.createCriteria(HardwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.like("sl.name", search, MatchMode.START))
+				.uniqueResult();
 
-        session.close();
+		session.close();
 
-        return list;
-    }
+		return count;
+	}
 
-    public static Integer searchHardwareLparSize(String search)
-            throws HibernateException, Exception {
-        Integer count = null;
+	public static Integer searchSoftwareLparSerialSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
 
-        Session session = getSession();
+		Session session = getSession();
 
-        count = (Integer) session.createCriteria(HardwareLpar.class)
-                .setProjection(Projections.rowCount()).createAlias("hardware",
-                        "h", CriteriaSpecification.LEFT_JOIN).setFetchMode(
-                        "softwareLpar", FetchMode.JOIN).setFetchMode(
-                        "hardware", FetchMode.JOIN).setFetchMode(
-                        "hardware.machineType", FetchMode.JOIN).setFetchMode(
-                        "customer", FetchMode.JOIN).add(
-                        Restrictions.isNotNull("softwareLpar")).add(
-                        Restrictions.disjunction().add(
-                                Restrictions.like("name", search,
-                                        MatchMode.ANYWHERE)).add(
-                                Restrictions.like("h.serial", search,
-                                        MatchMode.ANYWHERE))).uniqueResult();
+		count = (Integer) session.createCriteria(HardwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.eq("sl.biosSerial", search)).uniqueResult();
 
-        session.close();
+		session.close();
 
-        return count;
-    }
+		return count;
+	}
 
-    /**
-     * @param search
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static List<HardwareLpar> searchHardwareLpar(String search)
-            throws Exception {
-        logger.debug("DelegateComposite.search");
-        List<HardwareLpar> list = null;
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchSoftwareLparName(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-        Session session = getSession();
+		Session session = getSession();
 
-        list = session.createCriteria(HardwareLpar.class).createAlias(
-                "hardware", "h", CriteriaSpecification.LEFT_JOIN).setFetchMode(
-                "softwareLpar", FetchMode.JOIN).setFetchMode("hardware",
-                FetchMode.JOIN).setFetchMode("hardware.machineType",
-                FetchMode.JOIN).setFetchMode("customer", FetchMode.JOIN).add(
-                Restrictions.isNotNull("softwareLpar")).add(
-                Restrictions.disjunction().add(
-                        Restrictions.like("name", search, MatchMode.ANYWHERE))
-                        .add(
-                                Restrictions.like("h.serial", search,
-                                        MatchMode.ANYWHERE))).list();
+		list = session.createCriteria(HardwareLpar.class)
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.eq("sl.name", search)).list();
 
-        session.close();
+		session.close();
 
-        return list;
-    }
+		return list;
+	}
 
-    public static void save(HardwareLpar hardwareLpar,
-            HttpServletRequest request) throws Exception {
-        logger.debug("DelegateComposite.save");
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchSoftwareLparNameFuzzy(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-        Session session = getSession();
-        SoftwareLpar softwareLpar = hardwareLpar.getSoftwareLpar();
+		Session session = getSession();
 
-        if (softwareLpar == null) {
+		list = session
+				.createCriteria(HardwareLpar.class)
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.disjunction().add(
+						Restrictions.like("sl.name", search, MatchMode.START)))
+				.list();
 
-            // determine if there is a matching software lpar
-            softwareLpar = DelegateSoftware.getSoftwareLpar(hardwareLpar
-                    .getName(), hardwareLpar.getCustomer().getAccountNumber()
-                    .toString(), request);
+		session.close();
 
-            // if one exists, create a new composite record
-            if (softwareLpar != null) {
-                logger.debug("DelegateComposite.save.add");
+		return list;
+	}
 
-                try {
-                    Transaction tx = session.beginTransaction();
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchSoftwareLparSerial(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-                    hardwareLpar.setSoftwareLpar(softwareLpar);
+		Session session = getSession();
 
-                    // save or update the hardware
-                    session.saveOrUpdate(hardwareLpar);
+		list = session.createCriteria(HardwareLpar.class)
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.eq("sl.biosSerial", search)).list();
 
-                    tx.commit();
+		session.close();
 
-                } catch (Exception e) {
-                    logger.error(e, e);
-                }
-            }
-        }
+		return list;
+	}
 
-        closeSession(session);
-    }
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchSoftwareLparSerialFuzzy(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-    public static void save(SoftwareLpar softwareLpar,
-            HttpServletRequest request) throws Exception {
-        logger.debug("DelegateComposite.save");
+		Session session = getSession();
 
-        Session session = getSession();
-        HardwareLpar hardwareLpar = softwareLpar.getHardwareLpar();
+		list = session
+				.createCriteria(HardwareLpar.class)
+				.createAlias("softwareLpar", "sl")
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.disjunction().add(
+						Restrictions.like("sl.biosSerial", search,
+								MatchMode.ANYWHERE))).list();
 
-        if (hardwareLpar == null) {
+		session.close();
 
-            // determine if there is a matching software lpar
-            hardwareLpar = DelegateHardware.getHardwareLpar(softwareLpar
-                    .getName(), softwareLpar.getCustomer().getAccountNumber()
-                    .toString(), request);
+		return list;
+	}
 
-            // if one exists, create a new composite record
-            if (hardwareLpar != null) {
-                logger.debug("DelegateComposite.save.add");
+	public static Integer searchHardwareLparNameSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
 
-                try {
-                    Transaction tx = session.beginTransaction();
+		Session session = getSession();
 
-                    softwareLpar.setHardwareLpar(hardwareLpar);
+		count = (Integer) session.createCriteria(HardwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.createAlias("hardware", "h", CriteriaSpecification.LEFT_JOIN)
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNotNull("softwareLpar"))
+				.add(Restrictions.eq("name", search)).uniqueResult();
 
-                    // save or update the hardware
-                    session.saveOrUpdate(softwareLpar);
+		session.close();
 
-                    tx.commit();
+		return count;
+	}
 
-                } catch (Exception e) {
-                    logger.error(e, e);
-                }
-            }
-        }
+	public static Integer searchHardwareLparSerialSize(String search)
+			throws HibernateException, Exception {
+		Integer count = null;
 
-        closeSession(session);
-    }
+		Session session = getSession();
 
-    // This gets active software lpars with composite and without
-    @SuppressWarnings("unchecked")
-    public static List<SoftwareLpar> getSoftwareLparAllByCustomer(
-            Account account) throws HibernateException, Exception {
-        List<SoftwareLpar> list = null;
+		count = (Integer) session.createCriteria(HardwareLpar.class)
+				.setProjection(Projections.rowCount())
+				.createAlias("hardware", "h", CriteriaSpecification.LEFT_JOIN)
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNotNull("softwareLpar"))
+				.add(Restrictions.like("h.serial", search)).uniqueResult();
 
-        Session session = getSession();
+		session.close();
 
-        list = session.getNamedQuery("getSoftwareLparAllByCustomer").setEntity(
-                "customer", account.getCustomer()).list();
+		return count;
+	}
 
-        session.close();
-        return list;
-    }
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchHardwareLparName(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-    public static Long getCompositeByCustomerSize(Account account,
-            List<String> hwStatus) throws HibernateException, Exception {
-        Long count = null;
+		Session session = getSession();
 
-        Session session = getSession();
+		list = session.createCriteria(HardwareLpar.class)
+				.createAlias("hardware", "h", CriteriaSpecification.LEFT_JOIN)
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNotNull("softwareLpar"))
+				.add(Restrictions.eq("name", search)).list();
 
-        count = (Long) session.getNamedQuery("getCompositeByCustomerSize")
-                .setEntity("customer", account.getCustomer()).setParameterList(
-                        "hardwareStatus", hwStatus).uniqueResult();
+		session.close();
 
-        session.close();
-        return count;
-    }
+		return list;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<HardwareLpar> getCompositeByCustomer(Account account,
-            List<String> hwStatus) throws HibernateException, Exception {
-        List<HardwareLpar> list = null;
+	/**
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> searchHardwareLparSerial(String search)
+			throws Exception {
+		logger.debug("DelegateComposite.search");
+		List<HardwareLpar> list = null;
 
-        Session session = getSession();
+		Session session = getSession();
 
-        list = session.getNamedQuery("getCompositeByCustomer").setEntity(
-                "customer", account.getCustomer()).setParameterList(
-                "hardwareStatus", hwStatus).list();
+		list = session.createCriteria(HardwareLpar.class)
+				.createAlias("hardware", "h", CriteriaSpecification.LEFT_JOIN)
+				.setFetchMode("softwareLpar", FetchMode.JOIN)
+				.setFetchMode("hardware", FetchMode.JOIN)
+				.setFetchMode("hardware.machineType", FetchMode.JOIN)
+				.setFetchMode("customer", FetchMode.JOIN)
+				.add(Restrictions.isNotNull("softwareLpar"))
+				.add(Restrictions.eq("h.serial", search)).list();
 
-        session.close();
-        return list;
-    }
+		session.close();
+
+		return list;
+	}
+
+	public static void save(HardwareLpar hardwareLpar,
+			HttpServletRequest request) throws Exception {
+		logger.debug("DelegateComposite.save");
+
+		Session session = getSession();
+		SoftwareLpar softwareLpar = hardwareLpar.getSoftwareLpar();
+
+		if (softwareLpar == null) {
+
+			// determine if there is a matching software lpar
+			softwareLpar = DelegateSoftware.getSoftwareLpar(
+					hardwareLpar.getName(), hardwareLpar.getCustomer()
+							.getAccountNumber().toString(), request);
+
+			// if one exists, create a new composite record
+			if (softwareLpar != null) {
+				logger.debug("DelegateComposite.save.add");
+
+				try {
+					Transaction tx = session.beginTransaction();
+
+					hardwareLpar.setSoftwareLpar(softwareLpar);
+
+					// save or update the hardware
+					session.saveOrUpdate(hardwareLpar);
+
+					tx.commit();
+
+				} catch (Exception e) {
+					logger.error(e, e);
+				}
+			}
+		}
+
+		closeSession(session);
+	}
+
+	public static void save(SoftwareLpar softwareLpar,
+			HttpServletRequest request) throws Exception {
+		logger.debug("DelegateComposite.save");
+
+		Session session = getSession();
+		HardwareLpar hardwareLpar = softwareLpar.getHardwareLpar();
+
+		if (hardwareLpar == null) {
+
+			// determine if there is a matching software lpar
+			hardwareLpar = DelegateHardware.getHardwareLpar(
+					softwareLpar.getName(), softwareLpar.getCustomer()
+							.getAccountNumber().toString(), request);
+
+			// if one exists, create a new composite record
+			if (hardwareLpar != null) {
+				logger.debug("DelegateComposite.save.add");
+
+				try {
+					Transaction tx = session.beginTransaction();
+
+					softwareLpar.setHardwareLpar(hardwareLpar);
+
+					// save or update the hardware
+					session.saveOrUpdate(softwareLpar);
+
+					tx.commit();
+
+				} catch (Exception e) {
+					logger.error(e, e);
+				}
+			}
+		}
+
+		closeSession(session);
+	}
+
+	// This gets active software lpars with composite and without
+	@SuppressWarnings("unchecked")
+	public static List<SoftwareLpar> getSoftwareLparAllByCustomer(
+			Account account) throws HibernateException, Exception {
+		List<SoftwareLpar> list = null;
+
+		Session session = getSession();
+
+		list = session.getNamedQuery("getSoftwareLparAllByCustomer")
+				.setEntity("customer", account.getCustomer()).list();
+
+		session.close();
+		return list;
+	}
+
+	public static Long getCompositeByCustomerSize(Account account,
+			List<String> hwStatus) throws HibernateException, Exception {
+		Long count = null;
+
+		Session session = getSession();
+
+		count = (Long) session.getNamedQuery("getCompositeByCustomerSize")
+				.setEntity("customer", account.getCustomer())
+				.setParameterList("hardwareStatus", hwStatus).uniqueResult();
+
+		session.close();
+		return count;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<HardwareLpar> getCompositeByCustomer(Account account,
+			List<String> hwStatus) throws HibernateException, Exception {
+		List<HardwareLpar> list = null;
+
+		Session session = getSession();
+
+		list = session.getNamedQuery("getCompositeByCustomer")
+				.setEntity("customer", account.getCustomer())
+				.setParameterList("hardwareStatus", hwStatus).list();
+
+		session.close();
+		return list;
+	}
 }

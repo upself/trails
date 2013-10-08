@@ -42,10 +42,11 @@ Navigate using the toolbar to the left or <strong style="color: #7a3"
 				<td><html:select styleId="id_type" property="type"
 					styleClass="inputlong">
 					<html:option value="ACCOUNT">Account Id/Name/Dept</html:option>
-					<!-- 
-					<html:option value="SOFTWARELPAR">Software LPAR name/serial</html:option>
-					<html:option value="HARDWARELPAR">Hardware LPAR name/serial</html:option>
-					 -->
+					<html:option value="SOFTWARELPARNAME">Software LPAR name</html:option>
+					<html:option value="SOFTWARELPARNAMEFUZZY">Software LPAR name fuzzy</html:option>
+					<html:option value="SOFTWARELPARSERIAL">Software LPAR serial</html:option>
+					<html:option value="HARDWARELPARNAME">Hardware LPAR name</html:option>
+					<html:option value="HARDWARELPARSERIAL">Hardware LPAR serial</html:option>
 				</html:select><html:link page="/help/help.do#H1">
 					<img src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 						width="14" height="14" alt="contextual field help icon" />
