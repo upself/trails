@@ -11,6 +11,9 @@
 		<form-bean name="search" type="com.ibm.ea.bravo.FormSearch" />
 		<form-bean name="work" type="com.ibm.ea.bravo.FormSearch" />
 
+		<!-- SYSTEM STATUS -->
+		<form-bean name="submitForm" type="com.ibm.ea.bravo.systemstatus.FormSubmit" />
+		
 		<!-- ACCOUNT -->
 		<form-bean name="accountSearch" type="com.ibm.ea.bravo.account.FormAccountSearch" />
 
@@ -632,6 +635,13 @@
 		<action path="/systemStatus/home" type="com.ibm.ea.bravo.systemstatus.ActionSystemStatus"
 			parameter="home">
 			<forward name="success" path="/WEB-INF/jsp/systemStatus/home.jsp" />
+		</action>
+
+		<!-- SYSTEM STATUS submit -->
+		<action path="/systemStatus/submit_form" type="com.ibm.ea.bravo.systemstatus.ActionSystemStatus" 
+			parameter="submit_form" name="submitForm" scope="session"
+			input="/systemstatus/home.jsp">
+				<forward name="success" path="/WEB-INF/jsp/systemStatus/home.jsp" />
 		</action>
 
 		<!-- BANK ACCOUNT -->

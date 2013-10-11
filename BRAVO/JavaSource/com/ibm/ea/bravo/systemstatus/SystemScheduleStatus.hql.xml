@@ -8,10 +8,29 @@
 		]]>
 	</query>
 
-	<query name="selectBankAccountJobList">
+		<!-- commented out, not gonna be used anymore. for future reference --> 
+<!-- 	<query name="selectAllBankAccountJobs"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount BA where BA.status ='ACTIVE' -->
+<!-- 		]]> -->
+<!-- 	</query> -->
+	
+	<!-- commented out, but left as an example -->
+<!-- 	<query name="selectBankAccountJobList"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount BA where BA.status ='ACTIVE' -->
+<!-- 			and BAJ.bankAccount.id =:bankaccountId -->
+<!-- 			and BAJ.name like :bankaccountJobName -->
+<!-- 			and BAJ.name like :bankaccountJobStatus -->
+<!-- 			or BAJ.name like :bankaccountJobDelta -->
+<!-- 			and BAJ.startTime >=:startTime and BAJ.endTime <:endTime -->
+<!-- 		]]> -->
+<!-- 	</query>  -->
+	
+	<query name="selectBankAccountNames">
 		<![CDATA[
-			FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount BA where BA.status ='ACTIVE'
-		]]>
-	</query>
+ 			from BankAccount BA where BA.status ='ACTIVE'
+ 		]]>
+	</query>  
 
 </hibernate-mapping>
