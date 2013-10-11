@@ -273,6 +273,7 @@ public class Constants {
 	public static final String SYSTEM_SCHEDULE_STATUS_LIST =
 			"systemScheduleStatusList";
 	public static final String BANK_ACCOUNT_JOB_LIST = "bankAccountJobList";
+	public static final String BANK_ACCOUNT_NAMES = "bankAccountNames";
 	public static final String APMM_ACCOUNT_LIST ="DK002090,DK006074,DK006412,DK006421,DK120494,DK593039,DK593066,DKMDI,DK002090";
 	public static final String Is_APMM_ACCOUNT ="isAPMMAccount";
 }
