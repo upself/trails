@@ -266,6 +266,24 @@
 				value="%{#attr.row.processorCount}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareProcessorCount"
 				value="%{#attr.row.hardwareProcessorCount}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].processorManufacturer"
+				value="%{#attr.row.processorManufacturer}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].mastProcessorType"
+				value="%{#attr.row.mastProcessorType}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].nbrCoresPerChip"
+				value="%{#attr.row.nbrCoresPerChip}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].mastProcessorModel"
+				value="%{#attr.row.mastProcessorModel}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].nbrOfChipsMax"
+				value="%{#attr.row.nbrOfChipsMax}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].shared"
+				value="%{#attr.row.shared}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].sysplex"
+				value="%{#attr.row.sysplex}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].spla"
+				value="%{#attr.row.spla}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].internetIccFlag"
+				value="%{#attr.row.internetIccFlag}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].productInfoName"
 				value="%{#attr.row.productInfoName}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].reconcileTypeName"
@@ -316,7 +334,7 @@
 			</s:if>
 		</display:column>
 		<display:column title="Assignee" sortable="true"
-			sortProperty="remoteUser">
+			sortProperty="assignee">
 			<a
 				href="javascript:displayPopUp('/TRAILS/account/alerts/alertUnlicensedIbmSwHistory.htm?id=<s:property value="%{#attr.row.alertId}" />')">${row.assignee}</a>
 		</display:column>

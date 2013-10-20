@@ -457,6 +457,7 @@ public class ReportServiceImpl implements ReportService {
                 lsbSql.append(" AND SF.Scope_Id IN (")
                         .append(lsbScopeSql)
                         .append(") ")
+                        .append(" AND SF.STATUS_ID = 2 ")
                         .append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
                                 : "");
             }
