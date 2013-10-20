@@ -80,10 +80,6 @@ sub load {
     Staging::Delegate::StagingDelegate->insertCount( $stagingConnection, $self->count );
 
     $self->SUPER::endLoad($dieMsg);
-    logMsg('Temp delete counts = '.$self->count->{STAGING}->{SIGNATURE}->{TEMP_DELETE})
-         if defined $self->count && exists $self->count->{STAGING} && exists $self->count->{STAGING}->{SIGNATURE} && exists $self->count->{STAGING}->{SIGNATURE}->{TEMP_DELETE};
-    logMsg('Temp update counts =' .$self->count->{STAGING}->{SIGNATURE}->{TEMP_UPDATE})
-         if defined $self->count && exists $self->count->{STAGING} && exists $self->count->{STAGING}->{SIGNATURE} && exists $self->count->{STAGING}->{SIGNATURE}->{TEMP_UPDATE};
 
     if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' ) {
         ilog('Disconnecting from bank account');
@@ -139,118 +135,67 @@ sub doDelta {
         wlog('scanlist is zero');
         return;
     }
-    
-    
-    #set the limt.
-    $self->limit(100000);
-    my $qty = $self->getStagingSignatureQty($connection,  $self->SUPER::bankAccount->id );
-    
-    if($qty > $self->limit){
-      my $idSegments = $self->getStagingSignatureIds($connection,  $self->SUPER::bankAccount->id );
-      my @segments = @{$idSegments};
-      
-      for(my $i = 0;$i<scalar @segments;$i++){
-          if($i <= 0){
-              dlog('execute less than');
-              dlog("segment, end=$segments[$i]");
-              $self->compare($connection, undef,$segments[$i]);
-          }else{
-              dlog('execute between');
-              dlog("segment,start=$segments[$i-1], end=$segments[$i]");
-              $self->compare($connection, $segments[$i-1],$segments[$i]);
-          }
-      }
-    }else{
-      $self->compare($connection, undef,undef);
-    }
-}
 
-
-sub compare{
-     my ( $self, $connection, $start, $end ) = @_;
+    my $signatureList = $self->list;
 
     ###Loop through the staging query
     ###Prepare the necessary sql
-    
-    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureData() )
-                                                                   if(!defined $start && !defined $end);
-    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureDataLessThan() )
-                                                                   if(!defined $start && defined $end);
-    $connection->prepareSqlQuery(Staging::Delegate::StagingDelegate->querySoftwareSignatureDataBetween() )
-                                                                   if(defined $start && defined $end);
+
+    $connection->prepareSqlQuery( Staging::Delegate::StagingDelegate->querySoftwareSignatureData() );
+
     ###Define our fields
     my @fields = (qw(id softwareSignatureId softwareId action path scanRecordId scanRecordAction));
 
-
-    my $sth=undef;
     ###Get the statement handle
-    $sth = $connection->sql->{softwareSignatureData1} 
-                               if(!defined $start && !defined $end);
-    $sth = $connection->sql->{softwareSignatureData2}
-                               if(!defined $start && defined $end);
-    $sth = $connection->sql->{softwareSignatureData3}
-                               if(defined $start && defined $end);
+    my $sth = $connection->sql->{softwareSignatureData};
 
     ###Bind our columns
     my %rec;
     $sth->bind_columns( map { \$rec{$_} } @fields );
 
     ###Excute the query
-    $sth->execute( $self->SUPER::bankAccount->id )
-                        if(!defined $start && !defined $end);
-                        
-    $sth->execute( $self->SUPER::bankAccount->id,$end )
-                        if(!defined $start && defined $end);
-                        
-    $sth->execute( $self->SUPER::bankAccount->id,$start, $end )
-                        if(defined $start && defined $end);
-    my @tempSigArray;
+    $sth->execute( $self->SUPER::bankAccount->id );
     while ( $sth->fetchrow_arrayref ) {
 
         if ( $rec{action} eq 'DELETE' ) {
-            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
             next;
         }
 
         if ( $rec{scanRecordAction} eq 'DELETE' ) {
-            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
+            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
             next;
         }
 
         $self->SUPER::incrTotalCnt();
 
-        my $deleted  = 0;
         ###check if software exists
-        if ( exists $self->list->{ $rec{softwareId} } ) {
+        if ( exists $signatureList->{ $rec{softwareId} } ) {
             dlog( $rec{softwareId} . " softwareId exists in source" );
 
             ###check if software signature exists
-            if ( exists $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} } ) {
+            if ( exists $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} } ) {
                 dlog( $rec{softwareSignatureId} . " softwareSignatureId exists in source" );
 
                 ###check if scan record exists
                 if (
-                     exists $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
+                     exists $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }
                      ->{ $rec{scanRecordId} } )
                 {
                     dlog( $rec{scanRecordId} . " scanRecordId exists in source" );
 
-                    $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
                         ->{'id'} = $rec{id};
 
                     #Get all the keys even though there should only be one
-                    my $path =  $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
-                    my $scanAction= $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
+                    my $path =  $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
+                    my $scanAction= $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
                     
                     my $bankAccountType = $self->SUPER::bankAccount->type;
                     if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
                     {
                       if( stringEqual( $rec{action}, $scanAction)){
-                         dlog("delete, action same, rec=$rec{action},scanAction=$scanAction, swid=$rec{softwareId},ssigid=$rec{softwareSignatureId},srid=$rec{scanRecordId}");
-                         delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
-                         $deleted = 1;
-                      }else{
-                         $self->SUPER::incrUpdateCnt();
+                         delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                       }
                     }else{
                        if($self->pathChanged($path, $rec{path})){
@@ -259,170 +204,62 @@ sub compare{
                               $self->list->{ $rec{softwareId} }->{$rec{softwareSignatureId}}->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
                               $self->SUPER::incrUpdateCnt();
                           }else{
-                            dlog('delete, action is complete or S03INV40');
-                            delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
-                            $deleted = 1;
+                            delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                           }
                        }else{
-                         dlog('delete, path same');
-                         delete $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
-                         $deleted = 1;
+                         delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                        }
                     }
                 }
                 else {
                     dlog( $rec{scanRecordId} . " scanRecordId does not exist in source" );
+
                     if ( $rec{action} eq 'COMPLETE' ) {
                         dlog("Setting record to delete");
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'} = 'DELETE';
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'id'} = $rec{id};
-                        $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'} = $rec{path};
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                            ->{'action'} = 'DELETE';
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                            ->{'id'} = $rec{id};
+                        $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                            ->{'path'} = $rec{path};
                         $self->SUPER::incrDeleteCnt();
                     }
                 }
             }
             else {
                 dlog( $rec{softwareSignatureId} . " softwareSignatureId does not exist in source" );
+
                 if ( $rec{action} eq 'COMPLETE' ) {
-                   dlog("Setting record to delete");
-                   $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'} = 'DELETE';
-                   $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'id'} = $rec{id};
-                   $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'} = $rec{path};
-                   $self->SUPER::incrDeleteCnt();
+                    dlog("Setting record to delete");
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                        ->{'action'} = 'DELETE';
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                        ->{'id'} = $rec{id};
+                    $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                        ->{'path'} = $rec{path};
+                    $self->SUPER::incrDeleteCnt();
                 }
             }
         }
         else {
             dlog( $rec{softwareId} . " softwareId does not exist in source" );
+
             if ( $rec{action} eq 'COMPLETE' ) {
-               dlog("Setting record to delete");
-               $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'} = 'DELETE';
-               $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'id'} = $rec{id};
-               $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'} = $rec{path};
-               $self->SUPER::incrDeleteCnt();
+                dlog("Setting record to delete");
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                    ->{'action'} = 'DELETE';
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                    ->{'id'} = $rec{id};
+                $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
+                    ->{'path'} = $rec{path};
+                $self->SUPER::incrDeleteCnt();
             }
         }
-        
-        
-        my $id =undef;
-        $id = $self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'id'} 
-                                                                                                     if $deleted ne 1;
-        if(defined $id){
-            dlog('cache into temp size '. scalar @tempSigArray);
-            my $path=$self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'path'};
-            my $action=$self->list->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }->{'action'};
-            
-            my $ss = new Staging::OM::SoftwareSignature();
-            $ss->id($id);
-            $ss->scanRecordId($rec{scanRecordId});
-            $ss->softwareSignatureId($rec{softwareSignatureId});
-            $ss->softwareId($rec{softwareId});
-            $ss->path($path);
-            $ss->action($action);
-        
-            push @tempSigArray, $ss;
-        }
-        
-        if(scalar @tempSigArray >= 1000){
-           $self->applyTemp(\@tempSigArray, $connection);
-        }
-        
     }
     $sth->finish;
-    
-    $self->applyTemp(\@tempSigArray, $connection)
-          if(scalar @tempSigArray >0);
+
+    $self->list($signatureList);
 }
-
-sub getStagingSignatureQty{
-    my ( $self, $connection, $bankAccountId ) = @_;
-    my $query = '
-      select count(*) 
-       from software_signature s, scan_record sr
-      where
-       sr.bank_account_id  = ?
-       and s.scan_record_id  = sr.id
-      with ur
-    ';
-    $connection->prepareSqlQuery('getStagingSignatureQty',$query);
-    my $sth = $connection->sql->{getStagingSignatureQty};
-    my $qty;
-    $sth->bind_columns(\$qty);
-    $sth->execute($bankAccountId);
-    my $found = $sth->fetchrow_arrayref;
-    $sth->finish;
-    
-    return $qty;
-}
-
-
-sub getStagingSignatureIds{
- 
-   dlog('start build the segment array');
-   my ( $self, $connection, $bankAccountId ) = @_;
-   my $query = '
-      select s.id
-       from software_signature s, scan_record sr
-      where
-       sr.bank_account_id  = ?
-       and s.scan_record_id  = sr.id
-	  order 
-	   by s.id asc
-      with ur
-   ';
-   
-   dlog('query='.$query);
-     
-    my @idArray=();
-   
-    $connection->prepareSqlQuery('getStagingSignatureIds',$query);
-    my $sth = $connection->sql->{getStagingSignatureIds};
-    my $sigId;
-    $sth->bind_columns(\$sigId);
-    $sth->execute($bankAccountId);
-    my $counter = 0;
-    
-    my $lastId;
-    my $lastIdInArray;
-    my $limit = $self->limit;
-    
-    while( $sth->fetchrow_arrayref )
-    {
-      $counter++;
-      if($counter >= $limit){
-         dlog("add signature into array, $sigId");
-         push @idArray, $sigId;
-         $counter = 0;
-         $lastIdInArray = $sigId;
-      }
-      $lastId = $sigId;
-      dlog("counter=$counter, limit=$limit, signatureId=$sigId");
-    }
-    $sth->finish;
-    
-    if($lastId ne $lastIdInArray){
-      push @idArray, $lastId;
-    }
-    
-    dlog('end build the segment array. '.scalar @idArray);
-    return \@idArray;
-}
-
-sub applyTemp{
-    my ($self, $signatures, $connection) = @_;
-    
-    dlog("start temp applying");    
-    foreach my $item (@{$signatures}){
-      $item->save($connection);
-      delete $self->list->{$item->softwareId}->{$item->softwareSignatureId}->{$item->scanRecordId};
-      $self->addToCount( 'STAGING', 'SIGNATURE', 'TEMP_' . $item->action );
-    }
-    
-    @{$signatures} = ();
-    dlog("end temp applying");
-    logMsg('applied DELETE='.$self->count->{STAGING}->{SIGNATURE}->{TEMP_DELETE}.' ,UPDATE='.$self->count->{STAGING}->{SIGNATURE}->{TEMP_UPDATE});
-}
-
 
 sub pathChanged{
    my ($self,$scanPath, $stagingPath ) = @_;
@@ -484,11 +321,6 @@ sub applyDelta {
                 my $action = $self->list->{$key}->{$sigId}->{$srId}->{'action'};
                 my $id     = $self->list->{$key}->{$sigId}->{$srId}->{'id'};
                 my $path   = $self->list->{$key}->{$sigId}->{$srId}->{'path'};
-                
-                if (!defined $action){
-                    elog("action is null softwareId=$key, softwareSigantureId=$sigId, scanRecordId=$srId");
-                    next;
-                }
 
                 dlog("Applying id=$id");
                 my $ss = new Staging::OM::SoftwareSignature();
@@ -587,13 +419,5 @@ sub list {
     $self->{_list} = $value if defined($value);
     return ( $self->{_list} );
 }
-
-sub limit {
-    my ( $self, $value ) = @_;
-    $self->{_limit} = $value if defined($value);
-    return ( $self->{_limit} );
-}
-
-
 1;
 

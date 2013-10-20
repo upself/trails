@@ -88,7 +88,7 @@ eval {
         ###Get batches from staging to process.
         ###TODO I probably have a problem here if the trails connection dies
         my @bankAccounts;
-        my $ntadz = 2;
+        my $ntadz = 1;
         eval {
             ###Get the current software lpar batches to process.
             @bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccounts($ntadz);
@@ -155,10 +155,6 @@ sub spawnScript {
     }
     else {
         ###I am the child, i *CANNOT* return only exit
-        if($name eq 'TD4DSTANDALONE2 '){
-          exit 0;
-        }
-        
         my $cmd =
             "$childScript -b $name -f $fullLoadPeriodHours"
           . " -t $testMode -d $loadDeltaOnly -a $applyChanges -l $childLog -c $configFile";

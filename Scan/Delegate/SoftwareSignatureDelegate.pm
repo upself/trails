@@ -106,7 +106,7 @@ sub getDisconnectedSoftwareSignatureData {
             if ( !defined $rec{path} || $rec{path} eq '' ) {
                 $rec{path} = "null";
             }
-            
+
             if ( !exists $signatureList{$softwareId}{$softwareSignatureId}
                 { $scanMap->{ $rec{computerId} } } )
             {
@@ -240,9 +240,13 @@ sub getConnectedSoftwareSignatureData {
                }
             }
             
-            $signatureList{$softwareId}{$softwareSignatureId}{ $scanMap->{ $rec{computerId} } }{'action'} = $action;
-            $signatureList{$softwareId}{$softwareSignatureId}{ $scanMap->{ $rec{computerId} } }{'id'} = 0;
-            $signatureList{$softwareId}{$softwareSignatureId}{ $scanMap->{ $rec{computerId} } }{'path'} = $rec{path};
+            $signatureList{$softwareId}{$softwareSignatureId}
+                  { $scanMap->{ $rec{computerId} } }{'action'} = $action;
+            
+            $signatureList{$softwareId}{$softwareSignatureId}
+                { $scanMap->{ $rec{computerId} } }{'id'} = 0;
+            $signatureList{$softwareId}{$softwareSignatureId}
+                { $scanMap->{ $rec{computerId} } }{'path'} = $rec{path};
         }
     }
 

@@ -1326,58 +1326,8 @@ sub querySoftwareSignatureData {
             and b.bank_account_id = ?
         with ur
     ';
-    
-    dlog("normal query=$query");
 
-    return ( 'softwareSignatureData1', $query );
-}
-
-
-sub querySoftwareSignatureDataLessThan {
-    my $query = '
-        select
-            a.id
-            ,a.software_signature_id
-            ,a.software_id
-            ,a.action
-            ,a.path
-            ,b.id
-            ,b.action
-        from
-            software_signature a
-            ,scan_record b
-        where
-            a.scan_record_id = b.id
-            and b.bank_account_id = ?
-            and a.id <= ?
-        with ur
-    ';
-    dlog("less than query=$query");
-    return ( 'softwareSignatureData2', $query );
-}
-
-sub querySoftwareSignatureDataBetween {
-    my $query = '
-        select
-            a.id
-            ,a.software_signature_id
-            ,a.software_id
-            ,a.action
-            ,a.path
-            ,b.id
-            ,b.action
-        from
-            software_signature a
-            ,scan_record b
-        where
-            a.scan_record_id = b.id
-            and b.bank_account_id = ?
-            and a.id > ?
-            and a.id <= ?
-        with ur
-    ';
-    dlog("between query=$query");
-    return ( 'softwareSignatureData3', $query );
+    return ( 'softwareSignatureData', $query );
 }
 
 sub querySoftwareManualData {
