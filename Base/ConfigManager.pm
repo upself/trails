@@ -61,6 +61,11 @@ sub debugLevel {
     return $self->{_cfg}->getProperty('debugLevel');
 }
 
+sub ageDaysDelete {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('ageDaysDelete');
+}
+
 ###Returns an array of Test Bank Account names
 sub testBankAccounts {
     my $self = shift;

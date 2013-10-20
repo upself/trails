@@ -10,15 +10,16 @@ use Base::ConfigManager;
 use Database::Connection;
 
 ###Globals
-my $logfile    = "/var/staging/logs/stagingSyncGENAdvance/stagingSyncGENAdvance.log";
-my $pidFile    = "/tmp/bravoArchival.pid";
-my $configFile = "/opt/staging/v2/config/stagingSyncGENAdvanceConfig.txt";
+my $logfile    = "/var/staging/logs/deleteInstalledSoftware/deleteInstalledSoftware.log";
+my $pidFile    = "/tmp/deleteInstalledSoftware.pid";
+my $configFile = "/opt/staging/v2/config/deleteInstalledSoftware.txt";
 
 ###Initialize properties
 my $cfgMgr   = Base::ConfigManager->instance($configFile);
 my $server   = $cfgMgr->server;
 my $testMode = $cfgMgr->testMode;
 my $testCustomers = $cfgMgr->testCustomerIdsAsString;
+my $ageDaysDelete =$cfgMgr->ageDaysDelete;
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
@@ -49,10 +50,10 @@ logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
 
 ###Setup for forking children.
-my $maxChildren = 2;
+my $maxChildren = 5;
 my %children    = ();
 my $children    = 0;
-my $sleepTime   = 5;
+my $sleepTime   = 3600;
 my $childScript = ( dirname $0) . "/" . ( split( /\./, ( basename $0) ) )[0] . "Child.pl";
 
 ###Signal handler for dead children
@@ -77,16 +78,16 @@ eval {
     ###based on existance of pid file.
     $| = 1;
 
-    my @accountIds;
+    my @customerIds;
     eval {
         ###Get the current software lpar batches to process.
-        @accountIds = getCustomerIds();
+        @customerIds = getCustomerIds();
     };
     if ($@) {
         die $@;
     }
 
-    foreach my $id ( sort @accountIds ) {
+    foreach my $id ( sort @customerIds ) {
         dlog("id=$id");
 
         ###Spawn child unless maxed out.
@@ -97,11 +98,12 @@ eval {
 
         my $childLog = $logfile . "." . $id;
         spawnScript( $id, $childLog );
+        sleep 100;
     }
 
     ###Wait till  all children die.
     while ( $children != 0 ) {
-        sleep 5;
+        sleep 500;
     }
 };
 if ($@) {
@@ -129,7 +131,7 @@ sub spawnScript {
     }
     else {
         ###I am the child, i *CANNOT* return only exit
-        my $cmd = "$childScript -a $id -l $childLog";    
+        my $cmd = "$childScript -b $id -a $ageDaysDelete -l $childLog -c $configFile ";    
         dlog("spawning child: $cmd");
         `$cmd >>$childLog 2>&1`;
         dlog("Child complete: $cmd");
@@ -148,9 +150,9 @@ sub getCustomerIds {
     ###Prepare the necessary sql
     $connection->prepareSqlQueryAndFields( queryCustomerIds() );
 
-    my $sth = $connection->sql->{accountIds};
+    my $sth = $connection->sql->{customerIds};
     my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{accountIdsFields} } );
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{customerIdsFields} } );
     $sth->execute();
     while ( $sth->fetchrow_arrayref ) {
         push @ids, $rec{id};
@@ -168,7 +170,7 @@ sub queryCustomerIds {
     my @fields = (qw(id));
     my $query  = '
         select
-            a.account_number
+            a.customer_id
         from
             customer a
     ';
@@ -176,6 +178,6 @@ sub queryCustomerIds {
     	$query .='where customer_id in ('.$testCustomers.') with ur' ;
     }
     dlog("Executing query is $query");
-    return ( 'accountIds', $query, \@fields );
+    return ( 'customerIds', $query, \@fields );
 }
 
