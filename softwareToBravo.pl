@@ -50,7 +50,9 @@ exit;
 
 sub spawnChildren {
  wlog("$rNo Spawning children");
- for ( my $i = 0 ; $i < $maxChildren ; $i++ ) {
+ 
+ my $i=0;
+ while ( $i < $maxChildren ) {
   my $customer = shift @customerIds;
   my ( $date, $customerId ) = each %$customer;
   my $connection = Database::Connection->new('staging');
@@ -59,13 +61,17 @@ sub spawnChildren {
   foreach my $segLparIds (@lparIds){
       dlog('size of @$segLparIds='.@$segLparIds);
       if ( isCustomerRunning( $customerId, $date, $segLparIds ) == 1 ) {
+       $i--;
        next;
       }
       newChild( $customerId, $date, 5, $segLparIds);
-      if ( scalar @customerIds == 0 ) {
-       last;
-      }
+      $i++;
   }
+  
+  if ( scalar @customerIds == 0 ) {
+       last;
+  }
+  
  }
 }
 
@@ -74,6 +80,7 @@ sub keepTicking {
  my $count = 5;
  while (1) {
   if ( scalar @customerIds == 0 ) {
+   sleep 300;
    my $connection = Database::Connection->new('staging');
    @customerIds = getStagingQueue( $connection, $count );
    $connection->disconnect;
@@ -83,31 +90,33 @@ sub keepTicking {
    sleep;
    wlog("$rNo done sleeping");
   }
-  for ( my $i = $children ; $i < $maxChildren ; $i++ ) {
+  
+  my $i = $children;
+  while ( $i < $maxChildren) {
    dlog("$rNo running $i");
    my $customer = shift @customerIds;
    my ( $date, $customerId ) = each %$customer;
    my $connection = Database::Connection->new('staging');
-   my @lparIds = findSoftwareLparsByCustomerIdByDate($customerId,$date,5,$connection);
+   my @lparIds = findSoftwareLparsByCustomerIdByDate($customerId,$date,$count,$connection);
    $connection->disconnect;
    foreach my $segLparIds (@lparIds){
+       wlog("checking is customer running $customerId,$date,".scalar @$segLparIds.' scalar @lparIds '. scalar @lparIds);
        if ( isCustomerRunning( $customerId,$date, $segLparIds ) == 1 ) {
         $i--;
         next;
        }
-       if ( scalar @customerIds == 0 ) {
+       newChild( $customerId, $date, $count, $segLparIds );
+       $i++;
+   }
+   if ( scalar @customerIds == 0 ) {
          dlog('scalar @customerIds == 0');
          sleep 5;
          $count++;
          if($count>6){
            $count = 0;
          }
-        last;
-       }else{
-        dlog('new child');
-        newChild( $customerId, $date, $count, $segLparIds );
-       }
-   }
+     last;
+    }
   }
  }
 }
@@ -150,7 +159,7 @@ sub newChild {
     foreach my $lparId (@lpars) {
       $runningCustomerIds{$customerId}{$date}{$lparId} = $pid;
     }
-    ilog("forked new child, we now have $children children");
+    wlog("forked new child, we now have $children children $pid");
     return;
   }
  
@@ -173,7 +182,7 @@ sub newChild {
      $stagingConnection->disconnect;
      $trailsConnection->disconnect;
      $swassetConnection->disconnect;
-     wlog( "$rNo Child $customerId, $date, $lparId" . scalar @lpars . " done -- $phase" );
+     wlog( "$rNo Child $customerId, $date, $lparId" . scalar @lpars . " done $pid -- $phase" );
   }
  exit;
 }
@@ -245,7 +254,7 @@ sub getStagingQueue {
  my @customers;
  my %customerIdDateHash = ();
 
- for ( my $p = 0 ; $p < 2 ; $p++ ) {
+ for ( my $p = 1 ; $p < 2 ; $p++ ) {
   wlog("$rNo start building customer id array for $p");
   ###Prepare query to pull software lpar ids from staging
   dlog("preparing software lpar ids query");
@@ -474,7 +483,8 @@ sub p2Query {
             c.id = si.scan_record_id
         ';
  }
- $query .= ' where a.action != \'COMPLETE\'
+ $query .= ' where a.customer_id  = 2 and date(a.scan_time)=\'2012-10-25\' and
+       (a.action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
  if ( $count == 1 ) {
   $query .= '
@@ -507,7 +517,7 @@ sub p2Query {
                 or si.action in (1,2)
             ';
  }
-
+ $query .= ')';
  $query .= '
         group by
             a.customer_id
@@ -516,7 +526,8 @@ sub p2Query {
             date(a.scan_time)
         with ur
     ';
-
+    
+ dlog('query='.$query);
  return $query;
 }
 
@@ -544,7 +555,7 @@ sub findSoftwareLparsByCustomerIdByDate {
  dlog("binded columns for software lpar ids query");
 
  ###Excute the query
- ilog("executing software lpar ids query");
+ ilog("executing software lpar ids query $customerId $date");
  $sth->execute( $customerId, $date );
  ilog("executed software lpar ids query");
  
