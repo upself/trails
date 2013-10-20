@@ -6,6 +6,7 @@ import java.util.Set;
 import com.ibm.asset.bravo.domain.AuthorizedProduct;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.software.SoftwareLpar;
+import com.ibm.ea.bravo.software.SoftwareLparEff;
 import com.ibm.ea.cndb.Customer;
 
 public class HardwareLpar {
@@ -44,7 +45,17 @@ public class HardwareLpar {
 	private String internetIccFlag;
 	
 	private Set<AuthorizedProduct> authorizedProducts;
+	
+	private HardwareLparEff hardwareLparEff;
 
+	public HardwareLparEff getHardwareLparEff() {
+		return hardwareLparEff;
+	}
+
+	public void setHardwareLparEff(HardwareLparEff hardwareLparEff) {
+		this.hardwareLparEff = hardwareLparEff;
+	}
+	
 	public String getServerType() {
 		return serverType;
 	}

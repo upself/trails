@@ -66,6 +66,8 @@ public class FormHardware extends FormBase {
 
 	private Integer processorCount;
 	
+	private Integer processorCountEff;
+	
 	private Integer chips;
 	
 	private String serverType;
@@ -267,6 +269,7 @@ public class FormHardware extends FormBase {
 				this.country = hardwareLpar.getHardware().getCountry();
 				this.processorCount = hardwareLpar.getHardware()
 						.getProcessorCount();
+				this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();
 				this.chips = hardwareLpar.getHardware().getChips();
 				this.owner = hardwareLpar.getHardware().getOwner();
 				this.serverType = hardwareLpar.getServerType();
@@ -585,6 +588,14 @@ public class FormHardware extends FormBase {
 
 	public void setProcessorCount(Integer processorCount) {
 		this.processorCount = processorCount;
+	}
+	
+	public Integer getProcessorCountEff() {
+		return processorCountEff;
+	}
+
+	public void setProcessorCountEff(Integer processorCountEff) {
+		this.processorCountEff = processorCountEff;
 	}
 	
 	public String getMastProcessorType() {

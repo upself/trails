@@ -18,6 +18,10 @@
 			fetching customer eagerly because its key to identifying unique lpar
 			names
 		-->
+		<one-to-one name="hardwareLparEff"
+			class="com.ibm.ea.bravo.hardware.HardwareLparEff"
+			property-ref="hardwareLpar" cascade="delete" />
+			
 		<many-to-one name="customer" class="com.ibm.ea.cndb.Customer"
 			column="CUSTOMER_ID" not-null="true" index="IDX_HWLC" unique-key="IDX_HWL"
 			lazy="false" />

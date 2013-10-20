@@ -143,7 +143,7 @@
 					<td><font class="orange-dark"><c:out
 								value="${lpar.hardwareLpar.hardware.serverType}" /> </font></td>
 					<td><font class="orange-dark"><c:out
-								value="${lpar.hardwareLpar.hardware.processorCount}" /> </font></td>
+								value="${lpar.hardwareLpar.hardwareLparEff.processorCount}" /> </font></td>
 					<td><font class="orange-dark"><c:out
 								value="${lpar.hardwareLpar.sysplex}" /> </font></td>
 					<td><font class="orange-dark"><c:out

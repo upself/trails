@@ -103,6 +103,7 @@
 		<!-- HARDWARE -->
 		<mapping resource="com/ibm/ea/bravo/hardware/Hardware.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/hardware/HardwareLpar.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/hardware/HardwareLparEff.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/hardware/SCRTRecord.hbm.xml" />
 
 		<!-- SOFTWARE -->

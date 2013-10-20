@@ -133,7 +133,7 @@
 					<td><font class="orange-dark"><c:out
 								value="${hardware.serverType}" /> </font></td>
 					<td><font class="orange-dark"><c:out
-								value="${hardware.processorCount}" /> </font></td>
+								value="${hardware.processorCountEff}" /> </font></td>
 					<td><font class="orange-dark"><c:out
 								value="${hardware.sysplex}" /> </font></td>
 					<td><font class="orange-dark"><c:out
