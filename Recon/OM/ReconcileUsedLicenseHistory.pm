@@ -121,7 +121,7 @@ sub queryUpdate {
 sub delete {
     my($self, $connection) = @_;
     ilog("deleting: ".$self->toString());
-    if( defined $self->reconcileId ) {
+    if( defined $self->id ) {
         $connection->prepareSqlQuery($self->queryDelete());
         my $sth = $connection->sql->{deleteReconcileUsedLicenseHistory};
         $sth->execute(
