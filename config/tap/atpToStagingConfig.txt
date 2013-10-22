@@ -1,5 +1,5 @@
 testMode=0
-server=when we fixed the problem have lpar status problem 
+server=tap 
 applyChanges=1
 loadDeltaOnly=1
 debugLevel=error
