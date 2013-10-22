@@ -29,8 +29,6 @@
 			<c:if test="${hardware.assetType == 'MAINFRAME'}">
 				<th class="blue-med">CPU MIPS</th>
 				<th class="blue-med">CPU MSU</th>
-				<th class="blue-med">Part MIPS</th>
-				<th class="blue-med">Part MSU</th>
 			</c:if>
 		</tr>
 	</thead>
@@ -71,10 +69,6 @@
 							value="${hardware.cpuMIPS}" /></font></td>
 				<td><font class="orange-dark"><c:out
 							value="${hardware.cpuMSU}" /></font></td>
-				<td><font class="orange-dark"><c:out
-							value="${hardware.partMIPS}" /></font></td>
-				<td><font class="orange-dark"><c:out
-							value="${hardware.partMSU}" /></font></td>
 			</c:if>
 		</tr>
 	</tbody>
@@ -102,9 +96,7 @@
 			<th class="blue-med">HW_EXT_ID</th>
 			<th class="blue-med">HW_TechImgID</th>			
 			<c:if
-				test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
-				<th class="blue-med">CPU MIPS</th>
-				<th class="blue-med">CPU MSU</th>
+				test="${hardware.assetType == 'MAINFRAME'}">
 				<th class="blue-med">Part MIPS</th>
 				<th class="blue-med">Part MSU</th>
 			</c:if>
@@ -148,10 +140,6 @@
 								value="${hardware.techImageId}" /> </font></td>					
 					<c:if
 						test="${hardware.assetType == 'MAINFRAME'}">
-						<td><font class="orange-dark"><c:out
-									value="${hardware.cpuMIPS}" /> </font></td>
-						<td><font class="orange-dark"><c:out
-									value="${hardware.cpuMSU}" /> </font></td>
 						<td><font class="orange-dark"><c:out
 									value="${hardware.partMIPS}" /> </font></td>
 						<td><font class="orange-dark"><c:out

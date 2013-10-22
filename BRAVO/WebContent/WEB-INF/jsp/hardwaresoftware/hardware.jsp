@@ -29,8 +29,6 @@
 			<c:if test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
 				<th class="blue-med">CPU MIPS</th>
 				<th class="blue-med">CPU MSU</th>
-				<th class="blue-med">Part MIPS</th>
-				<th class="blue-med">Part MSU</th>
 			</c:if>
 		</tr>
 	</thead>
@@ -71,10 +69,6 @@
 							value="${lpar.hardwareLpar.hardware.cpuMIPS}" /></font></td>
 				<td><font class="orange-dark"><c:out
 							value="${lpar.hardwareLpar.hardware.cpuMSU}" /></font></td>
-				<td><font class="orange-dark"><c:out
-							value="${lpar.hardwareLpar.hardware.partMIPS}" /></font></td>
-				<td><font class="orange-dark"><c:out
-							value="${lpar.hardwareLpar.hardware.partMSU}" /></font></td>
 			</c:if>
 		</tr>
 	</tbody>
@@ -103,8 +97,6 @@
 			<th class="blue-med">HW_TechImgID</th>			
 			<c:if
 				test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
-				<th class="blue-med">CPU MIPS</th>
-				<th class="blue-med">CPU MSU</th>
 				<th class="blue-med">Part MIPS</th>
 				<th class="blue-med">Part MSU</th>
 			</c:if>
@@ -158,10 +150,6 @@
 								value="${lpar.hardwareLpar.techImageId}" /> </font></td>					
 					<c:if
 						test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
-						<td><font class="orange-dark"><c:out
-									value="${lpar.hardwareLpar.hardware.cpuMIPS}" /> </font></td>
-						<td><font class="orange-dark"><c:out
-									value="${lpar.hardwareLpar.hardware.cpuMSU}" /> </font></td>
 						<td><font class="orange-dark"><c:out
 									value="${lpar.hardwareLpar.partMIPS}" /> </font></td>
 						<td><font class="orange-dark"><c:out
