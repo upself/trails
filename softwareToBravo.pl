@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision241";
+my $rNo                = "revision286";
 my $children           =0;
 my $maxChildren        = 100;
 my $segmentSize        = 200;
@@ -193,8 +193,8 @@ sub newChild {
      $stagingConnection->disconnect;
      $trailsConnection->disconnect;
      $swassetConnection->disconnect;
-     wlog( "$rNo Child $customerId, $date, $lparId" . scalar @lpars . " done $pid -- $phase" );
   }
+  wlog( "$rNo Child $customerId, $date " . scalar @lpars . " done -- $phase" );
  exit;
 }
 
