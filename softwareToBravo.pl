@@ -64,6 +64,12 @@ sub spawnChildren {
        $i--;
        next;
       }
+      
+      if($i >= $maxChildren){
+       last;
+      }
+      
+      ### open child thread.
       newChild( $customerId, $date, 5, $segLparIds);
       $i++;
   }
@@ -79,21 +85,21 @@ sub keepTicking {
  wlog("$rNo Keep on ticking");
  my $count = 5;
  while (1) {
-  if ( scalar @customerIds == 0 ) {
-   sleep 300;
-   my $connection = Database::Connection->new('staging');
-   @customerIds = getStagingQueue( $connection, $count );
-   $connection->disconnect;
-  }
   if ( $children >= $maxChildren ) {
    wlog("$rNo sleeping");
    sleep;
    wlog("$rNo done sleeping");
   }
   
-  my $i = $children;
-  while ( $i < $maxChildren) {
-   dlog("$rNo running $i");
+  if ( scalar @customerIds == 0 ) {
+   sleep 300;
+   my $connection = Database::Connection->new('staging');
+   @customerIds = getStagingQueue( $connection, $count );
+   $connection->disconnect;
+  }
+  
+  while ( $children < $maxChildren) {
+   dlog("$rNo running $children");
    my $customer = shift @customerIds;
    my ( $date, $customerId ) = each %$customer;
    my $connection = Database::Connection->new('staging');
@@ -102,11 +108,16 @@ sub keepTicking {
    foreach my $segLparIds (@lparIds){
        wlog("checking is customer running $customerId,$date,".scalar @$segLparIds.' scalar @lparIds '. scalar @lparIds);
        if ( isCustomerRunning( $customerId,$date, $segLparIds ) == 1 ) {
-        $i--;
         next;
        }
+       
+       if($children >= $maxChildren){
+        last;
+       }
+       
+       ### open child thread.
        newChild( $customerId, $date, $count, $segLparIds );
-       $i++;
+       
    }
    if ( scalar @customerIds == 0 ) {
          dlog('scalar @customerIds == 0');
@@ -254,7 +265,7 @@ sub getStagingQueue {
  my @customers;
  my %customerIdDateHash = ();
 
- for ( my $p = 1 ; $p < 2 ; $p++ ) {
+ for ( my $p = 0 ; $p < 2 ; $p++ ) {
   wlog("$rNo start building customer id array for $p");
   ###Prepare query to pull software lpar ids from staging
   dlog("preparing software lpar ids query");
@@ -483,8 +494,8 @@ sub p2Query {
             c.id = si.scan_record_id
         ';
  }
- $query .= ' where a.customer_id  = 2 and date(a.scan_time)=\'2012-10-25\' and
-       (a.action != \'COMPLETE\'
+ $query .= ' where 
+        a.action != \'COMPLETE\'
         or b.action != \'COMPLETE\' ';
  if ( $count == 1 ) {
   $query .= '
@@ -517,7 +528,6 @@ sub p2Query {
                 or si.action in (1,2)
             ';
  }
- $query .= ')';
  $query .= '
         group by
             a.customer_id
