@@ -61,7 +61,6 @@ sub spawnChildren {
   foreach my $segLparIds (@lparIds){
       dlog('size of @$segLparIds='.@$segLparIds);
       if ( isCustomerRunning( $customerId, $date, $segLparIds ) == 1 ) {
-       $i--;
        next;
       }
       
@@ -112,7 +111,7 @@ sub keepTicking {
        }
        
        if($children >= $maxChildren){
-        last;
+        sleep;
        }
        
        ### open child thread.
