@@ -31,7 +31,7 @@ logfile($logfile);
 my $job                  = 'STAGING TO BRAVO';
 my $systemScheduleStatus = startJob($job);
 
-my $rNo                = "revision286";
+my $rNo                = "revision290";
 my $children           =0;
 my $maxChildren        = 100;
 my $segmentSize        = 200;
@@ -173,8 +173,8 @@ sub newChild {
     return;
   }
  
+  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", running -- $phase" );
   foreach my $lparId (@lpars) {
-     wlog("$rNo Child $customerId, $date, $lparId" . scalar @lpars . " running -- $phase" );
      my $stagingConnection = Database::Connection->new('staging');
      my $trailsConnection  = Database::Connection->new('trails');
      my $swassetConnection = Database::Connection->new('swasset');
@@ -193,7 +193,7 @@ sub newChild {
      $trailsConnection->disconnect;
      $swassetConnection->disconnect;
   }
-  wlog( "$rNo Child $customerId, $date " . scalar @lpars . " done -- $phase" );
+  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase" );
  exit;
 }
 
