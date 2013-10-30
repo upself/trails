@@ -88,7 +88,7 @@ eval {
         ###Get batches from staging to process.
         ###TODO I probably have a problem here if the trails connection dies
         my @bankAccounts;
-        my $ntadz = 1;
+        my $ntadz = 2;
         eval {
             ###Get the current software lpar batches to process.
             @bankAccounts = Sigbank::Delegate::BankAccountDelegate->getBankAccounts($ntadz);
@@ -96,7 +96,6 @@ eval {
         if ($@) {
             die $@;
         }
-         elog("cycle");
         ###Process each batch with max children forks.
         foreach my $name (@bankAccounts) {
             ilog("name=$name");
