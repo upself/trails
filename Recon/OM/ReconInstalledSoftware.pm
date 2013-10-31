@@ -239,9 +239,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_installed_sw
-        where
-            id = ?
+        delete from recon_installed_sw is1
+        where exists ( select is2.customer_id, is2.installed_software_id, is2.action from recon_installed_sw is2 where is2.id = ?
+        and is2.customer_id = is1.customer_id and is2.installed_software_id = is1.installed_software_id and is2.action = is1.action )
     ';
     return ('deleteReconInstalledSoftware', $query);
 }

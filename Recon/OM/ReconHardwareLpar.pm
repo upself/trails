@@ -239,9 +239,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_hw_lpar
-        where
-            id = ?
+        delete from recon_hw_lpar hl1
+        where exists ( select hl2.hardware_lpar_id, hl2.action from recon_hw_lpar hl2 where hl2.id = ?
+         and hl2.hardware_lpar_id = hl1.hardware_lpar_id and hl2.action = hl1.action )
     ';
     return ('deleteReconHardwareLpar', $query);
 }
