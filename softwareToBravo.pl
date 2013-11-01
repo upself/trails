@@ -173,6 +173,7 @@ sub newChild {
     return;
   }
  
+  my $start  = time;
   wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", running -- $phase" );
   foreach my $lparId (@lpars) {
      my $stagingConnection = Database::Connection->new('staging');
@@ -193,7 +194,17 @@ sub newChild {
      $trailsConnection->disconnect;
      $swassetConnection->disconnect;
   }
-  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase" );
+  
+  my $duration = time - $start;
+  if ( $duration < 60 ) {
+   $duration = $duration . ' sec(s)';
+  }
+  else {
+   $duration = $duration / 60;
+   $duration = $duration . ' min(s)';
+  }
+  
+  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase, duration: $duration" );
  exit;
 }
 
