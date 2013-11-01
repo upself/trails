@@ -511,8 +511,9 @@ public abstract class ProductDelegate extends Delegate {
 			IllegalAccessException, InvocationTargetException {
 
 		product.getProductInfo().setRecordTime(new Date());
+		if (!product.getProductInfo().getRemoteUser().equalsIgnoreCase("TADZMainframe")){
 		product.getProductInfo().setRemoteUser(remoteUser);
-
+		}
 		session.update(product);
 	}
 

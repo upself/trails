@@ -244,22 +244,17 @@ public abstract class SoftwareCategoryDelegate extends Delegate {
 		Session session = getHibernateSession();
 		Transaction tx = session.beginTransaction();
 
-		// Transfer our form to a manufacturer object
-		SoftwareCategory softwareCategory = transferUpdateSoftwareCategoryForm(
-				softwareCategoryForm, session);
-
 		// Now we need to go through the logic of updating a manufacturer
 		ActionErrors errors = new ActionErrors();
 
 		// Grab the manufacturer from the database using the ID
 		SoftwareCategory softwareCategoryById = null;
-		softwareCategoryById = getSoftwareCategory(softwareCategory
-				.getSoftwareCategoryId().toString(), softwareCategoryById,
+		softwareCategoryById = getSoftwareCategory(softwareCategoryForm.getSoftwareCategoryId().toString(), softwareCategoryById,
 				session);
 
 		// Grab the manufacturer from the database using the manufacturer name
 		SoftwareCategory softwareCategoryByName = null;
-		softwareCategoryByName = getSoftwareCategoryByName(softwareCategory
+		softwareCategoryByName = getSoftwareCategoryByName(softwareCategoryForm
 				.getSoftwareCategoryName(), softwareCategoryByName, session);
 
 		// If the manufacturer name exists in the database
@@ -276,7 +271,7 @@ public abstract class SoftwareCategoryDelegate extends Delegate {
 
 		}
 
-		if (softwareCategory.getSoftwareCategoryName()
+		if (softwareCategoryForm.getSoftwareCategoryName()
 				.equals(Constants.UNKNOWN)) {
 			errors.add("softwareCategoryName", new ActionMessage(
 					"errors.softwarecategory.duplicate"));
@@ -284,9 +279,13 @@ public abstract class SoftwareCategoryDelegate extends Delegate {
 		}
 
 		// We need to evict the two manufacturer from this session
-		session.evict(softwareCategoryById);
 		session.evict(softwareCategoryByName);
+		session.refresh(softwareCategoryById);
 
+		// Transfer our form to a manufacturer object
+		SoftwareCategory softwareCategory = transferUpdateSoftwareCategoryForm(softwareCategoryById,
+				softwareCategoryForm, session);
+		
 		// Save the manufacturer
 		save(softwareCategory, remoteUser, session);
 		tx.commit();
@@ -296,19 +295,19 @@ public abstract class SoftwareCategoryDelegate extends Delegate {
 		return errors;
 	}
 
-	public static SoftwareCategory transferUpdateSoftwareCategoryForm(
+	public static SoftwareCategory transferUpdateSoftwareCategoryForm(SoftwareCategory softwareCategory,
 			SoftwareCategoryForm softwareCategoryForm, Session session)
 			throws HibernateException, NamingException, IllegalAccessException,
 			InvocationTargetException {
 
 		// Instantiate a new software object
-		SoftwareCategory softwareCategory = new SoftwareCategory();
+		//SoftwareCategory softwareCategory = new SoftwareCategory();
 
 		// Copy the properties over from the form
 		softwareCategory.setChangeJustification(softwareCategoryForm
 				.getChangeJustification());
-		softwareCategory.setSoftwareCategoryId(new Long(softwareCategoryForm
-				.getSoftwareCategoryId()));
+		//softwareCategory.setSoftwareCategoryId(new Long(softwareCategoryForm
+		//		.getSoftwareCategoryId()));
 		softwareCategory.setStatus(softwareCategoryForm.getStatus());
 		softwareCategory.setSoftwareCategoryName(softwareCategoryForm
 				.getSoftwareCategoryName());
