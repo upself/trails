@@ -16,25 +16,25 @@
 	<a href="/TRAILS/reports/alertRedAging/accountDetail.htm?d-49653-e=2&6578706f7274=1&accountId=<s:property value="%{#attr.account.id}" />">Aging red alerts</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertHardware<s:property value="%{#attr.account.account}" />.tsv?name=alertHardware">HW w/o HW LPAR alert</a>
+	<a href="/TRAILS/report/download/alertHardware<s:property value="%{#attr.account.account}" />.xls?name=alertHardware">HW w/o HW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertHardwareLpar<s:property value="%{#attr.account.account}" />.tsv?name=alertHardwareLpar">HW LPAR w/o SW LPAR alert</a>
+	<a href="/TRAILS/report/download/alertHardwareLpar<s:property value="%{#attr.account.account}" />.xls?name=alertHardwareLpar">HW LPAR w/o SW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertSoftwareLpar<s:property value="%{#attr.account.account}" />.tsv?name=alertSoftwareLpar">SW LPAR w/o HW LPAR alert</a>
+	<a href="/TRAILS/report/download/alertSoftwareLpar<s:property value="%{#attr.account.account}" />.xls?name=alertSoftwareLpar">SW LPAR w/o HW LPAR alert</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/reports/operational/accountDetailDownload.htm?d-49653-e=2&6578706f7274=1&accountId=<s:property value="%{#attr.account.id}" />">Operational metrics</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.tsv?name=alertExpiredScan">Outdated SW LPAR alert</a>
+	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.xls?name=alertExpiredScan">Outdated SW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIbmSw<s:property value="%{#attr.account.account}" />.tsv?name=alertUnlicensedIbmSw">Unlicensed IBM SW alert</a>
+	<a href="/TRAILS/report/download/alertUnlicensedIbmSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIbmSw">Unlicensed IBM SW alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIsvSw<s:property value="%{#attr.account.account}" />.tsv?name=alertUnlicensedIsvSw">Unlicensed ISV SW alert</a>
+	<a href="/TRAILS/report/download/alertUnlicensedIsvSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIsvSw">Unlicensed ISV SW alert</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionDetail<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionDetail">Pending customer decision reconciled detail alert</a>
@@ -53,6 +53,9 @@
 </div>
 
 <h2 class="bar-blue-med-light">Miscellaneous reports</h2><br />
+<span class="download-link">
+	<a href="/TRAILS/report/download/casueCodeSummary<s:property value="%{#attr.account.account}" />.tsv?name=casueCodeSummary">Cause code summary report</a>
+</span>
 <span class="download-link">
 	<a href="/TRAILS/report/download/softwareVariance<s:property value="%{#attr.account.account}" />.tsv?name=softwareVariance">Contract scope to installed software variance</a>
 </span>

@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.HibernateException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.service.ReportService;
@@ -14,6 +15,8 @@ public abstract class ReportBase {
 	private ReportService reportService;
 
 	private OutputStream outputStream;
+	
+	private HSSFWorkbook hssfWorkBook;
 	
 	private String alertCode;
 
@@ -30,6 +33,14 @@ public abstract class ReportBase {
 
 		setReportService(pReportService);
 		setOutputStream(pOutputStream);
+	}
+	
+	public ReportBase(ReportService pReportService, OutputStream pOutputStream, HSSFWorkbook phssfWorkBook) {
+		super();
+
+		setReportService(pReportService);
+		setOutputStream(pOutputStream);
+		setHSSFWorkbook(phssfWorkBook);
 	}
 	
 	public ReportBase(ReportService pReportService, OutputStream pOutputStream, String pAlertCode) {
@@ -58,6 +69,14 @@ public abstract class ReportBase {
 	public abstract void execute(HttpServletRequest pHttpServletRequest,
 			Account pAccount) throws HibernateException, Exception;
 
+	public HSSFWorkbook getHSSFWorkbook() {
+		return hssfWorkBook;
+	}
+	
+	public void setHSSFWorkbook(HSSFWorkbook hssfWorkBook) {
+		this.hssfWorkBook = hssfWorkBook;
+	}
+	
 	public OutputStream getOutputStream() {
 		return outputStream;
 	}

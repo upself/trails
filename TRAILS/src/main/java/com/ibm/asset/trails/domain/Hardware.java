@@ -69,8 +69,59 @@ public class Hardware {
 
     @Column(name = "CHIPS")
     private Integer chips;
+    
+    @Column(name = "CPU_MIPS")
+    private Integer cpuLsprMips;
+    
+    @Column(name = "CPU_MSU")
+    private Integer cpuMsu;
+    
+    @Column(name = "CPU_GARTNER_MIPS")
+    private BigDecimal cpuGartnerMips;
 
-    @Column(name = "MAST_PROCESSOR_TYPE")
+    /**
+	 * @return the cpuLsprMips
+	 */
+	public Integer getCpuLsprMips() {
+		return cpuLsprMips;
+	}
+
+	/**
+	 * @param cpuLsprMips the cpuLsprMips to set
+	 */
+	public void setCpuLsprMips(Integer cpuLsprMips) {
+		this.cpuLsprMips = cpuLsprMips;
+	}
+
+	/**
+	 * @return the cpuMsu
+	 */
+	public Integer getCpuMsu() {
+		return cpuMsu;
+	}
+
+	/**
+	 * @param cpuMsu the cpuMsu to set
+	 */
+	public void setCpuMsu(Integer cpuMsu) {
+		this.cpuMsu = cpuMsu;
+	}
+
+	/**
+	 * @return the cpuGartnerMips
+	 */
+	public BigDecimal getCpuGartnerMips() {
+		return cpuGartnerMips;
+	}
+
+	/**
+	 * @param cpuGartnerMips the cpuGartnerMips to set
+	 */
+	public void setCpuGartnerMips(BigDecimal cpuGartnerMips) {
+		this.cpuGartnerMips = cpuGartnerMips;
+	}
+
+	@Column(name = "MAST_PROCESSOR_TYPE")
 	private String mastProcessorType;
 	
     @Column(name = "PROCESSOR_MANUFACTURER")

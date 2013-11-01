@@ -47,6 +47,102 @@ public class ReconWorkspace implements Serializable {
 	private Integer hardwareProcessorCount;
 
 	private Integer chips;
+	
+	private Integer cpuLsprMips;
+	
+	private Integer partLsprMips;
+	
+	private BigDecimal cpuGartnerMips;
+	
+	private BigDecimal partGartnerMips;
+	
+	/**
+	 * @return the cpuLsprMips
+	 */
+	public Integer getCpuLsprMips() {
+		return cpuLsprMips;
+	}
+
+	/**
+	 * @param cpuLsprMips the cpuLsprMips to set
+	 */
+	public void setCpuLsprMips(Integer cpuLsprMips) {
+		this.cpuLsprMips = cpuLsprMips;
+	}
+
+	/**
+	 * @return the partLsprMips
+	 */
+	public Integer getPartLsprMips() {
+		return partLsprMips;
+	}
+
+	/**
+	 * @param partLsprMips the partLsprMips to set
+	 */
+	public void setPartLsprMips(Integer partLsprMips) {
+		this.partLsprMips = partLsprMips;
+	}
+
+	/**
+	 * @return the cpuGartnerMips
+	 */
+	public BigDecimal getCpuGartnerMips() {
+		return cpuGartnerMips;
+	}
+
+	/**
+	 * @param cpuGartnerMips the cpuGartnerMips to set
+	 */
+	public void setCpuGartnerMips(BigDecimal cpuGartnerMips) {
+		this.cpuGartnerMips = cpuGartnerMips;
+	}
+
+	/**
+	 * @return the partGartnerMips
+	 */
+	public BigDecimal getPartGartnerMips() {
+		return partGartnerMips;
+	}
+
+	/**
+	 * @param partGartnerMips the partGartnerMips to set
+	 */
+	public void setPartGartnerMips(BigDecimal partGartnerMips) {
+		this.partGartnerMips = partGartnerMips;
+	}
+
+	/**
+	 * @return the cpuMsu
+	 */
+	public Integer getCpuMsu() {
+		return cpuMsu;
+	}
+
+	/**
+	 * @param cpuMsu the cpuMsu to set
+	 */
+	public void setCpuMsu(Integer cpuMsu) {
+		this.cpuMsu = cpuMsu;
+	}
+
+	/**
+	 * @return the partMsu
+	 */
+	public Integer getPartMsu() {
+		return partMsu;
+	}
+
+	/**
+	 * @param partMsu the partMsu to set
+	 */
+	public void setPartMsu(Integer partMsu) {
+		this.partMsu = partMsu;
+	}
+
+	private Integer cpuMsu;
+	
+	private Integer partMsu;
 
 	private String hardwareStatus;
 

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.HibernateException;
 
 import com.ibm.asset.trails.domain.Account;
@@ -13,14 +14,14 @@ import com.ibm.asset.trails.service.ReportService;
 public class AlertExpiredScanReport extends ReportBase {
 
 	public AlertExpiredScanReport(ReportService pReportService,
-			OutputStream pOutputStream) {
-		super(pReportService, pOutputStream);
+			OutputStream pOutputStream, HSSFWorkbook phwb) {
+		super(pReportService, pOutputStream, phwb);
 	}
 
 	@Override
 	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
 			throws HibernateException, Exception {
 		super.getReportService().getAlertExpiredScanReport(pAccount,
-				new PrintWriter(super.getOutputStream(), true));
+				super.getHSSFWorkbook(), super.getOutputStream());
 	}
 }

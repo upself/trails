@@ -1,8 +1,13 @@
 package com.ibm.asset.trails.service.impl;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +26,7 @@ import com.ibm.asset.trails.service.ReportService;
 
 @Service
 public class ReportServiceImpl implements ReportService {
+	private final String[] ALERT_VALID_CAUSE_CODE_HEADERS ={"Alert Type", "Cause Code (CC)", "Responsibility"};
     private final String[] ALERT_EXPIRED_MAINT_REPORT_COLUMN_HEADERS = {
             "Status", "Product name", "Total qty", "Expiration date",
             "SWCM ID", "Create date/time", "Age", "Assignee",
@@ -30,16 +36,19 @@ public class ReportServiceImpl implements ReportService {
     private final String[] ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS = {
             "Status", "Hostname", "Serial", "Machine type", "Asset type",
             "Create date/time", "Age", "Assignee", "Assignee comments",
-            "Assigned date/time" };
+            "Assigned date/time",  "Cause Code (CC)",
+            "CC target date", "CC owner", "CC change date", "CC change person", "Internal ID"};
     private final String ALERT_HARDWARE_LPAR_REPORT_NAME = "HW LPAR w/o SW LPAR alert report";
     private final String[] ALERT_HARDWARE_REPORT_COLUMN_HEADERS = { "Status",
             "Serial", "Machine type", "Asset type", "Create date/time", "Age",
-            "Assignee", "Assignee comments", "Assigned date/time" };
+            "Assignee", "Assignee comments", "Assigned date/time", "Cause Code (CC)", 
+            "CC target date", "CC owner", "CC change date", "CC change person", "Internal ID"};
     private final String ALERT_HARDWARE_REPORT_NAME = "HW w/o HW LPAR alert report";
     private final String ALERT_SOFTWARE_LPAR_REPORT_NAME = "SW LPAR w/o HW LPAR alert report";
     private final String[] ALERT_SW_LPAR_REPORT_COLUMN_HEADERS = { "Status",
             "Hostname", "Bios serial", "Create date/time", "Age", "Assignee",
-            "Assignee comments", "Assigned date/time" };
+            "Assignee comments", "Assigned date/time", "Cause Code (CC)", 
+            "CC target date", "CC owner", "CC change date", "CC change person", "Internal ID"};
     private final String ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME = "Account Data Exceptions report";
     private final String ALERT_UNLICENSED_IBM_SW_REPORT_NAME = "Unlicensed IBM SW alert report";
     private final String ALERT_UNLICENSED_ISV_SW_REPORT_NAME = "Unlicensed ISV SW alert report";
@@ -56,7 +65,7 @@ public class ReportServiceImpl implements ReportService {
     private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
             "Alert status", "Alert opened", "Alert duration", "SW LPAR name",
             "HW serial", "HW machine type", "Owner", "Country", "Asset type",
-            "SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","SHARED",
+            "SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","CPU IBM LSPR MIPS","CPU Gartner MIPS","CPU MSU","Part IBM LSPR MIPS","Part Gartner MIPS","Part MSU","SHARED",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
             "Effective processor count", "Installed SW product name", "SW Owner",
@@ -126,6 +135,10 @@ public class ReportServiceImpl implements ReportService {
     private final String[] WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
             "Account #", "Account name", "Account type", "Geography", "Region",
             "Country", "Sector", "Non-workstation count", "HW status" };
+    private final String CAUSE_CODE_SUMMARY_REPORT_NAME = "Cause Code Summary Report";
+    private final String[] CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS = {
+            "Alert", "Count", "Color", "Cause Code", "Responsibility"
+             };
     private EntityManager entityManager;
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -149,72 +162,157 @@ public class ReportServiceImpl implements ReportService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertExpiredScanReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
                 .setLong("customerId", pAccount.getId())
                 .setString("type", "EXPIRED_SCAN")
                 .scroll(ScrollMode.FORWARD_ONLY);
-
+        HSSFSheet sheet =  phwb.createSheet("Alert Outdated Swlpar Report");
         printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccount(),
-                ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+//        lsrReport.close();
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                        "SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'EXPIRED_SCAN' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertHardwareLparReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate())
                 .createSQLQuery(
-                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, HL.Name AS HL_Name, H.Serial, MT.Name AS MT_Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H, EAADMIN.Machine_Type MT WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE_LPAR' AND VA.Open = 1 AND HL.Id = VA.FK_Id AND H.Id = HL.Hardware_Id AND MT.Id = H.Machine_Type_Id ORDER BY HL.Name ASC")
+                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, HL.Name AS HL_Name, H.Serial, MT.Name AS MT_Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time, AC.name, CC.target_date, CC.owner, CC.record_time, CC.remote_user, CC.id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE_LPAR' AND VA.Open = 1 AND HL.Id = VA.FK_Id AND H.Id = HL.Hardware_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=4 and CC.alert_cause_id=AC.id ORDER BY HL.Name ASC")
                 .setLong("customerId", pAccount.getId())
                 .scroll(ScrollMode.FORWARD_ONLY);
-
+        HSSFSheet sheet =  phwb.createSheet("Alert HwLPAR Report");
         printHeader(ALERT_HARDWARE_LPAR_REPORT_NAME, pAccount.getAccount(),
-                ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+      
+        //lsrReport.close();
+        
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                		"SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'HARDWARE_LPAR' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertHardwareReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		 HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate())
                 .createSQLQuery(
-                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, H.Serial, MT.Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id ORDER BY H.Serial ASC")
+                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, H.Serial, MT.Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,  AC.name, CC.target_date, CC.owner, CC.record_time, CC.remote_user, CC.id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=3 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC")
                 .setLong("customerId", pAccount.getId())
                 .scroll(ScrollMode.FORWARD_ONLY);
-
+        HSSFSheet sheet =  phwb.createSheet("Alert Hardware Report");
         printHeader(ALERT_HARDWARE_REPORT_NAME, pAccount.getAccount(),
-                ALERT_HARDWARE_REPORT_COLUMN_HEADERS, pPrintWriter);
+                ALERT_HARDWARE_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+      //  lsrReport.close();
+        
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                		"SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'HARDWARE' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertSoftwareLparReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
                 .setLong("customerId", pAccount.getId())
                 .setString("type", "SOFTWARE_LPAR")
                 .scroll(ScrollMode.FORWARD_ONLY);
 
+        HSSFSheet sheet =  phwb.createSheet("Alert SwLpar Report");
         printHeader(ALERT_SOFTWARE_LPAR_REPORT_NAME, pAccount.getAccount(),
-                ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+
+      //  lsrReport.close();
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                		"SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'SOFTWARE_LPAR' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -253,36 +351,78 @@ public class ReportServiceImpl implements ReportService {
     
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertUnlicensedIbmSwReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate()).createSQLQuery(SQL_QUERY_UNLICENSED_SW)
                 .setLong("customerId", pAccount.getId())
                 .setString("type", "UNLICENSED_IBM_SW")
                 .scroll(ScrollMode.FORWARD_ONLY);
-
+        HSSFSheet sheet =  phwb.createSheet("Alert UNLICENSED_IBM_SW Report");
         printHeader(ALERT_UNLICENSED_IBM_SW_REPORT_NAME, pAccount.getAccount(),
-                ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+        
+       // lsrReport.close();
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                		"SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'UNLICENSED_IBM_SW' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getAlertUnlicensedIsvSwReport(Account pAccount,
-            PrintWriter pPrintWriter) throws HibernateException, Exception {
+    		HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate()).createSQLQuery(SQL_QUERY_UNLICENSED_SW)
                 .setLong("customerId", pAccount.getId())
                 .setString("type", "UNLICENSED_ISV_SW")
                 .scroll(ScrollMode.FORWARD_ONLY);
-
+        HSSFSheet sheet =  phwb.createSheet("Alert UNLICENSED_ISV_SW Report");
         printHeader(ALERT_UNLICENSED_ISV_SW_REPORT_NAME, pAccount.getAccount(),
-                ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, pPrintWriter);
+        		ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
+        int i=3;
         while (lsrReport.next()) {
-            pPrintWriter.println(outputData(lsrReport.get()));
+        	HSSFRow row=   sheet.createRow((int) i);
+            outputData(lsrReport.get(), row);
+            i++;
         }
-        lsrReport.close();
+
+        //lsrReport.close();
+        ScrollableResults vCauseCodeSummary = ((Session) getEntityManager()
+                .getDelegate())
+                .createSQLQuery(
+                		"SELECT VA.display_name, VA.ac_name,VA.ac_responsibility FROM EAADMIN.V_Alerts VA WHERE VA.Customer_Id = :customerId and VA.Type = 'UNLICENSED_ISV_SW' and VA.Open = 1 and VA.atc_status='ACTIVE' group by VA.display_name, VA.ac_name,VA.ac_responsibility ")
+                .setLong("customerId", pAccount.getId())
+                .scroll(ScrollMode.FORWARD_ONLY);
+        HSSFSheet sheet_2 =  phwb.createSheet("Valid Cause Codes");
+        HSSFRow rowhead0=   sheet_2.createRow((int) 0);
+        outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+        int j=1;
+        while (lsrReport.next()) {
+        	HSSFRow row=   sheet_2.createRow((int) j);
+            outputData(vCauseCodeSummary.get(), row);
+            j++;
+        }
+        vCauseCodeSummary.close();
+        phwb.write(pOutputStream);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -333,6 +473,12 @@ public class ReportServiceImpl implements ReportService {
                 + ",h.PROCESSOR_MODEL"
                 + ",h.NBR_CORES_PER_CHIP"
                 + ",h.NBR_OF_CHIPS_MAX"
+                + ",h.CPU_MIPS"
+                + ",h.CPU_GARTNER_MIPS"
+                + ",h.CPU_MSU"
+                + ",hl.PART_MIPS"
+                + ",hl.PART_GARTNER_MIPS"
+                + ",hl.PART_MSU"
                 + ",h.SHARED"
                 + ",h.hardware_status"
                 + ",hl.lpar_status"
@@ -722,6 +868,25 @@ public class ReportServiceImpl implements ReportService {
         }
         lsrReport.close();
     }
+    
+    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public  void getCauseCodeSummaryReport(Account pAccount,
+			PrintWriter pPrintWriter) throws HibernateException, Exception {
+    	 ScrollableResults lsrReport = ((Session) getEntityManager()
+                 .getDelegate())
+                 .createSQLQuery(
+                         "SELECT VA.CAUSE_CODE_ALERT_TYPE,count(*),CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as color,VA.AC_NAME, VA.AC_RESPONSIBILITY from v_alerts VA where VA.Customer_Id = :customerId group by (CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END ),VA.AC_NAME,VA.AC_RESPONSIBILITY,VA.CAUSE_CODE_ALERT_TYPE")
+                 .setLong("customerId", pAccount.getId())
+                 .scroll(ScrollMode.FORWARD_ONLY);
+
+         printHeader(CAUSE_CODE_SUMMARY_REPORT_NAME,
+                 pAccount.getAccount(),
+                 CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS, pPrintWriter);
+         while (lsrReport.next()) {
+             pPrintWriter.println(outputData(lsrReport.get()));
+         }
+         lsrReport.close();
+		   }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public void getSoftwareComplianceSummaryReport(Account pAccount,
@@ -809,6 +974,19 @@ public class ReportServiceImpl implements ReportService {
         lsrReport.close();
     }
 
+    private String outputData(Object[] poaData, HSSFRow rowct) {
+    	
+        StringBuffer lsbData = new StringBuffer();
+        String lsData = null;
+
+        for (int i = 0; poaData != null && i < poaData.length; i++) {
+            lsData = poaData[i] == null ? "" : poaData[i].toString();
+            rowct.createCell((int) i).setCellValue(lsData);
+        }
+
+        return lsbData.toString();
+    }
+    
     private String outputData(Object[] poaData) {
         StringBuffer lsbData = new StringBuffer();
         String lsData = null;
@@ -843,6 +1021,27 @@ public class ReportServiceImpl implements ReportService {
         return lsbData.toString();
     }
 
+    private void printHeader(String psReportName, Long plAccountNumber,
+            String[] psaColumnHeader, HSSFSheet sheet) {    	
+    	HSSFRow rowhead0=   sheet.createRow((int) 0);
+        SimpleDateFormat lsdfNow = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+        Object[] loaReportHeader = null;
+
+        if (plAccountNumber != null) {
+            loaReportHeader = new Object[] { psReportName, plAccountNumber,
+                    lsdfNow.format(Calendar.getInstance().getTime()) };
+        } else {
+            loaReportHeader = new Object[] { psReportName,
+                    lsdfNow.format(Calendar.getInstance().getTime()) };
+        }
+
+        rowhead0.createCell((int) 0).setCellValue("IBM Confidential");
+        HSSFRow rowhead1 = sheet.createRow((int) 1);
+        outputData(loaReportHeader, rowhead1);
+        HSSFRow rowhead2 = sheet.createRow((int) 2);
+        outputData(psaColumnHeader, rowhead2);
+    }
+    
     private void printHeader(String psReportName, Long plAccountNumber,
             String[] psaColumnHeader, PrintWriter pPrintWriter) {
         SimpleDateFormat lsdfNow = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");

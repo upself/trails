@@ -1,6 +1,7 @@
 package com.ibm.asset.trails.domain;
 
 import java.util.Date;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 
 @Entity
 @Table(name = "HARDWARE_LPAR")
@@ -26,7 +26,7 @@ public class HardwareLpar {
 
 	@Column(name = "NAME")
 	private String name;
-	
+
 	@Column(name = "EXT_ID")
 	private String extId;
 
@@ -42,19 +42,70 @@ public class HardwareLpar {
 
 	@Column(name = "STATUS")
 	private String status;
-	
+
 	@Column(name = "LPAR_STATUS")
 	private String lparStatus;
 
+	@Column(name = "PART_MIPS")
+	private Integer partLsprMips;
+
+	/**
+	 * @return the partLsprMips
+	 */
+	public Integer getPartLsprMips() {
+		return partLsprMips;
+	}
+
+	/**
+	 * @param partLsprMips the partLsprMips to set
+	 */
+	public void setPartLsprMips(Integer partLsprMips) {
+		this.partLsprMips = partLsprMips;
+	}
+
+	/**
+	 * @return the partMsu
+	 */
+	public Integer getPartMsu() {
+		return partMsu;
+	}
+
+	/**
+	 * @param partMsu the partMsu to set
+	 */
+	public void setPartMsu(Integer partMsu) {
+		this.partMsu = partMsu;
+	}
+
+	/**
+	 * @return the partGartnerMips
+	 */
+	public BigDecimal getPartGartnerMips() {
+		return partGartnerMips;
+	}
+
+	/**
+	 * @param partGartnerMips the partGartnerMips to set
+	 */
+	public void setPartGartnerMips(BigDecimal partGartnerMips) {
+		this.partGartnerMips = partGartnerMips;
+	}
+
+	@Column(name = "PART_MSU")
+	private Integer partMsu;
+
+	@Column(name = "PART_GARTNER_MIPS")
+	private BigDecimal partGartnerMips;
+
 	@Column(name = "SPLA")
 	private String spla;
-	
+
 	@Column(name = "SYSPLEX")
 	private String sysplex;
-	
+
 	@Column(name = "INTERNET_ICC_FLAG")
 	private String internetIccFlag;
-	
+
 	public Account getAccount() {
 		return account;
 	}
@@ -86,7 +137,7 @@ public class HardwareLpar {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getExtId() {
 		return extId;
 	}
@@ -118,7 +169,7 @@ public class HardwareLpar {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 	public String getLparStatus() {
 		return status;
 	}
@@ -126,7 +177,7 @@ public class HardwareLpar {
 	public void setLparStatus(String lparStatus) {
 		this.status = lparStatus;
 	}
-	
+
 	public String getSpla() {
 		return this.spla;
 	}
@@ -134,7 +185,7 @@ public class HardwareLpar {
 	public void setSpla(String spla) {
 		this.spla = spla;
 	}
-	
+
 	public String getSysplex() {
 		return this.sysplex;
 	}
@@ -142,7 +193,7 @@ public class HardwareLpar {
 	public void setSysplex(String sysplex) {
 		this.sysplex = sysplex;
 	}
-	
+
 	public String getInternetIccFlag() {
 		return this.internetIccFlag;
 	}

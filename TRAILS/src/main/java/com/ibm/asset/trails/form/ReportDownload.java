@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.util.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.service.ReportService;
@@ -23,6 +24,8 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 	private static final long serialVersionUID = 1L;
 
 	private static final Log log = LogFactory.getLog(ReportDownload.class);
+	
+	private final String REPORT_NAME_CAUSE_CODE_SUMMARY = "casueCodeSummary";
 
 	private final String REPORT_NAME_ALERT_EXPIRED_MAINT = "alertExpiredMaint";
 
@@ -103,19 +106,20 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 
 			try {
 				pHttpServletResponse.setContentType("application/vnd.ms-excel");
+				HSSFWorkbook hwb=new HSSFWorkbook();
 				if(lsCode != null){
 				pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
 						"filename=").append(lsName).append(lsCode).append(
 						lAccount != null ? lAccount.getAccount().toString() : "").append(
-						".tsv").toString());
+						".xls").toString());
 				} else {
 					pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
 							"filename=").append(lsName).append(
 							lAccount != null ? lAccount.getAccount().toString() : "").append(
-							".tsv").toString());
+							".xls").toString());
 				}
 				lReportBase = getReport(lsName, lsCode, lReportService,
-						pHttpServletResponse.getOutputStream(), pHttpServletRequest);
+						pHttpServletResponse.getOutputStream(), pHttpServletRequest, hwb);
 
 				if (lReportBase != null) {
 					lReportBase.execute(pHttpServletRequest, lAccount);
@@ -145,7 +149,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 
 	private ReportBase getReport(String psName, String psCode, ReportService pReportService,
 			ServletOutputStream pServletOutputStream,
-			HttpServletRequest pHttpServletRequest) throws Exception {
+			HttpServletRequest pHttpServletRequest, HSSFWorkbook phwb) throws Exception {
 		if (psName.equalsIgnoreCase(REPORT_NAME_FULL_RECONCILIATION)
 				|| psName.equalsIgnoreCase(REPORT_NAME_INSTALLED_SOFTWARE_BASELINE)
 				|| psName.equalsIgnoreCase(REPORT_NAME_LICENSE_BASELINE)
@@ -205,24 +209,24 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 					pServletOutputStream);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_EXPIRED_SCAN)) {
 			return new AlertExpiredScanReport(pReportService,
-					pServletOutputStream);
+					pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_HARDWARE)) {
-			return new AlertHardwareReport(pReportService, pServletOutputStream);
+			return new AlertHardwareReport(pReportService, pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_HARDWARE_LPAR)) {
 			return new AlertHardwareLparReport(pReportService,
-					pServletOutputStream);
+					pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_SOFTWARE_LPAR)) {
 			return new AlertSoftwareLparReport(pReportService,
-					pServletOutputStream);
+					pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ACCOUNT_DATA_EXCEPTION)) {
 			return new AccountDataExceptionsReport(pReportService, psCode,
 					pServletOutputStream);
 		}  else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_IBM_SW)) {
 			return new AlertUnlicensedIbmSwReport(pReportService,
-					pServletOutputStream);
+					pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_ALERT_UNLICENSED_ISV_SW)) {
 			return new AlertUnlicensedIsvSwReport(pReportService,
-					pServletOutputStream);
+					pServletOutputStream, phwb);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_FREE_LICENSE_POOL)) {
 			return new FreeLicensePoolReport(pReportService,
 					pServletOutputStream);
@@ -250,6 +254,8 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 			return new SoftwareVarianceReport(pReportService, pServletOutputStream);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_WORKSTATION_ACCOUNTS)) {
 			return new WorkstationAccountsReport(pReportService, pServletOutputStream);
+		} else if (psName.equalsIgnoreCase(REPORT_NAME_CAUSE_CODE_SUMMARY)) {
+			return new CauseCodeSummaryReport(pReportService, pServletOutputStream);
 		} else {
 			log.error(new StringBuffer("An invalid report name, '").append(
 					psName).append("', was given."));

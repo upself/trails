@@ -78,33 +78,37 @@
 	<div class="clear"></div>
 	<small> <display:table name="data.list" class="basic-table"
 			summary="alert list" id="row" cellspacing="1" cellpadding="0">
-		<display:column property="alertStatus" title="" />
-		<display:column property="alertAgeI" title="Age" />
-		<display:column property="hostname" title="Hostname" />
-		<display:column property="serial" title="Serial" />
-		<display:column property="country" title="Country" />
-		<display:column property="owner" title="HW Owner" />
-		<display:column property="assetType" title="Asset type" />
-		<display:column property="productInfoName" title="SW Name" />
-		<display:column property="processorManufacturer" title="Proc mfg" />
-		<display:column property="mastProcessorType" title="Proc type" />
-		<display:column property="mastProcessorModel" title="Proc model" />
-		<display:column property="nbrCoresPerChip" title="cores per chip" />
-		<display:column property="chips" title=" HW chip" />
-		<display:column property="hardwareProcessorCount"
-			title="HW proc" />
-		<display:column property="nbrOfChipsMax" title=" # chips max" />
-		<display:column property="shared" title="Shared" />
-		<display:column property="processorCount" title="LPAR proc" />
-		<display:column property="sysplex" title="Sysplex" />
-		<display:column property="spla" title="SPLA" />
-		<display:column property="internetIccFlag" title="Internet Acc" />
-		<display:column property="reconcileTypeName" title="Recon type" />
-		<display:column property="assignee" title="Assignee" />
+			<display:column property="alertStatus" title="" />
+			<display:column property="alertAgeI" title="Age" />
+			<display:column property="hostname" title="Hostname" />
+			<display:column property="serial" title="Serial" />
+			<display:column property="country" title="Country" />
+			<display:column property="owner" title="HW Owner" />
+			<display:column property="assetType" title="Asset type" />
+			<display:column property="productInfoName" title="SW Name" />
+			<display:column property="processorManufacturer" title="Proc mfg" />
+			<display:column property="mastProcessorType" title="Proc type" />
+			<display:column property="mastProcessorModel" title="Proc model" />
+			<display:column property="nbrCoresPerChip" title="cores per chip" />
+			<display:column property="chips" title=" HW chip" />
+			<display:column property="hardwareProcessorCount" title="HW proc" />
+			<display:column property="nbrOfChipsMax" title=" # chips max" />
+			<display:column property="cpuLsprMips" title="CPU IBM LSPR MIPS" />
+			<display:column property="partLsprMips" title="PART IBM LSPR MIPS" />
+			<display:column property="cpuGartnerMips" title="CPU Gartner MIPS" />
+			<display:column property="partGartnerMips" title="Part Gartner MIPS" />
+			<display:column property="cpuMsu" title="CPU MSU" />
+			<display:column property="partMsu" title="Part MSU" />
+			<display:column property="shared" title="Shared" />
+			<display:column property="processorCount" title="LPAR proc" />
+			<display:column property="sysplex" title="Sysplex" />
+			<display:column property="spla" title="SPLA" />
+			<display:column property="internetIccFlag" title="Internet Acc" />
+			<display:column property="reconcileTypeName" title="Recon type" />
+			<display:column property="assignee" title="Assignee" />
 		</display:table> <br />
 
-		<div class="hrule-dots"></div> 
-		<display:table name="licenseList"
+		<div class="hrule-dots"></div> <display:table name="licenseList"
 			class="basic-table" id="row" summary="license list"
 			decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 			cellspacing="1" cellpadding="0">

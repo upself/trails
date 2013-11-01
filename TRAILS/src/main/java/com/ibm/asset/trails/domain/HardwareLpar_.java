@@ -1,6 +1,7 @@
 package com.ibm.asset.trails.domain;
 
 import java.util.Date;
+import java.math.BigDecimal;
 
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
@@ -17,6 +18,9 @@ public class HardwareLpar_ {
 	public static volatile SingularAttribute<HardwareLpar, Date> recordTime;
 	public static volatile SingularAttribute<HardwareLpar, String> status;
 	public static volatile SingularAttribute<HardwareLpar, String> lparStatus;
+	public static volatile SingularAttribute<HardwareLpar, Integer> partLsprMips;
+	public static volatile SingularAttribute<HardwareLpar, Integer> partMsu;
+	public static volatile SingularAttribute<HardwareLpar, BigDecimal> partGartnerMips;
 	public static volatile SingularAttribute<HardwareLpar, String> spla;
 	public static volatile SingularAttribute<HardwareLpar, String> sysplex;
 	public static volatile SingularAttribute<HardwareLpar, String> internetIccFlag;

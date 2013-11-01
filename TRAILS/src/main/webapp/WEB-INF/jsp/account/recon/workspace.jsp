@@ -1,12 +1,12 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script src="${pageContext.request.contextPath}/js/jquery.js"
 	type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
 	type="text/javascript"></script>
 <script type="text/javascript">
-
 	function popupBravoSl(id) {
 		newWin = window
 				.open(
@@ -33,145 +33,161 @@
 				.open(page, 'PopUpWindow',
 						'left=200,top=180,resizable=yes,scrollbars=yes,width=700,height=500');
 	}
-	
-	
-	function rcnTypSltChng(objSelect){
+
+	function rcnTypSltChng(objSelect) {
 		var value = objSelect.value;
-		if(value == 1){
-	        $("#filterSpan").after('<input id="btnAddFltr" type="button" value="+filter" onclick="addFltr()"/>');
-		}else{
+		if (value == 1) {
+			$("#filterSpan")
+					.after(
+							'<input id="btnAddFltr" type="button" value="+filter" onclick="addFltr()"/>');
+		} else {
 			$("#btnAddFltr").remove();
 			$("div.fltr").empty();
 		}
 	}
-	
-    var fltrCntr = 0;
-	function addFltr(){
-		
-		var filter = '<div class="fltr">'+
-		'<div class="clear"></div>'+
-	    '<div class="hrule-dots"></div>'+
-	    '<div class="clear"></div>'+ 
-		'<input type="button" value="delete" onclick="delFltr(this)"/>'+
-		' Capacity Type:';
-		 $.ajax({
-		   url:"${pageContext.request.contextPath}/account/recon/getCapcityTypes.htm",
-	       async:false,
-	       data:{index:fltrCntr},
-	       beforeSend: function(){
-	    	 $("#filters").html("loading capacity types...");  
-	       },
-	       success: function (data,result){
-	    	 filter+=data+'</br></br>';
-	       },
-	       complete: function(){
-	    	 $("#filters").empty();  
-	       }
-	     });
-		 filter+=
-		' Manufacturer(s): <input type="text" name="filter['+fltrCntr+'].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'+
-		' Product name(s):<input type="text" name="filter['+fltrCntr+'].productName" autocomplete="off" onKeyUp="keyup(this)"/>'+ 
-		' PO number(s):<input type="text" name="filter['+fltrCntr+'].poNo"/>'+
-		' SWCM ID:<input type="text" name="filter['+fltrCntr+'].swcmId"/>'+
-		'</div>';
 
-	    
-		 $("#filters").after(filter);
-		 fltrCntr++;
+	var fltrCntr = 0;
+	function addFltr() {
+
+		var filter = '<div class="fltr">'
+				+ '<div class="clear"></div>'
+				+ '<div class="hrule-dots"></div>'
+				+ '<div class="clear"></div>'
+				+ '<input type="button" value="delete" onclick="delFltr(this)"/>'
+				+ ' Capacity Type:';
+		$
+				.ajax({
+					url : "${pageContext.request.contextPath}/account/recon/getCapcityTypes.htm",
+					async : false,
+					data : {
+						index : fltrCntr
+					},
+					beforeSend : function() {
+						$("#filters").html("loading capacity types...");
+					},
+					success : function(data, result) {
+						filter += data + '</br></br>';
+					},
+					complete : function() {
+						$("#filters").empty();
+					}
+				});
+		filter += ' Manufacturer(s): <input type="text" name="filter['
+				+ fltrCntr
+				+ '].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'
+				+ ' Product name(s):<input type="text" name="filter['
+				+ fltrCntr
+				+ '].productName" autocomplete="off" onKeyUp="keyup(this)"/>'
+				+ ' PO number(s):<input type="text" name="filter['+fltrCntr+'].poNo"/>'
+				+ ' SWCM ID:<input type="text" name="filter['+fltrCntr+'].swcmId"/>'
+				+ '</div>';
+
+		$("#filters").after(filter);
+		fltrCntr++;
 	}
-	
-	function delFltr(fltr){
+
+	function delFltr(fltr) {
 		$(fltr).parent("div").empty();
 	}
-	
-	$(document.body).click(function(event) {
-		var liveSearch=$("#jquery-live-search");
-		if(liveSearch.length){
-			var clicked = $(event.target);
-			if (!(clicked.is("#jquery-live-search") || clicked.parents("#jquery-live-search").length || clicked.is(this))) {
-				liveSearch.slideUp();
-			}
-		}
-	});
-	
-	var lastValue='';
-	
-	function keyup(type){
-		var value=$.trim(type.value);
-   		if(value==$.trim('')||value=='' || value==lastValue){
-           return;
+
+	$(document.body)
+			.click(
+					function(event) {
+						var liveSearch = $("#jquery-live-search");
+						if (liveSearch.length) {
+							var clicked = $(event.target);
+							if (!(clicked.is("#jquery-live-search")
+									|| clicked.parents("#jquery-live-search").length || clicked
+									.is(this))) {
+								liveSearch.slideUp();
+							}
+						}
+					});
+
+	var lastValue = '';
+
+	function keyup(type) {
+		var value = $.trim(type.value);
+		if (value == $.trim('') || value == '' || value == lastValue) {
+			return;
 		}
 		lastValue = value;
-		
-		var liveSearch=$("#jquery-live-search");
-	
-		if(!liveSearch.length){
-			liveSearch = $("<div id='jquery-live-search'></div>").appendTo(document.body).hide().slideUp(0);
+
+		var liveSearch = $("#jquery-live-search");
+
+		if (!liveSearch.length) {
+			liveSearch = $("<div id='jquery-live-search'></div>").appendTo(
+					document.body).hide().slideUp(0);
 		}
-		
+
 		var inputPos = $(type).position();
 		var inputHeight = $(type).outerHeight();
-		
+
 		liveSearch.css({
-			"position":"absolute",
-			"top":inputPos.top+inputHeight+"px",
-			"left":inputPos.left+"px"
+			"position" : "absolute",
+			"top" : inputPos.top + inputHeight + "px",
+			"left" : inputPos.left + "px"
 		});
-		
+
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
-		
-       this.timer = setTimeout(function(){
-		   
-    	   $.ajax({
-    			 url:"${pageContext.request.contextPath}/account/recon/quickSearch.htm",
-    			 async:true,
-    			 type:"POST",
-    			 data:{key:value,label:type.name},
-    			 beforeSend:function(){
-    				 liveSearch.empty();
-    				 liveSearch.append("searching...").fadeIn(400);
-    			 },
-    			 error:function(){
-    				 liveSearch.empty();
-    				 liveSearch.append("error").fadeIn(400);
-    			 },
-    			 success:function(data,status){
-    				 liveSearch.empty();
-    				 if(!data.length){
-    					 liveSearch.append("no matched item found.")
-    				 }else{
-    				     liveSearch.append(data);
-    				 }
-    				 liveSearch.show("slow");
-    				 
-    				 var over={
-    				    "color":"white",
-    				    "background":"blue"
-    				 };
-    				 
-    				 var out={
-    					"color":"black",
-    					"background":"white"
-    				 };
-    				 
-    				 $("li.prompt").hover(function(){
-    					  $(this).css(over);
-    				 }, function(){
-    					 $(this).css(out);
-    				 });
-    				 
-    				 $("li.prompt").click(function(){
-    					  type.value = $(this).text();
-    				 });
-    			 }
-    		   })
-       },1000);
-		
-    }
-	
 
+		this.timer = setTimeout(
+				function() {
+
+					$
+							.ajax({
+								url : "${pageContext.request.contextPath}/account/recon/quickSearch.htm",
+								async : true,
+								type : "POST",
+								data : {
+									key : value,
+									label : type.name
+								},
+								beforeSend : function() {
+									liveSearch.empty();
+									liveSearch.append("searching...").fadeIn(
+											400);
+								},
+								error : function() {
+									liveSearch.empty();
+									liveSearch.append("error").fadeIn(400);
+								},
+								success : function(data, status) {
+									liveSearch.empty();
+									if (!data.length) {
+										liveSearch
+												.append("no matched item found.")
+									} else {
+										liveSearch.append(data);
+									}
+									liveSearch.show("slow");
+
+									var over = {
+										"color" : "white",
+										"background" : "blue"
+									};
+
+									var out = {
+										"color" : "black",
+										"background" : "white"
+									};
+
+									$("li.prompt").hover(function() {
+										$(this).css(over);
+									}, function() {
+										$(this).css(out);
+									});
+
+									$("li.prompt").click(function() {
+										type.value = $(this).text();
+									});
+								}
+							})
+				}, 1000);
+
+	}
 </script>
 
 <s:url id="freepool" action="licenseFreePool"
@@ -276,6 +292,18 @@
 				value="%{#attr.row.mastProcessorModel}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].nbrOfChipsMax"
 				value="%{#attr.row.nbrOfChipsMax}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuLsprMips"
+				value="%{#attr.row.cpuLsprMips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].partLsprMips"
+				value="%{#attr.row.partLsprMips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuGartnerMips"
+				value="%{#attr.row.cpuGartnerMips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].partGartnerMips"
+				value="%{#attr.row.partGartnerMips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuMsu"
+				value="%{#attr.row.cpuMsu}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].partMsu"
+				value="%{#attr.row.partMsu}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].shared"
 				value="%{#attr.row.shared}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].sysplex"

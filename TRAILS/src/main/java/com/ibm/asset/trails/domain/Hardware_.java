@@ -24,6 +24,9 @@ public class Hardware_ {
 	public static volatile SingularAttribute<Hardware, String> processorModel;
 	public static volatile SingularAttribute<Hardware, String> processorBrand;
 	public static volatile SingularAttribute<Hardware, Integer> chips;
+	public static volatile SingularAttribute<Hardware, Integer> cpuLsprMips;
+	public static volatile SingularAttribute<Hardware, Integer> cpuMsu;
+	public static volatile SingularAttribute<Hardware, BigDecimal> cpuGartnerMips;
 	public static volatile SingularAttribute<Hardware, String> mastProcessorType;
 	public static volatile SingularAttribute<Hardware, String> processorManufacturer;
 	public static volatile SingularAttribute<Hardware, String> mastProcessorModel;

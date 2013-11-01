@@ -92,6 +92,12 @@ confirmation page. Click on cancel to return to the workspace.</p>
 		<display:column property="hardwareProcessorCount"
 			title="HW proc" />
 		<display:column property="nbrOfChipsMax" title=" # chips max" />
+		<display:column property="cpuLsprMips" title="CPU IBM LSPR MIPS" />
+		<display:column property="partLsprMips" title="PART IBM LSPR MIPS" />
+		<display:column property="cpuGartnerMips" title="CPU Gartner MIPS" />
+		<display:column property="partGartnerMips" title="Part Gartner MIPS" />
+		<display:column property="cpuMsu" title="CPU MSU" />
+		<display:column property="partMsu" title="Part MSU" />
 		<display:column property="shared" title="Shared" />
 		<display:column property="processorCount" title="LPAR proc" />
 		<display:column property="sysplex" title="Sysplex" />
