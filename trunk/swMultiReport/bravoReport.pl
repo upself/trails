@@ -247,12 +247,14 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 	$heartbeat->write( $lineCount, 9, "SCANTIME" );
 	$heartbeat->write( $lineCount, 10, "BANK ACCOUNT" );
 	$heartbeat->write( $lineCount, 11, "SERVER TYPE" );
-	$heartbeat->write( $lineCount, 12, "CPU MIPS" );
-	$heartbeat->write( $lineCount, 13, "CPU MSU" );
-	$heartbeat->write( $lineCount, 14, "PART MIPS" );
-	$heartbeat->write( $lineCount, 15, "PART MSU" );
-	$heartbeat->write( $lineCount, 16, "LPAR STATUS" );
-	$heartbeat->write( $lineCount, 17, "HARDWARE STATUS" );
+	$heartbeat->write( $lineCount, 12, "CPU IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 13, "CPU Gartner MIPS" );
+	$heartbeat->write( $lineCount, 14, "CPU MSU" );
+	$heartbeat->write( $lineCount, 15, "PART IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 16, "PART Gartner MIPS" );
+	$heartbeat->write( $lineCount, 17, "PART MSU" );
+	$heartbeat->write( $lineCount, 18, "LPAR STATUS" );
+	$heartbeat->write( $lineCount, 19, "HARDWARE STATUS" );
 
 	$lineCount++;
 
@@ -295,10 +297,14 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'serverType'} );
         $heartbeat->write( $lineCount, 12,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
+        $heartbeat->write( $lineCount, 12,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
         $heartbeat->write( $lineCount, 13,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
         $heartbeat->write( $lineCount, 14,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
+        $heartbeat->write( $lineCount, 15,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
         $heartbeat->write( $lineCount, 15,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
         $heartbeat->write( $lineCount, 16,
@@ -707,8 +713,10 @@ sub getBravoSoftwareReport {
 	my $scopeDescription;
 	my $serverType;
 	my $cpuMIPS;
+	my $cpuGartnerMIPS
 	my $cpuMSU;
 	my $partMIPS;
+	my $partGartnerMIPS
 	my $partMSU;
 	my $lparStatus;
 	my $hardwareStatus;
@@ -734,8 +742,10 @@ select 				   ol.account_number
                       ,sc.description
                       ,j.server_type
                       ,j.cpu_mips
+                      ,j.cup_gartner_mips
                       ,j.cpu_msu
                       ,i.part_mips
+                      ,i.part_gartner_mips
                       ,i.part_msu
                       ,i.lpar_status
                       ,j.hardware_status
@@ -818,7 +828,9 @@ from
 		\$softwareCategory,	\$osMinorVers,     	\$osSubVers, 
 		\$discrepancyType,     
 		\$scopeDescription, \$serverType,       \$cpuMIPS,
-		\$cpuMSU,           \$partMIPS,         \$partMSU,
+		\$cpuGartnerMIPS,
+		\$cpuMSU,           \$partMIPS,        \$partGartnerMIPS, 
+		\$partMSU,
 		\$lparStatus,       \$hardwareStatus
 	);
 
@@ -838,8 +850,10 @@ from
 		$data{$accountNumber}{$name}{'osSubVers'}   = $osSubVers;
 		$data{$accountNumber}{$name}{'serverType'}   = $serverType;
 		$data{$accountNumber}{$name}{'cpuMIPS'}   = $cpuMIPS;
+		$data{$accountNumber}{$name}{'cpuGartnerMIPS'}   = $cpuGartnerMIPS;
 		$data{$accountNumber}{$name}{'cpuMSU'}   = $cpuMSU;
 		$data{$accountNumber}{$name}{'partMIPS'}   = $partMIPS;
+		$data{$accountNumber}{$name}{'partGartnerMIPS'}   = $partGartnerMIPS;
 		$data{$accountNumber}{$name}{'partMSU'}   = $partMSU;
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
@@ -916,8 +930,10 @@ from
 		$data{$accountNumber}{$name}{'osSubVers'}   = $osSubVers;
 		$data{$accountNumber}{$name}{'serverType'}   = $serverType;
 		$data{$accountNumber}{$name}{'cpuMIPS'}   = $cpuMIPS;
+		$data{$accountNumber}{$name}{'cpuGartnerMIPS'}   = $cpuGartnerMIPS;
 		$data{$accountNumber}{$name}{'cpuMSU'}   = $cpuMSU;
 		$data{$accountNumber}{$name}{'partMIPS'}   = $partMIPS;
+		$data{$accountNumber}{$name}{'partGartnerMIPS'}   = $partGartnerMIPS;
 		$data{$accountNumber}{$name}{'partMSU'}   = $partMSU;
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
