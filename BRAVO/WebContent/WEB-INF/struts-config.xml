@@ -123,6 +123,11 @@
 			<forward name="list" path="/WEB-INF/jsp/account/list.jsp" />
 			<forward name="error" path="/WEB-INF/jsp/account/error.jsp" />
 		</action>
+		<action path="/account/banklist" type="com.ibm.ea.bravo.account.BankAccListAction"
+			name="customerBank" scope="request" parameter="bank">
+			<forward name="success" path="/WEB-INF/jsp/account/bankAcInclude.jsp" />
+			<forward name="admin" path="/WEB-INF/jsp/admin/bankInclude.jsp" />
+		</action>
 		<!-- ACCOUNT search -->
 		<action path="/account/search" type="com.ibm.ea.bravo.account.ActionAccount"
 			parameter="search" name="accountSearch" validate="false" scope="request">
@@ -398,10 +403,6 @@
 		<action path="/admin/db/create" type="com.ibm.ea.bravo.framework.db.ActionDb"
 			parameter="create">
 			<forward name="success" path="/home.do" />
-		</action>
-		<action path="/admin/bank" type="com.ibm.ea.bravo.admin.ActionAdmin"
-			name="customerBank" scope="request" parameter="bank">
-			<forward name="success" path="/WEB-INF/jsp/admin/bankInclude.jsp" />
 		</action>
 		<action path="/admin/updateBank" type="com.ibm.ea.bravo.admin.ActionAdmin"
 			name="customerBank" parameter="updateBank">

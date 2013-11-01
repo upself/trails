@@ -62,7 +62,7 @@ function popupTrailsReports(accountId) {
 <!-- Exclude Account --> <img
 	src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif" width="13"
 	height="12" /> <html:link
-	page="/admin/bank.do?accountId=${account.customer.accountNumber}">Bank Account Inclusion List</html:link><br />
+	page="/account/banklist.do?accountId=${account.customer.accountNumber}">Bank Account Inclusion List</html:link><br />
 <!-- Create Contact --> <img
 	src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif" width="13"
 	height="13" /> <html:link

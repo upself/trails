@@ -12,13 +12,13 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.ibm.ea.bravo.account.Account;
-import com.ibm.ea.bravo.account.DelegateAccount;
+//import com.ibm.ea.bravo.account.Account;
+//import com.ibm.ea.bravo.account.DelegateAccount;
 import com.ibm.ea.bravo.framework.common.ActionBase;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.software.DelegateSoftware;
-import com.ibm.ea.sigbank.BankAccount;
-import com.ibm.ea.sigbank.BankAccountInclusion;
+//import com.ibm.ea.sigbank.BankAccount;
+//import com.ibm.ea.sigbank.BankAccountInclusion;
 
 public class ActionAdmin extends ActionBase {
 	/**
@@ -69,23 +69,23 @@ public class ActionAdmin extends ActionBase {
         return mapping.findForward(Constants.SUCCESS);
     }
     
-    public ActionForward bank(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-		List<BankAccount> customerBank = null;
-		List<BankAccountInclusion> bankInclusion = null;
-    	logger.debug("Admin.bank");
-		String accountId = getParameter(request, Constants.ACCOUNT_ID);
-		// get the account
-		Account account = DelegateAccount.getAccount(accountId, request);
-		request.setAttribute(Constants.ACCOUNT, account);
-		customerBank = DelegateSoftware.getCustomerBank(account.getCustomer().getCustomerId().toString());
-		bankInclusion = DelegateSoftware.getBankInclusion(account.getCustomer().getAccountNumberStr());
-		request.setAttribute("customerBank", customerBank);
-		request.setAttribute("bankInclude", bankInclusion);
-		request.setAttribute("accountId", accountId);
+//   public ActionForward bank(ActionMapping mapping, ActionForm form,
+//            HttpServletRequest request, HttpServletResponse response)
+//            throws Exception {
+//		List<BankAccount> customerBank = null;
+//		List<BankAccountInclusion> bankInclusion = null;
+//   	logger.debug("Admin.bank");
+//		String accountId = getParameter(request, Constants.ACCOUNT_ID);
+//		// get the account
+//		Account account = DelegateAccount.getAccount(accountId, request);
+//		request.setAttribute(Constants.ACCOUNT, account);
+//		customerBank = DelegateSoftware.getCustomerBank(account.getCustomer().getCustomerId().toString());
+//		bankInclusion = DelegateSoftware.getBankInclusion(account.getCustomer().getAccountNumberStr());
+//		request.setAttribute("customerBank", customerBank);
+//		request.setAttribute("bankInclude", bankInclusion);
+//		request.setAttribute("accountId", accountId);
 		
-        return mapping.findForward(Constants.SUCCESS);
-    }
+//        return mapping.findForward(Constants.SUCCESS);
+//    }
     
 }

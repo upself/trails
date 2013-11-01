@@ -23,6 +23,7 @@ public class Constants {
 	public static final String COMMA = ",";
 	public static final String EA_ADMIN_GROUP = "com.ibm.ea.admin";
 	public static final String SUCCESS = "success";
+	public static final String ADMIN = "admin";
 	public static final String DB_SCHEMA = "/var/bravo/bravo.schema.sql";
 	public static final String NAME_SEARCH = "Name";
 	public static final String USER = "user";
