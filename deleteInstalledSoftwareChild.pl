@@ -44,7 +44,7 @@ eval {
     my $customerId = trim($opt_b);
     dlog(" the customer id is $customerId" );
     
-
+    mlog('Start to delete .');
     dlog('Declare parameters');
     my $deleteTotal ;
     my $escapeLine ;
@@ -70,6 +70,7 @@ eval {
     dlog('Closing statement handle');
     $sth->finish;
     dlog('Closed statement handle');
+    mlog('Complete to delete .');
 
 };
 if ($@) {

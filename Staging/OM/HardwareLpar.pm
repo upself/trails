@@ -20,6 +20,7 @@ sub new {
         ,_lparStatus => undef
         ,_partMIPS => undef
         ,_partMSU => undef
+        ,_partGartnerMIPS => undef
         ,_action => undef
         ,_updateDate => undef
         ,_hardwareKey => undef
@@ -119,6 +120,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->partGartnerMIPS && defined $object->partGartnerMIPS) {
+        $equal = 1 if $self->partGartnerMIPS eq $object->partGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->partGartnerMIPS && !defined $object->partGartnerMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->hardwareKey && defined $object->hardwareKey) {
         $equal = 1 if $self->hardwareKey eq $object->hardwareKey;
     }
@@ -210,6 +218,12 @@ sub partMSU {
     my $self = shift;
     $self->{_partMSU} = shift if scalar @_ == 1;
     return $self->{_partMSU};
+}
+
+sub partGartnerMIPS {
+    my $self = shift;
+    $self->{_partGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_partGartnerMIPS};
 }
 
 sub action {
@@ -315,6 +329,11 @@ sub toString {
         $s .= $self->{_partMSU};
     }
     $s .= ",";
+    $s .= "partGartnerMIPS=";
+    if (defined $self->{_partGartnerMIPS}) {
+        $s .= $self->{_partGartnerMIPS};
+    }
+    $s .= ",";
     $s .= "action=";
     if (defined $self->{_action}) {
         $s .= $self->{_action};
@@ -366,6 +385,7 @@ sub save {
             ,$self->lparStatus
             ,$self->partMIPS
             ,$self->partMSU
+            ,$self->partGartnerMIPS
             ,$self->action
             ,$self->updateDate
         );
@@ -390,6 +410,7 @@ sub save {
             ,$self->lparStatus
             ,$self->partMIPS
             ,$self->partMSU
+            ,$self->partGartnerMIPS
             ,$self->action
             ,$self->updateDate
             ,$self->id
@@ -418,10 +439,12 @@ sub queryInsert {
             ,lpar_status
             ,part_mips
             ,part_msu
+            ,PART_GARTNER_MIPS
             ,action
             ,update_date
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -458,6 +481,7 @@ sub queryUpdate {
             ,lpar_status = ?
             ,part_mips = ?
             ,part_msu = ?
+            ,PART_GARTNER_MIPS = ?
             ,action = ?
             ,update_date = ?
         where
@@ -505,6 +529,7 @@ sub getById {
     my $lparStatus;
     my $partMIPS;
     my $partMSU;
+    my $partGartnerMIPS;
     my $action;
     my $updateDate;
     $sth->bind_columns(
@@ -521,6 +546,7 @@ sub getById {
         ,\$lparStatus
         ,\$partMIPS
         ,\$partMSU
+        ,\$partGartnerMIPS
         ,\$action
         ,\$updateDate
     );
@@ -542,6 +568,7 @@ sub getById {
     $self->lparStatus($lparStatus);
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
+    $self->partGartnerMIPS($partGartnerMIPS);
     $self->action($action);
     $self->updateDate($updateDate);
     return (defined $found) ? 1 : 0;
@@ -563,6 +590,7 @@ sub queryGetById {
             ,lpar_status
             ,part_mips
             ,part_msu
+            ,PART_GARTNER_MIPS
             ,action
             ,update_date
         from

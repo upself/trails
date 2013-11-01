@@ -207,6 +207,7 @@ sub doDelta {
         $hardware->serverType( $rec{serverType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
+        $hardware->cpuGartnerMIPS( $rec{cpuGartnerMIPS} );
         $hardware->processorManufacturer( $rec{processorManufacturer} );
         $hardware->processorModel( $rec{processorModel} );
         $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
@@ -309,6 +310,7 @@ sub doDelta {
         $hardwareLpar->serverType( $rec{serverType} );
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
+        $hardwareLpar->partGartnerMIPS( $rec{partGartnerMIPS} );
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );

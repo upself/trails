@@ -29,6 +29,7 @@ sub new {
         ,_shared => undef
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
+        ,_cpuGartnerMIPS => undef
         ,_action => undef
         ,_updateDate => undef
         ,_table => 'hardware'
@@ -196,6 +197,13 @@ sub equals {
     $equal = 1 if (!defined $self->cpuMSU && !defined $object->cpuMSU);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->cpuGartnerMIPS && defined $object->cpuGartnerMIPS) {
+        $equal = 1 if $self->cpuGartnerMIPS eq $object->cpuGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->cpuGartnerMIPS && !defined $object->cpuGartnerMIPS);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -335,6 +343,12 @@ sub cpuMSU {
     my $self = shift;
     $self->{_cpuMSU} = shift if scalar @_ == 1;
     return $self->{_cpuMSU};
+}
+
+sub cpuGartnerMIPS {
+    my $self = shift;
+    $self->{_cpuGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_cpuGartnerMIPS};
 }
 
 sub action {
@@ -479,6 +493,11 @@ sub toString {
         $s .= $self->{_cpuMSU};
     }
     $s .= ",";
+    $s .= "cpuGartnerMIPS=";
+    if (defined $self->{_cpuGartnerMIPS}) {
+        $s .= $self->{_cpuGartnerMIPS};
+    }
+    $s .= ",";
     $s .= "action=";
     if (defined $self->{_action}) {
         $s .= $self->{_action};
@@ -534,6 +553,7 @@ sub save {
             ,$self->shared
             ,$self->cpuMIPS
             ,$self->cpuMSU
+            ,$self->cpuGartnerMIPS
             ,$self->action
             ,$self->updateDate
         );
@@ -567,6 +587,7 @@ sub save {
             ,$self->shared
             ,$self->cpuMIPS
             ,$self->cpuMSU
+            ,$self->cpuGartnerMIPS
             ,$self->action
             ,$self->updateDate
             ,$self->id
@@ -604,10 +625,12 @@ sub queryInsert {
             ,shared
             ,cpu_mips
             ,cpu_msu
+            ,CPU_GARTNER_MIPS
             ,action
             ,update_date
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -662,6 +685,7 @@ sub queryUpdate {
             ,shared = ?
             ,cpu_mips = ?
             ,cpu_msu = ?
+            ,CPU_GARTNER_MIPS = ?
             ,action = ?
             ,update_date = ?
         where
@@ -718,6 +742,7 @@ sub getById {
     my $shared;
     my $cpuMIPS;
     my $cpuMSU;
+    my $cpuGartnerMIPS;
     my $action;
     my $updateDate;
     $sth->bind_columns(
@@ -743,6 +768,7 @@ sub getById {
         ,\$shared
         ,\$cpuMIPS
         ,\$cpuMSU
+        ,\$cpuGartnerMIPS
         ,\$action
         ,\$updateDate
     );
@@ -773,6 +799,7 @@ sub getById {
     $self->shared($shared);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
+    $self->cpuGartnerMIPS($cpuGartnerMIPS);
     $self->action($action);
     $self->updateDate($updateDate);
     return (defined $found) ? 1 : 0;
@@ -803,6 +830,7 @@ sub queryGetById {
             ,shared
             ,cpu_mips
             ,cpu_msu
+            ,CPU_GARTNER_MIPS
             ,action
             ,update_date
         from

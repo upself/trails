@@ -44,6 +44,7 @@
 		sql-name="account_number" />
 	<property name="cpuMIPS" type="scalar" equals="true" sql-name="cpu_mips" />
 	<property name="cpuMSU" type="scalar" equals="true" sql-name="cpu_msu" />
+	<property name="cpuGartnerMIPS" type="scalar" equals="true" sql-name="CPU_GARTNER_MIPS" />
 	<property name="table" type="scalar" default="hardware" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

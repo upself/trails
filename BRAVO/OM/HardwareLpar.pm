@@ -23,6 +23,7 @@ sub new {
         ,_lparStatus => undef
         ,_partMIPS => undef
         ,_partMSU => undef
+        ,_partGartnerMIPS => undef
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -132,6 +133,13 @@ sub equals {
     $equal = 1 if (!defined $self->partMSU && !defined $object->partMSU);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->partGartnerMIPS && defined $object->partGartnerMIPS) {
+        $equal = 1 if $self->partGartnerMIPS eq $object->partGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->partGartnerMIPS && !defined $object->partGartnerMIPS);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -237,6 +245,12 @@ sub partMSU {
     return $self->{_partMSU};
 }
 
+sub partGartnerMIPS {
+    my $self = shift;
+    $self->{_partGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_partGartnerMIPS};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -337,6 +351,11 @@ sub toString {
         $s .= $self->{_partMSU};
     }
     $s .= ",";
+    $s .= "partGartnerMIPS=";
+    if (defined $self->{_partGartnerMIPS}) {
+        $s .= $self->{_partGartnerMIPS};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -373,6 +392,7 @@ sub save {
             ,$self->lparStatus
             ,$self->partMIPS
             ,$self->partMSU
+            ,$self->partGartnerMIPS
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -395,6 +415,7 @@ sub save {
             ,$self->lparStatus
             ,$self->partMIPS
             ,$self->partMSU
+            ,$self->partGartnerMIPS
             ,$self->id
         );
         $sth->finish;
@@ -423,6 +444,7 @@ sub queryInsert {
             ,lpar_status
             ,part_mips
             ,part_msu
+            ,PART_GARTNER_MIPS
         ) values (
             ?
             ,?
@@ -430,6 +452,7 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
+            ,?
             ,?
             ,?
             ,?
@@ -463,6 +486,7 @@ sub queryUpdate {
             ,lpar_status = ?
             ,part_mips = ?
             ,part_msu = ?
+            ,PART_GARTNER_MIPS = ?
         where
             id = ?
     ';
@@ -509,6 +533,7 @@ sub getByBizKey {
     my $lparStatus;
     my $partMIPS;
     my $partMSU;
+    my $partGartnerMIPS;
     $sth->bind_columns(
         \$id
         ,\$hardwareId
@@ -524,6 +549,7 @@ sub getByBizKey {
         ,\$lparStatus
         ,\$partMIPS
         ,\$partMSU
+        ,\$partGartnerMIPS
     );
     $sth->execute(
         $self->name
@@ -545,6 +571,7 @@ sub getByBizKey {
     $self->lparStatus($lparStatus);
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
+    $self->partGartnerMIPS($partGartnerMIPS);
 }
 
 sub queryGetByBizKey {
@@ -564,6 +591,7 @@ sub queryGetByBizKey {
             ,lpar_status
             ,part_mips
             ,part_msu
+            ,PART_GARTNER_MIPS
         from
             hardware_lpar
         where
@@ -592,6 +620,7 @@ sub getById {
     my $lparStatus;
     my $partMIPS;
     my $partMSU;
+    my $partGartnerMIPS;
     $sth->bind_columns(
         \$name
         ,\$customerId
@@ -608,6 +637,7 @@ sub getById {
         ,\$lparStatus
         ,\$partMIPS
         ,\$partMSU
+        ,\$partGartnerMIPS
     );
     $sth->execute(
         $self->id
@@ -629,6 +659,7 @@ sub getById {
     $self->lparStatus($lparStatus);
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
+    $self->partGartnerMIPS($partGartnerMIPS);
     return (defined $found) ? 1 : 0;
 }
 
@@ -650,6 +681,7 @@ sub queryGetById {
             ,lpar_status
             ,part_mips
             ,part_msu
+            ,PART_GARTNER_MIPS
         from
             hardware_lpar
         where

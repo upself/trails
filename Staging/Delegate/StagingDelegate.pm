@@ -657,6 +657,7 @@ sub queryHardwareData {
             mastProcessorType
             cpuMIPS
             cpuMSU
+            cpuGartnerMIPS
             processorManufacturer
             processorModel
             shared
@@ -673,6 +674,7 @@ sub queryHardwareData {
             techImageId
             partMIPS
             partMSU
+            partGartnerMIPS
             spla
             sysplex
             internetIccFlag
@@ -703,6 +705,7 @@ sub queryHardwareData {
             ,a.mast_processor_type
             ,a.cpu_mips
             ,a.cpu_msu
+            ,a.cpu_gartner_mips
             ,a.processor_manufacturer
             ,a.processor_model
             ,a.shared
@@ -719,6 +722,7 @@ sub queryHardwareData {
             ,b.tech_image_id
             ,b.part_mips
             ,b.part_msu
+            ,b.part_gartner_mips
             ,b.spla
             ,b.sysplex
             ,b.internet_icc_flag

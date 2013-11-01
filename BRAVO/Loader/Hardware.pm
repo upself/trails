@@ -268,6 +268,7 @@ sub buildBravoHardware {
 	$bravoHardware->serverType( $self->stagingHardware->serverType );
 	$bravoHardware->cpuMIPS( $self->stagingHardware->cpuMIPS );
 	$bravoHardware->cpuMSU( $self->stagingHardware->cpuMSU );
+	$bravoHardware->cpuGartnerMIPS( $self->stagingHardware->cpuGartnerMIPS );
 	$bravoHardware->processorManufacturer(
 		$self->stagingHardware->processorManufacturer );
 	$bravoHardware->processorModel( $self->stagingHardware->processorModel );

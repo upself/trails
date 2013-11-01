@@ -323,6 +323,7 @@ sub buildBravoHardwareLpar {
 	$bravoHardwareLpar->serverType( $self->stagingHardwareLpar->serverType );
 	$bravoHardwareLpar->partMIPS( $self->stagingHardwareLpar->partMIPS );
 	$bravoHardwareLpar->partMSU( $self->stagingHardwareLpar->partMSU );
+	$bravoHardwareLpar->partGartnerMIPS( $self->stagingHardwareLpar->partGartnerMIPS );
 	$bravoHardwareLpar->spla( $self->stagingHardwareLpar->spla );
 	$bravoHardwareLpar->sysplex( $self->stagingHardwareLpar->sysplex );
 	$bravoHardwareLpar->internetIccFlag(

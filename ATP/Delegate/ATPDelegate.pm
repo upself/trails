@@ -170,6 +170,7 @@ sub getData {
         $hardware->mastProcessorType( $rec{mastProcessorType} );
         $hardware->cpuMIPS( $rec{cpuMIPS} );
         $hardware->cpuMSU( $rec{cpuMSU} );
+        $hardware->cpuGartnerMIPS( $rec{cpuGartnerMIPS} );
         $hardware->processorManufacturer( $rec{processorManufacturer} );
         $hardware->processorModel( $rec{processorModel} );
         $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
@@ -233,6 +234,7 @@ sub getData {
         $hardwareLpar->lparStatus( $rec{lparStatus} );
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
+        $hardwareLpar->partGartnerMIPS( $rec{partGartnerMIPS} );
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
@@ -317,8 +319,10 @@ sub queryATPData {
             lparStatus
             cpuMIPS
             cpuMSU
+            cpuGartnerMIPS
             partMIPS
             partMSU
+            partGartnerMIPS
             processorManufacturer
             processorModel
             shared
@@ -364,8 +368,10 @@ sub queryATPData {
             ,rtrim(ltrim(lpar_status))
             ,CAST(cpu_mips AS INTEGER)
             ,CAST(cpu_msu AS INTEGER)
+            ,CAST(cpu_gartner_mips AS DECIMAL(10,3))
             ,CAST(part_mips AS INTEGER)
             ,CAST(part_msu AS INTEGER)
+            ,CAST(part_gartner_mips AS DECIMAL(10,3))
             ,ltrim(rtrim(PROCESSOR_MANUFACTURER))
 			,ltrim(rtrim(PROCESSOR_MODEL))
 			,ltrim(rtrim(SHARED))
@@ -418,8 +424,10 @@ sub queryATPDeltaData {
             lparStatus
             cpuMIPS
             cpuMSU
+            cpuGartnerMIPS
             partMIPS
             partMSU
+            partGartnerMIPS
             processorManufacturer
             processorModel
             shared
@@ -465,8 +473,10 @@ sub queryATPDeltaData {
             ,rtrim(ltrim(lpar_status))
             ,CAST(cpu_mips AS INTEGER)
             ,CAST(cpu_msu AS INTEGER)
+            ,CAST(cpu_gartner_mips AS DECIMAL(10,3))
             ,CAST(part_mips AS INTEGER)
             ,CAST(part_msu AS INTEGER)
+            ,CAST(part_gartner_mips AS DECIMAL(10,3))
             ,ltrim(rtrim(PROCESSOR_MANUFACTURER))
 			,ltrim(rtrim(PROCESSOR_MODEL))
 			,ltrim(rtrim(SHARED))

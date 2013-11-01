@@ -169,14 +169,20 @@ sub queryCustomerIds {
 
     my @fields = (qw(id));
     my $query  = '
-        select
-            a.customer_id
-        from
-            customer a
+        select sl.customer_id 
+        from software_lpar sl
+        ,installed_software is
+        ,software s 
+        where  sl.id = is.software_lpar_id 
+        and is.software_id = s.software_id 
+        and ( (is.status != \'ACTIVE\' and days(current timestamp) - days(is.record_time) > '.$ageDaysDelete.')   
+        or (sl.status != \'ACTIVE\' and days(current timestamp) - days(sl.record_time) > '.$ageDaysDelete.')  
+        or  (s.status != \'ACTIVE\') ) 
     ';
     if ( $testMode ){
-    	$query .='where customer_id in ('.$testCustomers.') with ur' ;
+    	$query .=' and sl.customer_id in ('.$testCustomers.') ' ;
     }
+       $query .=' group by sl.customer_id with ur';
     dlog("Executing query is $query");
     return ( 'customerIds', $query, \@fields );
 }

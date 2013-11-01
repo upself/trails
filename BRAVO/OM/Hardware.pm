@@ -33,6 +33,7 @@ sub new {
         ,_accountNumber => undef
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
+        ,_cpuGartnerMIPS => undef
         ,_table => 'hardware'
         ,_idField => 'id'
     };
@@ -212,6 +213,13 @@ sub equals {
     $equal = 1 if (!defined $self->cpuMSU && !defined $object->cpuMSU);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->cpuGartnerMIPS && defined $object->cpuGartnerMIPS) {
+        $equal = 1 if $self->cpuGartnerMIPS eq $object->cpuGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->cpuGartnerMIPS && !defined $object->cpuGartnerMIPS);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -377,6 +385,12 @@ sub cpuMSU {
     return $self->{_cpuMSU};
 }
 
+sub cpuGartnerMIPS {
+    my $self = shift;
+    $self->{_cpuGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_cpuGartnerMIPS};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -527,6 +541,11 @@ sub toString {
         $s .= $self->{_cpuMSU};
     }
     $s .= ",";
+    $s .= "cpuGartnerMIPS=";
+    if (defined $self->{_cpuGartnerMIPS}) {
+        $s .= $self->{_cpuGartnerMIPS};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -573,6 +592,7 @@ sub save {
             ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
+            ,$self->cpuGartnerMIPS
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -605,6 +625,7 @@ sub save {
             ,$self->accountNumber
             ,$self->cpuMIPS
             ,$self->cpuMSU
+            ,$self->cpuGartnerMIPS
             ,$self->id
         );
         $sth->finish;
@@ -643,6 +664,7 @@ sub queryInsert {
             ,account_number
             ,cpu_mips
             ,cpu_msu
+            ,CPU_GARTNER_MIPS
         ) values (
             ?
             ,?
@@ -653,6 +675,7 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
+            ,?
             ,?
             ,?
             ,?
@@ -703,6 +726,7 @@ sub queryUpdate {
             ,account_number = ?
             ,cpu_mips = ?
             ,cpu_msu = ?
+            ,CPU_GARTNER_MIPS = ?
         where
             id = ?
     ';
@@ -758,6 +782,7 @@ sub getByBizKey {
     my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
+    my $cpuGartnerMIPS;
     $sth->bind_columns(
         \$id
         ,\$owner
@@ -782,6 +807,7 @@ sub getByBizKey {
         ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
+        ,\$cpuGartnerMIPS
     );
     $sth->execute(
         $self->machineTypeId
@@ -813,6 +839,7 @@ sub getByBizKey {
     $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
+    $self->cpuGartnerMIPS($cpuGartnerMIPS);
 }
 
 sub queryGetByBizKey {
@@ -841,6 +868,7 @@ sub queryGetByBizKey {
             ,account_number
             ,cpu_mips
             ,cpu_msu
+            ,CPU_GARTNER_MIPS
         from
             hardware
         where
@@ -880,6 +908,7 @@ sub getById {
     my $accountNumber;
     my $cpuMIPS;
     my $cpuMSU;
+    my $cpuGartnerMIPS;
     $sth->bind_columns(
         \$machineTypeId
         ,\$serial
@@ -906,6 +935,7 @@ sub getById {
         ,\$accountNumber
         ,\$cpuMIPS
         ,\$cpuMSU
+        ,\$cpuGartnerMIPS
     );
     $sth->execute(
         $self->id
@@ -937,6 +967,7 @@ sub getById {
     $self->accountNumber($accountNumber);
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
+    $self->cpuGartnerMIPS($cpuGartnerMIPS);
     return (defined $found) ? 1 : 0;
 }
 
@@ -968,6 +999,7 @@ sub queryGetById {
             ,account_number
             ,cpu_mips
             ,cpu_msu
+            ,CPU_GARTNER_MIPS
         from
             hardware
         where
