@@ -197,24 +197,12 @@ sub newChild {
      $swassetConnection->disconnect;
      
      my $lparDuration = time - $lparStart;
-     if ( $lparDuration < 60 ) {
-       $lparDuration = $lparDuration . ' sec(s)';
-     }
-     else {
-       $lparDuration = $lparDuration / 60;
-       $lparDuration = $lparDuration . ' min(s)';
-     }
+     $lparDuration = $lparDuration . ' sec(s)';
      wlog("$rNo Child $customerId, $date, lparId=" . $lparId . ", done -- $phase duration $lparDuration" );
   }
   
   my $duration = time - $start;
-  if ( $duration < 60 ) {
-   $duration = $duration . ' sec(s)';
-  }
-  else {
-   $duration = $duration / 60;
-   $duration = $duration . ' min(s)';
-  }
+  $duration = $duration . ' sec(s)';
   
   wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase, duration: $duration" );
  exit;
