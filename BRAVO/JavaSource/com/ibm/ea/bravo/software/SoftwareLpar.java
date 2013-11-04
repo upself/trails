@@ -29,6 +29,8 @@ public class SoftwareLpar {
 	private String model;
 
 	private String biosSerial;
+	
+	private String sw_ti_id;
 
 	private Integer processorCount;
 
@@ -420,6 +422,14 @@ public class SoftwareLpar {
 
 	public void setBiosSerial(String biosSerial) {
 		this.biosSerial = biosSerial;
+	}
+
+	public String getSw_ti_id() {
+		return sw_ti_id;
+	}
+
+	public void setSw_ti_id(String sw_ti_id) {
+		this.sw_ti_id = sw_ti_id;
 	}
 
 	public Customer getCustomer() {
