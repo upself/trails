@@ -27,6 +27,8 @@
 		<property name="model" column="MODEL" length="128" />
 
 		<property name="biosSerial" column="BIOS_SERIAL" length="128" />
+		
+		<property name="sw_ti_id" column="TECH_IMG_ID" length="64" />
 
 		<property name="processorCount" column="PROCESSOR_COUNT"
 			type="integer" />
