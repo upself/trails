@@ -27,7 +27,8 @@
 			<th class="blue-med">HW Owner</th>
 			<th class="blue-med">ATP Status</th>
 			<c:if test="${hardware.assetType == 'MAINFRAME'}">
-				<th class="blue-med">CPU MIPS</th>
+				<th class="blue-med">CPU IBM LSPR MIPS</th>
+				<th class="blue-med">CPU Gartner MIPS</th>
 				<th class="blue-med">CPU MSU</th>
 			</c:if>
 		</tr>
@@ -68,6 +69,8 @@
 				<td><font class="orange-dark"><c:out
 							value="${hardware.cpuMIPS}" /></font></td>
 				<td><font class="orange-dark"><c:out
+							value="${hardware.cpuGartnerMIPS}" /></font></td>
+				<td><font class="orange-dark"><c:out
 							value="${hardware.cpuMSU}" /></font></td>
 			</c:if>
 		</tr>
@@ -94,10 +97,11 @@
 			<th class="blue-med">Internet Acc</th>
 			<th class="blue-med">Lpar Status</th>
 			<th class="blue-med">HW_EXT_ID</th>
-			<th class="blue-med">HW_TechImgID</th>			
+			<th class="blue-med">HW_TI_ID</th>			
 			<c:if
 				test="${hardware.assetType == 'MAINFRAME'}">
-				<th class="blue-med">Part MIPS</th>
+				<th class="blue-med">Part IBM LSPR MIPS</th>
+				<th class="blue-med">Part Gartner MIPS</th>
 				<th class="blue-med">Part MSU</th>
 			</c:if>
 		</tr>
@@ -142,6 +146,8 @@
 						test="${hardware.assetType == 'MAINFRAME'}">
 						<td><font class="orange-dark"><c:out
 									value="${hardware.partMIPS}" /> </font></td>
+						<td><font class="orange-dark"><c:out
+									value="${hardware.partGartnerMIPS}" /></font></td>										
 						<td><font class="orange-dark"><c:out
 									value="${hardware.partMSU}" /> </font></td>
 					</c:if>
