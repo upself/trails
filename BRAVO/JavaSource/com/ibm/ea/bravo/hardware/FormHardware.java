@@ -88,10 +88,14 @@ public class FormHardware extends FormBase {
 	
 	private Integer cpuMIPS;
 	
+	private Double cpuGartnerMIPS;
+	
 	private Integer cpuMSU;
 	
 	private Integer partMIPS;
 
+	private Double partGartnerMIPS;
+	
 	private Integer partMSU;
 	
 	private String lparStatus;
@@ -121,6 +125,14 @@ public class FormHardware extends FormBase {
 	public void setCpuMIPS(Integer cpuMIPS) {
 		this.cpuMIPS = cpuMIPS;
 	}
+	
+	public Double getCpuGartnerMIPS() {
+		return cpuGartnerMIPS;
+	}
+
+	public void setCpuGartnerMIPS(Double cpuGartnerMIPS) {
+		this.cpuGartnerMIPS = cpuGartnerMIPS;
+	}
 
 	public Integer getCpuMSU() {
 		return cpuMSU;
@@ -136,6 +148,14 @@ public class FormHardware extends FormBase {
 	
 	public void setPartMIPS(Integer partMIPS) {
 		this.partMIPS = partMIPS;
+	}
+
+	public Double getPartGartnerMIPS() {
+		return partGartnerMIPS;
+	}
+
+	public void setPartGartnerMIPS(Double partGartnerMIPS) {
+		this.partGartnerMIPS = partGartnerMIPS;
 	}
 
 	public Integer getPartMSU() {
@@ -280,6 +300,7 @@ public class FormHardware extends FormBase {
 				this.nbrOfChipsMax = hardwareLpar.getHardware().getNbrOfChipsMax();
 				this.shared = hardwareLpar.getHardware().getShared();
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
+				this.cpuGartnerMIPS = hardwareLpar.getHardware().getCpuGartnerMIPS();
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
 				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
 			}
