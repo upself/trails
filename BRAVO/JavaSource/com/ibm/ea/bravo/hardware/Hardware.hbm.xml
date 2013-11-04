@@ -72,6 +72,9 @@
 		
 		<property name="cpuMIPS" column="CPU_MIPS"
             type="integer" />
+        
+        <property name="cpuGartnerMIPS" column="CPU_GARTNER_MIPS"
+            type="java.math.BigDecimal" />
             
         <property name="cpuMSU" column="CPU_MSU"
             type="integer" />
