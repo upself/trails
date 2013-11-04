@@ -74,6 +74,8 @@ public class Hardware implements Serializable {
 	
 	private Integer cpuMIPS;
 	
+	private Double cpuGartnerMIPS;
+	
 	private Integer cpuMSU;
 	
 	public String getServerType() {
@@ -90,6 +92,14 @@ public class Hardware implements Serializable {
 
 	public void setCpuMIPS(Integer cpuMIPS) {
 		this.cpuMIPS = cpuMIPS;
+	}
+
+	public Double getCpuGartnerMIPS() {
+		return cpuGartnerMIPS;
+	}
+
+	public void setCpuGartnerMIPS(Double cpuGartnerMIPS) {
+		this.cpuGartnerMIPS = cpuGartnerMIPS;
 	}
 
 	public Integer getCpuMSU() {
