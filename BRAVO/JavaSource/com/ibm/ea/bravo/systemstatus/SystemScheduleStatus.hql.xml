@@ -29,7 +29,7 @@
 	
 	<query name="selectBankAccountNames">
 		<![CDATA[
- 			from BankAccount BA where BA.status ='ACTIVE'
+ 			from BankAccount BA where BA.status ='ACTIVE' order by BA.name
  		]]>
 	</query>  
 
