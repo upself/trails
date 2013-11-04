@@ -59,6 +59,9 @@
         <property name="partMIPS" column="PART_MIPS"
             type="integer" />
             
+		<property name="partGartnerMIPS" column="PART_GARTNER_MIPS"
+            type="java.math.BigDecimal" />            
+            
         <property name="partMSU" column="PART_MSU"
             type="integer" />
             
