@@ -111,7 +111,7 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			;
 
 			if (delta_check) {
-				deltaStringHQL = " and BAJ.name like :deltaLoadsCheck";
+				deltaStringHQL = " or BAJ.name like :deltaLoadsCheck";
 			}else {
 				deltaStringHQL = " and BAJ.name not like :deltaLoadsCheck";
 			}
