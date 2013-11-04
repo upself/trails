@@ -34,6 +34,8 @@ public class HardwareLpar {
 
 	private Integer partMIPS;
 
+	private Double partGartnerMIPS;
+	
 	private Integer partMSU;
 	
 	private String lparStatus;
@@ -78,6 +80,14 @@ public class HardwareLpar {
 	
 	public void setPartMIPS(Integer partMIPS) {
 		this.partMIPS = partMIPS;
+	}
+	
+	public Double getPartGartnerMIPS() {
+		return partGartnerMIPS;
+	}
+
+	public void setPartGartnerMIPS(Double partGartnerMIPS) {
+		this.partGartnerMIPS = partGartnerMIPS;
 	}
 
 	public Integer getPartMSU() {
