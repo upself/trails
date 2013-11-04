@@ -14,6 +14,10 @@
 			<th class="blue-med">Name</th>
 			<th class="blue-med">Proc</th>
 			<th class="blue-med">BIOS Serial</th>
+			<c:if
+				test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
+				<th class="blue-med">SW_TI_ID</th>
+			</c:if>
 			<th class="blue-med">Scan Time</th>
 			<th class="blue-med">Acquisition Time</th>
 		</tr>
@@ -49,6 +53,13 @@
 						value="${lpar.softwareLpar.processorCount}" /></font></td>
 					<td><font class="orange-dark"><c:out
 						value="${lpar.softwareLpar.biosSerial}" /></font></td>
+						
+					<c:if
+						test="${lpar.hardwareLpar.hardware.machineType.type == 'MAINFRAME'}">
+						<td><font class="orange-dark"><c:out
+							value="${lpar.softwareLpar.sw_ti_id}" /></font></td>
+					</c:if>
+
 					<td><font class="orange-dark"><c:out
 						value="${lpar.softwareLpar.scantimeDate}" /></font></td>
 					<td><font class="orange-dark"><c:out
