@@ -742,7 +742,7 @@ select 				   ol.account_number
                       ,sc.description
                       ,j.server_type
                       ,j.cpu_mips
-                      ,j.cup_gartner_mips
+                      ,j.cpu_gartner_mips
                       ,j.cpu_msu
                       ,i.part_mips
                       ,i.part_gartner_mips
