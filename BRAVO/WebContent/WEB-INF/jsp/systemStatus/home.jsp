@@ -77,6 +77,7 @@
 									styleClass="inputlong">
 									<html:option value="Show All">Show All</html:option>
 									<html:option value="SCAN RECORD">SCAN RECORD</html:option>
+									<html:option value="SCAN SOFTWARE">SCAN SOFTWARE</html:option>
 									<html:option value="SOFTWARE SIGNATURE">SOFTWARE SIGNATURE</html:option>
 									<html:option value="SOFTWARE FILTER">SOFTWARE FILTER</html:option>
 									<html:option value="PROCESSOR">PROCESSOR</html:option>
