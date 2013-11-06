@@ -14,6 +14,11 @@
 # 2013-08-20  Liu Hai(Larry) 1.0.3           Add Filter Logic to dispatch Operation Object properly to SelfHealing Engine on TAP or TAP3 Server to process
 #                                            For example: 'RESTART_LOADER_ON_TAP_SERVER' and 'RESTART_IBMIHS_ON_TAP_SERVER' Operations only can be processed on TAP Server
 #                                            For example: 'RESTART_LOADER_ON_TAP3_SERVER' Operation only can be processed on TAP3 Server
+# 2013-09-03  Liu Hai(Larry) 1.0.4           Bypass Filter Logic to dispatch Operation Object properly to SelfHealing Engine on TAP2 Testing Server to process
+###################################################################################################################################################################################################
+#                                            Phase 3 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 3'
+# 2013-10-14  Liu Hai(Larry) 1.3.0           Add New Operation 'RESTART_CHILD_LOADER_ON_TAP_SERVER' And Filter Logic Support on TAP Server to process this new Operation
+# 2013-10-15  Liu Hai(Larry) 1.3.1           Change Log File Generation Logic to generate Log File for every day
 #
 
 #Load required modules
@@ -25,10 +30,10 @@ use File::Basename;
 use Base::ConfigManager;
 
 #Globals
-my $selfHealingEngineFile         = "/home/liuhaidl/working/scripts/selfHealingEngine.pl";
-my $systemSupportEngineLogFile    = "/home/liuhaidl/working/scripts/systemSupportEngine.log";
-my $systemSupportEnginePidFile    = "/home/liuhaidl/working/scripts/systemSupportEngine.pid";
-my $systemSupportEngineConfigFile = "/home/liuhaidl/working/scripts/systemSupportEngine.properties";
+my $selfHealingEngineFile         = "/opt/staging/v2/selfHealingEngine.pl";
+my $systemSupportEngineLogFile    = "/var/staging/logs/systemSupport/systemSupportEngine.log";
+my $systemSupportEnginePidFile    = "/tmp/systemSupportEngine.pid";
+my $systemSupportEngineConfigFile = "/opt/staging/v2/config/systemSupportEngine.properties";
 
 #SERVER MODE
 my $TAP  = "TAP";#TAP Server for toStaging Loaders
@@ -38,8 +43,9 @@ my $SERVER_MODE;
 
 #Special Operation Name Codes List
 #Only can be processed on TAP Server
-my $RESTART_LOADER_ON_TAP_SERVER   = "RESTART_LOADER_ON_TAP_SERVER";
-my $RESTART_IBMIHS_ON_TAP_SERVER   = "RESTART_IBMIHS_ON_TAP_SERVER";
+my $RESTART_LOADER_ON_TAP_SERVER         = "RESTART_LOADER_ON_TAP_SERVER";
+my $RESTART_IBMIHS_ON_TAP_SERVER         = "RESTART_IBMIHS_ON_TAP_SERVER";
+my $RESTART_CHILD_LOADER_ON_TAP_SERVER   = "RESTART_CHILD_LOADER_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 3
 #Only can be processed on TAP3 Server
 my $RESTART_LOADER_ON_TAP3_SERVER  = "RESTART_LOADER_ON_TAP3_SERVER";
 
@@ -49,6 +55,7 @@ my $TRIGGER_INTERVAL_TIME;
 #TIMESTAMP STYLE
 my $STYLE1 = 1;#YYYY-MM-DD-HH.MM.SS For Example: 2013-04-18-10.30.33
 my $STYLE2 = 2;#YYYYMMDDHHMMSS For Example: 20130418103033
+my $STYLE3 = 3;#YYYYMMDD For Example: 20130618 #Added by Larry for System Support And Self Healing Service Components - Phase 3
 
 #Vars Definition
 #Database
@@ -64,6 +71,7 @@ my @mockOperationQueueRecords = ();
 my @operationQueueRecords = ();
 my $operationQueueRecordsCnt;#var used to store the count of Operation Queue Records 
 my $currentTimeStamp;
+my $currentDate;#Added by Larry for System Support And Self Healing Service Components - Phase 3
 
 #SQL Statements
 my $GET_ALL_OPERATION_QUEUE_NOT_DONE_OPERATIONS_SQL = "SELECT OPERATION_ID, OPERATION_NAME_CODE, OPERATION_NAME_DESCRIPTION, OPERATION_PARMS, OPERATION_STATUS, OPERATION_USER FROM OPERATION_QUEUE WHERE OPERATION_STATUS = 'ADDED' ORDER BY OPERATION_ID WITH UR";
@@ -101,9 +109,12 @@ sub main{
 
 #This method is used to do init operations
 sub init{
+  #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
+  #Change Log File Generation Logic to generate Log File for every day
   #Log File Operation
-  $currentTimeStamp = getCurrentTimeStamp($STYLE2);#Get the current full time using format YYYYMMDDHHMMSS
-  $systemSupportEngineLogFile.= ".$currentTimeStamp";
+  $currentDate = getCurrentTimeStamp($STYLE3);#Get the current date using format YYYYMMDD
+  $systemSupportEngineLogFile.= ".$currentDate";
+  #Added by Larry for System Support And Self Healing Service Components - Phase 3 End 
   
   #Get the 'systemSupportEngineLog.properties' config object
   $cfgMgr   = Base::ConfigManager->instance($systemSupportEngineConfigFile);
@@ -414,7 +425,7 @@ sub getTime
     $min  = ($min<10)?"0$min":$min;#minitue[0,59]
     $hour = ($hour<10)?"0$hour":$hour;#Hour[0,23]
     $mday = ($mday<10)?"0$mday":$mday;#Day[1,31]
-    $mon  = ($mon<9)?"0$mon":$mon;#Month[0,11]
+    $mon  = ($mon<10)?"0$mon":$mon;#Month[0,11]
     $year+=1900;#From 1900 year
     
     #$wday is accumulated from Saturday, stands for which day of one week[0-6]
@@ -432,7 +443,8 @@ sub getTime
              'yday'   => $yday,
              'date'   => "$year$mon$mday",
 		     'fullTime1' => "$year-$mon-$mday-$hour.$min.$sec",
-             'fullTime2' => "$year$mon$mday$hour$min$sec"
+             'fullTime2' => "$year$mon$mday$hour$min$sec",
+		     'fullTime3' => "$year$mon$mday"#Added by Larry for System Support And Self Healing Service Components - Phase 3
           };
 }
 
@@ -447,6 +459,11 @@ sub getCurrentTimeStamp{
    elsif($timeStampStyle == $STYLE2){#YYYYMMDDHHMMSS For Example: 20130418103033
       $currentTimeStamp = $dateObject->{fullTime2};
    }
+   #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
+   elsif($timeStampStyle == $STYLE3){#YYYYMMDD For Example: 20130618
+      $currentTimeStamp = $dateObject->{fullTime3};
+   }
+   #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
    
    return $currentTimeStamp;
 }
@@ -488,9 +505,13 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_PARMS_INDEX];
 	push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_STATUS_INDEX];
     push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_USER_INDEX];
- 
-   if($serverMode eq $TAP#TAP Server
-    ||$serverMode eq $TAP2){#Support TAP2 Testing Server Case
+    
+   if($serverMode eq $TAP2){#TAP2 Server for testing purpose
+	 #Please note that for TAP2 Testing Server, the available operation process records will not be filtered out.
+     push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
+	 print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";       
+   }#end if($serverMode eq $TAP2)
+   elsif($serverMode eq $TAP){#TAP Server
 	  if($operationNameCode ne $RESTART_LOADER_ON_TAP3_SERVER){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";
@@ -498,12 +519,14 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	  else{
 	    print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be filtered out for {$serverMode} Server to bypass process.\n"; 
 	  }#end else
-	}#end if($serverMode eq $TAP)
+	}#end elsif($serverMode eq $TAP)
 	elsif($serverMode eq $TAP3){#TAP3 Server
-	  if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER){
+	  if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER 
+	  && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER
+	  && $operationNameCode ne $RESTART_CHILD_LOADER_ON_TAP_SERVER){#Added by Larry for System Support And Self Healing Service Components - Phase
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    
-	  }#end if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER) 
+	  }#end if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER && $operationNameCode ne $RESTART_CHILD_LOADER_ON_TAP_SERVER) 
 	  else{
 	    print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be filtered out for {$serverMode} Server to bypass process.\n";     
 	  }
