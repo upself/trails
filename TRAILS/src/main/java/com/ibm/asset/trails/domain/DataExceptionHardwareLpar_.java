@@ -6,5 +6,5 @@ import javax.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(DataExceptionHardwareLpar.class)
 public class DataExceptionHardwareLpar_ extends DataException_ {
-	public static volatile SingularAttribute<DataExceptionHardwareLpar, HardwareLpar> HardwareLpar;
+	public static volatile SingularAttribute<DataExceptionHardwareLpar, HardwareLpar> hardwareLpar;
 }

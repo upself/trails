@@ -2,23 +2,23 @@ package com.ibm.asset.trails.dao;
 
 import java.util.List;
 
-import com.ibm.asset.trails.domain.DataExceptionCause;
+import com.ibm.asset.trails.domain.AlertCause;
 
 public interface DataExceptionCauseDao {
 
-	void add(DataExceptionCause pacAdd);
+	void add(AlertCause pacAdd);
 
-	DataExceptionCause find(Long plId);
+	AlertCause find(Long plId);
 
-	DataExceptionCause find(String psName);
+	AlertCause find(String psName);
 
-	DataExceptionCause find(String psName, Long plId);
+	AlertCause find(String psName, Long plId);
 
-	List<DataExceptionCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
+	List<AlertCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
 
-	List<DataExceptionCause> getAvailableAlertCauseList(List<Long> plId);
+	List<AlertCause> getAvailableAlertCauseList(List<Long> plId);
 
-	List<DataExceptionCause> list();
+	List<AlertCause> list();
 
-	void update(DataExceptionCause pacUpdate);
+	void update(AlertCause pacUpdate);
 }

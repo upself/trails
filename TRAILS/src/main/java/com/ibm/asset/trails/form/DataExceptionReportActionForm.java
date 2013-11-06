@@ -1,7 +1,7 @@
 package com.ibm.asset.trails.form;
 
 import com.ibm.asset.trails.domain.Account;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
 public class DataExceptionReportActionForm {
 
@@ -13,14 +13,14 @@ public class DataExceptionReportActionForm {
 
 	private Long total;
 
-	private DataExceptionType alertType;
+	private AlertType alertType;
 
 	private Account account;
 
 	private String url;
 
 	public DataExceptionReportActionForm(Long id, String name, Long assigned,
-			Long total, DataExceptionType alertType) {
+			Long total, AlertType alertType) {
 		this.id = id;
 		this.name = name;
 		this.assigned = assigned;
@@ -30,7 +30,7 @@ public class DataExceptionReportActionForm {
 	}
 
 	public DataExceptionReportActionForm(Account account, Long assigned,
-			Long total, DataExceptionType alertType) {
+			Long total, AlertType alertType) {
 		this.account = account;
 		this.assigned = assigned;
 		this.total = total;
@@ -78,11 +78,11 @@ public class DataExceptionReportActionForm {
 		this.total = total;
 	}
 
-	public DataExceptionType getAlertType() {
+	public AlertType getAlertType() {
 		return alertType;
 	}
 
-	public void setAlertType(DataExceptionType alertType) {
+	public void setAlertType(AlertType alertType) {
 		this.alertType = alertType;
 	}
 

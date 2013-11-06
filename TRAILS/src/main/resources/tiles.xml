@@ -40,6 +40,8 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/home.htm">
 			<item value="Alerts" link="/account/alerts/home.htm" icon="account" />
+			<item value="Cause codes" link="/account/causecodes/home.htm"
+				icon="account" />
 			<item value="Data exceptions" link="/account/exceptions/home.htm"
 				icon="account" />
 			<item value="License baseline" link="/account/license/license.htm"
@@ -1301,6 +1303,14 @@
 			value="TRAILS account data exception hardware lpar no cpu model" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception hardware lpar no cpu model" />
+	</definition>
+	<definition name="tiles.account.causecodes.upload" extends="tiles.w3OneColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account cause codes upload" />
+		<put-attribute name="keywords"
+			value="TRAILS account cause code upload" />
 	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"

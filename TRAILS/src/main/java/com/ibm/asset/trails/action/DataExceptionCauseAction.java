@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
-import com.ibm.asset.trails.domain.DataExceptionCause;
+import com.ibm.asset.trails.domain.AlertCause;
 import com.ibm.asset.trails.form.DataExceptionCauseForm;
 import com.ibm.asset.trails.service.DataExceptionCauseService;
 import com.ibm.tap.trails.annotation.UserRole;
@@ -19,7 +19,7 @@ public class DataExceptionCauseAction extends BaseActionWithSession implements
 		Preparable {
 	private static final long serialVersionUID = 1L;
 	private final String SAVE_MESSAGE_SESSION_KEY = "alertCauseSaveMessage";
-	private List<DataExceptionCause> alertCauseList;
+	private List<AlertCause> alertCauseList;
 	private Long alertCauseId;
 	private DataExceptionCauseService alertCauseService;
 	private DataExceptionCauseForm alertCauseForm;
@@ -96,11 +96,11 @@ public class DataExceptionCauseAction extends BaseActionWithSession implements
 		this.alertCauseId = alertCauseId;
 	}
 
-	public List<DataExceptionCause> getAlertCauseList() {
+	public List<AlertCause> getAlertCauseList() {
 		return alertCauseList;
 	}
 
-	public void setAlertCauseList(List<DataExceptionCause> alertCauseList) {
+	public void setAlertCauseList(List<AlertCause> alertCauseList) {
 		this.alertCauseList = alertCauseList;
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.DataException;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
 public interface DataExceptionDao {
 
@@ -17,7 +17,7 @@ public interface DataExceptionDao {
 	List<? extends DataException> paginatedList(Account account, int firstResult,
 			int maxResults, String sortBy, String sortDirection);
 
-	Long getAlertQtyByAccountAlertType(Account account, DataExceptionType alertType);
+	Long getAlertQtyByAccountAlertType(Account account, AlertType alertType);
 	
 	void setAlertTypeCode(String alertTypeCode);
 	String getAlertTypeCode();

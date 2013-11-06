@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ibm.asset.trails.domain.DataExceptionCause;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.form.DataExceptionTypeCauseMappingForm;
 import com.ibm.asset.trails.service.DataExceptionCauseService;
 import com.ibm.asset.trails.service.DataExceptionTypeService;
@@ -25,7 +25,7 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 	private DataExceptionCauseService alertCauseService;
 	private DataExceptionTypeCauseMappingForm alertTypeCauseMappingForm;
 	private Long alertTypeId;
-	private List<DataExceptionType> alertTypeList;
+	private List<AlertType> alertTypeList;
 	
 	@Autowired
 	private DataExceptionTypeService alertTypeService;
@@ -55,15 +55,15 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String map() {
-		DataExceptionType latMap = alertTypeService.findWithAlertCauses(
+		AlertType latMap = alertTypeService.findWithAlertCauses(
 				getAlertTypeId());
 		List<Long> llMappedAlertCauseId = new ArrayList<Long>();
 
 		setAlertTypeCauseMappingForm(new DataExceptionTypeCauseMappingForm());
 		getAlertTypeCauseMappingForm().setAlertTypeName(latMap.getName());
 		getAlertTypeCauseMappingForm().setMappedAlertCauseList(
-				new ArrayList<DataExceptionCause>(latMap.getAlertCauseSet()));
-		for (DataExceptionCause lacMap : getAlertTypeCauseMappingForm().getMappedAlertCauseList()) {
+				new ArrayList<AlertCause>(latMap.getAlertCauseSet()));
+		for (AlertCause lacMap : getAlertTypeCauseMappingForm().getMappedAlertCauseList()) {
 			llMappedAlertCauseId.add(lacMap.getId());
 		}
 		getAlertTypeCauseMappingForm()
@@ -76,16 +76,16 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String save() {
-		DataExceptionType latSave = alertTypeService.findById(getAlertTypeId());
+		AlertType latSave = alertTypeService.findById(getAlertTypeId());
 
 		if (getAlertTypeCauseMappingForm() != null
 				&& getAlertTypeCauseMappingForm().getMappedAlertCauseIdArray() != null) {
-			latSave.setAlertCauseSet(new HashSet<DataExceptionCause>(getAlertCauseService()
+			latSave.setAlertCauseSet(new HashSet<AlertCause>(getAlertCauseService()
 					.getAlertCauseListByIdList(
 							Arrays.asList(getAlertTypeCauseMappingForm()
 									.getMappedAlertCauseIdArray()))));
 		} else {
-			latSave.setAlertCauseSet(new HashSet<DataExceptionCause>());
+			latSave.setAlertCauseSet(new HashSet<AlertCause>());
 		}
 		alertTypeService.update(latSave);
 		getSession().put(SAVE_MESSAGE_SESSION_KEY,
@@ -119,11 +119,11 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 		this.alertTypeId = alertTypeId;
 	}
 
-	public List<DataExceptionType> getAlertTypeList() {
+	public List<AlertType> getAlertTypeList() {
 		return alertTypeList;
 	}
 
-	public void setAlertTypeList(List<DataExceptionType> alertTypeList) {
+	public void setAlertTypeList(List<AlertType> alertTypeList) {
 		this.alertTypeList = alertTypeList;
 	}
 }

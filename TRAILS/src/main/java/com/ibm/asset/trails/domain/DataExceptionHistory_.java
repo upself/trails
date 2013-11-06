@@ -10,8 +10,8 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class DataExceptionHistory_ {
 	public static volatile SingularAttribute<DataExceptionHistory, DataException> alert;
 	public static volatile SingularAttribute<DataExceptionHistory, Account> account;
-	public static volatile SingularAttribute<DataExceptionHistory, DataExceptionType> alertType;
-	public static volatile SingularAttribute<DataExceptionHistory, DataExceptionCause> alertCause;
+	public static volatile SingularAttribute<DataExceptionHistory, AlertType> alertType;
+	public static volatile SingularAttribute<DataExceptionHistory, AlertCause> alertCause;
 	public static volatile SingularAttribute<DataExceptionHistory, Boolean> open;
 	public static volatile SingularAttribute<DataExceptionHistory, Long> id;
 	public static volatile SingularAttribute<DataExceptionHistory, Date> creationTime;

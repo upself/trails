@@ -1,6 +1,6 @@
 package com.ibm.asset.trails.action;
 
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.service.DataExceptionService;
 import com.ibm.tap.trails.annotation.UserRole;
 import com.ibm.tap.trails.annotation.UserRoleType;
@@ -53,7 +53,7 @@ public class SoftwareLparExpAction extends AccountBaseAction {
 
 	}
 
-	private DataExceptionType getAlertType() {
+	private AlertType getAlertType() {
 		return alertSoftwareLparService.getAlertType();
 	}
 

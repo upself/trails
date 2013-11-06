@@ -2,18 +2,18 @@ package com.ibm.asset.trails.service;
 
 import java.util.List;
 
-import com.ibm.asset.trails.domain.DataExceptionCause;
+import com.ibm.asset.trails.domain.AlertCause;
 import com.opensymphony.xwork2.validator.ValidationException;
 
 public interface DataExceptionCauseService {
 
-	DataExceptionCause find(Long plId);
+	AlertCause find(Long plId);
 
-	List<DataExceptionCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
+	List<AlertCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
 
-	List<DataExceptionCause> getAvailableAlertCauseList(List<Long> plId);
+	List<AlertCause> getAvailableAlertCauseList(List<Long> plId);
 
-	List<DataExceptionCause> list();
+	List<AlertCause> list();
 
 	String save(Long plId, String psName) throws ValidationException;
 }

@@ -15,10 +15,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-
 @Entity(name = "AlertHistory")
 @Table(name = "H_ALERT")
-@NamedQueries( { @NamedQuery(name = "getAlertHistoryByAlertId", query = "FROM AlertHistory ah WHERE ah.alert.id=:alertId ORDER BY ah.recordTime ASC") })
+@NamedQueries({ @NamedQuery(name = "getAlertHistoryByAlertId", query = "FROM AlertHistory ah WHERE ah.alert.id=:alertId ORDER BY ah.recordTime ASC") })
 public class DataExceptionHistory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -33,11 +32,11 @@ public class DataExceptionHistory implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "ALERT_TYPE_ID")
-	protected DataExceptionType alertType;
+	protected AlertType alertType;
 
 	@ManyToOne
 	@JoinColumn(name = "ALERT_CAUSE_ID")
-	protected DataExceptionCause alertCause;
+	protected AlertCause alertCause;
 
 	@Basic
 	@Column(name = "open")
@@ -101,7 +100,7 @@ public class DataExceptionHistory implements Serializable {
 	/**
 	 * @return the alertType
 	 */
-	public DataExceptionType getAlertType() {
+	public AlertType getAlertType() {
 		return alertType;
 	}
 
@@ -109,14 +108,14 @@ public class DataExceptionHistory implements Serializable {
 	 * @param alertType
 	 *            the alertType to set
 	 */
-	public void setAlertType(DataExceptionType alertType) {
+	public void setAlertType(AlertType alertType) {
 		this.alertType = alertType;
 	}
 
 	/**
 	 * @return the alertCause
 	 */
-	public DataExceptionCause getAlertCause() {
+	public AlertCause getAlertCause() {
 		return alertCause;
 	}
 
@@ -124,7 +123,7 @@ public class DataExceptionHistory implements Serializable {
 	 * @param alertCause
 	 *            the alertCause to set
 	 */
-	public void setAlertCause(DataExceptionCause alertCause) {
+	public void setAlertCause(AlertCause alertCause) {
 		this.alertCause = alertCause;
 	}
 

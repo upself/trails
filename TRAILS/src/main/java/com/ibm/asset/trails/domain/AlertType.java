@@ -20,14 +20,13 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@Entity(name = "AlertType")
+@Entity
 @Table(name = "ALERT_TYPE")
 @NamedQueries({
-	@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT LEFT OUTER JOIN FETCH AT.alertCauseSet WHERE AT.id = :id"),
-	@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
-	@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC")
-})
-public class DataExceptionType extends AbstractDomainEntity {
+		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT LEFT OUTER JOIN FETCH AT.alertCauseSet WHERE AT.id = :id"),
+		@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
+		@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC") })
+public class AlertType extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1543290200848510819L;
 
 	@Id
@@ -45,7 +44,7 @@ public class DataExceptionType extends AbstractDomainEntity {
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "ALERT_TYPE_CAUSE", joinColumns = @JoinColumn(name = "ALERT_TYPE_ID"), inverseJoinColumns = @JoinColumn(name = "ALERT_CAUSE_ID"))
-	protected Set<DataExceptionCause> alertCauseSet = new HashSet<DataExceptionCause>();
+	protected Set<AlertCause> alertCauseSet = new HashSet<AlertCause>();
 
 	public Long getId() {
 		return id;
@@ -71,19 +70,19 @@ public class DataExceptionType extends AbstractDomainEntity {
 		this.code = code;
 	}
 
-	public Set<DataExceptionCause> getAlertCauseSet() {
+	public Set<AlertCause> getAlertCauseSet() {
 		return alertCauseSet;
 	}
 
-	public void setAlertCauseSet(Set<DataExceptionCause> alertCauseSet) {
+	public void setAlertCauseSet(Set<AlertCause> alertCauseSet) {
 		this.alertCauseSet = alertCauseSet;
 	}
 
 	@Override
 	public boolean equals(final Object other) {
-		if (!(other instanceof DataExceptionType))
+		if (!(other instanceof AlertType))
 			return false;
-		DataExceptionType castOther = (DataExceptionType) other;
+		AlertType castOther = (AlertType) other;
 		return new EqualsBuilder().append(name, castOther.name)
 				.append(code, castOther.code).isEquals();
 	}

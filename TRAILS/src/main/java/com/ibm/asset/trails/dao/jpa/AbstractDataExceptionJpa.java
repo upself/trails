@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.DataException;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
 public class AbstractDataExceptionJpa {
 
@@ -37,7 +37,7 @@ public class AbstractDataExceptionJpa {
 
 	@Transactional
 	public Long getAlertQtyByAccountAlertType(Account account,
-			DataExceptionType alertType) {
+			AlertType alertType) {
 		Long count = (Long) getEntityManager().createNamedQuery(
 				"getOpenAlertQtyByAccountAndType").setParameter("account",
 				account).setParameter("alertType", alertType).getSingleResult();

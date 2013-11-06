@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.dao.DataExceptionDao;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
 @Transactional
 @Repository
@@ -37,7 +37,7 @@ public class DataExceptionSoftwareLparDaoJpa extends AbstractDataExceptionJpa
     public List<DataExceptionSoftwareLpar> paginatedList(Account account,
             int firstResult, int maxResults, String sortBy, String sortDirection) {
 
-        DataExceptionType alertType = (DataExceptionType) getEntityManager()
+        AlertType alertType = (AlertType) getEntityManager()
                 .createNamedQuery("getAlertTypeByCode")
                 .setParameter("code", alertTypecode).getSingleResult();
 

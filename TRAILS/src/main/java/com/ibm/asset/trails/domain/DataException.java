@@ -20,7 +20,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-
 @Entity
 @Table(name = "ALERT")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -87,11 +86,11 @@ public class DataException extends AbstractDomainEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "ALERT_TYPE_ID")
-	protected DataExceptionType alertType;
+	protected AlertType alertType;
 
 	@ManyToOne
 	@JoinColumn(name = "ALERT_CAUSE_ID")
-	protected DataExceptionCause alertCause;
+	protected AlertCause alertCause;
 
 	@Basic
 	@Column(name = "open")
@@ -140,7 +139,7 @@ public class DataException extends AbstractDomainEntity {
 	/**
 	 * @return the alertType
 	 */
-	public DataExceptionType getAlertType() {
+	public AlertType getAlertType() {
 		return alertType;
 	}
 
@@ -148,14 +147,14 @@ public class DataException extends AbstractDomainEntity {
 	 * @param alertType
 	 *            the alertType to set
 	 */
-	public void setAlertType(DataExceptionType alertType) {
+	public void setAlertType(AlertType alertType) {
 		this.alertType = alertType;
 	}
 
 	/**
 	 * @return the alertCause
 	 */
-	public DataExceptionCause getAlertCause() {
+	public AlertCause getAlertCause() {
 		return alertCause;
 	}
 
@@ -163,7 +162,7 @@ public class DataException extends AbstractDomainEntity {
 	 * @param alertCause
 	 *            the alertCause to set
 	 */
-	public void setAlertCause(DataExceptionCause alertCause) {
+	public void setAlertCause(AlertCause alertCause) {
 		this.alertCause = alertCause;
 	}
 

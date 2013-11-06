@@ -9,29 +9,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.BaseEntityDAO;
 import com.ibm.asset.trails.dao.DataExceptionTypeDao;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.service.DataExceptionTypeService;
 
 @Service
 public class DataExceptionTypeServiceImpl extends
-        AbstractGenericEntityService<DataExceptionType, Long> implements
+        AbstractGenericEntityService<AlertType, Long> implements
         DataExceptionTypeService {
 
     @Autowired
     private DataExceptionTypeDao dao;
 
     @Override
-    protected BaseEntityDAO<DataExceptionType, Long> getDao() {
+    protected BaseEntityDAO<AlertType, Long> getDao() {
         return dao;
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public DataExceptionType findWithAlertCauses(Long plId) {
+    public AlertType findWithAlertCauses(Long plId) {
         return dao.findWithCauses(plId);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public List<DataExceptionType> list() {
+    public List<AlertType> list() {
         return dao.list();
     }
 

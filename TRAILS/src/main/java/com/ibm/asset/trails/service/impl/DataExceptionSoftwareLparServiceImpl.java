@@ -14,7 +14,7 @@ import com.ibm.asset.trails.dao.DataExceptionTypeDao;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.DataException;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.service.DataExceptionService;
 
 @Service
@@ -69,7 +69,7 @@ public class DataExceptionSoftwareLparServiceImpl implements
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public long getAlertListSize(Account account, DataExceptionType alertType) {
+    public long getAlertListSize(Account account, AlertType alertType) {
         return alertSoftwareLparDao.getAlertQtyByAccountAlertType(account,
                 alertType);
     }
@@ -98,7 +98,7 @@ public class DataExceptionSoftwareLparServiceImpl implements
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public DataExceptionType getAlertType() {
+    public AlertType getAlertType() {
         return alertTypeDao.getAlertTypeByCode(alertSoftwareLparDao
                 .getAlertTypeCode());
     }

@@ -9,8 +9,8 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(DataException.class)
 public class DataException_ {
 	public static volatile SingularAttribute<DataException, Account> account;
-	public static volatile SingularAttribute<DataException, DataExceptionType> alertType;
-	public static volatile SingularAttribute<DataException, DataExceptionCause> alertCause;
+	public static volatile SingularAttribute<DataException, AlertType> alertType;
+	public static volatile SingularAttribute<DataException, AlertCause> alertCause;
 	public static volatile SingularAttribute<DataException, Boolean> open;
 	public static volatile SingularAttribute<DataException, Long> id;
 	public static volatile SingularAttribute<DataException, Date> creationTime;

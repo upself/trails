@@ -2,11 +2,11 @@ package com.ibm.asset.trails.service;
 
 import java.util.List;
 
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
-public interface DataExceptionTypeService extends BaseEntityService<DataExceptionType, Long>{
+public interface DataExceptionTypeService extends BaseEntityService<AlertType, Long>{
 
-	DataExceptionType findWithAlertCauses(Long plId);
+	AlertType findWithAlertCauses(Long plId);
 
-	List<DataExceptionType> list();
+	List<AlertType> list();
 }

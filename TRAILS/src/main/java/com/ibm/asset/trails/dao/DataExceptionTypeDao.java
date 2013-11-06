@@ -3,15 +3,15 @@ package com.ibm.asset.trails.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ibm.asset.trails.domain.DataExceptionType;
+import com.ibm.asset.trails.domain.AlertType;
 
-public interface DataExceptionTypeDao extends BaseEntityDAO<DataExceptionType, Long>{
+public interface DataExceptionTypeDao extends BaseEntityDAO<AlertType, Long>{
 
-	DataExceptionType findWithCauses(Long plId);
+	AlertType findWithCauses(Long plId);
 
-	DataExceptionType getAlertTypeByCode(String code);
+	AlertType getAlertTypeByCode(String code);
 
-	List<DataExceptionType> list();
+	List<AlertType> list();
 
 	List<Map<String, String>> summary(Long accountId, String alertTypeType);
 }

@@ -2,13 +2,13 @@ package com.ibm.asset.trails.form;
 
 import java.util.List;
 
-import com.ibm.asset.trails.domain.DataExceptionCause;
+import com.ibm.asset.trails.domain.AlertCause;
 
 public class DataExceptionTypeCauseMappingForm {
 	private String alertTypeName;
-	private List<DataExceptionCause> availableAlertCauseList;
+	private List<AlertCause> availableAlertCauseList;
 	private Long[] mappedAlertCauseIdArray;
-	private List<DataExceptionCause> mappedAlertCauseList;
+	private List<AlertCause> mappedAlertCauseList;
 
 	public String getAlertTypeName() {
 		return alertTypeName;
@@ -18,11 +18,11 @@ public class DataExceptionTypeCauseMappingForm {
 		this.alertTypeName = alertTypeName;
 	}
 
-	public List<DataExceptionCause> getAvailableAlertCauseList() {
+	public List<AlertCause> getAvailableAlertCauseList() {
 		return availableAlertCauseList;
 	}
 
-	public void setAvailableAlertCauseList(List<DataExceptionCause> availableAlertCauseList) {
+	public void setAvailableAlertCauseList(List<AlertCause> availableAlertCauseList) {
 		this.availableAlertCauseList = availableAlertCauseList;
 	}
 
@@ -34,11 +34,11 @@ public class DataExceptionTypeCauseMappingForm {
 		this.mappedAlertCauseIdArray = mappedAlertCauseIdArray;
 	}
 
-	public List<DataExceptionCause> getMappedAlertCauseList() {
+	public List<AlertCause> getMappedAlertCauseList() {
 		return mappedAlertCauseList;
 	}
 
-	public void setMappedAlertCauseList(List<DataExceptionCause> mappedAlertCauseList) {
+	public void setMappedAlertCauseList(List<AlertCause> mappedAlertCauseList) {
 		this.mappedAlertCauseList = mappedAlertCauseList;
 	}
 }

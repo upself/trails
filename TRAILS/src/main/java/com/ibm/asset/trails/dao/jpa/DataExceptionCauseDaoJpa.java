@@ -7,27 +7,27 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.DataExceptionCauseDao;
-import com.ibm.asset.trails.domain.DataExceptionCause;
+import com.ibm.asset.trails.domain.AlertCause;
 
 @Transactional
 @Repository
 public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
         implements DataExceptionCauseDao {
 
-    public void add(DataExceptionCause pacAdd) {
+    public void add(AlertCause pacAdd) {
         getEntityManager().persist(pacAdd);
     }
 
-    public DataExceptionCause find(Long plId) {
-        return getEntityManager().find(DataExceptionCause.class, plId);
+    public AlertCause find(Long plId) {
+        return getEntityManager().find(AlertCause.class, plId);
     }
 
-    public DataExceptionCause find(String psName) {
+    public AlertCause find(String psName) {
         @SuppressWarnings("unchecked")
-        List<DataExceptionCause> results = getEntityManager()
+        List<AlertCause> results = getEntityManager()
                 .createNamedQuery("findAlertCauseByName")
                 .setParameter("name", psName).getResultList();
-        DataExceptionCause result;
+        AlertCause result;
         if (results == null || results.isEmpty()) {
             result = null;
         } else {
@@ -36,13 +36,13 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
         return result;
     }
 
-    public DataExceptionCause find(String psName, Long plId) {
+    public AlertCause find(String psName, Long plId) {
         @SuppressWarnings("unchecked")
-        List<DataExceptionCause> results = getEntityManager()
+        List<AlertCause> results = getEntityManager()
                 .createNamedQuery("findAlertCauseByNameNotId")
                 .setParameter("name", psName).setParameter("id", plId)
                 .getResultList();
-        DataExceptionCause result;
+        AlertCause result;
         if (results == null || results.isEmpty()) {
             result = null;
         } else {
@@ -52,10 +52,10 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
     }
 
     @SuppressWarnings("unchecked")
-    public List<DataExceptionCause> getAlertCauseListByIdList(
+    public List<AlertCause> getAlertCauseListByIdList(
             List<Long> plAlertCauseId) {
         if (plAlertCauseId.size() == 0) {
-            return new ArrayList<DataExceptionCause>();
+            return new ArrayList<AlertCause>();
         } else {
             return getEntityManager()
                     .createNamedQuery("getAlertCauseListByIdList")
@@ -64,7 +64,7 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
     }
 
     @SuppressWarnings("unchecked")
-    public List<DataExceptionCause> getAvailableAlertCauseList(List<Long> plId) {
+    public List<AlertCause> getAvailableAlertCauseList(List<Long> plId) {
         if (plId.size() == 0) {
             return getEntityManager().createNamedQuery("getAlertCauseList")
                     .getResultList();
@@ -76,12 +76,12 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
     }
 
     @SuppressWarnings("unchecked")
-    public List<DataExceptionCause> list() {
+    public List<AlertCause> list() {
         return getEntityManager().createNamedQuery("getAlertCauseList")
                 .getResultList();
     }
 
-    public void update(DataExceptionCause pacUpdate) {
+    public void update(AlertCause pacUpdate) {
         getEntityManager().merge(pacUpdate);
     }
 }
