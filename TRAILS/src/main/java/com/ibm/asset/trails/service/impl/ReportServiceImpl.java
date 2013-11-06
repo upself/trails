@@ -68,7 +68,7 @@ public class ReportServiceImpl implements ReportService {
             "SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","CPU IBM LSPR MIPS","CPU Gartner MIPS","CPU MSU","Part IBM LSPR MIPS","Part Gartner MIPS","Part MSU","SHARED",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
-            "Effective processor count", "Installed SW product name", "SW Owner",
+            "Effective processor count","Total PVU", "Installed SW product name", "SW Owner",
             "Alert assignee", "Alert assignee comment", "Inst SW manufacturer",
             "Inst SW validation status", "Reconciliation action",
             "Reconciliation user", "Reconciliation date/time",
@@ -485,6 +485,11 @@ public class ReportServiceImpl implements ReportService {
                 + ",h.processor_count as hwProcCount "
                 + ",h.chips as hwChips "
                 + ",case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount "
+               +",case when ibmb.id is not null then (select pvui.VALUE_UNITS_PER_CORE from pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
+               +"(case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then  'SINGLE-CORE' "
+               +"when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then  'DUAL-CORE' "   
+               +"when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then  'QUAD-CORE' "
+               +"else 'MULTI-CORE' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) else null end as pvuPerCode"
                 + ",instSi.name as instSwName "
                 ;
         String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
@@ -565,8 +570,10 @@ public class ReportServiceImpl implements ReportService {
                 + "left outer join eaadmin.capacity_type ct on "
                 + "l.cap_type = ct.code "
                 + "left outer join eaadmin.customer c on "
-                + "l.customer_id = c.customer_id ";
-
+                + "l.customer_id = c.customer_id "
+                + "left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL "
+                + "left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id "
+                ;
         String lsBaseWhereClause = "where "
                 + "sl.customer_id = :customerId "
                 + "and hl.customer_id = :customerId "
@@ -875,7 +882,7 @@ public class ReportServiceImpl implements ReportService {
     	 ScrollableResults lsrReport = ((Session) getEntityManager()
                  .getDelegate())
                  .createSQLQuery(
-                         "SELECT VA.CAUSE_CODE_ALERT_TYPE,count(*),CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as color,VA.AC_NAME, VA.AC_RESPONSIBILITY from v_alerts VA where VA.Customer_Id = :customerId group by (CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END ),VA.AC_NAME,VA.AC_RESPONSIBILITY,VA.CAUSE_CODE_ALERT_TYPE")
+                         "SELECT VA.CAUSE_CODE_ALERT_TYPE,count(*),CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as color,VA.AC_NAME, VA.AC_RESPONSIBILITY from v_alerts VA where VA.Customer_Id = :customerId group by 3 ,VA.AC_NAME,VA.AC_RESPONSIBILITY,VA.CAUSE_CODE_ALERT_TYPE")
                  .setLong("customerId", pAccount.getId())
                  .scroll(ScrollMode.FORWARD_ONLY);
 
