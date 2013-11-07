@@ -60,7 +60,8 @@ public class ReportServiceImpl implements ReportService {
             };
     private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
             "Status", "Installed SW product name", "Number of instances",
-            "Create date/time", "Age" };
+            "Create date/time", "Age", "Cause Code (CC)", 
+            "CC target date", "CC owner", "CC change date", "CC change person", "Internal ID" };
     private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
     private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
             "Alert status", "Alert opened", "Alert duration", "SW LPAR name",
@@ -882,7 +883,7 @@ public class ReportServiceImpl implements ReportService {
     	 ScrollableResults lsrReport = ((Session) getEntityManager()
                  .getDelegate())
                  .createSQLQuery(
-                         "SELECT VA.CAUSE_CODE_ALERT_TYPE,count(*),CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as color,VA.AC_NAME, VA.AC_RESPONSIBILITY from v_alerts VA where VA.Customer_Id = :customerId group by 3 ,VA.AC_NAME,VA.AC_RESPONSIBILITY,VA.CAUSE_CODE_ALERT_TYPE")
+                         "SELECT VA.CAUSE_CODE_ALERT_TYPE,count(*),CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as color,VA.AC_NAME, VA.AC_RESPONSIBILITY from v_alerts VA where VA.Customer_Id = :customerId group by (CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END) ,VA.AC_NAME,VA.AC_RESPONSIBILITY,VA.CAUSE_CODE_ALERT_TYPE")
                  .setLong("customerId", pAccount.getId())
                  .scroll(ScrollMode.FORWARD_ONLY);
 
