@@ -2,6 +2,7 @@ package Recon::OM::AlertHardwareLpar;
 
 use strict;
 use Base::Utils;
+use Recon::CauseCode;
 
 sub new {
     my ($class) = @_;
@@ -197,6 +198,7 @@ sub save {
         );
         $sth->finish;
     }
+    Recon::CauseCode::updateCCtable($self->id, 4, $connection); # updating CC table with alert type 4 - HW LPAR
 }
 
 sub queryInsert {
