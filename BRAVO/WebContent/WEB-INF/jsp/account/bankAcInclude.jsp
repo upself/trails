@@ -51,14 +51,8 @@
 
 				<display:table name="bankInclude" requestURI="" class="bravo"
 					id="includes">
-					<display:setProperty name="basic.empty.showtable" value="true" />
-					<display:column title="Remove Inclusion" headerClass="blue-med">
-						<html:multibox property="selectedIncludes"  disabled="true"
-							style="margin: 0 0 0 4px">
-							<c:out value="${includes.id}" />
-						</html:multibox>
-					</display:column>
-
+					<display:setProperty name="basic.empty.showtable" value="true"/>
+			value='<tr class="empty" align="center"><td colspan="{0}">Nothing found to display</td></tr>' />
 					<display:column property="name" title="Name" sortable="true"
 						headerClass="blue-med" />
 					<display:column property="description" title="Description"
