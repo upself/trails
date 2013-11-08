@@ -7,6 +7,7 @@ use Recon::Validation;
 use Recon::OM::AlertSoftwareLpar;
 use Recon::OM::AlertSoftwareLparHistory;
 use BRAVO::OM::Customer;
+use Recon::CauseCode;
 
 sub new {
     my ( $class, $connection, $softwareLpar, $hardwareLpar ) = @_;
@@ -71,6 +72,8 @@ sub openAlert {
     $alert->comments('Auto Open');
     $alert->open(1);
     $alert->save( $self->connection );
+    
+    Recon::CauseCode::updateCCtable( $alert->id, 5, $self->connection);
 }
 
 sub closeAlert {
@@ -93,6 +96,8 @@ sub closeAlert {
     $alert->comments('Auto Close');
     $alert->open(0);
     $alert->save( $self->connection ) if $save == 1;
+    
+    Recon::CauseCode::updateCCtable( $alert->id, 5, $self->connection) if ( $save == 1 );
 }
 
 sub recordHistory {

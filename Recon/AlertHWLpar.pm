@@ -8,6 +8,7 @@ use Recon::Validation;
 use Recon::OM::Alert;
 use Recon::OM::AlertHistory;
 use Recon::OM::AlertHardwareLparNew;
+use Recon::CauseCode;
 
 sub new {
     my ( $class, $connection, $hardware, $hardwareLpar ) = @_;
@@ -94,6 +95,8 @@ sub openAlert {
 	 $alert->comment('Auto Open');
 	 $alert->save( $self->connection );
 	 
+	 Recon::CauseCode::updateCCtable( $alert->id, $alert->alertTypeId, $self->connection ); # updating CC table
+	 
 	 if(!defined $alertId){
 	  my $alertHwLpar =  new Recon::OM::AlertHardwareLparNew();
 	  $alertHwLpar->idF($alert->id);
@@ -151,6 +154,8 @@ sub closeAlert {
 	$alert->assignee(undef);
 	$alert->comment('Auto close');
 	$alert->save( $self->connection );
+	
+	Recon::CauseCode::updateCCtable( $alert->id, $alert->alertTypeId, $self->connection ); # updating CC table
     
 }
 

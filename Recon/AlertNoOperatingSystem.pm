@@ -8,6 +8,7 @@ use Recon::Validation;
 use Recon::OM::Alert;
 use Recon::OM::AlertHistory;
 use Recon::OM::AlertSoftwareLparNew;
+use Recon::CauseCode;
 
 sub new {
 	my ( $class, $connection, $softwareLpar ) = @_;
@@ -151,6 +152,8 @@ sub openAlert {
 	$alert->assignee(undef);
 	$alert->comment('Auto Open');
 	$alert->save( $self->connection );
+	
+	Recon::CauseCode::updateCCtable( $alert->id, 9, $self->connection);
 
 	my $softwareLparAlert = new Recon::OM::AlertSoftwareLparNew();
 	$softwareLparAlert->id( $alert->id );
@@ -190,6 +193,8 @@ sub closeAlert {
 	$alert->comment('Auto Close');
 	$alert->open(0);
 	$alert->save( $self->connection ) if $save == 1;
+	
+	Recon::CauseCode::updateCCtable( $alert->id, 9, $self->connection) if ( $save == 1 );
 
 	my $softwareLparAlert = new Recon::OM::AlertSoftwareLparNew();
 	$softwareLparAlert->id( $alert->id );

@@ -7,6 +7,7 @@ use BRAVO::OM::Customer;
 use Recon::Validation;
 use Recon::OM::AlertExpiredScan;
 use Recon::OM::AlertExpiredScanHistory;
+use Recon::CauseCode;
 
 sub new {
 	my ( $class, $connection, $softwareLpar, $isValidScantime ) = @_;
@@ -127,6 +128,8 @@ sub openAlert {
 	$alert->comments('Auto Open');
 	$alert->open(1);
 	$alert->save( $self->connection );
+	
+	Recon::CauseCode::updateCCtable( $alert->id, 6, $self->connection );
 
 	ilog('OpenAlert method of AlertExpiredScan complete');
 }
@@ -154,6 +157,8 @@ sub closeAlert {
 	$alert->comments('Auto Close');
 	$alert->open(0);
 	$alert->save( $self->connection ) if $save == 1;
+	
+	Recon::CauseCode::updateCCtable( $alert->id, 6, $self->connection ) if ( $save == 1 );
 
 	ilog('CloseAlert method of AlertExpiredScan complete');
 }
