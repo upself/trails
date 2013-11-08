@@ -2,7 +2,7 @@ package Recon::OM::AlertHardware;
 
 use strict;
 use Base::Utils;
-use Recon::CauseCode;
+# use Recon::CauseCode;
 
 sub new {
     my ($class) = @_;
@@ -198,7 +198,7 @@ sub save {
         );
         $sth->finish;
     }
-    Recon::CauseCode::updateCCtable($self->id, 3, $connection); # updating CC table with code 3 - hardware
+#    Recon::CauseCode::updateCCtable($self->id, 3, $connection); # updating CC table with code 3 - hardware
 }
 
 sub queryInsert {

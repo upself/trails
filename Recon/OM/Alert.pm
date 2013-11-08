@@ -2,7 +2,7 @@ package Recon::OM::Alert;
 
 use strict;
 use Base::Utils;
-use Recon::CauseCode;
+# use Recon::CauseCode;
 
 sub new {
     my ($class) = @_;
@@ -254,7 +254,7 @@ sub save {
         );
         $sth->finish;
     }
-    Recon::CauseCode::updateCCtable($self->id, $self->alertTypeId, $connection); # updating CC table for a new alert
+#    Recon::CauseCode::updateCCtable($self->id, $self->alertTypeId, $connection); # updating CC table for a new alert
 }
 
 sub queryInsert {

@@ -2,7 +2,7 @@ package Recon::OM::AlertExpiredScan;
 
 use strict;
 use Base::Utils;
-use Recon::CauseCode;
+# use Recon::CauseCode;
 
 sub new {
     my ($class) = @_;
@@ -198,7 +198,7 @@ sub save {
         );
         $sth->finish;
     }
-    Recon::CauseCode::updateCCtable($self->id, 6, $connection); # updating CCtable with alert type 6
+#    Recon::CauseCode::updateCCtable($self->id, 6, $connection); # updating CCtable with alert type 6
 }
 
 sub queryInsert {
