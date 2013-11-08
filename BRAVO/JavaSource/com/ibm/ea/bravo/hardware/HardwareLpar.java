@@ -1,5 +1,6 @@
 package com.ibm.ea.bravo.hardware;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -34,7 +35,7 @@ public class HardwareLpar {
 
 	private Integer partMIPS;
 
-	private Double partGartnerMIPS;
+	private BigDecimal partGartnerMIPS;
 	
 	private Integer partMSU;
 	
@@ -82,11 +83,11 @@ public class HardwareLpar {
 		this.partMIPS = partMIPS;
 	}
 	
-	public Double getPartGartnerMIPS() {
+	public BigDecimal getPartGartnerMIPS() {
 		return partGartnerMIPS;
 	}
 
-	public void setPartGartnerMIPS(Double partGartnerMIPS) {
+	public void setPartGartnerMIPS(BigDecimal partGartnerMIPS) {
 		this.partGartnerMIPS = partGartnerMIPS;
 	}
 

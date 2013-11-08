@@ -74,7 +74,7 @@ public class Hardware implements Serializable {
 	
 	private Integer cpuMIPS;
 	
-	private Double cpuGartnerMIPS;
+	private BigDecimal cpuGartnerMIPS;
 	
 	private Integer cpuMSU;
 	
@@ -94,11 +94,11 @@ public class Hardware implements Serializable {
 		this.cpuMIPS = cpuMIPS;
 	}
 
-	public Double getCpuGartnerMIPS() {
+	public BigDecimal getCpuGartnerMIPS() {
 		return cpuGartnerMIPS;
 	}
 
-	public void setCpuGartnerMIPS(Double cpuGartnerMIPS) {
+	public void setCpuGartnerMIPS(BigDecimal cpuGartnerMIPS) {
 		this.cpuGartnerMIPS = cpuGartnerMIPS;
 	}
 

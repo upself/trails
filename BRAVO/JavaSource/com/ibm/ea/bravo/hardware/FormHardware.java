@@ -88,13 +88,13 @@ public class FormHardware extends FormBase {
 	
 	private Integer cpuMIPS;
 	
-	private Double cpuGartnerMIPS;
+	private BigDecimal cpuGartnerMIPS;
 	
 	private Integer cpuMSU;
 	
 	private Integer partMIPS;
 
-	private Double partGartnerMIPS;
+	private BigDecimal partGartnerMIPS;
 	
 	private Integer partMSU;
 	
@@ -126,11 +126,11 @@ public class FormHardware extends FormBase {
 		this.cpuMIPS = cpuMIPS;
 	}
 	
-	public Double getCpuGartnerMIPS() {
+	public BigDecimal getCpuGartnerMIPS() {
 		return cpuGartnerMIPS;
 	}
 
-	public void setCpuGartnerMIPS(Double cpuGartnerMIPS) {
+	public void setCpuGartnerMIPS(BigDecimal cpuGartnerMIPS) {
 		this.cpuGartnerMIPS = cpuGartnerMIPS;
 	}
 
@@ -150,11 +150,11 @@ public class FormHardware extends FormBase {
 		this.partMIPS = partMIPS;
 	}
 
-	public Double getPartGartnerMIPS() {
+	public BigDecimal getPartGartnerMIPS() {
 		return partGartnerMIPS;
 	}
 
-	public void setPartGartnerMIPS(Double partGartnerMIPS) {
+	public void setPartGartnerMIPS(BigDecimal partGartnerMIPS) {
 		this.partGartnerMIPS = partGartnerMIPS;
 	}
 
