@@ -377,8 +377,8 @@
 				 else software_lpar.processor_count end as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.ext_id as ext_id
-				,hardware_lpar.tech_image_id as hw_ti_id
-				,software_lpar.tech_image_id as sw_ti_id
+				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
+				,software_lpar.TECH_IMG_ID as sw_ti_id
 				,hardware.chips as chips
 				,hardware.server_type as server_type
 				,hardware_lpar.spla as SPLA
@@ -439,7 +439,8 @@
 				,0 as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.ext_id as ext_id
-				,hardware_lpar.tech_image_id as tech_image_id
+				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
+				,'' as sw_ti_id
 				,hardware.chips as chips
 				,hardware.server_type as server_type
 				,hardware_lpar.spla as SPLA
@@ -452,8 +453,10 @@
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
 				,hardware.shared as shared
 				,hardware.cpu_mips 
-                ,hardware.cpu_msu 
-                ,hardware_lpar.part_mips
+                ,hardware.CPU_GARTNER_MIPS
+				,hardware.cpu_msu 
+				,hardware_lpar.part_mips
+				,hardware_lpar.PART_GARTNER_MIPS
                 ,hardware_lpar.part_msu
 				,hardware_lpar.lpar_status
 			from
@@ -493,7 +496,8 @@
 				,0 as processor_count
 				,0 as hw_processor_count
 				,'' as ext_id
-				,'' as tech_image_id
+				,'' as hw_ti_id
+				,'' as sw_ti_id
 				,0 as chips
 				,'' as server_type
 				,'' as SPLA
@@ -506,8 +510,10 @@
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
 				,hardware.shared as shared
 				,hardware.cpu_mips 
-                ,hardware.cpu_msu 
-                ,0 as part_mips
+                ,hardware.CPU_GARTNER_MIPS
+				,hardware.cpu_msu 
+				,0 as part_mips
+				,0 as PART_GARTNER_MIPS
                 ,0 as part_msu
 				,'' as lpar_status
 			from
