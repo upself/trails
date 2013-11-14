@@ -66,6 +66,13 @@ sub ageDaysDelete {
     return $self->{_cfg}->getProperty('ageDaysDelete');
 }
 
+#Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
+sub nonDebugLogPath {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('nonDebugLogPath');
+}
+#Added by Larry for System Support And Self Healing Service Components - Phase 3 End
+
 ###Returns an array of Test Bank Account names
 sub testBankAccounts {
     my $self = shift;

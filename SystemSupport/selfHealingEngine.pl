@@ -122,6 +122,7 @@ my $selfHealingEngineInvokedMode;#var used to store selfHealingEngine Invoked Mo
 #Config File
 my $cfgMgr;
 my $configServerMode;
+my $configNonDebugLogPath;#Added by Larry for System Support And Self Healing Service Components - Phase 3
 
 #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
 #Operation Parameter Indexes
@@ -194,6 +195,9 @@ sub init{
   print LOG "Config Server Mode: {$configServerMode}\n";
   #Set Server Mode Value from configuration file
   $SERVER_MODE  = $configServerMode;
+  #Get the config Non Debug Log Path
+  $configNonDebugLogPath = trim($cfgMgr->nonDebugLogPath);
+  print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
   
   #set db2 env path
   setDB2ENVPath();
@@ -275,6 +279,8 @@ sub coreOperationProcess{
   my $operationResultFlag = $OPERATION_SUCCESS;#Set the init default value is "OPERATION_SUCCESS"
   my $operationFailedComments = "";#var used to store operation comments
   my $operationStartedFlag = $FALSE;#var used to store operation started flag when Operation has been started to process($operationStartedFlag = $TURE means that the Operation has been started to process) 
+  my $operationSuccessSpecialComments = "";#var used to store operation success special comments
+  my $operationSuccessSpecialFlag = $FALSE;#var used to store operation success special flag
 	
   $operationNameCode = trim($operationNameCode);#Remove space chars
   $operationMergedParametersValue = trim($operationMergedParametersValue);#Remove space chars
@@ -537,8 +543,8 @@ sub coreOperationProcess{
             print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
 
 			#Added by Larry for Self Healing Service Component - Phase 2 Start
-			#Sleep 10 seconds to give the target loader startup time
-			sleep 10;
+			#Sleep 120 seconds to give the target loader startup time
+			sleep 120;
             #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
 			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
 			chomp($targetLoaderRunningProcessCnt);#remove the return line char
@@ -594,6 +600,7 @@ sub coreOperationProcess{
 	   my $invokedCommandLoaderConfigFile;#var used to store invoked command loader configuration file - softwareFilterToStagingConfig.txt
 	   my $certainBankAccountNameCount;#var used to store certain bank account name count
 	   my $inputParameterValuesValidationFlag = $TRUE;#Set 1(1 = TURE) as default value
+       my $nonDebugLogFile;#var used to store non debug log file - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM 
 
        #Input Operation Parameter Values Check
        $relatedTicketNumber = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_RELATED_TICKET_NUMBER_INDEX]);#Related Ticket Number(Optional) - For example: TI30620-56800
@@ -646,22 +653,7 @@ sub coreOperationProcess{
 	   }#end else
 	  
 	   $logFile = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX]);#Log File(Required) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCC
-       if($logFile eq ""){
-         $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-	     $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		 if($operationFailedComments ne ""){
-		   $operationFailedComments.="The Operation Parameter - Log File is required. It cannot be empty. For example: {/var/staging/logs/sample.log}<br>";  
-		 }#end if($operationFailedComments ne "")
-		 else{
-		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-           $operationFailedComments.="The Operation Parameter - Log File is required. It cannot be empty. For example: {/var/staging/logs/sample.log}<br>";
-		 }#end else
-  		 print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Log File is required. It cannot be empty. For example: {/var/staging/logs/sample.log}\n";
-	   }#end if($restartLoaderName eq "")
-	   else{
-	     print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Log File: {$logFile}\n";
-	   }#end else
-
+    
        if($operationResultFlag == $OPERATION_SUCCESS){#Only all the input Operation Parameters have values, then go into the input Operation Parameter Values Validation Check Business Logic
          #Restart Child Loader Validation Check  
 	     foreach my $validChildLoaderName (@validChildLoaderList){
@@ -749,101 +741,126 @@ sub coreOperationProcess{
 		 }#end if($debugOption ne $DEBUG_OPTION_YES && $debugOption ne $DEBUG_OPTION_NO)
          
 		 #Log File Validation Check
-         my $logFileValidFlag = $TRUE;#var used to store the log file valid falg. set $TRUE as the initial default value
-         
-		 #Check if the log file includes the invalid file path char '\' 
-         my $backslashIndexPosition;#var used to store the backslash index position value
-         $backslashIndexPosition = index($logFile,$BACKSLASH);
-		 if($backslashIndexPosition!=-1){
-		   $logFileValidFlag = $FALSE;
-		   $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-           $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		   if($operationFailedComments ne ""){
-		     $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";  
-		   }#end if($operationFailedComments ne "")
-		   else{
-		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-             $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";
-		   }#end else
-		   print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.\n"; 
-		 }#end if($backslashIndexPosition!=-1)
-         
-         #Check if the log file is a valid one which includes '/home'. It means that the log file can only be outputed into the '/home' folder path
-         if($logFileValidFlag == $TRUE){
-		   my $logFileStrLength = length($logFile);
-		   if($logFileStrLength <= 6){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
-             $logFileValidFlag = $FALSE;
-		     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-             $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		     if($operationFailedComments ne ""){
-		       $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
-		     }#end if($operationFailedComments ne "")
-		     else{
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
-		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
-		   }#end if($subLogFileStr ne $HOME_PATH)
-		 }#end if($logFileValidFlag == $TRUE)
+         if($upperCaseDebugOption eq $DEBUG_OPTION_NO){#If Debug = NO, then the log file will be set to be a default value - For example, /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM. And also the log file check will be bypassed 
+		   my $processedParentLoaderName = $restartChildLoaderName;
+		   $processedParentLoaderName =~ s/$REPLACED_STRING//g;
+		   my $processedNonDebugLogFileName = $processedParentLoaderName.".log.".$bankAccountName;
+		   $nonDebugLogFile = $configNonDebugLogPath.$processedParentLoaderName."/".$processedNonDebugLogFileName;
+		   $logFile = $nonDebugLogFile;
+           print LOG "The Restart Child Loader on TAP Server - The Non Debug Fixed Log File: {$logFile}\n";
+	     }#end if($upperCaseDebugOption eq $DEBUG_OPTION_NO)
+		 else{
+		   my $logFileValidFlag = $TRUE;#var used to store the log file valid falg. set $TRUE as the initial default value
+           
+		   #If the log file value is empty, then set the default log file value '/var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM'
+           if($logFile eq ""){
+             my $processedParentLoaderName = $restartChildLoaderName;
+		     $processedParentLoaderName =~ s/$REPLACED_STRING//g;
+		     my $processedDefaultDebugLogFileName = $processedParentLoaderName.".log.".$bankAccountName;
+		     $logFile = $configNonDebugLogPath.$processedParentLoaderName."/".$processedDefaultDebugLogFileName;
+             $logFileValidFlag = $FALSE;#Set log file valid flag to FALSE for {Log File: '' + Debug Option: 'YES'} Case to bypass all the Log File Check Validations
+             print LOG "The Restart Child Loader on TAP Server - The Default Debug Log File {$logFile} has been set due that the Log File Value is empty for Debug Option {YES} Case.\n";    
+		   }#end if($logFile eq "")
+           else{
+             print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Log File: {$logFile}\n";
+           }#end else
+    
+           #Check if the log file includes the invalid file path char '\'
+		   if($logFileValidFlag == $TRUE){
+             my $backslashIndexPosition;#var used to store the backslash index position value
+             $backslashIndexPosition = index($logFile,$BACKSLASH);
+		     if($backslashIndexPosition!=-1){
+		       $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";
+		       }#end else
+		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.\n"; 
+		     }#end if($backslashIndexPosition!=-1)
+		   }#end if($logFileValidFlag == $TRUE)
 
-		 if($logFileValidFlag == $TRUE){
-		   my $subLogFileStr = substr($logFile,0,5);
-		   if($subLogFileStr ne $HOME_PATH){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
-             $logFileValidFlag = $FALSE;
-		     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-             $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		     if($operationFailedComments ne ""){
-		       $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
-		     }#end if($operationFailedComments ne "")
-		     else{
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
-		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
-		   }#end if($subLogFileStr ne $HOME_PATH)
-		 }#end if($logFileValidFlag == $TRUE)
+           #Check if the log file is a valid one which includes '/home'. It means that the log file can only be outputed into the '/home' folder path
+           if($logFileValidFlag == $TRUE){
+		     my $logFileStrLength = length($logFile);
+		     if($logFileStrLength <= 6){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
 
-		 if($logFileValidFlag == $TRUE){
-		   my $logFileLastChar = substr($logFile,length($logFile)-1,1);
-		   if($logFileLastChar eq $SLASH){#The valid log file cannot be a file path - For example: '/home/liuhaidl/logs/sampleLog.txt'
-             $logFileValidFlag = $FALSE;
-		     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-             $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		     if($operationFailedComments ne ""){
-		       $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
-		     }#end if($operationFailedComments ne "")
-		     else{
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
-		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
-		   }#end if($subLogFileStr ne $HOME_PATH)
-		 }#end if($logFileValidFlag == $TRUE)
+		   if($logFileValidFlag == $TRUE){
+		     my $subLogFileStr = substr($logFile,0,5);
+		     if($subLogFileStr ne $HOME_PATH){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
+
+		   if($logFileValidFlag == $TRUE){
+		     my $logFileLastChar = substr($logFile,length($logFile)-1,1);
+		     if($logFileLastChar eq $SLASH){#The valid log file cannot be a file path - For example: '/home/liuhaidl/logs/sampleLog.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
         
-		 #Check if the log path exists or not
-         if($logFileValidFlag == $TRUE){
-		   my $lastSlashIndexPosition = rindex($logFile,$SLASH);
-		   my $logPath = substr($logFile,0,$lastSlashIndexPosition);
-           print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath}\n";
-		   if(-e $logPath){
-		     print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} exists.\n";    
-		   }#end if(-e $logPath)
-		   else{
-             $logFileValidFlag = $FALSE;
-		     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
-             $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		     if($operationFailedComments ne ""){
-		       $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";  
-		     }#end if($operationFailedComments ne "")
+		   #Check if the log path exists or not
+           if($logFileValidFlag == $TRUE){
+		     my $lastSlashIndexPosition = rindex($logFile,$SLASH);
+		     my $logPath = substr($logFile,0,$lastSlashIndexPosition);
+             print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath}\n";
+		     if(-e $logPath){
+		       print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} exists.\n";    
+		     }#end if(-e $logPath)
 		     else{
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";
+		       }#end else
+		       print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} doesn't exist.\n";
 		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} doesn't exist.\n";
-		   }#end else
-		 }#end if($logFileValidFlag == $TRUE)
-	
-		 if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
+		   }#end if($logFileValidFlag == $TRUE)
+		 }#end else
+		
+	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
            my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
 		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
@@ -961,7 +978,15 @@ sub coreOperationProcess{
 		        }#end else
 		        print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
 		      }#end else
-           }#end if($operationResultFlag == $OPERATION_SUCCESS)
+
+			  #5. Set Operation Success Specail Comments to include Log File Value
+			  if($operationResultFlag == $OPERATION_SUCCESS){
+                $operationSuccessSpecialFlag = $TRUE;
+			    $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+                $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.";
+				print LOG "The Restart Child Loader on TAP Server - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
+    		  }#end if($operationResultFlag == $OPERATION_SUCCESS)
+		   }#end if($operationResultFlag == $OPERATION_SUCCESS)
 	     }#end if($inputParameterValuesValidationFlag == $TRUE)
        }#end if($operationResultFlag == $OPERATION_SUCCESS)
        
@@ -1027,7 +1052,14 @@ sub coreOperationProcess{
     if(($selfHealingEngineInvokedMode eq $QUEUE_MODE)#Queue Mode
 	 &&($operationStartedFlag == $TRUE)){#Operation has been started to process
 	  if($operationResultFlag == $OPERATION_SUCCESS){#Operation has been finished to be processed successfully
-        updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_DONE_CODE,$DONE_COMMENTS,$parameterOperationId);
+	    #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
+		if($operationSuccessSpecialFlag == $TRUE){
+          updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_DONE_CODE,$operationSuccessSpecialComments,$parameterOperationId);	
+		}#if($operationSuccessSpecialFlag == $TRUE)
+		else{
+	      updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_DONE_CODE,$DONE_COMMENTS,$parameterOperationId);	
+	    }#end else
+		#Added by Larry for System Support And Self Healing Service Components - Phase 3 End
       }
 	  else{#Operation has been finished to be processed failed
 	    updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_FAILED_CODE,$operationFailedComments,$parameterOperationId); 
