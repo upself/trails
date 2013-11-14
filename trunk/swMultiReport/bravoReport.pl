@@ -297,19 +297,19 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'serverType'} );
         $heartbeat->write( $lineCount, 12,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
-        $heartbeat->write( $lineCount, 12,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
         $heartbeat->write( $lineCount, 13,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
         $heartbeat->write( $lineCount, 14,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
+        $heartbeat->write( $lineCount, 15,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
-        $heartbeat->write( $lineCount, 15,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
-        $heartbeat->write( $lineCount, 15,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
         $heartbeat->write( $lineCount, 16,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
         $heartbeat->write( $lineCount, 17,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
+        $heartbeat->write( $lineCount, 18,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
+        $heartbeat->write( $lineCount, 19,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'hardwareStatus'} );
 		$lineCount++;
 	}
@@ -713,10 +713,10 @@ sub getBravoSoftwareReport {
 	my $scopeDescription;
 	my $serverType;
 	my $cpuMIPS;
-	my $cpuGartnerMIPS
+	my $cpuGartnerMIPS;
 	my $cpuMSU;
 	my $partMIPS;
-	my $partGartnerMIPS
+	my $partGartnerMIPS;
 	my $partMSU;
 	my $lparStatus;
 	my $hardwareStatus;
