@@ -47,7 +47,7 @@ public class ActionSystemStatus extends ActionBase {
 		
 		//Select the List of SystemStatus objects from the database
 		request.setAttribute(Constants.SYSTEM_SCHEDULE_STATUS_LIST,
-				DelegateSystemStatus.selectSystemScheduleStatusList());
+				DelegateSystemStatus.selectSystemScheduleStatusList(formSubmit));
 
 		
 		//currently disabled option to call reset of the submit form, now, after submit chosen values will stay

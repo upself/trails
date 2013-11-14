@@ -18,31 +18,27 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			.getLogger(DelegateSystemStatus.class);
 
 	@SuppressWarnings("unchecked")
-	public static List<SystemScheduleStatus> selectSystemScheduleStatusList()
+	public static List<SystemScheduleStatus> selectSystemScheduleStatusList(FormSubmit fs)
 			throws Exception {
+		
+		boolean systemStatus_checkbox = fs.isSystemStatus_checkbox();
 		List<SystemScheduleStatus> llSystemScheduleStatus = null;
-		Session lSession = getSession();
+		
+		if (systemStatus_checkbox) {
+			try {
+				Session lSession = getSession();
 
-		llSystemScheduleStatus = lSession.getNamedQuery(
-				"selectSystemScheduleStatusList").list();
-		closeSession(lSession);
+				llSystemScheduleStatus = lSession.getNamedQuery(
+						"selectSystemScheduleStatusList").list();
+				closeSession(lSession);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else {	
+		}
 
 		return llSystemScheduleStatus;
 	}
-
-	//previously used to get all BankAccountJobs
-//	@SuppressWarnings("unchecked")
-//	public static List<BankAccountJob> selectAllBankAccountJobs()
-//			throws Exception {
-//		List<BankAccountJob> llBankAccountJob = null;
-//		Session lSession = getSession();
-//
-//		llBankAccountJob = lSession.getNamedQuery("selectAllBankAccountJobs")
-//				.list();
-//		closeSession(lSession);
-//
-//		return llBankAccountJob;
-//	}
 
 	//function to get all active BankAccounts for Bank Account combobox
 	@SuppressWarnings({ "unchecked" })
@@ -84,6 +80,12 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			String loaderStat = fs.getLoaderStatus().trim();
 			String loaderStatHQL = "";
 			
+			String bankAccountType = fs.getType().trim();
+			String bankAccountTypeHQL = "";
+			
+			String connectionType = fs.getConnectionType().trim();
+			String connectionTypeHQL = "";
+			
 			boolean delta_check = fs.isDelta_checkbox();
 			String deltaStringHQL = "";
 
@@ -96,7 +98,6 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			String dateToActual = "";
 			Date date_t_asDate = null;
 			
-			
 			if (!bankAcc.equals("0")) {
 				bankAccountHQL = " and BAJ.bankAccount.id = :bankAccountId";
 			}
@@ -108,14 +109,15 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			if (!loaderStat.equals("Show All")) {
 				loaderStatHQL = " and BAJ.status like :loaderStatus";
 			}
-			;
-
-			if (delta_check) {
-				deltaStringHQL = " or BAJ.name like :deltaLoadsCheck";
-			}else {
-				deltaStringHQL = " and BAJ.name not like :deltaLoadsCheck";
+			
+			if (!bankAccountType.equals("Show All")) {
+				bankAccountTypeHQL = " and BA.type like :B_A_Type";
 			}
-
+			
+			if (!connectionType.equals("Show All")) {
+				connectionTypeHQL = " and BA.connectionType = :connType";
+			}
+			
 			if (date_f.length() > 0) {
 				dateFromActual = " and BAJ.startTime >= :start_time";
 				date_f_asDate = sdf.parse(date_f);
@@ -125,15 +127,24 @@ public class DelegateSystemStatus extends HibernateDelegate {
 				dateToActual = " and BAJ.endTime <= :end_time";
 				date_t_asDate = sdf.parse(date_t);
 			}
+			
+			if (!delta_check) {
+				deltaStringHQL = " and BAJ.name not like :deltaLoadsCheck";
+			}
 
+			
 			String hqlQuery = "FROM BankAccountJob BAJ JOIN FETCH BAJ.bankAccount BA where BA.status ='ACTIVE'"
 					+ bankAccountHQL
 					+ moduleLoadHQL
 					+ loaderStatHQL
+					+ bankAccountTypeHQL
+					+ connectionTypeHQL
 					+ deltaStringHQL
 					+ dateFromActual
 					+ dateToActual;
 
+			logger.info("hqlQuery: " + hqlQuery);
+			 
 			Session lSession = getSession();
 
 			Query query = lSession.createQuery(hqlQuery);
@@ -147,6 +158,12 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			}
 			if (loaderStatHQL.length() > 0) {
 				query.setString("loaderStatus", "%" + loaderStat + "%");
+			}
+			if (bankAccountTypeHQL.length() > 0) {
+				query.setString("B_A_Type", "%" + bankAccountType + "%");
+			}
+			if (connectionTypeHQL.length() > 0) {
+				query.setString("connType", connectionType);
 			}
 			if (deltaStringHQL.length() > 0) {
 				query.setString("deltaLoadsCheck", "%(DELTA)%");

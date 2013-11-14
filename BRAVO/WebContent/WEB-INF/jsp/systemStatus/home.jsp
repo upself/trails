@@ -94,7 +94,7 @@
 						<tr>
 							<td><label for="id_type">Loader status</label>:</td>
 							<td><html:select styleId="id_type" property="loaderStatus"
-									styleClass="inputlong">
+									styleClass="inputshort">
 									<html:option value="Show All">Show All</html:option>
 									<html:option value="COMPLETE">COMPLETE</html:option>
 									<html:option value="PENDING">PENDING</html:option>
@@ -102,6 +102,33 @@
 									<%-- 									<html:option value="ERROR - Technical">ERROR - Technical</html:option> --%>
 									<%-- 									<html:option value="ERROR - 15% Threshold">ERROR - 15% Threshold</html:option> --%>
 									<%-- 									<html:option value="ERROR - Long Run">ERROR - Long Run</html:option> --%>
+								</html:select></td>
+						</tr>
+						<tr>
+							<td><label for="id_type">Bank Account Type</label>:</td>
+							<td><html:select styleId="id_type" property="type"
+									styleClass="inputshort">
+									<html:option value="Show All">Show All</html:option>
+									<html:option value="TCM">TCM</html:option>
+									<html:option value="TLM">TLM</html:option>
+									<html:option value="SMS">SMS</html:option>
+									<html:option value="SNAPSHOT">SNAPSHOT</html:option>
+									<html:option value="EESM">EESM</html:option>
+									<html:option value="BLAZANT">BLAZANT</html:option>
+									<html:option value="ALTIRIS">ALTIRIS</html:option>
+									<html:option value="IDD">IDD</html:option>
+									<html:option value="TADZ">TADZ</html:option>
+									<html:option value="FACTS">FACTS</html:option>
+									<html:option value="TAD4D">TAD4D</html:option>
+								</html:select></td>
+						</tr>
+						<tr>
+							<td><label for="id_type">Connection Type</label>:</td>
+							<td><html:select styleId="id_type" property="connectionType"
+									styleClass="inputshort">
+									<html:option value="Show All">Show All</html:option>
+									<html:option value="DISCONNECTED">DISCONNECTED</html:option>
+									<html:option value="CONNECTED">CONNECTED</html:option>
 								</html:select></td>
 						</tr>
 						<tr>
@@ -113,6 +140,11 @@
 							</td>
 
 
+						</tr>
+						<tr>
+							<td></td>
+							<td><html:checkbox property="systemStatus_checkbox" /> <label
+								for="id_type">Include system status</label></td>
 						</tr>
 						<tr>
 							<td><span class="button-blue"> <html:submit
@@ -163,6 +195,10 @@
 					sortable="true" headerClass="blue-med" />
 				<display:column property="elapsedTime" title="Elapsed time"
 					sortable="false" headerClass="blue-med" style="white-space:nowrap" />
+				<display:column property="bankAccount.type" title="Account Type"
+					sortable="true" headerClass="blue-med" style="white-space:nowrap" />
+				<display:column property="bankAccount.connectionType" title="Connection Type"
+					sortable="true" headerClass="blue-med" style="white-space:nowrap" />
 				<display:column property="status" title="Status" sortable="true"
 					headerClass="blue-med" />
 			</display:table>

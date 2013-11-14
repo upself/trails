@@ -19,7 +19,10 @@ public class FormSubmit extends FormBase{
 	private String bankAccount;
 	private String moduleLoader;
 	private String loaderStatus;
+	private String type;
+	private String connectionType;
 	private boolean delta_checkbox;
+	private boolean systemStatus_checkbox;
 	private String date_from;
 	private String date_to;
 	
@@ -30,7 +33,10 @@ public class FormSubmit extends FormBase{
 		bankAccount = "";
 		moduleLoader = "";
 		loaderStatus = "";
+		type = "";
+		connectionType = "";
 		delta_checkbox = false;
+		systemStatus_checkbox = false;
 		date_from = "";
 		date_to = "";
 	}
@@ -40,7 +46,10 @@ public class FormSubmit extends FormBase{
 		bankAccount = "";
 		moduleLoader = "";
 		loaderStatus = "";
+		type = "";
+		connectionType = "";
 		delta_checkbox = false;
+		systemStatus_checkbox = false;
 		date_from = "";
 		date_to = "";
 	}
@@ -68,6 +77,23 @@ public class FormSubmit extends FormBase{
 	public void setLoaderStatus(String loaderStatus) {
 		this.loaderStatus = loaderStatus;
 	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getConnectionType() {
+		return connectionType;
+	}
+
+	public void setConnectionType(String connectionType) {
+		this.connectionType = connectionType;
+	}
+
 	public boolean isDelta_checkbox() {
 		return delta_checkbox;
 	}
@@ -90,5 +116,13 @@ public class FormSubmit extends FormBase{
 
 	public void setDate_to(String date_to) {
 		this.date_to = date_to;
+	}
+
+	public boolean isSystemStatus_checkbox() {
+		return systemStatus_checkbox;
+	}
+
+	public void setSystemStatus_checkbox(boolean systemStatus_checkbox) {
+		this.systemStatus_checkbox = systemStatus_checkbox;
 	}
 }
