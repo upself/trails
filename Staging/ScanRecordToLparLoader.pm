@@ -8,6 +8,7 @@ use Staging::OM::ScanRecord;
 use Staging::OM::SoftwareLpar;
 use Staging::OM::SoftwareLparMap;
 use Staging::Delegate::StagingDelegate;
+use Scan::Delegate::ScanTADzDelegate;
 use Sigbank::Delegate::SystemScheduleStatusDelegate;
 use Sigbank::Delegate::BankAccountDelegate;
 use Sigbank::OM::BankAccount;

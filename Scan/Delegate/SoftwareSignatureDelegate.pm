@@ -55,6 +55,7 @@ sub getDisconnectedSoftwareSignatureData {
         $filePart );
 
     my %signatureList;
+    my $scanSoftwareActionCombination = undef;
 
     if ($fileToProcess) {
 
@@ -75,7 +76,9 @@ sub getDisconnectedSoftwareSignatureData {
         my @fields
             = (qw (computerId swareSigId fileName fileSize acqTime path));
             
-        my  %existsSignatures = ();
+        $scanSoftwareActionCombination = $self->initScanSoftwareActionCombination($bankAccount)
+          if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' );
+            
         while ( $gz->gzreadline($line) > 0 ) {
             my $status = $tsv->parse($line);
 
@@ -114,12 +117,14 @@ sub getDisconnectedSoftwareSignatureData {
                 my $action = 'UPDATE';
                 if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' ){
                    my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
-                   if($existsSignatures{$key}){
+                   if($scanSoftwareActionCombination->{$key.'|UPDATE'}||
+                          (!$scanSoftwareActionCombination->{$key.'|UPDATE'} && $scanSoftwareActionCombination->{$key.'|COMPLETE'})
+                   ){
                       $action= 'COMPLETE';
                       dlog('processed srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
                    }else{
-                     $existsSignatures{$key} = 1;
-                     dlog('new srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
+                      $scanSoftwareActionCombination->{$key.'|UPDATE'} = 1;
+                      dlog('new srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
                   }
                 }
                 
@@ -140,7 +145,53 @@ sub getDisconnectedSoftwareSignatureData {
         dlog("no $filePart to process");
     }
 
-    return \%signatureList;
+    return (\%signatureList, $scanSoftwareActionCombination);
+}
+
+
+sub initScanSoftwareActionCombination{
+    my ( $self, $bankAccount) = @_;
+    my $connection = Database::Connection->new('staging');
+    my  %existsSignatures = ();
+    
+    my $query = '
+select 
+  sr.id, 
+  ss.software_id,
+  ss.action
+from 
+   scan_record sr, 
+   software_signature ss 
+where 
+   sr.id = ss.scan_record_id 
+   and sr.bank_account_id = ?
+group by 
+    sr.id,
+	ss.software_id,
+	ss.action
+order by 
+    sr.id,
+	ss.software_id,
+	ss.action
+with ur';
+
+     dlog('query='.$query);
+    
+    
+     $connection->prepareSqlQuery('queryUpdateScanRecordSoftwareIds',$query);
+     my @fields = (qw(scanRecordId softwareId action));
+     my $sth = $connection->sql->{queryUpdateScanRecordSoftwareIds};
+     my %rec;
+     $sth->bind_columns( map { \$rec{$_} } @fields );
+     $sth->execute($bankAccount->id);
+     while ( $sth->fetchrow_arrayref ) {
+         my $key =   $rec{scanRecordId}.'|'.$rec{softwareId}.'|'.$rec{action};
+         $existsSignatures{$key}=1;
+     }
+     dlog('key=3571485|216511|UPDATE value='.$existsSignatures{'3571485|216511|UPDATE'});
+     dlog('key=3571485|216511|COMPLETE value='.$existsSignatures{'3571485|216511|COMPLETE'});
+     
+     return \%existsSignatures;
 }
 
 sub getConnectedSoftwareSignatureData {
@@ -254,7 +305,7 @@ sub getConnectedSoftwareSignatureData {
     $sth->finish;
 
     ###Return the lists
-    return ( \%signatureList );
+    return ( \%signatureList,undef );
 }
 
 sub buildSoftwareSignature {

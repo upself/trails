@@ -412,6 +412,46 @@ sub checkHardwareLpar {
 ###Find unique ext_id match
 sub findUniqueExtIdMatch {
     my $self = shift;
+    
+    # unfortunately, we are forced to use a completely different field for TADz matches, thus we have to check
+    # if this is a valid TADz match based on SOFTWARE_LPAR.TECH_IMG_ID == HARDWARE_LPAR.TECH_IMG_ID
+    if ( defined $self->hardwareLpar ) {
+    	# check if techImgId exists and has a value
+    	if ( defined $self->hardwareLpar->techImageId && (length($self->hardwareLpar->techImageId) > 0) ) {
+    		# check to see if a match exists in the software_lpar table
+    		my $softwareLpar = $self->getSoftwareLparByTechImgId($self->hardwareLpar->techImageId, $self->hardwareLpar->customerId );
+    		if ( defined $softwareLpar ) {
+        		my $hardwareLpar = $self->getHardwareLparByTechImgId( $self->hardwareLpar->techImageId, $self->hardwareLpar->customerId );
+       			if ( defined $hardwareLpar ) {
+        			$self->softwareLpar($softwareLpar);
+        			$self->checkSoftwareLpar('EXT_ID');
+        			return;       				
+       			}
+    			
+    		}
+    		
+    	}
+
+    } elsif ( defined $self->softwareLpar ) {
+    	# check if techImgId exists and it is four characters long
+    	if ( defined $self->softwareLpar->techImgId && (length($self->softwareLpar->techImgId) > 0) ) {
+    		# check to see if a match exists in the software_lpar table
+    		my $hardwareLpar = $self->getHardwareLparByTechImgId($self->softwareLpar->techImgId, $self->softwareLpar->customerId );
+    		if ( defined $hardwareLpar ) {
+        		my $softwareLpar = $self->getSoftwareLparByTechImgId( $self->softwareLpar->techImgId, $self->softwareLpar->customerId );
+       			if ( defined $softwareLpar ) {
+        			$self->hardwareLpar($hardwareLpar);
+        			$self->checkHardwareLpar('EXT_ID');
+        			return;       				
+       			}
+    			
+    		}
+    		
+    	}
+    	
+    }
+    # types of matches because we are NOT tadz
+    # END TADz techImgId matching logic
 
     if ( defined $self->hardwareLpar ) {
         return if ( !defined $self->hardwareLpar->extId || $self->hardwareLpar->extId eq '' );
@@ -755,6 +795,124 @@ sub getHardwareLparByShortname {
 ########################################################################################################################
 ### Match method queries
 ########################################################################################################################
+
+# TADz techImgId specific queries
+sub getSoftwareLparByTechImgId {
+	my ( $self, $techImgId, $customerId ) = @_;
+    ###method variables
+    my @fields;
+    my %rec;
+
+    ###prepare query
+    $self->connection->prepareSqlQueryAndFields( $self->querySoftwareLparByTechImgId() );
+
+    ###access statement handle
+    my $sth = $self->connection->sql->{softwareLparByTechImgId};
+
+    ###Bind columns
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{softwareLparByTechImgIdFields} } );
+
+    ###Execute query
+    $sth->execute( $customerId, $techImgId );
+
+    ###Setup counter
+    my $count = 0;
+
+    ###Loop through results
+    while ( $sth->fetchrow_arrayref ) {
+        $count++;
+    }
+    ###End loop
+
+    ###close statement handle
+    $sth->finish;
+
+    return undef if ( $count == 0 || $count > 1 );
+
+    my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+    $softwareLpar->id( $rec{id} );
+    $softwareLpar->getById( $self->connection );
+
+    return $softwareLpar;
+	
+}
+
+sub querySoftwareLparByTechImgId {
+    my @fields = (qw( id ));
+
+    my $query = qq{
+        select
+            sl.id
+        from 
+            software_lpar sl
+        where 
+            sl.customer_id = ?
+            and sl.tech_img_id = ?
+            and sl.status = 'ACTIVE'
+    };
+
+    return ( 'softwareLparByTechImgId', $query, \@fields );
+}
+
+sub getHardwareLparByTechImgId {
+    my ( $self, $techImgId, $customerId ) = @_;
+
+    ###method variables
+    my @fields;
+    my %rec;
+
+    ###prepare query
+    $self->connection->prepareSqlQueryAndFields( $self->queryHardwareLparByTechImgId() );
+
+    ###access statement handle
+    my $sth = $self->connection->sql->{hardwareLparByTechImgId};
+
+    ###Bind columns
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{hardwareLparByTechImgIdFields} } );
+
+    ###Execute query
+    $sth->execute( $customerId, $techImgId );
+
+    ###Setup counter
+    my $count = 0;
+
+    ###Loop through results
+    while ( $sth->fetchrow_arrayref ) {
+        $count++;
+    }
+    ###End loop
+
+    ###close statement handle
+    $sth->finish;
+
+    return undef if ( $count == 0 || $count > 1 );
+
+    my $hardwareLpar = new BRAVO::OM::HardwareLpar();
+    $hardwareLpar->id( $rec{id} );
+    $hardwareLpar->getById( $self->connection );
+
+    return $hardwareLpar;
+}
+
+sub queryHardwareLparByTechImgId {
+    my @fields = (qw( id ));
+
+    my $query = qq{
+        select
+            hl.id
+        from 
+            hardware_lpar hl
+        where 
+            hl.customer_id = ?
+            and hl.tech_image_id = ?
+            and hl.status = 'ACTIVE'
+    };
+
+    return ( 'hardwareLparByTechImgId', $query, \@fields );
+}
+
+
+# end TADz specific queries
 
 sub getSoftwareLparByExtId {
     my ( $self, $extId, $customerId ) = @_;

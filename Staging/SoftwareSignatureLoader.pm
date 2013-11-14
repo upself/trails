@@ -105,12 +105,14 @@ sub prepareSourceData {
     die('Cannot call method directly') if ( $self->SUPER::flag == 0 );
 
     eval {
-        $self->list(
-                     SoftwareSignatureDelegate->getSoftwareSignatureData(
-                                                       $connection, $self->SUPER::bankAccount, $self->loadDeltaOnly
-                     )
-        );
+     my $list;
+     my $combination;
+     ($list,$combination) = 
+                     SoftwareSignatureDelegate->getSoftwareSignatureData($connection, $self->SUPER::bankAccount, $self->loadDeltaOnly);
+      $self->list($list);
+      $self->scanSwActionCombination($combination);
     };
+    
     if ($@) {
         wlog($@);
         die $@;
@@ -194,7 +196,7 @@ sub doDelta {
                     my $bankAccountType = $self->SUPER::bankAccount->type;
                     if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
                     {
-                      if( stringEqual( $rec{action}, $scanAction)){
+                      if( stringEqual( $rec{action}, $scanAction)||($rec{action} eq 'UPDATE' && $scanAction eq 'COMPLETE')){
                          delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                       }
                     }else{
@@ -202,7 +204,6 @@ sub doDelta {
                           if( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40'){
                               dlog("Setting record to update since path has changed");
                               $self->list->{ $rec{softwareId} }->{$rec{softwareSignatureId}}->{ $rec{scanRecordId} }->{'action'} = 'UPDATE';
-                              $self->SUPER::incrUpdateCnt();
                           }else{
                             delete $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} };
                           }
@@ -223,6 +224,10 @@ sub doDelta {
                         $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
                             ->{'path'} = $rec{path};
                         $self->SUPER::incrDeleteCnt();
+                        
+                        ###randomly pick one signature under this scanRecordId and softwareId and set to UPDATE.
+                        $self->setToUpdate($rec{scanRecordId},$rec{softwareId},$rec{softwareSignatureId});
+                            
                     }
                 }
             }
@@ -238,6 +243,8 @@ sub doDelta {
                     $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
                         ->{'path'} = $rec{path};
                     $self->SUPER::incrDeleteCnt();
+                    
+                    $self->setToUpdate($rec{scanRecordId},$rec{softwareId},$rec{softwareSignatureId});
                 }
             }
         }
@@ -253,12 +260,66 @@ sub doDelta {
                 $signatureList->{ $rec{softwareId} }->{ $rec{softwareSignatureId} }->{ $rec{scanRecordId} }
                     ->{'path'} = $rec{path};
                 $self->SUPER::incrDeleteCnt();
+                
+                $self->setToUpdate($rec{scanRecordId},$rec{softwareId},$rec{softwareSignatureId});
             }
         }
     }
     $sth->finish;
 
     $self->list($signatureList);
+}
+
+
+sub setToUpdate{
+ my ($self,$srId,$swId,$swSignatureId) = @_;
+ 
+ my $key = $srId.'|'.$swId;
+ 
+ return  
+   if(!defined $self->scanSwActionCombination);
+ return 
+     if($self->scanSwActionCombination->{$key.'|UPDATE'});
+ return 
+     if(!$self->scanSwActionCombination->{$key.'|COMPLETE'});
+ 
+ my $sql = '
+     select 
+     ss.id,
+     ss.software_signature_id,
+     ss.path 
+   from 
+     software_signature ss 
+   where 
+     ss.scan_record_id  = ?
+     and ss.software_id  = ?
+     and ss.software_signature_id <> ?
+   with ur';
+   
+   
+ my $connection = Database::Connection->new('staging');    
+ $connection->prepareSqlQuery('getSignatureId',$sql);
+
+ ###Define our fields
+ my @fields = (qw(id softwareSignatureId path));
+ ###Get the statement handle
+ my $sth = $connection->sql->{getSignatureId};
+
+ ###Bind our columns
+ my %rec;
+ $sth->bind_columns( map { \$rec{$_} } @fields );
+
+ ###Excute the query
+ $sth->execute($srId,$swId,$swSignatureId);
+ my $found = $sth->fetchrow_arrayref;
+ if(defined $found){
+  $self->list->{$swId}->{$rec{softwareSignatureId}}->{$srId}->{'action'}='UPDATE';
+  $self->list->{$swId}->{$rec{softwareSignatureId}}->{$srId}->{'id'}=$rec{id};
+  $self->list->{$swId}->{$rec{softwareSignatureId}}->{$srId}->{'path'}=$rec{path};
+  $self->scanSwActionCombination->{$key.'|UPDATE'}=1;
+ }
+ $connection->disconnect
+            if ( defined $connection );
 }
 
 sub pathChanged{
@@ -340,6 +401,8 @@ sub applyDelta {
                 dlog( $ss->toString );
 
                 $ss->save($connection);
+                $self->SUPER::incrUpdateCnt() 
+                        if($ss->action eq 'UPDATE');
                 $self->addToCount( 'STAGING', 'SIGNATURE', 'STATUS_' . $ss->action );
             }
         }
@@ -418,6 +481,12 @@ sub list {
     my ( $self, $value ) = @_;
     $self->{_list} = $value if defined($value);
     return ( $self->{_list} );
+}
+
+sub scanSwActionCombination {
+    my ( $self, $value ) = @_;
+    $self->{_scanSwActionCombination} = $value if defined($value);
+    return ( $self->{_scanSwActionCombination} );
 }
 1;
 

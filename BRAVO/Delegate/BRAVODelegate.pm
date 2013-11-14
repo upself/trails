@@ -699,7 +699,7 @@ sub inactivateSoftwareLparById {
     my $sth = $connection->sql->{installedSoftwaresBySoftwareLparId};
     my %rec;
     $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{installedSoftwaresBySoftwareLparIdFields} } );
-    $sth->execute( $id, $id, $id, $id, $id );
+    $sth->execute( $id, $id, $id, $id, $id, $id );
     my %statistics;
     while ( $sth->fetchrow_arrayref ) {
         dlog("deleting installed types");
