@@ -4,6 +4,7 @@ use strict;
 use Carp qw( croak );
 use Base::Utils;
 use DBI;
+use Config::Properties::Simple;
 
 sub new {
     my ( $class, $bankAccount ) = @_;
@@ -108,32 +109,32 @@ sub setDBInfo {
         $self->schema( $self->bankAccount->databaseSchema );
     }
     else {
-
+        my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
         my %dbs;
 
-            $dbs{'swasset'}{'password'} = 'NOV02db2';
-            $dbs{'swasset'}{'user'}     = 'swasset';
-            $dbs{'swasset'}{'name'}     = 'SWASSTDB';
+            $dbs{'swasset'}{'password'} = $cfg->getProperty('swasset.password');
+            $dbs{'swasset'}{'user'}     = $cfg->getProperty('swasset.user');
+            $dbs{'swasset'}{'name'}     = $cfg->getProperty('swasset.name');
 
-            $dbs{'staging'}{'password'} = 'apr03db2';
-            $dbs{'staging'}{'user'}     = 'eaadmin';
-            $dbs{'staging'}{'name'}     = 'STAGING';
+            $dbs{'staging'}{'password'} = $cfg->getProperty('staging.password');
+            $dbs{'staging'}{'user'}     = $cfg->getProperty('staging.user');
+            $dbs{'staging'}{'name'}     = $cfg->getProperty('staging.name');
 
-            $dbs{'trails'}{'password'} = 'Bearw00n';
-            $dbs{'trails'}{'user'}     = 'eaadmin';
-            $dbs{'trails'}{'name'}     = 'TRAILS';
+            $dbs{'trails'}{'password'} = $cfg->getProperty('trails.password');
+            $dbs{'trails'}{'user'}     = $cfg->getProperty('trails.user');
+            $dbs{'trails'}{'name'}     = $cfg->getProperty('trails.name');
 
-            $dbs{'cndb'}{'password'} = 'NOV02db2';
-            $dbs{'cndb'}{'user'}     = 'cndb';
-            $dbs{'cndb'}{'name'}     = 'CNDB';
+            $dbs{'cndb'}{'password'} = $cfg->getProperty('cndb.password');
+            $dbs{'cndb'}{'user'}     = $cfg->getProperty('cndb.user');
+            $dbs{'cndb'}{'name'}     = $cfg->getProperty('cndb.name');
 
-            $dbs{'swcm'}{'password'} = 'Tru30dds';
-            $dbs{'swcm'}{'user'}     = 'tap2swcm';
-            $dbs{'swcm'}{'name'}     = 'SWCMPROD';
+            $dbs{'swcm'}{'password'} = $cfg->getProperty('swcm.password');
+            $dbs{'swcm'}{'user'}     = $cfg->getProperty('swcm.user');
+            $dbs{'swcm'}{'name'}     = $cfg->getProperty('swcm.name');
 
-            $dbs{'sims'}{'password'} = 'ba001ley';
-            $dbs{'sims'}{'user'}     = 'simscon';
-            $dbs{'sims'}{'name'}     = 'SIMS';
+            $dbs{'sims'}{'password'} = $cfg->getProperty('sims.password');
+            $dbs{'sims'}{'user'}     = $cfg->getProperty('sims.user');
+            $dbs{'sims'}{'name'}     = $cfg->getProperty('sims.name');
             
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
