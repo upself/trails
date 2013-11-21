@@ -22,6 +22,9 @@
 # 2013-11-18  Liu Hai(Larry) 1.3.2           Add the feature support when the input operation parameters have ' ' space chars in them - For example - "Test 2". 
 #                                            There is a bug found when there are ' ' space chars in operation parameters, then there is a parse error for Self Healing Engine to get the input Operation Parameters
 #                                            Solution: replace all the ' ' chars using '~' special chars for temp and then convert them back for Self Healing Engine 
+###################################################################################################################################################################################################
+#                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
+# 2013-11-08  Liu Hai(Larry) 1.4.0           Add New Operation 'RESTART_IBMIHS_ON_TAP_SERVER' And Filter Logic Support on TAP Server to process this new Operation
 #
 
 #Load required modules
@@ -47,10 +50,10 @@ my $SERVER_MODE;
 #Special Operation Name Codes List
 #Only can be processed on TAP Server
 my $RESTART_LOADER_ON_TAP_SERVER         = "RESTART_LOADER_ON_TAP_SERVER";
-my $RESTART_IBMIHS_ON_TAP_SERVER         = "RESTART_IBMIHS_ON_TAP_SERVER";
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER   = "RESTART_CHILD_LOADER_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 3
+my $RESTART_IBMIHS_ON_TAP_SERVER         = "RESTART_IBMIHS_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 4
 #Only can be processed on TAP3 Server
-my $RESTART_LOADER_ON_TAP3_SERVER  = "RESTART_LOADER_ON_TAP3_SERVER";
+my $RESTART_LOADER_ON_TAP3_SERVER        = "RESTART_LOADER_ON_TAP3_SERVER";
 
 #System Support Engine Trigger Interval Time
 my $TRIGGER_INTERVAL_TIME;
@@ -530,7 +533,9 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	elsif($serverMode eq $TAP3){#TAP3 Server
 	  if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER 
 	  && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER
-	  && $operationNameCode ne $RESTART_CHILD_LOADER_ON_TAP_SERVER){#Added by Larry for System Support And Self Healing Service Components - Phase
+	  && $operationNameCode ne $RESTART_CHILD_LOADER_ON_TAP_SERVER#Added by Larry for System Support And Self Healing Service Components - Phase 3
+      && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER#Added by Larry for System Support And Self Healing Service Components - Phase 4
+	  ){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    
 	  }#end if($operationNameCode ne $RESTART_LOADER_ON_TAP_SERVER && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER && $operationNameCode ne $RESTART_CHILD_LOADER_ON_TAP_SERVER) 

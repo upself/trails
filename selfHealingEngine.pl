@@ -24,6 +24,9 @@
 #                                            There is a bug found when there are ' ' space chars in operation parameters, then there is a parse error for Self Healing Engine to get the input Operation Parameters
 #                                            Solution: replace all the ' ' chars using '~' special chars for temp and then convert them back for Self Healing Engine 
 #
+###################################################################################################################################################################################################
+#                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
+# 2013-11-08  Liu Hai(Larry) 1.4.0           System Support And Self Healing Service Components - Phase 4 - Add 'RESTART_IBMIHS_ON_TAP_SERVER' Support Feature 
 #
 
 #Load required modules
@@ -61,7 +64,7 @@ my $QUEUE_MODE   = "QUEUE_MODE";
 my $COMMAND_MODE = "COMMAND_MODE";
 #Statements for 'OPERATION_QUEUE.COMMENTS' column
 my $PROGRESSING_COMMENTS = "This Operation is being progressed.";
-my $FAILED_COMMENTS      = "This Operatoin is failed due to reason: ";
+my $FAILED_COMMENTS      = "This Operatoin is failed due to reason:<br>";
 my $DONE_COMMENTS        = "This Operation has been finished successfully.";
 
 #TIMESTAMP STYLE
@@ -77,13 +80,12 @@ my $NO_PARAM = "NO_PARAM";
 my $RESTART_LOADER_ON_TAP_SERVER              = "RESTART_LOADER_ON_TAP_SERVER";
 my $RESTART_LOADER_ON_TAP3_SERVER             = "RESTART_LOADER_ON_TAP3_SERVER";
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER        = "RESTART_CHILD_LOADER_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 3
-
 #Database Group
 my $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT = "DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT";
 my $COMPOSITE_BUILDER                         = "COMPOSITE_BUILDER";
 my $UPDATE_SW_LICENSES_STATUS                 = "UPDATE_SW_LICENSES_STATUS";
 #Server Group
-my $RESTART_IBMIHS_ON_TAP_SERVER              = "RESTART_IBMIHS_ON_TAP_SERVER";
+my $RESTART_IBMIHS_ON_TAP_SERVER              = "RESTART_IBMIHS_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 4
 
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
@@ -174,6 +176,14 @@ my $HOME_PATH = "/home";
 my $BACKSLASH = "\\";
 my $SLASH     = "/";
 #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 4 Start
+#Business Unix Commands
+my $CALCULATE_IBMIHS_RUNNING_COUNT     = "ps -ef |grep 'httpd -d'|grep -v grep|wc -l";
+my $GET_IBMIHS_RUNNING_PROCESS_ID_LIST = "ps -ef |grep 'httpd -d'|grep -v grep|awk '{print \$2}'";
+my $START_IBMIHS_SERVER_ON_TAP2_SERVER = "/opt/IBMIHS/bin/apachectl start"; 
+my $START_IBMIHS_SERVER_ON_TAP_SERVER  = "/IHSV61/IBMIHS/bin/apachectl start";
+#Added by Larry for System Support And Self Healing Service Components - Phase 4 End
 
 main();
 
@@ -1001,6 +1011,77 @@ sub coreOperationProcess{
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $RESTART_CHILD_LOADER_ON_TAP_SERVER) 
     #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
+	#Added by Larry for System Support And Self Healing Service Components - Phase 4 Start
+	elsif($operationNameCode eq $RESTART_IBMIHS_ON_TAP_SERVER){#RESTART_IBMIHS_ON_TAP_SERVER
+      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+         #Operation has been started to be processed
+         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+         $operationStartedFlag = $TRUE;#Operation has been started to process
+       }
+
+       my $calculateIBMIHSRunningCount;#var used to store IBMIHS running count
+	   my @ibmIHSRunningProcessIdList;#array used to store IBMIHS running process id list
+       
+	   #1. Check if there are some running processes for IBM IHS Server, if so, then kill them first.
+       $calculateIBMIHSRunningCount = `$CALCULATE_IBMIHS_RUNNING_COUNT`;
+	   print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
+       chomp($calculateIBMIHSRunningCount);#Remove the return line char
+	   trim($calculateIBMIHSRunningCount);#Remove space chars 
+       if($calculateIBMIHSRunningCount <=0){
+	     print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server is not running currently.\n";    
+	   }
+	   else{
+	     print LOG "The Restart IBM HTTP Server on TAP Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
+		 
+		 @ibmIHSRunningProcessIdList = `$GET_IBMIHS_RUNNING_PROCESS_ID_LIST`;
+		 print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$GET_IBMIHS_RUNNING_PROCESS_ID_LIST} has been executed.\n";    
+		 my $ibmIHSRunningPidIndex = 1;
+		 foreach my $ibmIHSRunningProcessId(@ibmIHSRunningProcessIdList){
+		   chomp($ibmIHSRunningProcessId);#remove the return line char
+		   trim($ibmIHSRunningProcessId);#Remove space chars
+		   print LOG "The Restart IBM HTTP Server on TAP Server - [$ibmIHSRunningPidIndex]PID: {$ibmIHSRunningProcessId} needs to be killed for IBM HTTP Server.\n";
+           my $cmdExecResult = system("kill -9 $ibmIHSRunningProcessId");
+		   if($cmdExecResult == 0){
+             print LOG "The Restart IBM HTTP Server on TAP Server - PID: {$ibmIHSRunningProcessId} has been killed successfully for IBM HTTP Server.\n";
+           }
+		   else{
+			 print LOG "The Restart IBM HTTP Server on TAP Server - PID: {$ibmIHSRunningProcessId} has been killed failed for IBM HTTP Server.\n";
+		   }
+           $ibmIHSRunningPidIndex++;
+	     }#end foreach my $ibmIHSRunningProcessId(@ibmIHSRunningProcessIdList)
+       }#end else
+
+       #2. Start IBMIHS Server
+	   if($SERVER_MODE eq $TAP2){#TAP2 Testing Server
+	     `$START_IBMIHS_SERVER_ON_TAP2_SERVER`;
+         print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP2_SERVER} has been executed.\n";
+	   }
+	   elsif($SERVER_MODE eq $TAP){#TAP PROD Server
+	     `$START_IBMIHS_SERVER_ON_TAP_SERVER`;
+         print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP_SERVER} has been executed.\n";
+	   }
+       
+	   #3. Check if the IBMIHS Server has been restart successfully or not
+       $calculateIBMIHSRunningCount = `$CALCULATE_IBMIHS_RUNNING_COUNT`;
+	   print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
+       chomp($calculateIBMIHSRunningCount);#Remove the return line char
+	   trim($calculateIBMIHSRunningCount);#Remove space chars 
+       if($calculateIBMIHSRunningCount <=0){
+         $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		 $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+         $operationFailedComments.="The IBM HTTP Server on TAP Server has been restarted failed.<br>";
+		 $operationFailedComments.="Please check the IBM HTTP Server log to find failed reason and fix issue."; 
+	     print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server on TAP Server has been restarted failed.\n";
+	   }
+	   else{
+		 print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server on TAP Server has been restarted successfully.\n";    
+	     print LOG "The Restart IBM HTTP Server on TAP Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
+	   }
+	  
+       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $RESTART_IBMIHS_ON_TAP_SERVER)
+    #Added by Larry for System Support And Self Healing Service Components - Phase 4 End
     elsif($operationNameCode eq $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT){#DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT
       if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
          #Operation has been started to be processed
@@ -1031,16 +1112,6 @@ sub coreOperationProcess{
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $UPDATE_SW_LICENSES_STATUS)
-    elsif($operationNameCode eq $RESTART_IBMIHS_ON_TAP_SERVER){#RESTART_IBMIHS_ON_TAP_SERVER
-      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
-         #Operation has been started to be processed
-         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
-         $operationStartedFlag = $TRUE;#Operation has been started to process
-       }
-	  
-       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
-	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
-    }#end elsif($operationNameCode eq $RESTART_IBMIHS_ON_TAP_SERVER)
     #A piece of code template which is used for 'New Operatoin' business logic
     #elsif($operationNameCode eq "SAMPLE_OPERATION_NAME_CODE"){#SAMPLE_OPERATION_NAME_CODE
 	#  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
