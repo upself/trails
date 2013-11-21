@@ -69,7 +69,7 @@ public class ReportServiceImpl implements ReportService {
             "SPLA","SysPlex","Internet ACC Flag","Processor Type","Processor Manufacturer","Processor Model","NBR Cores per Chip","NBR of Chips Max","CPU IBM LSPR MIPS","CPU Gartner MIPS","CPU MSU","Part IBM LSPR MIPS","Part Gartner MIPS","Part MSU","SHARED",
             "Hardware Status", "Lpar Status",
             "Physical HW processor count", "Physical chips",
-            "Effective processor count","Total PVU", "Installed SW product name", "SW Owner",
+            "Effective processor count","VU/core", "Installed SW product name", "SW Owner",
             "Alert assignee", "Alert assignee comment", "Inst SW manufacturer",
             "Inst SW validation status", "Reconciliation action",
             "Reconciliation user", "Reconciliation date/time",
@@ -128,8 +128,8 @@ public class ReportServiceImpl implements ReportService {
     private final String[] SOFTWARE_VARIANCE_REPORT_COLUMN_HEADERS = {
             "Product name", "Installed instances", "Scope software title" };
     private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
-    private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id ORDER BY SL.Name ASC";
-    private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SI.Name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Item SI, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = SI.Id GROUP BY SI.Name) AS TEMP ORDER BY Software_Item_Name ASC";
+    private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time , AC.name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id  FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id and VA.id=CC.alert_id and CC.alert_type_id=5 and CC.alert_cause_id=AC.id ORDER BY SL.Name ASC";
+    private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age, ac_name, target_date, cc_owner, cc_record_time,cc_remote_user,cc_id FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SI.Name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time,  AC.name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id  FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Item SI, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS , EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = SI.Id and VA.id=CC.alert_id and CC.alert_type_id=17 and CC.alert_cause_id=AC.id GROUP BY SI.Name, ac.name,CC.target_date,CC.owner,CC.remote_user,CC.id,CC.record_time) AS TEMP ORDER BY Software_Item_Name, ac_name,target_date,cc_owner,cc_remote_user,cc_id,cc_record_time ASC";
     private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWLPAR_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
     private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_HWLPAR_Report = "SELECT  AT.Name as DataException_Type, HL.Name as Lpar_Name,  Hw.SERIAL as Serial, A.Creation_time, HW.PROCESSOR_COUNT,cast(HL.EXT_ID as VARCHAR(8)),HW.CHIPS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Hardware_Lpar AHL, hardware_Lpar HL,hardware HW where A.open=:open and A.alert_type_id=AT.id and AHL.id=A.id and AHL.hardware_lpar_id=HL.id and HL.hardware_id=HW.id and HL.customer_id= :customerId and AT.code= :alertCode order by A.Creation_time";
     private final String WORKSTATION_ACCOUNTS_REPORT_NAME = "Workstation accounts with non-workstations report";
@@ -189,7 +189,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -204,7 +204,7 @@ public class ReportServiceImpl implements ReportService {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate())
                 .createSQLQuery(
-                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, HL.Name AS HL_Name, H.Serial, MT.Name AS MT_Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time, AC.name, CC.target_date, CC.owner, CC.record_time, CC.remote_user, CC.id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE_LPAR' AND VA.Open = 1 AND HL.Id = VA.FK_Id AND H.Id = HL.Hardware_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=4 and CC.alert_cause_id=AC.id ORDER BY HL.Name ASC")
+                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, HL.Name AS HL_Name, H.Serial, MT.Name AS MT_Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time, AC.name as ac_name, CC.target_date, CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE_LPAR' AND VA.Open = 1 AND HL.Id = VA.FK_Id AND H.Id = HL.Hardware_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=4 and CC.alert_cause_id=AC.id ORDER BY HL.Name ASC")
                 .setLong("customerId", pAccount.getId())
                 .scroll(ScrollMode.FORWARD_ONLY);
         HSSFSheet sheet =  phwb.createSheet("Alert HwLPAR Report");
@@ -229,7 +229,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -244,7 +244,7 @@ public class ReportServiceImpl implements ReportService {
         ScrollableResults lsrReport = ((Session) getEntityManager()
                 .getDelegate())
                 .createSQLQuery(
-                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, H.Serial, MT.Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,  AC.name, CC.target_date, CC.owner, CC.record_time, CC.remote_user, CC.id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=3 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC")
+                        "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, H.Serial, MT.Name, MT.Type, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,  AC.name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = 'HARDWARE' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id and VA.id=CC.alert_id and CC.alert_type_id=3 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC")
                 .setLong("customerId", pAccount.getId())
                 .scroll(ScrollMode.FORWARD_ONLY);
         HSSFSheet sheet =  phwb.createSheet("Alert Hardware Report");
@@ -268,7 +268,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -307,7 +307,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -379,7 +379,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -417,7 +417,7 @@ public class ReportServiceImpl implements ReportService {
         HSSFRow rowhead0=   sheet_2.createRow((int) 0);
         outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
         int j=1;
-        while (lsrReport.next()) {
+        while (vCauseCodeSummary.next()) {
         	HSSFRow row=   sheet_2.createRow((int) j);
             outputData(vCauseCodeSummary.get(), row);
             j++;
@@ -486,11 +486,11 @@ public class ReportServiceImpl implements ReportService {
                 + ",h.processor_count as hwProcCount "
                 + ",h.chips as hwChips "
                 + ",case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount "
-               +",case when ibmb.id is not null then (select pvui.VALUE_UNITS_PER_CORE from pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
+               +",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
                +"(case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then  'SINGLE-CORE' "
                +"when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then  'DUAL-CORE' "   
                +"when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then  'QUAD-CORE' "
-               +"else 'MULTI-CORE' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) else null end as pvuPerCode"
+               +"when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE' else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
                 + ",instSi.name as instSwName "
                 ;
         String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
@@ -989,6 +989,9 @@ public class ReportServiceImpl implements ReportService {
 
         for (int i = 0; poaData != null && i < poaData.length; i++) {
             lsData = poaData[i] == null ? "" : poaData[i].toString();
+            if (poaData[i] != null){
+            System.out.print(i);
+            System.out.print(poaData[i].toString());}
             rowct.createCell((int) i).setCellValue(lsData);
         }
 
