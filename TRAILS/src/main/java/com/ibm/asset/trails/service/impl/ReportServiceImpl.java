@@ -989,9 +989,6 @@ public class ReportServiceImpl implements ReportService {
 
         for (int i = 0; poaData != null && i < poaData.length; i++) {
             lsData = poaData[i] == null ? "" : poaData[i].toString();
-            if (poaData[i] != null){
-            System.out.print(i);
-            System.out.print(poaData[i].toString());}
             rowct.createCell((int) i).setCellValue(lsData);
         }
 
