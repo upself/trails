@@ -305,7 +305,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			if (!strCompare(causeCodeName, colCauseCode)) {
 				AlertCause alertCause = (AlertCause) getEntityManager()
 						.createNamedQuery("findAlertCauseByName")
-						.setParameter("name", colCauseCode).getSingleResult();
+						.setParameter("name", colCauseCode.trim().toUpperCase()).getSingleResult();
 				causeCode.setAlertCause(alertCause);
 			}
 
@@ -425,8 +425,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			return false;
 		}
 
-		if (alertCause.length() > 64) {
-			alertCause = alertCause.substring(0, 64);
+		if (alertCause.length() > 128) {
+			alertCause = alertCause.substring(0, 128);
 		}
 
 		if (alertCause == null || "".equals(alertCause)) {
@@ -437,7 +437,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		try {
 			acList = getEntityManager()
 					.createNamedQuery("findAlertCauseByName")
-					.setParameter("name", alertCause).getResultList();
+					.setParameter("name", alertCause.trim().toUpperCase())
+					.getResultList();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
