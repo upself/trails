@@ -1721,15 +1721,11 @@ sub getCustomerId {
         my $exactId;
         my %customerIds;
         
-        # Are we a TADz scan?
+        # Are we a TADz scan? If so, use LPAR_NAME+SERIAL to match else UNKNOWN account
+# This was commented out to take the change out -- until we stop getBankAccountById and use a hash
+#    	my $bankAccount = Sigbank::Delegate::BankAccountDelegate->getBankAccountById($sr->bankAccountId);
     	if ( $self->isTADz($sr->bankAccountId) == 1 ) {
     		my $match4 = 0;
-    		my $tsidCustomerId = 0;
-    		dlog("checking TADz if customer_id was already found using TSID->TECH_IMG_ID");
-    		$tsidCustomerId = ScanTADzDelegate->getTSIDCustomerId($sr); 
-    		if ( $tsidCustomerId > 0 ) {
-    			return $tsidCustomerId;
-    		}
     		dlog("applying TADz HW->SW matching logic for customer_id");
         	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
             	foreach my $fqhn ( keys %{$ref} ) {
@@ -1756,20 +1752,8 @@ sub getCustomerId {
         	if ( $match4 > 0 ) {
         		return $match4;
         	}
-            # Use the tme_object_id from cndb -- direct copy from distributed logic
-            if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    if ( $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } eq $customerId ) {
-                        dlog("ATP tme_object_id match $sr->name");
-                        return $customerId;
-                    }
-                }
-
-                dlog('TME_OBJECT_ID MISMATCH');
-                return 999999;
-            }
     		return 999999;
-    	} # end TADz matching logic -- distributed starts below here
+    	} 
 
         #Loop through all the matches
         foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
