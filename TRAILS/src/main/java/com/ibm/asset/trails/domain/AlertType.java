@@ -4,14 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -23,7 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name = "ALERT_TYPE")
 @NamedQueries({
-		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT LEFT OUTER JOIN FETCH AT.alertCauseSet WHERE AT.id = :id"),
+		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT WHERE AT.id = :id"),
 		@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
 		@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC") })
 public class AlertType extends AbstractDomainEntity {
@@ -42,9 +41,16 @@ public class AlertType extends AbstractDomainEntity {
 	@Column(name = "CODE")
 	protected String code;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "ALERT_TYPE_CAUSE", joinColumns = @JoinColumn(name = "ALERT_TYPE_ID"), inverseJoinColumns = @JoinColumn(name = "ALERT_CAUSE_ID"))
-	protected Set<AlertCause> alertCauseSet = new HashSet<AlertCause>();
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.alertType", cascade = CascadeType.ALL)
+	protected Set<AlertTypeCause> alertTypeCauses = new HashSet<AlertTypeCause>();
+
+	public Set<AlertTypeCause> getAlertTypeCauses() {
+		return alertTypeCauses;
+	}
+
+	public void setAlertTypeCauses(Set<AlertTypeCause> alertTypeCauses) {
+		this.alertTypeCauses = alertTypeCauses;
+	}
 
 	public Long getId() {
 		return id;
@@ -68,14 +74,6 @@ public class AlertType extends AbstractDomainEntity {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public Set<AlertCause> getAlertCauseSet() {
-		return alertCauseSet;
-	}
-
-	public void setAlertCauseSet(Set<AlertCause> alertCauseSet) {
-		this.alertCauseSet = alertCauseSet;
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package com.ibm.asset.trails.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
@@ -34,6 +33,8 @@ import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.CauseCodeService;
 import com.ibm.bluepages.BPResults;
 import com.ibm.bluepages.BluePages;
+import com.ibm.ea.common.State;
+import com.ibm.ea.common.State.EStatus;
 
 @Service
 public class CauseCodeServiceImpl implements CauseCodeService {
@@ -49,11 +50,14 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	private final static String ERROR_UNKONW_TYPE = "Please do not change the structure of the report.";
 	private final static String ERROR_INTERNAL_ID_NOT_EXIST = "Internal id not exists";
-	private final static String ERROR_BAD_DATE_FORMAT = "Please use the following format for dates: YYYY-MM-DD";
+	private final static String ERROR_BAD_DATE_FORMAT = "Please ensure the cell is date formatted";
 	private static final String ERROR_UNKNOW_OWNER = "Please use an Email Address, as specified in Blue Pages";
 	private static final String ERROR_UNKONW_CAUSE_CODE = "Unknown alert cause";
 
 	private ECauseCodeReport colIndexes;
+
+	private final static String STEP2_LABEL = "VALIDATE";
+	private final static String STEP3_LABEL = "PERSISTE";
 
 	@Autowired
 	private AccountService accountService;
@@ -76,60 +80,78 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-	public ByteArrayOutputStream loadSpreadsheet(File file, String remoteUser) {
+	public ByteArrayOutputStream loadSpreadsheet(File file, String remoteUser,
+			List<State> steps) throws IOException {
 
 		ByteArrayOutputStream bos = null;
-		try {
-			FileInputStream fin = new FileInputStream(file);
-			HSSFWorkbook wb = new HSSFWorkbook(fin);
 
-			HSSFSheet sheet = wb.getSheetAt(0);
+		FileInputStream fin = new FileInputStream(file);
+		HSSFWorkbook wb = new HSSFWorkbook(fin);
 
-			HSSFCell reportNameCell = sheet.getRow(ROW_ALERT_TYPE).getCell(
-					COL_ALERT_TYPE);
-			String reportName = reportNameCell.getStringCellValue().trim();
+		HSSFSheet sheet = wb.getSheetAt(0);
 
-			HSSFCellStyle errorStyle = wb.createCellStyle();
-			errorStyle.setFillForegroundColor(HSSFColor.RED.index);
-			errorStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		HSSFCell reportNameCell = sheet.getRow(ROW_ALERT_TYPE).getCell(
+				COL_ALERT_TYPE);
+		String reportName = reportNameCell.getStringCellValue().trim();
 
-			colIndexes = ECauseCodeReport.getReportByName(reportName);
+		HSSFCellStyle errorStyle = wb.createCellStyle();
+		errorStyle.setFillForegroundColor(HSSFColor.RED.index);
+		errorStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
-			boolean error = validateExcelCauseCodeContent(sheet, errorStyle);
+		colIndexes = ECauseCodeReport.getReportByName(reportName);
 
-			if (!error) {
-				saveCauseCode(wb, remoteUser);
+		boolean error = validateExcelCauseCodeContent(sheet, errorStyle, steps);
+
+		if (!error) {
+			saveCauseCode(wb, remoteUser, steps);
+		} else {
+			State state = State.findStateByLable(steps, STEP3_LABEL);
+			if (state == null) {
+				state = new State();
+				state.setDescription("Persist changes");
+				state.setLabel(STEP3_LABEL);
+				state.setStatus(EStatus.IGNORED);
+				steps.add(state);
 			}
-
-			bos = new ByteArrayOutputStream();
-			wb.write(bos);
-
-		} catch (FileNotFoundException e) {
-			log.error(e.getMessage(), e);
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
 		}
+
+		bos = new ByteArrayOutputStream();
+		wb.write(bos);
 
 		return bos;
 
 	}
 
 	private boolean validateExcelCauseCodeContent(HSSFSheet sheet,
-			HSSFCellStyle errorStyle) {
+			HSSFCellStyle errorStyle, List<State> steps) {
+
+		State state = State.findStateByLable(steps, STEP2_LABEL);
+		if (state == null) {
+			state = new State();
+			state.setDescription("Data validation");
+			state.setLabel(STEP2_LABEL);
+			state.setStatus(EStatus.IN_PROGRESS);
+			steps.add(state);
+		}
 
 		boolean error = false;
 		if (colIndexes == null) {
+			int lastCellNO = sheet.getRow(ROW_ALERT_TYPE).getLastCellNum();
 			HSSFCell cell = sheet.getRow(ROW_ALERT_TYPE).createCell(
-					colIndexes.getColMessage());
+					lastCellNO + 1);
 			cell.setCellStyle(errorStyle);
 			cell.setCellValue(new HSSFRichTextString(ERROR_UNKONW_TYPE));
 			error = true;
 		} else {
 			Iterator<Row> rowIter = sheet.rowIterator();
 			int rowCounter = -1;
+			int totalRows = sheet.getLastRowNum();
 			while (rowIter.hasNext()) {
 				HSSFRow row = (HSSFRow) rowIter.next();
 				rowCounter++;
+
+				int progress = (int) ((float) rowCounter / totalRows * 100);
+				state.setProgress(progress);
 
 				if (rowCounter <= ROW_TABLE_HEAD) {
 					continue;
@@ -144,7 +166,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 							buildErrorMsg(errorMsg,
 									colIndexes.getColInternalId(),
-									ERROR_INTERNAL_ID_NOT_EXIST);
+									"Internal ID", ERROR_INTERNAL_ID_NOT_EXIST);
 						}
 					}
 
@@ -153,7 +175,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 							buildErrorMsg(errorMsg,
 									colIndexes.getColCauseCode(),
-									ERROR_UNKONW_CAUSE_CODE);
+									"Cause Code (CC)", ERROR_UNKONW_CAUSE_CODE);
 						}
 					}
 
@@ -161,14 +183,14 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						if (!isDateFormat(cell)) {
 							buildErrorMsg(errorMsg,
 									colIndexes.getColTargetDate(),
-									ERROR_BAD_DATE_FORMAT);
+									"CC target date", ERROR_BAD_DATE_FORMAT);
 						}
 					}
 
 					if (col == colIndexes.getColOwner()) {
 						if (!isOwnerExistsInBluePage(cell)) {
 							buildErrorMsg(errorMsg, colIndexes.getColOwner(),
-									ERROR_UNKNOW_OWNER);
+									"CC owner", ERROR_UNKNOW_OWNER);
 						}
 					}
 				}
@@ -183,16 +205,44 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				}
 			}
 		}
+
+		if (error) {
+			state.setStatus(EStatus.FAILED);
+		} else {
+			if (state.getProgress() == 100
+					&& state.getStatus().getPriority() < EStatus.FINISHED
+							.getPriority()) {
+				state.setStatus(EStatus.FINISHED);
+			}
+		}
 		return error;
 	}
 
-	private void saveCauseCode(HSSFWorkbook wb, String remoteUser) {
+	private void saveCauseCode(HSSFWorkbook wb, String remoteUser,
+			List<State> steps) {
 		HSSFSheet sheet = wb.getSheetAt(0);
 		Iterator<Row> rowIter = sheet.rowIterator();
+
+		State state = State.findStateByLable(steps, STEP3_LABEL);
+		if (state == null) {
+			state = new State();
+			state.setDescription("Persist changes");
+			state.setLabel(STEP3_LABEL);
+			state.setStatus(EStatus.IN_PROGRESS);
+			steps.add(state);
+		}
+
 		int rowCounter = -1;
+		int totalRows = sheet.getLastRowNum();
 		while (rowIter.hasNext()) {
 			HSSFRow row = (HSSFRow) rowIter.next();
 			rowCounter++;
+
+			int progress = (int) ((float) rowCounter / totalRows * 100);
+			state.setProgress(progress);
+			if (progress == 100) {
+				state.setStatus(EStatus.FINISHED);
+			}
 
 			if (rowCounter <= ROW_TABLE_HEAD) {
 				continue;
@@ -212,14 +262,19 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			CauseCode causeCode = (CauseCode) getEntityManager()
 					.createNamedQuery("getCauseCodeById")
 					.setParameter("id", causeCodeId).getSingleResult();
-			
+
 			String causeCodeName = causeCode.getAlertCause().getName();
 			String colCauseCode = row.getCell(colIndexes.getColCauseCode())
 					.getStringCellValue().trim();
 
 			Date targetDate = causeCode.getTargetDate();
-			Date colTargetDate = row.getCell(colIndexes.getColTargetDate())
-					.getDateCellValue();
+			HSSFCell targetDateCell = row
+					.getCell(colIndexes.getColTargetDate());
+			Date colTargetDate = null;
+			if (targetDateCell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC
+					&& HSSFDateUtil.isCellDateFormatted(targetDateCell)) {
+				colTargetDate = targetDateCell.getDateCellValue();
+			}
 
 			String owner = causeCode.getOwner();
 			String colOwner = row.getCell(colIndexes.getColOwner())
@@ -316,8 +371,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	}
 
 	private void buildErrorMsg(StringBuffer result, int columnNo,
-			String errorMsg) {
-		result.append(" Error: coloumn " + columnNo + " ");
+			String colName, String errorMsg) {
+		result.append(" Error: coloumn " + columnNo + ":" + colName + ",");
 		result.append(errorMsg);
 	}
 
@@ -328,6 +383,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 			String internetId = cell.getStringCellValue().trim();
+			if (internetId == null || "".equals(internetId)) {
+				return true;
+			}
 			BPResults result = BluePages.getPersonsByInternet(internetId);
 			return result.hasColumn("EMPNUM");
 		}
@@ -336,6 +394,17 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	private boolean isDateFormat(HSSFCell cell) {
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+			return true;
+		}
+
+		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+			String str = cell.getStringCellValue();
+			if (str == null || "".equals(str)) {
+				return true;
+			}
+		}
+
+		if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
 			return true;
 		}
 

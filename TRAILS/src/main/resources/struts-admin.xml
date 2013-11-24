@@ -45,12 +45,6 @@
 			</result>
 		</action>
 
-		<action name="add" method="add" class="alertCauseAction">
-			<result name="success" type="tiles">
-				tiles.admin.alertCause.manage
-			</result>
-		</action>
-
 		<action name="update" method="update" class="alertCauseAction">
 			<result name="success" type="tiles">
 				tiles.admin.alertCause.manage
@@ -65,24 +59,5 @@
 		</action>
 	</package>
 
-	<package name="adminAlertTypeCauseMapping" extends="trails-struts-default"
-		namespace="/admin/alertTypeCauseMapping">
-		<action name="listAlertType" method="listAlertType"
-			class="alertTypeCauseMappingAction">
-			<result name="success" type="tiles">
-				tiles.admin.alertTypeCauseMapping.listAlertType
-			</result>
-		</action>
-
-		<action name="map" method="map" class="alertTypeCauseMappingAction">
-			<result name="success" type="tiles">
-				tiles.admin.alertTypeCauseMapping.map
-			</result>
-		</action>
-
-		<action name="save" method="save" class="alertTypeCauseMappingAction">
-			<result name="success" type="redirect">listAlertType.htm</result>
-		</action>
-	</package>
 
 </struts>

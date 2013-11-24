@@ -23,8 +23,6 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/listPvu.htm"
 				icon="false" />
 			<item value="Cause code" link="/admin/alertCause/list.htm" icon="false" />
-			<item value="Alert type/cause code mapping" link="/admin/alertTypeCauseMapping/listAlertType.htm"
-				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/scheduleF/showUpload.htm">
 			<item value="View" link="/admin/scheduleF/list.htm" icon="scheduleFList" />
@@ -1215,8 +1213,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOOS"
-		extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.account.exception.lparNOOS" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -1226,8 +1223,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no operating system" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOSW"
-		extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.account.exception.lparNOSW" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -1237,8 +1233,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no software" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOLP"
-		extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.account.exception.lparNOLP" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -1259,7 +1254,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no customer" />
 	</definition>
-	
+
 	<definition name="tiles.account.exception.lparHWNPRC"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"
@@ -1307,10 +1302,8 @@
 	<definition name="tiles.account.causecodes.upload" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
-		<put-attribute name="description"
-			value="TRAILS account cause codes upload" />
-		<put-attribute name="keywords"
-			value="TRAILS account cause code upload" />
+		<put-attribute name="description" value="TRAILS account cause codes upload" />
+		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
@@ -1323,7 +1316,7 @@
 
 	<definition name="tiles.account.exception.assigment.Hwlpar.result"
 		template="/WEB-INF/jsp/account/exception/hwlparAssigmentStatus.jsp" />
-		
+
 	<definition name="tiles.account.exception.assigment.Swlpar.result"
 		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
 

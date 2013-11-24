@@ -96,6 +96,12 @@
 		class="com.ibm.asset.trails.service.impl.DataExceptionTypeServiceImpl">
 	</bean>
 
+	<bean id="alertCauseResponsibilityService"
+		class="com.ibm.asset.trails.service.impl.AlertCauseResponsibilityServiceImpl" />
+
+	<bean id="alertTypeCauseService"
+		class="com.ibm.asset.trails.service.impl.AlertTypeCauseServiceImpl" />
+
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
@@ -367,12 +373,11 @@
 	<bean id="alertCauseAction" scope="prototype"
 		class="com.ibm.asset.trails.action.DataExceptionCauseAction">
 		<property name="alertCauseService" ref="alertCauseService" />
+		<property name="alertTypeService" ref="alertTypeService" />
+		<property name="alertCauseResponsibilityService" ref="alertCauseResponsibilityService" />
+		<property name="alertTypeCauseService" ref="alertTypeCauseService" />
 	</bean>
 
-	<bean id="alertTypeCauseMappingAction" scope="prototype"
-		class="com.ibm.asset.trails.action.DataExceptionTypeCauseMappingAction">
-		<property name="alertCauseService" ref="alertCauseService" />
-	</bean>
 
 	<!--exceptions configuration -->
 	<bean id="alertSoftwareLparDao"

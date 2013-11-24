@@ -1,7 +1,6 @@
 package com.ibm.asset.trails.form;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 

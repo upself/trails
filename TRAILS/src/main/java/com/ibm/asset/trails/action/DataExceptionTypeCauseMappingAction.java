@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ibm.asset.trails.domain.AlertCause;
 import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.AlertTypeCause;
 import com.ibm.asset.trails.form.DataExceptionTypeCauseMappingForm;
 import com.ibm.asset.trails.service.DataExceptionCauseService;
 import com.ibm.asset.trails.service.DataExceptionTypeService;
@@ -18,6 +18,7 @@ import com.ibm.tap.trails.annotation.UserRoleType;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.Preparable;
 
+@Deprecated
 public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 		implements Preparable {
 	private static final long serialVersionUID = -2746874419315812071L;
@@ -26,14 +27,15 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 	private DataExceptionTypeCauseMappingForm alertTypeCauseMappingForm;
 	private Long alertTypeId;
 	private List<AlertType> alertTypeList;
-	
+
 	@Autowired
 	private DataExceptionTypeService alertTypeService;
 
 	public void prepare() throws Exception {
 		// Retrieve the save message string from session
 		if (getSession().containsKey(SAVE_MESSAGE_SESSION_KEY)) {
-			addActionMessage((String) getSession().get(SAVE_MESSAGE_SESSION_KEY));
+			addActionMessage((String) getSession()
+					.get(SAVE_MESSAGE_SESSION_KEY));
 			getSession().remove(SAVE_MESSAGE_SESSION_KEY);
 		}
 	}
@@ -55,21 +57,21 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String map() {
-		AlertType latMap = alertTypeService.findWithAlertCauses(
-				getAlertTypeId());
+		AlertType latMap = alertTypeService
+				.findWithAlertCauses(getAlertTypeId());
 		List<Long> llMappedAlertCauseId = new ArrayList<Long>();
 
 		setAlertTypeCauseMappingForm(new DataExceptionTypeCauseMappingForm());
 		getAlertTypeCauseMappingForm().setAlertTypeName(latMap.getName());
 		getAlertTypeCauseMappingForm().setMappedAlertCauseList(
-				new ArrayList<AlertCause>(latMap.getAlertCauseSet()));
-		for (AlertCause lacMap : getAlertTypeCauseMappingForm().getMappedAlertCauseList()) {
-			llMappedAlertCauseId.add(lacMap.getId());
+				new ArrayList<AlertTypeCause>(latMap.getAlertTypeCauses()));
+		for (AlertTypeCause lacMap : getAlertTypeCauseMappingForm()
+				.getMappedAlertCauseList()) {
+			llMappedAlertCauseId.add(lacMap.getPk().getAlertCause().getId());
 		}
-		getAlertTypeCauseMappingForm()
-				.setAvailableAlertCauseList(
-						getAlertCauseService().getAvailableAlertCauseList(
-								llMappedAlertCauseId));
+		getAlertTypeCauseMappingForm().setAvailableAlertCauseList(
+				getAlertCauseService().getAvailableAlertCauseList(
+						llMappedAlertCauseId));
 
 		return Action.SUCCESS;
 	}
@@ -80,12 +82,12 @@ public class DataExceptionTypeCauseMappingAction extends BaseActionWithSession
 
 		if (getAlertTypeCauseMappingForm() != null
 				&& getAlertTypeCauseMappingForm().getMappedAlertCauseIdArray() != null) {
-			latSave.setAlertCauseSet(new HashSet<AlertCause>(getAlertCauseService()
-					.getAlertCauseListByIdList(
+			latSave.setAlertTypeCauses(new HashSet<AlertTypeCause>(
+					getAlertCauseService().getAlertCauseListByIdList(
 							Arrays.asList(getAlertTypeCauseMappingForm()
 									.getMappedAlertCauseIdArray()))));
 		} else {
-			latSave.setAlertCauseSet(new HashSet<AlertCause>());
+			latSave.setAlertTypeCauses(new HashSet<AlertTypeCause>());
 		}
 		alertTypeService.update(latSave);
 		getSession().put(SAVE_MESSAGE_SESSION_KEY,

@@ -3,6 +3,7 @@ package com.ibm.asset.trails.dao;
 import java.util.List;
 
 import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertTypeCause;
 
 public interface DataExceptionCauseDao {
 
@@ -14,11 +15,13 @@ public interface DataExceptionCauseDao {
 
 	AlertCause find(String psName, Long plId);
 
-	List<AlertCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
+	List<AlertTypeCause> getAlertCauseListByIdList(List<Long> plAlertCauseId);
 
-	List<AlertCause> getAvailableAlertCauseList(List<Long> plId);
+	List<AlertTypeCause> getAvailableAlertCauseList(List<Long> plId);
 
-	List<AlertCause> list();
+	List<AlertTypeCause> list();
+
+	List<AlertTypeCause> listWithTypeJoin();
 
 	void update(AlertCause pacUpdate);
 }
