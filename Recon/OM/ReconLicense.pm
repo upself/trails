@@ -239,9 +239,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_license l1
-        where exists ( select l2.customer_id, l2.license_id, l2.action from recon_license l2 where l2.id = ?
-         and l2.customer_id = l1.customer_id and l2.license_id = l1.license_id and l2.action = l1.action )
+        delete from recon_license
+        where
+            id = ?
     ';
     return ('deleteReconLicense', $query);
 }

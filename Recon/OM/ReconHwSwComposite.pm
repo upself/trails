@@ -239,9 +239,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_hs_composite hsc1
-        where exists ( select hsc2.customer_id, hsc2.hw_sw_composite_id, hsc2.action from recon_hs_composite hsc2 where hsc2.id = ?
-         and hsc2.customer_id = hsc1.customer_id and hsc2.hw_sw_composite_id = hsc1.hw_sw_composite_id and hsc2.action = hsc1.action )
+        delete from recon_hs_composite
+        where
+            id = ?
     ';
     return ('deleteReconHwSwComposite', $query);
 }

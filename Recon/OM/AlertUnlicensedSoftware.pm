@@ -2,7 +2,6 @@ package Recon::OM::AlertUnlicensedSoftware;
 
 use strict;
 use Base::Utils;
-# use Recon::CauseCode;
 
 sub new {
     my ($class) = @_;
@@ -219,10 +218,6 @@ sub save {
         );
         $sth->finish;
     }
-#    if ( $self->type eq "IBM" )
-#		{ Recon::CauseCode::updateCCtable($self->id, 7, $connection ); }
-#	else
-#		{ Recon::CauseCode::updateCCtable($self->id, 8, $connection ); }
 }
 
 sub queryInsert {
