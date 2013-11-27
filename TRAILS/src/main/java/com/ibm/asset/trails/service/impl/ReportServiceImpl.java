@@ -75,7 +75,7 @@ public class ReportServiceImpl implements ReportService {
 			"CPU MSU", "Part IBM LSPR MIPS", "Part Gartner MIPS", "Part MSU",
 			"SHARED", "Hardware Status", "Lpar Status",
 			"Physical HW processor count", "Physical chips",
-			"Effective processor count", "VU/core",
+			"Effective processor count", "PVU/core",
 			"Installed SW product name", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
 			"Inst SW validation status", "Reconciliation action",
