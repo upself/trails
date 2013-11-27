@@ -50,20 +50,20 @@
 	height="13" /> <html:link
 	page="/software/selectInit.do?accountId=${account.customer.accountNumber}&lparName=${software.softwareLpar.name}&lparId=${software.softwareLpar.id}">Add Missing Software Product</html:link><br />
 
-<!-- Modify Effective Processor Count --> <img
-	src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif" width="13"
-	height="13" /> <c:choose>
-	<c:when test="${software.softwareLpar.softwareLparEff == null}">
-		<html:link
-			page="/software/lpar/eff/create.do?lparId=${software.softwareLpar.id}">Create Effective Processor Count</html:link>
-		<br />
-	</c:when>
-	<c:otherwise>
-		<html:link
-			page="/software/lpar/eff/update.do?lparId=${software.softwareLpar.id}&id=${software.softwareLpar.softwareLparEff.id}">Update Effective Processor Count</html:link>
-		<br />
-	</c:otherwise>
-</c:choose></p>
+<!-- <!-- Modify Effective Processor Count --> <img -->
+<!-- 	src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif" width="13" -->
+<%-- 	height="13" /> <c:choose> --%>
+<%-- 	<c:when test="${software.softwareLpar.softwareLparEff == null}"> --%>
+<%-- 		<html:link --%>
+<%-- 			page="/software/lpar/eff/create.do?lparId=${software.softwareLpar.id}">Create Effective Processor Count</html:link> --%>
+<!-- 		<br /> -->
+<%-- 	</c:when> --%>
+<%-- 	<c:otherwise> --%>
+<%-- 		<html:link --%>
+<%-- 			page="/software/lpar/eff/update.do?lparId=${software.softwareLpar.id}&id=${software.softwareLpar.softwareLparEff.id}">Update Effective Processor Count</html:link> --%>
+<!-- 		<br /> -->
+<%-- 	</c:otherwise> --%>
+<%-- </c:choose></p> --%>
 
 </div>
 <br />
