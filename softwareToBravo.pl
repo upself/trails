@@ -37,10 +37,7 @@ my $maxChildren        = 100;
 my $segmentSize        = 200;
 my %runningCustomerIds = ();
 my %children           = ();
-
-my $connection = Database::Connection->new('staging');
-my @customerIds = getStagingQueue( $connection, 5 );
-$connection->disconnect;
+my @customerIds;
 
 daemonize();
 spawnChildren();
@@ -50,6 +47,12 @@ exit;
 
 sub spawnChildren {
  wlog("$rNo Spawning children");
+ 
+ if(!@customerIds){
+   my $connection = Database::Connection->new('staging');
+   @customerIds = getStagingQueue( $connection, 5 );
+   $connection->disconnect;  
+ }
  
  my $i=0;
  while ( $i < $maxChildren ) {
