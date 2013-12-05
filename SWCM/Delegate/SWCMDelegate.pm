@@ -8,75 +8,6 @@ use BRAVO::Delegate::BRAVODelegate;
 use BRAVO::OM::CapType;
 use BRAVO::OM::LicenseType;
 
-# This SQL restriction is being added to prohibit data from the SoftReq 
-# final load being imported from SwCM until it has been reviewed
-# this snippet will be removed after the asset managers have completed their
-# review of the data. Search for REMOVE_AFTER_ASSET_MANAGERS_REVIEW
-# in SWCMLoader.pm for the area that requires modifying and
-# below in this file for the areas that require modifying after the 
-# review is complete.
-#my $REMOVE_AFTER_ASSET_MANAGERS_REVIEW = " (a.lic_ext_src_id not like 'SR%' or not (a.lic_last_modified_by like '%softreq_final_load%' " .
-#" and ( a.maint_massloaded = '1' or a.maint_massloaded is null) ) ) ";
-my $REMOVE_AFTER_ASSET_MANAGERS_REVIEW = " ( (a.lic_ext_src_id not like 'SR%') or
- ( ( a.lic_last_modified_by not like '%softreq_final_load%' )
-and ( (a.maint_massloaded = '0') or (a.maint_massloaded is null) ) )
-) ";
-
-# getLicenseListKeep() and the licenseListKeep hash will not be needed after the
-# asset manager's review. Therefore, every attempt is being made to keep this function
-# very local in the code for easy removal.
-sub getLicenseListKeep {
-    my ( $self, $swcmConnection ) = @_;
-	my %licenseListKeep;
-	$swcmConnection->prepareSqlQueryAndFields(
-		$self->queryLicenseKeep() );
-		
-    my $sth = $swcmConnection->sql->{LicenseKeep};
-    dlog("got sth obj");
-
-    ###Bind the columns
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} }
-            @{ $swcmConnection->sql->{LicenseKeepFields} } );
-    dlog("binded cols to sth");
-    
-        $sth->execute();
-        dlog('Execution complete');
-    while ( $sth->fetchrow_arrayref ) {
-    	$licenseListKeep{$rec{extSrcId}} = 0;    	
-    }
-    $sth->finish;
-    dlog("closed sth");
-	return ( \%licenseListKeep );	
-}
-
-sub queryLicenseKeep {
-    my ( $self ) = @_;
-
-    my @fields = qw(
-        extSrcId
-    );
-    my $query = '
-        select
-        	distinct
-            a.lic_ext_src_id
-        from
-            swlm.lics2trails5 a 
-        left outer join swlm.cpu2trails b
-            on a.swcm_license_id = b.lic_id
-        left outer join swlm.lpar2trails c
-            on a.swcm_license_id= c.lic_id
-	where lic_ext_src_id like \'SR%\' and
-	( ( lic_last_modified_by like \'%softreq_final_load%\' )
-	or ( maint_massloaded = \'1\' ) );            
-    ';
-
-
-    dlog("queryLicenseKeep=$query");
-    return ( 'LicenseKeep', $query, \@fields );
-
-}
-
 sub getData {
     my ($self,             $swcmConnection,  $bravoConnection,
         $accountNumberMap, $customerNameMap, $dupCustomerNameMap,
@@ -506,7 +437,6 @@ sub querySWCMLicenseDeltaData {
     	';
     }
     $query .= ' and ';
-	$query .= $REMOVE_AFTER_ASSET_MANAGERS_REVIEW;
 	
     $query .= ' order by a.swcm_lic_sw_prod_id, a.swcm_license_id';
 

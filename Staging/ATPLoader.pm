@@ -213,6 +213,9 @@ sub doDelta {
         $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
         $hardware->nbrOfChipsMax( $rec{nbrOfChipsMax} );
         $hardware->shared( $rec{shared} );
+        $hardware->sharedProcessor( $rec{sharedProcessor} );
+        $hardware->cloudName( $rec{cloudName} );
+        $hardware->chassisId( $rec{chassisId} );
         dlog( $hardware->toString );
 
         if ( defined $self->hardware->{$key} ) {
@@ -314,6 +317,11 @@ sub doDelta {
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
+        $hardwareLpar->backupMethod( $rec{backupMethod} );
+        $hardwareLpar->clusterType( $rec{clusterType} );
+        $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
+        $hardwareLpar->cappedLpar( $rec{cappedLpar} );
+        $hardwareLpar->virtualFlag( $rec{virtualFlag} );
 
         dlog( $hardwareLpar->toString );
 

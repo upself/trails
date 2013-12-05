@@ -24,6 +24,11 @@ sub new {
         ,_partMIPS => undef
         ,_partMSU => undef
         ,_partGartnerMIPS => undef
+        ,_backupMethod => undef
+        ,_clusterType => undef
+        ,_vMobilRestrict => undef
+        ,_cappedLpar => undef
+        ,_virtualFlag => undef
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -140,6 +145,41 @@ sub equals {
     $equal = 1 if (!defined $self->partGartnerMIPS && !defined $object->partGartnerMIPS);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->backupMethod && defined $object->backupMethod) {
+        $equal = 1 if $self->backupMethod eq $object->backupMethod;
+    }
+    $equal = 1 if (!defined $self->backupMethod && !defined $object->backupMethod);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->clusterType && defined $object->clusterType) {
+        $equal = 1 if $self->clusterType eq $object->clusterType;
+    }
+    $equal = 1 if (!defined $self->clusterType && !defined $object->clusterType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->vMobilRestrict && defined $object->vMobilRestrict) {
+        $equal = 1 if $self->vMobilRestrict eq $object->vMobilRestrict;
+    }
+    $equal = 1 if (!defined $self->vMobilRestrict && !defined $object->vMobilRestrict);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->cappedLpar && defined $object->cappedLpar) {
+        $equal = 1 if $self->cappedLpar eq $object->cappedLpar;
+    }
+    $equal = 1 if (!defined $self->cappedLpar && !defined $object->cappedLpar);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->virtualFlag && defined $object->virtualFlag) {
+        $equal = 1 if $self->virtualFlag eq $object->virtualFlag;
+    }
+    $equal = 1 if (!defined $self->virtualFlag && !defined $object->virtualFlag);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -251,6 +291,36 @@ sub partGartnerMIPS {
     return $self->{_partGartnerMIPS};
 }
 
+sub backupMethod {
+    my $self = shift;
+    $self->{_backupMethod} = shift if scalar @_ == 1;
+    return $self->{_backupMethod};
+}
+
+sub clusterType {
+    my $self = shift;
+    $self->{_clusterType} = shift if scalar @_ == 1;
+    return $self->{_clusterType};
+}
+
+sub vMobilRestrict {
+    my $self = shift;
+    $self->{_vMobilRestrict} = shift if scalar @_ == 1;
+    return $self->{_vMobilRestrict};
+}
+
+sub cappedLpar {
+    my $self = shift;
+    $self->{_cappedLpar} = shift if scalar @_ == 1;
+    return $self->{_cappedLpar};
+}
+
+sub virtualFlag {
+    my $self = shift;
+    $self->{_virtualFlag} = shift if scalar @_ == 1;
+    return $self->{_virtualFlag};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -356,6 +426,31 @@ sub toString {
         $s .= $self->{_partGartnerMIPS};
     }
     $s .= ",";
+    $s .= "backupMethod=";
+    if (defined $self->{_backupMethod}) {
+        $s .= $self->{_backupMethod};
+    }
+    $s .= ",";
+    $s .= "clusterType=";
+    if (defined $self->{_clusterType}) {
+        $s .= $self->{_clusterType};
+    }
+    $s .= ",";
+    $s .= "vMobilRestrict=";
+    if (defined $self->{_vMobilRestrict}) {
+        $s .= $self->{_vMobilRestrict};
+    }
+    $s .= ",";
+    $s .= "cappedLpar=";
+    if (defined $self->{_cappedLpar}) {
+        $s .= $self->{_cappedLpar};
+    }
+    $s .= ",";
+    $s .= "virtualFlag=";
+    if (defined $self->{_virtualFlag}) {
+        $s .= $self->{_virtualFlag};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -393,6 +488,11 @@ sub save {
             ,$self->partMIPS
             ,$self->partMSU
             ,$self->partGartnerMIPS
+            ,$self->backupMethod
+            ,$self->clusterType
+            ,$self->vMobilRestrict
+            ,$self->cappedLpar
+            ,$self->virtualFlag
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -416,6 +516,11 @@ sub save {
             ,$self->partMIPS
             ,$self->partMSU
             ,$self->partGartnerMIPS
+            ,$self->backupMethod
+            ,$self->clusterType
+            ,$self->vMobilRestrict
+            ,$self->cappedLpar
+            ,$self->virtualFlag
             ,$self->id
         );
         $sth->finish;
@@ -445,6 +550,11 @@ sub queryInsert {
             ,part_mips
             ,part_msu
             ,PART_GARTNER_MIPS
+            ,BACKUPMETHOD
+            ,CLUSTER_TYPE
+            ,VIRTUAL_MOBILITY_RESTRICTION
+            ,CAPPED_LPAR
+            ,VIRTUAL_FLAG
         ) values (
             ?
             ,?
@@ -452,6 +562,11 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
+            ,?
+            ,?
+            ,?
+            ,?
+            ,?
             ,?
             ,?
             ,?
@@ -487,6 +602,11 @@ sub queryUpdate {
             ,part_mips = ?
             ,part_msu = ?
             ,PART_GARTNER_MIPS = ?
+            ,BACKUPMETHOD = ?
+            ,CLUSTER_TYPE = ?
+            ,VIRTUAL_MOBILITY_RESTRICTION = ?
+            ,CAPPED_LPAR = ?
+            ,VIRTUAL_FLAG = ?
         where
             id = ?
     ';
@@ -534,6 +654,11 @@ sub getByBizKey {
     my $partMIPS;
     my $partMSU;
     my $partGartnerMIPS;
+    my $backupMethod;
+    my $clusterType;
+    my $vMobilRestrict;
+    my $cappedLpar;
+    my $virtualFlag;
     $sth->bind_columns(
         \$id
         ,\$hardwareId
@@ -550,6 +675,11 @@ sub getByBizKey {
         ,\$partMIPS
         ,\$partMSU
         ,\$partGartnerMIPS
+        ,\$backupMethod
+        ,\$clusterType
+        ,\$vMobilRestrict
+        ,\$cappedLpar
+        ,\$virtualFlag
     );
     $sth->execute(
         $self->name
@@ -572,6 +702,11 @@ sub getByBizKey {
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
     $self->partGartnerMIPS($partGartnerMIPS);
+    $self->backupMethod($backupMethod);
+    $self->clusterType($clusterType);
+    $self->vMobilRestrict($vMobilRestrict);
+    $self->cappedLpar($cappedLpar);
+    $self->virtualFlag($virtualFlag);
 }
 
 sub queryGetByBizKey {
@@ -592,6 +727,11 @@ sub queryGetByBizKey {
             ,part_mips
             ,part_msu
             ,PART_GARTNER_MIPS
+            ,BACKUPMETHOD
+            ,CLUSTER_TYPE
+            ,VIRTUAL_MOBILITY_RESTRICTION
+            ,CAPPED_LPAR
+            ,VIRTUAL_FLAG
         from
             hardware_lpar
         where
@@ -621,6 +761,11 @@ sub getById {
     my $partMIPS;
     my $partMSU;
     my $partGartnerMIPS;
+    my $backupMethod;
+    my $clusterType;
+    my $vMobilRestrict;
+    my $cappedLpar;
+    my $virtualFlag;
     $sth->bind_columns(
         \$name
         ,\$customerId
@@ -638,6 +783,11 @@ sub getById {
         ,\$partMIPS
         ,\$partMSU
         ,\$partGartnerMIPS
+        ,\$backupMethod
+        ,\$clusterType
+        ,\$vMobilRestrict
+        ,\$cappedLpar
+        ,\$virtualFlag
     );
     $sth->execute(
         $self->id
@@ -660,6 +810,11 @@ sub getById {
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
     $self->partGartnerMIPS($partGartnerMIPS);
+    $self->backupMethod($backupMethod);
+    $self->clusterType($clusterType);
+    $self->vMobilRestrict($vMobilRestrict);
+    $self->cappedLpar($cappedLpar);
+    $self->virtualFlag($virtualFlag);
     return (defined $found) ? 1 : 0;
 }
 
@@ -682,6 +837,11 @@ sub queryGetById {
             ,part_mips
             ,part_msu
             ,PART_GARTNER_MIPS
+            ,BACKUPMETHOD
+            ,CLUSTER_TYPE
+            ,VIRTUAL_MOBILITY_RESTRICTION
+            ,CAPPED_LPAR
+            ,VIRTUAL_FLAG
         from
             hardware_lpar
         where

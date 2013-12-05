@@ -21,6 +21,11 @@
 		sql-name="part_mips" />
 	<property name="partMSU" type="scalar" equals="true" sql-name="part_msu" />
 	<property name="partGartnerMIPS" type="scalar" equals="true" sql-name="PART_GARTNER_MIPS" />
+	<property name="backupMethod" type="scalar" equals="true" sql-name="BACKUPMETHOD" />
+	<property name="clusterType" type="scalar" equals="true" sql-name="CLUSTER_TYPE" />
+	<property name="vMobilRestrict" type="scalar" equals="true" sql-name="VIRTUAL_MOBILITY_RESTRICTION" />
+	<property name="cappedLpar" type="scalar" equals="true" sql-name="CAPPED_LPAR" />
+	<property name="virtualFlag" type="scalar" equals="true" sql-name="VIRTUAL_FLAG" />
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="updateDate" type="scalar" sql-name="update_date" />
 	<property name="hardwareKey" type="scalar" equals="true" />

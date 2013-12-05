@@ -39,6 +39,9 @@
 	<property name="cpuMIPS" type="scalar" equals="true" sql-name="cpu_mips" />
 	<property name="cpuMSU" type="scalar" equals="true" sql-name="cpu_msu" />
 	<property name="cpuGartnerMIPS" type="scalar" equals="true" sql-name="CPU_GARTNER_MIPS" />
+	<property name="sharedProcessor" type="scalar" equals="true" sql-name="SHARED_PROCESSOR" />
+	<property name="cloudName" type="scalar" equals="true" sql-name="CLOUD_NAME" />
+	<property name="chassisId" type="scalar" equals="true" sql-name="CHASSIS_ID" />
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="updateDate" type="scalar" sql-name="update_date" />
 	<property name="table" type="scalar" default="hardware" />

@@ -682,7 +682,15 @@ sub queryHardwareData {
             effProcessorCount
             effStatus
             effAction
-            serverType)
+            serverType
+            sharedProcessor
+            cloudName
+            chassisId
+            backupMethod
+            clusterType
+            vMobilRestrict
+            cappedLpar
+            virtualFlag)
     );
     my $query = '
         select
@@ -711,6 +719,9 @@ sub queryHardwareData {
             ,a.shared
             ,a.nbr_cores_per_chip
             ,a.nbr_of_chips_max
+            ,a.shared_processor
+            ,a.cloud_name
+            ,a.chassis_id
             ,b.id
             ,b.name
             ,b.customer_id
@@ -726,6 +737,11 @@ sub queryHardwareData {
             ,b.spla
             ,b.sysplex
             ,b.internet_icc_flag
+            ,b.backupmethod
+            ,b.cluster_type
+            ,b.virtual_mobility_restriction
+            ,b.capped_lpar
+            ,b.virtual_flag
             ,c.id
             ,c.processor_count
             ,c.status

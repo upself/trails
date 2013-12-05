@@ -34,6 +34,9 @@ sub new {
         ,_cpuMIPS => undef
         ,_cpuMSU => undef
         ,_cpuGartnerMIPS => undef
+        ,_sharedProcessor => undef
+        ,_cloudName => undef
+        ,_chassisId => undef
         ,_table => 'hardware'
         ,_idField => 'id'
     };
@@ -220,6 +223,27 @@ sub equals {
     $equal = 1 if (!defined $self->cpuGartnerMIPS && !defined $object->cpuGartnerMIPS);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->sharedProcessor && defined $object->sharedProcessor) {
+        $equal = 1 if $self->sharedProcessor eq $object->sharedProcessor;
+    }
+    $equal = 1 if (!defined $self->sharedProcessor && !defined $object->sharedProcessor);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->cloudName && defined $object->cloudName) {
+        $equal = 1 if $self->cloudName eq $object->cloudName;
+    }
+    $equal = 1 if (!defined $self->cloudName && !defined $object->cloudName);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->chassisId && defined $object->chassisId) {
+        $equal = 1 if $self->chassisId eq $object->chassisId;
+    }
+    $equal = 1 if (!defined $self->chassisId && !defined $object->chassisId);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -391,6 +415,24 @@ sub cpuGartnerMIPS {
     return $self->{_cpuGartnerMIPS};
 }
 
+sub sharedProcessor {
+    my $self = shift;
+    $self->{_sharedProcessor} = shift if scalar @_ == 1;
+    return $self->{_sharedProcessor};
+}
+
+sub cloudName {
+    my $self = shift;
+    $self->{_cloudName} = shift if scalar @_ == 1;
+    return $self->{_cloudName};
+}
+
+sub chassisId {
+    my $self = shift;
+    $self->{_chassisId} = shift if scalar @_ == 1;
+    return $self->{_chassisId};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -546,6 +588,21 @@ sub toString {
         $s .= $self->{_cpuGartnerMIPS};
     }
     $s .= ",";
+    $s .= "sharedProcessor=";
+    if (defined $self->{_sharedProcessor}) {
+        $s .= $self->{_sharedProcessor};
+    }
+    $s .= ",";
+    $s .= "cloudName=";
+    if (defined $self->{_cloudName}) {
+        $s .= $self->{_cloudName};
+    }
+    $s .= ",";
+    $s .= "chassisId=";
+    if (defined $self->{_chassisId}) {
+        $s .= $self->{_chassisId};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -593,6 +650,9 @@ sub save {
             ,$self->cpuMIPS
             ,$self->cpuMSU
             ,$self->cpuGartnerMIPS
+            ,$self->sharedProcessor
+            ,$self->cloudName
+            ,$self->chassisId
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -626,6 +686,9 @@ sub save {
             ,$self->cpuMIPS
             ,$self->cpuMSU
             ,$self->cpuGartnerMIPS
+            ,$self->sharedProcessor
+            ,$self->cloudName
+            ,$self->chassisId
             ,$self->id
         );
         $sth->finish;
@@ -665,6 +728,9 @@ sub queryInsert {
             ,cpu_mips
             ,cpu_msu
             ,CPU_GARTNER_MIPS
+            ,SHARED_PROCESSOR
+            ,CLOUD_NAME
+            ,CHASSIS_ID
         ) values (
             ?
             ,?
@@ -675,6 +741,9 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
+            ,?
+            ,?
+            ,?
             ,?
             ,?
             ,?
@@ -727,6 +796,9 @@ sub queryUpdate {
             ,cpu_mips = ?
             ,cpu_msu = ?
             ,CPU_GARTNER_MIPS = ?
+            ,SHARED_PROCESSOR = ?
+            ,CLOUD_NAME = ?
+            ,CHASSIS_ID = ?
         where
             id = ?
     ';
@@ -783,6 +855,9 @@ sub getByBizKey {
     my $cpuMIPS;
     my $cpuMSU;
     my $cpuGartnerMIPS;
+    my $sharedProcessor;
+    my $cloudName;
+    my $chassisId;
     $sth->bind_columns(
         \$id
         ,\$owner
@@ -808,6 +883,9 @@ sub getByBizKey {
         ,\$cpuMIPS
         ,\$cpuMSU
         ,\$cpuGartnerMIPS
+        ,\$sharedProcessor
+        ,\$cloudName
+        ,\$chassisId
     );
     $sth->execute(
         $self->machineTypeId
@@ -840,6 +918,9 @@ sub getByBizKey {
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
     $self->cpuGartnerMIPS($cpuGartnerMIPS);
+    $self->sharedProcessor($sharedProcessor);
+    $self->cloudName($cloudName);
+    $self->chassisId($chassisId);
 }
 
 sub queryGetByBizKey {
@@ -869,6 +950,9 @@ sub queryGetByBizKey {
             ,cpu_mips
             ,cpu_msu
             ,CPU_GARTNER_MIPS
+            ,SHARED_PROCESSOR
+            ,CLOUD_NAME
+            ,CHASSIS_ID
         from
             hardware
         where
@@ -909,6 +993,9 @@ sub getById {
     my $cpuMIPS;
     my $cpuMSU;
     my $cpuGartnerMIPS;
+    my $sharedProcessor;
+    my $cloudName;
+    my $chassisId;
     $sth->bind_columns(
         \$machineTypeId
         ,\$serial
@@ -936,6 +1023,9 @@ sub getById {
         ,\$cpuMIPS
         ,\$cpuMSU
         ,\$cpuGartnerMIPS
+        ,\$sharedProcessor
+        ,\$cloudName
+        ,\$chassisId
     );
     $sth->execute(
         $self->id
@@ -968,6 +1058,9 @@ sub getById {
     $self->cpuMIPS($cpuMIPS);
     $self->cpuMSU($cpuMSU);
     $self->cpuGartnerMIPS($cpuGartnerMIPS);
+    $self->sharedProcessor($sharedProcessor);
+    $self->cloudName($cloudName);
+    $self->chassisId($chassisId);
     return (defined $found) ? 1 : 0;
 }
 
@@ -1000,6 +1093,9 @@ sub queryGetById {
             ,cpu_mips
             ,cpu_msu
             ,CPU_GARTNER_MIPS
+            ,SHARED_PROCESSOR
+            ,CLOUD_NAME
+            ,CHASSIS_ID
         from
             hardware
         where

@@ -328,6 +328,16 @@ sub buildBravoHardwareLpar {
 	$bravoHardwareLpar->sysplex( $self->stagingHardwareLpar->sysplex );
 	$bravoHardwareLpar->internetIccFlag(
 		$self->stagingHardwareLpar->internetIccFlag );
+	$bravoHardwareLpar->backupMethod(
+		$self->stagingHardwareLpar->backupMethod );
+	$bravoHardwareLpar->clusterType(
+		$self->stagingHardwareLpar->clusterType );
+	$bravoHardwareLpar->vMobilRestrict(
+		$self->stagingHardwareLpar->vMobilRestrict );
+	$bravoHardwareLpar->cappedLpar(
+		$self->stagingHardwareLpar->cappedLpar );
+	$bravoHardwareLpar->virtualFlag(
+		$self->stagingHardwareLpar->virtualFlag );
 
 	$self->bravoHardwareLpar($bravoHardwareLpar);
 	dlog( 'build hw lpar from staging ' . $bravoHardwareLpar->toString );

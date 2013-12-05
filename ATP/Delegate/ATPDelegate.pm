@@ -176,6 +176,9 @@ sub getData {
         $hardware->nbrCoresPerChip( $rec{nbrCoresPerChip} );
         $hardware->nbrOfChipsMax( $rec{nbrOfChipsMax} );
         $hardware->shared( $rec{shared} );
+        $hardware->sharedProcessor( $rec{sharedProcessor} );
+        $hardware->cloudName( $rec{cloudName} );
+        $hardware->chassisId( $rec{chassisId} );
         dlog( $hardware->toString );
             
         ###Add substr to cut down processorType
@@ -238,6 +241,11 @@ sub getData {
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
+        $hardwareLpar->backupMethod( $rec{backupMethod} );
+        $hardwareLpar->clusterType( $rec{clusterType} );
+        $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
+        $hardwareLpar->cappedLpar( $rec{cappedLpar} );
+        $hardwareLpar->virtualFlag( $rec{virtualFlag} );
            
         dlog( $hardwareLpar->toString );
 
@@ -330,7 +338,15 @@ sub queryATPData {
             nbrOfChipsMax
             spla
             sysplex
-            internetIccFlag)
+            internetIccFlag
+            sharedProcessor
+            cloudName
+            chassisId
+            backupMethod
+            clusterType
+            vMobilRestrict
+            cappedLpar
+            virtualFlag)
     );
     my $query = '
         select
@@ -380,6 +396,14 @@ sub queryATPData {
 			,ltrim(rtrim(SPLA))
 			,ltrim(rtrim(SYSPLEX))
 			,ltrim(rtrim(INTERNET_ACC_FLAG ))
+			,ltrim(rtrim(SHARED_PROCESSOR))
+			,ltrim(rtrim(CLOUD_NAME))
+			,ltrim(rtrim(CHASSIS_ID))
+			,ltrim(rtrim(BACKUPMETHOD))
+			,ltrim(rtrim(CLUSTER_TYPE))
+			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
+			,ltrim(rtrim(CAPPED_LPAR))
+			,ltrim(rtrim(VIRTUALFLAG))			
         from
             atpprod.bravo
     ';
@@ -435,7 +459,15 @@ sub queryATPDeltaData {
             nbrOfChipsMax
             spla
             sysplex
-            internetIccFlag)
+            internetIccFlag
+            sharedProcessor
+            cloudName
+            chassisId
+            backupMethod
+            clusterType
+            vMobilRestrict
+            cappedLpar
+            virtualFlag)
     );
     my $query = '
         select
@@ -485,6 +517,14 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(SPLA))
 			,ltrim(rtrim(SYSPLEX))
 			,ltrim(rtrim(INTERNET_ACC_FLAG ))
+			,ltrim(rtrim(SHARED_PROCESSOR))
+			,ltrim(rtrim(CLOUD_NAME))
+			,ltrim(rtrim(CHASSIS_ID))
+			,ltrim(rtrim(BACKUPMETHOD))
+			,ltrim(rtrim(CLUSTER_TYPE))
+			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
+			,ltrim(rtrim(CAPPED_LPAR))
+			,ltrim(rtrim(VIRTUALFLAG))
         from
             atpprod.bravo
         where  

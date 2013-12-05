@@ -275,6 +275,9 @@ sub buildBravoHardware {
 	$bravoHardware->nbrCoresPerChip( $self->stagingHardware->nbrCoresPerChip );
 	$bravoHardware->nbrOfChipsMax( $self->stagingHardware->nbrOfChipsMax );
 	$bravoHardware->shared( $self->stagingHardware->shared );
+	$bravoHardware->sharedProcessor( $self->stagingHardware->sharedProcessor );
+	$bravoHardware->cloudName( $self->stagingHardware->cloudName );
+	$bravoHardware->chassisId( $self->stagingHardware->chassisId );
 	my $accountNumber = $self->stagingHardware->customerNumber;
 	$accountNumber =~ s/X//g;
 	$bravoHardware->accountNumber($accountNumber);
