@@ -68,10 +68,11 @@ public class ReportServiceImpl implements ReportService {
 	private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
-			"HW serial", "HW machine type", "Owner", "Country", "Asset type",
-			"SPLA", "SysPlex", "Internet ACC Flag", "Processor Type",
+			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
+			"Owner", "Country", "Asset type","SPLA","Virtual Flag","Virtual Mobility restriction",
+			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
-			"NBR of Chips Max", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
+			"NBR of Chips Max","Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
 			"CPU MSU", "Part IBM LSPR MIPS", "Part Gartner MIPS", "Part MSU",
 			"SHARED", "Hardware Status", "Lpar Status",
 			"Physical HW processor count", "Physical chips",
@@ -462,17 +463,26 @@ public class ReportServiceImpl implements ReportService {
 				+ ",sl.name as swLparName "
 				+ ",h.serial as hwSerial "
 				+ ",mt.name as hwMachType "
+				+ ",h.model as cpuModel"
+				+ ",h.chassis_id"
+				+ ",h.cloud_name"
 				+ ",h.owner as hwOwner "
 				+ ",h.country as hwCountry "
 				+ ",mt.type as hwAssetType "
 				+ ",hl.SPLA"
+				+ ",hl.virtual_flag"
+				+ ",hl.virtual_mobility_restriction"
 				+ ",hl.SYSPLEX"
+				+ ",hl.cluster_type"
+				+ ",hl.backupmethod"
 				+ ",hl.INTERNET_ICC_FLAG"
+				+ ",hl.capped_lpar"
 				+ ",h.MAST_PROCESSOR_TYPE"
 				+ ",h.PROCESSOR_MANUFACTURER"
 				+ ",h.PROCESSOR_MODEL"
 				+ ",h.NBR_CORES_PER_CHIP"
 				+ ",h.NBR_OF_CHIPS_MAX"
+				+ ",h.shared_processor"
 				+ ",h.CPU_MIPS"
 				+ ",h.CPU_GARTNER_MIPS"
 				+ ",h.CPU_MSU"
