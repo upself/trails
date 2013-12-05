@@ -6,6 +6,7 @@ use Staging::Loader;
 use Staging::Delegate::ScanRecordDelegate;
 use Staging::OM::ScanRecord;
 use Scan::Delegate::ComputerDelegate;
+use Scan::Delegate::ScanTADzDelegate;
 use Staging::Delegate::StagingDelegate;
 
 our @ISA = qw(Loader);
@@ -38,6 +39,12 @@ sub load {
     ilog('Get the staging connection');
     my $stagingConnection = Database::Connection->new('staging');
     ilog('Got Staging connection');
+    
+    if ( $self->SUPER::bankAccount->type eq 'TADZ' ) {
+    	ilog('TADz bank account -- loading techImgId');
+    	ScanTADzDelegate->loadTechImgId($stagingConnection);
+    }
+    
 
     my $connection;
     eval {
