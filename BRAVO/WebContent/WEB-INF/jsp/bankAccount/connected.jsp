@@ -85,6 +85,10 @@
 						property="authenticatedData" sortable="true" />
 					<display:column title="Synchronize signatures" headerClass="blue-med"
 						property="syncSig" sortable="true" />
+					<display:column title="Technical Contact" headerClass="blue-med"
+						property="technicalContact" sortable="true" />
+					<display:column title="Business Contact" headerClass="blue-med"
+						property="businessContact" sortable="true" />
 					<display:column title="Editor" headerClass="blue-med"
 						property="remoteUser" sortable="true" />
 					<display:column title="Last edited" headerClass="blue-med"

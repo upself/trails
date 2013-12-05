@@ -308,6 +308,7 @@ in to complete the form.</p>
 				<html:radio styleId="radio_authenticationData_no"
 					property="authenticatedData" value="N">NO</html:radio></td>
 			</tr>
+			
 			<logic:equal scope="request" name="bankAccountForm"
 				property="connectionType" value="CONNECTED">
 				<tr>
@@ -322,6 +323,7 @@ in to complete the form.</p>
 					</td>
 				</tr>
 			</logic:equal>
+			
 			<logic:notEmpty scope="request" name="bankAccountForm" property="id">
 				<tr>
 					<td>*</td>
@@ -335,6 +337,46 @@ in to complete the form.</p>
 					</html:select></td>
 				</tr>
 			</logic:notEmpty>
+			
+			<logic:equal scope="request" name="bankAccountForm"
+				property="connectionType" value="CONNECTED">
+				<tr>
+					<td>*</td>
+					<td><label for="text_technicalContact">Technical contact:</label></td>
+					<td>
+					<div class="input-note">maximum 255 characters</div>
+					<html:text styleId="text_technicalContact" property="technicalContact"
+						styleClass="input" size="40" maxlength="255" /></td>
+				</tr>
+				<tr>
+					<td>*</td>
+					<td><label for="text_businessContact">Business contact:</label></td>
+					<td>
+					<div class="input-note">maximum 255 characters</div>
+					<html:text styleId="text_businessContact" property="businessContact"
+						styleClass="input" size="40" maxlength="255" /></td>
+				</tr>
+			</logic:equal>
+			
+			<logic:equal scope="request" name="bankAccountForm"
+				property="connectionType" value="DISCONNECTED">
+				<tr>
+					<td>*</td>
+					<td><label for="text_technicalContact">Technical contact:</label></td>
+					<td>
+					<div class="input-note">maximum 255 characters</div>
+					<html:text styleId="text_technicalContact" property="technicalContact"
+						styleClass="inputlong" size="40" maxlength="255" /></td>
+				</tr>
+				<tr>
+					<td>*</td>
+					<td><label for="text_businessContact">Business contact:</label></td>
+					<td>
+					<div class="input-note">maximum 255 characters</div>
+					<html:text styleId="text_businessContact" property="businessContact"
+						styleClass="inputlong" size="40" maxlength="255" /></td>
+				</tr>
+			</logic:equal>
 		</tbody>
 	</table>
 	<p />

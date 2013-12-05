@@ -79,6 +79,10 @@
 						headerClass="blue-med" sortable="true" />
 					<display:column title="Authenicated data" headerClass="blue-med"
 						property="authenticatedData" sortable="true" />
+					<display:column title="Technical Contact" headerClass="blue-med"
+						property="technicalContact" sortable="true" />
+					<display:column title="Business Contact" headerClass="blue-med"
+						property="businessContact" sortable="true" />
 					<display:column title="Editor" headerClass="blue-med"
 						property="remoteUser" sortable="true" />
 					<display:column title="Last edited" headerClass="blue-med"

@@ -56,6 +56,10 @@ public class FormBankAccount extends ValidatorForm {
 	private String syncSig;
 
 	private String status;
+	
+	private String technicalContact;
+	
+	private String businessContact;
 
 	public FormBankAccount() {
 		super();
@@ -106,6 +110,8 @@ public class FormBankAccount extends ValidatorForm {
 				setSyncSig(lBankAccount.getSyncSig());
 				setConnectionType(lBankAccount.getConnectionType());
 				setStatus(lBankAccount.getStatus());
+				setTechnicalContact(lBankAccount.getTechnicalContact());
+				setBusinessContact(lBankAccount.getBusinessContact());
 			} else {
 				logger.error("An invalid bank account id was given");
 				lActionErrors.add(Constants.BANK_ACCOUNT, new ActionMessage(
@@ -295,6 +301,22 @@ public class FormBankAccount extends ValidatorForm {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getTechnicalContact() {
+		return technicalContact;
+	}
+
+	public void setTechnicalContact(String technicalContact) {
+		this.technicalContact = technicalContact;
+	}
+
+	public String getBusinessContact() {
+		return businessContact;
+	}
+
+	public void setBusinessContact(String businessContact) {
+		this.businessContact = businessContact;
+	}
 
 	@Override
 	public String toString() {
@@ -319,6 +341,8 @@ public class FormBankAccount extends ValidatorForm {
 				.append("'\n\ttunnelPort = '").append(getTunnelPort())
 				.append("'\n\tauthenticatedData = '").append(getAuthenticatedData())
 				.append("'\n\tsyncSig = '").append(getSyncSig())
-				.append("'\n\tstatus = '").append(getStatus()).toString();
+				.append("'\n\tstatus = '").append(getStatus().toString())
+				.append("'\n\ttechnicalContact = '").append(getTechnicalContact().toString())
+				.append("'\n\tbusinessContact = '").append(getBusinessContact()).toString();
 	}
 }

@@ -1,6 +1,7 @@
 package com.ibm.ea.bravo.bankaccount;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,11 +14,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.ibm.bluepages.BPResults;
+import com.ibm.bluepages.BluePages;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
 import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.utils.EaUtils;
-import com.ibm.ea.bravo.bankaccount.bankAccountException;
 
 public class DelegateBankAccount extends HibernateDelegate {
 	private static final Logger logger = Logger
@@ -33,9 +35,102 @@ public class DelegateBankAccount extends HibernateDelegate {
 		BankAccount lBankAccount = createBankAccount(pFormBankAccount, false);
 
 		lActionErrors = validateBankAccount(lBankAccount, lSession);
+		
+		//load inserted values from user submitted form
+		String insertedTechnicalContact = pFormBankAccount.getTechnicalContact();
+		String insertedBusinessContact = pFormBankAccount.getBusinessContact();
+
+		//Technical contact input check
+		//if either of the user inputs(for contact e-mails) is empty, then throw an error
+		if (insertedTechnicalContact.equals("") || insertedBusinessContact.equals("")) {
+			lSession.evict(lBankAccount);
+			lActionErrors.add("emptyContacts", new ActionMessage("error.bankAccount.email"));
+
+		}else {
+			//if there are both entries in the user input, split that input by commas
+			String[] technicalContacts = insertedTechnicalContact.split(",");
+			List<String> technicalResult = new ArrayList<String>();
+			Boolean technicalOk = true;
+			
+			//try to validate each technical contact email by using BP library, if it fails in any point, whole input fails
+			try {
+				for (int i = 0; i < technicalContacts.length; i++) {
+					String temp = technicalContacts[i].trim();
+					BPResults result = BluePages.getPersonsByInternet(temp);
+					
+					if (result.hasColumn("EMPNUM")) {					
+						technicalResult.add(temp);
+					}else {
+						technicalOk = false;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			//test passed, proceed
+			if (technicalOk) {
+				//if all checked e-mails were validated, add delimiters into result String
+				String delimiter = "";
+				String technicalActual = "";
+				
+				for (String i : technicalResult) {
+					technicalActual = technicalActual + delimiter + i;
+				    delimiter = ",";
+				}
+				lBankAccount.setTechnicalContact(technicalActual); 
+			} else {
+				//if that failed, stop processing and throw an error on the page
+				lSession.evict(lBankAccount);
+				lActionErrors.add("technicalContact", new ActionMessage("error.bankAccount.email"));
+			}			
+			
+			//Business contact input check - comments as with technical part above
+			String[] businessContacts = insertedBusinessContact.split(",");	
+			List<String> businessResult = new ArrayList<String>();
+			
+			Boolean businessOk = true;
+			
+			try {
+				for (int i = 0; i < businessContacts.length; i++) {
+					logger.debug("foring business");
+					String temp = businessContacts[i].trim();
+					BPResults result = BluePages.getPersonsByInternet(temp);
+					
+					if (result.hasColumn("EMPNUM")) {
+						businessResult.add(temp);
+					}else {
+						businessOk = false;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			//test passed, proceed
+			if (businessOk) {
+				
+				String delimiter = "";
+				String businessActual = "";
+				
+				for (String i : businessResult) {
+					businessActual = businessActual + delimiter + i;
+				    delimiter = ",";
+				}
+				
+				lBankAccount.setBusinessContact(businessActual);
+			} else {
+				lSession.evict(lBankAccount);
+				lActionErrors.add("businessContact", new ActionMessage("error.bankAccount.email"));
+				logger.debug("Business action errors: " + lActionErrors);
+			}			
+		}
 
 		// Ensure that there is only one BankAccount with the given name
 		if (lActionErrors.isEmpty()) {
+			
+			logger.debug("lActionErrors.isEmpty");
+			
 			lTransaction = lSession.beginTransaction();
 			saveBankAccount(lBankAccount, psRemoteUser, lSession);
 			lTransaction.commit();
@@ -102,6 +197,8 @@ public class DelegateBankAccount extends HibernateDelegate {
 			lBankAccount.setTunnel(pFormBankAccount.getTunnel());
 			lBankAccount.setSyncSig(pFormBankAccount.getSyncSig());
 			lBankAccount.setConnectionType(Constants.CONNECTED);
+			lBankAccount.setBusinessContact(pFormBankAccount.getBusinessContact());
+			lBankAccount.setTechnicalContact(pFormBankAccount.getTechnicalContact());
 
 			// Set the non-required fields
 			if (!EaUtils.isEmpty(pFormBankAccount.getDatabaseSchema())) {

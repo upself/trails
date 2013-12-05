@@ -72,6 +72,10 @@ public class BankAccount implements Serializable {
 	private String tunnel;
 
 	private String tunnelPort;
+	
+	private String technicalContact;
+	
+	private String businessContact;
 
 	public String getStatusImage() {
 		if (status.equals(Constants.ACTIVE))
@@ -287,5 +291,21 @@ public class BankAccount implements Serializable {
 
 	public void setTunnelPort(String tunnelPort) {
 		this.tunnelPort = tunnelPort;
+	}
+
+	public String getTechnicalContact() {
+		return technicalContact;
+	}
+
+	public void setTechnicalContact(String technicalContact) {
+		this.technicalContact = technicalContact;
+	}
+
+	public String getBusinessContact() {
+		return businessContact;
+	}
+
+	public void setBusinessContact(String businessContact) {
+		this.businessContact = businessContact;
 	}
 }

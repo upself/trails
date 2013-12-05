@@ -69,6 +69,10 @@
 		<property name="tunnel" column="TUNNEL" length="1" />
 
 		<property name="tunnelPort" column="TUNNEL_PORT" length="8" />
+		
+		<property name="technicalContact" column="TECHNICAL_CONTACT" length="255" />
+		
+		<property name="businessContact" column="BUSINESS_CONTACT" length="255" />
 
 	</class>
 </hibernate-mapping>
