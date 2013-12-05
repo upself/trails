@@ -371,6 +371,9 @@
 				,'Y' as swflag
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
+				,hardware.model as cpu_model
+				,hardware.chassis_id as chassis_id
+				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
 				,date(software_lpar.scantime) as scan_time
 				,case when software_lpar_eff.status = 'ACTIVE' then software_lpar_eff.processor_count
@@ -382,13 +385,19 @@
 				,hardware.chips as chips
 				,hardware.server_type as server_type
 				,hardware_lpar.spla as SPLA
+				,hardware_lpar.virtual_flag as virtualFlag
+				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
 				,hardware_lpar.sysplex as sysplex
+				,hardware_lpar.cluster_type as clusterType
+				,hardware_lpar.backupmethod as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
+				,hardware_lpar.capped_lpar as cappedLpar
 				,hardware.Mast_Processor_Type as mastProcessorType
 				,hardware.processor_Manufacturer as processorManufacturer
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
 				,hardware.CPU_GARTNER_MIPS
@@ -434,6 +443,9 @@
 				,'N' as swflag
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
+				,hardware.model as cpu_model
+				,hardware.chassis_id as chassis_id
+				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
 				,date(nullif(1,1)) as scan_time
 				,0 as processor_count
@@ -444,13 +456,19 @@
 				,hardware.chips as chips
 				,hardware.server_type as server_type
 				,hardware_lpar.spla as SPLA
+				,hardware_lpar.virtual_flag as virtualFlag
+				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
 				,hardware_lpar.sysplex as sysplex
+				,hardware_lpar.cluster_type  as clusterType
+				,hardware_lpar.backupmethod  as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
+				,hardware_lpar.capped_lpar as cappedLpar
 				,hardware.Mast_Processor_Type as mastProcessorType
 				,hardware.processor_Manufacturer as processorManufacturer
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
@@ -491,6 +509,9 @@
 				,'N' as swflag
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
+				,hardware.model as cpu_model
+				,hardware.chassis_id as chassis_id
+				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
 				,date(nullif(1,1)) as scan_time
 				,0 as processor_count
@@ -501,13 +522,19 @@
 				,0 as chips
 				,'' as server_type
 				,'' as SPLA
+				,'' as virtualFlag
+				,'' as vMobilRestrict
 				,'' as sysplex
+				,'' as clusterType
+				,'' as backupMethod
 				,'' as internetIccFlag
+				,'' as cappedLpar
 				,hardware.Mast_Processor_Type as mastProcessorType
 				,hardware.processor_Manufacturer as processorManufacturer
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
