@@ -27,6 +27,10 @@
 ###################################################################################################################################################################################################
 #                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
 # 2013-11-08  Liu Hai(Larry) 1.4.0           System Support And Self Healing Service Components - Phase 4 - Add 'RESTART_IBMIHS_ON_TAP_SERVER' Support Feature 
+###################################################################################################################################################################################################
+#                                            Phase 5 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 5'
+# 2013-11-20  Liu Hai(Larry) 1.5.0           System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_BRAVO_WEB_APPLICATION' Support Feature  
+#                                            System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_TRAILS_WEB_APPLICATION' Support Feature
 #
 
 #Load required modules
@@ -34,6 +38,7 @@ use strict;
 use DBI;
 use Database::Connection;
 use Base::ConfigManager;
+use Net::Telnet;#Added by Larry for System Support And Self Healing Service Components - Phase 5
 
 #Globals
 my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEngine.log";
@@ -86,6 +91,11 @@ my $COMPOSITE_BUILDER                         = "COMPOSITE_BUILDER";
 my $UPDATE_SW_LICENSES_STATUS                 = "UPDATE_SW_LICENSES_STATUS";
 #Server Group
 my $RESTART_IBMIHS_ON_TAP_SERVER              = "RESTART_IBMIHS_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 4
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 Start
+#Application Group
+my $RESTART_BRAVO_WEB_APPLICATION             = "RESTART_BRAVO_WEB_APPLICATION";
+my $RESTART_TRAILS_WEB_APPLICATION            = "RESTART_TRAILS_WEB_APPLICATION";
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 End
 
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
@@ -184,6 +194,69 @@ my $GET_IBMIHS_RUNNING_PROCESS_ID_LIST = "ps -ef |grep 'httpd -d'|grep -v grep|a
 my $START_IBMIHS_SERVER_ON_TAP2_SERVER = "/opt/IBMIHS/bin/apachectl start"; 
 my $START_IBMIHS_SERVER_ON_TAP_SERVER  = "/IHSV61/IBMIHS/bin/apachectl start";
 #Added by Larry for System Support And Self Healing Service Components - Phase 4 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 Start
+#Constants
+#Execution Unix Commands
+my $STOP_TOMCAT_FOR_BRAVO   = "sudo /sbin/service tomcat55_bravo stop";
+my $START_TOMCAT_FOR_BRAVO  = "sudo /sbin/service tomcat55_bravo start";
+my $STOP_TOMCAT_FOR_TRAILS  = "sudo /sbin/service tomcat55_trails stop";
+my $START_TOMCAT_FOR_TRAILS = "sudo /sbin/service tomcat55_trails start";
+
+#Target Web Application Host Server
+my $TAPMF_HOST_SERVER  = "tapmf.boulder.ibm.com";
+my $BRAVO_HOST_SERVER  = "bravo.boulder.ibm.com";
+my $TRAILS_HOST_SERVER = "trails.boulder.ibm.com";
+#Server Default Telnet Port
+my $PORT = 23;
+
+#Target Web Application Dump File Folder
+my $TAPMF_DUMP_FILE_FOLDER = "/tmp";
+my $BRAVO_DUMP_FILE_FOLDER = "/var/bravo/tmp";
+my $TRAILS_DUMP_FILE_FOLDER = "/var/trails/tmp";
+
+#Return Error Mode
+my $RETURN_ERROR_MODE = "return";
+#Return Message Match Strings
+my $LOGIN = "/[l|L]ogin:/";
+my $PASSWORD = "/[p|P]assword:/";
+my $MATCH = "Match";
+#General Prompt Pattern
+my $PROMPT = '/[\?>] ?$|\? ?$|\$ ?$|[\?\>] ?$|\% +$|hp\)\s*$/';
+my $SHELL_XTERM_TYPE = "xterm";
+
+my $EXECUTE_SUCCESS_STRING = "done";
+my $EXECUTE_SUCCESS = 1;
+my $EXECUTE_FAIL    = 0;
+
+#Command Monitor Timeout Time
+#my $COMMAND_MONITOR_TIMEOUT = 180;
+my $COMMAND_MONITOR_TIMEOUT = 10;
+
+#Telnet Related Files
+my $TELNET_DUMP_FILE   = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerDump.log";
+my $TELNET_OUTPUT_FILE= "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerOutput.log";
+my $TELNET_INPUT_FILE  = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerInput.log";
+my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerOption.log";
+
+#Userids and Passwords used to logon the remote server using Telnet Mode
+#TAPMF Web Application Testing Server
+my $TAPMF_SERVER_USERID   = 'liuhaidl';
+my $TAPMF_SERVRE_PASSWORD = 'abcd1251';
+#Bravo Web Application PROD Server
+my $BRAVO_SERVER_USERID   = 'liuhaidl';
+my $BRAVO_SERVRE_PASSWORD = 'abcd1250';
+#Trails Web Application PROD Server
+my $TRAILS_SERVER_USERID   = 'liuhaidl';
+my $TRAILS_SERVRE_PASSWORD = 'abcd1250';
+
+#Vars
+my $operationErrorFlag = $FALSE;#var used to store operation error flag(TRUE or FALSE)
+
+#Move the following two vars from the local vars to global ones
+my $operationResultFlag = $OPERATION_SUCCESS;#Set the init default value is "OPERATION_SUCCESS"
+my $operationFailedComments = "";#var used to store operation comments 
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 End
 
 main();
 
@@ -293,8 +366,8 @@ sub process{
 sub coreOperationProcess{
   my $operationNameCode = shift;
   my $operationMergedParametersValue = shift;
-  my $operationResultFlag = $OPERATION_SUCCESS;#Set the init default value is "OPERATION_SUCCESS"
-  my $operationFailedComments = "";#var used to store operation comments
+  $operationResultFlag = $OPERATION_SUCCESS;#Set the init default value is "OPERATION_SUCCESS"
+  $operationFailedComments = "";#var used to store operation comments
   my $operationStartedFlag = $FALSE;#var used to store operation started flag when Operation has been started to process($operationStartedFlag = $TURE means that the Operation has been started to process) 
   my $operationSuccessSpecialComments = "";#var used to store operation success special comments
   my $operationSuccessSpecialFlag = $FALSE;#var used to store operation success special flag
@@ -1082,6 +1155,204 @@ sub coreOperationProcess{
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $RESTART_IBMIHS_ON_TAP_SERVER)
     #Added by Larry for System Support And Self Healing Service Components - Phase 4 End
+    #Added by Larry for System Support And Self Healing Service Components - Phase 5 Start
+    elsif($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION#RESTART_BRAVO_WEB_APPLICATION
+		||$operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION#RESTART_TRAILS_WEB_APPLICATION
+	){
+      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+         #Operation has been started to be processed
+         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+         $operationStartedFlag = $TRUE;#Operation has been started to process
+       }
+       
+	   #Vars	  
+	   my $telnet;#var used to store telnet Object
+       my @msgReturnLines;#array used to store telnet return messages
+       my $targetHostServer;#var used to store target web application host server
+       my $executeStopCommand;#var used to store execute stop command
+       my $executeStartCommand;#var used to store execute start command
+       my $executeResultValue;#var used to store the execute result value
+	   my $telnetUserId;#var used to store telnet userid
+       my $telnetPassword;#var used to store telnet password
+	   my $dumpFileFolder;#var used to store dump file folder
+
+       #Business Logic Code started from here
+	   if($SERVER_MODE eq $TAP2){#TAP2 Testing Server
+		  $targetHostServer = $TAPMF_HOST_SERVER;
+          $telnetUserId = $TAPMF_SERVER_USERID;
+          $telnetPassword = $TAPMF_SERVRE_PASSWORD;
+          $dumpFileFolder = $TAPMF_DUMP_FILE_FOLDER;
+		}#end if($SERVER_MODE eq $TAP2)
+		elsif($SERVER_MODE eq $TAP){#TAP PROD Server
+		  if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
+			$targetHostServer = $BRAVO_HOST_SERVER;
+			$telnetUserId = $BRAVO_SERVER_USERID;
+            $telnetPassword = $BRAVO_SERVRE_PASSWORD;
+            $dumpFileFolder = $BRAVO_DUMP_FILE_FOLDER;
+		  }
+		  elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
+			$targetHostServer = $TRAILS_HOST_SERVER;
+			$telnetUserId = $TRAILS_SERVER_USERID;
+            $telnetPassword = $TRAILS_SERVRE_PASSWORD;
+            $dumpFileFolder = $TRAILS_DUMP_FILE_FOLDER;
+		  }
+		}#end elsif($SERVER_MODE eq $TAP)
+		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Host Server: {$targetHostServer}.");
+		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - Telnet the Remote {$targetHostServer} Server started.");
+
+		if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
+		  $executeStopCommand = $STOP_TOMCAT_FOR_BRAVO;
+		  $executeStartCommand = $START_TOMCAT_FOR_BRAVO;
+		}#end if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION)
+		elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
+		  $executeStopCommand = $STOP_TOMCAT_FOR_TRAILS;
+		  $executeStartCommand = $START_TOMCAT_FOR_TRAILS;
+		}#end elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION)
+		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command: {$executeStopCommand} has been set.");
+		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command: {$executeStartCommand} has been set.");
+
+		#Create Telnet Object
+		$telnet=new Net::Telnet('Host'=>$targetHostServer
+							   ,'Port'=>$PORT);
+
+		#Set Timeout Time
+		$telnet->timeout($COMMAND_MONITOR_TIMEOUT);
+
+		#Set Error Return Code
+		$telnet->errmode($RETURN_ERROR_MODE);
+
+		#Set Telnet Object Log Parameters
+		$telnet->dump_log($TELNET_DUMP_FILE);
+		$telnet->output_log($TELNET_OUTPUT_FILE);
+		$telnet->input_log($TELNET_INPUT_FILE);
+		$telnet->option_log($TELNET_OPTION_FILE);
+
+		$telnet->waitfor($MATCH=>$LOGIN) or &error("Match Telnet Return Message for Login Userid with Regex String {$LOGIN}",$telnet->errmsg);
+
+		if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 1
+		  $telnet->print($telnetUserId);#Login Userid
+		  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Userid {$telnetUserId} has been set to login the Remote {$targetHostServer} Server.");
+
+		  $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Login Password with Regex String {$PASSWORD}",$telnet->errmsg);
+		  if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 2
+			$telnet->print($telnetPassword);#Login Password
+			printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Password {$telnetPassword} has been set to login the Remote {$targetHostServer} Server.");
+			printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - Login the Remote {$targetHostServer} Server Successfully.");
+
+			#Set the Shell Term Type
+			$telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Shell Term Type with Regex String {$PROMPT}",$telnet->errmsg); 
+			if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 3
+			  $telnet->print($SHELL_XTERM_TYPE);
+			 
+			  #Change to the target dump file folder
+              $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Basic Input Line with Regex String {$PROMPT}",$telnet->errmsg);
+
+			  if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 3A
+                $telnet->print("cd $dumpFileFolder");
+                printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Dump File Folder {$dumpFileFolder} has been switched on {$targetHostServer} Server.");
+
+			    #Execute the Stop Tomcat for Bravo/Trails Unix Command
+			    $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Basic Input Line with Regex String {$PROMPT}",$telnet->errmsg);
+
+			    if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 4
+				  $telnet->print($executeStopCommand);
+
+				  $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Sudo Password with Regex String {$PASSWORD}",$telnet->errmsg);
+
+				  if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 5
+				    $telnet->print($telnetPassword);#Login Password
+
+				    @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Stop Status with Regex String {$PROMPT}",$telnet->errmsg);
+                    printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Stop Messages have been returned successfully.");
+				   
+				    if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 6
+					  my $msgReturnLineIndex = 1;
+					  my $successStringPosition;
+					  $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
+				   
+					  foreach my $msgReturnLine(@msgReturnLines){
+					    chomp($msgReturnLine);
+					    print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Stop Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
+					    $msgReturnLineIndex++;
+					  
+					    $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
+					    if($successStringPosition!=-1){
+						  $executeResultValue = $EXECUTE_SUCCESS;
+						  last;
+					    }#end if($successStringPosition!=-1)
+					  }#end foreach my $msgReturnLine(@msgReturnLines)
+
+					  if($executeResultValue == $EXECUTE_SUCCESS){
+					     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed successfully.");
+		 
+					     #Execute the Start Tomcat for Bravo/Trails Unix Command 
+					     $telnet->print($executeStartCommand);
+					     @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Start Status with Regex String {$PROMPT}",$telnet->errmsg);
+                         printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Start Messages have been returned successfully.");
+				
+              	         if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 7
+						   my $msgReturnLineIndex = 1;
+						   my $successStringPosition;
+						   $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
+
+						   foreach my $msgReturnLine(@msgReturnLines){
+						     chomp($msgReturnLine);
+						     print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Start Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
+						     $msgReturnLineIndex++;
+						  
+						     $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
+						     if($successStringPosition!=-1){
+						 	   $executeResultValue = $EXECUTE_SUCCESS;
+						 	   last;
+						     }#end if($successStringPosition!=-1)
+						   }#end foreach my $msgReturnLine(@msgReturnLines)
+						
+						   if($executeResultValue == $EXECUTE_SUCCESS){ 
+						     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed successfully.");
+						   }#end if($executeResultValue == $EXECUTE_SUCCESS)
+						   else{
+						     $operationErrorFlag = $TRUE;
+					         $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                             $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                             $operationFailedComments.="The Target Execute Start Command {$executeStartCommand} has been executed failed.";
+						     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed failed.");
+					       }
+					     }#end if($operationErrorFlag == $FALSE) - 7
+					   }#end if($executeResultValue == $EXECUTE_SUCCESS)
+					   else{
+					      $operationErrorFlag = $TRUE;
+						  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                          $operationFailedComments.="The Target Execute Stop Command {$executeStopCommand} has been executed failed.";
+						  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed failed.");
+				       }
+				    }#$operationErrorFlag == $FALSE - 6
+				  }#$operationErrorFlag == $FALSE - 5
+			    }#$operationErrorFlag == $FALSE - 4
+              }#$operationErrorFlag == $FALSE - 3A 
+			}#$operationErrorFlag == $FALSE - 3   
+		  }#$operationErrorFlag == $FALSE - 2
+		}#$operationErrorFlag == $FALSE - 1
+
+		if($operationErrorFlag == $FALSE){
+		  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Remote Web Application Restart Operation has been finished successfully.");
+		}else{
+		  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Remote Web Application Restart Operation has been finished failed.");
+		}
+
+	   #Sleep 300 seconds to make sure the sudo password expired for every time to run 
+	   sleep 300;
+	
+       $telnet->print("exit");
+	   $telnet->close();
+
+	   printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - Telnet the Remote {$targetHostServer} Server ended.");
+	   #Business Logic Code ended from here
+ 
+       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION || $operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION)
+    #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
     elsif($operationNameCode eq $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT){#DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT
       if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
          #Operation has been started to be processed
@@ -1325,7 +1596,7 @@ sub setDB2ENVPath{
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/tap/sqllib/db2profile";
+	  $DB_ENV = "/home/eaadmin/sqllib/db2profile";
 	}
 	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
@@ -1374,3 +1645,22 @@ sub queryCountNumberForCertainBankAccountName{
   return ('countNumberForCertainBankAccountName', $GET_COUNT_NUMBER_FOR_CERTAIN_BANK_ACCOUNT_NAME_SQL);
 }
 #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 Start
+sub error
+{
+  my ($place,$reason)=@_;
+  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+  $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+  $operationFailedComments.="$place: $reason.";
+  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Restart Web Appliction is failed due to reason: {$place: $reason}");
+  $operationErrorFlag = $TRUE;
+}
+
+sub printMessageWithTimeStamp{
+  my $message = shift;
+  my $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+  my $messageWithTimeStamp = "[$currentTimeStamp]$message\n";
+  print LOG $messageWithTimeStamp;
+}
+#Added by Larry for System Support And Self Healing Service Components - Phase 5 End

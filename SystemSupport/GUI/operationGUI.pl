@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 #
 # This perl script is used to provide a GUI to let AM support team add operations into Operation Queue 
 # Author: liuhaidl@cn.ibm.com 
@@ -1277,7 +1277,7 @@ sub setDB2ENVPath{
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/tap/sqllib/db2profile";
+	  $DB_ENV = "/home/eaadmin/sqllib/db2profile";
 	}
 }
 
@@ -1289,7 +1289,7 @@ sub setDBConnInfo{
       $db_password = "apr03db2";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $db_url = "dbi:DB2:STAGING";
+	  $db_url = "dbi:DB2:STAGTEST";
       $db_userid = "eaadmin";
       $db_password = "apr03db2";
 	}
