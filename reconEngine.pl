@@ -414,16 +414,17 @@ sub queryDistinctCustomerIdsFromQueueFifo {
         $query .= '
         a.customer_id in ('
             . $cfgMgr->testCustomerIdsAsString() . ')
-        and';
-    }
+        ';
+    } else {
     $query .= '
                 a.table!=\'RECON_CUSTOMER\' 
 
 				or ( 
    					a.table=\'RECON_CUSTOMER\' 
    					and a.customer_id not in ( 7200,9754,11497,12145) 
-				) 
-                group by
+				)';
+	}
+    $query.='   group by
                     a.customer_id
                     ,date(a.record_time)
                 order by date(a.record_time)
