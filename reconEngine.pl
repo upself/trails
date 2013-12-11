@@ -408,14 +408,15 @@ sub queryDistinctCustomerIdsFromQueueFifo {
             ,date(a.record_time)
         from
             v_recon_queue a
+        where
     ';
     if ( $testMode == 1 ) {
         $query .= '
-        where a.customer_id in ('
-            . $cfgMgr->testCustomerIdsAsString() . ')';
+        a.customer_id in ('
+            . $cfgMgr->testCustomerIdsAsString() . ')
+        and';
     }
     $query .= '
-                where 
                 a.table!=\'RECON_CUSTOMER\' 
 
 				or ( 
