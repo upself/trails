@@ -5,22 +5,22 @@ use Base::Utils;
 use Staging::OM::ScanRecord;
 
 my %infrastructure = (
-    "P0DDB2C", "AG",
-    "EGN0DBS0", "EMEA",
-    "AAZDDBEP", "ANZ",
-        
+	"P0DDB2C", "AG",
+	"EGN0DBS0", "EMEA",
+	"AAZDDBEP", "ANZ",
+		
 );
 
 my %techImgIdMap = ();
 
 sub insertTechImgId {
-    my ($self, $techImgId, $lparName, $customerId) = @_;
+	my ($self, $techImgId, $lparName, $customerId) = @_;
     $techImgIdMap{ $techImgId } = [ $lparName , $customerId];
-    
+	
 }
 
-my $sqlAG = "   select
-     node.node_key
+my $sqlAG = "	select
+     system.system_key concat \'_\' concat node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
@@ -76,7 +76,7 @@ SELECT  LP.FOSNAME as sid,
 where node_type = \'LPAR\' ";
 
 my $sqlEMEA = "select
-     node.node_key
+     system.system_key concat \'_\' concat node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
@@ -132,7 +132,7 @@ SELECT  LP.FOSNAME as sid,
 where node_type = \'LPAR\' ";
 
 my $sqlANZ = "select
-     node.node_key
+     system.system_key concat \'_\' concat node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
@@ -179,29 +179,29 @@ sub getTADzInfrastructure {
     my ($self, $bankAccount) = @_;
     
     if ( ! defined $bankAccount ) {
-        dlog ("Not passed bank account to getTAzInfrastructure");
-        return "ERROR";
+    	dlog ("Not passed bank account to getTAzInfrastructure");
+    	return "ERROR";
     } 
     if ( (defined $bankAccount->databaseName) && ($bankAccount->databaseName gt "") ) {
-        if ( defined $infrastructure{$bankAccount->databaseName} ) {
-            return $infrastructure{$bankAccount->databaseName};
-        } else {
-            return "ERROR";
-        }
+    	if ( defined $infrastructure{$bankAccount->databaseName} ) {
+    		return $infrastructure{$bankAccount->databaseName};
+    	} else {
+    		return "ERROR";
+    	}
     }  
 }
 
 sub getCorrectSQL {
-    my ($self, $infra, $delta) = @_;
-    if ( $infra eq 'AG' ) {
-        return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
-    } elsif ( $infra eq 'EMEA' ) {
-        return $sqlEMEA . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
-    } elsif ( $infra eq 'ANZ' ) {
-        return $sqlANZ . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
-    } else {
-        return "ERROR";
-    }
+	my ($self, $infra, $delta) = @_;
+	if ( $infra eq 'AG' ) {
+		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
+	} elsif ( $infra eq 'EMEA' ) {
+		return $sqlEMEA . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
+	} elsif ( $infra eq 'ANZ' ) {
+		return $sqlANZ . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
+	} else {
+		return "ERROR";
+	}
 }
 
 
@@ -209,10 +209,10 @@ sub getCorrectSQL {
 # remember to pull ONLY unique ones that are 4 characters and hardware_lpar is valid
 # and this needs to be an array with both lpar name and customer id
 sub loadTechImgId {
-    my ($self, $connection) = @_;
-    
+	my ($self, $connection) = @_;
+	
     $connection->prepareSqlQuery( $self->queryTechImgIdData() );
-    
+	
     my @fields = (qw(techImgId lparName customerId ));
 
 
@@ -228,15 +228,15 @@ sub loadTechImgId {
     $sth->execute();
     my $counter = 0;
     while ( $sth->fetchrow_arrayref ) {
-        $techImgIdMap{ $rec{techImgId} } = [ $rec{lparName} , $rec{customerId}];
-        ++$counter;
+    	$techImgIdMap{ $rec{techImgId} } = [ $rec{lparName} , $rec{customerId}];
+    	++$counter;
 
     }
     
     $sth->finish;
     dlog("Loaded techImgId records: " . $counter);
     
-    return $counter;
+	return $counter;
 
 }
 
@@ -255,48 +255,47 @@ select tech_image_id from hardware_lpar group by tech_image_id having count(*) >
 
 # check to see if the customer_id has been stored into the objectId and return it if it has else 0
 sub getTSIDCustomerId {
-    my ($self, $sr ) = @_;
-    if ( defined $sr ) {
-        if ( $sr->objectId =~ /CUSTOMER_ID/ ) {
-            my $tmpVal = $sr->objectId;
-            $tmpVal =~ s/CUSTOMER_ID//;
-            return $tmpVal;
-        } else {
-            return 0;
-        }
-    } else {
-        return 0;
-    }
+	my ($self, $sr ) = @_;
+	if ( defined $sr ) {
+		if ( $sr->objectId =~ /CUSTOMER_ID/ ) {
+			my $tmpVal = $sr->objectId;
+			$tmpVal =~ s/CUSTOMER_ID//;
+			return $tmpVal;
+		} else {
+			return 0;
+		}
+	} else {
+		return 0;
+	}
 }
 
 # accept a scanRecord and set lpar name based on the tsid
 sub mapTSID {
-    my ($self, $sr, $bankAccount ) = @_;
-    # we shouldn't see this but let caller know if we do and log it
-    if (! (defined $sr || defined $bankAccount) ) {
-        dlog ("Passed empty TADz record or bankAccount to mapTSID function ");
-        return "ERROR";
-    } elsif ( (defined $sr->techImgId) && ($sr->techImgId gt "") ) {
-        if ( length $sr->techImgId != 4 ) {
-            dlog("Invalid techImgId -- not 4 characters");
-            $sr->objectId($bankAccount->name);
-            return "INVALID";
-        }
-        if ( defined $techImgIdMap{$sr->techImgId} ) {
-            $sr->objectId("CUSTOMER_ID" . $techImgIdMap{$sr->techImgId}[1]);
-            return $techImgIdMap{$sr->techImgId}[0];
-        } else {
-            dlog ("No match found for TSID " . $sr->techImgId );
-            $sr->objectId($bankAccount->name);
-            return "NO_MATCH";
-        }
-        
-    } else {
-            dlog ("Nothing to match ScanTADzDelegate::mapTSID");
-            $sr->objectId($bankAccount->name);
-        return "BLANK_TSID";
-    }
+	my ($self, $sr, $bankAccount ) = @_;
+	# we shouldn't see this but let caller know if we do and log it
+	if (! (defined $sr || defined $bankAccount) ) {
+		dlog ("Passed empty TADz record or bankAccount to mapTSID function ");
+		return "ERROR";
+	} elsif ( (defined $sr->techImgId) && ($sr->techImgId gt "") ) {
+		if ( length $sr->techImgId != 4 ) {
+			dlog("Invalid techImgId -- not 4 characters");
+			$sr->objectId($bankAccount->name);
+			return "INVALID";
+		}
+		if ( defined $techImgIdMap{$sr->techImgId} ) {
+			$sr->objectId("CUSTOMER_ID" . $techImgIdMap{$sr->techImgId}[1]);
+			return $techImgIdMap{$sr->techImgId}[0];
+		} else {
+			dlog ("No match found for TSID " . $sr->techImgId );
+			$sr->objectId($bankAccount->name);
+			return "NO_MATCH";
+		}
+		
+	} else {
+			dlog ("Nothing to match ScanTADzDelegate::mapTSID");
+			$sr->objectId($bankAccount->name);
+		return "BLANK_TSID";
+	}
 }
 
 1;
-

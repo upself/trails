@@ -1682,290 +1682,346 @@ sub updateStats {
 }
 ###TODO make sure everything is caps from source
 sub getCustomerId {
-    my ( $self, $sr ) = @_;
+	my ( $self, $sr ) = @_;
 
-    dlog("Start getCustomerId method");
+	dlog("Start getCustomerId method");
 
-    my $acceptFlag = 0;
-    if (    $sr->bankAccountId == 180
-         || $sr->bankAccountId == 406
-         || $sr->bankAccountId == 410
-         || $sr->bankAccountId == 5
-         || $sr->bankAccountId == 740
-         || $sr->bankAccountId == 738 
-         || $sr->bankAccountId == 853
-         || $sr->bankAccountId == 920
-         || $sr->bankAccountId == 1305)
-    {
-        $acceptFlag = 1;
-    }
+	my $acceptFlag = 0;
+	if (   $sr->bankAccountId == 180
+		|| $sr->bankAccountId == 406
+		|| $sr->bankAccountId == 410
+		|| $sr->bankAccountId == 5
+		|| $sr->bankAccountId == 740
+		|| $sr->bankAccountId == 738
+		|| $sr->bankAccountId == 853
+		|| $sr->bankAccountId == 920 )
+	{
+		$acceptFlag = 1;
+	}
 
-    if ( $sr->isManual == 1 ) {
-        if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
-            return $self->customerAcctMap->{ $sr->objectId };
-        }
+	if ( $sr->isManual == 1 ) {
+		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
+			return $self->customerAcctMap->{ $sr->objectId };
+		}
 
-        dlog('NO MATCHING ACCOUNT');
-        return 999999;
-    }
+		dlog('NO MATCHING ACCOUNT');
+		return 999999;
+	}
 
-    my $shortName = ( split( /\./, $sr->name ) )[0];
-    $shortName = $sr->name if ( !defined $shortName );
-    
-    dlog("shortName=$shortName");
+	my $shortName = ( split( /\./, $sr->name ) )[0];
+	$shortName = $sr->name if ( !defined $shortName );
 
-    if ( exists $self->hwLparMap->{$shortName} ) {
-        my $count           = 0;
-        my $exactMatchCount = 0;
-        my $customerCount   = 0;
-        my $exactId;
-        my %customerIds;
-        
-        # Are we a TADz scan?
-    	if ( $self->isTADz($sr->bankAccountId) == 1 ) {
-    		my $match4 = 0;
-    		my $tsidCustomerId = 0;
-    		dlog("checking TADz if customer_id was already found using TSID->TECH_IMG_ID");
-    		$tsidCustomerId = ScanTADzDelegate->getTSIDCustomerId($sr); 
-    		if ( $tsidCustomerId > 0 ) {
-    			return $tsidCustomerId;
-    		}
-    		dlog("applying TADz HW->SW matching logic for customer_id");
-        	foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
-            	foreach my $fqhn ( keys %{$ref} ) {
-            		my $hwSerial4 = "";
-            		my $hwSerial5 = "";
-            		if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
-            			$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
-            			$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
-            			
-            		}
-            		if ( defined $sr->serialNumber ) {
-            			my $swSerial4 = substr $sr->serialNumber, -4;
-            			my $swSerial5 = substr $sr->serialNumber, -5;
-            			if ( $hwSerial5 eq $swSerial5 ) {
-            				return $ref->{$fqhn}->{'customerId'};
-            			}
-            			if ( $hwSerial4 eq $swSerial4 ) {
-            				$match4 =  $ref->{$fqhn}->{'customerId'};
-            			}
-            		}
-            	}
-        	
-        	}
-        	if ( $match4 > 0 ) {
-        		return $match4;
-        	}
-            # Use the tme_object_id from cndb -- direct copy from distributed logic
-            if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    if ( $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } eq $customerId ) {
-                        dlog("ATP tme_object_id match $sr->name");
-                        return $customerId;
-                    }
-                }
+	dlog("shortName=$shortName");
 
-                dlog('TME_OBJECT_ID MISMATCH');
-                return 999999;
-            }
-    		return 999999;
-    	} # end TADz matching logic -- distributed starts below here
+	# Are we a TADz scan?
+	dlog ("testing if TADz " . $sr->name . " " . $sr->bankAccountId);
+	if ( $self->isTADz( $sr->bankAccountId ) == 1 ) {
+		my $match4         = 0;
+		my $tsidCustomerId = 0;
+		dlog("checking TADz if customer_id was already found using TSID->TECH_IMG_ID bank account " . $sr->bankAccountId );
+		$tsidCustomerId = ScanTADzDelegate->getTSIDCustomerId($sr);
+		if ( $tsidCustomerId > 0 ) {
+			dlog( $sr->name . " found customer_id by TSID: " . $tsidCustomerId );
+			return $tsidCustomerId;
+		}
+		dlog("applying TADz HW->SW matching logic for customer_id -- hardware serial+name match " . $sr->name );
+		foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
+			foreach my $fqhn ( keys %{$ref} ) {
+				my $hwSerial4 = "";
+				my $hwSerial5 = "";
+				if ( defined $ref->{$fqhn}->{'serialNumber'} ) {
+					$hwSerial4 = substr $ref->{$fqhn}->{'serialNumber'}, -4;
+					$hwSerial5 = substr $ref->{$fqhn}->{'serialNumber'}, -5;
 
-        #Loop through all the matches
-        foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
+				}
+				if ( defined $sr->serialNumber ) {
+					my $swSerial4 = substr $sr->serialNumber, -4;
+					my $swSerial5 = substr $sr->serialNumber, -5;
+					if ( $hwSerial5 eq $swSerial5 ) {
+						dlog("matched TADz by serial number" . $sr->serialNumber);
+						return $ref->{$fqhn}->{'customerId'};
+					}
+					if ( $hwSerial4 eq $swSerial4 ) {
+						$match4 = $ref->{$fqhn}->{'customerId'};
+					}
+				}
+			}
 
-            #Loop through the fqhns, there could be 1 short and 1 long
-            foreach my $fqhn ( keys %{$ref} ) {
+		}
+		if ( $match4 > 0 ) {
+			return $match4;
+		}
 
-                if ( $acceptFlag == 0 ) {
-                    if ( exists $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } ) {
-                        ### This customer will only accept certain bank accounts
+		# Use the tme_object_id from cndb -- direct copy from distributed logic
+		dlog( "Using TADz TME_OBJECT_ID match " . $sr->objectId );
+		if ( defined $sr->objectId && $sr->objectId ne '' ) {
+			if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
+				if ( exists $self->inclusionMap->{$self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } } ) {
+					### This customer will only accept certain bank accounts
+					if ( defined $self->inclusionMap->{ $self->objectIdMap->{ (split( /\./, uc( $sr->objectId ) ) )[0] }}{ $sr->bankAccountId } ) {
+						dlog( "Found tme_object_id in cndb:" . $sr->name );
+						return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+					}
+				} else {
+					return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+				}
+			} else {
+				return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
+			}
+			dlog('Even TADz TME_OBJECT_ID did not MATCH -- TADz scan is being sent to 999999 -- name: ' . $sr->name);
+			return 999999;
+		}
+		# we shouldn't be here UNLESS the OBJECT_ID is not set for a TADz account
+		dlog("TADz account does not have OBJECT_ID set -- bank_account_id: " . $sr->bankAccountId);
+		return 999999;
+	}    # end TADz matching logic -- distributed starts below here
 
-                        if (
-                            !defined $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} }{ $sr->bankAccountId } )
-                        {
-                            dlog( $sr->bankAccountId . " not defined for " . $ref->{$fqhn}->{'customerId'} );
-                            $count++;
-                            next;
-                        }
-                    }
-                }
+	if ( exists $self->hwLparMap->{$shortName} ) {
+		my $count           = 0;
+		my $exactMatchCount = 0;
+		my $customerCount   = 0;
+		my $exactId;
+		my %customerIds;
 
-                #If we match a serial number return it immediately per logic
-                if (    ( defined $sr->serialNumber )
-                     && ( $ref->{$fqhn}->{'serialNumber'} eq $sr->serialNumber ) )
-                {
-                    dlog( "ATP serial match: $shortName " . $sr->serialNumber . ", " . $sr->name . ", $fqhn" );
+		#Loop through all the matches
+		foreach my $ref ( @{ $self->hwLparMap->{$shortName} } ) {
 
-                    return $ref->{$fqhn}->{'customerId'};
-                }
+			#Loop through the fqhns, there could be 1 short and 1 long
+			foreach my $fqhn ( keys %{$ref} ) {
 
-                if ( $fqhn eq $sr->name ) {
-                    $exactMatchCount++;
-                    $exactId = $ref->{$fqhn}->{'customerId'};
-                }
+				if ( $acceptFlag == 0 ) {
+					if (
+						exists
+						$self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } )
+					{
+						### This customer will only accept certain bank accounts
 
-                if ( !exists $customerIds{ $ref->{$fqhn}->{'customerId'} } ) {
-                    $customerIds{ $ref->{$fqhn}->{'customerId'} } = 0;
-                    $customerCount++;
-                }
+						if (
+							!defined $self->inclusionMap->{ $ref->{$fqhn}
+								  ->{'customerId'} }{ $sr->bankAccountId } )
+						{
+							dlog(   $sr->bankAccountId
+								  . " not defined for "
+								  . $ref->{$fqhn}->{'customerId'} );
+							$count++;
+							next;
+						}
+					}
+				}
 
-                $count++;
-            }
-        }
+				#If we match a serial number return it immediately per logic
+				if (   ( defined $sr->serialNumber )
+					&& ( $ref->{$fqhn}->{'serialNumber'} eq $sr->serialNumber )
+				  )
+				{
+					dlog(   "ATP serial match: $shortName "
+						  . $sr->serialNumber . ", "
+						  . $sr->name
+						  . ", $fqhn" );
 
-        #If we get here, we know a serial didn't match
-        #If our count is equal to 1, then we know we have a fuzzy unique match
-        dlog("count=$count");
-        if ( $count == 1 ) {
-            my $ref = @{ $self->hwLparMap->{$shortName} }[0];
+					return $ref->{$fqhn}->{'customerId'};
+				}
 
-            foreach my $fqhn ( keys %{$ref} ) {
-                if ( $acceptFlag == 0 ) {
-                    if ( exists $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } ) {
-                        ### This customer will only accept certain bank accounts
+				if ( $fqhn eq $sr->name ) {
+					$exactMatchCount++;
+					$exactId = $ref->{$fqhn}->{'customerId'};
+				}
 
-                        if (
-                            !defined $self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} }{ $sr->bankAccountId } )
-                        {
-                            dlog( $sr->bankAccountId . " not defined for " . $ref->{$fqhn}->{'customerId'} );
-                            next;
-                        }
-                    }
-                }
+				if ( !exists $customerIds{ $ref->{$fqhn}->{'customerId'} } ) {
+					$customerIds{ $ref->{$fqhn}->{'customerId'} } = 0;
+					$customerCount++;
+				}
 
-                dlog("ATP Fuzzy match $fqhn");
-                return $ref->{$fqhn}->{'customerId'};
-            }
-        }
+				$count++;
+			}
+		}
 
-        #If we get here, we know we have multiple matches
-        dlog("exactMatchCount=$exactMatchCount");
-        if ( $exactMatchCount > 0 ) {
+		#If we get here, we know a serial didn't match
+		#If our count is equal to 1, then we know we have a fuzzy unique match
+		dlog("count=$count");
+		if ( $count == 1 ) {
+			my $ref = @{ $self->hwLparMap->{$shortName} }[0];
 
-            # If there is one exact match
-            if ( $exactMatchCount == 1 ) {
-                dlog("ATP exact match: $sr->name");
-                return $exactId;
-            }
+			foreach my $fqhn ( keys %{$ref} ) {
+				if ( $acceptFlag == 0 ) {
+					if (
+						exists
+						$self->inclusionMap->{ $ref->{$fqhn}->{'customerId'} } )
+					{
+						### This customer will only accept certain bank accounts
 
-            # If we have only one customerId, thats it
-            dlog("customerCount=$customerCount");
-            if ( $customerCount == 1 ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    dlog("ATP single customer: $sr->name");
-                    return $customerId;
-                }
-            }
+						if (
+							!defined $self->inclusionMap->{ $ref->{$fqhn}
+								  ->{'customerId'} }{ $sr->bankAccountId } )
+						{
+							dlog(   $sr->bankAccountId
+								  . " not defined for "
+								  . $ref->{$fqhn}->{'customerId'} );
+							next;
+						}
+					}
+				}
 
-            # if account is swasset, only use if an account matches what is in swasset
-            if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    if ( exists $self->customerAcctMap->{ $sr->objectId }
-                         && $self->customerAcctMap->{ $sr->objectId } eq $customerId )
-                    {
-                        return $customerId;
-                    }
-                }
+				dlog("ATP Fuzzy match $fqhn");
+				return $ref->{$fqhn}->{'customerId'};
+			}
+		}
 
-                dlog('MOVE SWASSET SCAN');
-                return 999999;
-            }
+		#If we get here, we know we have multiple matches
+		dlog("exactMatchCount=$exactMatchCount");
+		if ( $exactMatchCount > 0 ) {
 
-            #Check the mapping file for hostname
-            if ( exists $self->nameMap->{ $sr->name } ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    if ( $self->nameMap->{ $sr->name } eq $customerId ) {
-                        dlog("ATP Mapping file match $sr->name");
-                        return $customerId;
-                    }
-                }
+			# If there is one exact match
+			if ( $exactMatchCount == 1 ) {
+				dlog("ATP exact match: $sr->name");
+				return $exactId;
+			}
 
-                dlog('UPDATE MAPPING FILE');
-                return 999999;
-            }
+			# If we have only one customerId, thats it
+			dlog("customerCount=$customerCount");
+			if ( $customerCount == 1 ) {
+				foreach my $customerId ( keys %customerIds ) {
+					dlog("ATP single customer: $sr->name");
+					return $customerId;
+				}
+			}
 
-            # Use the tme_object_id from cndb
-            if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
-                foreach my $customerId ( keys %customerIds ) {
-                    if ( $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } eq $customerId ) {
-                        dlog("ATP tme_object_id match $sr->name");
-                        return $customerId;
-                    }
-                }
+	  # if account is swasset, only use if an account matches what is in swasset
+			if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
+				foreach my $customerId ( keys %customerIds ) {
+					if ( exists $self->customerAcctMap->{ $sr->objectId }
+						&& $self->customerAcctMap->{ $sr->objectId } eq
+						$customerId )
+					{
+						return $customerId;
+					}
+				}
 
-                dlog('TME_OBJECT_ID MISMATCH');
-                return 999999;
-            }
+				dlog('MOVE SWASSET SCAN');
+				return 999999;
+			}
 
-            dlog('ADD TME_OBJECT_ID TO CNDB');
-            return 999999;
-        }
-    }
+			#Check the mapping file for hostname
+			if ( exists $self->nameMap->{ $sr->name } ) {
+				foreach my $customerId ( keys %customerIds ) {
+					if ( $self->nameMap->{ $sr->name } eq $customerId ) {
+						dlog("ATP Mapping file match $sr->name");
+						return $customerId;
+					}
+				}
 
-    # if account is swasset, only use if an account matches what is in swasset
-    if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
-        if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
-            return $self->customerAcctMap->{ $sr->objectId };
-        }
+				dlog('UPDATE MAPPING FILE');
+				return 999999;
+			}
 
-        dlog('NO MATCHING ACCOUNT');
-        return 999999;
-    }
+			# Use the tme_object_id from cndb
+			if (
+				exists
+				$self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0]
+				} )
+			{
+				foreach my $customerId ( keys %customerIds ) {
+					if (
+						$self->objectIdMap->{ (
+								split( /\./, uc( $sr->objectId ) ) )[0] } eq
+						$customerId )
+					{
+						dlog("ATP tme_object_id match $sr->name");
+						return $customerId;
+					}
+				}
 
-    if ( exists $self->nameMap->{ $sr->name } ) {
-        dlog("Found hostname in mapping $sr->name");
+				dlog('TME_OBJECT_ID MISMATCH');
+				return 999999;
+			}
 
-        if ( $acceptFlag == 0 ) {
-            if ( exists $self->inclusionMap->{ $self->nameMap->{ $sr->name } } ) {
-                ### This customer will only accept certain bank accounts
+			dlog('ADD TME_OBJECT_ID TO CNDB');
+			return 999999;
+		}
+	}
 
-                if ( defined $self->inclusionMap->{ $self->nameMap->{ $sr->name } }{ $sr->bankAccountId } ) {
-                    return $self->nameMap->{ $sr->name };
-                }
-            }
-            else {
-                return $self->nameMap->{ $sr->name };
-            }
-        }
-        else {
-            return $self->nameMap->{ $sr->name };
-        }
-    }
+	# if account is swasset, only use if an account matches what is in swasset
+	if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
+		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
+			return $self->customerAcctMap->{ $sr->objectId };
+		}
 
-    if ( defined $sr->objectId && $sr->objectId ne '' ) {
-        if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
+		dlog('NO MATCHING ACCOUNT');
+		return 999999;
+	}
 
-            if ( $acceptFlag == 0 ) {
-                if (
-                     exists
-                     $self->inclusionMap->{ $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } } )
-                {
-                    ### This customer will only accept certain bank accounts
+	if ( exists $self->nameMap->{ $sr->name } ) {
+		dlog("Found hostname in mapping $sr->name");
 
-                    if (
-                         defined
-                         $self->inclusionMap->{ $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } }
-                         { $sr->bankAccountId } )
-                    {
-                        dlog( "Found tme_object_id in cndb" . $sr->name );
-                        return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
-                    }
-                }
-                else {
-                    return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
-                }
-            }
-            else {
-                return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
-            }
-        }
-    }
+		if ( $acceptFlag == 0 ) {
+			if ( exists $self->inclusionMap->{ $self->nameMap->{ $sr->name } } )
+			{
+				### This customer will only accept certain bank accounts
 
-    dlog("End getCustomerId method");
+				if (
+					defined
+					$self->inclusionMap->{ $self->nameMap->{ $sr->name } }
+					{ $sr->bankAccountId } )
+				{
+					return $self->nameMap->{ $sr->name };
+				}
+			}
+			else {
+				return $self->nameMap->{ $sr->name };
+			}
+		}
+		else {
+			return $self->nameMap->{ $sr->name };
+		}
+	}
 
-    dlog('ATP NEED UPDATE');
-    return 999999;
+	if ( defined $sr->objectId && $sr->objectId ne '' ) {
+		if (
+			exists
+			$self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } )
+		{
+
+			if ( $acceptFlag == 0 ) {
+				if (
+					exists $self->inclusionMap->{
+						$self->objectIdMap->{ (
+								split( /\./, uc( $sr->objectId ) ) )[0] }
+					}
+				  )
+				{
+					### This customer will only accept certain bank accounts
+
+					if (
+						defined $self->inclusionMap->{
+							$self->objectIdMap->{ (
+									split( /\./, uc( $sr->objectId ) ) )[0] }
+						}{ $sr->bankAccountId }
+					  )
+					{
+						dlog( "Found tme_object_id in cndb" . $sr->name );
+						return
+						  $self->objectIdMap->{ (
+								split( /\./, uc( $sr->objectId ) ) )[0] };
+					}
+				}
+				else {
+					return
+					  $self->objectIdMap->{ (
+							split( /\./, uc( $sr->objectId ) ) )[0] };
+				}
+			}
+			else {
+				return
+				  $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )
+					  [0] };
+			}
+		}
+	}
+
+	dlog("End getCustomerId method");
+
+	dlog('ATP NEED UPDATE');
+	return 999999;
 }
 
 sub maps {
