@@ -943,11 +943,11 @@ sub queryBravoSoftwareDataByCustomerId {
         	,0
         	,\'\'
         from software_lpar sl
-	        join installed_software is on is.software_lpar_id = sl.id
+	        left outer join installed_software is on is.software_lpar_id = sl.id
 	        where sl.customer_id = ?
                 and sl.name = ?
         	and sl.status = \'ACTIVE\'
-	        and is.status = \'INACTIVE\' 
+	        and (is.status = \'INACTIVE\' or is.status is null)
 	        and not exists (select 1 from installed_software isc where isc.status=\'ACTIVE\' and isc.software_lpar_id=sl.id )
 	        group by sl.id,sl.name
 	    with ur

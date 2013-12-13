@@ -1,4 +1,4 @@
-package Recon::Recover::RecoveryNEW;
+package Recon::Recover::Recovery;
 
 use strict;
 use Base::Utils;
@@ -23,8 +23,8 @@ sub new {
 		$reportFile )
 	  = @_;
 	my $self = {
-		_applyChanges      => $applyChanges,
 		_connection        => $connection,
+		_applyChanges      => $applyChanges,
 		_restoreManual     => $restoreManual,
 		_customer          => $customer,
 		_reportFile        => $reportFile,
@@ -236,12 +236,12 @@ sub recoverMapsByReconcileH {
 		my $usedLicenseId;
     
 		if ( defined $id ) {
-	    my $RehwSerial = getHwSerailNumberByReconcileId($reconcileId);
-        my $UlhwSerial = getHwSerailNumberByUsedLicenseId($id);
+	    my $RehwSerial = getHwSerailNumberByReconcileId( $reconcileId );
+        my $UlhwSerial = getHwSerailNumberByUsedLicenseId( $id );
             if (!defined $UlhwSerial){
             	$usedLicenseId = $id;
             }
-		   else (defined $UlhwSerial && $RehwSerial eq $UlhwSerial ){
+		   elsif (defined $UlhwSerial && $RehwSerial eq $UlhwSerial ){
 		   	    $usedLicenseId = $id;
 			}
 		}

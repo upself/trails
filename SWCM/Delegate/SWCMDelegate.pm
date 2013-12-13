@@ -351,11 +351,7 @@ sub querySWCMLicenseData {
     	    a.account_id = \'15020\' 
     	and ';
     	
-    } else {
-    	$query .= ' where '
-    }
-        
-    $query .= $REMOVE_AFTER_ASSET_MANAGERS_REVIEW;
+    }   
 
     $query .= ' order by a.swcm_license_id';
 
@@ -436,8 +432,7 @@ sub querySWCMLicenseDeltaData {
     	    a.account_id = \'15020\'
     	';
     }
-    $query .= ' and ';
-	
+
     $query .= ' order by a.swcm_lic_sw_prod_id, a.swcm_license_id';
 
     dlog("querySWCMLicenseDeltaData=$query");
