@@ -87,7 +87,7 @@ sub queryScanSoftwareItemData {
 	my $query = '
 (
 SELECT 
-S.system_key concat \'_\' concat N.node_key
+N.node_key
      , P.feature_guid as guid
      , MAX(PU.PERIOD) AS LASTUSED
      , bigint(case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end) AS TOTAL
@@ -108,7 +108,7 @@ S.system_key concat \'_\' concat N.node_key
 )
     union
 (
-S.system_key concat \'_\' concat N.node_key
+N.node_key
      , P.version_guid guid
      , MAX(PU.PERIOD)       AS LASTUSED
      , bigint(case when SUM(PU.EVENT_CNT) is null then 0 else SUM(PU.EVENT_CNT) end) AS TOTAL

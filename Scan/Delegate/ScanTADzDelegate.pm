@@ -20,7 +20,7 @@ sub insertTechImgId {
 }
 
 my $sqlAG = "	select
-     system.system_key concat \'_\' concat node.node_key
+     node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
@@ -76,7 +76,7 @@ SELECT  LP.FOSNAME as sid,
 where node_type = \'LPAR\' ";
 
 my $sqlEMEA = "select
-     system.system_key concat \'_\' concat node.node_key
+     node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
@@ -132,7 +132,7 @@ SELECT  LP.FOSNAME as sid,
 where node_type = \'LPAR\' ";
 
 my $sqlANZ = "select
-     system.system_key concat \'_\' concat node.node_key
+     node.node_key
       ,lpar_name
       ,'' as objectId
       ,hw_model
