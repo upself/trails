@@ -7,7 +7,6 @@ set -x
 chmod -R 775 $DIR
 chgrp -R eadt $DIR
 cd $DIR
-cp misc/Connection.pm.$SHOST Database/Connection.pm
 cp config/$SHOST/* config/
 mkdir -p /var/staging/logs/adcToBravo
 mkdir -p /var/staging/logs/adcToStaging
