@@ -419,7 +419,7 @@ sub doDelta {
                                 dlog('SR=U,SL=C,SLM=C');
 
                                 my $customerId = $self->getCustomerId($sr);
-                                dlog("customerId=$customerId");
+                                dlog("customerId=$customerId : " . $sr->computerId);
 
                                 if ( $customerId =~ m/\D/ ) {
                                     dlog('ScanRecord does not map to a customerId');
@@ -814,6 +814,8 @@ sub doDelta {
                                 dlog('SR=C,SL=C,SLM=C');
 
                                 my $customerId = $self->getCustomerId($sr);
+                                dlog("customerId=$customerId : " . $sr->computerId);
+                                
                                 dlog("customerId=$customerId");
 
                                 if ( $customerId =~ m/\D/ ) {
@@ -1180,6 +1182,8 @@ sub doDelta {
                                 dlog('SR=D,SL=C,SLM=C');
 
                                 my $customerId = $self->getCustomerId($sr);
+                                dlog("customerId=$customerId : " . $sr->computerId);
+                                
                                 dlog("customerId=$customerId");
 
                                 my $key = $slm->softwareLpar->name . '|' . $slm->softwareLpar->customerId;
@@ -1349,7 +1353,8 @@ sub doDelta {
                         dlog('SR=U,SL=N,SLM=N');
 
                         my $customerId = $self->getCustomerId($sr);
-                        dlog("customerId=$customerId");
+                        dlog("customerId=$customerId : " . $sr->computerId);
+                        
 
                         if ( $customerId =~ m/\D/ ) {
                             dlog('ScanRecord does not map to a customerId');
@@ -1407,6 +1412,8 @@ sub doDelta {
                         dlog('SR=C,SL=N,SLM=N');
 
                         my $customerId = $self->getCustomerId($sr);
+                        dlog("customerId=$customerId : " . $sr->computerId);
+                        
                         dlog("customerId=$customerId");
 
                         if ( $customerId =~ m/\D/ ) {
@@ -1752,27 +1759,33 @@ sub getCustomerId {
 			return $match4;
 		}
 
-		# Use the tme_object_id from cndb -- direct copy from distributed logic
+		# Use the tme_object_id from cndb -- direct copy from distributed logic with a few minor changes
+		# The TADz version does not check the acceptFlag because we already know that if it is a TADz bank account
+		# the flag is 0. We also have made all the checks the business owners wanted for us to try.
+		# We checked the tsid, then we checked lpar+serial5, then we checked lpar+serail4. Finally, we are checking the 
+		# the TME object and will set the customer_id based on a TME object else set to 999999
 		dlog( "Using TADz TME_OBJECT_ID match " . $sr->objectId );
+		# Do we have an OBJECT_ID in the SCAN_RECORD?
 		if ( defined $sr->objectId && $sr->objectId ne '' ) {
+			# Is there a matching TME OBJECT in CNDB for this OBJECT_ID?
 			if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
+				# Does this customer_id use a bank_account inclusion map?
 				if ( exists $self->inclusionMap->{$self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } } ) {
 					### This customer will only accept certain bank accounts
 					if ( defined $self->inclusionMap->{ $self->objectIdMap->{ (split( /\./, uc( $sr->objectId ) ) )[0] }}{ $sr->bankAccountId } ) {
-						dlog( "Found tme_object_id in cndb:" . $sr->name );
+						dlog( "Found TADZ tme_object_id in cndb considering inclusion map:" . $sr->name );
 						return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
-					}
+					} # if not found in the inclusion map then it will drop down to the 999999 default right above the end of the TADz logic
 				} else {
+					dlog ("TADz found mapped TME Object -> bank_account and inclusion list does not apply " . $sr->objectId);
 					return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
 				}
-			} else {
-				return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
 			}
-			dlog('Even TADz TME_OBJECT_ID did not MATCH -- TADz scan is being sent to 999999 -- name: ' . $sr->name);
+			dlog('TADz OBJECT_ID did not match TME_OBJECT_ID -- TADz scan is being sent to 999999 -- name: ' . $sr->name);
 			return 999999;
 		}
 		# we shouldn't be here UNLESS the OBJECT_ID is not set for a TADz account
-		dlog("TADz account does not have OBJECT_ID set -- bank_account_id: " . $sr->bankAccountId);
+		dlog("TADz account does not have OBJECT_ID set in SCAN_RECORD -- bank_account_id: " . $sr->bankAccountId);
 		return 999999;
 	}    # end TADz matching logic -- distributed starts below here
 
@@ -1976,44 +1989,19 @@ sub getCustomerId {
 	}
 
 	if ( defined $sr->objectId && $sr->objectId ne '' ) {
-		if (
-			exists
-			$self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } )
-		{
-
+		if ( exists $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } ) {
 			if ( $acceptFlag == 0 ) {
-				if (
-					exists $self->inclusionMap->{
-						$self->objectIdMap->{ (
-								split( /\./, uc( $sr->objectId ) ) )[0] }
-					}
-				  )
-				{
+				if ( exists $self->inclusionMap->{ $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] } } ) {
 					### This customer will only accept certain bank accounts
-
-					if (
-						defined $self->inclusionMap->{
-							$self->objectIdMap->{ (
-									split( /\./, uc( $sr->objectId ) ) )[0] }
-						}{ $sr->bankAccountId }
-					  )
-					{
+					if ( defined $self->inclusionMap->{ $self->objectIdMap->{ (split( /\./, uc( $sr->objectId ) ) )[0] }}{ $sr->bankAccountId } ) {
 						dlog( "Found tme_object_id in cndb" . $sr->name );
-						return
-						  $self->objectIdMap->{ (
-								split( /\./, uc( $sr->objectId ) ) )[0] };
+						return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
 					}
+				} else {
+					return $self->objectIdMap->{ (split( /\./, uc( $sr->objectId ) ) )[0] };
 				}
-				else {
-					return
-					  $self->objectIdMap->{ (
-							split( /\./, uc( $sr->objectId ) ) )[0] };
-				}
-			}
-			else {
-				return
-				  $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )
-					  [0] };
+			} else {
+				return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
 			}
 		}
 	}
