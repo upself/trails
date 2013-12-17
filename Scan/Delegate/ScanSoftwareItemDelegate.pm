@@ -107,7 +107,7 @@ N.node_key
   ORDER BY  N.node_key, p.feature_guid
 )
     union
-(
+(select
 N.node_key
      , P.version_guid guid
      , MAX(PU.PERIOD)       AS LASTUSED
