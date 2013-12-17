@@ -62,6 +62,9 @@
 # 2013-09-26  Liu Hai(Larry) 1.8.0           HealthCheck and Monitoring Service Component - Phase 8: Design and Develop Application Monitoring - Web Application Running Status Check Basic Architecture and Business Logic
 # 2013-09-27  Liu Hai(Larry) 1.8.1           HealthCheck and Monitoring Service Component - Phase 8: Add Some Testing Function Codes only for TAP2 Testing Server
 # 2013-09-30  Liu Hai(Larry) 1.8.2           HealthCheck and Monitoring Service Component - Phase 8: Add HTTP 403 Forbidden Return Code for Trails Web Application to understand this case that Trails Web Applcation is also running 
+###################################################################################################################################################################################################
+#                                            Phase 8A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A'
+# 2013-12-16  Liu Hai(Larry) 1.8.3           HealthCheck and Monitoring Service Component - Phase 8A: Design and Develop Self Healing Business Logic to automatically fix Bravo/Trails Web Application down case
 #                                                                                                    
 #
 
@@ -382,6 +385,23 @@ my $HTTP_FORBIDDEN_CODE = "403";
 
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
 
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
+#Self Healing Engine Restart Web Application Operation Definition Indexes
+my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PROGRAM_NAME_INDEX = 0;#For example: selfHealingEngine.pl
+my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_CODE_INDEX         = 1;#For example: RESTART_BRAVO_WEB_APPLICATION
+my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PARAMETERS_INDEX   = 2;#For example: ^^^^^^^^^
+
+my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON  = "Y";#var used to store Self Healing Engine Restart Web Application Operation Turn On Flag
+my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_OFF = "N";#var used to store Self Healing Engine Restart Web Application Operation Turn Off Flag
+
+my $LOADER_EXISTING_PATH   = "/opt/staging/v2/";
+
+my $BRAVO_WEB_APP  = "Bravo";
+my $TRAILS_WEB_APP = "Trails";
+
+my $PWD_UNIX_COMMAND = "pwd";
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
 ###Initialize properties
@@ -512,8 +532,8 @@ sub process{
         
 		#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
 		#For Testing Purpose on TAP2 Server only Start
-		#For TAP2 Testing Server, only let HealthCheck and Monitoring Engine run 3 times for testing purpose
-		if(($SERVER_MODE eq $TAP2) && ($loopIndex==3)){
+		#For TAP2 Testing Server, only let HealthCheck and Monitoring Engine run 1 time for testing purpose
+		if(($SERVER_MODE eq $TAP2) && ($loopIndex==1)){
 		  last;
 		}
         #For Testing Purpose on TAP2 Server only End
@@ -2056,12 +2076,56 @@ sub eventRuleCheck{
 				 my $webAppsCheckConfigValues = $metaRuleParameter2;#var used to store web application check configuration values - for example: "TAP2^Bravo~15~20~http://bravo.boulder.ibm.com/BRAVO/home.do'Trails~15~20~http://trails.boulder.ibm.com/TRAILS/"
 				 print LOG "Web Application Running Status Check Monitoring - The Web Applications Check Configuration Values: {$webAppsCheckConfigValues}\n";
 
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
+				 my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing
+			     my $selfHealingEngineSwitch = $metaRuleParameter3;#var used to store Self Healing Engine Switch(Y/N) - For example: Y
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Switch: {$selfHealingEngineSwitch}\n";
+                 my $selfHealingEngineRestartBravoWebAppOperationDefinition = $metaRuleParameter4;#var used to store Self Healing Engine Restart Bravo Web Application Operation Definition - For example: selfHealingEngine.pl'RESTART_BRAVO_WEB_APPLICATION'~~~~~~~~~
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Operation Definition: {$selfHealingEngineRestartBravoWebAppOperationDefinition}\n";
+                 my @selfHealingEngineRestartBravoWebAppOperationDefinitionArray = split(/\'/,$selfHealingEngineRestartBravoWebAppOperationDefinition);
+				 my $selfHealingEngineRestartBravoWebAppOperationProgramName = trim($selfHealingEngineRestartBravoWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PROGRAM_NAME_INDEX]);
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Operation Program Name: {$selfHealingEngineRestartBravoWebAppOperationProgramName}\n";
+				 my $selfHealingEngineRestartBravoWebAppOperationCode = trim($selfHealingEngineRestartBravoWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_CODE_INDEX]);
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Operation Code: {$selfHealingEngineRestartBravoWebAppOperationCode}\n";
+                 my $selfHealingEngineRestartBravoWebAppOperationParams = trim($selfHealingEngineRestartBravoWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PARAMETERS_INDEX]);
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Operation Parameters: {$selfHealingEngineRestartBravoWebAppOperationParams}\n";
+                 #For Self Healing Engine Operation Parameters Definition and HME Operaiton Parameters Definiton, the definiton rule is the same using '^' char in the configuration file
+				 #So in order to avoid this conflict about configuration parse for HME, the Self Healing Engine Operation Parameters have been defined using char '~' and then convert all the chars '~' to the target ones '^'
+				 $selfHealingEngineRestartBravoWebAppOperationParams =~ s/\~/\^/g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Converted Operation Parameters: {$selfHealingEngineRestartBravoWebAppOperationParams}\n";
+                 my $selfHealingEngineRestartBravoWebAppOperationExecutionCommand = "$loaderExistingPath$selfHealingEngineRestartBravoWebAppOperationProgramName $selfHealingEngineRestartBravoWebAppOperationCode $selfHealingEngineRestartBravoWebAppOperationParams";#For example "./selfHealingEngine.pl RESTART_BRAVO_WEB_APPLICATION ^^^^^^^^^"
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Bravo Web Application Operation Execution Command: {$selfHealingEngineRestartBravoWebAppOperationExecutionCommand}\n";
+ 
+                 my $selfHealingEngineRestartTrailsWebAppOperationDefinition = $metaRuleParameter5;#var used to store Self Healing Engine Restart Trails Web Application Operation Definition - For example: selfHealingEngine.pl'RESTART_TRAILS_WEB_APPLICATION'~~~~~~~~~
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Operation Definition:: {$selfHealingEngineRestartTrailsWebAppOperationDefinition}\n";
+				 my @selfHealingEngineRestartTrailsWebAppOperationDefinitionArray = split(/\'/,$selfHealingEngineRestartTrailsWebAppOperationDefinition);
+				 my $selfHealingEngineRestartTrailsWebAppOperationProgramName = trim($selfHealingEngineRestartTrailsWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PROGRAM_NAME_INDEX]);
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Operation Program Name: {$selfHealingEngineRestartTrailsWebAppOperationProgramName}\n";
+				 my $selfHealingEngineRestartTrailsWebAppOperationCode = trim($selfHealingEngineRestartTrailsWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_CODE_INDEX]);
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Operation Code: {$selfHealingEngineRestartTrailsWebAppOperationCode}\n";
+                 my $selfHealingEngineRestartTrailsWebAppOperationParams = trim($selfHealingEngineRestartTrailsWebAppOperationDefinitionArray[$SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PARAMETERS_INDEX]);
+				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Operation Parameters: {$selfHealingEngineRestartTrailsWebAppOperationParams}\n";
+                 #For Self Healing Engine Operation Parameters Definition and HME Operaiton Parameters Definiton, the definiton rule is the same using '^' char in the configuration file
+				 #So in order to avoid this conflict about configuration parse for HME, the Self Healing Engine Operation Parameters have been defined using char '~' and then convert all the chars '~' to the target ones '^'
+				 $selfHealingEngineRestartTrailsWebAppOperationParams =~ s/\~/\^/g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Converted Operation Parameters: {$selfHealingEngineRestartTrailsWebAppOperationParams}\n";
+         		 my $selfHealingEngineRestartTrailsWebAppOperationExecutionCommand = "$loaderExistingPath$selfHealingEngineRestartTrailsWebAppOperationProgramName $selfHealingEngineRestartTrailsWebAppOperationCode $selfHealingEngineRestartTrailsWebAppOperationParams";#For example "./selfHealingEngine.pl RESTART_TRAILS_WEB_APPLICATION ^^^^^^^^^"
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Trails Web Application Operation Execution Command: {$selfHealingEngineRestartBravoWebAppOperationExecutionCommand}\n";
+ 				 
+				 my $selfHealingEngineRestartWebAppOperationSuccessMessage = $metaRuleParameter6;#var used to store Self Healing Engine Restart Web Application Operation Success Message - For example: The Self Healing Engine - Restart Web Application @3 Operation has been executed successfully.
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Success Message: {$selfHealingEngineRestartWebAppOperationSuccessMessage}\n";
+				 my $selfHealingEngineRestartWebAppOperationFailMessage = $metaRuleParameter7;#var used to store Self Healing Engine Restart Web Application Operation Fail Message - For example: The Self Healing Engine - Restart Web Application @3 Operation has been executed failed due to reason: @4.
+                 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Fail Message: {$selfHealingEngineRestartWebAppOperationFailMessage}\n";
+            	 
+				 my $selfHealingEngineRestartWebAppOperationProcessedMessage;#var used to store Self Healing Engine Restart Web Application Operation Processed Message
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Web Applications Running Status Check on @1 Server'
 				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Web Application @2 is currently not running.'
 				 my $processedRuleHandlingInstructionCode;#var used to store processed rule handling instruction code - for example: 'E-APM-WAC-001'
                  my @webAppErrorMessageArray = ();#array used to store webApp Error Message - For example: 'Web Application Bravo is currently not running.'
 				 my $webAppErrorMessageArrayCnt;#var used to store the count of webApp Error Message
-				
+            	 
                  my @webAppsCheckConfigValuesArray = split(/\'/,$webAppsCheckConfigValues);
 				 foreach my $webAppsCheckConfigValuesArrayItem (@webAppsCheckConfigValuesArray){
 				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Values: {$webAppsCheckConfigValuesArrayItem}\n";
@@ -2072,7 +2136,7 @@ sub eventRuleCheck{
 
 				   my @webAppsCheckConfigValuesArrayItemArray = split(/\~/,$webAppsCheckConfigValuesArrayItem);
 
-				   my $webAppName = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX];
+				   my $webAppName = trim($webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX]);#remove spaces
                    print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - webAppName: {$webAppName}\n";
 				  
 				   my $connectTimeout = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX];
@@ -2106,23 +2170,137 @@ sub eventRuleCheck{
 					 }
                    }#end foreach my $webReturnMsg (@webReturnMsgs)
 
-				   if($webAppRunningFlag == $TRUE){
+                   if($webAppRunningFlag == $TRUE){
+                     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n"; 
+					 
                      #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
 					 #For Testing Purpose on TAP2 Server only Start
 					 #For TAP2 Testing Server, whatever there are actual webApp Error Messages or not, always generates webApp Error Messages about Alert Email Content for testing purpose 
 					 if($SERVER_MODE eq $TAP2){
                        $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					   push @webAppErrorMessageArray, $processedRuleMessage;
-					 }
+                       
+                       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
+                       #Please note that the following codes have been added for Testing Purpose on TAP2 Server only
+					   #The Self Healing Engine Restart Web Application Operation Automatically Started here
+					   if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
+					    &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
+					     ){
+
+					     #Switch to the target perl execution folder - '/opt/staging/v2/'  
+					     chdir $loaderExistingPath;
+		                 print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
+                       
+					     #Check the current folder information	 
+					     my @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
+					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
+					       chomp($pwdReturnMsg);
+					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
+					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
+
+					     my $restartWebAppExecCmd;#var used to to store restart web application execution command
+					     if($webAppName eq $BRAVO_WEB_APP){
+					       $restartWebAppExecCmd = $selfHealingEngineRestartBravoWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_BRAVO_WEB_APPLICATION ^^^^^^^^^"
+					     }#end if($webAppName eq $BRAVO_WEB_APP)
+					     else{
+					       $restartWebAppExecCmd = $selfHealingEngineRestartTrailsWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_TRAILS_WEB_APPLICATION ^^^^^^^^^"
+					     }#end else
+
+					     my $restartWebAppCmdExecResult = system($restartWebAppExecCmd);
+                         if($restartWebAppCmdExecResult == 0){
+					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed successfully.\n";
+					       $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationSuccessMessage;
+						   $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+						   push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
+						   print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
+					     }#end if($restartWebAppCmdExecResult == 0)
+					     else{
+					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed failed.\n";
+                           $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationFailMessage;
+                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@3/"The Restart Web Application Unix Command: {$restartWebAppExecCmd} has been executed failed."/g;
+                           push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
+                           print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
+					     }#end else
+
+                         #Switch back to the HME home folder - '/home/liuhaidl/working/scripts'  
+					     chdir $HOME_DIR;
+		                 print LOG "Web Application Running Status Check Monitoring - The HealthCheck and Monitoring Engine Home Folder: {$HOME_DIR} has been switched back.\n";
+                      
+					     #Check the current folder information	 
+					     @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
+					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
+					       chomp($pwdReturnMsg);
+					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
+					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
+					   }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
+                       #The Self Healing Engine Restart Web Application Operation Automatically Ended here
+                       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+					 }#end if($SERVER_MODE eq $TAP2)
 					 #For Testing Purpose on TAP2 Server only End
 					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server End
-				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n";  
-				   }
+				   }#end if($webAppRunningFlag == $TRUE)
 				   else{
 					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					 push @webAppErrorMessageArray, $processedRuleMessage;
-				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";  
-				   }
+				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
+					 
+					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
+					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
+					 if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
+					  &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
+					   ){
+
+					   #Switch to the target perl execution folder - '/opt/staging/v2/'  
+					   chdir $loaderExistingPath;
+		               print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
+                       
+					   #Check the current folder information	 
+					   my @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
+					   foreach my $pwdReturnMsg(@pwdReturnMsgs){
+					     chomp($pwdReturnMsg);
+					     print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
+					   }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
+
+					   my $restartWebAppExecCmd;#var used to to store restart web application execution command
+					   if($webAppName eq $BRAVO_WEB_APP){
+					     $restartWebAppExecCmd = $selfHealingEngineRestartBravoWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_BRAVO_WEB_APPLICATION ^^^^^^^^^"
+					   }#end if($webAppName eq $BRAVO_WEB_APP)
+					   else{
+					     $restartWebAppExecCmd = $selfHealingEngineRestartTrailsWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_TRAILS_WEB_APPLICATION ^^^^^^^^^"
+					   }#end else
+
+					   my $restartWebAppCmdExecResult = system($restartWebAppExecCmd);
+                       if($restartWebAppCmdExecResult == 0){
+					     print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed successfully.\n";
+					     $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationSuccessMessage;
+						 $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+						 push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
+						 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
+					   }#end if($restartWebAppCmdExecResult == 0)
+					   else{
+					     print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed failed.\n";
+                         $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationFailMessage;
+                         $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
+                         $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@3/"The Restart Web Application Unix Command: {$restartWebAppExecCmd} has been executed failed."/g;
+                         push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
+                         print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
+					   }#end else
+
+                       #Switch back to the HME home folder - '/home/liuhaidl/working/scripts'  
+					   chdir $HOME_DIR;
+		               print LOG "Web Application Running Status Check Monitoring - The HealthCheck and Monitoring Engine Home Folder: {$HOME_DIR} has been switched back.\n";
+                      
+					   #Check the current folder information	 
+					   @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
+					   foreach my $pwdReturnMsg(@pwdReturnMsgs){
+					     chomp($pwdReturnMsg);
+					     print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
+					   }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
+					 }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
+                     #The Self Healing Engine Restart Web Application Operation Automatically Ended here
+					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+				   }#end else
          		 }#end foreach my $webAppsCheckConfigValuesArrayItem (@webAppsCheckConfigValuesArray)
                  
 				 #Calculate the count of webApp Error Message
