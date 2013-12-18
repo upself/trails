@@ -15,6 +15,9 @@
 	<br />
 </s:if>
 <br />
+<a href="<s:url action='add' namespace='/admin/causecodes'/>">Add
+	cause code</a>
+<br />
 <br />
 <display:table name="alertTypeCausesList" class="basic-table" id="row"
 	decorator="org.displaytag.decorator.TotalTableDecorator"

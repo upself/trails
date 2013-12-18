@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -52,7 +53,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	private final static String ERROR_INTERNAL_ID_NOT_EXIST = "Internal id not exists";
 	private final static String ERROR_BAD_DATE_FORMAT = "Please ensure the cell is date formatted";
 	private static final String ERROR_UNKNOW_OWNER = "Please use an Email Address, as specified in Blue Pages";
-	private static final String ERROR_UNKONW_CAUSE_CODE = "Unknown alert cause";
+	private static final String ERROR_UNKONW_CAUSE_CODE = "Unknown alert cause or it's inactive";
+	private static final String ERROR_ALERT_TYPE_NOT_MATCH = "Alert type not match";
 
 	private ECauseCodeReport colIndexes;
 
@@ -122,6 +124,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean validateExcelCauseCodeContent(HSSFSheet sheet,
 			HSSFCellStyle errorStyle, List<State> steps) {
 
@@ -146,6 +149,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			Iterator<Row> rowIter = sheet.rowIterator();
 			int rowCounter = -1;
 			int totalRows = sheet.getLastRowNum();
+			int colStart = colIndexes.getColCauseCode();
+			int colEnd = colIndexes.getColInternalId();
 			while (rowIter.hasNext()) {
 				HSSFRow row = (HSSFRow) rowIter.next();
 				rowCounter++;
@@ -158,25 +163,102 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				}
 
 				StringBuffer errorMsg = new StringBuffer();
-				for (int col = 9; col <= 14; col++) {
+				for (int col = colStart; col <= colEnd; col++) {
 					HSSFCell cell = row.getCell(col);
 
 					if (col == colIndexes.getColInternalId()) {
-						if (!isCauseCodeExists(cell)) {
+						List<CauseCode> list = getCauseCodeById(cell);
+						if (cell == null || list == null || list.size() <= 0) {
 
 							buildErrorMsg(errorMsg,
 									colIndexes.getColInternalId(),
 									"Internal ID", ERROR_INTERNAL_ID_NOT_EXIST);
+						} else {
+							long alertTypeId = list.get(0).getAlertType()
+									.getId();
+							if (alertTypeId != colIndexes.getAlertTypeId()) {
+								buildErrorMsg(errorMsg,
+										colIndexes.getColInternalId(),
+										"Internal ID",
+										ERROR_ALERT_TYPE_NOT_MATCH);
+							}
 						}
 					}
 
 					if (col == colIndexes.getColCauseCode()) {
-						if (!isAlertCauseExists(cell)) {
-
+						if (cell == null) {
 							buildErrorMsg(errorMsg,
 									colIndexes.getColCauseCode(),
 									"Cause Code (CC)", ERROR_UNKONW_CAUSE_CODE);
+							continue;
 						}
+						HSSFCell causeCodeIdCell = row.getCell(colIndexes
+								.getColInternalId());
+
+						List<CauseCode> list = getCauseCodeById(causeCodeIdCell);
+						if (list.size() <= 0) {
+							buildErrorMsg(errorMsg,
+									colIndexes.getColCauseCode(),
+									"Cause Code (CC)", ERROR_UNKONW_CAUSE_CODE);
+							continue;
+						}
+
+						boolean pass = true;
+						// if no change continue;
+						String alertCauseNameInCell = null;
+						if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+							alertCauseNameInCell = cell.getStringCellValue();
+						} else {
+							pass = false;
+						}
+
+						if (alertCauseNameInCell == null
+								|| "".equals(alertCauseNameInCell)) {
+							pass = false;
+						}
+
+						if (!pass) {
+							buildErrorMsg(errorMsg,
+									colIndexes.getColCauseCode(),
+									"Cause Code (CC)", ERROR_UNKONW_CAUSE_CODE);
+							continue;
+						}
+
+						if (alertCauseNameInCell.length() > 128) {
+							alertCauseNameInCell = alertCauseNameInCell
+									.substring(0, 128);
+						}
+
+						String alertCauseNameInDb = list.get(0).getAlertCause()
+								.getName();
+						// compare the cc name and cause code name under id. if
+						// not same check it's availability. if same ignore.
+						if (!strCompare(alertCauseNameInDb,
+								alertCauseNameInCell)) {
+
+							List<AlertCause> acList = null;
+							try {
+								acList = getEntityManager()
+										.createNamedQuery(
+												"findActiveAlertCauseByNameAndTypeId")
+										.setParameter(
+												"alertCauseName",
+												alertCauseNameInCell.trim()
+														.toUpperCase())
+										.setParameter("alertTypeId",
+												colIndexes.getAlertTypeId())
+										.getResultList();
+								if (acList.size() <= 0) {
+									buildErrorMsg(errorMsg,
+											colIndexes.getColCauseCode(),
+											"Cause Code (CC)",
+											ERROR_UNKONW_CAUSE_CODE);
+								}
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
+							}
+						}
+
 					}
 
 					if (col == colIndexes.getColTargetDate()) {
@@ -305,7 +387,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			if (!strCompare(causeCodeName, colCauseCode)) {
 				AlertCause alertCause = (AlertCause) getEntityManager()
 						.createNamedQuery("findAlertCauseByName")
-						.setParameter("name", colCauseCode.trim().toUpperCase()).getSingleResult();
+						.setParameter("name", colCauseCode.trim().toUpperCase())
+						.getSingleResult();
 				causeCode.setAlertCause(alertCause);
 			}
 
@@ -377,6 +460,10 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	}
 
 	private boolean isOwnerExistsInBluePage(HSSFCell cell) {
+		if (cell == null) {
+			return false;
+		}
+
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
 			return true;
 		}
@@ -393,7 +480,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	}
 
 	private boolean isDateFormat(HSSFCell cell) {
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+		if (cell == null || cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
 			return true;
 		}
 
@@ -417,7 +504,6 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	@SuppressWarnings("unchecked")
 	private boolean isAlertCauseExists(HSSFCell cell) {
-		// findAlertCauseByName
 		String alertCause;
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 			alertCause = cell.getStringCellValue();
@@ -436,8 +522,10 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		List<AlertCause> acList = null;
 		try {
 			acList = getEntityManager()
-					.createNamedQuery("findAlertCauseByName")
-					.setParameter("name", alertCause.trim().toUpperCase())
+					.createNamedQuery("findActiveAlertCauseByNameAndTypeId")
+					.setParameter("alertCauseName",
+							alertCause.trim().toUpperCase())
+					.setParameter("alertTypeId", colIndexes.getAlertTypeId())
 					.getResultList();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -446,20 +534,25 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean isCauseCodeExists(HSSFCell cell) {
+	private List<CauseCode> getCauseCodeById(HSSFCell cell) {
 
 		long causeCodeId;
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			causeCodeId = Long.valueOf(cell.getStringCellValue());
+			String content = cell.getStringCellValue();
+			Pattern pattern = Pattern.compile("[0-9]*");
+			if (!pattern.matcher(content).matches()) {
+				return null;
+			}
+			causeCodeId = Long.valueOf(content);
 		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
 			causeCodeId = Math.round(cell.getNumericCellValue());
 		} else {
-			return false;
+			return null;
 		}
 
 		List<CauseCode> causeCode = getEntityManager()
 				.createNamedQuery("getCauseCodeById")
 				.setParameter("id", causeCodeId).getResultList();
-		return causeCode.size() >= 1;
+		return causeCode;
 	}
 }

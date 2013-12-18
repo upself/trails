@@ -18,7 +18,7 @@
 		$
 				.ajax({
 					url : "${pageContext.request.contextPath}//account/causecodes/progress.htm",
-					async : false,
+					async : true,
 					type : "POST",
 					contentType : "application/json",
 					dataType : 'json',
@@ -36,9 +36,11 @@
 									clearTimeout(timer);
 								}
 								if (steps[i].status == 'SUCCESS') {
-									alert('Your data has been loaded successfully');
+									bar
+											.append('<br/><strong>Your data has been loaded successfully!</strong>');
 								} else {
-									alert('Cause code uploading failed');
+									bar
+											.append('<br/><strong>Cause code uploading failed!</strong>');
 								}
 								break;
 							}
@@ -50,11 +52,7 @@
 
 					},
 					error : function(XmlHttpRequest, textStatus, errorThrown) {
-						alert("Error:" + XmlHttpRequest.responseText);
-						stop = true;
-						if (timer) {
-							clearTimeout(timer);
-						}
+
 					}
 				});
 
@@ -150,7 +148,7 @@ loaded successfully' in a separate pop-up window.
 <br />
 <s:actionerror />
 <s:actionmessage />
-
+<div id="progressbar"></div>
 <s:form id="uploadForm" action="upload" namespace="/account/causecodes"
 	enctype="multipart/form-data" theme="simple" onsubmit="progress()">
 	<table>
@@ -167,9 +165,6 @@ loaded successfully' in a separate pop-up window.
 	</div>
 	<iframe name="hiddenFrame" style="display: none;"></iframe>
 </s:form>
-
-<br />
 <br />
 
-<div id="progressbar"></div>
 
