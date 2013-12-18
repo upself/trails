@@ -23,6 +23,9 @@
 # 2013-11-18  Liu Hai(Larry) 1.3.2           Add the feature support when the input operation parameters have ' ' space chars in them - For example - "Test 2". 
 #                                            There is a bug found when there are ' ' space chars in operation parameters, then there is a parse error for Self Healing Engine to get the input Operation Parameters
 #                                            Solution: replace all the ' ' chars using '~' special chars for temp and then convert them back for Self Healing Engine 
+# 2013-12-11  Liu Hai(Larry) 1.3.3           Change the -f value from 12 to 1 to support full load all the time for child loader
+#                                            my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";
+#                                            Per Eugen, if 'Restart Child Loader on TAP Server' SSC feature has been used, it means that the full load for this child loader is needed.
 #
 ###################################################################################################################################################################################################
 #                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
@@ -167,7 +170,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX     = 2;#Bank Acc
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX          = 3;#Debug Option(Required) - For example: YES or NO
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Required) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
 
-my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 12 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command
+my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
 #Invoked Command Parameter Definition Indexes
 my $INVOKED_COMMAND_RESTART_CHILD_LOADER_NAME_REPLACE_STRING = "#1";
 my $INVOKED_COMMAND_RESTART_BANK_ACCOUNT_NAME_REPLACE_STRING = "#2";
@@ -230,8 +233,7 @@ my $EXECUTE_SUCCESS = 1;
 my $EXECUTE_FAIL    = 0;
 
 #Command Monitor Timeout Time
-#my $COMMAND_MONITOR_TIMEOUT = 180;
-my $COMMAND_MONITOR_TIMEOUT = 10;
+my $COMMAND_MONITOR_TIMEOUT = 300;
 
 #Telnet Related Files
 my $TELNET_DUMP_FILE   = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerDump.log";
@@ -1596,7 +1598,7 @@ sub setDB2ENVPath{
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/eaadmin/sqllib/db2profile";
+	  $DB_ENV = "/home/tap/sqllib/db2profile";
 	}
 	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
