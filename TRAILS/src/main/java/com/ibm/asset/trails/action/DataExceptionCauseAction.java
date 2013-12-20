@@ -47,7 +47,69 @@ public class DataExceptionCauseAction extends BaseActionWithSession implements
 	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String add() {
+		initAddPageParameters();
 		return Action.SUCCESS;
+	}
+
+	private void initAddPageParameters() {
+		setAlertCauseForm(new DataExceptionCauseForm());
+		getAlertCauseForm().setAlertCauseResponsibilities(
+				alertCauseResponsibilityService.list());
+		getAlertCauseForm().setAlertTypes(alertTypeService.list());
+	}
+
+	@SkipValidation
+	@UserRole(userRole = UserRoleType.ADMIN)
+	public String save() {
+		Long responsibilityId = getAlertCauseForm()
+				.getAlertCauseResponsibilityId();
+		Long alertTypeId = getAlertCauseForm().getAlertTypeId();
+		String alertCauseName = getAlertCauseForm().getAlertCauseName().trim();
+		String alertTypeCauseStatus = getAlertCauseForm().getState();
+
+		if (null == alertCauseName || "".equals(alertCauseName)) {
+			addActionError("Name is required");
+			initAddPageParameters();
+			return Action.INPUT;
+		}
+
+		AlertCause alertCause = alertCauseService.findByName(alertCauseName);
+		AlertCauseResponsibility alertCauseResponsibility = alertCauseResponsibilityService
+				.findById(responsibilityId);
+		if (alertCause == null
+				|| !alertCause.getAlertCauseResponsibility().equals(
+						alertCauseResponsibility)) {
+			alertCause = new AlertCause();
+			alertCause.setName(alertCauseName);
+			alertCause.setShowInGui(true);
+			alertCause.setAlertCauseResponsibility(alertCauseResponsibility);
+			alertCauseService.save(alertCause);
+
+			AlertTypeCause alertTypeCause = new AlertTypeCause();
+			alertTypeCause.setStatus(alertTypeCauseStatus);
+			alertTypeCause.getPk().setAlertCause(alertCause);
+			AlertType alertType = alertTypeService.findById(alertTypeId);
+			alertTypeCause.getPk().setAlertType(alertType);
+			alertTypeCauseService.add(alertTypeCause);
+			return Action.SUCCESS;
+		}
+
+		AlertTypeCause exists = alertTypeCauseService.getByTypeCauseId(
+				alertTypeId, alertCause.getId());
+		if (exists == null) {
+			AlertTypeCause alertTypeCause = new AlertTypeCause();
+			alertTypeCause.setStatus(alertTypeCauseStatus);
+			alertTypeCause.getPk().setAlertCause(alertCause);
+			AlertType alertType = alertTypeService.findById(alertTypeId);
+			alertTypeCause.getPk().setAlertType(alertType);
+			alertTypeCauseService.add(alertTypeCause);
+
+			return Action.SUCCESS;
+		}
+
+		addActionError("Cause code already exists");
+		initAddPageParameters();
+		return Action.INPUT;
 	}
 
 	@SkipValidation
@@ -64,92 +126,82 @@ public class DataExceptionCauseAction extends BaseActionWithSession implements
 		return Action.SUCCESS;
 	}
 
-	@Validations(visitorFields = { @VisitorFieldValidator(fieldName = "alertCauseForm", appendPrefix = false) })
+	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
-	public String save() throws ValidationException {
+	public String update() throws ValidationException {
 
-		StringBuffer resultMsg = new StringBuffer();
+		String alertCauseName = alertCauseForm.getAlertCauseName().trim();
+		if (alertCauseName == null || "".equals(alertCauseName)) {
+			addActionError("Name is requried");
+			initEditPageParam();
+			return Action.INPUT;
+		}
 
-		// Find the changes on alert_cause side.
+		AlertCause alertCause = alertCauseService.find(getAlertCauseId());
 		AlertCauseResponsibility alertCauseResponsibility = alertCauseResponsibilityService
 				.findById(alertCauseForm.getAlertCauseResponsibilityId());
 
-		String alertCauseName = alertCauseForm.getAlertCauseName();
-		AlertCause alertCause = alertCauseService.findByName(alertCauseName);
-		if (alertCause == null) {
-			alertCause = new AlertCause();
-			alertCause.setName(alertCauseName);
-			alertCause.setShowInGui(true);
-			alertCause.setAlertCauseResponsibility(alertCauseResponsibility);
-			alertCauseService.save(alertCause);
+		boolean changed = false;
+		if (!alertCause.getName().equalsIgnoreCase(alertCauseName)
+				|| !alertCause.getAlertCauseResponsibility().equals(
+						alertCauseResponsibility)) {
 
-			resultMsg.append("New Cause code name created,");
-		} else {
-			long id = alertCause.getAlertCauseResponsibility().getId();
-			if (id != alertCauseResponsibility.getId()) {
+			AlertCause exists = alertCauseService.findByNameResposibility(
+					alertCauseName, alertCauseResponsibility);
+
+			if (exists == null) {
+				alertCause.setName(alertCauseName);
 				alertCause
 						.setAlertCauseResponsibility(alertCauseResponsibility);
 				alertCauseService.update(alertCause);
-
-				resultMsg.append("The Responsibility updated,");
+				changed = true;
+			} else {
+				addActionError("Cause code name and responsibily pair already exists");
+				initEditPageParam();
+				return Action.INPUT;
 			}
 		}
-
-		// Find the changes on mapping table. alert_type_cause.
-		AlertType alertType = alertTypeService.findById(alertCauseForm
-				.getAlertTypeId());
 
 		AlertTypeCause alertTypeCause = alertTypeCauseService.getByTypeCauseId(
-				alertType.getId(), alertCause.getId());
-		String status = alertCauseForm.getState();
+				getAlertTypeId(), getAlertCauseId());
 
-		if (alertTypeCause == null) {
-			alertTypeCause = new AlertTypeCause();
-			alertTypeCause.getPk().setAlertCause(alertCause);
-			alertTypeCause.getPk().setAlertType(alertType);
-			alertTypeCause.setStatus(status);
-
-			alertTypeCauseService.add(alertTypeCause);
-
-			resultMsg
-					.append(" New alert type&cause mapping was added successfully.");
-		} else {
-			if (!status.equals(alertTypeCause.getStatus())) {
-				alertTypeCause.setStatus(status);
-				alertTypeCauseService.update(alertTypeCause);
-			}
-			resultMsg.append(" Status updated successfully.");
+		if (!alertTypeCause.getStatus().equals(alertCauseForm.getState())) {
+			alertTypeCause.setStatus(alertCauseForm.getState());
+			alertTypeCauseService.update(alertTypeCause);
+			changed = true;
 		}
 
-		if (resultMsg.length() == 0) {
-			resultMsg.append("No change found");
+		if (changed) {
+			return Action.SUCCESS;
 		}
-		getSession().put(SAVE_MESSAGE_SESSION_KEY, resultMsg.toString());
 
-		return Action.SUCCESS;
+		addActionError("Nothing changed");
+		initEditPageParam();
+		return Action.INPUT;
+
 	}
 
 	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
-	public String update() {
+	public String edit() {
+		initEditPageParam();
+		return Action.SUCCESS;
+	}
 
+	private void initEditPageParam() {
 		setAlertCauseForm(new DataExceptionCauseForm());
 
 		getAlertCauseForm().setAlertCauseResponsibilities(
 				alertCauseResponsibilityService.list());
-
-		getAlertCauseForm().setAlertTypes(alertTypeService.list());
-
 		getAlertCauseForm().setAlertCauseName(
 				alertCauseService.find(getAlertCauseId()).getName());
+		getAlertCauseForm().setAlertTypes(alertTypeService.list());
 
-		getAlertCauseForm().setAlertTypeCause(
-				alertTypeCauseService.getByTypeCauseId(this.alertTypeId,
-						this.alertCauseId));
+		AlertTypeCause alertTypeCause = alertTypeCauseService.getByTypeCauseId(
+				this.alertTypeId, this.alertCauseId);
+		getAlertCauseForm().setAlertTypeCause(alertTypeCause);
 
 		getAlertCauseForm().init();
-
-		return Action.SUCCESS;
 	}
 
 	public DataExceptionCauseForm getAlertCauseForm() {

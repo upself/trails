@@ -11,11 +11,11 @@
 		});
 	});
 </script>
-<h1 class="oneline">Edit</h1>
+<h1 class="oneline">Add</h1>
 <div style="font-size: 22px; display: inline">&nbsp;cause code</div>
 <p class="confidential">IBM Confidential</p>
 <br />
-<p>Edit the cause code's name. Press the Save button to save your
+<p>Add the cause code's name. Press the Save button to save your
 	changes. Fields marked with an asterisk (*) are required.</p>
 <br />
 <div class="hrule-dots"></div>
@@ -26,26 +26,27 @@
 </s:if>
 <h2 class="bar-blue-med-light">Cause code details</h2>
 <br />
-<s:form action="update" method="post" namespace="/admin/alertCause"
+<s:form action="save" method="post" namespace="/admin/alertCause"
 	theme="simple">
 	<s:hidden name="alertCauseId" />
-	<s:hidden name="alertTypeId" />
 	<!--Alert -->
 	<div class="float-left" style="width: 30%;">
 		<label for="alertCauseName">Alert:</label>
 	</div>
 	<div class="float-left" style="width: 70%;">
-		<s:property value="alertCauseForm.alertTypeCause.pk.alertType.name" />
+		<s:select name="alertCauseForm.alertTypeId"
+			list="alertCauseForm.alertTypes" listKey="id" listValue="name"
+			headerKey="0" />
 	</div>
 	<br />
 	<br />
 	<!-- Name -->
 	<div class="float-left" style="width: 30%;">
-		<label for="alertCauseName">*Name</label>
+		<label for="alertCauseName">*Name:</label>
 	</div>
 	<div class="float-left" style="width: 70%;">
 		<s:textfield name="alertCauseForm.alertCauseName" required="true"
-			size="50" id="alertCauseName" maxlength="255" />
+			size="50" id="alertCauseName" maxlength="64" />
 	</div>
 	<br />
 	<br />

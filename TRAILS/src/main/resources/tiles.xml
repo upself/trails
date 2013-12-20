@@ -1327,6 +1327,13 @@
 		<put-attribute name="keywords" value="TRAILS alert cause list" />
 	</definition>
 
+	<definition name="tiles.admin.alertCause.add" extends="tiles.w3OneColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/alertCause/add.jsp" />
+		<put-attribute name="description" value="TRAILS add alert causes" />
+		<put-attribute name="keywords" value="TRAILS add alert causes" />
+	</definition>
+
 	<definition name="tiles.admin.alertCause.manage" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/manage.jsp" />

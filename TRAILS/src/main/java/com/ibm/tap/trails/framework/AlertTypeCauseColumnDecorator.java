@@ -14,7 +14,7 @@ public class AlertTypeCauseColumnDecorator implements DisplaytagColumnDecorator 
 			MediaTypeEnum media) throws DecoratorException {
 
 		AlertTypeCauseId id = (AlertTypeCauseId) columnValue;
-		String url = "<a href=/TRAILS/admin/alertCause/update.htm?alertCauseId="
+		String url = "<a href=/TRAILS/admin/alertCause/edit.htm?alertCauseId="
 				+ id.getAlertCause().getId()
 				+ "&alertTypeId="
 				+ id.getAlertType().getId()

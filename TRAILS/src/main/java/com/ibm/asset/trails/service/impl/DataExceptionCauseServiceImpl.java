@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.DataExceptionCauseDao;
 import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertCauseResponsibility;
 import com.ibm.asset.trails.domain.AlertTypeCause;
 import com.ibm.asset.trails.service.DataExceptionCauseService;
 import com.opensymphony.xwork2.validator.ValidationException;
@@ -19,6 +20,12 @@ public class DataExceptionCauseServiceImpl implements DataExceptionCauseService 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public AlertCause find(Long plId) {
 		return getAlertCauseDao().find(plId);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public AlertCause findByNameResposibility(String alertCauseName,
+			AlertCauseResponsibility responsibility) {
+		return getAlertCauseDao().find(alertCauseName, responsibility);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -97,4 +104,5 @@ public class DataExceptionCauseServiceImpl implements DataExceptionCauseService 
 	public void setAlertCauseDao(DataExceptionCauseDao alertCauseDao) {
 		this.alertCauseDao = alertCauseDao;
 	}
+
 }

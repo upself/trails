@@ -77,16 +77,41 @@ public class AlertType extends AbstractDomainEntity {
 	}
 
 	@Override
-	public boolean equals(final Object other) {
-		if (!(other instanceof AlertType))
-			return false;
-		AlertType castOther = (AlertType) other;
-		return new EqualsBuilder().append(name, castOther.name)
-				.append(code, castOther.code).isEquals();
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((alertTypeCauses == null) ? 0 : alertTypeCauses.hashCode());
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(name).append(code).toHashCode();
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AlertType other = (AlertType) obj;
+		if (alertTypeCauses == null) {
+			if (other.alertTypeCauses != null)
+				return false;
+		} else if (!alertTypeCauses.equals(other.alertTypeCauses))
+			return false;
+		if (code == null) {
+			if (other.code != null)
+				return false;
+		} else if (!code.equals(other.code))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
+
 }

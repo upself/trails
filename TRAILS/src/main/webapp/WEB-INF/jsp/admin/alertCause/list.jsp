@@ -15,7 +15,7 @@
 	<br />
 </s:if>
 <br />
-<a href="<s:url action='add' namespace='/admin/causecodes'/>">Add
+<a href="<s:url action='add' namespace='/admin/alertCause'/>">Add
 	cause code</a>
 <br />
 <br />

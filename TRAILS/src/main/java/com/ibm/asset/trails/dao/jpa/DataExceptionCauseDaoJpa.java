@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.DataExceptionCauseDao;
 import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertCauseResponsibility;
 import com.ibm.asset.trails.domain.AlertTypeCause;
 
 @Transactional
@@ -43,6 +44,22 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
 				.createNamedQuery("findAlertCauseByNameNotId")
 				.setParameter("name", psName).setParameter("id", plId)
 				.getResultList();
+		AlertCause result;
+		if (results == null || results.isEmpty()) {
+			result = null;
+		} else {
+			result = results.get(0);
+		}
+		return result;
+	}
+
+	public AlertCause find(String psName,
+			AlertCauseResponsibility responsibility) {
+		@SuppressWarnings("unchecked")
+		List<AlertCause> results = getEntityManager()
+				.createNamedQuery("findAlertCauseByNameAndResponsibility")
+				.setParameter("name", psName.toUpperCase())
+				.setParameter("responsibility", responsibility).getResultList();
 		AlertCause result;
 		if (results == null || results.isEmpty()) {
 			result = null;
@@ -92,4 +109,5 @@ public class DataExceptionCauseDaoJpa extends AbstractDataExceptionJpa
 		getEntityManager().merge(pacUpdate);
 		getEntityManager().flush();
 	}
+
 }

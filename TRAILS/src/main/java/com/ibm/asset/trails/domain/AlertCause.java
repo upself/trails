@@ -20,7 +20,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ALERT_CAUSE")
 @NamedQueries({
-		@NamedQuery(name = "findAlertCauseByName", query = "FROM AlertCause WHERE upper(name) = :name"),
+		@NamedQuery(name = "findAlertCauseByName", query = "FROM AlertCause WHERE upper(name) = :name and showInGui = 1"),
+		@NamedQuery(name = "findAlertCauseByNameAndResponsibility", query = "FROM AlertCause WHERE upper(name) = :name and alertCauseResponsibility = :responsibility and showInGui = 1"),
 		@NamedQuery(name = "findAlertCauseByNameNotId", query = "FROM AlertCause WHERE name = :name AND id != :id"),
 		@NamedQuery(name = "getAlertCauseList", query = "SELECT alertTypeCauses FROM AlertCause WHERE showInGui = 1 ORDER BY name"),
 		@NamedQuery(name = "getAlertCauseListWithTypeJoin", query = "SELECT cause.alertTypeCauses FROM AlertCause AS cause WHERE cause.showInGui = 1 ORDER BY cause.name"),
@@ -86,4 +87,50 @@ public class AlertCause {
 			AlertCauseResponsibility alertCauseResponsibility) {
 		this.alertCauseResponsibility = alertCauseResponsibility;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((alertCauseResponsibility == null) ? 0
+						: alertCauseResponsibility.hashCode());
+		result = prime * result
+				+ ((alertTypeCauses == null) ? 0 : alertTypeCauses.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (showInGui ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AlertCause other = (AlertCause) obj;
+		if (alertCauseResponsibility == null) {
+			if (other.alertCauseResponsibility != null)
+				return false;
+		} else if (!alertCauseResponsibility
+				.equals(other.alertCauseResponsibility))
+			return false;
+		if (alertTypeCauses == null) {
+			if (other.alertTypeCauses != null)
+				return false;
+		} else if (!alertTypeCauses.equals(other.alertTypeCauses))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (showInGui != other.showInGui)
+			return false;
+		return true;
+	}
+
 }

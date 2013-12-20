@@ -45,20 +45,32 @@
 			</result>
 		</action>
 
-		<action name="update" method="update" class="alertCauseAction">
+		<action name="edit" method="edit" class="alertCauseAction">
 			<result name="success" type="tiles">
 				tiles.admin.alertCause.manage
 			</result>
 		</action>
 
-
-		<action name="add" method="add" class="alertCauseAction">
-			<result type="redirect">list.htm</result>
+		<action name="update" method="update" class="alertCauseAction">
+			<result name="success" type="redirect">list.htm</result>
 			<result name="input" type="tiles">
 				tiles.admin.alertCause.manage
 			</result>
 		</action>
-	</package>
 
+		<action name="add" method="add" class="alertCauseAction">
+			<result name="success" type="tiles">
+				tiles.admin.alertCause.add
+			</result>
+		</action>
+
+		<action name="save" method="save" class="alertCauseAction">
+			<result name="success" type="redirect">list.htm</result>
+			<result name="input" type="tiles">
+				tiles.admin.alertCause.add
+			</result>
+		</action>
+
+	</package>
 
 </struts>
