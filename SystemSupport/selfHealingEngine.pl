@@ -11,6 +11,10 @@
 # 2013-08-15  Liu Hai(Larry) 1.0.3           Add 'RESTART_LOADER' Support Feature
 # 2013-08-20  Liu Hai(Larry) 1.0.4           Remove 'RESTART_LOADER' Support Feature and Add 'RESTART_LOADER_ON_TAP_SERVER' and 'RESTART_LOADER_ON_TAP3_SERVER' Support Features
 #                                            Add Configuration File named 'selfHealingEngine.properties' Feature for Server Mode parameter
+# 2013-12-24  Liu Hai(Larry) 1.0.5           1) There is a bug found in the program. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count like below:
+#                                               #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+#                                               Comment out the above code line to fix bug
+#                                            2) Print out the restart loader process running message
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
@@ -23,6 +27,9 @@
 # 2013-11-18  Liu Hai(Larry) 1.3.2           Add the feature support when the input operation parameters have ' ' space chars in them - For example - "Test 2". 
 #                                            There is a bug found when there are ' ' space chars in operation parameters, then there is a parse error for Self Healing Engine to get the input Operation Parameters
 #                                            Solution: replace all the ' ' chars using '~' special chars for temp and then convert them back for Self Healing Engine 
+# 2013-12-11  Liu Hai(Larry) 1.3.3           Change the -f value from 12 to 1 to support full load all the time for child loader
+#                                            my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";
+#                                            Per Eugen, if 'Restart Child Loader on TAP Server' SSC feature has been used, it means that the full load for this child loader is needed.
 #
 ###################################################################################################################################################################################################
 #                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
@@ -167,7 +174,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX     = 2;#Bank Acc
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX          = 3;#Debug Option(Required) - For example: YES or NO
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Required) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
 
-my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 12 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command
+my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
 #Invoked Command Parameter Definition Indexes
 my $INVOKED_COMMAND_RESTART_CHILD_LOADER_NAME_REPLACE_STRING = "#1";
 my $INVOKED_COMMAND_RESTART_BANK_ACCOUNT_NAME_REPLACE_STRING = "#2";
@@ -230,8 +237,7 @@ my $EXECUTE_SUCCESS = 1;
 my $EXECUTE_FAIL    = 0;
 
 #Command Monitor Timeout Time
-#my $COMMAND_MONITOR_TIMEOUT = 180;
-my $COMMAND_MONITOR_TIMEOUT = 10;
+my $COMMAND_MONITOR_TIMEOUT = 300;
 
 #Telnet Related Files
 my $TELNET_DUMP_FILE   = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerDump.log";
@@ -512,10 +518,22 @@ sub coreOperationProcess{
 			#Added by Larry for Self Healing Service Component - Phase 2 Start
 			#Sleep 10 seconds to give the target loader startup time
 			sleep 10;
-            #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
+		
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+            my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep start|grep -v grep`;
+			foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
+              chomp($loaderRunningProcessMsg); 
+			  print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
+            }
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
+
+			#Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
 			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
 			chomp($targetLoaderRunningProcessCnt);#remove the return line char
-            $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+            #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
+			#$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+            #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 			if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
 			   print LOG "The Restart Loader on TAP Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
 			   print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
@@ -1596,7 +1614,7 @@ sub setDB2ENVPath{
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/eaadmin/sqllib/db2profile";
+	  $DB_ENV = "/home/tap/sqllib/db2profile";
 	}
 	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';

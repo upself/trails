@@ -11,6 +11,10 @@
 # 2013-08-15  Liu Hai(Larry) 1.0.3           Add 'RESTART_LOADER' Support Feature
 # 2013-08-20  Liu Hai(Larry) 1.0.4           Remove 'RESTART_LOADER' Support Feature and Add 'RESTART_LOADER_ON_TAP_SERVER' and 'RESTART_LOADER_ON_TAP3_SERVER' Support Features
 #                                            Add Configuration File named 'selfHealingEngine.properties' Feature for Server Mode parameter
+# 2013-12-24  Liu Hai(Larry) 1.0.5           1) There is a bug found in the program. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count like below:
+#                                               #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+#                                               Comment out the above code line to fix bug
+#                                            2) Print out the restart loader process running message
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
@@ -514,10 +518,22 @@ sub coreOperationProcess{
 			#Added by Larry for Self Healing Service Component - Phase 2 Start
 			#Sleep 10 seconds to give the target loader startup time
 			sleep 10;
-            #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
+		
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+            my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep start|grep -v grep`;
+			foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
+              chomp($loaderRunningProcessMsg); 
+			  print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
+            }
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
+
+			#Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
 			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
 			chomp($targetLoaderRunningProcessCnt);#remove the return line char
-            $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+            #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
+			#$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+            #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 			if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
 			   print LOG "The Restart Loader on TAP Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
 			   print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
