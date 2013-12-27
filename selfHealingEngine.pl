@@ -15,6 +15,8 @@
 #                                               #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
 #                                               Comment out the above code line to fix bug
 #                                            2) Print out the restart loader process running message
+# 2013-12-27  Liu Hai(Larry) 1.0.6           Add the following new loaders into authorized loader list:
+#                                            1) atpToStaging.pl
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
@@ -1586,7 +1588,10 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"licenseToBravo.pl";#19
   push @vaildLoaderList,"licTypeToBravo.pl";#20
   push @vaildLoaderList,"scanSoftwareItemToStaging.pl";#21
-  #push @vaildLoaderList,"testingTAP.pl";#22 #For testing function purpose only
+  #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.0.6 Start
+  push @vaildLoaderList,"atpToStaging.pl";#22
+  #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.0.6 End
+  #push @vaildLoaderList,"testingTAP.pl";#23 #For testing function purpose only
   
   return @vaildLoaderList;
 }
