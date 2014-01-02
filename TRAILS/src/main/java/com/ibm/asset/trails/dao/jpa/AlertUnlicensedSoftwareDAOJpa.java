@@ -31,8 +31,8 @@ public class AlertUnlicensedSoftwareDAOJpa extends
             lsOwnerFromClause = ", EAADMIN.Hw_Sw_Composite HSC, EAADMIN.Hardware_Lpar HL, EAADMIN.Hardware H";
             lsOwnerWhereClause = "AND HSC.Software_Lpar_Id = SL.Id AND HL.Id = HSC.Hardware_Lpar_Id AND H.Id = HL.Hardware_Id AND H.Owner = :owner ";
         } else {
-            lsOwnerFromClause = "";
-            lsOwnerWhereClause = "";
+            lsOwnerFromClause = ", EAADMIN.Hw_Sw_Composite HSC";
+            lsOwnerWhereClause = "AND HSC.Software_Lpar_Id = SL.Id";
         }
 
         if (includeOpenAlerts) {

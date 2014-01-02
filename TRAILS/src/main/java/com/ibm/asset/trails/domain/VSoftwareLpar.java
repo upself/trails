@@ -23,6 +23,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @org.hibernate.annotations.Entity(mutable = false)
 public class VSoftwareLpar extends AbstractDomainEntity {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1223530244153549459L;
+
 	@Id
 	@Column(name = "ID")
 	private Long id;
