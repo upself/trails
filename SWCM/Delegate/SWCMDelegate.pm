@@ -194,6 +194,25 @@ sub getData {
         if ( $rec{extSrcCode} ne "SOFTREQ" ) {
             $rec{extSrcId} = "SWCM_" . $rec{swcmLicenseId};
         }
+        
+        my $prodNmae;
+        my $fullDesc;
+        if ( length( $rec{prodName} ) > 128 ) {
+        	dlog(
+                    "************* Found record that has longer software name than 128 characters , cut off record **********"
+                );
+                $prodNmae = substr $rec{prodName}, 0, 128 ;
+        } else {
+        	$prodNmae =  $rec{prodName} ;
+        }
+        if ( length( $rec{fullDesc} ) > 255 ) {
+        	dlog(
+                    "************* Found record that has longer software description than 255 characters , cut off record **********"
+                );
+                $fullDesc = substr $rec{fullDesc}, 0, 255 ;
+        } else {
+        	$fullDesc = $rec{fullDesc} ;
+        }
 
         ###Construct the key
         my $key = $rec{extSrcId};
@@ -213,8 +232,8 @@ sub getData {
         $license->expireDate( $rec{expireDate} );
         $license->endDate( $rec{endDate} );
         $license->poNumber( $rec{poNumber} );
-        $license->prodName( $rec{prodName} );
-        $license->fullDesc( $rec{fullDesc} );
+        $license->prodName( $prodNmae );
+        $license->fullDesc( $fullDesc );
         $license->version( $rec{version} );
         $license->cpuSerial( $rec{cpuSerial} );
         $license->licenseStatus( $rec{licenseStatus} );
