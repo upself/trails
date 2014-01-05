@@ -11,7 +11,8 @@ import com.ibm.ea.sigbank.BankAccount;
 public class FormBankAccount extends ValidatorForm {
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(FormBankAccount.class);
+	private static final Logger logger = Logger
+			.getLogger(FormBankAccount.class);
 
 	private Long id;
 
@@ -56,9 +57,9 @@ public class FormBankAccount extends ValidatorForm {
 	private String syncSig;
 
 	private String status;
-	
+
 	private String technicalContact;
-	
+
 	private String businessContact;
 
 	public FormBankAccount() {
@@ -301,7 +302,7 @@ public class FormBankAccount extends ValidatorForm {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 	public String getTechnicalContact() {
 		return technicalContact;
 	}
@@ -320,29 +321,20 @@ public class FormBankAccount extends ValidatorForm {
 
 	@Override
 	public String toString() {
-		return new StringBuffer("[FormConnectedSave]\n\tid = ").append(getId())
-				.append("\n\tname = '").append(getName())
-				.append("'\n\tconnectionType = '").append(getConnectionType())
-				.append("'\n\tconnectionStatus = '").append(getConnectionStatus())
-				.append("'\n\tdescription = '").append(getDescription())
-				.append("'\n\ttype = '").append(getType())
-				.append("'\n\tversion = '").append(getVersion())
-				.append("'\n\tdataType = '").append(getDataType())
-				.append("'\n\tdatabaseType = '").append(getDatabaseType())
-				.append("'\n\tdatabaseVersion = '").append(getDatabaseVersion())
-				.append("'\n\tdatabaseName = '").append(getDatabaseName())
-				.append("'\n\tdatabaseSchema = '").append(getDatabaseSchema())
-				.append("'\n\tdatabaseIp = '").append(getDatabaseIp())
-				.append("'\n\tdatabasePort = '").append(getDatabasePort())
-				.append("'\n\tdatabaseUser = '").append(getDatabaseUser())
-				.append("'\n\tdatabasePassword = '").append(getDatabasePassword())
-				.append("'\n\tsocks = '").append(getSocks())
-				.append("'\n\ttunnel = '").append(getTunnel())
-				.append("'\n\ttunnelPort = '").append(getTunnelPort())
-				.append("'\n\tauthenticatedData = '").append(getAuthenticatedData())
-				.append("'\n\tsyncSig = '").append(getSyncSig())
-				.append("'\n\tstatus = '").append(getStatus().toString())
-				.append("'\n\ttechnicalContact = '").append(getTechnicalContact().toString())
-				.append("'\n\tbusinessContact = '").append(getBusinessContact()).toString();
+		return "FormBankAccount [id=" + id + ", connectionType="
+				+ connectionType + ", connectionStatus=" + connectionStatus
+				+ ", name=" + name + ", description=" + description + ", type="
+				+ type + ", version=" + version + ", dataType=" + dataType
+				+ ", databaseType=" + databaseType + ", databaseVersion="
+				+ databaseVersion + ", databaseName=" + databaseName
+				+ ", databaseSchema=" + databaseSchema + ", databaseIp="
+				+ databaseIp + ", databasePort=" + databasePort
+				+ ", databaseUser=" + databaseUser + ", databasePassword="
+				+ databasePassword + ", socks=" + socks + ", tunnel=" + tunnel
+				+ ", tunnelPort=" + tunnelPort + ", authenticatedData="
+				+ authenticatedData + ", syncSig=" + syncSig + ", status="
+				+ status + ", technicalContact=" + technicalContact
+				+ ", businessContact=" + businessContact + "]";
 	}
+
 }
