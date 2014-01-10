@@ -17,6 +17,9 @@
 #                                            2) Print out the restart loader process running message
 # 2013-12-27  Liu Hai(Larry) 1.0.6           Add the following new loaders into authorized loader list:
 #                                            1) atpToStaging.pl
+# 2013-12-27  Liu Hai(Larry) 1.0.7           A. Add the following new loaders into authorized loader list:
+#                                            1) swcmToStaging.pl
+#                                            B. Add the loader running mode(start/run-once) support feature
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
@@ -266,6 +269,13 @@ my $operationResultFlag = $OPERATION_SUCCESS;#Set the init default value is "OPE
 my $operationFailedComments = "";#var used to store operation comments 
 #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
 
+#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
+my $LOADER_START_MODE    = "start";
+my $LOADER_RUN_ONCE_MODE = "run-once";
+my $loaderRunningMode;#var used to store loader running mode - For example: "start/stop/run-once"
+my $RUN_ONCE_LOADER_LIST = "/swcmToStaging.pl/";#var used to store run-once loader list - For example: "swcmToStaging.pl"
+#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
+
 main();
 
 #This is the main method of Self Healing Engine
@@ -482,8 +492,17 @@ sub coreOperationProcess{
 		  print LOG "The Restart Loader on TAP Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP Server.\n";
 		}
 		else{#Restart Loader is a valid loader
+          #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
+		  if(index($RUN_ONCE_LOADER_LIST,$restartLoaderName)>-1){#judge if the target restart loader name is in the run-once loader list, then set the loader running mode to 'run-once' 
+		    $loaderRunningMode = $LOADER_RUN_ONCE_MODE;
+          }#end if($RUN_ONCE_LOADER_LIST.indexOf($restartLoaderName)>0)
+		  else{
+            $loaderRunningMode = $LOADER_START_MODE;
+		  }#end else
+		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
+
 		  #1. Find out and Kill all the parent and child processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
+		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -510,7 +529,7 @@ sub coreOperationProcess{
           #2. Start target loader using loader full name - For exmaple: "/opt/staging/v2/reconEngine.pl"
 		  $restartLoaderFullCommand = $loaderExistingPath;
           $restartLoaderFullCommand.= $restartLoaderName;
-          $restartLoaderFullCommand.= " start";
+          $restartLoaderFullCommand.= " $loaderRunningMode";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 		  print LOG "The Restart Loader on TAP Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
 		  my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
           print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
@@ -522,7 +541,7 @@ sub coreOperationProcess{
 			sleep 10;
 		
 			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
-            my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep start|grep -v grep`;
+            my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 			foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
               chomp($loaderRunningProcessMsg); 
 			  print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
@@ -530,7 +549,7 @@ sub coreOperationProcess{
 			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 
 			#Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
+			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|wc -l`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 			chomp($targetLoaderRunningProcessCnt);#remove the return line char
 			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
             #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
@@ -1588,10 +1607,13 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"licenseToBravo.pl";#19
   push @vaildLoaderList,"licTypeToBravo.pl";#20
   push @vaildLoaderList,"scanSoftwareItemToStaging.pl";#21
-  #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.0.6 Start
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.6 Start
   push @vaildLoaderList,"atpToStaging.pl";#22
-  #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.0.6 End
-  #push @vaildLoaderList,"testingTAP.pl";#23 #For testing function purpose only
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.6 End
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
+  push @vaildLoaderList,"swcmToStaging.pl";#23
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
+  #push @vaildLoaderList,"testingTAP.pl";#24 #For testing function purpose only
   
   return @vaildLoaderList;
 }
