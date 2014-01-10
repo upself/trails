@@ -42,11 +42,14 @@ public class DelegateBankAccount extends HibernateDelegate {
 
 		//Technical contact input check
 		//if either of the user inputs(for contact e-mails) is empty, then throw an error
-		if (insertedTechnicalContact.equals("") || insertedBusinessContact.equals("")) {
-			lSession.evict(lBankAccount);
-			lActionErrors.add("emptyContacts", new ActionMessage("error.bankAccount.email"));
+		
+		//// LEFT previous version commented out, using this approach now after change of the design
+//		if (insertedTechnicalContact.equals("") || insertedBusinessContact.equals("")) {
+		if (!insertedTechnicalContact.equals("")) {
+//			lSession.evict(lBankAccount);
+//			lActionErrors.add("emptyContacts", new ActionMessage("error.bankAccount.email"));
 
-		}else {
+//		}else {
 			//if there are both entries in the user input, split that input by commas
 			String[] technicalContacts = insertedTechnicalContact.split(",");
 			List<String> technicalResult = new ArrayList<String>();
@@ -84,7 +87,9 @@ public class DelegateBankAccount extends HibernateDelegate {
 				lSession.evict(lBankAccount);
 				lActionErrors.add("technicalContact", new ActionMessage("error.bankAccount.email"));
 			}			
+		}
 			
+		if (!insertedBusinessContact.equals("")) {
 			//Business contact input check - comments as with technical part above
 			String[] businessContacts = insertedBusinessContact.split(",");	
 			List<String> businessResult = new ArrayList<String>();
