@@ -515,17 +515,25 @@ EOL
 
 sub queryDelete {
     my \$query = '
-        delete from $table
-        where
+        delete from $table a where exists (
+        select b.id from $table b where 
 EOL
     $flag = 0;
     foreach my $i ( sort { $a <=> $b } keys %props ) {
         my $prop    = $props{$i}->{"name"};
         my $sqlName = $props{$i}->{"sql-name"};
         my $sqlKey  = $props{$i}->{"sql-key"};
+        my $sqlEquals = 1 if (( defined $props{$i}->{"equals"} ) && ( $props{$i}->{"equals"} eq "true"));
         next if $sqlName eq "null";
-        next if $sqlKey  eq "false";
-        my $s = "$sqlName = ?";
+        next if $sqlName eq "idField";
+#        next if $sqlKey  eq "false";
+		next if ((! defined $sqlEquals ) && ( $sqlKey eq "false" ));
+		my $s="";
+		if ( $sqlKey eq "true" ) {
+			$s .= "b.$sqlName = ?";
+		} else {
+            $s .= "a.$sqlName = b.$sqlName ";
+        }
         $s = "and " . $s unless $flag == 0;
         $flag = 1;
         print <<EOL;
@@ -533,7 +541,7 @@ EOL
 EOL
     }
     print <<EOL;
-    ';
+    )';
     return ('$deleteString', \$query);
 }
 EOL
