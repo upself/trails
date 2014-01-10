@@ -26,11 +26,11 @@ die "Usage: $0"
              && defined $opt_s );
 
 ###Close handles to avoid console output.
-open( STDIN, "/dev/null" )
+open( STDIN, $opt_l )
     or die "ERROR: Unable to direct STDIN to /dev/null: $!";
-open( STDOUT, "/dev/null" )
+open( STDOUT, $opt_l )
     or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
-open( STDERR, "/dev/null" )
+open( STDERR, $opt_l )
     or die "ERROR: Unable to direct STDERR to /dev/null: $!";
 
 my $stagingConnection;
