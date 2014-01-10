@@ -15,6 +15,7 @@ my $s;
 my $package;
 my $class;
 my $table;
+my $parsingRecon = 0; # added variable, if parsingRecon, the queryDelete looks differently
 my %props = ();
 my %meths = ();
 
@@ -122,6 +123,8 @@ $parser->setHandlers(
                       Final => \&handle_final
 );
 $parser->parsefile( $ARGV[0] );
+
+$parsingRecon=1 if ( $ARGV[0] =~ /\/Recon\// );
 
 #print STDOUT Dumper(\%props);
 
@@ -515,8 +518,7 @@ EOL
 
 sub queryDelete {
     my \$query = '
-        delete from $table a where exists (
-        select b.id from $table b where 
+        delete from $table a where
 EOL
     $flag = 0;
     foreach my $i ( sort { $a <=> $b } keys %props ) {
@@ -528,9 +530,13 @@ EOL
         next if $sqlName eq "idField";
 #        next if $sqlKey  eq "false";
 		next if ((! defined $sqlEquals ) && ( $sqlKey eq "false" ));
+		next if (( $sqlKey eq "false" ) && ( $parsingRecon == 0 ));
 		my $s="";
+		$s="exists ( select b.id from $table b where " if (( $flag == 0 ) && ( $parsingRecon ));
 		if ( $sqlKey eq "true" ) {
-			$s .= "b.$sqlName = ?";
+			$s .= "b." if ( $parsingRecon );
+			$s .= "a." unless ( $parsingRecon );
+			$s .= "$sqlName = ?";
 		} else {
             $s .= "a.$sqlName = b.$sqlName ";
         }
@@ -540,8 +546,9 @@ EOL
             $s
 EOL
     }
+    print ")" if $parsingRecon;
     print <<EOL;
-    )';
+    ';
     return ('$deleteString', \$query);
 }
 EOL
