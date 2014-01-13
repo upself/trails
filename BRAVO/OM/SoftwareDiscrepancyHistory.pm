@@ -189,7 +189,7 @@ sub queryInsert {
             ,?
             ,?
             ,\'STAGING\'
-            ,CURRENT TIMESTAMP
+            ,?
         ))
     ';
     return ('insertSoftwareDiscrepancyHistory', $query);
@@ -203,7 +203,7 @@ sub queryUpdate {
             ,action = ?
             ,comment = ?
             ,remote_user = \'STAGING\'
-            ,record_time = CURRENT TIMESTAMP
+            ,record_time = ?
         where
             id = ?
     ';
@@ -225,9 +225,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_discrepancy_h
-        where
-            id = ?
+        delete from software_discrepancy_h a where
+            a.id = ?
     ';
     return ('deleteSoftwareDiscrepancyHistory', $query);
 }

@@ -171,9 +171,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from license_sw_map
-        where
-            id = ?
+        delete from license_sw_map a where
+            a.id = ?
     ';
     return ('deleteLicenseSoftwareMap', $query);
 }

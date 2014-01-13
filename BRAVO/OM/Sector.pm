@@ -231,9 +231,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from sector
-        where
-            sector_id = ?
+        delete from sector a where
+            a.sector_id = ?
     ';
     return ('deleteSector', $query);
 }

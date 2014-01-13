@@ -161,10 +161,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_software_lpar
-        where
-            id = ?
-    ';
+        delete from alert_software_lpar a where
+            exists ( select b.id from alert_software_lpar b where b.id = ?
+            and a.software_lpar_id = b.software_lpar_id 
+)    ';
     return ('deleteAlertSoftwareLparNew', $query);
 }
 

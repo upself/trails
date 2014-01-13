@@ -279,10 +279,13 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_unlicensed_sw
-        where
-            id = ?
-    ';
+        delete from alert_unlicensed_sw a where
+            exists ( select b.id from alert_unlicensed_sw b where b.id = ?
+            and a.installed_software_id = b.installed_software_id 
+            and a.comments = b.comments 
+            and a.type = b.type 
+            and a.open = b.open 
+)    ';
     return ('deleteAlertUnlicensedSoftware', $query);
 }
 

@@ -192,9 +192,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_map
-        where
-            id = ?
+        delete from software_lpar_map a where
+            a.id = ?
     ';
     return ('deleteSoftwareLparMap', $query);
 }

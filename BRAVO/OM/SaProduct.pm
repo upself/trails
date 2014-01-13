@@ -154,9 +154,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from sa_product
-        where
-            id = ?
+        delete from sa_product a where
+            a.id = ?
     ';
     return ('deleteSaProduct', $query);
 }

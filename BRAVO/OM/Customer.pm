@@ -879,9 +879,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from customer
-        where
-            customer_id = ?
+        delete from customer a where
+            a.customer_id = ?
     ';
     return ('deleteCustomer', $query);
 }

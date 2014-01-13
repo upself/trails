@@ -202,10 +202,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from inst_manual_sware
-        where
-            computer_sys_id = ?
-            and software_id = ?
+        delete from inst_manual_sware a where
+            a.computer_sys_id = ?
+            and a.software_id = ?
     ';
     return ('deleteInstalledManualSoftware', $query);
 }

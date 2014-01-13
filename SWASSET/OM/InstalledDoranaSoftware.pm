@@ -127,10 +127,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from inst_dorana_sware
-        where
-            computer_sys_id = ?
-            and dorana_prod_id = ?
+        delete from inst_dorana_sware a where
+            a.computer_sys_id = ?
+            and a.dorana_prod_id = ?
     ';
     return ('deleteInstalledDoranaSoftware', $query);
 }

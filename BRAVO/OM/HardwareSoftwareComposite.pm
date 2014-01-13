@@ -250,9 +250,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from hw_sw_composite
-        where
-            id = ?
+        delete from hw_sw_composite a where
+            a.id = ?
     ';
     return ('deleteHardwareSoftwareComposite', $query);
 }

@@ -257,9 +257,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from installed_sa_product
-        where
-            id = ?
+        delete from installed_sa_product a where
+            a.id = ?
     ';
     return ('deleteInstalledTLCMZ', $query);
 }

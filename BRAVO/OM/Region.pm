@@ -255,9 +255,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from region
-        where
-            id = ?
+        delete from region a where
+            a.id = ?
     ';
     return ('deleteRegion', $query);
 }

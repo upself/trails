@@ -452,9 +452,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from processor
-        where
-            id = ?
+        delete from processor a where
+            a.id = ?
     ';
     return ('deleteProcessor', $query);
 }

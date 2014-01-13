@@ -224,9 +224,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from effective_processor
-        where
-            id = ?
+        delete from effective_processor a where
+            a.id = ?
     ';
     return ('deleteHardwareLparEff', $query);
 }

@@ -283,9 +283,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from manual_queue
-        where
-            id = ?
+        delete from manual_queue a where
+            a.id = ?
     ';
     return ('deleteManualQueue', $query);
 }

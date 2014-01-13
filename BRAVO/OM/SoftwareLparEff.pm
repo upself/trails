@@ -244,9 +244,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_eff
-        where
-            id = ?
+        delete from software_lpar_eff a where
+            a.id = ?
     ';
     return ('deleteSoftwareLparEff', $query);
 }

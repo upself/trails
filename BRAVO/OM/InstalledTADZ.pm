@@ -305,9 +305,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from installed_tadz
-        where
-            id = ?
+        delete from installed_tadz a where
+            a.id = ?
     ';
     return ('deleteInstalledTADZ', $query);
 }

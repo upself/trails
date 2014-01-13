@@ -183,9 +183,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from major
-        where
-            major_id = ?
+        delete from major a where
+            a.major_id = ?
     ';
     return ('deleteMajor', $query);
 }

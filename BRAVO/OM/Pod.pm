@@ -231,9 +231,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from pod
-        where
-            pod_id = ?
+        delete from pod a where
+            a.pod_id = ?
     ';
     return ('deletePod', $query);
 }

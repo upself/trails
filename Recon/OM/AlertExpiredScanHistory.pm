@@ -216,9 +216,9 @@ sub queryInsert {
             ?
             ,?
             ,?
-            ,CURRENT TIMESTAMP
+            ,?
             ,\'STAGING\'
-            ,CURRENT TIMESTAMP
+            ,?
         ))
     ';
     return ('insertAlertExpiredScanHistory', $query);
@@ -233,7 +233,7 @@ sub queryUpdate {
             ,open = ?
             ,creation_time = ?
             ,remote_user = \'STAGING\'
-            ,record_time = CURRENT TIMESTAMP
+            ,record_time = ?
         where
             id = ?
     ';
@@ -255,10 +255,12 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_exp_scan_h
-        where
-            id = ?
-    ';
+        delete from alert_exp_scan_h a where
+            exists ( select b.id from alert_exp_scan_h b where b.id = ?
+            and a.alert_expired_scan_id = b.alert_expired_scan_id 
+            and a.comments = b.comments 
+            and a.open = b.open 
+)    ';
     return ('deleteAlertExpiredScanHistory', $query);
 }
 

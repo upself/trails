@@ -219,7 +219,7 @@ sub queryInsert {
             ,?
             ,?
             ,\'ATP\'
-            ,CURRENT TIMESTAMP
+            ,?
         ))
     ';
     return ('insertSoftwareLparEffHistory', $query);
@@ -234,7 +234,7 @@ sub queryUpdate {
             ,status = ?
             ,action = ?
             ,remote_user = \'ATP\'
-            ,record_time = CURRENT TIMESTAMP
+            ,record_time = ?
         where
             id = ?
     ';
@@ -256,9 +256,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_eff_h
-        where
-            id = ?
+        delete from software_lpar_eff_h a where
+            a.id = ?
     ';
     return ('deleteSoftwareLparEffHistory', $query);
 }

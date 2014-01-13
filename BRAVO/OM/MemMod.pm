@@ -284,9 +284,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_mem_mod
-        where
-            id = ?
+        delete from software_lpar_mem_mod a where
+            a.id = ?
     ';
     return ('deleteMemMod', $query);
 }

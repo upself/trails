@@ -1244,9 +1244,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from scan_record
-        where
-            id = ?
+        delete from scan_record a where
+            a.id = ?
     ';
     return ('deleteScanRecord', $query);
 }

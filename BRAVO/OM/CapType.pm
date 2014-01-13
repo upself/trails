@@ -198,9 +198,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from capacity_type
-        where
-            code = ?
+        delete from capacity_type a where
+            a.code = ?
     ';
     return ('deleteCapType', $query);
 }

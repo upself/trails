@@ -279,9 +279,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from tlcmz_computer
-        where
-            computer_sys_id = ?
+        delete from tlcmz_computer a where
+            a.computer_sys_id = ?
     ';
     return ('deleteTLCMZComputer', $query);
 }

@@ -299,8 +299,8 @@ sub queryInsert {
             ,?
             ,?
             ,?
-            ,CURRENT TIMESTAMP
-            ,CURRENT TIMESTAMP
+            ,?
+            ,?
             ,\'STAGING\'
             ,?
             ,?
@@ -319,7 +319,7 @@ sub queryUpdate {
             ,alert_cause_id = ?
             ,open = ?
             ,creation_time = ?
-            ,record_time = CURRENT TIMESTAMP
+            ,record_time = ?
             ,remote_user = \'STAGING\'
             ,assignee = ?
             ,comment = ?
@@ -344,10 +344,15 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from h_alert
-        where
-            id = ?
-    ';
+        delete from h_alert a where
+            exists ( select b.id from h_alert b where b.id = ?
+            and a.alert_id = b.alert_id 
+            and a.customer_id = b.customer_id 
+            and a.alert_type_id = b.alert_type_id 
+            and a.alert_cause_id = b.alert_cause_id 
+            and a.open = b.open 
+            and a.comment = b.comment 
+)    ';
     return ('deleteAlertHistory', $query);
 }
 

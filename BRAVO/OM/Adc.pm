@@ -380,9 +380,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_adc
-        where
-            id = ?
+        delete from software_lpar_adc a where
+            a.id = ?
     ';
     return ('deleteAdc', $query);
 }

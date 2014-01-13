@@ -147,10 +147,11 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from pvu
-        where
-            id = ?
-    ';
+        delete from pvu a where
+            exists ( select b.id from pvu b where b.id = ?
+            and a.processor_brand = b.processor_brand 
+            and a.processor_model = b.processor_model 
+)    ';
     return ('deletePvu', $query);
 }
 

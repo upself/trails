@@ -257,9 +257,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from installed_filter
-        where
-            id = ?
+        delete from installed_filter a where
+            a.id = ?
     ';
     return ('deleteInstalledFilter', $query);
 }

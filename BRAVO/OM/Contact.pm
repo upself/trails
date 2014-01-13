@@ -327,9 +327,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from contact
-        where
-            contact_id = ?
+        delete from contact a where
+            a.contact_id = ?
     ';
     return ('deleteContact', $query);
 }

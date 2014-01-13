@@ -171,9 +171,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from contact_lpar
-        where
-            id = ?
+        delete from contact_lpar a where
+            a.id = ?
     ';
     return ('deleteContactLpar', $query);
 }

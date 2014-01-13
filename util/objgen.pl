@@ -406,8 +406,8 @@ EOL
               if $default eq 'undef';
             $s = "\\\'" . $default . "\\\'";
         }
-        $s = "CURRENT TIMESTAMP" if $prop eq "recordTime";
-        $s = "CURRENT TIMESTAMP" if $prop eq "creationTime";
+        $s = "CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ m/History/i);
+        $s = "CURRENT TIMESTAMP" if ($prop eq "creationTime" && $class!~ m/History/i);
         $s = "," . $s unless $flag == 0;
         $flag = 1;
         print <<EOL;
@@ -449,7 +449,7 @@ EOL
                   if $default eq 'undef';
                 $s = "$sqlName = \\\'" . $default . "\\\'";
             }
-            $s = "$sqlName = CURRENT TIMESTAMP" if $prop eq "recordTime";
+            $s = "$sqlName = CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ m/History/i);
             $s = "," . $s unless $flag == 0;
             $flag = 1;
             print <<EOL;

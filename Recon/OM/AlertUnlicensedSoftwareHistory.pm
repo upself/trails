@@ -216,9 +216,9 @@ sub queryInsert {
             ?
             ,?
             ,?
-            ,CURRENT TIMESTAMP
+            ,?
             ,\'STAGING\'
-            ,CURRENT TIMESTAMP
+            ,?
         ))
     ';
     return ('insertAlertUnlicensedSoftwareHistory', $query);
@@ -233,7 +233,7 @@ sub queryUpdate {
             ,open = ?
             ,creation_time = ?
             ,remote_user = \'STAGING\'
-            ,record_time = CURRENT TIMESTAMP
+            ,record_time = ?
         where
             id = ?
     ';
@@ -255,10 +255,12 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_unlicensed_sw_h
-        where
-            id = ?
-    ';
+        delete from alert_unlicensed_sw_h a where
+            exists ( select b.id from alert_unlicensed_sw_h b where b.id = ?
+            and a.alert_unlicensed_sw_id = b.alert_unlicensed_sw_id 
+            and a.comments = b.comments 
+            and a.open = b.open 
+)    ';
     return ('deleteAlertUnlicensedSoftwareHistory', $query);
 }
 

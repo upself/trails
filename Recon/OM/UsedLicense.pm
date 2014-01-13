@@ -171,10 +171,12 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from used_license
-        where
-            id = ?
-    ';
+        delete from used_license a where
+            exists ( select b.id from used_license b where b.id = ?
+            and a.license_id = b.license_id 
+            and a.used_quantity = b.used_quantity 
+            and a.capacity_type_id = b.capacity_type_id 
+)    ';
     return ('deleteUsedLicense', $query);
 }
 

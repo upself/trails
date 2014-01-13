@@ -404,9 +404,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from adc
-        where
-            id = ?
+        delete from adc a where
+            a.id = ?
     ';
     return ('deleteAdc', $query);
 }

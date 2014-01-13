@@ -265,9 +265,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from system_schedule_status
-        where
-            id = ?
+        delete from system_schedule_status a where
+            a.id = ?
     ';
     return ('deleteSystemScheduleStatus', $query);
 }

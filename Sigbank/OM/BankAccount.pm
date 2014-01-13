@@ -690,9 +690,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from bank_account
-        where
-            id = ?
+        delete from bank_account a where
+            a.id = ?
     ';
     return ('deleteBankAccount', $query);
 }
