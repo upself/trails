@@ -341,7 +341,7 @@ in to complete the form.</p>
 			<logic:equal scope="request" name="bankAccountForm"
 				property="connectionType" value="CONNECTED">
 				<tr>
-					<td>*</td>
+					<td></td>
 					<td><label for="text_technicalContact">Technical contact:</label></td>
 					<td>
 					<div class="input-note">maximum 255 characters</div>
@@ -349,7 +349,7 @@ in to complete the form.</p>
 						styleClass="input" size="40" maxlength="255" /></td>
 				</tr>
 				<tr>
-					<td>*</td>
+					<td></td>
 					<td><label for="text_businessContact">Business contact:</label></td>
 					<td>
 					<div class="input-note">maximum 255 characters</div>
@@ -361,7 +361,7 @@ in to complete the form.</p>
 			<logic:equal scope="request" name="bankAccountForm"
 				property="connectionType" value="DISCONNECTED">
 				<tr>
-					<td>*</td>
+					<td></td>
 					<td><label for="text_technicalContact">Technical contact:</label></td>
 					<td>
 					<div class="input-note">maximum 255 characters</div>
@@ -369,7 +369,7 @@ in to complete the form.</p>
 						styleClass="inputlong" size="40" maxlength="255" /></td>
 				</tr>
 				<tr>
-					<td>*</td>
+					<td></td>
 					<td><label for="text_businessContact">Business contact:</label></td>
 					<td>
 					<div class="input-note">maximum 255 characters</div>
