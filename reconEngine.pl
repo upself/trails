@@ -332,7 +332,7 @@ sub getReconCustomerQueue {
     wlog("$rNo start building customer id array");
     
     
-    for (my $phase=0; $phase<2; $phase++){
+    for (my $phase=0; $phase<1; $phase++){
      
         my $qName = undef;
         my $query = undef;
@@ -386,7 +386,6 @@ sub queryPriorityCustomerIds{
             v_recon_queue a
         where 
             a.table!=\'RECON_CUSTOMER\'
-            and a.customer_id in (14939,642)
         group by
             a.customer_id
             ,date(a.record_time)
@@ -418,11 +417,7 @@ sub queryDistinctCustomerIdsFromQueueFifo {
     } else {
     $query .= '
                 a.table!=\'RECON_CUSTOMER\' 
-
-				or ( 
-   					a.table=\'RECON_CUSTOMER\' 
-   					and a.customer_id not in ( 7200,9754,11497,12145) 
-				)';
+				';
 	}
     $query.='   group by
                     a.customer_id

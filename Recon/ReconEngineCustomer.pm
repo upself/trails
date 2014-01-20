@@ -274,10 +274,6 @@ sub queryReconQueueByCustomerId {
             a.customer_id = ?
             and date(record_time) = ?
             and (a.table != \'RECON_CUSTOMER\' 
-            or (
-               a.table=\'RECON_CUSTOMER\' 
-               and a.customer_id not in ( 7200,9754,11497,12145))
-            )
             and not exists (
                 select b.id from v_recon_queue b where
                     a.fk = b.fk and
