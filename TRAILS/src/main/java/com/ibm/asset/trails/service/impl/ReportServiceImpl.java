@@ -79,7 +79,7 @@ public class ReportServiceImpl implements ReportService {
 			"Effective processor count", "PVU/core",
 			"Installed SW product name", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
-			"Inst SW validation status", "Reconciliation action",
+			"Inst SW validation status", "Reconciliation action", "Allocation methodology", 
 			"Reconciliation user", "Reconciliation date/time",
 			"Reconciliation comments", "Reconciliation parent product",
 			"License account number", "Full product description",
@@ -508,6 +508,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",instSwMan.name as instSwManName "
 				+ ",dt.name as instSwDiscrepName "
 				+ ",case when rt.is_manual = 0 then rt.name || '(AUTO)' when rt.is_manual = 1 then rt.name || '(MANUAL)' end "
+				+ ",am.name as reconAllocMethod "
 				+ ",r.remote_user as reconUser "
 				+ ",r.record_time as reconTime "
 				+ ",case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments "
@@ -580,7 +581,8 @@ public class ReportServiceImpl implements ReportService {
 				+ "left outer join eaadmin.customer c on "
 				+ "l.customer_id = c.customer_id "
 				+ "left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL "
-				+ "left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id ";
+				+ "left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id "
+				+ "left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id=am.id ";
 		String lsBaseWhereClause = "where "
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
