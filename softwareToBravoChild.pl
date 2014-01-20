@@ -24,26 +24,30 @@ die "Usage: $0"
              && defined $opt_c
              && defined $opt_p
              && defined $opt_s );
-
-###Close handles to avoid console output.
-open( STDIN, $opt_l )
-    or die "ERROR: Unable to direct STDIN to /dev/null: $!";
-open( STDOUT, $opt_l )
-    or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
-open( STDERR, $opt_l )
-    or die "ERROR: Unable to direct STDERR to /dev/null: $!";
-
+             
 my $stagingConnection;
 my $trailsConnection;
 my $swassetConnection;
+
+
 eval {
-    my $cfgMgr = Base::ConfigManager->instance($opt_c);
+ 
+     my $cfgMgr = Base::ConfigManager->instance($opt_c);
+     logfile($opt_l);
+     logging_level( $cfgMgr->debugLevel );
+         
+     ###Close handles to avoid console output.
+     open( STDIN, "/dev/null" )
+       or die "ERROR: Unable to direct STDIN to /dev/null: $!";
+     open( STDOUT, "/dev/null" )
+       or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
+     open( STDERR, "/dev/null" )
+       or die "ERROR: Unable to direct STDERR to /dev/null: $!";
+
     $stagingConnection = Database::Connection->new('staging');
     $trailsConnection = Database::Connection->new('trails');
-    $swassetConnection = Database::Connection->new('swasset');
-
-    logfile($opt_l);
-    logging_level( $cfgMgr->debugLevel );
+    $swassetConnection = Database::Connection->new('swasset'); 
+    
 
     ilog(   "starting child: loadDeltaOnly=$opt_d, applyChanges=$opt_a"
           . ", customerId=$opt_i"
