@@ -232,7 +232,7 @@ sub loadQueue {
 
         ###Upper case record values
         upperValues( \%rec );
-
+        
         ###Add to our queue hash
         $queue{ $rec{orderBy} }{ $rec{pk} }{table}  = $rec{table};
         $queue{ $rec{orderBy} }{ $rec{pk} }{id}     = $rec{id};
@@ -277,6 +277,13 @@ sub queryReconQueueByCustomerId {
             or (
                a.table=\'RECON_CUSTOMER\' 
                and a.customer_id not in ( 7200,9754,11497,12145))
+            )
+            and not exists (
+                select b.id from v_recon_queue b where
+                    a.fk = b.fk and
+                    a.table = b.table and
+                    a.action = b.action and
+                    a.id > b.id
             )
     ';
     dlog("queryReconQueueByCustomerId=$query");
