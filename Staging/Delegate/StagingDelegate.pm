@@ -663,6 +663,10 @@ sub queryHardwareData {
             shared
             nbrCoresPerChip
             nbrOfChipsMax
+            sharedProcessor
+            cloudName
+            chassisId
+            serverType
             lparId
             name
             lparCustomerId
@@ -678,19 +682,16 @@ sub queryHardwareData {
             spla
             sysplex
             internetIccFlag
-            effId
-            effProcessorCount
-            effStatus
-            effAction
-            serverType
-            sharedProcessor
-            cloudName
-            chassisId
             backupMethod
             clusterType
             vMobilRestrict
             cappedLpar
-            virtualFlag)
+            virtualFlag
+            effId
+            effProcessorCount
+            effStatus
+            effAction
+           )
     );
     my $query = '
         select
@@ -722,6 +723,7 @@ sub queryHardwareData {
             ,a.shared_processor
             ,a.cloud_name
             ,a.chassis_id
+            ,a.server_type
             ,b.id
             ,b.name
             ,b.customer_id
@@ -746,7 +748,6 @@ sub queryHardwareData {
             ,c.processor_count
             ,c.status
             ,c.action
-            ,a.server_type
         from
             hardware a
             left outer join hardware_lpar b on
