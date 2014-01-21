@@ -7,6 +7,7 @@ use Staging::OM::SoftwareSignature;
 use Scan::Delegate::ScanDelegate;
 use Staging::Delegate::StagingDelegate;
 use Scan::Delegate::SoftwareSignatureDelegate;
+use Staging::Delegate::TempSignatureTable;
 
 our @ISA = qw(Loader);
 
@@ -59,7 +60,11 @@ sub load {
         ilog('Source data prepared');
 
         ilog('Performing the delta');
-        $self->doDelta($stagingConnection);
+        if($self->SUPER::bankAccount->connectionType eq 'CONNECTED'){
+            $self->doDelta($stagingConnection);
+        }else{
+            $self->doDeltaWithTempTable($stagingConnection);
+        }
         ilog('Delta complete');
 
         ###Check if we have crossed the delete threshold
@@ -68,7 +73,11 @@ sub load {
         }
         else {
             ilog('Applying deltas');
-            $self->applyDelta($stagingConnection);
+            if($self->SUPER::bankAccount->connectionType eq 'CONNECTED'){
+               $self->applyDelta($stagingConnection);
+            }else{
+               $self->applyDeltaWithTempTable($stagingConnection);
+            }
             ilog('Deltas applied');
         }
     };
@@ -107,10 +116,12 @@ sub prepareSourceData {
     eval {
      my $list;
      my $combination;
-     ($list,$combination) = 
+     my $tempStagingTableConnection;
+     ($list,$combination,$tempStagingTableConnection) = 
                      SoftwareSignatureDelegate->getSoftwareSignatureData($connection, $self->SUPER::bankAccount, $self->loadDeltaOnly);
       $self->list($list);
       $self->scanSwActionCombination($combination);
+      $self->tempStagingTableConnection($tempStagingTableConnection);
     };
     
     if ($@) {
@@ -119,6 +130,202 @@ sub prepareSourceData {
     }
 
     dlog('End prepareSourceData method');
+}
+
+
+sub doDeltaWithTempTable{
+ 
+    my ( $self, $connection ) = @_;
+
+    dlog('Start doDelta method');
+
+    die('Cannot call method directly') if ( $self->SUPER::flag == 0 );
+
+    my $check  = $self->checkTempTable($self->tempStagingTableConnection);
+    if($check <=0){
+        wlog('temp table content is zero');
+        return;
+    }
+    dlog('temp table qty is '.$check);
+    $self->removeActionDelete($connection);
+    
+    $connection->prepareSqlQuery( Staging::Delegate::StagingDelegate->querySoftwareSignatureData() );
+
+    ###Define our fields
+    my @fields = (qw(id softwareSignatureId softwareId action path scanRecordId scanRecordAction));
+
+    ###Get the statement handle
+    my $sth = $connection->sql->{softwareSignatureData};
+
+    ###Bind our columns
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
+
+    ###Excute the query
+    $sth->execute( $self->SUPER::bankAccount->id );
+    while ( $sth->fetchrow_arrayref ) {   
+     
+        if($rec{action} eq 'DELETE' || $rec{scanRecordAction} eq 'DELETE' ) {
+            next;
+        }
+
+        $self->SUPER::incrTotalCnt();
+
+        
+
+                ###check if scan record exists
+                if (SoftwareSignatureDelegate->isSignatureExists($self->tempStagingTableConnection,$self->SUPER::bankAccount, 
+                                              $rec{softwareId},$rec{softwareSignatureId},$rec{scanRecordId} ))
+                {
+                    dlog( $rec{scanRecordId} . " scanRecordId exists in source" );
+                    
+                    my $tempTableObj = new Staging::Delegate::TempSignatureTable;
+                    $tempTableObj->softwareId($rec{softwareId});
+                    $tempTableObj->softwareSignatureId($rec{softwareSignatureId});
+                    $tempTableObj->scanRecordId($rec{scanRecordId} );
+                    $tempTableObj->bankAccount($self->SUPER::bankAccount);
+                    
+                    dlog('bank account name is:'.$tempTableObj->bankAccount->name);
+                    
+                    $tempTableObj->getByBizKey($self->tempStagingTableConnection);
+                    
+                    $tempTableObj->id($rec{id});
+                    $tempTableObj->update($self->tempStagingTableConnection);                    
+
+                    #Get all the keys even though there should only be one
+                    my $path =  $tempTableObj->path;
+                    my $scanAction= $tempTableObj->action;
+                    
+                    my $bankAccountType = $self->SUPER::bankAccount->type;
+                    if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
+                    {
+                      if( stringEqual( $rec{action}, $scanAction)||($rec{action} eq 'UPDATE' && $scanAction eq 'COMPLETE')){
+                         $tempTableObj->delete($self->tempStagingTableConnection);
+                      }
+                    }else{
+                       if($self->pathChanged($path, $rec{path})){
+                          if( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40'){
+                              dlog("Setting record to update since path has changed");
+                              $tempTableObj->action('UPDATE');
+                              $tempTableObj->update($self->tempStagingTableConnection); 
+                          }else{
+                              $tempTableObj->delete($self->tempStagingTableConnection);
+                          }
+                       }else{
+                              $tempTableObj->delete($self->tempStagingTableConnection);
+                       }
+                    }
+                }
+                else {
+                    dlog( $rec{scanRecordId} . " scanRecordId does not exist in source" );
+
+                    if ( $rec{action} eq 'COMPLETE' ) {
+                        dlog("Setting record to delete");
+                        
+                        my $tempTableObj = new Staging::Delegate::TempSignatureTable;
+                        $tempTableObj->bankAccount($self->SUPER::bankAccount);
+                         
+                        $tempTableObj->softwareId($rec{softwareId});
+                        $tempTableObj->softwareSignatureId($rec{softwareSignatureId});
+                        $tempTableObj->scanRecordId($rec{scanRecordId} );
+                        
+                        $tempTableObj->path($rec{path});
+                        $tempTableObj->id($rec{id});
+                        $tempTableObj->action('DELETE');
+                         
+                        $tempTableObj->save($self->tempStagingTableConnection);                       
+                          
+                        $self->SUPER::incrDeleteCnt();
+                        ###randomly pick one signature under this scanRecordId and softwareId and set to UPDATE.
+                        $self->setToUpdate($rec{scanRecordId},$rec{softwareId},$rec{softwareSignatureId});
+                            
+                    }
+                }
+    }  ###end of while.
+            
+}
+
+sub insertNotInSourceToTempTable{
+ 
+ my ($self,$connection,$bankAccount)=@_;
+ 
+ my $query = '
+insert into SESSION.TEMP_SIGNATURE_'.$bankAccount->name.'(SOFTWARE_ID,SOFTWARE_SIGNATURE_ID,SCAN_RECORD_ID,ACTION,PATH,ID)
+  select 
+  ss.software_id, 
+  ss.software_signature_id, 
+  sr.id,
+  \'DELETE\',
+  ss.path,
+  ss.id 
+from scan_record sr, software_signature ss 
+where 
+ sr.id  = ss.scan_record_id and 
+ sr.bank_account_id = '.$bankAccount->id.' and 
+ not exists(
+  select 1 from SESSION.TEMP_SIGNATURE_'.$bankAccount->name.' temp 
+  where temp.software_signature_id = ss.software_signature_id and 
+  temp.software_id = ss.software_id and 
+  temp.scan_record_id  = sr.id
+ )';   
+
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('insertNIS',$query);
+  my $sth = $connection->sql->{insertNIS};
+  $sth->execute(); 
+  
+}
+
+sub checkTempTable{
+ 
+ dlog('in isSignatureExists method');
+ my ($self,$connection)=@_;
+ 
+ my $query = 'select count(*) from SESSION.TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name;
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('tempCount',$query);
+  my @fields = (qw(qty));
+  my $sth = $connection->sql->{tempCount};
+  my %rec;
+     $sth->bind_columns( map { \$rec{$_} } @fields );
+  $sth->execute(); 
+  $sth->fetchrow_arrayref;
+  
+  dlog('end isSignatureExists method');
+  
+  return $rec{qty};  
+}
+
+
+sub removeActionDelete{
+ dlog('start removeActionDelete');
+ my ($self,$connection)=@_; 
+ my $query = 'select
+        software_signature_id, 
+        scan_record_id, 
+        software_id 
+      from scan_record sr, software_signature ss
+      where 
+        sr.id  = ss.scan_record_id 
+        and (ss.action  = \'DELETE\' or sr.action = \'DELETE\') 
+        and sr.bank_account_id  = ?';
+      
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('queryDelete',$query);
+  my @fields = (qw(softwareSignatureId scanRecordId softwareId));
+  my $sth = $connection->sql->{queryDelete};
+  my %rec;
+  $sth->bind_columns( map { \$rec{$_} } @fields );
+  $sth->execute($self->SUPER::bankAccount->id); 
+  while ( $sth->fetchrow_arrayref ) {
+      SoftwareSignatureDelegate->deleteSignatureTemp($self->tempStagingTableConnection, $self->SUPER::bankAccount, 
+                                                       $rec{softwareId}, $rec{softwareSignatureId},$rec{scanRecordId});
+      dlog("deleted from temp table softwareSignatureId=$rec{softwareSignatureId}, softwareId=$rec{softwareId}, scanRecordId=$rec{scanRecordId}");                                                       
+  }
+  
+  dlog('end removeActionDelete');
 }
 
 sub doDelta {
@@ -347,6 +554,73 @@ sub pathChanged{
    }
 }
 
+sub applyDeltaWithTempTable {
+    my ( $self, $connection ) = @_;
+
+    dlog('Start applyDelta method');
+
+    die('Cannot call method directly') if ( !$self->flag );
+
+    ###TODO Need to discuss how to handle
+    if ( $self->SUPER::applyChanges == 0 ) {
+        dlog('Skipping apply per argument');
+        return;
+    }
+
+    my $check  = $self->checkTempTable($self->tempStagingTableConnection);
+    if($check <=0){
+        wlog('temp table content is zero');
+        return;
+    }
+    dlog('temp table qty is '.$check);
+    
+    ###Get a cndb connection
+    my $tempTableConnection = $self->tempStagingTableConnection;
+
+    my $query = 'select 
+    software_id, 
+    software_signature_id, 
+    scan_record_id, 
+    action, 
+    id, 
+    path
+    from SESSION.TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name;
+
+    dlog('query='.$query);
+    $tempTableConnection->prepareSqlQuery('loopTemp',$query);
+    my @fields = (qw(softwareId softwareSignatureId scanRecordId action id path));
+    my $sth = $tempTableConnection->sql->{loopTemp};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
+    $sth->execute();
+    while( $sth->fetchrow_arrayref ) {
+      
+         dlog("Applying id=$rec{id}");
+         my $ss = new Staging::OM::SoftwareSignature();
+         $ss->id($rec{id});
+         $ss->scanRecordId($rec{scanRecordId});
+         $ss->softwareSignatureId($rec{softwareSignatureId});
+         $ss->softwareId($rec{softwareId});
+         $ss->path($rec{path});
+         $ss->action($rec{action});
+         
+         
+         $ss->id(undef) if $ss->id == 0;
+         $ss->path(undef) if $ss->path eq 'null';
+
+         dlog( $ss->toString );
+         $ss->save($connection);
+         $self->SUPER::incrUpdateCnt() if($ss->action eq 'UPDATE');
+         $self->addToCount( 'STAGING', 'SIGNATURE', 'STATUS_' . $ss->action );
+    }
+    
+    $sth->finish;
+    $tempTableConnection->disconnect;
+
+    dlog('End applyDelta method');
+}
+
+
 sub applyDelta {
     my ( $self, $connection ) = @_;
 
@@ -487,6 +761,12 @@ sub scanSwActionCombination {
     my ( $self, $value ) = @_;
     $self->{_scanSwActionCombination} = $value if defined($value);
     return ( $self->{_scanSwActionCombination} );
+}
+
+sub tempStagingTableConnection {
+    my ( $self, $value ) = @_;
+    $self->{_tempStagingTableConnection} = $value if defined($value);
+    return ( $self->{_tempStagingTableConnection} );
 }
 1;
 

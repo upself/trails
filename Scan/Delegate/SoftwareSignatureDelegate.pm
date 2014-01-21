@@ -56,6 +56,9 @@ sub getDisconnectedSoftwareSignatureData {
 
     my %signatureList;
     my $scanSoftwareActionCombination = undef;
+    
+    my $tempStagingTableConnection = Database::Connection->new('staging');  
+    $self->createTempTable($tempStagingTableConnection, $bankAccount);
 
     if ($fileToProcess) {
 
@@ -78,13 +81,14 @@ sub getDisconnectedSoftwareSignatureData {
             
         $scanSoftwareActionCombination = $self->initScanSoftwareActionCombination($bankAccount)
           if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' );
+          
             
         while ( $gz->gzreadline($line) > 0 ) {
             my $status = $tsv->parse($line);
 
             my $index = 0;
             my %rec   = map { $fields[ $index++ ] => $_ } $tsv->fields();
-
+            
             cleanValues( \%rec );
             upperValues( \%rec );
 
@@ -109,12 +113,9 @@ sub getDisconnectedSoftwareSignatureData {
             if ( !defined $rec{path} || $rec{path} eq '' ) {
                 $rec{path} = "null";
             }
-
-            if ( !exists $signatureList{$softwareId}{$softwareSignatureId}
-                { $scanMap->{ $rec{computerId} } } )
-            {
-             
-                my $action = 'UPDATE';
+            
+            if(!$self->isSignatureExists($tempStagingTableConnection,$bankAccount, $softwareId,$softwareSignatureId,$scanMap->{ $rec{computerId} })){
+               my $action = 'UPDATE';
                 if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' ){
                    my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
                    if($scanSoftwareActionCombination->{$key.'|UPDATE'}||
@@ -128,13 +129,19 @@ sub getDisconnectedSoftwareSignatureData {
                   }
                 }
                 
-                $signatureList{$softwareId}{$softwareSignatureId}
-                    { $scanMap->{ $rec{computerId} } }{'action'} = $action;
-                $signatureList{$softwareId}{$softwareSignatureId}
-                    { $scanMap->{ $rec{computerId} } }{'id'} = 0;
-                $signatureList{$softwareId}{$softwareSignatureId}
-                    { $scanMap->{ $rec{computerId} } }{'path'} = $rec{path};
+                dlog('before insert into temp table');                
+                $self->insertIntoSignatureTemp($tempStagingTableConnection, $bankAccount,
+                                               $softwareId, 
+                                               $softwareSignatureId,
+                                               $scanMap->{ $rec{computerId} }, 
+                                               $action,
+                                               $rec{path},
+                                               0);
+               dlog('after insert into temp table');
             }
+            
+
+            
         }
         die "Error reading from $fileToProcess: $gzerrno"
             . ( $gzerrno + 0 ) . "\n"
@@ -145,7 +152,121 @@ sub getDisconnectedSoftwareSignatureData {
         dlog("no $filePart to process");
     }
 
-    return (\%signatureList, $scanSoftwareActionCombination);
+    return (\%signatureList, $scanSoftwareActionCombination,$tempStagingTableConnection);
+}
+
+sub createTempTable{
+ 
+ my ($self,$connection,$bankAccount)=@_;
+ 
+ 
+ my $query = '
+  DECLARE GLOBAL TEMPORARY TABLE SESSION.TEMP_SIGNATURE_'.$bankAccount->name.'
+  (SOFTWARE_ID BIGINT  NOT NULL,
+   SOFTWARE_SIGNATURE_ID BIGINT NOT NULL,
+   SCAN_RECORD_ID BIGINT NOT NULL,
+   ACTION VARCHAR(32),
+   PATH VARCHAR(255),
+   ID BIGINT)
+   ON COMMIT PRESERVE ROWS
+   NOT LOGGED ON ROLLBACK DELETE ROWS';
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('createTempTable',$query);
+  my $sth = $connection->sql->{createTempTable};
+  $sth->execute(); 
+  
+}
+
+
+sub isSignatureExists{
+ dlog('in isSignatureExists method');
+ my ($self,$connection, $bankAccount, $softwareId,$softwareSignatureId,$scanRecordId)=@_;
+ 
+ my $query = '
+ select count(*) from SESSION.TEMP_SIGNATURE_'.$bankAccount->name.'
+ where software_id = ?
+ and software_signature_id =?
+ and scan_record_id = ? ';
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('isSigExists',$query);
+  my @fields = (qw(qty));
+  my $sth = $connection->sql->{isSigExists};
+  my %rec;
+     $sth->bind_columns( map { \$rec{$_} } @fields );
+  $sth->execute($softwareId,$softwareSignatureId,$scanRecordId); 
+  $sth->fetchrow_arrayref;
+  
+  dlog('end isSignatureExists method');
+  
+  if($rec{qty}>0){
+   return 1;
+  }
+  
+  return 0;
+}
+
+
+sub insertIntoSignatureTemp{
+ 
+ my ($self,$connection,$bankAccount, $softwareId,$softwareSignatureId,$scanRecordId, $action, $path, $id)=@_;
+ 
+ my $query = '
+ insert into SESSION.TEMP_SIGNATURE_'.$bankAccount->name.' (software_id, software_signature_id, scan_record_id, action, path, id)
+ values(?,?,?,?,?,?)';
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('insertSigTemp',$query);
+  my $sth = $connection->sql->{insertSigTemp};
+  $sth->execute($softwareId,$softwareSignatureId,$scanRecordId, $action, $path, $id); 
+  
+}
+
+sub deleteSignatureTemp{
+ 
+ my ($self,$connection,$bankAccount, $softwareId,$softwareSignatureId,$scanRecordId)=@_;
+ 
+ my $query = '
+ delete from SESSION.TEMP_SIGNATURE_'.$bankAccount->name.' where software_id=? and software_signature_id=? and scan_record_id=?';
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('deleteTemp',$query);
+  my $sth = $connection->sql->{deleteTemp};
+  $sth->execute($softwareId,$softwareSignatureId,$scanRecordId); 
+  
+}
+
+sub insertNotInSourceToTempTable{
+ 
+ my ($self,$connection,$bankAccount)=@_;
+ 
+ my $query = '
+insert into SESSION.TEMP_SIGNATURE_'.$bankAccount->name.'(SOFTWARE_ID,SOFTWARE_SIGNATURE_ID,SCAN_RECORD_ID,ACTION,PATH,ID)
+  select 
+  ss.software_id, 
+  ss.software_signature_id, 
+  sr.id,
+  \'DELETE\',
+  ss.path,
+  ss.id 
+from scan_record sr, software_signature ss 
+where 
+ sr.id  = ss.scan_record_id and 
+ sr.bank_account_id = '.$bankAccount->id.' and 
+ not exists(
+  select 1 from SESSION.TEMP_SIGNATURE_'.$bankAccount->name.' temp 
+  where temp.software_signature_id = ss.software_signature_id and 
+  temp.software_id = ss.software_id and 
+  temp.scan_record_id  = sr.id
+ )';   
+
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('insertNIS',$query);
+  my $sth = $connection->sql->{insertNIS};
+  $sth->execute(); 
+  
 }
 
 
@@ -188,8 +309,6 @@ with ur';
          my $key =   $rec{scanRecordId}.'|'.$rec{softwareId}.'|'.$rec{action};
          $existsSignatures{$key}=1;
      }
-     dlog('key=3571485|216511|UPDATE value='.$existsSignatures{'3571485|216511|UPDATE'});
-     dlog('key=3571485|216511|COMPLETE value='.$existsSignatures{'3571485|216511|COMPLETE'});
      
      return \%existsSignatures;
 }
@@ -305,7 +424,7 @@ sub getConnectedSoftwareSignatureData {
     $sth->finish;
 
     ###Return the lists
-    return ( \%signatureList,undef );
+    return ( \%signatureList,undef, undef);
 }
 
 sub buildSoftwareSignature {
