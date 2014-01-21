@@ -278,8 +278,8 @@ EOL
         my $prop = $props{$i}->{"name"};
         next if $prop eq "id";
         next if $prop eq "remoteUser";
-        next if $prop eq "recordTime";
-        next if $prop eq "creationTime";
+        next if ($prop eq "recordTime" && $class!~ /^Alert.*History$/);
+        next if ($prop eq "creationTime" && $class!~ /^Alert.*History$/);
         my $sqlName = $props{$i}->{"sql-name"};
         next if $sqlName eq "null";
         my $type = $props{$i}->{"type"};
@@ -321,7 +321,7 @@ EOL
             next if $sqlName eq "null";
             next if $sqlKey  eq "true";
             next if $prop    eq "remoteUser";
-            next if $prop    eq "recordTime";
+            next if ($prop    eq "recordTime" && $class!~ /^Alert.*History$/);
             $prop = $prop . "->id" if $type eq "object";
             my $s = "\$self->$prop";
             $s = "," . $s unless $flag == 0;
@@ -406,8 +406,8 @@ EOL
               if $default eq 'undef';
             $s = "\\\'" . $default . "\\\'";
         }
-        $s = "CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ m/History/i);
-        $s = "CURRENT TIMESTAMP" if ($prop eq "creationTime" && $class!~ m/History/i);
+        $s = "CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ /^Alert.*History$/);
+        $s = "CURRENT TIMESTAMP" if ($prop eq "creationTime" && $class!~ /^Alert.*History$/);
         $s = "," . $s unless $flag == 0;
         $flag = 1;
         print <<EOL;
@@ -449,7 +449,7 @@ EOL
                   if $default eq 'undef';
                 $s = "$sqlName = \\\'" . $default . "\\\'";
             }
-            $s = "$sqlName = CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ m/History/i);
+            $s = "$sqlName = CURRENT TIMESTAMP" if ($prop eq "recordTime" && $class!~ /^Alert.*History$/);
             $s = "," . $s unless $flag == 0;
             $flag = 1;
             print <<EOL;

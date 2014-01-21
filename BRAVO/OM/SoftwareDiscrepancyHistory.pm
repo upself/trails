@@ -189,7 +189,7 @@ sub queryInsert {
             ,?
             ,?
             ,\'STAGING\'
-            ,?
+            ,CURRENT TIMESTAMP
         ))
     ';
     return ('insertSoftwareDiscrepancyHistory', $query);
@@ -203,7 +203,7 @@ sub queryUpdate {
             ,action = ?
             ,comment = ?
             ,remote_user = \'STAGING\'
-            ,record_time = ?
+            ,record_time = CURRENT TIMESTAMP
         where
             id = ?
     ';

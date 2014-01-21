@@ -219,7 +219,7 @@ sub queryInsert {
             ,?
             ,?
             ,\'ATP\'
-            ,?
+            ,CURRENT TIMESTAMP
         ))
     ';
     return ('insertSoftwareLparEffHistory', $query);
@@ -234,7 +234,7 @@ sub queryUpdate {
             ,status = ?
             ,action = ?
             ,remote_user = \'ATP\'
-            ,record_time = ?
+            ,record_time = CURRENT TIMESTAMP
         where
             id = ?
     ';

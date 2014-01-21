@@ -180,6 +180,8 @@ sub save {
             $self->alertExpiredMaintId
             ,$self->comments
             ,$self->open
+            ,$self->creationTime
+            ,$self->recordTime
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -193,6 +195,7 @@ sub save {
             ,$self->comments
             ,$self->open
             ,$self->creationTime
+            ,$self->recordTime
             ,$self->id
         );
         $sth->finish;

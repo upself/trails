@@ -251,6 +251,8 @@ sub save {
             ,$self->alertTypeId
             ,$self->alertCauseId
             ,$self->open
+            ,$self->creationTime
+            ,$self->recordTime
             ,$self->assignee
             ,$self->comment
         );
@@ -268,6 +270,7 @@ sub save {
             ,$self->alertCauseId
             ,$self->open
             ,$self->creationTime
+            ,$self->recordTime
             ,$self->assignee
             ,$self->comment
             ,$self->id
