@@ -65,6 +65,13 @@
 ###################################################################################################################################################################################################
 #                                            Phase 8A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A'
 # 2013-12-16  Liu Hai(Larry) 1.8.3           HealthCheck and Monitoring Service Component - Phase 8A: Design and Develop Self Healing Business Logic to automatically fix Bravo/Trails Web Application down case
+###################################################################################################################################################################################################
+#                                            Phase 9 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 9'
+# 2014-01-15  Liu Hai(Larry) 1.9.0           HealthCheck and Monitoring Service Component - Phase 9: Design and Develop Database Monitoring - Database Exception Status Check Basic Architecture and Business Logic 
+# 2014-01-21  Liu Hai(Larry) 1.9.1           HealthCheck and Monitoring Service Component - Phase 9: The following new features have been added into this phase
+#                                                                                                    1) Database Exception Code List defined to notify DBA team Support
+#                                                                                                    2) Monitoring Database Exclusion Duration Time Support
+#                                                                                                    3) Database Exception Email Switch for DBA Team Support 
 #                                                                                                    
 #
 
@@ -242,6 +249,9 @@ my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING  = "CNDB_CUSTOMER_TME_OBJECT_ID_MONIT
 my $TRAILSST_DB_APPLY_GAP_MONITORING        = "TRAILSST_DB_APPLY_GAP_MONITORING";#EVENT_TYPE_ID = 10
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_2      = "TRAILSRP_DB_APPLY_GAP_MONITORING_2";#EVENT_TYPE_ID = 11
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
+my $DB_EXCEPTION_STATUS_CHECK_MONITORING    = "DB_EXCEPTION_STATUS_CHECK_MONITORING";#EVENT_TYPE_ID = 13
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
 #Application Monitoring - Event Group Name
 my $APPLICATION_MONITORING                  = "APPLICATION_MONITORING";#EVENT_GROUP_ID = 4
@@ -369,7 +379,7 @@ my $hme_error_mail_message;
 my $WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX        = 0;#For example: 'Bravo'
 my $WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX    = 1;#For example: '15' seconds - CONNECT_TIMEOUT stands for the max http request time
 my $WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX           = 2;#For example: '20' seconds - MAX_TIME stands for the max transfer time
-my $WEBAPP_CHECK_CONFIG_VALUE_URL                      = 3;#For example: 'http://bravo.boulder.ibm.com/BRAVO/home.do'
+my $WEBAPP_CHECK_CONFIG_VALUE_URL_INDEX                = 3;#For example: 'http://bravo.boulder.ibm.com/BRAVO/home.do'
 
 #Web Application CURL Unix Command
 my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
@@ -401,6 +411,25 @@ my $TRAILS_WEB_APP = "Trails";
 
 my $PWD_UNIX_COMMAND = "pwd";
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX                   = 0;#For example: 'TRAILS'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX               = 1;#For example: 'TRAILS'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX                  = 2;#For example: 'eaadmin'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX                = 3;#For example: 'Gr77nday'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_LOCATED_SERVER_INDEX          = 4;#For example: 'dst20lp05.boulder.ibm.com'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_LIST_INDEX   = 5;#For example: 'liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_SWITCH_INDEX = 6;#For example: 'Y' - means turn no the DBA notify email function or 'N' - means turn off the DBA notify email function
+
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_TURN_ON      = "Y";#Turn on DBA Team notify email flag
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_TURN_OFF     = "N";#Turn off DBA Team notify email flag
+
+my $DB_CONNECTION_COMMAND = "db2 connect to \@1 user \@2 using \@3";
+
+my $DB_CONNECTION_SUCCESS_KEY_MESSAGE = "Database Connection Information";
+
+my %WEEKDAY_HASH = ("Monday"=>1,"Tuesday"=>2,"Wednesday"=>3,"Thursday"=>4,"Friday"=>5,"Saturday"=>6,"Sunday"=>7);
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
 
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
@@ -490,6 +519,7 @@ sub loadEventMetaData{
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","10","TRAILSST_DB_APPLY_GAP_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","11","TRAILSRP_DB_APPLY_GAP_MONITORING_2")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
   #push @eventMetaRecords, [("4","APPLICATION_MONITORING","12","WEBAPP_RUNNING_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8
+  #push @eventMetaRecords, [("3","DATABASE_MONITORING","13","DB_EXCEPTION_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
 }
 
 #This method is used to load event rule and email information definition
@@ -748,7 +778,14 @@ sub eventLogicProcess{
 	  #So set 0 for eventValue var
 	  eventRuleCheck($groupName,$eventName,0);
    } 
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End 
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
+   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
+  	  #For Event Type "DB_EXCEPTION_STATUS_CHECK_MONITORING",the eventValue value is not needed.
+	  #So set 0 for eventValue var
+	  eventRuleCheck($groupName,$eventName,0);
+   } 
+   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
    #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
    #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
    #Add 'New Event Group' + 'New Event Type' business logic here
@@ -2147,7 +2184,7 @@ sub eventRuleCheck{
 				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - maxTime: {$maxTime}\n";
 				   $processedCURL =~ s/\@maxTime/$maxTime/g;#replace @maxTime with maxTime value - for example: 20
 				  
-				   my $url = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_URL];
+				   my $url = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_URL_INDEX];
 				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - url: {$url}\n";
                    $processedCURL =~ s/\@url/$url/g;#replace @url with URL value - for example: http://bravo.boulder.ibm.com/BRAVO/home.do
 
@@ -2331,6 +2368,207 @@ sub eventRuleCheck{
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 		     }#end elsif(($triggerEventGroup eq $APPLICATION_MONITORING && $triggerEventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
              #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
+			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
+             elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
+				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+				 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
+				 print LOG "Database Exception Status Check Monitoring - The Server Mode: {$serverMode}\n";
+			     my $monitoringDBsDefinitionList = $metaRuleParameter2;#var used to store monitoring databases definition list - for example: 'TRAILS~TRAILSPD~eaadmin~Gr77nday~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'STAGING~STAGING~eaadmin~apr03db2~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Databases Definition List: {$monitoringDBsDefinitionList}\n";
+				 my $monitoringDBExceptionCodeList = $metaRuleParameter3;#var used to store monitoring database exception code list to be notified to DBA team - for example: 'SQL1032N'SQL30081N'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Code List: {$monitoringDBExceptionCodeList}\n";
+				 my @monitoringDBExceptionCodeArray = split(/\'/,$monitoringDBExceptionCodeList);#array used to store monitoring database exception code array to be notified to DBA team - for example: ['SQL1032N','SQL30081N']
+                 my $monitoringDBExclusionStartTime = $metaRuleParameter4;#var used to store monitoring database exclusion start time - for example: 'Sun'03'
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion Start Time: {$monitoringDBExclusionStartTime}\n";
+                 my $monitoringDBExclusionEndTime = $metaRuleParameter5;#var used to store monitoring database exclusion end time - for example: 'Sun'10'
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion End Time: {$monitoringDBExclusionEndTime}\n";
+				 my $monitoringDBExceptionEmailTitle = $metaRuleParameter6;#var used to store monitoring database exception email title - for example: 'The Database Exception Email for Database @2 on server @3'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Email Title: {$monitoringDBExceptionEmailTitle}\n";
+                 my $monitoringDBExceptionEmailContent = $metaRuleParameter7;#var used to store monitoring database exception email content - for example: 'The Database @2 on server @3 has exception: @4'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Email Content: {$monitoringDBExceptionEmailContent}\n";
+	 
+				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Database Exception Status Check on @1 Server'
+                 my $processedRuleMessage;#var used to store processed rule message - for example: 'The Database @2 on server @3 has exception: @4'
+				 my $processedRuleHandlingInstructionCode;#var used to store processed rule handling instruction code - for example: 'E-DBM-DEC-001'
+                 my @monitoringDBsErrorMessageArray = ();#array used to store monitoring databases Error Messages - For example: 'The Database @2 on server @3 has exception: @4'
+				 my $monitoringDBsErrorMessageArrayCnt;#var used to store the count of monitoring databases Error Messages
+				 my $monitoringDBsBypassFlag = $FALSE;#var used to store the monitoring databases bypass flag
+
+                 $processedRuleTitle = $metaRuleTitle;
+				 $processedRuleTitle =~ s/\@1/$SERVER_MODE/g;
+			     $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                 
+                 my @monitoringDBExclusionStartTimeArray = split(/\'/,$monitoringDBExclusionStartTime);
+                 my $monitoringDBExclusionStartWeekday = trim($monitoringDBExclusionStartTimeArray[0]);#For example: 'Sunday'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion Start Weekday: {$monitoringDBExclusionStartWeekday}\n";
+                 my $monitoringDBExclusionStartWeekdayNumber = getCurrentWeekdayNumber($monitoringDBExclusionStartWeekday);#For example: 7 = Sunday
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion Start Weekday Number: {$monitoringDBExclusionStartWeekdayNumber}\n";
+                 my $monitoringDBExclusionStartHour = trim($monitoringDBExclusionStartTimeArray[1]);#For example: '03'
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion Start Hour: {$monitoringDBExclusionStartHour}\n";
+
+                 my @monitoringDBExclusionEndTimeArray = split(/\'/,$monitoringDBExclusionEndTime);
+                 my $monitoringDBExclusionEndWeekday = trim($monitoringDBExclusionEndTimeArray[0]);#For example: 'Sunday'
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion End Weekday: {$monitoringDBExclusionEndWeekday}\n";
+				 my $monitoringDBExclusionEndWeekdayNumber = getCurrentWeekdayNumber($monitoringDBExclusionEndWeekday);#For example: 7 = Sunday
+				 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion End Weekday Number: {$monitoringDBExclusionEndWeekdayNumber}\n";
+                 my $monitoringDBExclusionEndHour = trim($monitoringDBExclusionEndTimeArray[1]);#For example: '10'
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exclusion End Hour: {$monitoringDBExclusionEndHour}\n";
+                 
+				 my $dateObject = &getTime();#Get the hash address of current system time object
+				 my $currentWeekday = $dateObject->{wday};
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Current Weekday: {$currentWeekday}\n";
+				 my $currentWeekdayNumber = getCurrentWeekdayNumber($currentWeekday);
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Current Weekday Number: {$currentWeekdayNumber}\n";
+                 my $currentHour = $dateObject->{hour};
+                 print LOG "Database Exception Status Check Monitoring - The Monitoring Database Current Hour: {$currentHour}\n";
+				 
+                 #judge if the current time is in the monitoring exclusion duratime time
+                 if(($currentWeekdayNumber>$monitoringDBExclusionStartWeekdayNumber)&&($currentWeekdayNumber<$monitoringDBExclusionEndWeekdayNumber)){
+				   $monitoringDBsBypassFlag = $TRUE;
+				 }
+				 elsif(($monitoringDBExclusionStartWeekdayNumber==$monitoringDBExclusionEndWeekdayNumber)&&($currentWeekdayNumber==$monitoringDBExclusionStartWeekdayNumber)&&($currentHour ge $monitoringDBExclusionStartHour)&&($currentHour le $monitoringDBExclusionEndHour)){
+				   $monitoringDBsBypassFlag = $TRUE;
+				 }
+				 elsif(($currentWeekdayNumber==$monitoringDBExclusionStartWeekdayNumber)&&($currentHour ge $monitoringDBExclusionStartHour)&&($currentWeekdayNumber<$monitoringDBExclusionEndWeekdayNumber)){
+                   $monitoringDBsBypassFlag = $TRUE;
+				 }
+				 elsif(($currentWeekdayNumber==$monitoringDBExclusionEndWeekdayNumber)&&($currentHour le $monitoringDBExclusionEndHour)&&($currentWeekdayNumber>$monitoringDBExclusionStartWeekdayNumber)){
+				   $monitoringDBsBypassFlag = $TRUE;
+				 }
+
+			     if($monitoringDBsBypassFlag == $FALSE)
+				 {
+                   print LOG "Database Exception Status Check Monitoring - The Current Time {$currentWeekday $currentHour} is not in the monitoring exclusion duration time {$monitoringDBExclusionStartWeekday $monitoringDBExclusionStartHour,$monitoringDBExclusionEndWeekday $monitoringDBExclusionEndHour}\n";
+                   print LOG "Database Exception Status Check Monitoring - The Database Monitoring Operation should be done.\n";
+
+				   #set monitoring db profile
+				   my $monitoringDBProfile;#var used to store db monitoring profile
+                   if($serverMode eq $TAP){#TAP DB Profile
+				     $monitoringDBProfile = "/db2/tap/sqllib/db2profile";  	    
+				   }#end if($serverMode eq $TAP)
+				   elsif($serverMode eq $TAP2){#TAP2 DB Profile 
+				     $monitoringDBProfile = "/home/tap/sqllib/db2profile";   
+				   }#end elsif($serverMode eq $TAP2)
+                   print LOG "Database Exception Status Check Monitoring - The Monitoring Database Profile: {$monitoringDBProfile}\n"; 
+             
+                   #1.set db2profile
+                   `. $monitoringDBProfile`;
+                   print LOG "Database Exception Status Check Monitoring - The Monitoring Database Profile {$monitoringDBProfile} has been set.\n"; 
+
+				   my @monitoringDBsDefinitionArray = split(/\'/,$monitoringDBsDefinitionList);
+				   my $monitoringDBDefinition;#var used to store monitoring database definition - for example: 'TRAILS~TRAILSPD~eaadmin~Gr77nday~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
+				   foreach $monitoringDBDefinition(@monitoringDBsDefinitionArray){
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Definition: {$monitoringDBDefinition}\n";
+				     my @monitoringDBDefinitionArray = split(/\~/,$monitoringDBDefinition);
+				     my $monitoringDBAlias = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX]);#For example: 'TRAILS'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Alias: {$monitoringDBAlias}\n";
+				     my $monitoringDBRealName = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX]);#For example: 'TRAILSPD'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Real Name: {$monitoringDBRealName}\n";
+				     my $monitoringDBUserId = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX]);#For example: 'eaadmin'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database UserId: {$monitoringDBUserId}\n";
+				     my $monitoringDBPassword = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX]);#For example: 'Gr77nday'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Password: {$monitoringDBPassword}\n";
+				     my $monitoringDBLocatedServer = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_LOCATED_SERVER_INDEX]);#For example: 'dst20lp05.boulder.ibm.com'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Located Server: {$monitoringDBLocatedServer}\n";
+				     my $monitoringDBDBANotifyEmailList = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_LIST_INDEX]);#For example: 'liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
+				     print LOG "Database Exception Status Check Monitoring - The Monitoring Database DBA Notify Email List: {$monitoringDBDBANotifyEmailList}\n";
+				     my @monitoringDBDBANotifyEmailArray = split(/\,/,$monitoringDBDBANotifyEmailList);
+				     foreach my $monitoringDBDBANotifyEmail(@monitoringDBDBANotifyEmailArray){
+                       print LOG "Database Exception Status Check Monitoring - The Monitoring Database DBA Notify Email: {$monitoringDBDBANotifyEmail}\n";
+				     }#end foreach my $monitoringDBDBANotifyEmail(@monitoringDBDBANotifyEmailArray)
+                     my $monitoringDBDBANotifyEmailSwitch = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_SWITCH_INDEX]);#For example: 'Y' - means turn no the DBA notify email function or 'N' - means turn off the DBA notify email function
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database DBA Notify Email Switch: {$monitoringDBDBANotifyEmailSwitch}\n";
+
+				     my $monitoringDBConnectionProcessedCommand = $DB_CONNECTION_COMMAND;
+                     $monitoringDBConnectionProcessedCommand =~ s/\@1/$monitoringDBAlias/g;#replace #1 with monitoring database alias - for example: 'TRAILS'
+                     $monitoringDBConnectionProcessedCommand =~ s/\@2/$monitoringDBUserId/g;#replace #2 with monitoring database userid - for example: 'eaadmin'
+				     $monitoringDBConnectionProcessedCommand =~ s/\@3/$monitoringDBPassword/g;#replace #3 with monitoring database password - for example: 'Gr77nday'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Connection Processed Command: {$monitoringDBConnectionProcessedCommand}\n";
+				   
+                     #2.connect to target monitoring database
+				     my $monitoringDBConnReturnMsg = `$monitoringDBConnectionProcessedCommand`;
+				     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Connection Return Message: {$monitoringDBConnReturnMsg}\n";
+                   
+				     if(index($monitoringDBConnReturnMsg,$DB_CONNECTION_SUCCESS_KEY_MESSAGE)>-1){#DB Connection Success
+                       print LOG "Database Exception Status Check Monitoring - The Monitoring Database {$monitoringDBAlias} has been connected successfully.\n"; 
+				     }#end if(index($monitoringDBConnReturnMsg,$DB_CONNECTION_SUCCESS_KEY_MESSAGE)>-1)
+				     else{#DB Connection Failure
+					   print LOG "Database Exception Status Check Monitoring - The Monitoring Database {$monitoringDBAlias} has been connected failed.\n";
+                       $processedRuleMessage = $metaRuleMessage;#For example: 'The Database @2 on server @3 has exception: @4'
+                       $processedRuleMessage =~ s/\@2/$monitoringDBRealName/g;#replace @2 with monitoring database real name - for example: 'TRAILS'
+                       $processedRuleMessage =~ s/\@3/$monitoringDBLocatedServer/g;#replace @3 with monitoring database located server - for example: 'dst20lp05.boulder.ibm.com'
+					   $processedRuleMessage =~ s/\@4/$monitoringDBConnReturnMsg/g;#replace @4 with monitoring database connection return message
+                       push @monitoringDBsErrorMessageArray,$processedRuleMessage;#append event rule message into email message array
+
+					   #judge if the DB exception is the one which defined to notify DBA team
+					   foreach my $monitoringDBExceptionCode(@monitoringDBExceptionCodeArray){
+						   print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Code {$monitoringDBExceptionCode}\n";
+					     if(index($monitoringDBConnReturnMsg,$monitoringDBExceptionCode)>-1){
+						   print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Code {$monitoringDBExceptionCode} has been included into the Database Connection Return Message: {$monitoringDBConnReturnMsg}\n";
+						   print LOG "Database Exception Status Check Monitoring - The Monitoring Database Exception Code {$monitoringDBExceptionCode} is one Database Exception which should be notified to DBA team.\n";
+						  
+						   #Send Database Exception Email to DBA team related persons
+						   my $processMonitoringDBExceptionEmailTitle = $monitoringDBExceptionEmailTitle;#For example: 'The Database Exception Email for Database @2 on server @3'
+                           $processMonitoringDBExceptionEmailTitle =~ s/\@2/$monitoringDBRealName/g;#replace @2 with monitoring database real name - for example: 'TRAILS'
+                           $processMonitoringDBExceptionEmailTitle =~ s/\@3/$monitoringDBLocatedServer/g;#replace @3 with monitoring database located server - for example: 'dst20lp05.boulder.ibm.com'
+                           print LOG "Database Exception Status Check Monitoring - The Processed Monitoring Database Exception Email Title {$processMonitoringDBExceptionEmailTitle}\n";
+                           
+                           my $processMonitoringDBExceptionEmailContent = $monitoringDBExceptionEmailContent;#For example: 'The Database @2 on server @3 has exception: @4'
+						   $processMonitoringDBExceptionEmailContent =~ s/\@2/$monitoringDBRealName/g;#replace @2 with monitoring database real name - for example: 'TRAILS'
+                           $processMonitoringDBExceptionEmailContent =~ s/\@3/$monitoringDBLocatedServer/g;#replace @3 with monitoring database located server - for example: 'dst20lp05.boulder.ibm.com'
+						   $processMonitoringDBExceptionEmailContent =~ s/\@4/$monitoringDBConnReturnMsg/g;#replace @4 with monitoring database connection return message
+                           print LOG "Database Exception Status Check Monitoring - The Processed Monitoring Database Exception Email Content {$processMonitoringDBExceptionEmailContent}\n";
+                           
+                           my $processMonitoringDBExceptionEmailFinalContent = "";
+						   $processMonitoringDBExceptionEmailFinalContent.="-----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+			               $processMonitoringDBExceptionEmailFinalContent.="$processMonitoringDBExceptionEmailContent\n";
+                           $processMonitoringDBExceptionEmailFinalContent.="-----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                           
+						   if($monitoringDBDBANotifyEmailSwitch eq $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_TURN_ON){#Email Notify Funciton has been turn on
+							 print LOG "Database Exception Status Check Monitoring - The Database Exception Email Notify Function has been turn on for DBA team.\n";
+							 sendEmail($processMonitoringDBExceptionEmailTitle,$monitoringDBDBANotifyEmailList,"",$processMonitoringDBExceptionEmailFinalContent);
+						     print LOG "Database Exception Status Check Monitoring - The Database Exception Email for Database {$monitoringDBRealName} on Server {$monitoringDBLocatedServer} has been sent to {$monitoringDBDBANotifyEmailList} DBA Team Related Persons Successfully.\n";
+						   }#end if($monitoringDBDBANotifyEmailSwitch eq $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_TURN_ON)
+						   else{#Email Notify Funciton has been turn off
+						     print LOG "Database Exception Status Check Monitoring - The Database Exception Email Notify Function has been turn off. So the Database Exception Notify Email has not been sent for DBA team.\n";  
+						   }#end else
+						 
+						   last;
+						 }#end if(index($monitoringDBConnReturnMsg,$DB_CONNECTION_SUCCESS_KEY_MESSAGE)>-1)
+					   }
+                        
+				     }#end else
+                   }#end foreach $monitoringDBDefinition(@monitoringDBsDefinitionArray)
+
+                   #Calculate the count of webApp Error Message
+				   $monitoringDBsErrorMessageArrayCnt = scalar(@monitoringDBsErrorMessageArray);
+
+                   #Generate the alert email content when $monitoringDBsErrorMessageArrayCnt>0  
+				   if($monitoringDBsErrorMessageArrayCnt>0){
+				   
+                     $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+				     $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				     print LOG "Database Exception Status Check Monitoring - The Processed Rule Title: {$processedRuleTitle}\n";
+                   
+         		     $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				     print LOG "Database Exception Status Check Monitoring - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n"; 
+				   
+				     foreach $processedRuleMessage (@monitoringDBsErrorMessageArray){
+                       $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage";
+                       print LOG "Database Exception Status Check Monitoring - The Processed Rule Message: {$processedRuleMessage}\n";
+				     }
+				     $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				   }#end if($monitoringDBsErrorMessageArrayCnt>0)
+				 }#end if(($currentWeekdayNumber<=$monitoringDBExclusionStartWeekdayNumber)&&($currentHour lt $monitoringDBExclusionStartHour)||($currentWeekdayNumber>=$monitoringDBExclusionEndWeekdayNumber)&&($currentHour gt $monitoringDBExclusionEndHour))
+                 else {
+				   print LOG "Database Exception Status Check Monitoring - The Current Time {$currentWeekday $currentHour} is in the monitoring exclusion duration time {$monitoringDBExclusionStartWeekday $monitoringDBExclusionStartHour,$monitoringDBExclusionEndWeekday $monitoringDBExclusionEndHour}\n";
+				   print LOG "Database Exception Status Check Monitoring - The Database Monitoring Operation should be bypassed.\n";
+				 }
+
+                 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+                 print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+			 }#end elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
+             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     
@@ -2384,7 +2622,7 @@ sub getTime
     #$wday is accumulated from Saturday, stands for which day of one week[0-6]
     #$yday is accumulated from 1/1£¬stands for which day of one year[0,364]
     #$isdst is a flag
-    my $weekday = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat')[$wday];
+    my $weekday = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')[$wday];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
     return { 'second' => $sec,
              'minute' => $min,
              'hour'   => $hour,
@@ -2850,5 +3088,19 @@ sub queryTotalCustomerCountInQueue{
 sub sendHMEStartupErrorEmail{
   my ($emailSubject,$toEmailAddress,$emailContent) = @_;
   system("echo \"$emailContent\" | mail -s \"$emailSubject\" \"$toEmailAddress\"");
+}
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
+sub getCurrentWeekdayNumber{
+ my $currentWeekday = shift;
+ my $currentWeekdayNumber =-1;#default value = -1
+ foreach my $weekdayKey(keys %WEEKDAY_HASH)  
+ {  
+	if($currentWeekday eq $weekdayKey){
+      $currentWeekdayNumber=$WEEKDAY_HASH{$weekdayKey};
+	}#end if($currentWeekday eq $weekdayKey) 
+ }#end foreach my $weekdayKey(keys %WEEKDAY_HASH)
+ return $currentWeekdayNumber;
 }
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
