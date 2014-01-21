@@ -255,7 +255,7 @@ sub getData {
             $hardwareLparList{$lparKey} = $hardwareLpar;
         }
         else {
-            wlog( 'Found lpar twice ' . $hardwareLpar->toString );
+            dlog( 'Found lpar twice ' . $hardwareLpar->toString );
         }
 
         ###Continue if the processor count is not defined
