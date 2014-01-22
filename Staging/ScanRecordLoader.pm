@@ -11,6 +11,10 @@ use Staging::Delegate::StagingDelegate;
 
 our @ISA = qw(Loader);
 
+###Globals
+my $Log15PercentDeltaDir    = "/var/staging/logs/scanRecordToStaging/";
+my $DeltaReportFile = "15PercentDeltaComputerReport.tsv";
+
 sub new {
     my ( $class, $bankAccountName ) = @_;
 
@@ -350,7 +354,99 @@ sub applyDelta {
 
     ###Check if we have crossed the delete threshold
     if ( $self->SUPER::checkDeleteThreshold() ) {
-        die '**** We are deleting more than 15% of total records - Aborting ****';
+
+    	dlog('Creating tsv object');
+
+        my $tsv = Text::CSV_XS->new(
+                                     {
+                                       sep_char    => "\t",
+                                       binary      => 1,
+                                       eol         => $/,
+                                       escape_char => '',
+                                       quote_char  => ''
+                                     }
+        );
+
+        dlog('tsv object created');
+
+        dlog('Open delta report file');
+
+        my $Log15PercentDeltafile = $Log15PercentDeltaDir . "/" . $self->bankAccountName . $DeltaReportFile ;
+        open my $fh, ">", $Log15PercentDeltaDir . "/" . $DeltaReportFile or die ("failed to create ".$DeltaReportFile);
+
+        dlog('Delta report file created');
+
+        dlog('Generating delta report file');
+		
+		my @fields = (
+            qw( computerId
+            scanTime
+            objectId
+            name
+            model
+            serialNumber
+            osName
+            osType
+                )
+        );
+
+=these fields are not needed
+
+            osMajor
+            osMinor
+            osSub
+            osInstDate
+            userName
+            biosManufacturer
+            biosModel
+            serverType
+            biosDate
+            techImgId
+            extId
+            memory
+            disk
+            dedicatedProcessors
+            totalProcessors
+            sharedProcessors
+            processorType
+            sharedProcByCores
+            dedicatedProcByCores
+            totalProcByCores
+            alias
+            physicalTotalKb
+            virtualMemory
+            physicalFreeMemory
+            virtualFreeMemory
+            nodeCapacity
+            lparCapacity
+            biosDate
+            biosSerialNumber
+            biosUniqueId
+            boardSerial
+            caseSerial
+            caseAssetTag
+            powerOnPassword
+=cut
+		#for each record
+        foreach my $key ( keys %{ $self->list } ) {
+            if ( $self->list->{$key}->action eq 'DELETE' ) {
+            	#if value is undefined, we use "undef" string
+                my @row = map ( defined( $self->list->{$key}->$_) ? ($self->list->{$key}->$_) : (" "), @fields);
+                $tsv->bind_columns (\(@row));
+                $tsv->print ($fh, undef);
+            }
+        }
+
+        dlog('Delta report file generated');
+
+        dlog('Closing delta report file');
+
+        close $fh or die "failed to create 15PercentDeltaFile $!";
+
+        dlog('Delta report file closed');
+
+        #die '**** We are deleting more than 15% of total records - Aborting ****';
+
     }
     else {
         $self->SUPER::updateCnt(0);
