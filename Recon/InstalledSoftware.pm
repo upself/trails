@@ -21,6 +21,7 @@ use Recon::Delegate::ReconInstalledSoftwareValidation;
 use Recon::OM::PvuMap;
 use Recon::OM::PvuInfo;
 use Recon::SoftwareLpar;
+use Recon::CauseCode;
 
 sub new {
 	my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -3099,6 +3100,7 @@ sub recordAlertUnlicensedSoftwareHistory {
 
 sub openAlertUnlicensedSoftware {
 	my $self = shift;
+	my $CCalertType=0;
 	dlog("begin openAlertUnlicensedSoftware");
 
 	###Instantiate alert object.
@@ -3123,9 +3125,11 @@ sub openAlertUnlicensedSoftware {
 		$self->ibmArray )
 	{
 		$alert->type('IBM');
+		$CCalertType=7;
 	}
 	else {
 		$alert->type('ISV');
+		$CCalertType=8;
 	}
 	$alert->comments('Auto Open');
 	$alert->open(1);
@@ -3145,6 +3149,8 @@ sub openAlertUnlicensedSoftware {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
 	}
+	
+	Recon::CauseCode::updateCCtable ( $alert->id, $CCalertType, $self->connection);
 
 	dlog("end openAlertUnlicensedSoftware");
 }
