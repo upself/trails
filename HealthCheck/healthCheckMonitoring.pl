@@ -3091,7 +3091,7 @@ sub sendHMEStartupErrorEmail{
 }
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
 sub getCurrentWeekdayNumber{
  my $currentWeekday = shift;
  my $currentWeekdayNumber =-1;#default value = -1
@@ -3103,4 +3103,4 @@ sub getCurrentWeekdayNumber{
  }#end foreach my $weekdayKey(keys %WEEKDAY_HASH)
  return $currentWeekdayNumber;
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
+#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
