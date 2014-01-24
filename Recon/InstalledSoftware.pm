@@ -2784,6 +2784,8 @@ sub closeAlertUnlicensedSoftware {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
 	}
+	
+	Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
 
 	dlog("end closeAlertUnlicensedSoftware");
 }
