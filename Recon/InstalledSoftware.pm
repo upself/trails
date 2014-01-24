@@ -2779,13 +2779,13 @@ sub closeAlertUnlicensedSoftware {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 		}
+		Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
 	}
 	elsif ( $createNew == 1 ) {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
-	}
-	
-	Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
+		Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
+	}	
 
 	dlog("end closeAlertUnlicensedSoftware");
 }
