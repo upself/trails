@@ -27,7 +27,7 @@ import com.ibm.asset.trails.service.AlertReportService;
 public class AlertReportServiceImpl implements AlertReportService {
     private EntityManager em;
 
-    // "Note that the @PersistenceContext annotation has an optional attribute
+    // "Note that the @PersistenceContext(unitName="trailspd") annotation has an optional attribute
     // type, which defaults to PersistenceContextType.TRANSACTION. This default
     // is what you need to receive a "shared EntityManager" proxy. The
     // alternative, PersistenceContextType.EXTENDED, is a completely different
@@ -40,9 +40,9 @@ public class AlertReportServiceImpl implements AlertReportService {
     // application."
     // AGM: We create the entitymanager factory in the applicationcontext.xml.
     // This is expensive to create so instead of getting a new one, we get an
-    // entity manager which is in inexpensive. The @PersistenceContext tells
+    // entity manager which is in inexpensive. The @PersistenceContext(unitName="trailspd") tells
     // spring to inject the entitymanager.
-    @PersistenceContext
+    @PersistenceContext(unitName="trailspd")
     public void setEntityManager(EntityManager em) {
         this.em = em;
     }

@@ -642,7 +642,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
         return em;
     }
 
-    @PersistenceContext
+    @PersistenceContext(unitName="trailspd")
     public void setEntityManager(EntityManager em) {
         this.em = em;
     }

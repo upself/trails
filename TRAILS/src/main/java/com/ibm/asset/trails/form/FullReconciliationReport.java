@@ -26,9 +26,9 @@ public class FullReconciliationReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getFullReconciliationReport(pAccount,
+		super.getReportService().getFullReconciliationReport(pAccount, remoteUser, lsName,  
 				new PrintWriter(super.getOutputStream(), true),
 				super.isCustomerOwnedCustomerManagedSearchChecked(),
 				super.isCustomerOwnedIBMManagedSearchChecked(),

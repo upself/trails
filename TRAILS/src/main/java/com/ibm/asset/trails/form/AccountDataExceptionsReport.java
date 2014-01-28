@@ -18,9 +18,9 @@ public class AccountDataExceptionsReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAccountDataExceptionReport(pAccount, super.getAlertCode(),
+		super.getReportService().getAccountDataExceptionReport(pAccount, remoteUser, lsName, super.getAlertCode(),
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

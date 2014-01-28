@@ -18,9 +18,9 @@ public class HardwareBaselineReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getHardwareBaselineReport(pAccount,
+		super.getReportService().getHardwareBaselineReport(pAccount, remoteUser, lsName,
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

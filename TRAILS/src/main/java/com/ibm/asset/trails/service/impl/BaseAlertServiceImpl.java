@@ -2,7 +2,7 @@ package com.ibm.asset.trails.service.impl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContexts;
+
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +28,7 @@ public abstract class BaseAlertServiceImpl {
     public abstract void updateAll(Account pAccount, String psRemoteUser,
             String psComments, int piMode);
 
-    @PersistenceContext
+    @PersistenceContext(unitName="trailspd")
     public void setEntityManager(EntityManager em) {
         this.em = em;
     }

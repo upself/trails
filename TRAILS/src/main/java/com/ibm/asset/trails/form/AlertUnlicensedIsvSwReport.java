@@ -19,9 +19,9 @@ public class AlertUnlicensedIsvSwReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAlertUnlicensedIsvSwReport(pAccount,
+		super.getReportService().getAlertUnlicensedIsvSwReport(pAccount, remoteUser, lsName, 
 				super.getHSSFWorkbook(), super.getOutputStream());
 	}
 }

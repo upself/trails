@@ -18,9 +18,9 @@ public class AlertExpiredMaintReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAlertExpiredMaintReport(pAccount,
+		super.getReportService().getAlertExpiredMaintReport(pAccount, remoteUser, lsName, 
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

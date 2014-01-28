@@ -82,8 +82,15 @@
 		<property name="licenseService" ref="licenseService" />
 	</bean>
 
-
-	<bean id="reportService" class="com.ibm.asset.trails.service.impl.ReportServiceImpl" />
+    <bean id="dbdeterminativeService" class="com.ibm.asset.trails.service.impl.DatabaseDeterminativeServiceImpl" >
+     <property name="gapseconds">
+         <value>${sync.gap.seconds}</value>
+     </property>
+    </bean>
+     
+	<bean id="reportService" class="com.ibm.asset.trails.service.impl.ReportServiceImpl" >
+	<constructor-arg><ref bean="dbdeterminativeService"/></constructor-arg>
+	</bean>
 
 	<bean id="pvuService" class="com.ibm.asset.trails.service.impl.PvuServiceImpl" />
 
@@ -102,25 +109,56 @@
 	<bean id="alertTypeCauseService"
 		class="com.ibm.asset.trails.service.impl.AlertTypeCauseServiceImpl" />
 
-	<bean id="entityManagerFactory"
+	<bean id="entityManagerFactory1"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="dataSource" ref="dataSource1" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter1" />
+		<property name="persistenceUnitName" value="trailspd"/>
+	</bean>
+	
+	<bean id="entityManagerFactory2"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource2" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter2" />
+		<property name="persistenceUnitName" value="trailsst"/>
 	</bean>
 
-	<bean id="hibernateJpaVendorAdapter"
+	<bean id="hibernateJpaVendorAdapter1"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="database" value="${database}" />
-		<property name="showSql" value="${showSql}" />
+		<property name="database" value="${pd.database}" />
+		<property name="showSql" value="${pd.showSql}" />
+		<property name="databasePlatform" value="com.ibm.asset.trails.domain.DB2Dialect" />
+	</bean>
+	
+	<bean id="hibernateJpaVendorAdapter2"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="database" value="${st.database}" />
+		<property name="showSql" value="${st.showSql}" />
 		<property name="databasePlatform" value="com.ibm.asset.trails.domain.DB2Dialect" />
 	</bean>
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	<bean id="dataSource1" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
-		<property name="user" value="${username}" />
-		<property name="password" value="${password}" />
-		<property name="driverClass" value="${driverClassName}" />
-		<property name="jdbcUrl" value="${url}" />
+		<property name="user" value="${pd.username}" />
+		<property name="password" value="${pd.password}" />
+		<property name="driverClass" value="${pd.driverClassName}" />
+		<property name="jdbcUrl" value="${pd.url}" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
+		<property name="maxPoolSize" value="100" />
+		<property name="acquireIncrement" value="5" />
+		<property name="maxStatements" value="50" />
+		<property name="idleConnectionTestPeriod" value="300" />
+		<property name="acquireRetryAttempts" value="3" />
+		<property name="acquireRetryDelay" value="500" />
+	</bean>
+	
+	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="user" value="${st.username}" />
+		<property name="password" value="${st.password}" />
+		<property name="driverClass" value="${st.driverClassName}" />
+		<property name="jdbcUrl" value="${st.url}" />
 		<property name="initialPoolSize" value="10" />
 		<property name="minPoolSize" value="10" />
 		<property name="maxPoolSize" value="100" />
@@ -131,14 +169,20 @@
 		<property name="acquireRetryDelay" value="500" />
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	<bean id="transactionManager1" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory1" />
+		<qualifier value="trailspd"/>
+	</bean>
+	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory2" />
+		<qualifier value="trailsst"/>
 	</bean>
 
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven transaction-manager="transactionManager1" />
+	<tx:annotation-driven transaction-manager="transactionManager2" />
 
 	<bean id="searchAccountAction" scope="prototype"
 		class="com.ibm.asset.trails.action.SearchAccountAction">
@@ -488,7 +532,6 @@
 		<property name="alertTypeCode" value="NCPMDL" />
 	</bean>
 
-
 	<bean id="alertSwlparAjaxAction" scope="prototype"
 		class="com.ibm.asset.trails.action.SoftwareLparAjaxAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
@@ -501,6 +544,13 @@
 		<property name="alertHardwareLparService" ref="alertHwlparService" />
 	</bean>
 
+	<bean  class="com.ibm.asset.trails.aspect.ReportStatisticLogAspect">
+	     <property name="dbdeterminativeService" ref="dbdeterminativeService" />
+	     <property name="reportLogPath">
+	       <value>${report.log.path}</value>
+	     </property>
+	</bean>
+	
 	<bean class="com.ibm.asset.trails.aspect.DataExceptionHistoryAspect">
 		<property name="historyService" ref="alertSwlparHistoryService" />
 	</bean>

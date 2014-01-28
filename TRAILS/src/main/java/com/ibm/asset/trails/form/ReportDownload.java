@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.form;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
@@ -92,6 +93,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 				|| lsName.equalsIgnoreCase(REPORT_NAME_NON_WORKSTATION_ACCOUNTS)
 				|| lsName.equalsIgnoreCase(REPORT_NAME_WORKSTATION_ACCOUNTS)) {
 			Account lAccount = null;
+			String remoteUser = null;
 			ReportBase lReportBase = null;
 			ServletContext lServletContext = getServletContext();
 			WebApplicationContext lWebApplicationContext = WebApplicationContextUtils
@@ -102,8 +104,10 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 			if (lUserSession != null) {
 				lAccount = ((UserSession) pHttpServletRequest.getSession()
 						.getAttribute("userSession")).getAccount();
+				remoteUser = ((UserSession) pHttpServletRequest.getSession()
+						.getAttribute("userSession")).getRemoteUser();
 			}
-
+			
 			try {
 				pHttpServletResponse.setContentType("application/vnd.ms-excel");
 				HSSFWorkbook hwb=new HSSFWorkbook();
@@ -122,7 +126,7 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 						pHttpServletResponse.getOutputStream(), pHttpServletRequest, hwb);
 
 				if (lReportBase != null) {
-					lReportBase.execute(pHttpServletRequest, lAccount);
+					lReportBase.execute(pHttpServletRequest, lAccount, remoteUser, lsName);
 				}
 			} catch (Exception e) {
 				e.printStackTrace(System.out);

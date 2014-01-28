@@ -16,9 +16,9 @@ public class WorkstationAccountsReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws Exception {
-		super.getReportService().getWorkstationAccountsReport(
+		super.getReportService().getWorkstationAccountsReport( remoteUser, lsName,  
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

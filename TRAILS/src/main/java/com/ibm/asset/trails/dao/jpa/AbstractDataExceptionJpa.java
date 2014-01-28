@@ -14,7 +14,7 @@ public class AbstractDataExceptionJpa {
 
 	private EntityManager em;
 
-	@PersistenceContext
+	@PersistenceContext(unitName="trailspd")
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
 	}

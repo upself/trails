@@ -16,12 +16,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.DataExceptionTypeEnum;
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.service.DatabaseDeterminativeService;
 import com.ibm.asset.trails.service.ReportService;
 
 @Service
@@ -150,10 +152,15 @@ public class ReportServiceImpl implements ReportService {
 	private final String CAUSE_CODE_SUMMARY_REPORT_NAME = "Cause Code Summary Report";
 	private final String[] CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS = {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
-	private EntityManager entityManager;
+	private DatabaseDeterminativeService dbdeterminativeService;
+	
+	@Autowired
+	public ReportServiceImpl(DatabaseDeterminativeService dbdeterminativeService) {
+		this.dbdeterminativeService = dbdeterminativeService;
+	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertExpiredMaintReport(Account pAccount,
+	public void getAlertExpiredMaintReport(Account pAccount, String remoteUser, String lsName,  
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -172,7 +179,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertExpiredScanReport(Account pAccount, HSSFWorkbook phwb,
+	public void getAlertExpiredScanReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
@@ -208,7 +215,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertHardwareLparReport(Account pAccount, HSSFWorkbook phwb,
+	public void getAlertHardwareLparReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -245,7 +252,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertHardwareReport(Account pAccount, HSSFWorkbook phwb,
+	public void getAlertHardwareReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -282,7 +289,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertSoftwareLparReport(Account pAccount, HSSFWorkbook phwb,
+	public void getAlertSoftwareLparReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
@@ -320,7 +327,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAccountDataExceptionReport(Account pAccount,
+	public void getAccountDataExceptionReport(Account pAccount, String remoteUser, String lsName, 
 			String pAlertCode, PrintWriter pPrintWriter)
 			throws HibernateException, Exception {
 		String sql_query_data_exception = null;
@@ -353,7 +360,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertUnlicensedIbmSwReport(Account pAccount,
+	public void getAlertUnlicensedIbmSwReport(Account pAccount, String remoteUser, String lsName, 
 			HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
@@ -390,7 +397,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertUnlicensedIsvSwReport(Account pAccount,
+	public void getAlertUnlicensedIsvSwReport(Account pAccount, String remoteUser, String lsName, 
 			HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
@@ -427,7 +434,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getFreeLicensePoolReport(Account pAccount,
+	public void getFreeLicensePoolReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).getNamedQuery("freePoolReport")
@@ -443,7 +450,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getFullReconciliationReport(Account pAccount,
+	public void getFullReconciliationReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -648,7 +655,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getHardwareBaselineReport(Account pAccount,
+	public void getHardwareBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -666,7 +673,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getInstalledSoftwareBaselineReport(Account pAccount,
+	public void getInstalledSoftwareBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -740,7 +747,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getLicenseBaselineReport(Account pAccount,
+	public void getLicenseBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -814,7 +821,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getNonWorkstationAccountsReport(PrintWriter pPrintWriter)
+	public void getNonWorkstationAccountsReport(String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -831,7 +838,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionDetailReport(Account pAccount,
+	public void getPendingCustomerDecisionDetailReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -850,7 +857,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionSummaryReport(Account pAccount,
+	public void getPendingCustomerDecisionSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -869,7 +876,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getReconciliationSummaryReport(Account pAccount,
+	public void getReconciliationSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -889,7 +896,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getCauseCodeSummaryReport(Account pAccount,
+	public void getCauseCodeSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -907,7 +914,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareComplianceSummaryReport(Account pAccount,
+	public void getSoftwareComplianceSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -940,7 +947,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareLparBaselineReport(Account pAccount,
+	public void getSoftwareLparBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -958,7 +965,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareVarianceReport(Account pAccount,
+	public void getSoftwareVarianceReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -976,7 +983,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getWorkstationAccountsReport(PrintWriter pPrintWriter)
+	public void getWorkstationAccountsReport( String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -1077,13 +1084,17 @@ public class ReportServiceImpl implements ReportService {
 		pPrintWriter.println(outputData(loaReportHeader));
 		pPrintWriter.println(outputData(psaColumnHeader));
 	}
-
+	
 	private EntityManager getEntityManager() {
-		return entityManager;
-	}
-
-	@PersistenceContext
-	public void setEntityManager(EntityManager entityManager) {
-		this.entityManager = entityManager;
+		try {
+			dbdeterminativeService.setEntityManager();
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dbdeterminativeService.getEntityManager();
 	}
 }

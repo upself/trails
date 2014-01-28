@@ -22,7 +22,7 @@ import com.ibm.asset.trails.dao.BaseDAO;
 public abstract class AbstractGenericDAOJpa<E> implements BaseDAO<E> {
     protected static final String UNCHECKED = "unchecked";
 
-    @PersistenceContext
+    @PersistenceContext(unitName="trailspd")
     protected transient EntityManager entityManager;
     protected final transient Class<E> entityClass;
 

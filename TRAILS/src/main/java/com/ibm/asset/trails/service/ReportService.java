@@ -3,40 +3,42 @@ package com.ibm.asset.trails.service;
 import java.io.PrintWriter;
 import java.io.OutputStream;
 
+import javax.persistence.EntityManager;
+
 import org.hibernate.HibernateException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.ibm.asset.trails.domain.Account;
 
 public interface ReportService {
-	void getAlertExpiredMaintReport(Account pAccount, PrintWriter pPrintWriter)
+	void getAlertExpiredMaintReport(Account pAccount, String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws Exception;
 
-	void getAlertExpiredScanReport(Account pAccount,  HSSFWorkbook phwb, OutputStream pOutputStream)
+	void getAlertExpiredScanReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws Exception;
 
-	void getAlertHardwareLparReport(Account pAccount, HSSFWorkbook phwb, OutputStream pOutputStream)
+	void getAlertHardwareLparReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws HibernateException, Exception;
 
-	void getAlertHardwareReport(Account pAccount, HSSFWorkbook phwb, OutputStream pOutputStream)
+	void getAlertHardwareReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws HibernateException, Exception;
 
-	void getAlertSoftwareLparReport(Account pAccount,  HSSFWorkbook phwb, OutputStream pOutputStream)
+	void getAlertSoftwareLparReport(Account pAccount,String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)
 			throws HibernateException, Exception;
 
-	void getAlertUnlicensedIbmSwReport(Account pAccount,
+	void getAlertUnlicensedIbmSwReport(Account pAccount, String remoteUser, String lsName, 
 			 HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception;
 	
-	void getAccountDataExceptionReport(Account pAccount, String pAlertCode,
+	void getAccountDataExceptionReport(Account pAccount, String remoteUser, String lsName,  String pAlertCode,
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
-	void getAlertUnlicensedIsvSwReport(Account pAccount,
+	void getAlertUnlicensedIsvSwReport(Account pAccount, String remoteUser, String lsName, 
 			 HSSFWorkbook phwb, OutputStream pOutputStream) throws HibernateException, Exception;
 
-	void getFreeLicensePoolReport(Account pAccount, PrintWriter pPrintWriter)
+	void getFreeLicensePoolReport(Account pAccount, String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 
-	void getFullReconciliationReport(Account pAccount,
+	void getFullReconciliationReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -44,10 +46,10 @@ public interface ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
 			throws HibernateException, Exception;
 
-	void getHardwareBaselineReport(Account pAccount, PrintWriter pPrintWriter)
+	void getHardwareBaselineReport(Account pAccount, String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 
-	void getInstalledSoftwareBaselineReport(Account pAccount,
+	void getInstalledSoftwareBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -55,29 +57,29 @@ public interface ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
 			throws HibernateException, Exception;
 
-	void getLicenseBaselineReport(Account pAccount, PrintWriter pPrintWriter,
+	void getLicenseBaselineReport(Account pAccount,String remoteUser, String lsName,  PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
 			throws HibernateException, Exception;
 
-	void getNonWorkstationAccountsReport(PrintWriter pPrintWriter)
+	void getNonWorkstationAccountsReport(String remoteUser, String lsName, PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 
-	void getPendingCustomerDecisionDetailReport(Account pAccount,
+	void getPendingCustomerDecisionDetailReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
-	void getPendingCustomerDecisionSummaryReport(Account pAccount,
+	void getPendingCustomerDecisionSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
-	void getReconciliationSummaryReport(Account pAccount,
+	void getReconciliationSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 	
-	void getCauseCodeSummaryReport(Account pAccount,
+	void getCauseCodeSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
-	void getSoftwareComplianceSummaryReport(Account pAccount,
+	void getSoftwareComplianceSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
@@ -85,12 +87,12 @@ public interface ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
 			throws HibernateException, Exception;
 
-	void getSoftwareLparBaselineReport(Account pAccount,
+	void getSoftwareLparBaselineReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
 
-	void getSoftwareVarianceReport(Account pAccount, PrintWriter pPrintWriter)
+	void getSoftwareVarianceReport(Account pAccount, String remoteUser, String lsName,   PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 
-	void getWorkstationAccountsReport(PrintWriter pPrintWriter)
+	void getWorkstationAccountsReport(String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 }

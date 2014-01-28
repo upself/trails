@@ -68,7 +68,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		return em;
 	}
 
-	@PersistenceContext
+	@PersistenceContext(unitName="trailspd")
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}

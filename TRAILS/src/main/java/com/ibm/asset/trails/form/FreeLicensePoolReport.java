@@ -18,9 +18,9 @@ public class FreeLicensePoolReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getFreeLicensePoolReport(pAccount,
+		super.getReportService().getFreeLicensePoolReport(pAccount, remoteUser, lsName, 
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

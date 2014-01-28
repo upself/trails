@@ -18,9 +18,9 @@ public class AlertHardwareReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAlertHardwareReport(pAccount,
+		super.getReportService().getAlertHardwareReport(pAccount, remoteUser, lsName, 
 				super.getHSSFWorkbook(), super.getOutputStream());
 	}
 }

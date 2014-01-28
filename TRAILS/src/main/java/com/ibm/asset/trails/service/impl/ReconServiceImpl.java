@@ -40,7 +40,7 @@ public class ReconServiceImpl implements ReconService {
 
 	private EntityManager em;
 
-	@PersistenceContext
+	@PersistenceContext(unitName="trailspd")
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}

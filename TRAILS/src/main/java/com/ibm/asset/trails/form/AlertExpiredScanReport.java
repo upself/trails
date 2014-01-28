@@ -19,9 +19,9 @@ public class AlertExpiredScanReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAlertExpiredScanReport(pAccount,
+		super.getReportService().getAlertExpiredScanReport(pAccount, remoteUser, lsName,
 				super.getHSSFWorkbook(), super.getOutputStream());
 	}
 }

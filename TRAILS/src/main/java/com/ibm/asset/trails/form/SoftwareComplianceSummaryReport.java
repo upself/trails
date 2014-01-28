@@ -26,9 +26,9 @@ public class SoftwareComplianceSummaryReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getSoftwareComplianceSummaryReport(pAccount,
+		super.getReportService().getSoftwareComplianceSummaryReport(pAccount, remoteUser, lsName,  
 				new PrintWriter(super.getOutputStream(), true),
 				super.isCustomerOwnedCustomerManagedSearchChecked(),
 				super.isCustomerOwnedIBMManagedSearchChecked(),

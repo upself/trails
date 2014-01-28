@@ -18,9 +18,9 @@ public class ReconciliationSummaryReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getReconciliationSummaryReport(pAccount,
+		super.getReportService().getReconciliationSummaryReport(pAccount, remoteUser, lsName, 
 				new PrintWriter(super.getOutputStream(), true));
 	}
 }

@@ -19,9 +19,9 @@ public class AlertUnlicensedIbmSwReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount)
+	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getAlertUnlicensedIbmSwReport(pAccount,
+		super.getReportService().getAlertUnlicensedIbmSwReport(pAccount, remoteUser, lsName, 
 				super.getHSSFWorkbook(), super.getOutputStream());
 	}
 }

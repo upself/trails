@@ -67,7 +67,7 @@ public abstract class ReportBase {
 	}
 
 	public abstract void execute(HttpServletRequest pHttpServletRequest,
-			Account pAccount) throws HibernateException, Exception;
+			Account pAccount, String remoteUser, String lsName) throws HibernateException, Exception;
 
 	public HSSFWorkbook getHSSFWorkbook() {
 		return hssfWorkBook;
