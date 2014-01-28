@@ -3,6 +3,8 @@
 	<property name="id" type="scalar" sql-name="id" sql-key="true" />
 	<property name="reconcileTypeId" type="scalar" equals="true"
 		sql-name="reconcile_type_id" />
+	<property name="allocationMethodologyId" type="scalar" equals="true"
+		sql-name="allocation_methodology_id" />
 	<property name="installedSoftwareId" type="scalar" equals="true"
 		sql-name="installed_software_id" biz-key="true" />
 	<property name="parentInstalledSoftwareId" type="scalar"

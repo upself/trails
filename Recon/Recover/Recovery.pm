@@ -39,6 +39,8 @@ sub new {
 
 sub run {
 	my $self = shift;
+	my $startTime = shift;
+	my $endTime = shift;
 
 	if ( $self->isValidCustomer == 0 ) {
 		$self->report( 'Account Number:'
@@ -65,7 +67,7 @@ sub run {
 		}
 
 		my @installedSoftwareIds =
-		  $self->getInstalledSoftwareIds($softwareLpar);
+		  $self->getInstalledSoftwareIds($softwareLpar,$startTime,$endTime);
 		foreach my $installedSoftwareId (@installedSoftwareIds) {
 			my $installedSoftware = new BRAVO::OM::InstalledSoftware();
 			$installedSoftware->id($installedSoftwareId);
@@ -173,6 +175,7 @@ sub run {
 			}
 
 			$reconcile->reconcileTypeId( $reconcileH->reconcileTypeId );
+			$reconcile->allocationMethodologyId( $reconcileH->allocationMethodologyId );
 			$reconcile->parentInstalledSoftwareId(
 				$reconcileH->parentInstalledSoftwareId );
 			$reconcile->comments( $reconcileH->comments );
@@ -483,7 +486,7 @@ sub isValidInstalledSoftware {
 }
 
 sub getInstalledSoftwareIds {
-	my ( $self, $softwareLpar ) = @_;
+	my ( $self, $softwareLpar, $startTime, $endTime ) = @_;
 
 	my @ids;
 
@@ -493,7 +496,7 @@ sub getInstalledSoftwareIds {
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
 		  @{ $self->connection->sql->{installedSoftwareIdsFields} } );
-	$sth->execute( $softwareLpar->id );
+	$sth->execute( $softwareLpar->id, $startTime, $endTime );
 	push @ids, $rec{id} while ( $sth->fetchrow_arrayref );
 	$sth->finish;
 
@@ -513,13 +516,18 @@ sub queryInstalledSoftwareIds {
         from
             installed_software is
             ,software s
+            ,alert_unlicensed_Sw asw
         where
             is.software_lpar_id = ?
+            and date(asw.record_time) >=? 
+            and date(asw.record_time) <=?
+            and asw.installed_software_id=is.id
             and is.software_id = s.software_id
             and s.level = 'LICENSABLE'
             and is.discrepancy_type_id != 3
             and is.discrepancy_type_id != 5 
-            and is.status = 'ACTIVE'            
+            and is.status = 'ACTIVE'  
+            and asw.open=1           
             and not exists(select 1 from reconcile r, reconcile_type rt where r.installed_software_id = is.id and r.reconcile_type_id = rt.id and rt.is_manual = 1) 
             and not exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id and rh.manual_break = 1) 
             and exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id) 

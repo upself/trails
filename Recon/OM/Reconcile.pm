@@ -8,6 +8,7 @@ sub new {
     my $self = {
         _id => undef
         ,_reconcileTypeId => undef
+        ,_allocationMethodologyId => undef
         ,_installedSoftwareId => undef
         ,_parentInstalledSoftwareId => undef
         ,_comments => undef
@@ -30,6 +31,13 @@ sub equals {
         $equal = 1 if $self->reconcileTypeId eq $object->reconcileTypeId;
     }
     $equal = 1 if (!defined $self->reconcileTypeId && !defined $object->reconcileTypeId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->allocationMethodologyId && defined $object->allocationMethodologyId) {
+        $equal = 1 if $self->allocationMethodologyId eq $object->allocationMethodologyId;
+    }
+    $equal = 1 if (!defined $self->allocationMethodologyId && !defined $object->allocationMethodologyId);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -73,6 +81,12 @@ sub reconcileTypeId {
     my $self = shift;
     $self->{_reconcileTypeId} = shift if scalar @_ == 1;
     return $self->{_reconcileTypeId};
+}
+
+sub allocationMethodologyId {
+    my $self = shift;
+    $self->{_allocationMethodologyId} = shift if scalar @_ == 1;
+    return $self->{_allocationMethodologyId};
 }
 
 sub installedSoftwareId {
@@ -136,6 +150,11 @@ sub toString {
         $s .= $self->{_reconcileTypeId};
     }
     $s .= ",";
+    $s .= "allocationMethodologyId=";
+    if (defined $self->{_allocationMethodologyId}) {
+        $s .= $self->{_allocationMethodologyId};
+    }
+    $s .= ",";
     $s .= "installedSoftwareId=";
     if (defined $self->{_installedSoftwareId}) {
         $s .= $self->{_installedSoftwareId};
@@ -190,6 +209,7 @@ sub save {
         $sth->bind_columns(\$id);
         $sth->execute(
             $self->reconcileTypeId
+            ,$self->allocationMethodologyId
             ,$self->installedSoftwareId
             ,$self->parentInstalledSoftwareId
             ,$self->comments
@@ -204,6 +224,7 @@ sub save {
         my $sth = $connection->sql->{updateReconcile};
         $sth->execute(
             $self->reconcileTypeId
+            ,$self->allocationMethodologyId
             ,$self->installedSoftwareId
             ,$self->parentInstalledSoftwareId
             ,$self->comments
@@ -222,6 +243,7 @@ sub queryInsert {
             final table (
         insert into reconcile (
             reconcile_type_id
+            ,allocation_methodology_id
             ,installed_software_id
             ,parent_installed_software_id
             ,comments
@@ -230,6 +252,7 @@ sub queryInsert {
             ,record_time
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -246,6 +269,7 @@ sub queryUpdate {
         update reconcile
         set
             reconcile_type_id = ?
+            ,allocation_methodology_id = ?
             ,installed_software_id = ?
             ,parent_installed_software_id = ?
             ,comments = ?
@@ -276,6 +300,7 @@ sub queryDelete {
         delete from reconcile a where
             exists ( select b.id from reconcile b where b.id = ?
             and a.reconcile_type_id = b.reconcile_type_id 
+            and a.allocation_methodology_id = b.allocation_methodology_id 
             and a.installed_software_id = b.installed_software_id 
             and a.parent_installed_software_id = b.parent_installed_software_id 
             and a.comments = b.comments 
@@ -290,6 +315,7 @@ sub getByBizKey {
     my $sth = $connection->sql->{getByBizKeyReconcile};
     my $id;
     my $reconcileTypeId;
+    my $allocationMethodologyId;
     my $parentInstalledSoftwareId;
     my $comments;
     my $machineLevel;
@@ -298,6 +324,7 @@ sub getByBizKey {
     $sth->bind_columns(
         \$id
         ,\$reconcileTypeId
+        ,\$allocationMethodologyId
         ,\$parentInstalledSoftwareId
         ,\$comments
         ,\$machineLevel
@@ -311,6 +338,7 @@ sub getByBizKey {
     $sth->finish;
     $self->id($id);
     $self->reconcileTypeId($reconcileTypeId);
+    $self->allocationMethodologyId($allocationMethodologyId);
     $self->parentInstalledSoftwareId($parentInstalledSoftwareId);
     $self->comments($comments);
     $self->machineLevel($machineLevel);
@@ -323,6 +351,7 @@ sub queryGetByBizKey {
         select
             id
             ,reconcile_type_id
+            ,allocation_methodology_id
             ,parent_installed_software_id
             ,comments
             ,machine_level
@@ -341,6 +370,7 @@ sub getById {
     $connection->prepareSqlQuery($self->queryGetById());
     my $sth = $connection->sql->{getByIdKeyReconcile};
     my $reconcileTypeId;
+    my $allocationMethodologyId;
     my $installedSoftwareId;
     my $parentInstalledSoftwareId;
     my $comments;
@@ -349,6 +379,7 @@ sub getById {
     my $recordTime;
     $sth->bind_columns(
         \$reconcileTypeId
+        ,\$allocationMethodologyId
         ,\$installedSoftwareId
         ,\$parentInstalledSoftwareId
         ,\$comments
@@ -362,6 +393,7 @@ sub getById {
     my $found = $sth->fetchrow_arrayref;
     $sth->finish;
     $self->reconcileTypeId($reconcileTypeId);
+    $self->allocationMethodologyId($allocationMethodologyId);
     $self->installedSoftwareId($installedSoftwareId);
     $self->parentInstalledSoftwareId($parentInstalledSoftwareId);
     $self->comments($comments);
@@ -375,6 +407,7 @@ sub queryGetById {
     my $query = '
         select
             reconcile_type_id
+            ,allocation_methodology_id
             ,installed_software_id
             ,parent_installed_software_id
             ,comments

@@ -28,8 +28,8 @@ logging_level( $cfgMgr->debugLevel );
 ###Set the logfile
 logfile($logfile);
 
-use vars qw( $opt_a $opt_h $opt_f $opt_m);
-getopts("a:h:f:m:");
+use vars qw( $opt_a $opt_h $opt_f $opt_m $opt_s $opt_e);
+getopts("a:h:f:m:s:e");
 usage() unless ( $opt_a || $opt_f );
 usage() if ( $opt_a && $opt_f );
 usage() if ( $opt_a && $opt_a !~ /\d+/ );
@@ -43,6 +43,11 @@ if ($opt_f) {
 else {
     $opt_h = '' if !defined $opt_h;
     $data->{$opt_a}->{$opt_h} = 1;
+}
+
+if (!defined $opt_s && !defined $opt_e) {
+    $opt_s = '1970-01-01';
+    $opt_e = substr currentTimeStamp(), 0, 10;
 }
 
 my $connection = Database::Connection->new('trails');
@@ -70,7 +75,7 @@ foreach my $accountNumber ( keys %{$data} ) {
         next if $name eq '';
         $recovery->addToSoftwareLparNames($name);
     }
-    $recovery->run;
+    $recovery->run( $opt_s, $opt_e );
 }
 
 sub parseFile {
@@ -93,10 +98,13 @@ sub parseFile {
 }
 
 sub usage {
-    print "manualRecovery -a <account> [-h <hostname>] [-f <file> -m 0/1 ]";
+    print "manualRecovery -a <account> [-h <hostname>] [-f <file> -m 0/1 ] [-s startTime -e endTime]";
     print
         "-m 0 = will not restore manual breaks OR 1 = will resotre manaul breaks"
-        ;    
+        ;   
+    print
+       " -s startTime -e endTime, open alerts within the time range"
+        ;  
     exit 0;
 }
 
