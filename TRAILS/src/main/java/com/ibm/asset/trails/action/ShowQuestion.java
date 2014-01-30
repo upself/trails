@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
@@ -24,6 +26,9 @@ public class ShowQuestion extends AccountBaseAction {
 	@Autowired
 	private LicenseService licenseService;
 
+	@Autowired
+	private AllocationMethodologyService allocationMethodologyService;
+
 	private List<ReconcileType> reconcileTypes;
 
 	private Recon recon;
@@ -31,6 +36,8 @@ public class ShowQuestion extends AccountBaseAction {
 	private Long reconcileTypeId;
 
 	private List<LicenseFilter> filter;
+
+	private List<AllocationMethodology> allocationMethodologies;
 
 	// TODO just going to admit this is pure laziness
 	// due to the license free pool being way to large to not paginate
@@ -117,6 +124,8 @@ public class ShowQuestion extends AccountBaseAction {
 	@Override
 	@UserRole(userRole = UserRoleType.READER)
 	public String execute() {
+
+		setAllocationMethodologies(allocationMethodologyService.findAll());
 
 		recon.setList(list);
 		recon.setReconcileTypeId(reconcileTypeId);
@@ -288,4 +297,12 @@ public class ShowQuestion extends AccountBaseAction {
 		this.filter = filter;
 	}
 
+	public List<AllocationMethodology> getAllocationMethodologies() {
+		return allocationMethodologies;
+	}
+
+	public void setAllocationMethodologies(
+			List<AllocationMethodology> allocationMethodologies) {
+		this.allocationMethodologies = allocationMethodologies;
+	}
 }
