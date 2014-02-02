@@ -106,6 +106,8 @@ sub breakReconcileById {
 			my $usedLicense = new Recon::OM::UsedLicense();
 			$usedLicense->id($ulId);
 			$usedLicense->getById($connection);
+			
+			next if(!defined $usedLicense->licenseId);
 
 			###Add license id to hash for recon of lic.
 			$licenseIds{ $usedLicense->licenseId }++;
