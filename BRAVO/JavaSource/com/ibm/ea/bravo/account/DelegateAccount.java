@@ -224,6 +224,7 @@ public abstract class DelegateAccount extends HibernateDelegate {
 
 	public static boolean getMultiReport(Account account) {
 		FtpClient fc = new FtpClient();
+		InputStream is = null; 
 		try {
 			
 			String fileName = "MULTI."
@@ -242,7 +243,7 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			fc.login(user, password);
 			fc.binary();
 			fc.cd(directory);
-			InputStream is = fc.get(fileName);
+			is = fc.get(fileName);
 
 			if (is != null) {
 				return true;
@@ -254,6 +255,14 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			}
 			logger.error(e.getMessage(), e);
 		} finally {
+			
+			if(is!=null){
+				try {
+					is.close();
+				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
 
 			if (fc != null) {
 				try {
