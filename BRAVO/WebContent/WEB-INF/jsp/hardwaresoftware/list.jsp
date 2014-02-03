@@ -130,7 +130,7 @@ Assets</a><br />
 	src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
 	height="12" /> <c:if test="${account.multiReport}">
 	<a
-		href="http://tap.raleigh.ibm.com/sam/report/MULTI.${account.customer.accountNumber}.zip">
+		href="/BRAVO/download/MULTI.${account.customer.accountNumber}.zip?name=softwareMulti&accountId=${account.customer.accountNumber}">
 	Software Multi Report </a>
 </c:if> <c:if test="${!account.multiReport}">
 					Software Multi Report

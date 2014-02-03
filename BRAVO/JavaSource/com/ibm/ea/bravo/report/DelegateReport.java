@@ -79,6 +79,10 @@ public class DelegateReport extends HibernateDelegate {
 
 		if (reportName.equalsIgnoreCase(Constants.AUTHORIZED_ASSETS_BLANK))
 			report = new AuthorizedAssetsLoaderTemplate();
+
+		if (reportName.equalsIgnoreCase(Constants.SW_MULTI_REPORT)) {
+			report = new SwMultiReport();
+		}
 		return report;
 	}
 
@@ -111,8 +115,8 @@ public class DelegateReport extends HibernateDelegate {
 
 		// Get our composites and our active software lpars
 		// We know that composites will only be active stuff
-		ArrayList<Object> data = new ArrayList<Object>(DelegateComposite
-				.getSoftwareLparAllByCustomer(account));
+		ArrayList<Object> data = new ArrayList<Object>(
+				DelegateComposite.getSoftwareLparAllByCustomer(account));
 
 		if (data != null) {
 			Iterator<Object> i = data.iterator();
@@ -169,8 +173,8 @@ public class DelegateReport extends HibernateDelegate {
 			}
 		}
 
-		data = new ArrayList<Object>(DelegateHardware
-				.getHardwareLparsWithoutSoftware(account));
+		data = new ArrayList<Object>(
+				DelegateHardware.getHardwareLparsWithoutSoftware(account));
 
 		if (data != null) {
 			Iterator<Object> i = data.iterator();
@@ -210,8 +214,8 @@ public class DelegateReport extends HibernateDelegate {
 			}
 		}
 
-		data = new ArrayList<Object>(DelegateHardware
-				.getHardwaresNoActiveLparsByCustomer(account));
+		data = new ArrayList<Object>(
+				DelegateHardware.getHardwaresNoActiveLparsByCustomer(account));
 
 		if (data != null) {
 			Iterator<Object> i = data.iterator();
@@ -236,16 +240,14 @@ public class DelegateReport extends HibernateDelegate {
 					machineTypeName = h.getMachineType().getName();
 				}
 
-				list
-						.add(new Object[] {
-								account.getCustomer().getAccountNumber(),
-								account.getCustomer().getCustomerName(),
-								account.getCustomer().getCustomerType()
-										.getCustomerTypeName(),
-								account.getCustomer().getPod().getPodName(),
-								"No LPAR", type, serial, biosSerial, hwFlag,
-								"N", hwStatus, machineTypeName, customerNumber,
-								null, processorCount });
+				list.add(new Object[] {
+						account.getCustomer().getAccountNumber(),
+						account.getCustomer().getCustomerName(),
+						account.getCustomer().getCustomerType()
+								.getCustomerTypeName(),
+						account.getCustomer().getPod().getPodName(), "No LPAR",
+						type, serial, biosSerial, hwFlag, "N", hwStatus,
+						machineTypeName, customerNumber, null, processorCount });
 			}
 		}
 
@@ -253,7 +255,7 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Object[]> getReport(HardwareLparOnly report,
+	public static List<Object[]> getReport(HardwareLparOnly report,
 			HttpServletRequest request) throws ExceptionAccountAccess {
 		logger.debug("DelegateReport.getReport(HardwareLparOnly)");
 		List<Object[]> list = new ArrayList<Object[]>();
@@ -269,8 +271,8 @@ public class DelegateReport extends HibernateDelegate {
 			Session session = getSession();
 
 			list = session.getNamedQuery("reportHardwareOnlyByCustomer")
-					.setEntity("customer", account.getCustomer()).setString(
-							"status", Constants.ACTIVE).list();
+					.setEntity("customer", account.getCustomer())
+					.setString("status", Constants.ACTIVE).list();
 
 			closeSession(session);
 
@@ -282,7 +284,7 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Object[]> getReport(SoftwareLparOnly report,
+	public static List<Object[]> getReport(SoftwareLparOnly report,
 			HttpServletRequest request) throws ExceptionAccountAccess {
 		logger.debug("DelegateReport.getReport(SoftwareLparOnly)");
 		List<Object[]> list = new ArrayList<Object[]>();
@@ -299,8 +301,8 @@ public class DelegateReport extends HibernateDelegate {
 			Session session = getSession();
 
 			list = session.getNamedQuery("reportSoftwareOnlyByCustomer")
-					.setEntity("customer", account.getCustomer()).setString(
-							"status", Constants.ACTIVE).list();
+					.setEntity("customer", account.getCustomer())
+					.setString("status", Constants.ACTIVE).list();
 
 			closeSession(session);
 
@@ -327,7 +329,8 @@ public class DelegateReport extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery("reportDiscrepanciesByCustomer")
+			list = session
+					.getNamedQuery("reportDiscrepanciesByCustomer")
 					.setLong("customer",
 							account.getCustomer().getCustomerId().longValue())
 					.setString("status", Constants.ACTIVE).scroll();
@@ -342,8 +345,8 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DiscrepancySummary> getDiscrepancySummaryReport() throws HibernateException,
-			Exception {
+	public static List<DiscrepancySummary> getDiscrepancySummaryReport()
+			throws HibernateException, Exception {
 
 		logger.debug("DelegateReport.getReport(getDiscrepancySummaryReport)");
 		List<DiscrepancySummary> list = new ArrayList<DiscrepancySummary>();
@@ -364,7 +367,7 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Object[]> getReport(GlobalSummary report) {
+	public static List<Object[]> getReport(GlobalSummary report) {
 		logger.debug("DelegateReport.getReport(GlobalSummary)");
 		List<Object[]> list = new ArrayList<Object[]>();
 
@@ -384,7 +387,7 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Object[]> getReport(AccountSoftware report,
+	public static List<Object[]> getReport(AccountSoftware report,
 			HttpServletRequest request) throws ExceptionAccountAccess {
 		logger.debug("DelegateReport.getReport(AccountSoftware)");
 		List<Object[]> list = new ArrayList<Object[]>();
@@ -405,9 +408,9 @@ public class DelegateReport extends HibernateDelegate {
 			Session session = getSession();
 
 			list = session.getNamedQuery("reportLparsByAccountBySoftware")
-					.setEntity("customer", account.getCustomer()).setEntity(
-							"software", software).setString("status",
-							Constants.ACTIVE).list();
+					.setEntity("customer", account.getCustomer())
+					.setEntity("software", software)
+					.setString("status", Constants.ACTIVE).list();
 
 			closeSession(session);
 
@@ -419,7 +422,7 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Object[]> getReport(TrailsManualSoftwareLoader report,
+	public static List<Object[]> getReport(TrailsManualSoftwareLoader report,
 			HttpServletRequest request) throws ExceptionAccountAccess {
 		logger.debug("DelegateReport.getReport(TrailsManualSoftwareLoader)");
 		List<Object[]> list = new ArrayList<Object[]>();
@@ -434,7 +437,8 @@ public class DelegateReport extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session.getNamedQuery("reportTrailsManualSoftwareLoader")
+			list = session
+					.getNamedQuery("reportTrailsManualSoftwareLoader")
 					.setLong("customer_id",
 							account.getCustomer().getCustomerId().longValue())
 					.list();
@@ -453,10 +457,10 @@ public class DelegateReport extends HibernateDelegate {
 	 * @param request
 	 */
 	@SuppressWarnings("unchecked")
-    public static List<String> getReport(SoftwareDiscrepancyLoaderTemplate template,
+	public static List<String> getReport(
+			SoftwareDiscrepancyLoaderTemplate template,
 			HttpServletRequest request) {
-		logger
-				.debug("DelegateReport.getReport(SoftwareDiscrepancyLoaderTemplate)");
+		logger.debug("DelegateReport.getReport(SoftwareDiscrepancyLoaderTemplate)");
 		List<String> list = new ArrayList<String>();
 
 		try {
@@ -480,10 +484,9 @@ public class DelegateReport extends HibernateDelegate {
 	 * @param request
 	 */
 	@SuppressWarnings("unchecked")
-    public static List<String> getReport(AuthorizedAssetsLoaderTemplate template,
-			HttpServletRequest request) {
-		logger
-				.debug("DelegateReport.getReport(AuthorizedAssetsLoaderTemplate)");
+	public static List<String> getReport(
+			AuthorizedAssetsLoaderTemplate template, HttpServletRequest request) {
+		logger.debug("DelegateReport.getReport(AuthorizedAssetsLoaderTemplate)");
 		List<String> list = new ArrayList<String>();
 
 		try {
@@ -503,15 +506,15 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DepartmentScanReport> getDepartmentScanReport(String deptId)
-			throws HibernateException, Exception {
+	public static List<DepartmentScanReport> getDepartmentScanReport(
+			String deptId) throws HibernateException, Exception {
 
 		List<DepartmentScanReport> results = null;
 
 		Session session = getSession();
 
-		results = session.getNamedQuery("departmentScanReport").setLong("pod",
-				new Long(deptId).longValue()).list();
+		results = session.getNamedQuery("departmentScanReport")
+				.setLong("pod", new Long(deptId).longValue()).list();
 
 		closeSession(session);
 
@@ -519,7 +522,8 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DepartmentScanReport> getGeoScanReport() throws HibernateException, Exception {
+	public static List<DepartmentScanReport> getGeoScanReport()
+			throws HibernateException, Exception {
 
 		List<DepartmentScanReport> results = null;
 
@@ -533,15 +537,15 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DepartmentScanReport> getGeoRollupReport(String geoId)
+	public static List<DepartmentScanReport> getGeoRollupReport(String geoId)
 			throws HibernateException, Exception {
 
 		List<DepartmentScanReport> results = null;
 
 		Session session = getSession();
 
-		results = session.getNamedQuery("geoRollupReport").setLong("geo",
-				new Long(geoId).longValue()).list();
+		results = session.getNamedQuery("geoRollupReport")
+				.setLong("geo", new Long(geoId).longValue()).list();
 
 		closeSession(session);
 
@@ -549,15 +553,15 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DepartmentScanReport> getRegionRollupReport(String regionId)
-			throws HibernateException, Exception {
+	public static List<DepartmentScanReport> getRegionRollupReport(
+			String regionId) throws HibernateException, Exception {
 
 		List<DepartmentScanReport> results = null;
 
 		Session session = getSession();
 
-		results = session.getNamedQuery("regionRollupReport").setLong("region",
-				new Long(regionId).longValue()).list();
+		results = session.getNamedQuery("regionRollupReport")
+				.setLong("region", new Long(regionId).longValue()).list();
 
 		closeSession(session);
 
@@ -565,15 +569,15 @@ public class DelegateReport extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<DepartmentScanReport> getCountryCodeRollupReport(String countryId)
-			throws HibernateException, Exception {
+	public static List<DepartmentScanReport> getCountryCodeRollupReport(
+			String countryId) throws HibernateException, Exception {
 
 		List<DepartmentScanReport> results = null;
 
 		Session session = getSession();
 
-		results = session.getNamedQuery("countryCodeRollupReport").setLong(
-				"country", new Long(countryId).longValue()).list();
+		results = session.getNamedQuery("countryCodeRollupReport")
+				.setLong("country", new Long(countryId).longValue()).list();
 
 		closeSession(session);
 

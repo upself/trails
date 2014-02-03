@@ -1,9 +1,8 @@
 package com.ibm.ea.bravo.account;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,8 +16,11 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import sun.net.ftp.FtpClient;
+
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
+import com.ibm.ea.bravo.framework.properties.DelegateProperties;
 import com.ibm.ea.bravo.secure.Bluegroup;
 import com.ibm.ea.cndb.Customer;
 import com.ibm.ea.utils.EaUtils;
@@ -36,14 +38,16 @@ public abstract class DelegateAccount extends HibernateDelegate {
 
 		Session session = getSession();
 
-		size = (Integer) session.createCriteria(Customer.class).createAlias(
-				"pod", "p").add(
-				Restrictions.disjunction().add(
-						Restrictions.like("customerName", search,
-								MatchMode.ANYWHERE).ignoreCase()).add(
-						Restrictions.like("accountNumberStr", search,
-								MatchMode.ANYWHERE).ignoreCase()).add(
-						Restrictions.like("p.podName", search,
+		size = (Integer) session
+				.createCriteria(Customer.class)
+				.createAlias("pod", "p")
+				.add(Restrictions
+						.disjunction()
+						.add(Restrictions.like("customerName", search,
+								MatchMode.ANYWHERE).ignoreCase())
+						.add(Restrictions.like("accountNumberStr", search,
+								MatchMode.ANYWHERE).ignoreCase())
+						.add(Restrictions.like("p.podName", search,
 								MatchMode.ANYWHERE).ignoreCase()))
 				.setProjection(Projections.rowCount()).uniqueResult();
 
@@ -53,23 +57,26 @@ public abstract class DelegateAccount extends HibernateDelegate {
 	}
 
 	@SuppressWarnings("unchecked")
-    public static List<Account> search(String search) throws Exception {
+	public static List<Account> search(String search) throws Exception {
 		logger.debug("DelegateAccount.search " + search);
 		List<Account> list = null;
 
 		Session session = getSession();
 
-		list = session.createCriteria(Customer.class).setFetchMode(
-				"customerType", FetchMode.JOIN).setFetchMode("pod",
-				FetchMode.JOIN).setFetchMode("bluegroups", FetchMode.JOIN)
-				.createAlias("pod", "p").add(
-						Restrictions.disjunction().add(
-								Restrictions.like("customerName", search,
-										MatchMode.ANYWHERE)).add(
-								Restrictions.like("accountNumberStr", search,
-										MatchMode.ANYWHERE)).add(
-								Restrictions.like("p.podName", search,
-										MatchMode.ANYWHERE))).list();
+		list = session
+				.createCriteria(Customer.class)
+				.setFetchMode("customerType", FetchMode.JOIN)
+				.setFetchMode("pod", FetchMode.JOIN)
+				.setFetchMode("bluegroups", FetchMode.JOIN)
+				.createAlias("pod", "p")
+				.add(Restrictions
+						.disjunction()
+						.add(Restrictions.like("customerName", search,
+								MatchMode.ANYWHERE))
+						.add(Restrictions.like("accountNumberStr", search,
+								MatchMode.ANYWHERE))
+						.add(Restrictions.like("p.podName", search,
+								MatchMode.ANYWHERE))).list();
 
 		closeSession(session);
 
@@ -110,7 +117,8 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			return account;
 		}
 
-		Iterator<Bluegroup> i = account.getCustomer().getBluegroups().iterator();
+		Iterator<Bluegroup> i = account.getCustomer().getBluegroups()
+				.iterator();
 
 		while (i.hasNext()) {
 			Bluegroup bluegroup = (Bluegroup) i.next();
@@ -140,9 +148,9 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			String[] apmmAccounts = Constants.APMM_ACCOUNT_LIST.split(",");
 			if (apmmAccounts != null && apmmAccounts.length > 0) {
 				for (int i = 0; i < apmmAccounts.length; i++) {
-				     if(customerName.matches("(?i).*"+apmmAccounts[i]+".*")){
-				    	 return true;
-				     }
+					if (customerName.matches("(?i).*" + apmmAccounts[i] + ".*")) {
+						return true;
+					}
 				}
 			}
 		}
@@ -161,26 +169,28 @@ public abstract class DelegateAccount extends HibernateDelegate {
 		Session session = getSession();
 
 		// get the hardware statistics
-		count = (Long) session.getNamedQuery(
-				"accountStatisticsHardwareByCustomerId").setLong("customerId",
-				account.getCustomer().getCustomerId().longValue())
+		count = (Long) session
+				.getNamedQuery("accountStatisticsHardwareByCustomerId")
+				.setLong("customerId",
+						account.getCustomer().getCustomerId().longValue())
 				.uniqueResult();
 
 		accountStatistics.setHardwareLpars(new Integer(count.intValue()));
 
 		// get the software statistics
-		counts = (Object[]) session.getNamedQuery(
-				"accountStatisticsSoftwareByCustomerId").setLong("customerId",
-				account.getCustomer().getCustomerId().longValue())
+		counts = (Object[]) session
+				.getNamedQuery("accountStatisticsSoftwareByCustomerId")
+				.setLong("customerId",
+						account.getCustomer().getCustomerId().longValue())
 				.uniqueResult();
 
 		accountStatistics.setSoftwareDiscrepancies((Integer) counts[0]);
 		accountStatistics.setSoftwares((Integer) counts[1]);
 
 		// Get the hardware total with a scan
-		count = (Long) session.getNamedQuery(
-				"hardwareLparsWithCompositeByCustomerId").setEntity(
-				"customerId", account.getCustomer()).uniqueResult();
+		count = (Long) session
+				.getNamedQuery("hardwareLparsWithCompositeByCustomerId")
+				.setEntity("customerId", account.getCustomer()).uniqueResult();
 
 		accountStatistics
 				.setHardwareLparsWithScan(new Integer(count.intValue()));
@@ -200,9 +210,9 @@ public abstract class DelegateAccount extends HibernateDelegate {
 		}
 
 		// Get the hardware total with a scan
-		count = (Long) session.getNamedQuery(
-				"softwareLparsWithNoCompositeByCustomerId").setEntity(
-				"customer", account.getCustomer()).uniqueResult();
+		count = (Long) session
+				.getNamedQuery("softwareLparsWithNoCompositeByCustomerId")
+				.setEntity("customer", account.getCustomer()).uniqueResult();
 
 		accountStatistics.setSoftwareLparsWithoutHardwareLpar(new Integer(count
 				.intValue()));
@@ -213,29 +223,48 @@ public abstract class DelegateAccount extends HibernateDelegate {
 	}
 
 	public static boolean getMultiReport(Account account) {
-		// String filename = Constants.REPORT_DIR + "/MULTI."
-		// + account.getCustomer().getAccountNumber() + ".zip";
-		String urlString = "http://tap.raleigh.ibm.com/sam/report/MULTI."
-				+ account.getCustomer().getAccountNumber() + ".zip";
-		URL url;
-		int response = 0;
+		FtpClient fc = new FtpClient();
 		try {
-			url = new URL(urlString);
-			URLConnection connection = url.openConnection();
-			if (connection instanceof HttpURLConnection) {
-				HttpURLConnection httpConnection = (HttpURLConnection) connection;
-				httpConnection.connect();
-				response = httpConnection.getResponseCode();
+			
+			String fileName = "MULTI."
+					+ account.getCustomer().getAccountNumber() + ".zip";
+
+			String server = DelegateProperties.getProperty(
+					Constants.APP_PROPERTIES, "gsa.ftp.server");
+			String user = DelegateProperties.getProperty(
+					Constants.APP_PROPERTIES, "gsa.ftp.user");
+			String password = DelegateProperties.getProperty(
+					Constants.APP_PROPERTIES, "gsa.ftp.password");
+			String directory = DelegateProperties.getProperty(
+					Constants.APP_PROPERTIES, "gsa.ftp.directory");
+
+			fc.openServer(server);
+			fc.login(user, password);
+			fc.binary();
+			fc.cd(directory);
+			InputStream is = fc.get(fileName);
+
+			if (is != null) {
+				return true;
 			}
 		} catch (IOException e) {
-			return false;
-		}
 
-		if (response == 200) {
-			return true;
+			if (e instanceof FileNotFoundException) {
+				return false;
+			}
+			logger.error(e.getMessage(), e);
+		} finally {
+
+			if (fc != null) {
+				try {
+					fc.closeServer();
+				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
 		}
 
 		return false;
-	}
 
+	}
 }

@@ -38,6 +38,7 @@ public class Constants {
 	public static final String SOFTWARE_LPAR_ONLY = "softwareLparOnly";
 	public static final String STATUS = "status";
 	public static final String ACCOUNT_ASSETS = "accountAssets";
+	public static final String SW_MULTI_REPORT = "softwareMulti";
 	public static final String INTERNET = "internet";
 	public static final String ACCOUNT_SOFTWARE = "accountSoftware";
 	public static final String SOFTWARE_DISCREPANCY_BLANK_FILE = "/opt/IBMIHS/htdocs/en_US/downloads/BRAVO Mass Missing SW Discrepancy Template.xls";
