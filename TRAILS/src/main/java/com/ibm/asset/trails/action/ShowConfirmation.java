@@ -70,6 +70,7 @@ public class ShowConfirmation extends AccountBaseAction {
         if (getPer() == null || getPer().equalsIgnoreCase("PVU")) {
             disabled = true;
         }
+        setAllocationMethodologies(allocationMethodologyService.findAll());
     }
 
     @UserRole(userRole = UserRoleType.READER)
@@ -79,7 +80,7 @@ public class ShowConfirmation extends AccountBaseAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String addAvailableLicenses() {
-    	setAllocationMethodologies(allocationMethodologyService.findAll());
+    	
     	
         List<License> llLicense = getRecon().getLicenseList();
         boolean lbFoundLicense = false;
