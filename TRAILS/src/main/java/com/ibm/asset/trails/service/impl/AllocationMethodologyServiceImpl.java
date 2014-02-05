@@ -21,4 +21,8 @@ public class AllocationMethodologyServiceImpl extends
 		return dao;
 	}
 
+	public AllocationMethodology findByCode(String code) {
+		return dao.findByCode(code);
+	}
+
 }

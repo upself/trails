@@ -15,6 +15,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
+import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
@@ -31,6 +33,7 @@ import com.ibm.asset.trails.domain.Reconcile;
 import com.ibm.asset.trails.domain.ReconcileH;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
+import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.ReconService;
 
 @Service
@@ -40,7 +43,10 @@ public class ReconServiceImpl implements ReconService {
 
 	private EntityManager em;
 
-	@PersistenceContext(unitName="trailspd")
+	@Autowired
+	private AllocationMethodologyService allocationMethodologyService;
+
+	@PersistenceContext(unitName = "trailspd")
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
@@ -69,30 +75,34 @@ public class ReconServiceImpl implements ReconService {
 			String remoteUser, String comments, Account account) {
 		AlertUnlicensedSw alert = findAlertById(alertId);
 		boolean bReconcileValidation = reconcileValidate(alert);
-		if (bReconcileValidation){
-		Reconcile reconcile = findReconcile(alert);
-		clearUsedLicenses(reconcile, remoteUser);
-		ReconcileH reconcileH = findReconcileHistory(alert);
-		clearUsedLicenseHistories(reconcileH);
-		reconcile = updateReconcile(reconRequest, reconcile, alert, remoteUser,
-				new HashSet<UsedLicense>());
-		reconcileH = updateReconcileH(reconcile, reconcileH, alert,
-				new HashSet<UsedLicenseHistory>());
-		alert.setReconcile(reconcile);
-		alert.setReconcileH(reconcileH);
-		closeAlert(alert);
+		if (bReconcileValidation) {
+			Reconcile reconcile = findReconcile(alert);
+			clearUsedLicenses(reconcile, remoteUser);
+			ReconcileH reconcileH = findReconcileHistory(alert);
+			clearUsedLicenseHistories(reconcileH);
+			reconcile = updateReconcile(reconRequest, reconcile, alert,
+					remoteUser, new HashSet<UsedLicense>());
+			reconcileH = updateReconcileH(reconcile, reconcileH, alert,
+					new HashSet<UsedLicenseHistory>());
+			alert.setReconcile(reconcile);
+			alert.setReconcileH(reconcileH);
+			closeAlert(alert);
 		}
 	}
-	
-	private boolean reconcileValidate(AlertUnlicensedSw alert){
-		String hwStatus = alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getHardwareStatus();
-		String lparStatus = alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getLparStatus();
-		if (hwStatus.equalsIgnoreCase("ACTIVE")){
-			if (lparStatus.equalsIgnoreCase("ACTIVE")||lparStatus.equalsIgnoreCase("INACTIVE")||lparStatus.equalsIgnoreCase(null)){
-			return true;
-			 }
+
+	private boolean reconcileValidate(AlertUnlicensedSw alert) {
+		String hwStatus = alert.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getHardware().getHardwareStatus();
+		String lparStatus = alert.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getLparStatus();
+		if (hwStatus.equalsIgnoreCase("ACTIVE")) {
+			if (lparStatus.equalsIgnoreCase("ACTIVE")
+					|| lparStatus.equalsIgnoreCase("INACTIVE")
+					|| lparStatus.equalsIgnoreCase(null)) {
+				return true;
 			}
-		return false ;
+		}
+		return false;
 	}
 
 	private void closeAlert(AlertUnlicensedSw alert) {
@@ -120,6 +130,11 @@ public class ReconServiceImpl implements ReconService {
 		reconcile.setRecordTime(new Date());
 		reconcile.setRemoteUser(remoteUser);
 		reconcile.setUsedLicenses(usedLics);
+		if (reconRequest.getPer() != null) {
+			AllocationMethodology allocationMethodology = allocationMethodologyService
+					.findByCode(reconRequest.getPer().toUpperCase());
+			reconcile.setAllocationMethodology(allocationMethodology);
+		}
 		return getEntityManager().merge(reconcile);
 	}
 
@@ -136,6 +151,8 @@ public class ReconServiceImpl implements ReconService {
 		reconcileH.setRecordTime(reconcile.getRecordTime());
 		reconcileH.setRemoteUser(reconcile.getRemoteUser());
 		reconcileH.setUsedLicenses(usedLicHis);
+		reconcileH.setAllocationMethodology(reconcile
+				.getAllocationMethodology());
 		return getEntityManager().merge(reconcileH);
 	}
 
@@ -194,15 +211,16 @@ public class ReconServiceImpl implements ReconService {
 			removeUsedLicenseReconcile(ul, reconcile);
 		}
 	}
-	
-	private void clearUsedLicenses(Set<UsedLicense> usedLicenses,Set<UsedLicenseHistory> usedLicenseHistories,String remoteUser){
+
+	private void clearUsedLicenses(Set<UsedLicense> usedLicenses,
+			Set<UsedLicenseHistory> usedLicenseHistories, String remoteUser) {
 		for (UsedLicense ul : usedLicenses) {
 			getEntityManager().remove(ul);
-			
+
 		}
 		for (UsedLicenseHistory ulh : usedLicenseHistories) {
-			 getEntityManager().remove(ulh);
-			
+			getEntityManager().remove(ulh);
+
 		}
 	}
 
@@ -333,7 +351,7 @@ public class ReconServiceImpl implements ReconService {
 			liLicenseApplied = pmLicenseApplied.entrySet().iterator();
 			Set<UsedLicense> usedLicenses = new HashSet<UsedLicense>();
 			Set<UsedLicenseHistory> usedLicenseHistories = new HashSet<UsedLicenseHistory>();
-			
+
 			while (liLicenseApplied.hasNext()) {
 				leTemp = liLicenseApplied.next();
 
@@ -343,7 +361,7 @@ public class ReconServiceImpl implements ReconService {
 				ul.setCapacityType(leTemp.getKey().getCapacityType());
 				getEntityManager().persist(ul);
 				usedLicenses.add(ul);
-				
+
 				UsedLicenseHistory ulh = new UsedLicenseHistory();
 				ulh.setLicense(leTemp.getKey());
 				ulh.setUsedQuantity(leTemp.getValue());
@@ -353,51 +371,48 @@ public class ReconServiceImpl implements ReconService {
 			}
 
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
-			   boolean bReconcileValidation = reconcileValidate(lausTemp);
-			 if (bReconcileValidation){
-				if (lausTemp.isOpen()) {
-					reconcile = createReconcile(
-							lausTemp.getInstalledSoftware(),
-							lausTemp.getInstalledSoftware(), pRecon,
-							remoteUser, comments, usedLicenses,
-							usedLicenseHistories);
+				boolean bReconcileValidation = reconcileValidate(lausTemp);
+				if (bReconcileValidation) {
+					if (lausTemp.isOpen()) {
+						reconcile = createReconcile(
+								lausTemp.getInstalledSoftware(),
+								lausTemp.getInstalledSoftware(), pRecon,
+								remoteUser, comments, usedLicenses,
+								usedLicenseHistories);
 
-					AlertUnlicensedSwH aush = createAlertHistory(lausTemp);
-					aush.setAlertUnlicensedSw(lausTemp);
+						AlertUnlicensedSwH aush = createAlertHistory(lausTemp);
+						aush.setAlertUnlicensedSw(lausTemp);
 
-					// Close the alert
-					lausTemp.setOpen(false);
-					lausTemp.setRecordTime(new Date());
-					aush = getEntityManager().merge(aush);
+						// Close the alert
+						lausTemp.setOpen(false);
+						lausTemp.setRecordTime(new Date());
+						aush = getEntityManager().merge(aush);
+					} else {
+						reconcile = lausTemp.getReconcile();
+						reconcile.setParentInstalledSoftware(reconcile
+								.getParentInstalledSoftware());
+						reconcile.setReconcileType(pRecon.getReconcileType());
+						reconcile.setRecordTime(new Date());
+						reconcile.setRemoteUser(remoteUser);
+						reconcile.setComments(comments);
+						reconcile.setMachineLevel(new Integer(pRecon.getPer()
+								.equalsIgnoreCase("HWDEVICE")
+								|| pRecon.getPer().equalsIgnoreCase(
+										"HWPROCESSOR")
+								|| pRecon.getPer().equalsIgnoreCase("PVU") ? 1
+								: 0));
+
+						log.debug("Clearing licenses");
+						clearUsedLicenses(reconcile, remoteUser);
+						reconcile.setUsedLicenses(usedLicenses);
+						log.debug("Saving reconcile");
+						reconcile = getEntityManager().merge(reconcile);
+						createReconcileHistory(reconcile, usedLicenseHistories);
+					}
 				} else {
-					reconcile = lausTemp.getReconcile();
-					reconcile.setParentInstalledSoftware(reconcile
-							.getParentInstalledSoftware());
-					reconcile.setReconcileType(pRecon.getReconcileType());
-					reconcile.setRecordTime(new Date());
-					reconcile.setRemoteUser(remoteUser);
-					reconcile.setComments(comments);
-					reconcile
-							.setMachineLevel(new Integer(
-									pRecon.getPer()
-											.equalsIgnoreCase("HWDEVICE")
-											|| pRecon.getPer()
-													.equalsIgnoreCase(
-															"HWPROCESSOR")
-											|| pRecon.getPer()
-													.equalsIgnoreCase("PVU") ? 1
-											: 0));
-
-					log.debug("Clearing licenses");
-					clearUsedLicenses(reconcile, remoteUser);
-					reconcile.setUsedLicenses(usedLicenses);
-					log.debug("Saving reconcile");
-					reconcile = getEntityManager().merge(reconcile);
-					createReconcileHistory(reconcile, usedLicenseHistories);
+					clearUsedLicenses(usedLicenses, usedLicenseHistories,
+							remoteUser);
 				}
-			 } else {
-				 clearUsedLicenses(usedLicenses,usedLicenseHistories,remoteUser);			 
-			 }
 			}
 
 			return aus.getInstalledSoftware().getSoftwareLpar()
@@ -431,8 +446,13 @@ public class ReconServiceImpl implements ReconService {
 										"HWPROCESSOR") || pRecon.getPer()
 								.equalsIgnoreCase("PVU")) ? 1 : 0));
 
-		log.debug("Calling save");
 		reconcile.setUsedLicenses(usedLicenses);
+		if (pRecon.getPer() != null) {
+			AllocationMethodology allocationMethodology = allocationMethodologyService
+					.findByCode(pRecon.getPer().toUpperCase());
+			reconcile.setAllocationMethodology(allocationMethodology);
+		}
+		log.debug("Calling save");
 		reconcile = getEntityManager().merge(reconcile);
 		createReconcileHistory(reconcile, usedLicenseHistories);
 
@@ -462,6 +482,8 @@ public class ReconServiceImpl implements ReconService {
 			reconcileH.setRemoteUser(reconcile.getRemoteUser());
 			reconcileH.setMachineLevel(reconcile.getMachineLevel());
 			reconcileH.setComments(reconcile.getComments());
+			reconcileH.setAllocationMethodology(reconcile
+					.getAllocationMethodology());
 			reconcileH.setUsedLicenses(usedLicenseHistories);
 		} else {
 			reconcileH = results.get(0);
@@ -473,6 +495,8 @@ public class ReconServiceImpl implements ReconService {
 			reconcileH.setRemoteUser(reconcile.getRemoteUser());
 			reconcileH.setMachineLevel(reconcile.getMachineLevel());
 			reconcileH.setComments(reconcile.getComments());
+			reconcileH.setAllocationMethodology(reconcile
+					.getAllocationMethodology());
 
 			log.debug("Clearing license recon maps");
 			reconcileH.setUsedLicenses(usedLicenseHistories);

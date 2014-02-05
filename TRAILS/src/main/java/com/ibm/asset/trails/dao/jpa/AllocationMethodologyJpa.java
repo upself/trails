@@ -10,4 +10,10 @@ public class AllocationMethodologyJpa extends
 		AbstractGenericEntityDAOJpa<AllocationMethodology, Long> implements
 		AllocationMethodologyDao {
 
+	public AllocationMethodology findByCode(String code) {
+		return (AllocationMethodology) entityManager
+				.createNamedQuery("findAllocationMethodologyByCode")
+				.setParameter("code", code).getSingleResult();
+	}
+
 }

@@ -10,10 +10,12 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
@@ -48,8 +50,13 @@ public class ShowConfirmation extends AccountBaseAction {
 
     @Autowired
     private LicenseService licenseService;
+    
+    @Autowired
+	private AllocationMethodologyService allocationMethodologyService;
 
     private List<License> licenseList = new ArrayList<License>();
+    
+    private List<AllocationMethodology> allocationMethodologies;
 
     private String[] selectedLicenseId;
 
@@ -72,6 +79,8 @@ public class ShowConfirmation extends AccountBaseAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String addAvailableLicenses() {
+    	setAllocationMethodologies(allocationMethodologyService.findAll());
+    	
         List<License> llLicense = getRecon().getLicenseList();
         boolean lbFoundLicense = false;
 
@@ -504,4 +513,13 @@ public class ShowConfirmation extends AccountBaseAction {
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
+    
+    public List<AllocationMethodology> getAllocationMethodologies() {
+		return allocationMethodologies;
+	}
+
+	public void setAllocationMethodologies(
+			List<AllocationMethodology> allocationMethodologies) {
+		this.allocationMethodologies = allocationMethodologies;
+	}
 }

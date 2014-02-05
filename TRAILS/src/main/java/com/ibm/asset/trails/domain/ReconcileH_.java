@@ -6,7 +6,6 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-
 @StaticMetamodel(ReconcileH.class)
 public class ReconcileH_ {
 	public static volatile SingularAttribute<ReconcileH, Long> id;
@@ -19,4 +18,5 @@ public class ReconcileH_ {
 	public static volatile SingularAttribute<ReconcileH, Date> recordTime;
 	public static volatile SingularAttribute<ReconcileH, Integer> machineLevel;
 	public static volatile SingularAttribute<ReconcileH, Boolean> manualBreak;
+	public static volatile SingularAttribute<ReconcileH, AllocationMethodology> allocationMethodology;
 }

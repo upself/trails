@@ -23,138 +23,151 @@ import javax.persistence.Table;
 @Table(name = "RECONCILE_H")
 @NamedQuery(name = "reconcileHistoryByInstalledSoftwareId", query = "FROM ReconcileH WHERE installedSoftware.id = :instSwId")
 public class ReconcileH implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID")
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RECONCILE_TYPE_ID")
-    private ReconcileType reconcileType;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "RECONCILE_TYPE_ID")
+	private ReconcileType reconcileType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "INSTALLED_SOFTWARE_ID")
-    private InstalledSoftware installedSoftware;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "INSTALLED_SOFTWARE_ID")
+	private InstalledSoftware installedSoftware;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_INSTALLED_SOFTWARE_ID")
-    private InstalledSoftware parentInstalledSoftware;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PARENT_INSTALLED_SOFTWARE_ID")
+	private InstalledSoftware parentInstalledSoftware;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "H_RECONCILE_USED_LICENSE", joinColumns = @JoinColumn(name = "H_RECONCILE_ID"), inverseJoinColumns = @JoinColumn(name = "H_USED_LICENSE_ID"))
-    private Set<UsedLicenseHistory> usedLicenses = new HashSet<UsedLicenseHistory>();
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "H_RECONCILE_USED_LICENSE", joinColumns = @JoinColumn(name = "H_RECONCILE_ID"), inverseJoinColumns = @JoinColumn(name = "H_USED_LICENSE_ID"))
+	private Set<UsedLicenseHistory> usedLicenses = new HashSet<UsedLicenseHistory>();
 
-    @Column(name = "COMMENTS")
-    private String comments;
+	@Column(name = "COMMENTS")
+	private String comments;
 
-    @Column(name = "REMOTE_USER")
-    private String remoteUser;
+	@Column(name = "REMOTE_USER")
+	private String remoteUser;
 
-    @Column(name = "RECORD_TIME")
-    private Date recordTime;
+	@Column(name = "RECORD_TIME")
+	private Date recordTime;
 
-    @Column(name = "MACHINE_LEVEL")
-    private Integer machineLevel;
+	@Column(name = "MACHINE_LEVEL")
+	private Integer machineLevel;
 
-    @Column(name = "MANUAL_BREAK")
-    private boolean manualBreak;
+	@Column(name = "MANUAL_BREAK")
+	private boolean manualBreak;
 
-    public String getComments() {
-        return comments;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ALLOCATION_METHODOLOGY_ID")
+	private AllocationMethodology allocationMethodology;
 
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
+	public String getComments() {
+		return comments;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public InstalledSoftware getInstalledSoftware() {
-        return installedSoftware;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setInstalledSoftware(InstalledSoftware installedSoftware) {
-        this.installedSoftware = installedSoftware;
-    }
+	public InstalledSoftware getInstalledSoftware() {
+		return installedSoftware;
+	}
 
-    public InstalledSoftware getParentInstalledSoftware() {
-        return parentInstalledSoftware;
-    }
+	public void setInstalledSoftware(InstalledSoftware installedSoftware) {
+		this.installedSoftware = installedSoftware;
+	}
 
-    public void setParentInstalledSoftware(
-            InstalledSoftware parentInstalledSoftware) {
-        this.parentInstalledSoftware = parentInstalledSoftware;
-    }
+	public InstalledSoftware getParentInstalledSoftware() {
+		return parentInstalledSoftware;
+	}
 
-    public ReconcileType getReconcileType() {
-        return reconcileType;
-    }
+	public void setParentInstalledSoftware(
+			InstalledSoftware parentInstalledSoftware) {
+		this.parentInstalledSoftware = parentInstalledSoftware;
+	}
 
-    public void setReconcileType(ReconcileType reconcileType) {
-        this.reconcileType = reconcileType;
-    }
+	public ReconcileType getReconcileType() {
+		return reconcileType;
+	}
 
-    public Date getRecordTime() {
-        return recordTime;
-    }
+	public void setReconcileType(ReconcileType reconcileType) {
+		this.reconcileType = reconcileType;
+	}
 
-    public void setRecordTime(Date recordTime) {
-        this.recordTime = recordTime;
-    }
+	public Date getRecordTime() {
+		return recordTime;
+	}
 
-    public String getRemoteUser() {
-        return remoteUser;
-    }
+	public void setRecordTime(Date recordTime) {
+		this.recordTime = recordTime;
+	}
 
-    public void setRemoteUser(String remoteUser) {
-        this.remoteUser = remoteUser;
-    }
+	public String getRemoteUser() {
+		return remoteUser;
+	}
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other)
-            return true;
-        if (!(other instanceof ReconcileH))
-            return false;
-        final ReconcileH that = (ReconcileH) other;
-        return this.installedSoftware.getId().equals(
-                that.getInstalledSoftware().getId());
-    }
+	public void setRemoteUser(String remoteUser) {
+		this.remoteUser = remoteUser;
+	}
 
-    @Override
-    public int hashCode() {
-        return installedSoftware.getId().hashCode();
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (!(other instanceof ReconcileH))
+			return false;
+		final ReconcileH that = (ReconcileH) other;
+		return this.installedSoftware.getId().equals(
+				that.getInstalledSoftware().getId());
+	}
 
-    public Integer getMachineLevel() {
-        return machineLevel;
-    }
+	@Override
+	public int hashCode() {
+		return installedSoftware.getId().hashCode();
+	}
 
-    public void setMachineLevel(Integer machineLevel) {
-        this.machineLevel = machineLevel;
-    }
+	public Integer getMachineLevel() {
+		return machineLevel;
+	}
 
-    public boolean isManualBreak() {
-        return manualBreak;
-    }
+	public void setMachineLevel(Integer machineLevel) {
+		this.machineLevel = machineLevel;
+	}
 
-    public void setManualBreak(boolean manualBreak) {
-        this.manualBreak = manualBreak;
-    }
+	public boolean isManualBreak() {
+		return manualBreak;
+	}
 
-    public void setUsedLicenses(Set<UsedLicenseHistory> usedLicenses) {
-        this.usedLicenses = usedLicenses;
-    }
+	public void setManualBreak(boolean manualBreak) {
+		this.manualBreak = manualBreak;
+	}
 
-    public Set<UsedLicenseHistory> getUsedLicenses() {
-        return usedLicenses;
-    }
+	public void setUsedLicenses(Set<UsedLicenseHistory> usedLicenses) {
+		this.usedLicenses = usedLicenses;
+	}
+
+	public Set<UsedLicenseHistory> getUsedLicenses() {
+		return usedLicenses;
+	}
+
+	public void setAllocationMethodology(
+			AllocationMethodology allocationMethodology) {
+		this.allocationMethodology = allocationMethodology;
+	}
+
+	public AllocationMethodology getAllocationMethodology() {
+		return allocationMethodology;
+	}
 }

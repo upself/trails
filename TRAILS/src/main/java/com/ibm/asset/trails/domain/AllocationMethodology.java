@@ -3,10 +3,13 @@ package com.ibm.asset.trails.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "ALLOCATION_METHODOLOGY")
+@NamedQueries(@NamedQuery(name = "findAllocationMethodologyByCode", query = "from AllocationMethodology where code = :code"))
 public class AllocationMethodology extends AbstractDomainEntity {
 
 	private static final long serialVersionUID = 4320876101293371381L;
@@ -17,6 +20,17 @@ public class AllocationMethodology extends AbstractDomainEntity {
 
 	@Column(name = "NAME")
 	private String name;
+
+	@Column(name = "CODE")
+	private String code;
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public long getId() {
 		return id;

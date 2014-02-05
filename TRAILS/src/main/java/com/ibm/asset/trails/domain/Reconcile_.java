@@ -6,7 +6,6 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-
 @StaticMetamodel(Reconcile.class)
 public class Reconcile_ {
 	public static volatile SingularAttribute<Reconcile, Long> id;
@@ -18,4 +17,5 @@ public class Reconcile_ {
 	public static volatile SingularAttribute<Reconcile, String> remoteUser;
 	public static volatile SingularAttribute<Reconcile, Date> recordTime;
 	public static volatile SingularAttribute<Reconcile, Integer> machineLevel;
+	public static volatile SingularAttribute<Reconcile, AllocationMethodology> allocationMethodology;
 }

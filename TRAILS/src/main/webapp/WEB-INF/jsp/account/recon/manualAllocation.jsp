@@ -79,7 +79,7 @@
 		<label for="automated">Allocation methodology:</label>
 	</div>
 	<div class="float-left" style="width: 75%;">
-		<s:select name="per" list="allocationMethodologies" listKey="id"
+		<s:select name="per" list="allocationMethodologies" listKey="code"
 			listValue="name" onchange="disableLicenses(this)" />
 	</div>
 	<div class="clear"></div>
