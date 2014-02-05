@@ -47,6 +47,9 @@ mkdir -p /var/staging/logs/bravoArchival
 dos2unix /opt/staging/v2/start-all.sh
 dos2unix /opt/staging/v2/stop-all.sh
 dos2unix /opt/staging/v2/scripts/*.sh
+
+chmod -R 775 $DIR
+chgrp -R eadt $DIR
 set +x
 
 exit 0
