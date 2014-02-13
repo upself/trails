@@ -306,6 +306,7 @@ public class ReconServiceImpl implements ReconService {
 		reconcileH.setReconcileType(reconcile.getReconcileType());
 		reconcileH.setRecordTime(new Date());
 		reconcileH.setRemoteUser(remoteUser);
+		reconcileH.setAllocationMethodology(reconcile.getAllocationMethodology());
 		return getEntityManager().merge(reconcileH);
 	}
 
