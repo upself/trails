@@ -47,7 +47,7 @@ public class AlertUnlicensedSoftwareDAOJpa extends
         }
 
         if (overwriteAuto) {
-            lsbQuery.append(lsbQuery.length() > 0 ? "UNION " : "")
+            lsbQuery.append(lsbQuery.length() > 0 ? " UNION " : "")
                     .append("SELECT AUS.Id FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software_Item SI, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT")
                     .append(lsOwnerFromClause)
                     .append(" WHERE SL.Customer_Id = :customerId AND SI.Id = :softwareItemId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SI.Id = IS.Software_Id AND R.Installed_Software_Id = IS.Id AND RT.Id = R.Reconcile_Type_Id AND RT.Is_Manual = 0 ")
@@ -55,7 +55,7 @@ public class AlertUnlicensedSoftwareDAOJpa extends
         }
 
         if (overwriteManual) {
-            lsbQuery.append(lsbQuery.length() > 0 ? "UNION " : "")
+            lsbQuery.append(lsbQuery.length() > 0 ? " UNION " : "")
                     .append("SELECT AUS.Id FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software_Item SI, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT")
                     .append(lsOwnerFromClause)
                     .append(" WHERE SL.Customer_Id = :customerId AND SI.Id = :softwareItemId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SI.Id = IS.Software_Id AND R.Installed_Software_Id = IS.Id AND RT.Id = R.Reconcile_Type_Id AND RT.Is_Manual = 1 ")
