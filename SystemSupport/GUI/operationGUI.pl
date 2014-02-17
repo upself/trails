@@ -30,6 +30,9 @@
 # 2013-10-12  Liu Hai(Larry) 1.3.0           Adjust Operation Queue Table Data Column to be fixed width
 # 2013-10-14  Liu Hai(Larry) 1.3.1           Generate Operation Parameters Input String whatever Operation Parameters have values or not. The Operation Parameters String has included 10 values using ^ char to seperate. For example: TI30326-36768^reconEngine.pl^^^^^^^^
 # 2013-11-05  Liu Hai(Larry) 1.3.2           System Support And Self Healing Service Components - Phase 3 - Add the special char '\' support for the Operation Parameters 
+###################################################################################################################################################################################################
+#                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
+# 2014-02-13  Liu Hai(Larry) 1.6.0           Add Operation Parameter Value Type Check Support Feature
 #
 
 #Load required modules
@@ -108,12 +111,16 @@ my $PARAMETER_DISPLAY_FLAG_N_VALUE        = "N";#Hidden
 #Parameter Value Types
 my $CHR_VALUE_TYPE                        = "CHR";#String Type
 my $INT_VALUE_TYPE                        = "INT";#Integer Type
-my $ALL_VALUE_TYPE                        = "ALL";#String and Integer are ok
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
+my $POSINT_VALUE_TYPE                     = "POSINT";#Positive Integer Type [+0-9]
+my $NEGINT_VALUE_TYPE                     = "NEGINT";#Negative Integer Type [-0-9]
+my $ANY_VALUE_TYPE                        = "ANY";#Any String,Integer and Specail Chars
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 #Parameter Required Flag Values
 my $PARAMETER_REQUIRED_FLAG_R_VALUE       = "R";#Required
 my $PARAMETER_REQUIRED_FLAG_N_VALUE       = "N";#Non Required
 #Operation Parameter Field Default Definition
-my $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION = "N|Default Label|ALL|N";
+my $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION = "N|Default Label|ANY|N";
 
 #Operation Meta Data Vars
 my $metaOperationSequenceCode;#For example, "OPT001"
@@ -297,22 +304,26 @@ sub addJavascriptLogic{
   print "        //Operation Parameter Meta Data Indexes\n";
   print "        var PARAMETER_DISPLAY_FLAG_INDEX	 = 0;//Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'\n";
   print "        var PARAMETER_DISPLAY_LABEL_INDEX	 = 1;//Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'\n";
-  print "        var PARAMETER_VALUE_TYPE_INDEX	     = 2;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ALL:String and Integer are ok). For example: 'CHR'\n";
+  print "        var PARAMETER_VALUE_TYPE_INDEX	     = 2;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ANY:Any String,Integer and Specail Chars). For example: 'CHR'\n";
   print "        var PARAMETER_REQUIRED_FLAG_INDEX   = 3;//Parameter Required Flag: R or N(R: Required, N: Non Required). For example: 'R'\n";
   print "        //Parameter Dispaly Flag Values\n";
   print "        var PARAMETER_DISPLAY_FLAG_Y_VALUE  = 'Y';//Display\n";
   print "        var PARAMETER_DISPLAY_FLAG_N_VALUE  = 'N';//Hidden\n";
   print "        //Parameter Value Types\n";
-  print "        var CHR_VALUE_TYPE                  = 'CHR';//String Type\n";
-  print "        var INT_VALUE_TYPE                  = 'INT';//Integer Type\n";
-  print "        var ALL_VALUE_TYPE                  = 'ALL';//String and Integer are ok\n";
+  print "        var CHR_VALUE_TYPE                  = 'CHR';//String Type - [a-zA-Z]\n";
+  print "        var INT_VALUE_TYPE                  = 'INT';//Integer Type - [0-9]\n";
+  print "        //Added by Larry for System Support And Self Healing Service Components - Phase 6 Start\n";
+  print "        var POSINT_VALUE_TYPE               = 'POSINT';//Positive Integer Type - [+0-9]\n";
+  print "        var NEGINT_VALUE_TYPE               = 'NEGINT';//Negative Integer Type - [-0-9]\n";
+  print "        var ANY_VALUE_TYPE                  = 'ANY';//Any String,Integer and Specail Chars\n";
+  print "        //Added by Larry for System Support And Self Healing Service Components - Phase 6 End\n";
   print "        //Parameter Required Flag Values\n";
   print "        var PARAMETER_REQUIRED_FLAG_R_VALUE = 'R';//Required\n";
   print "        var PARAMETER_REQUIRED_FLAG_N_VALUE = 'N';//Non Required\n";
   print "        //Operation Parameter Meta Data Vars\n";
   print "        var metaOperationParameterDisplayFlag;//Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'\n";
   print "        var metaOperationParameterDisplayLabel;//Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'\n";
-  print "        var metaOperationParameterValueType;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ALL:String and Integer are ok). For example: 'CHR'\n";
+  print "        var metaOperationParameterValueType;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ANY:Any String,Integer and Specail Chars). For example: 'CHR'\n";
   print "        var metaOperationParameterRequiredFlag;//Parameter Required Flag: R or N(R: Required, N: Non Required). For example: 'R'\n";
   print "        //Tr Default Prefix Definition\n";
   print "        var TR_PARM_FLD                     = 'tr_parm_fld'\n";
@@ -384,8 +395,9 @@ sub addJavascriptLogic{
   print "            var operationParameterField = operationParameterFieldsArray[i];\n";
   print "            var operationParameterFieldArray = operationParameterField.split('|');\n";
   print "            var operationParameterDisplayFlag;\n";
-  print "            var operationParameterRequiredFlag;\n";
   print "            var operationParameterLabelValue;\n";
+  print "            var operationParameterValueType;//Added by Larry for System Support And Self Healing Service Components - Phase 6\n";
+  print "            var operationParameterRequiredFlag;\n";
   print "            var operationParameterInputFieldObject;\n";
   print "            var operationParameterInputFieldValue;\n";
   print "            for(var j=0; j<operationParameterFieldArray.length; j++){\n";
@@ -401,6 +413,11 @@ sub addJavascriptLogic{
   print "              else if(j == PARAMETER_DISPLAY_LABEL_INDEX){\n";
   print "                operationParameterLabelValue = operationParameterFieldArray[j];\n";
   print "              }//end else if(j == PARAMETER_DISPLAY_LABEL_INDEX)\n";
+  print "              //Added by Larry for System Support And Self Healing Service Components - Phase 6 Start\n";
+  print "              else if(j == PARAMETER_VALUE_TYPE_INDEX){\n";
+  print "                operationParameterValueType = operationParameterFieldArray[j];\n";
+  print "              }//end else if(j == PARAMETER_VALUE_TYPE_INDEX)\n";
+  print "              //Added by Larry for System Support And Self Healing Service Components - Phase 6 End\n";
   print "              else if(j == PARAMETER_REQUIRED_FLAG_INDEX){\n";
   print "                var parameterRequiredFlagValue = operationParameterFieldArray[j];\n";
   print "                if(parameterRequiredFlagValue == PARAMETER_REQUIRED_FLAG_R_VALUE){\n";
@@ -421,6 +438,30 @@ sub addJavascriptLogic{
   print "              operationParameterInputFieldObject.focus();//Set focus if there is no input value for operation parameter input field\n";
   print "              return false;\n";
   print "            }//end if((operationParameterInputFieldValue == '') && (operationParameterDisplayFlag == true) && (operationParameterRequiredFlag == true))\n";
+  print "            //Added by Larry for System Support And Self Healing Service Components - Phase 6 Start\n";
+  print "            if((operationParameterInputFieldValue != '') && (operationParameterDisplayFlag == true)){\n";
+  print "              if((operationParameterValueType == INT_VALUE_TYPE) && (/^[0-9]+\$/.test(operationParameterInputFieldValue) == false)){\n";
+  print "                alert('You must input integer [0-9] for {'+operationParameterLabelValue+'} field.');\n";
+  print "                operationParameterInputFieldObject.focus();//Set focus if the input value is not integer [0~9] for operation parameter input field\n";
+  print "                return false;\n";
+  print "              }//end if((operationParameterValueType == INT_VALUE_TYPE) && (/^[0-9]+\$/.test(operationParameterInputFieldValue) == false))\n";
+  print "              if((operationParameterValueType == POSINT_VALUE_TYPE) && (/^\\+?[1-9][0-9]*\$/.test(operationParameterInputFieldValue) == false)){\n";
+  print "                alert('You must input positive integer for {'+operationParameterLabelValue+'} field.');\n";
+  print "                operationParameterInputFieldObject.focus();//Set focus if the input value is not positive integer for operation parameter input field\n";
+  print "                return false;\n";
+  print "              }//end if((operationParameterValueType == POSINT_VALUE_TYPE) && (/^\\+?[1-9][0-9]*\$/.test(operationParameterInputFieldValue) == false))\n";
+  print "              if((operationParameterValueType == NEGINT_VALUE_TYPE) && (/^\\-[1-9][0-9]*\$/.test(operationParameterInputFieldValue) == false)){\n";
+  print "                alert('You must input negative integer for {'+operationParameterLabelValue+'} field.');\n";
+  print "                operationParameterInputFieldObject.focus();//Set focus if the input value is not negative integer for operation parameter input field\n";
+  print "                return false;\n";
+  print "              }//end if((operationParameterValueType == NEGINT_VALUE_TYPE) && (/^\\-[1-9][0-9]*\$/.test(operationParameterInputFieldValue) == false))\n";
+  print "              if((operationParameterValueType == CHR_VALUE_TYPE) && (/^[A-Za-z]+\$/.test(operationParameterInputFieldValue) == false)){\n";
+  print "                alert('You must input char [a-zA-Z] for {'+operationParameterLabelValue+'} field.');\n";
+  print "                operationParameterInputFieldObject.focus();//Set focus if the input value is not char [a-zA-Z] for operation parameter input field\n";
+  print "                return false;\n";
+  print "              }//end if((operationParameterValueType == CHR_VALUE_TYPE) && (/^[A-Za-z]+\$/.test(operationParameterInputFieldValue) == false))\n";
+  print "            }//end if((operationParameterInputFieldValue != '') && (operationParameterDisplayFlag == true))\n";
+  print "            //Added by Larry for System Support And Self Healing Service Components - Phase 6 End\n";
   print "          }//end for(var i=2; i<operationParameterFieldsArray.length; i++)\n";
   print "          return true;\n";
   print "        }\n";
@@ -1277,7 +1318,7 @@ sub setDB2ENVPath{
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/eaadmin/sqllib/db2profile";
+	  $DB_ENV = "/home/tap/sqllib/db2profile";
 	}
 }
 
@@ -1289,7 +1330,7 @@ sub setDBConnInfo{
       $db_password = "apr03db2";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $db_url = "dbi:DB2:STAGTEST";
+	  $db_url = "dbi:DB2:STAGING";
       $db_userid = "eaadmin";
       $db_password = "apr03db2";
 	}

@@ -29,6 +29,9 @@
 #                                            Phase 5 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 5'
 # 2013-11-21  Liu Hai(Larry) 1.5.0           Add New Operation 'RESTART_BRAVO_WEB_APPLICATION' And Filter Logic Support on TAP Server to process this new Operation
 #                                            Add New Operation 'RESTART_TRAILS_WEB_APPLICATION' And Filter Logic Support on TAP Server to process this new Operation 
+###################################################################################################################################################################################################
+#                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
+# 2014-01-27  Liu Hai(Larry) 1.6.0           Add New Operation 'STAGING_BRAVO_DATA_SYNC' And Filter Logic Support on TAP Server to process this new Operation
 #
 
 #Load required modules
@@ -58,6 +61,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER   = "RESTART_CHILD_LOADER_ON_TAP_SERVER";
 my $RESTART_IBMIHS_ON_TAP_SERVER         = "RESTART_IBMIHS_ON_TAP_SERVER";#Added by Larry for System Support And Self Healing Service Components - Phase 4
 my $RESTART_BRAVO_WEB_APPLICATION        = "RESTART_BRAVO_WEB_APPLICATION";#Added by Larry for System Support And Self Healing Service Components - Phase 5
 my $RESTART_TRAILS_WEB_APPLICATION       = "RESTART_TRAILS_WEB_APPLICATION";#Added by Larry for System Support And Self Healing Service Components - Phase 5
+my $STAGING_BRAVO_DATA_SYNC              = "STAGING_BRAVO_DATA_SYNC";#Added by Larry for System Support And Self Healing Service Components - Phase 6
 #Only can be processed on TAP3 Server
 my $RESTART_LOADER_ON_TAP3_SERVER        = "RESTART_LOADER_ON_TAP3_SERVER";
 
@@ -490,7 +494,7 @@ sub setDB2ENVPath{
       $DB_ENV = '/db2/tap/sqllib/db2profile';
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
+	  $DB_ENV = '/home/tap/sqllib/db2profile';
 	}
     elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
@@ -543,6 +547,7 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
       && $operationNameCode ne $RESTART_IBMIHS_ON_TAP_SERVER#Added by Larry for System Support And Self Healing Service Components - Phase 4
 	  && $operationNameCode ne $RESTART_BRAVO_WEB_APPLICATION#Added by Larry for System Support And Self Healing Service Components - Phase 5
       && $operationNameCode ne $RESTART_TRAILS_WEB_APPLICATION#Added by Larry for System Support And Self Healing Service Components - Phase 5
+      && $operationNameCode ne $STAGING_BRAVO_DATA_SYNC#Added by Larry for System Support And Self Healing Service Components - Phase 6
 	  ){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    

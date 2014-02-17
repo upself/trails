@@ -43,6 +43,9 @@
 #                                            Phase 5 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 5'
 # 2013-11-20  Liu Hai(Larry) 1.5.0           System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_BRAVO_WEB_APPLICATION' Support Feature  
 #                                            System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_TRAILS_WEB_APPLICATION' Support Feature
+###################################################################################################################################################################################################
+#                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
+# 2014-01-27  Liu Hai(Larry) 1.6.0           System Support And Self Healing Service Components - Phase 6 - Add 'STAGING_BRAVO_DATA_SYNC' Support Feature  
 #
 
 #Load required modules
@@ -108,6 +111,10 @@ my $RESTART_IBMIHS_ON_TAP_SERVER              = "RESTART_IBMIHS_ON_TAP_SERVER";#
 my $RESTART_BRAVO_WEB_APPLICATION             = "RESTART_BRAVO_WEB_APPLICATION";
 my $RESTART_TRAILS_WEB_APPLICATION            = "RESTART_TRAILS_WEB_APPLICATION";
 #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
+#Tool Group
+my $STAGING_BRAVO_DATA_SYNC                   = "STAGING_BRAVO_DATA_SYNC";
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
@@ -177,7 +184,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER_RELATED_TICKET_NUMBER_INDEX = 0;#Related 
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_CHILD_LOADER_NAME_INDEX     = 1;#Child Loader Name(Required) - For example: softwareFilterToStagingChild.pl
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX     = 2;#Bank Account Name(Required) - For example: GTAASCCM
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX          = 3;#Debug Option(Required) - For example: YES or NO
-my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Required) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
+my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Optional) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
 
 my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
 #Invoked Command Parameter Definition Indexes
@@ -275,6 +282,24 @@ my $LOADER_RUN_ONCE_MODE = "run-once";
 my $loaderRunningMode;#var used to store loader running mode - For example: "start/stop/run-once"
 my $RUN_ONCE_LOADER_LIST = "/swcmToStaging.pl/";#var used to store run-once loader list - For example: "swcmToStaging.pl"
 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
+#Staging Bravo Data SYNC Script Existing Path
+my $STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH           = "/opt/staging/v2/";
+#Staging Bravo Data SYNC Script PATH Name
+my $STAGING_BRAVO_DATA_SYNC_SCRIPT_PATH_NAME           = "./misc/stagingSyncGENAdvanceChild.pl";
+#Staging Bravo Data SYNC Default Log Path
+my $STAGING_BRAVO_DATA_SYNC_DEFAULT_LOG_PATH           = "/var/staging/logs/stagingSyncGENAdvance/";
+#Staging Bravo Data SYNC Default Log Name Prefix
+my $STAGING_BRAVO_DATA_SYNC_DEFAULT_LOG_NAME_PREFIX    = "stagingSyncGENAdvanceChild.log";
+#Staging Bravo Data SYNC Script Marks
+my $STAGING_BRAVO_DATA_SYNC_SCRIPT_ACCOUNT_NUMBER_MAKR = "-a";
+my $STAGING_BRAVO_DATA_SYNC_SCRIPT_HOSTNAME_MAKR       = "-h";
+my $STAGING_BRAVO_DATA_SYNC_SCRIPT_LOG_FILE_MAKR       = "-l";
+
+my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL = "SELECT COUNT(*) FROM CUSTOMER WHERE ACCOUNT_NUMBER = ? AND STATUS = 'ACTIVE' WITH UR";
+my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT(*) FROM SOFTWARE_LPAR SL, CUSTOMER C WHERE C.ACCOUNT_NUMBER = ? AND SL.NAME = ? AND C.CUSTOMER_ID = SL.CUSTOMER_ID AND C.STATUS = 'ACTIVE' AND SL.STATUS ='ACTIVE' WITH UR";
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 
 main();
 
@@ -1392,6 +1417,273 @@ sub coreOperationProcess{
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION || $operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION)
     #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
+	#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
+	elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC#STAGING_BRAVO_DATA_SYNC
+	){
+      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+         #Operation has been started to be processed
+         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+         $operationStartedFlag = $TRUE;#Operation has been started to process
+       }
+
+       my $relatedTicketNumber;#var used to store related ticket number - For example: TI30620-56800
+	   my $accountNumber;#var used to store account number - For example: 135120
+	   my $hostname;#var used to store hostname - For example: zhysztpc
+	   my $logFile;#var used to store log file - For example: /var/staging/logs/stagingSyncGENAdvance/stagingSyncGENAdvanceChild.log.135120
+       my $inputParameterValuesValidationFlag = $TRUE;#var used to store input parameter values validation flag - set $TRUE as the default value
+	   my $processedInvokedCommand;#var used to store processed invoked command
+
+	   $relatedTicketNumber = $operationParameter1;
+	   print LOG "The Staging Bravo Data SYNC - The Operation Parameter - The Related Ticket Number: {$relatedTicketNumber}\n";
+       
+	   #Account Number Validation Check
+	   $accountNumber = $operationParameter2;
+	   print LOG "The Staging Bravo Data SYNC - The Operation Parameter - The Account Number: {$accountNumber}\n";
+	   my $certainAccountNumberCountNumber = getCountNumberForCertainAccountNumberFunction($bravoConnection,$accountNumber);
+	   if($certainAccountNumberCountNumber == 0){
+		 $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		 if($operationFailedComments ne ""){
+		   $operationFailedComments.="There is no account defined with account number: {$accountNumber}<br>";  
+		 }#end if($operationFailedComments ne "")
+		 else{
+		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		   $operationFailedComments.="There is no account defined with account number: {$accountNumber}<br>";
+		 }#end else
+		 print LOG "The Staging Bravo Data SYNC - There is no account defined with account number: {$accountNumber}\n";
+	   }#end if($certainAccountNumberCountNumber == 0)
+	   elsif($certainAccountNumberCountNumber == 1){
+		 print LOG "The Staging Bravo Data SYNC - There is one account defined with account number: {$accountNumber}\n";
+	   }#end elsif($certainAccountNumberCountNumber == 1)
+	   else{
+		 $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		 if($operationFailedComments ne ""){
+		   $operationFailedComments.="There are more than one account defined with account number: {$accountNumber}<br>";  
+		 }#end if($operationFailedComments ne "")
+		 else{
+		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		   $operationFailedComments.="There are more than one account defined with account number: {$accountNumber}<br>";
+		 }#end else
+		 print LOG "The Staging Bravo Data SYNC - There are more than one account defined with account number: {$accountNumber}\n";
+	   }#end else
+ 
+	     #Account Number and Host Name Validation Check
+         $hostname = $operationParameter3;
+	     print LOG "The Staging Bravo Data SYNC - The Operation Parameter - The Hostname: {$hostname}\n";
+	   if($hostname ne ""){
+         my $countNumberForCertainAccountNumberAndHostname = getCountNumberForCertainAccountNumberAndHostnameFunction($bravoConnection,$accountNumber,$hostname);
+         if($countNumberForCertainAccountNumberAndHostname == 0){
+		   $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="There is no software lpar defined with account number: {$accountNumber} and hostname: {$hostname}<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		     $operationFailedComments.="There is no software lpar defined with account number: {$accountNumber} and hostname: {$hostname}<br>";
+		   }#end else
+		   print LOG "The Staging Bravo Data SYNC - There is no software lpar defined with account number: {$accountNumber} and hostname: {$hostname}\n";
+	     }#end if($countNumberForCertainAccountNumberAndHostname == 0)
+	     elsif($countNumberForCertainAccountNumberAndHostname == 1){
+		   print LOG "The Staging Bravo Data SYNC - There is one software lpar defined with account number: {$accountNumber} and hostname: {$hostname}\n";
+	     }#end elsif($countNumberForCertainAccountNumberAndHostname == 1)
+	     else{
+		   $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="There are more than one software lpar defined with account number: {$accountNumber} and hostname: {$hostname}<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		     $operationFailedComments.="There are more than one software lpar defined with account number: {$accountNumber} and hostname: {$hostname}<br>";
+		   }#end else
+		   print LOG "The Staging Bravo Data SYNC - There are more than one software lpar defined with account number: {$accountNumber} and hostname: {$hostname}\n";
+	     }#end else
+	   }#end if($hostname ne "")
+	  
+	   $logFile = $operationParameter4;
+	   print LOG "The Staging Bravo Data SYNC - The Operation Parameter - Log File: {$logFile}\n";
+	   if($logFile eq ""){#If the log file is empty, then set the default log file - For exmaple: /var/staging/logs/stagingSyncGENAdvance/stagingSyncGENAdvanceChild.log.103590
+	     $logFile = $STAGING_BRAVO_DATA_SYNC_DEFAULT_LOG_PATH.$STAGING_BRAVO_DATA_SYNC_DEFAULT_LOG_NAME_PREFIX.".".$accountNumber;
+		 print LOG "The Staging Bravo Data SYNC - The Default Log File: {$logFile} has been set due that there is no value provided from the front end Operation GUI.\n";
+	   }#end if($logFile eq "")
+	   else{
+	       #Log File Validation Check
+		   my $logFileValidFlag = $TRUE;#var used to store the log file valid falg. set $TRUE as the initial default value
+
+		   #Check if the log file includes the invalid file path char '\'
+		   if($logFileValidFlag == $TRUE){
+             my $backslashIndexPosition;#var used to store the backslash index position value
+             $backslashIndexPosition = index($logFile,$BACKSLASH);
+		     if($backslashIndexPosition!=-1){
+		       $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";
+		       }#end else
+		       print LOG "The Staging Bravo Data SYNC - The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.\n"; 
+		     }#end if($backslashIndexPosition!=-1)
+		   }#end if($logFileValidFlag == $TRUE)
+
+           #Check if the log file is a valid one which includes '/home'. It means that the log file can only be outputed into the '/home' folder path
+           if($logFileValidFlag == $TRUE){
+		     my $logFileStrLength = length($logFile);
+		     if($logFileStrLength <= 6){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Staging Bravo Data SYNC - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
+
+		   if($logFileValidFlag == $TRUE){
+		     my $subLogFileStr = substr($logFile,0,5);
+		     if($subLogFileStr ne $HOME_PATH){#The valid log file must include '/home/' substring in it. So the vaild length of log file must > 6. For example: '/home/log.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Staging Bravo Data SYNC - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
+
+		   if($logFileValidFlag == $TRUE){
+		     my $logFileLastChar = substr($logFile,length($logFile)-1,1);
+		     if($logFileLastChar eq $SLASH){#The valid log file cannot be a file path - For example: '/home/liuhaidl/logs/sampleLog.txt'
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
+		       }#end else
+		       print LOG "The Staging Bravo Data SYNC - The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		     }#end if($subLogFileStr ne $HOME_PATH)
+		   }#end if($logFileValidFlag == $TRUE)
+        
+		   #Check if the log path exists or not
+           if($logFileValidFlag == $TRUE){
+		     my $lastSlashIndexPosition = rindex($logFile,$SLASH);
+		     my $logPath = substr($logFile,0,$lastSlashIndexPosition);
+             print LOG "The Staging Bravo Data SYNC - The Target Output Log File Path: {$logPath}\n";
+		     if(-e $logPath){
+		       print LOG "The Staging Bravo Data SYNC - The Target Output Log File Path: {$logPath} exists.\n";    
+		     }#end if(-e $logPath)
+		     else{
+               $logFileValidFlag = $FALSE;
+		       $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		       if($operationFailedComments ne ""){
+		         $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";  
+		       }#end if($operationFailedComments ne "")
+		       else{
+		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                 $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";
+		       }#end else
+		       print LOG "The Staging Bravo Data SYNC - The Target Output Log File Path: {$logPath} doesn't exist.\n";
+		     }#end else
+		   }#end if($logFileValidFlag == $TRUE)
+	   }#end else
+         
+       #If all the input parameter values are valid, then invokes the target 'Staging Bravo Data SYN Script'  
+	   if($inputParameterValuesValidationFlag == $TRUE){
+		 #1. Generate the target processed invoked command - For example: "./misc/stagingSyncGENAdvanceChild.pl -a 135120 -h zhysztpc -l /var/staging/logs/stagingSyncGENAdvance/stagingSyncGENAdvance.log.135120"
+	     $processedInvokedCommand = "";
+         $processedInvokedCommand.=$STAGING_BRAVO_DATA_SYNC_SCRIPT_PATH_NAME;#append "./misc/stagingSyncGENAdvanceChild.pl"
+         $processedInvokedCommand.=" $STAGING_BRAVO_DATA_SYNC_SCRIPT_ACCOUNT_NUMBER_MAKR $accountNumber";#append "-a 135120"
+		 if($hostname ne ""){
+		   $processedInvokedCommand.=" $STAGING_BRAVO_DATA_SYNC_SCRIPT_HOSTNAME_MAKR $hostname";#append "-h zhysztpc" 
+		 }
+         $processedInvokedCommand.=" $STAGING_BRAVO_DATA_SYNC_SCRIPT_LOG_FILE_MAKR $logFile";#append "-l /var/staging/logs/stagingSyncGENAdvance/stagingSyncGENAdvance.log.135120"
+         print LOG "The Staging Bravo Data SYNC - The Processed Invoked Command {$processedInvokedCommand}\n";
+
+		 #2. Invoke the target processed command  
+		 #Switch to the /opt/staging/v2 folder first
+		 my $switchFolderCmdExecResult = system('cd $STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH');
+		 if($switchFolderCmdExecResult == 0){
+		   print LOG "The Staging Bravo Data SYNC - The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched successfully.\n";
+		   #Invoke the target staging bravo data sync script
+		   my $invokeStagingBravoDataSYNCScriptCmdExecResult = system("$processedInvokedCommand");
+		   if($invokeStagingBravoDataSYNCScriptCmdExecResult == 0){
+			 print LOG "The Staging Bravo Data SYNC - The Processed Invoked Command: {$processedInvokedCommand} has been executed successfully.\n";
+           }#end if($invokeStagingBravoDataSYNCScriptCmdExecResult == 0)
+		   else{
+			 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+			 if($operationFailedComments ne ""){
+			   $operationFailedComments.="The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.<br>";  
+			 }#end if($operationFailedComments ne "")
+			 else{
+			   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+			   $operationFailedComments.="The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.<br>";
+			 }#end else 
+			 print LOG "The Staging Bravo Data SYNC - The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.\n";
+		   }#end else   
+		 }#end if($switchFolderCmdExecResult == 0)
+		 else{
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+			 $operationFailedComments.="The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched failed.<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+			 $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+			 $operationFailedComments.="The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched failed.<br>";
+		   }#end else 
+		   print LOG "The Staging Bravo Data SYNC - The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched failed.\n";
+		 }#end else
+         
+		 #3. Change the group of the log file to 'users' to let the log file downloaded
+		 my $changeGroupCommand = "chgrp users $logFile";
+		 my $logFileChangedGroupFlag = system("$changeGroupCommand");
+		 if($logFileChangedGroupFlag == 0){
+		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
+		 }#end if($logFileChangedGroupFlag == 0)
+		 else{
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+			 $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
+		   }#end else
+		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
+		 }#end else
+
+		 #4. Set Operation Success Specail Comments to include Log File Value
+		 if($operationResultFlag == $OPERATION_SUCCESS){
+		   $operationSuccessSpecialFlag = $TRUE;
+		   $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+		   $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.";
+		   print LOG "The Staging Bravo Data SYNC - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
+		 }#end if($operationResultFlag == $OPERATION_SUCCESS)
+	   }#end if($inputParameterValuesValidationFlag == $TRUE)
+
+	   $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
+	#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
     elsif($operationNameCode eq $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT){#DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT
       if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
          #Operation has been started to be processed
@@ -1709,3 +2001,50 @@ sub printMessageWithTimeStamp{
   print LOG $messageWithTimeStamp;
 }
 #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
+#my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL = "SELECT COUNT(*) FROM CUSTOMER WHERE ACCOUNT_NUMBER = ? AND STATUS = 'ACTIVE' WITH UR";
+sub getCountNumberForCertainAccountNumberFunction{
+  my $connection = shift;
+  my $accountNumber = shift;
+  my @countNumberRowForCertainAccountNumber;
+  my $countNumberForCertainAccountNumber;
+  
+  $connection->prepareSqlQuery(queryCountNumberForCertainAccountNumber());
+  my $sth = $connection->sql->{countNumberForCertainAccountNumber};
+
+  $sth->execute($accountNumber);
+  @countNumberRowForCertainAccountNumber = $sth->fetchrow_array();
+  $countNumberForCertainAccountNumber = $countNumberRowForCertainAccountNumber[0]; 
+  $sth->finish;
+  return $countNumberForCertainAccountNumber;
+}
+
+sub queryCountNumberForCertainAccountNumber{
+  print LOG "[queryCountNumberForCertainAccountNumber] Query SQL: {$GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL}\n";
+  return ('countNumberForCertainAccountNumber', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL);
+}
+
+#my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT(*) FROM SOFTWARE_LPAR SL, CUSTOMER C WHERE C.ACCOUNT_NUMBER = ? AND SL.NAME = ? AND C.CUSTOMER_ID = SL.CUSTOMER_ID AND C.STATUS = 'ACTIVE' AND SL.STATUS ='ACTIVE' WITH UR";
+sub getCountNumberForCertainAccountNumberAndHostnameFunction{
+  my $connection = shift;
+  my $accountNumber = shift;
+  my $hostname = shift;
+  my @countNumberRowForCertainAccountNumberAndHostname;
+  my $countNumberForCertainAccountNumberAndHostname;
+  
+  $connection->prepareSqlQuery(queryCountNumberForCertainAccountNumberAndHostname());
+  my $sth = $connection->sql->{countNumberForCertainAccountNumberAndHostname};
+
+  $sth->execute($accountNumber,$hostname);
+  @countNumberRowForCertainAccountNumberAndHostname = $sth->fetchrow_array();
+  $countNumberForCertainAccountNumberAndHostname = $countNumberRowForCertainAccountNumberAndHostname[0]; 
+  $sth->finish;
+  return $countNumberForCertainAccountNumberAndHostname;
+}
+
+sub queryCountNumberForCertainAccountNumberAndHostname{
+  print LOG "[queryCountNumberForCertainAccountNumberAndHostname] Query SQL: {$GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL}\n";
+  return ('countNumberForCertainAccountNumberAndHostname', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL);
+}
+#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
