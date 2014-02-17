@@ -402,6 +402,11 @@ public class ReconServiceImpl implements ReconService {
 										"HWPROCESSOR")
 								|| pRecon.getPer().equalsIgnoreCase("PVU") ? 1
 								: 0));
+						if (pRecon.getPer() != null) {
+							AllocationMethodology allocationMethodology = allocationMethodologyService
+									.findByCode(pRecon.getPer().toUpperCase());
+							reconcile.setAllocationMethodology(allocationMethodology);
+						}
 
 						log.debug("Clearing licenses");
 						clearUsedLicenses(reconcile, remoteUser);
