@@ -407,19 +407,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_customer_log a where
-            exists ( select b.id from recon_customer_log b where b.id = ?
-            and a.customer_id = b.customer_id 
-            and a.hw_count = b.hw_count 
-            and a.hw_avg = b.hw_avg 
-            and a.hw_lpar_count = b.hw_lpar_count 
-            and a.hw_lpar_avg = b.hw_lpar_avg 
-            and a.sw_lpar_count = b.sw_lpar_count 
-            and a.sw_lpar_avg = b.sw_lpar_avg 
-            and a.lic_count = b.lic_count 
-            and a.lic_avg = b.lic_avg 
-            and a.duration = b.duration 
-)    ';
+        delete from recon_customer_log
+        where
+            id = ?
+    ';
     return ('deleteReconCustomerLog', $query);
 }
 

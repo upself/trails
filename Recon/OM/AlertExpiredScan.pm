@@ -255,12 +255,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_expired_scan a where
-            exists ( select b.id from alert_expired_scan b where b.id = ?
-            and a.software_lpar_id = b.software_lpar_id 
-            and a.comments = b.comments 
-            and a.open = b.open 
-)    ';
+        delete from alert_expired_scan
+        where
+            id = ?
+    ';
     return ('deleteAlertExpiredScan', $query);
 }
 

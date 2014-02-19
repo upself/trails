@@ -258,12 +258,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_hardware_h a where
-            exists ( select b.id from alert_hardware_h b where b.id = ?
-            and a.alert_hardware_id = b.alert_hardware_id 
-            and a.comments = b.comments 
-            and a.open = b.open 
-)    ';
+        delete from alert_hardware_h
+        where
+            id = ?
+    ';
     return ('deleteAlertHardwareHistory', $query);
 }
 

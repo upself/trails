@@ -297,15 +297,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from reconcile a where
-            exists ( select b.id from reconcile b where b.id = ?
-            and a.reconcile_type_id = b.reconcile_type_id 
-            and a.allocation_methodology_id = b.allocation_methodology_id 
-            and a.installed_software_id = b.installed_software_id 
-            and a.parent_installed_software_id = b.parent_installed_software_id 
-            and a.comments = b.comments 
-            and a.machine_level = b.machine_level 
-)    ';
+        delete from reconcile
+        where
+            id = ?
+    ';
     return ('deleteReconcile', $query);
 }
 

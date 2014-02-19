@@ -273,15 +273,6 @@ sub queryReconQueueByCustomerId {
         where
             a.customer_id = ?
             and date(record_time) = ?
-            and not exists (
-                select b.id from v_recon_queue b where
-                    a.fk = b.fk and
-                    a.table = b.table and
-                    a.action = b.action and
-                    date(a.record_time) = date(b.record_time) and
-                    a.customer_id = b.customer_id and
-                    a.id > b.id
-            )
     ';
     dlog("queryReconQueueByCustomerId=$query");
     return ( 'reconQueueByCustomerId', $query, \@fields );

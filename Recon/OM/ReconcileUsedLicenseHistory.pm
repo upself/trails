@@ -133,10 +133,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from h_reconcile_used_license a where
-            exists ( select b.id from h_reconcile_used_license b where b.h_reconcile_id = ?
-            and a.h_used_license_id = b.h_used_license_id 
-)    ';
+        delete from h_reconcile_used_license
+        where
+            h_reconcile_id = ?
+    ';
     return ('deleteReconcileUsedLicenseHistory', $query);
 }
 

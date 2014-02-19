@@ -258,12 +258,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_exp_maint_h a where
-            exists ( select b.id from alert_exp_maint_h b where b.id = ?
-            and a.alert_expired_maint_id = b.alert_expired_maint_id 
-            and a.comments = b.comments 
-            and a.open = b.open 
-)    ';
+        delete from alert_exp_maint_h
+        where
+            id = ?
+    ';
     return ('deleteAlertExpiredMaintHistory', $query);
 }
 

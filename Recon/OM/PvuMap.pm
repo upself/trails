@@ -195,13 +195,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from pvu_map a where
-            exists ( select b.id from pvu_map b where b.id = ?
-            and a.processor_brand = b.processor_brand 
-            and a.processor_model = b.processor_model 
-            and a.pvu_id = b.pvu_id 
-            and a.machine_type_id = b.machine_type_id 
-)    ';
+        delete from pvu_map
+        where
+            id = ?
+    ';
     return ('deletePvuMap', $query);
 }
 

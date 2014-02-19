@@ -339,19 +339,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from pvu_info a where
-            exists ( select b.id from pvu_info b where b.id = ?
-            and a.pvu_id = b.pvu_id 
-            and a.processor_type = b.processor_type 
-            and a.value_units_per_core = b.value_units_per_core 
-            and a.processor_architectures = b.processor_architectures 
-            and a.server_vendor = b.server_vendor 
-            and a.server_brand = b.server_brand 
-            and a.processor_vendor = b.processor_vendor 
-            and a.start_date = b.start_date 
-            and a.end_date = b.end_date 
-            and a.status = b.status 
-)    ';
+        delete from pvu_info
+        where
+            id = ?
+    ';
     return ('deletePvuInfo', $query);
 }
 

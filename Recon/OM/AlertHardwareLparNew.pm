@@ -178,10 +178,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from alert_hardware_lpar a where
-            exists ( select b.id from alert_hardware_lpar b where b.id = ?
-            and a.hardware_lpar_id = b.hardware_lpar_id 
-)    ';
+        delete from alert_hardware_lpar
+        where
+            id = ?
+    ';
     return ('deleteAlertHardwareLparNew', $query);
 }
 

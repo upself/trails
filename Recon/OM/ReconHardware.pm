@@ -239,12 +239,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_hardware a where
-            exists ( select b.id from recon_hardware b where b.id = ?
-            and a.hardware_id = b.hardware_id 
-            and a.customer_id = b.customer_id 
-            and a.action = b.action 
-)    ';
+        delete from recon_hardware
+        where
+            id = ?
+    ';
     return ('deleteReconHardware', $query);
 }
 
