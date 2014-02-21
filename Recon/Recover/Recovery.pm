@@ -284,7 +284,7 @@ sub recoverMapsByReconcileH {
 	$sth->execute($reconcileHId);
 	while ( $sth->fetchrow_arrayref ) {
 		$self->addToLicenseIds( $rec{licenseId} );
-
+         dlog("licenseId: $rec{licenseId} , quantity: $rec{quantity} , capType: $rec{capType} ");
 		$self->connection->prepareSqlQueryAndFields( queryUsedLicense() );
 		my $sth = $self->connection->sql->{usedLicense};
 		my $id;

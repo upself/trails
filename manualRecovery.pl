@@ -36,7 +36,7 @@ usage() unless ($opt_s && $opt_e)||( !defined $opt_s && !defined $opt_e );
 ###Set the logfile
 if ($opt_f){
 	my @path = split('\/',$opt_f);
-    $logfile = "/var/staging/logs/manualRecovery/ ". "$path[$#path]".".log";
+    $logfile = "/var/staging/logs/manualRecovery/". "$path[$#path]".".log";
 }
 logfile($logfile);
 
