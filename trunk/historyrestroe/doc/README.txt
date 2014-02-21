@@ -19,6 +19,8 @@ user=eaadmin
 password=12345
 
 
+1.3 put the history data into path /var/ftp/EMEA/HISTORY_TABLES.txt.
+
 2. Command to launch the program:
 cat /dev/null > log.txt;
 nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt > log.txt & 
