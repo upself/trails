@@ -28,7 +28,8 @@ sub new {
 		_restoreManual     => $restoreManual,
 		_customer          => $customer,
 		_reportFile        => $reportFile,
-		_softwareLparNames => undef
+		_softwareLparNames => undef,
+		_installedSoftwareIds => undef
 	};
 	bless $self, $class;
 
@@ -42,6 +43,7 @@ sub run {
 	my $startTime = shift;
 	my $endTime = shift;
 
+    if ($self->customer ne ''){
 	if ( $self->isValidCustomer == 0 ) {
 		$self->report( 'Account Number:'
 			  . $self->customer->accountNumber
@@ -50,13 +52,16 @@ sub run {
 	}
 
 	$self->loadSoftwareLparNames if ( !defined $self->softwareLparNames );
+    }
 	foreach my $name ( sort @{ $self->softwareLparNames } ) {
-		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+		my $softwareLpar ;
+		my @installedSoftwareIds;
+		if ($name ne '') {
+	    $softwareLpar = new BRAVO::OM::SoftwareLpar();
 		$softwareLpar->customerId( $self->customer->id );
 		$softwareLpar->name($name);
 		$softwareLpar->getByBizKey( $self->connection );
 		dlog( $softwareLpar->toString );
-
 		if ( $self->isValidSoftwareLpar($softwareLpar) == 0 ) {
 			$self->report( 'Account Number:'
 				  . $self->customer->accountNumber . ':'
@@ -64,16 +69,26 @@ sub run {
 				  . $softwareLpar->name
 				  . ':Software Lpar is invalid' );
 			next;
-		}
-
-		my @installedSoftwareIds =
+		 }
+		
+		 @installedSoftwareIds =
 		  $self->getInstalledSoftwareIds($softwareLpar,$startTime,$endTime);
+		} else {
+			$softwareLpar = '';
+			@installedSoftwareIds = @{$self->installedSoftwareIds};
+		}
 		foreach my $installedSoftwareId (@installedSoftwareIds) {
+		#	printf "the insw id is ".$installedSoftwareId ."\n";
 			my $installedSoftware = new BRAVO::OM::InstalledSoftware();
 			$installedSoftware->id($installedSoftwareId);
 			$installedSoftware->getById( $self->connection );
 			dlog( $installedSoftware->toString );
-
+            
+            if($softwareLpar eq ''){
+            $softwareLpar = new BRAVO::OM::SoftwareLpar();
+		    $softwareLpar->id( $installedSoftware->softwareLparId );
+		    $softwareLpar->getById( $self->connection );
+	        }
 			my $software = new BRAVO::OM::Software();
 			$software->id( $installedSoftware->softwareId );
 			$software->getById( $self->connection );
@@ -85,6 +100,7 @@ sub run {
 				) == 0
 			  )
 			{
+				if ($self->customer ne ''){
 				$self->report( 'Account Number:'
 					  . $self->customer->accountNumber . ':'
 					  . 'Software Lpar:'
@@ -92,6 +108,11 @@ sub run {
 					  . ':Software:'
 					  . $software->name
 					  . ':Installed software is invalid' );
+				} else {
+			    $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Installed software is invalid' );
+				}
 				next;
 			}
 
@@ -101,6 +122,7 @@ sub run {
 			dlog( $reconcileH->toString );
 
 			if ( !defined $reconcileH->id ) {
+			 if ($self->customer ne ''){
 				$self->report( 'Account Number:'
 					  . $self->customer->accountNumber
 					  . ':Software Lpar:'
@@ -108,9 +130,15 @@ sub run {
 					  . ':Software:'
 					  . $software->name
 					  . ':No reconcile history' );
+			  } else {
+			    $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':No reconcile history' );
+				}
 				next;
 			}
 			if ( $reconcileH->machineLevel == 1 ) {
+			   if ($self->customer ne ''){
 				$self->report( 'Account Number:'
 					  . $self->customer->accountNumber
 					  . ':Software Lpar:'
@@ -118,12 +146,18 @@ sub run {
 					  . ':Software:'
 					  . $software->name
 					  . ':Reconciled on the machine level' );
+				 } else {
+			    $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Reconciled on the machine level' );
+				}
 
 				#				next;
 			}
 
 			if ( $self->restoreManual == 0 ) {
 				if ( $reconcileH->manualBreak == 1 ) {
+				   if ($self->customer ne ''){
 					$self->report( 'Account Number:'
 						  . $self->customer->accountNumber
 						  . ':Software Lpar:'
@@ -131,6 +165,11 @@ sub run {
 						  . ':Software:'
 						  . $software->name
 						  . ':Reconcile manually broken' );
+					  } else {
+			         $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Reconcile manually broken' );
+				    }
 					my $queue =
 					  Recon::Queue->new( $self->connection, $installedSoftware,
 						$softwareLpar );
@@ -151,6 +190,7 @@ sub run {
 				dlog( $reconcileType->toString );
 
 				if ( $reconcileType->isManual == 1 ) {
+					if ($self->customer ne ''){
 					$self->report( 'Account Number:'
 						  . $self->customer->accountNumber
 						  . ':Software Lpar:'
@@ -158,18 +198,29 @@ sub run {
 						  . ':Software:'
 						  . $software->name
 						  . ':Current reconcile is manual' );
+					  } else {
+			         $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Current reconcile is manual' );
+				     }
 					next;
 				}
 				if ( $reconcileH->machineLevel == 0 ) {
 					$self->breakReconcile( $reconcile->id );
 				} else {
+					if ($self->customer ne ''){
 					$self->report( 'Account Number:'
 						  . $self->customer->accountNumber
 						  . ':Software Lpar:'
 						  . $softwareLpar->name
 						  . ':Software:'
 						  . $software->name
-						  . ':Not breaking reconcile because at machine level' );					
+						  . ':Not breaking reconcile because at machine level' );
+				      } else {
+			          $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Not breaking reconcile because at machine level' );
+				     }					
 				}
 
 			}
@@ -191,7 +242,7 @@ sub run {
 			  Recon::Queue->new( $self->connection, $installedSoftware,
 				$softwareLpar );
 			$queue->add;
-
+            if ($self->customer ne ''){
 			$self->report( 'Account Number:'
 				  . $self->customer->accountNumber
 				  . ':Software Lpar:'
@@ -199,6 +250,11 @@ sub run {
 				  . ':Software:'
 				  . $software->name
 				  . ':Recovered' );
+		      } else {
+			          $self->report( 'installedSoftwareId:'
+					  . $installedSoftware->id
+					  . ':Recovered' );
+		    }		
 		}
 	}
 
@@ -672,9 +728,6 @@ sub validate {
 	croak 'Customer is undefined'
 	  unless defined $self->customer;
 
-	croak 'Invalid value for customerId'
-	  unless defined $self->customer->id;
-
 	croak 'Invalid report file'
 	  unless defined $self->reportFile;
 }
@@ -709,6 +762,12 @@ sub softwareLparNames {
 	return $self->{_softwareLparNames};
 }
 
+sub installedSoftwareIds {
+	my $self = shift;
+	$self->{_installedSoftwareIds} = shift if scalar @_ == 1;
+	return $self->{_installedSoftwareIds};
+}
+
 sub reportFile {
 	my $self = shift;
 	$self->{_reportFile} = shift if scalar @_ == 1;
@@ -735,6 +794,14 @@ sub addToSoftwareLparNames {
 	my $names = $self->softwareLparNames;
 	push( @{$names}, $name );
 	$self->softwareLparNames($names);
+}
+
+sub addToInstalledSoftwareIds {
+	my ( $self, $installedSwId ) = @_;
+
+	my $installedSwIds = $self->installedSoftwareIds;
+	push( @{$installedSwIds}, $installedSwId );
+	$self->installedSoftwareIds($installedSwIds);
 }
 
 sub report {
