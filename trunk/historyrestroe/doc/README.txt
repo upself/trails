@@ -12,15 +12,28 @@ total 7.3M
 	  
 1.2 edit conf.txt file for DB connection and password. 
 e.g.
-
 driver=com.ibm.db2.jcc.DB2Driver
 url=jdbc:db2://dst20lp05.boulder.ibm.com:50000/trailspd
 user=eaadmin
 password=12345
 
-
 1.3 put the history data into path /var/ftp/EMEA/HISTORY_TABLES.txt.
 
-2. Command to launch the program:
+2. Format of the history data. 
+2.1 It's tab separated(TSV) . 
+2.2. Head of the file. 
+
+
+3. Command to launch the program:
+
 cat /dev/null > log.txt;
-nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt > log.txt & 
+nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_2.txt > log2.txt &
+
+cat /dev/null > log.txt;
+nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_3.txt > log3.txt &
+
+cat /dev/null > log.txt;
+nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_4.txt > log4.txt &
+
+
+ 

@@ -63,7 +63,8 @@ public class Restore {
 			+ "? "
 			+ ") ";
 
-	public Restore(String path) {
+	public Restore(String path, String historyPath) {
+		this.filePath = historyPath;
 		prop = new Properties();
 		try {
 			prop.load(new FileInputStream(new File(path)));
@@ -130,6 +131,13 @@ public class Restore {
 			persisUsedLicense(ulh);
 			persisMapping(rh, ulh);
 
+			if (rowNO % 10000 == 0) {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			}
+
 			if (exists) {
 				System.out.println("EXISTS:row="
 						+ rowNO
@@ -179,6 +187,7 @@ public class Restore {
 			if (stmt != null) {
 				try {
 					stmt.close();
+					stmt = null;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -204,6 +213,7 @@ public class Restore {
 			if (stmt != null) {
 				try {
 					stmt.close();
+					stmt = null;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -246,6 +256,7 @@ public class Restore {
 			if (stmt != null) {
 				try {
 					stmt.close();
+					stmt = null;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -256,7 +267,7 @@ public class Restore {
 	}
 
 	public static void main(String[] args) {
-		new Restore(args[0]).loadFile();
+		new Restore(args[0], args[1]).loadFile();
 	}
 
 	class ReconcileHistory {
