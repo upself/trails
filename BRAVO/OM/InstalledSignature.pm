@@ -281,8 +281,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from installed_signature a where
-            a.id = ?
+        delete from installed_signature
+        where
+            id = ?
     ';
     return ('deleteInstalledSignature', $query);
 }

@@ -411,8 +411,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_ip_address a where
-            a.id = ?
+        delete from software_lpar_ip_address
+        where
+            id = ?
     ';
     return ('deleteIpAddress', $query);
 }

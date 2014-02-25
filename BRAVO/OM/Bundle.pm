@@ -154,8 +154,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from bundle a where
-            a.id = ?
+        delete from bundle
+        where
+            id = ?
     ';
     return ('deleteBundle', $query);
 }

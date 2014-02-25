@@ -267,8 +267,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_hdisk a where
-            a.id = ?
+        delete from software_lpar_hdisk
+        where
+            id = ?
     ';
     return ('deleteHdisk', $query);
 }

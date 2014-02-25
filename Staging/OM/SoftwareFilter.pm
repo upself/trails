@@ -212,8 +212,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_filter a where
-            a.id = ?
+        delete from software_filter
+        where
+            id = ?
     ';
     return ('deleteSoftwareFilter', $query);
 }

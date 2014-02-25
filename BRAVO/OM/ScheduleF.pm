@@ -154,8 +154,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from schedule_f a where
-            a.id = ?
+        delete from schedule_f
+        where
+            id = ?
     ';
     return ('deleteScheduleF', $query);
 }

@@ -397,8 +397,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from outsource_profile a where
-            a.id = ?
+        delete from outsource_profile
+        where
+            id = ?
     ';
     return ('deleteOutsourceProfile', $query);
 }

@@ -428,8 +428,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from ip_address a where
-            a.id = ?
+        delete from ip_address
+        where
+            id = ?
     ';
     return ('deleteIpAddress', $query);
 }

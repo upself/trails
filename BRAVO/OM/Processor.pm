@@ -435,8 +435,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_lpar_processor a where
-            a.id = ?
+        delete from software_lpar_processor
+        where
+            id = ?
     ';
     return ('deleteProcessor', $query);
 }

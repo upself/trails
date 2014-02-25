@@ -284,8 +284,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from hdisk a where
-            a.id = ?
+        delete from hdisk
+        where
+            id = ?
     ';
     return ('deleteHdisk', $query);
 }

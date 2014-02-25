@@ -781,8 +781,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from hardware a where
-            a.id = ?
+        delete from hardware
+        where
+            id = ?
     ';
     return ('deleteHardware', $query);
 }

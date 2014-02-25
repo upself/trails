@@ -308,8 +308,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from mem_mod a where
-            a.id = ?
+        delete from mem_mod
+        where
+            id = ?
     ';
     return ('deleteMemMod', $query);
 }

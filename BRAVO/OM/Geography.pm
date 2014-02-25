@@ -231,8 +231,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from geography a where
-            a.id = ?
+        delete from geography
+        where
+            id = ?
     ';
     return ('deleteGeography', $query);
 }

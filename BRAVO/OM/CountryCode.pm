@@ -279,8 +279,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from country_code a where
-            a.id = ?
+        delete from country_code
+        where
+            id = ?
     ';
     return ('deleteCountryCode', $query);
 }
