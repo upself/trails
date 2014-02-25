@@ -127,9 +127,10 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from inst_tlcmz_sware a where
-            a.computer_sys_id = ?
-            and a.tlcmz_prod_id = ?
+        delete from inst_tlcmz_sware
+        where
+            computer_sys_id = ?
+            and tlcmz_prod_id = ?
     ';
     return ('deleteInstalledTLCMZSoftware', $query);
 }

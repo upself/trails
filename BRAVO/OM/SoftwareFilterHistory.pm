@@ -154,8 +154,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_filter_h a where
-            a.software_filter_h_id = ?
+        delete from software_filter_h
+        where
+            software_filter_h_id = ?
     ';
     return ('deleteSoftwareFilterHistory', $query);
 }

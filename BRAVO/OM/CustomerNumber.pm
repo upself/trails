@@ -327,8 +327,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from customer_number a where
-            a.customer_number_id = ?
+        delete from customer_number
+        where
+            customer_number_id = ?
     ';
     return ('deleteCustomerNumber', $query);
 }

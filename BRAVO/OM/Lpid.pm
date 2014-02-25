@@ -207,8 +207,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from lpid a where
-            a.lpid_id = ?
+        delete from lpid
+        where
+            lpid_id = ?
     ';
     return ('deleteLpid', $query);
 }

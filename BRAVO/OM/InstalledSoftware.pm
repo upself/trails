@@ -412,8 +412,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from installed_software a where
-            a.id = ?
+        delete from installed_software
+        where
+            id = ?
     ';
     return ('deleteInstalledSoftware', $query);
 }

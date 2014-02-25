@@ -276,8 +276,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from swasset_queue a where
-            a.id = ?
+        delete from swasset_queue
+        where
+            id = ?
     ';
     return ('deleteSwassetQueue', $query);
 }

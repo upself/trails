@@ -224,8 +224,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from account_pool a where
-            a.account_pool_id = ?
+        delete from account_pool
+        where
+            account_pool_id = ?
     ';
     return ('deleteAccountPool', $query);
 }

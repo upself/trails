@@ -678,8 +678,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from license a where
-            a.id = ?
+        delete from license
+        where
+            id = ?
     ';
     return ('deleteLicense', $query);
 }

@@ -154,8 +154,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_signature a where
-            a.software_signature_id = ?
+        delete from software_signature
+        where
+            software_signature_id = ?
     ';
     return ('deleteSoftwareSignature', $query);
 }

@@ -212,8 +212,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_tlcmz a where
-            a.id = ?
+        delete from software_tlcmz
+        where
+            id = ?
     ';
     return ('deleteSoftwareTlcmz', $query);
 }

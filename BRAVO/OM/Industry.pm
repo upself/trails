@@ -255,8 +255,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from industry a where
-            a.industry_id = ?
+        delete from industry
+        where
+            industry_id = ?
     ';
     return ('deleteIndustry', $query);
 }

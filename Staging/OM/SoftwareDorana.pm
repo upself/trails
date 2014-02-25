@@ -212,8 +212,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from software_dorana a where
-            a.id = ?
+        delete from software_dorana
+        where
+            id = ?
     ';
     return ('deleteSoftwareDorana', $query);
 }
