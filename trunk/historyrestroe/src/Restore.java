@@ -22,6 +22,10 @@ public class Restore {
 	private Connection conn;
 	private Properties prop;
 
+	private final int DEBUG_LEVEL = 0;
+
+	private int logLevel;
+
 	private String queryInsertReconcileH = "INSERT INTO RECONCILE_H( "
 			+ "INSTALLED_SOFTWARE_ID, "
 			+ "RECONCILE_TYPE_ID, "
@@ -63,8 +67,9 @@ public class Restore {
 			+ "? "
 			+ ") ";
 
-	public Restore(String path, String historyPath) {
+	public Restore(String path, String historyPath, int logLevel) {
 		this.filePath = historyPath;
+		this.logLevel = logLevel;
 		prop = new Properties();
 		try {
 			prop.load(new FileInputStream(new File(path)));
@@ -183,6 +188,9 @@ public class Restore {
 			stmt.setLong(1, rh.id);
 			stmt.setLong(2, ulh.id);
 			stmt.executeUpdate();
+
+			printout("mapping created rhId=" + rh.id + " ulhId=" + ulh.id,
+					DEBUG_LEVEL);
 		} finally {
 			if (stmt != null) {
 				try {
@@ -209,6 +217,8 @@ public class Restore {
 				ulh.id = ids.getLong(1);
 			}
 
+			printout("used license created, id=" + ulh.id, DEBUG_LEVEL);
+
 		} finally {
 			if (stmt != null) {
 				try {
@@ -219,6 +229,13 @@ public class Restore {
 				}
 			}
 		}
+	}
+
+	private void printout(String content, int level) {
+		if (this.logLevel == level) {
+			System.out.println(content);
+		}
+
 	}
 
 	private boolean persistReconcile(ReconcileHistory rh) throws SQLException {
@@ -233,6 +250,7 @@ public class Restore {
 			if (result.next()) {
 				rh.id = result.getLong(1);
 				exists = true;
+				printout("Reconcile exists, id=" + rh.id, DEBUG_LEVEL);
 			} else {
 				stmt = conn.prepareStatement(queryInsertReconcileH,
 						Statement.RETURN_GENERATED_KEYS);
@@ -251,6 +269,7 @@ public class Restore {
 				if (ids.next()) {
 					rh.id = ids.getLong(1);
 				}
+				printout("Reconcile created, id=" + rh.id, DEBUG_LEVEL);
 			}
 		} finally {
 			if (stmt != null) {
@@ -267,7 +286,11 @@ public class Restore {
 	}
 
 	public static void main(String[] args) {
-		new Restore(args[0], args[1]).loadFile();
+		int logLevel = -1;
+		if (args.length == 3) {
+			logLevel = Integer.valueOf(args[2]).intValue();
+		}
+		new Restore(args[0], args[1], logLevel).loadFile();
 	}
 
 	class ReconcileHistory {
