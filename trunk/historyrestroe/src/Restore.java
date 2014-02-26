@@ -125,16 +125,21 @@ public class Restore {
 	public void persist(ReconcileHistory rh, UsedLicenseHistory ulh, int rowNO) {
 
 		try {
+			printout("connect start", DEBUG_LEVEL);
 			if (conn == null) {
 				Class.forName(prop.getProperty("driver"));
 				conn = DriverManager.getConnection(prop.getProperty("url"),
 						prop.getProperty("user"), prop.getProperty("password"));
 
 			}
+			printout("connect end", DEBUG_LEVEL);
+			
 
+			printout("persist start", DEBUG_LEVEL);
 			boolean exists = persistReconcile(rh);
 			persisUsedLicense(ulh);
 			persisMapping(rh, ulh);
+			printout("persist end", DEBUG_LEVEL);
 
 			if (rowNO % 10000 == 0) {
 				if (conn != null) {
