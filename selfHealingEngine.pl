@@ -46,6 +46,9 @@
 ###################################################################################################################################################################################################
 #                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
 # 2014-01-27  Liu Hai(Larry) 1.6.0           System Support And Self Healing Service Components - Phase 6 - Add 'STAGING_BRAVO_DATA_SYNC' Support Feature  
+###################################################################################################################################################################################################
+#                                            Phase 6A Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6A'
+# 2014-02-25  Liu Hai(Larry) 1.6.1           System Support And Self Healing Service Components - Phase 6A - Add GSA SSE Shared Log Folder Support Feature  
 #
 
 #Load required modules
@@ -54,6 +57,7 @@ use DBI;
 use Database::Connection;
 use Base::ConfigManager;
 use Net::Telnet;#Added by Larry for System Support And Self Healing Service Components - Phase 5
+use Net::SCP::Expect;#Added by Larry for System Support And Self Healing Service Components - Phase 6A
 
 #Globals
 my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEngine.log";
@@ -300,6 +304,14 @@ my $STAGING_BRAVO_DATA_SYNC_SCRIPT_LOG_FILE_MAKR       = "-l";
 my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL = "SELECT COUNT(*) FROM CUSTOMER WHERE ACCOUNT_NUMBER = ? AND STATUS = 'ACTIVE' WITH UR";
 my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT(*) FROM SOFTWARE_LPAR SL, CUSTOMER C WHERE C.ACCOUNT_NUMBER = ? AND SL.NAME = ? AND C.CUSTOMER_ID = SL.CUSTOMER_ID AND C.STATUS = 'ACTIVE' AND SL.STATUS ='ACTIVE' WITH UR";
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
+my $GSA_SERVER                           = "jpngsa.ibm.com";
+my $GSA_LOG_SHARED_FOLDER_PATH           = "/gsa/jpngsa/projects/a/amsw/sse/logs";
+my $GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH = "https://jpngsa.ibm.com/projects/a/amsw/sse/logs";
+my $GSA_USERID                           = "liuhaidl";
+my $GSA_PASSWORD                         = "abcd1234";
+#Added by Larry for System Support And Self Healing Service Components - Phase 6A End
 
 main();
 
@@ -1569,11 +1581,38 @@ sub coreOperationProcess{
 		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
 		 }#end else
 
+         #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
+		 #3.1 Copy the target log file to the GSA Log Shared Folder Path
+		 #The parameter 'auto_yes'=>1 is used to set the default value 'yes' for question "Are you sure you want to continue connecting (yes/no)?" when the program accesses the target server the first time
+		 eval{
+		   my $scpe = Net::SCP::Expect->new('auto_yes'=>1);
+           $scpe->login($GSA_USERID,$GSA_PASSWORD);  
+           $scpe->scp($logFile,"$GSA_SERVER:$GSA_LOG_SHARED_FOLDER_PATH");
+           print LOG "The Staging Bravo Data SYNC - The Log File {$logFile} has been copied to the GSA SSE Shared Log Folder Path {$GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH} successfully.\n";
+		 };
+		 if($@){
+           $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="The Log File {$logFile} has been copied to the GSA SSE Shared Log Folder Path {$GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH} failed.<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+			 $operationFailedComments.="The Log File {$logFile} has been copied to the GSA SSE Shared Log Folder Path {$GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH} failed.<br>";
+		   }#end else
+		   print LOG "The Staging Bravo Data SYNC - The Log File {$logFile} has been copied to the GSA SSE Shared Log Folder Path {$GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH} failed.\n";  
+		 }#end if($@)
+		 #Added by Larry for System Support And Self Healing Service Components - Phase 6A End
+
 		 #4. Set Operation Success Specail Comments to include Log File Value
 		 if($operationResultFlag == $OPERATION_SUCCESS){
 		   $operationSuccessSpecialFlag = $TRUE;
 		   $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
-		   $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.";
+		   $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.<br>";
+		   #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
+		   $operationSuccessSpecialComments.="This Log File has also been copied to the GSA SSE Shared Log Folder Path:<br>";
+           $operationSuccessSpecialComments.="{$GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH}";
+		   #Added by Larry for System Support And Self Healing Service Components - Phase 6A End
+		   
 		   print LOG "The Staging Bravo Data SYNC - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
 		 }#end if($operationResultFlag == $OPERATION_SUCCESS)
 	   }#end if($inputParameterValuesValidationFlag == $TRUE)
