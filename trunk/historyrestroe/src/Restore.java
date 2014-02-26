@@ -125,15 +125,13 @@ public class Restore {
 	public void persist(ReconcileHistory rh, UsedLicenseHistory ulh, int rowNO) {
 
 		try {
-			printout("connect start", DEBUG_LEVEL);
 			if (conn == null) {
+				printout("connect start", DEBUG_LEVEL);
 				Class.forName(prop.getProperty("driver"));
 				conn = DriverManager.getConnection(prop.getProperty("url"),
 						prop.getProperty("user"), prop.getProperty("password"));
-
+				printout("connect end", DEBUG_LEVEL);
 			}
-			printout("connect end", DEBUG_LEVEL);
-			
 
 			printout("persist start", DEBUG_LEVEL);
 			boolean exists = persistReconcile(rh);
@@ -141,7 +139,7 @@ public class Restore {
 			persisMapping(rh, ulh);
 			printout("persist end", DEBUG_LEVEL);
 
-			if (rowNO % 10000 == 0) {
+			if (rowNO != 0 && rowNO % 150 == 0) {
 				if (conn != null) {
 					conn.close();
 					conn = null;
@@ -248,7 +246,7 @@ public class Restore {
 		PreparedStatement stmt = null;
 		try {
 			stmt = conn
-					.prepareStatement("select id from reconcile_h where installed_software_id  = ?");
+					.prepareStatement("select id from reconcile_h where installed_software_id  = ? with ur");
 
 			stmt.setLong(1, rh.installedSoftwareId);
 			ResultSet result = stmt.executeQuery();
