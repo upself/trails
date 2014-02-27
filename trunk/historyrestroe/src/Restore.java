@@ -141,6 +141,7 @@ public class Restore {
 
 			if (rowNO != 0 && rowNO % 150 == 0) {
 				if (conn != null) {
+					conn.commit();
 					conn.close();
 					conn = null;
 				}
@@ -171,6 +172,7 @@ public class Restore {
 					+ ulh.id
 					+ ",MSG:"
 					+ e.getMessage());
+			System.out.println("cause:" + e.getCause());
 		} catch (ClassNotFoundException e) {
 			System.out.println("ERROR:row="
 					+ rowNO

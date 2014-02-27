@@ -139,10 +139,10 @@ nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizha
 driver=com.ibm.db2.jcc.DB2Driver
 url=jdbc:db2://dst20lp05.boulder.ibm.com:50000/trailspd
 user=eaadmin
-password=may2012a
+password=<deleted>
 
 -- config for trailspd
 driver=com.ibm.db2.jcc.DB2Driver
-url=jdbc:db2:trails
+url=jdbc:db2://9.17.246.19:60084/trailspd
 user=eaadmin
-password=Gr77nday
+password=<deleted>

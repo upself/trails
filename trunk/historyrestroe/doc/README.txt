@@ -15,7 +15,7 @@ e.g.
 driver=com.ibm.db2.jcc.DB2Driver
 url=jdbc:db2://dst20lp05.boulder.ibm.com:50000/trailspd
 user=eaadmin
-password=12345
+password=<deleted>
 
 1.3 put the history data into path /var/ftp/EMEA/HISTORY_TABLES.txt.
 
@@ -23,17 +23,35 @@ password=12345
 2.1 It's tab separated(TSV) . 
 2.2. Head of the file. 
 
+Installed Software Id	
+Reconcile Type Id	
+Id	
+Parent Installed Software Id	
+Comments	
+Remote User	
+Record Time	
+Machine Level	
+Reconcile H	
+Manual Break	
+H Reconcile Id	
+H Used License Id	
+Id2	
+License Id	
+Used Quantity	
+Capacity 
+Type Id
 
 3. Command to launch the program:
-
+3.1. 
 cat /dev/null > log.txt;
 nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_2.txt > log2.txt &
 
-cat /dev/null > log.txt;
-nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_3.txt > log3.txt &
+There are 3 parameters separated by space. 
+java Restore [configure file] [source file] [logging level]
 
-cat /dev/null > log.txt;
-nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt /var/ftp/EMEA/temp/HISTORY_TABLES_4.txt > log4.txt &
-
+the first 2 parameters are required,
+configure file: database configuration information for the program. see 1.2 for reference. 
+source file: contains the data need to be recovery. see 2. for reference. 
+logging level: empty or -1 - normal, 0 - debug
 
  
