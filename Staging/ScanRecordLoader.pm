@@ -458,7 +458,7 @@ sub applyDelta {
 
         dlog('Delta report file closed');
 
-        #die '**** We are deleting more than 15% of total records - Aborting ****';
+        die '**** We are deleting more than 15% of total records - Aborting ****';
 
     }
     else {

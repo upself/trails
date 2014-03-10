@@ -253,7 +253,8 @@ sub checkDeleteThreshold {
 	}
 	###If total number of records processed is greater that 1000, then we do not want to
 	###process more than 15% delete records - this may indicate a bad input file
-	if ( $self->deleteCnt > ( $self->totalCnt * 0.15 ) )
+	if ( $self->totalCnt > 1000 
+	        && $self->deleteCnt > ( $self->totalCnt * 0.15 ) )
 	{
 		dlog("**** Exceeded delete threshold ****");
 		return 1;
