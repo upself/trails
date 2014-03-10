@@ -20,6 +20,8 @@
 # 2013-12-27  Liu Hai(Larry) 1.0.7           A. Add the following new loaders into authorized loader list:
 #                                            1) swcmToStaging.pl
 #                                            B. Add the loader running mode(start/run-once) support feature
+# 2014-03-10  Liu Hai(Larry) 1.0.8           A. Add the following new loaders into authorized loader list:
+#                                            1) capTypeToBravo.pl
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
@@ -1842,7 +1844,10 @@ sub getValidLoaderListOnTAPServer{
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
   push @vaildLoaderList,"swcmToStaging.pl";#23
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
-  #push @vaildLoaderList,"testingTAP.pl";#24 #For testing function purpose only
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 Start
+  push @vaildLoaderList,"capTypeToBravo.pl";#24
+  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 End
+  #push @vaildLoaderList,"testingTAP.pl";#25 #For testing function purpose only
   
   return @vaildLoaderList;
 }
