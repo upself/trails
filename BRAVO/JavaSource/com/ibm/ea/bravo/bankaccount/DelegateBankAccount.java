@@ -39,6 +39,12 @@ public class DelegateBankAccount extends HibernateDelegate {
 		//load inserted values from user submitted form
 		String insertedTechnicalContact = pFormBankAccount.getTechnicalContact();
 		String insertedBusinessContact = pFormBankAccount.getBusinessContact();
+		String insertedName = pFormBankAccount.getName();
+		
+		if (insertedName.startsWith(" ") || insertedName.endsWith(" ")) {
+			lSession.evict(lBankAccount);
+			lActionErrors.add("technicalContact", new ActionMessage("error.bankAccount.name"));
+		}
 
 		//Technical contact input check
 		//if either of the user inputs(for contact e-mails) is empty, then throw an error
