@@ -443,10 +443,10 @@ sub applyDelta {
 		#for each record
         foreach my $key ( keys %{ $self->list } ) {
             if ( $self->list->{$key}->action eq 'DELETE' ) {
-            	#if value is undefined, we use "undef" string
+            	#if value is undefined, we use just use another tab string
                 my @row = map ( defined( $self->list->{$key}->$_) ? ($self->list->{$key}->$_) : ("\t"), @fields);
                 $tsv->bind_columns (\(@row));
-                $tsv->print ($fh, undef);
+                $tsv->print ($fh, \@row);
             }
         }
 
