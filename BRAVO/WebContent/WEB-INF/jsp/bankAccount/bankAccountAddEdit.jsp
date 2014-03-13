@@ -154,7 +154,7 @@ in to complete the form.</p>
 					<html:option value="BLAZANT">BLAZANT</html:option>
 					<html:option value="ALTIRIS">ALTIRIS</html:option>
 					<html:option value="IDD">IDD</html:option>
-					<html:option value="TAD4Z">TADZ</html:option>
+					<html:option value="TADZ">TADZ</html:option>
 					<logic:equal scope="request" name="bankAccountForm"
 						property="connectionType" value="DISCONNECTED">
 						<html:option value="FACTS">FACTS</html:option>
