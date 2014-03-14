@@ -279,22 +279,22 @@ sub reconcile {
 
 		return 1;
 	}
-	elsif ( defined $self->customer->swComplianceMgmt
-		&& $self->customer->swComplianceMgmt eq 'YES' )
-	{
-		if ( defined $self->installedSoftwareReconData->scopeName ) {
-			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
+##	elsif ( defined $self->customer->swComplianceMgmt
+##		&& $self->customer->swComplianceMgmt eq 'YES' )
+##	{
+##		if ( defined $self->installedSoftwareReconData->scopeName ) {
+##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
 				###Create reconcile and set id in data.
-				my $reconcileTypeMap =
-				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-				my $rId =
-				  $self->createReconcile(
-					$reconcileTypeMap->{'Pending customer decision'},
-					0, $self->installedSoftware->id );
-				return 1;
-			}
-		}
-	}
+##				my $reconcileTypeMap =
+##				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+##				my $rId =
+##				  $self->createReconcile(
+##					$reconcileTypeMap->{'Pending customer decision'},
+##					0, $self->installedSoftware->id );
+##				return 1;
+##			}
+##		}
+##	}
 
 	return 0;
 }

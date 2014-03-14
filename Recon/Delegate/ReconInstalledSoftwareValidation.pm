@@ -360,22 +360,22 @@ sub validateBundle {
 
 sub validateCustomerPendingDecision {
 	my $self = shift;
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Pending customer decision'} )
+	if (( $self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'Pending customer decision'} ) || ( $self->installedSoftwareReconData->rTypeId == 14 ))
 	{
 		dlog('reconciled as pending customer decision');
-		if ( defined $self->customer->swComplianceMgmt
-			&& $self->customer->swComplianceMgmt eq 'YES' )
-		{
-			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
-				dlog("reconcile validated");
-				return 1;
-			}
+##		if ( defined $self->customer->swComplianceMgmt
+##			&& $self->customer->swComplianceMgmt eq 'YES' )
+##		{
+##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
+##				dlog("reconcile validated");
+##				return 1;
+##			}
 
-		}
-		dlog(
-"reconciled as pending customer decision but does not pass validation"
-		);
+##		}
+##		dlog(
+## "reconciled as pending customer decision but does not pass validation"
+##		); COMMENTED OUT AS PCD SHOULD NO LONGER BE A VALID RECONCILE, EVER
 		return 0;
 	}
 	return 1;
