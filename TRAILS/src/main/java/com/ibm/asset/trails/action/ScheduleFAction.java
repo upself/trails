@@ -35,7 +35,7 @@ public class ScheduleFAction extends AccountBaseAction {
         super.prepare();
 
         if (getSort() == null) {
-            setSort("SF.softwareName");
+            setSort("SF.softwareName,SF.level,SF.hwOwner,SF.hostname,SF.serial,SF.machineType");
             setDir("ASC");
         }
     }

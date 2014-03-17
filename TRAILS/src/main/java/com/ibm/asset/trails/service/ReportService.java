@@ -43,7 +43,12 @@ public interface ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception;
 
 	void getHardwareBaselineReport(Account pAccount, String remoteUser, String lsName,  PrintWriter pPrintWriter)
@@ -54,14 +59,24 @@ public interface ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception;
 
 	void getLicenseBaselineReport(Account pAccount,String remoteUser, String lsName,  PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception;
 
 	void getNonWorkstationAccountsReport(String remoteUser, String lsName, PrintWriter pPrintWriter)
@@ -84,7 +99,12 @@ public interface ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception;
 
 	void getSoftwareLparBaselineReport(Account pAccount, String remoteUser, String lsName, 

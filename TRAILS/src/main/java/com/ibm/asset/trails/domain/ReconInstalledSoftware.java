@@ -11,11 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "RECON_INSTALLED_SW")
+@NamedQuery(name = "reconInstalledSWbyInswIdANDCsId", query = "FROM ReconInstalledSoftware ris JOIN FETCH ris.account a JOIN FETCH ris.installedSoftware b WHERE ris.account = :account AND ris.installedSoftware = :installedSoftware")
 public class ReconInstalledSoftware implements Serializable {
 
 	/**

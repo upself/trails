@@ -455,7 +455,12 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
 		String lsBaseSelectClauseOne = "select "
 				+ "CASE WHEN AUS.Open = 0 THEN 'Blue' "
@@ -600,28 +605,66 @@ public class ReportServiceImpl implements ReportService {
 
 		if (pbCustomerOwnedCustomerManagedSearchChecked
 				|| pbCustomerOwnedIBMManagedSearchChecked
-				|| pbIBMOwnedIBMManagedSearchChecked) {
+				|| pbIBMOwnedIBMManagedSearchChecked
+				|| pbIBMO3rdMSearchChecked
+				|| pbCustO3rdMSearchChecked
+				|| pbIBMOibmMSWCOSearchChecked
+				|| pbCustOibmMSWCOSearchChecked
+				|| pbSelectAllChecked) {
 			lsbSql.append(
 					lsBaseSelectClauseOne + lsBaseSelectClauseTwo
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
 					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
 					.append(lsBaseWhereClause);
+			if (pbSelectAllChecked) {				
+					lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
+					pbTitlesNotSpecifiedInContractScopeSearchChecked = true;
+			} else {
 
-			if (pbCustomerOwnedCustomerManagedSearchChecked) {
-				lsbScopeSql.append("1");
-			}
-			if (pbCustomerOwnedIBMManagedSearchChecked) {
-				if (lsbScopeSql.length() > 0) {
-					lsbScopeSql.append(", 2");
-				} else {
-					lsbScopeSql.append("2");
+				if (pbCustomerOwnedCustomerManagedSearchChecked) {
+					lsbScopeSql.append("1");
 				}
-			}
-			if (pbIBMOwnedIBMManagedSearchChecked) {
-				if (lsbScopeSql.length() > 0) {
-					lsbScopeSql.append(", 3");
-				} else {
-					lsbScopeSql.append("3");
+				if (pbCustomerOwnedIBMManagedSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 2");
+					} else {
+						lsbScopeSql.append("2");
+					}
+				}
+				if (pbIBMOwnedIBMManagedSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 3");
+					} else {
+						lsbScopeSql.append("3");
+					}
+				}
+				if (pbIBMO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 4");
+					} else {
+						lsbScopeSql.append("4");
+					}
+				}
+				if (pbCustO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 5");
+					} else {
+						lsbScopeSql.append("5");
+					}
+				}
+				if (pbIBMOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 6");
+					} else {
+						lsbScopeSql.append("6");
+					}
+				}
+				if (pbCustOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 7");
+					} else {
+						lsbScopeSql.append("7");
+					}
 				}
 			}
 			lsbSql.append(" AND SF.Scope_Id IN (")
@@ -678,7 +721,12 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
 		String lsBaseSelectAndFromClause = "SELECT SI.Name AS SI_Name, M.Name AS M_Name, CASE UCASE(KBD.Custom_2) WHEN 'TRUE' THEN 'Yes' ELSE 'No' END, SL.Name AS SL_Name, SL.Bios_Serial, VSLP.Processor_Count, H.Chips, SL.ScanTime, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END, H.Serial, MT.Name AS MT_Name, MT.Type FROM EAADMIN.Kb_Definition KBD, EAADMIN.Software_Item SI, EAADMIN.Product P, EAADMIN.Product_Info PI, EAADMIN.Manufacturer M, EAADMIN.Software_Lpar SL, EAADMIN.V_Software_Lpar_Processor VSLP, EAADMIN.Installed_Software IS LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id, (SELECT SL2.Customer_Id, SI2.Id, PI2.Software_Category_Id, MIN(PI2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2, EAADMIN.Software_Item SI2, EAADMIN.Product_Info PI2, EAADMIN.Installed_Software IS2 WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND SI2.Id = IS2.Software_Id AND PI2.Id = SI2.Id AND PI2.Licensable = 1 AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, SI2.Id, PI2.Software_Category_Id) AS TEMP";
 		String lsBaseWhereClause = "WHERE KBD.Id = IS.Software_Id AND SI.Id = KBD.Id AND P.Id = SI.Id AND PI.Id = P.Id AND PI.Licensable = 1 AND M.Id = P.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND VSLP.Id = SL.Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.Id = SI.Id AND TEMP.Software_Category_Id = PI.Software_Category_Id AND TEMP.Priority = PI.Priority";
@@ -686,17 +734,25 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
 
-		if (!pbCustomerOwnedCustomerManagedSearchChecked
-				|| !pbCustomerOwnedIBMManagedSearchChecked
-				|| !pbIBMOwnedIBMManagedSearchChecked
-				|| !pbTitlesNotSpecifiedInContractScopeSearchChecked) {
+		if (!((pbCustomerOwnedCustomerManagedSearchChecked
+				&& pbCustomerOwnedIBMManagedSearchChecked
+				&& pbIBMOwnedIBMManagedSearchChecked
+				&& pbTitlesNotSpecifiedInContractScopeSearchChecked
+				&& pbIBMO3rdMSearchChecked
+				&& pbCustO3rdMSearchChecked
+				&& pbIBMOibmMSWCOSearchChecked
+				&& pbCustOibmMSWCOSearchChecked)
+				|| pbSelectAllChecked)) {
 			if (pbCustomerOwnedCustomerManagedSearchChecked
 					|| pbCustomerOwnedIBMManagedSearchChecked
-					|| pbIBMOwnedIBMManagedSearchChecked) {
+					|| pbIBMOwnedIBMManagedSearchChecked
+					|| pbIBMO3rdMSearchChecked
+					|| pbCustO3rdMSearchChecked
+					|| pbIBMOibmMSWCOSearchChecked
+					|| pbCustOibmMSWCOSearchChecked) {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(", EAADMIN.Schedule_F SF ")
 						.append(lsBaseWhereClause);
-
 				if (pbCustomerOwnedCustomerManagedSearchChecked) {
 					lsbScopeSql.append("1");
 				}
@@ -714,6 +770,34 @@ public class ReportServiceImpl implements ReportService {
 						lsbScopeSql.append("3");
 					}
 				}
+				if (pbIBMO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 4");
+					} else {
+						lsbScopeSql.append("4");
+					}
+				}
+				if (pbCustO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 5");
+					} else {
+						lsbScopeSql.append("5");
+					}
+				}
+				if (pbIBMOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 6");
+					} else {
+						lsbScopeSql.append("6");
+					}
+				}
+				if (pbCustOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 7");
+					} else {
+						lsbScopeSql.append("7");
+					}
+			}
 				lsbSql.append(
 						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = SI.Id AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
@@ -752,7 +836,12 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
 		String lsBaseSelectAndFromClause = "SELECT COALESCE(SI.Name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.Software_Item SI ON SI.Id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
@@ -760,17 +849,25 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
 
-		if (!pbCustomerOwnedCustomerManagedSearchChecked
-				|| !pbCustomerOwnedIBMManagedSearchChecked
-				|| !pbIBMOwnedIBMManagedSearchChecked
-				|| !pbTitlesNotSpecifiedInContractScopeSearchChecked) {
+		if (!((pbCustomerOwnedCustomerManagedSearchChecked
+				&& pbCustomerOwnedIBMManagedSearchChecked
+				&& pbIBMOwnedIBMManagedSearchChecked
+				&& pbTitlesNotSpecifiedInContractScopeSearchChecked
+				&& pbIBMO3rdMSearchChecked
+				&& pbCustO3rdMSearchChecked
+				&& pbIBMOibmMSWCOSearchChecked
+				&& pbCustOibmMSWCOSearchChecked)
+				|| pbSelectAllChecked)) {
 			if (pbCustomerOwnedCustomerManagedSearchChecked
 					|| pbCustomerOwnedIBMManagedSearchChecked
-					|| pbIBMOwnedIBMManagedSearchChecked) {
+					|| pbIBMOwnedIBMManagedSearchChecked
+					|| pbIBMO3rdMSearchChecked
+					|| pbCustO3rdMSearchChecked
+					|| pbIBMOibmMSWCOSearchChecked
+					|| pbCustOibmMSWCOSearchChecked) {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(", EAADMIN.Schedule_F SF ")
 						.append(lsBaseWhereClause);
-
 				if (pbCustomerOwnedCustomerManagedSearchChecked) {
 					lsbScopeSql.append("1");
 				}
@@ -788,6 +885,34 @@ public class ReportServiceImpl implements ReportService {
 						lsbScopeSql.append("3");
 					}
 				}
+				if (pbIBMO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 4");
+					} else {
+						lsbScopeSql.append("4");
+					}
+				}
+				if (pbCustO3rdMSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 5");
+					} else {
+						lsbScopeSql.append("5");
+					}
+				}
+				if (pbIBMOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 6");
+					} else {
+						lsbScopeSql.append("6");
+					}
+				}
+				if (pbCustOibmMSWCOSearchChecked) {
+					if (lsbScopeSql.length() > 0) {
+						lsbScopeSql.append(", 7");
+					} else {
+						lsbScopeSql.append("7");
+					}
+			}
 				lsbSql.append(
 						" AND SF.Customer_Id = L.Customer_Id AND SF.Software_Id = SI.Id AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
@@ -919,12 +1044,27 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked)
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
+		if (pbSelectAllChecked){
+			 pbCustomerOwnedCustomerManagedSearchChecked = true;
+			 pbCustomerOwnedIBMManagedSearchChecked= true;
+			 pbIBMOwnedIBMManagedSearchChecked= true;
+			 pbIBMO3rdMSearchChecked= true;
+			 pbCustO3rdMSearchChecked= true;
+			 pbIBMOibmMSWCOSearchChecked= true;
+			 pbCustOibmMSWCOSearchChecked= true;
+			 pbTitlesNotSpecifiedInContractScopeSearchChecked= true;
+		}
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"CALL EAADMIN.SwComplianceSum(:customerId, :customerOwnedCustomerManaged, :customerOwnedIBMManaged, :ibmOwnedIBMManaged, :titlesNotSpecifiedInContractScope)")
+						"CALL EAADMIN.SwComplianceSum(:customerId, :customerOwnedCustomerManaged, :customerOwnedIBMManaged, :ibmOwnedIBMManaged, :ibmOwned3RDManaged, :customerOwned3RDManaged, :ibmOwnedIbmManagedSWConsumBased, :custOwnedIbmManagedSWConsumBased, :titlesNotSpecifiedInContractScope)")
 				.setLong("customerId", pAccount.getId())
 				.setInteger("customerOwnedCustomerManaged",
 						pbCustomerOwnedCustomerManagedSearchChecked ? 1 : 0)
@@ -932,6 +1072,14 @@ public class ReportServiceImpl implements ReportService {
 						pbCustomerOwnedIBMManagedSearchChecked ? 1 : 0)
 				.setInteger("ibmOwnedIBMManaged",
 						pbIBMOwnedIBMManagedSearchChecked ? 1 : 0)
+				.setInteger("ibmOwned3RDManaged",
+						pbIBMO3rdMSearchChecked ? 1 : 0)
+				.setInteger("customerOwned3RDManaged",
+						pbCustO3rdMSearchChecked ? 1 : 0)
+				.setInteger("ibmOwnedIbmManagedSWConsumBased",
+						pbIBMOibmMSWCOSearchChecked ? 1 : 0)
+				.setInteger("custOwnedIbmManagedSWConsumBased",
+						pbCustOibmMSWCOSearchChecked ? 1 : 0)
 				.setInteger(
 						"titlesNotSpecifiedInContractScope",
 						pbTitlesNotSpecifiedInContractScopeSearchChecked ? 1

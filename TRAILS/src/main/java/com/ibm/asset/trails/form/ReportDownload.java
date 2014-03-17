@@ -164,44 +164,84 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 					pHttpServletRequest, "customerOwnedIBMManagedSearchChecked");
 			String lsIBMOwnedCustomerIBMSearchChecked = this.getParameter(
 					pHttpServletRequest, "ibmOwnedIBMManagedSearchChecked");
+			String lsIBMO3rdMSearchChecked = this.getParameter(
+					pHttpServletRequest, "ibmO3rdMSearchChecked");
+			String lsCustO3rdMSearchChecked = this.getParameter(
+					pHttpServletRequest, "custO3rdMSearchChecked");
+			String lsIBMOibmMSWCOSearchChecked = this.getParameter(
+					pHttpServletRequest, "ibmOibmMSWCOSearchChecked");
+			String lsCustOibmMSWCOSearchChecked = this.getParameter(
+					pHttpServletRequest, "custOibmMSWCOSearchChecked");
 			String lsTitlesNotSpecifiedInContractScopeSearchChecked = this
 					.getParameter(pHttpServletRequest,
 							"titlesNotSpecifiedInContractScopeSearchChecked");
+			String lsSelectAllChecked = this.getParameter(
+					pHttpServletRequest, "selectAllChecked");
 			boolean lbCustomerOwnedCustomerManagedSearchChecked = lsCustomerOwnedCustomerManagedSearchChecked != null
 					&& lsCustomerOwnedCustomerManagedSearchChecked.length() > 0;
 			boolean lbCustomerOwnedIBMManagedSearchChecked = lsCustomerOwnedIBMManagedSearchChecked != null
 					&& lsCustomerOwnedIBMManagedSearchChecked.length() > 0;
 			boolean lbIBMOwnedCustomerIBMSearchChecked = lsIBMOwnedCustomerIBMSearchChecked != null
 					&& lsIBMOwnedCustomerIBMSearchChecked.length() > 0;
+			boolean lbIBMO3rdMSearchChecked = lsIBMO3rdMSearchChecked != null
+					&& lsIBMO3rdMSearchChecked.length() > 0;
+			boolean lbCustO3rdMSearchChecked = lsCustO3rdMSearchChecked != null
+					&& lsCustO3rdMSearchChecked.length() > 0;
+			boolean lbIBMOibmMSWCOSearchChecked = lsIBMOibmMSWCOSearchChecked != null
+					&& lsIBMOibmMSWCOSearchChecked.length() > 0;
+			boolean lbCustOibmMSWCOSearchChecked = lsCustOibmMSWCOSearchChecked != null
+				    && lsCustOibmMSWCOSearchChecked.length() > 0;
 			boolean lbTitlesNotSpecifiedInContractScopeSearchChecked = lsTitlesNotSpecifiedInContractScopeSearchChecked != null
 					&& lsTitlesNotSpecifiedInContractScopeSearchChecked.length() > 0;
+			boolean lbSelectAllChecked = lsSelectAllChecked != null
+					&& lsSelectAllChecked.length() > 0;
 
 			if (psName.equalsIgnoreCase(REPORT_NAME_FULL_RECONCILIATION)) {
 				return new FullReconciliationReport(pReportService,
 						pServletOutputStream, lbCustomerOwnedCustomerManagedSearchChecked,
 						lbCustomerOwnedIBMManagedSearchChecked,
 						lbIBMOwnedCustomerIBMSearchChecked,
-						lbTitlesNotSpecifiedInContractScopeSearchChecked);
+						lbIBMO3rdMSearchChecked,
+						lbCustO3rdMSearchChecked,
+						lbIBMOibmMSWCOSearchChecked,
+						lbCustOibmMSWCOSearchChecked,
+						lbTitlesNotSpecifiedInContractScopeSearchChecked,
+						lbSelectAllChecked);
 			} else if (psName
 					.equalsIgnoreCase(REPORT_NAME_INSTALLED_SOFTWARE_BASELINE)) {
 				return new InstalledSoftwareBaselineReport(pReportService,
 						pServletOutputStream, lbCustomerOwnedCustomerManagedSearchChecked,
 						lbCustomerOwnedIBMManagedSearchChecked,
 						lbIBMOwnedCustomerIBMSearchChecked,
-						lbTitlesNotSpecifiedInContractScopeSearchChecked);
+						lbIBMO3rdMSearchChecked,
+						lbCustO3rdMSearchChecked,
+						lbIBMOibmMSWCOSearchChecked,
+						lbCustOibmMSWCOSearchChecked,
+						lbTitlesNotSpecifiedInContractScopeSearchChecked,
+						lbSelectAllChecked);
 			} else if (psName.equalsIgnoreCase(REPORT_NAME_LICENSE_BASELINE)) {
 				return new LicenseBaselineReport(pReportService, pServletOutputStream,
 						lbCustomerOwnedCustomerManagedSearchChecked,
 						lbCustomerOwnedIBMManagedSearchChecked,
 						lbIBMOwnedCustomerIBMSearchChecked,
-						lbTitlesNotSpecifiedInContractScopeSearchChecked);
+						lbIBMO3rdMSearchChecked,
+						lbCustO3rdMSearchChecked,
+						lbIBMOibmMSWCOSearchChecked,
+						lbCustOibmMSWCOSearchChecked,
+						lbTitlesNotSpecifiedInContractScopeSearchChecked,
+						lbSelectAllChecked);
 			} else if (psName
 					.equalsIgnoreCase(REPORT_NAME_SOFTWARE_COMPLIANCE_SUMMARY)) {
 				return new SoftwareComplianceSummaryReport(pReportService,
 						pServletOutputStream, lbCustomerOwnedCustomerManagedSearchChecked,
 						lbCustomerOwnedIBMManagedSearchChecked,
 						lbIBMOwnedCustomerIBMSearchChecked,
-						lbTitlesNotSpecifiedInContractScopeSearchChecked);
+						lbIBMO3rdMSearchChecked,
+						lbCustO3rdMSearchChecked,
+						lbIBMOibmMSWCOSearchChecked,
+						lbCustOibmMSWCOSearchChecked,
+						lbTitlesNotSpecifiedInContractScopeSearchChecked,
+						lbSelectAllChecked);
 			} else {
 				log.error(new StringBuffer("An invalid report name, '").append(psName)
 						.append("', was given."));

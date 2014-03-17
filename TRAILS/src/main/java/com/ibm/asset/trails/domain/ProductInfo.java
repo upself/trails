@@ -17,7 +17,9 @@ import javax.persistence.Table;
 @Table(name = "PRODUCT_INFO")
 @NamedQueries({
         @NamedQuery(name = "productInfoBySoftwareName", query = "FROM ProductInfo WHERE UCASE(name) = :name and deleted!=1 order by product_role desc"),
-        @NamedQuery(name = "productInfoByAliasName", query = "FROM ProductInfo PI JOIN PI.alias AS A WITH UCASE(A.name) = :name and deleted!=1 order by product_role desc") })
+        @NamedQuery(name = "productInfoByAliasName", query = "FROM ProductInfo PI JOIN PI.alias AS A WITH UCASE(A.name) = :name and deleted!=1 order by product_role desc"),
+        @NamedQuery(name = "inactiveProductInfoBySoftwareName", query = "FROM ProductInfo WHERE UCASE(name) = :name order by product_role desc"),
+        @NamedQuery(name = "inactiveProductInfoByAliasName", query = "FROM ProductInfo PI JOIN PI.alias AS A WITH UCASE(A.name) = :name order by product_role desc")})
 public class ProductInfo extends Product implements Serializable {
     private static final long serialVersionUID = -8798102209513138193L;
 

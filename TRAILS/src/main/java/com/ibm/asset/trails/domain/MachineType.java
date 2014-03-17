@@ -5,13 +5,16 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "MACHINE_TYPE")
 @org.hibernate.annotations.Entity(mutable = false)
-@NamedQuery(name = "machineTypeDetailsById", query = "FROM MachineType WHERE id = :id")
+@NamedQueries({
+@NamedQuery(name = "machineTypeDetailsById", query = "FROM MachineType WHERE id = :id"),
+@NamedQuery(name = "machineTypeDetailsByName", query = "FROM MachineType WHERE name = :name")})
 public class MachineType {
 
 	@Id

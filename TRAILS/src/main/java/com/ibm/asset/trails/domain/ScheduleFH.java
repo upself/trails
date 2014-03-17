@@ -21,6 +21,21 @@ public class ScheduleFH {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
+	
+	@Column(name = "LEVEL")
+	private String level;
+
+	@Column(name = "HW_OWNER")
+	private String hwOwner;
+
+	@Column(name = "SERIAL")
+	private String serial;
+
+	@Column(name = "MACHINE_TYPE")
+	private String machineType;
+
+	@Column(name = "HOSTNAME")
+	private String hostname;
 
 	@ManyToOne
 	@JoinColumn(name = "SCHEDULE_F_ID")
@@ -66,6 +81,46 @@ public class ScheduleFH {
 
 	@Column(name = "RECORD_TIME")
 	private Date recordTime;
+
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+	public String getHwOwner() {
+		return hwOwner;
+	}
+
+	public void setHwOwner(String hwOwner) {
+		this.hwOwner = hwOwner;
+	}
+
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public String getMachineType() {
+		return machineType;
+	}
+
+	public void setMachineType(String machineType) {
+		this.machineType = machineType;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
 
 	public Account getAccount() {
   	return account;

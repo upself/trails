@@ -25,8 +25,18 @@ public abstract class ReportBase {
 	private boolean customerOwnedIBMManagedSearchChecked = false;
 
 	private boolean ibmOwnedIBMManagedSearchChecked = false;
+	
+	private boolean ibmO3rdMSearchChecked = false;
+	
+	private boolean custO3rdMSearchChecked = false;
+	
+	private boolean ibmOibmMSWCOSearchChecked = false;
+	
+	private boolean custOibmMSWCOSearchChecked = false;
 
 	private boolean titlesNotSpecifiedInContractScopeSearchChecked = false;
+	
+	private boolean selectAllChecked = false;
 
 	public ReportBase(ReportService pReportService, OutputStream pOutputStream) {
 		super();
@@ -55,7 +65,12 @@ public abstract class ReportBase {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked) {
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked) {
 		super();
 
 		setReportService(pReportService);
@@ -63,7 +78,12 @@ public abstract class ReportBase {
 		setCustomerOwnedCustomerManagedSearchChecked(pbCustomerOwnedCustomerManagedSearchChecked);
 		setCustomerOwnedIBMManagedSearchChecked(pbCustomerOwnedIBMManagedSearchChecked);
 		setIbmOwnedIBMManagedSearchChecked(pbIBMOwnedIBMManagedSearchChecked);
+		setIbmO3rdMSearchChecked(pbIBMO3rdMSearchChecked);
+		setCustO3rdMSearchChecked(pbCustO3rdMSearchChecked);
+	    setIbmOibmMSWCOSearchChecked(pbIBMOibmMSWCOSearchChecked);
+		setCustOibmMSWCOSearchChecked(pbCustOibmMSWCOSearchChecked);
 		setTitlesNotSpecifiedInContractScopeSearchChecked(pbTitlesNotSpecifiedInContractScopeSearchChecked);
+		setSelectAllChecked(pbSelectAllChecked);
 	}
 
 	public abstract void execute(HttpServletRequest pHttpServletRequest,
@@ -135,5 +155,45 @@ public abstract class ReportBase {
 	public void setTitlesNotSpecifiedInContractScopeSearchChecked(
 			boolean titlesNotSpecifiedInContractScopeSearchChecked) {
 		this.titlesNotSpecifiedInContractScopeSearchChecked = titlesNotSpecifiedInContractScopeSearchChecked;
+	}
+
+	public boolean isIbmO3rdMSearchChecked() {
+		return ibmO3rdMSearchChecked;
+	}
+
+	public void setIbmO3rdMSearchChecked(boolean ibmO3rdMSearchChecked) {
+		this.ibmO3rdMSearchChecked = ibmO3rdMSearchChecked;
+	}
+
+	public boolean isCustO3rdMSearchChecked() {
+		return custO3rdMSearchChecked;
+	}
+
+	public void setCustO3rdMSearchChecked(boolean custO3rdMSearchChecked) {
+		this.custO3rdMSearchChecked = custO3rdMSearchChecked;
+	}
+
+	public boolean isIbmOibmMSWCOSearchChecked() {
+		return ibmOibmMSWCOSearchChecked;
+	}
+
+	public void setIbmOibmMSWCOSearchChecked(boolean ibmOibmMSWCOSearchChecked) {
+		this.ibmOibmMSWCOSearchChecked = ibmOibmMSWCOSearchChecked;
+	}
+
+	public boolean isCustOibmMSWCOSearchChecked() {
+		return custOibmMSWCOSearchChecked;
+	}
+
+	public void setCustOibmMSWCOSearchChecked(boolean custOibmMSWCOSearchChecked) {
+		this.custOibmMSWCOSearchChecked = custOibmMSWCOSearchChecked;
+	}
+
+	public boolean isSelectAllChecked() {
+		return selectAllChecked;
+	}
+
+	public void setSelectAllChecked(boolean selectAllChecked) {
+		this.selectAllChecked = selectAllChecked;
 	}
 }

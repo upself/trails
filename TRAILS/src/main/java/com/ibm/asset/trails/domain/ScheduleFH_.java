@@ -22,4 +22,9 @@ public class ScheduleFH_ {
 	public static volatile SingularAttribute<ScheduleFH, String> businessJustification;
 	public static volatile SingularAttribute<ScheduleFH, String> remoteUser;
 	public static volatile SingularAttribute<ScheduleFH, Date> recordTime;
+	public static volatile SingularAttribute<ScheduleF, String> level;
+	public static volatile SingularAttribute<ScheduleF, String> hwOwner;
+	public static volatile SingularAttribute<ScheduleF, String> serial;
+	public static volatile SingularAttribute<ScheduleF, String> machineType;
+	public static volatile SingularAttribute<ScheduleF, String> hostname;
 }

@@ -11,5 +11,7 @@ public class VSoftwareLpar_ {
 	public static volatile SingularAttribute<VSoftwareLpar, Account> account;
 	public static volatile SingularAttribute<VSoftwareLpar, Integer> processorCount;
 	public static volatile SingularAttribute<VSoftwareLpar, HardwareLpar> hardwareLpar;
+	public static volatile SingularAttribute<VSoftwareLpar, String> name;
+	public static volatile SingularAttribute<VSoftwareLpar, String> status;
 	public static volatile SetAttribute<VSoftwareLpar, InstalledSoftware> installedSoftwares;
 }

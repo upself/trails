@@ -4,8 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.MachineType;
 import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.Scope;
@@ -19,6 +21,7 @@ public interface ScheduleFService {
 
 	ScheduleF findScheduleF(Long plScheduleFId, Account pAccount,
 			ProductInfo pProductInfo);
+	List<ScheduleF> findScheduleF(Account pAccount, ProductInfo pProductInfo, String level);
 
 	ArrayList<ProductInfo> findProductInfoBySoftwareName(String psSoftwareName);
 
@@ -29,6 +32,8 @@ public interface ScheduleFService {
 	ArrayList<Source> getSourceList();
 
 	ArrayList<Status> getStatusList();
+	
+	ArrayList<String> getLevelList();
 
 	ByteArrayOutputStream loadSpreadsheet(File file, String remoteUser)
 			throws IOException;
@@ -37,4 +42,6 @@ public interface ScheduleFService {
 			int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
 
 	void saveScheduleF(ScheduleF psfSave, String psRemoteUser);
+
+	List<MachineType> findMachineTypebyName(String string);
 }

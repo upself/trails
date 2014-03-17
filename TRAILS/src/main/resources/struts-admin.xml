@@ -9,6 +9,7 @@
 		<action name="home" class="adminAction">
 			<result type="tiles">tiles.admin.home</result>
 		</action>
+		<action name="liveSearch" method="liveSearch" class="ScheduleFAjaxAction"></action>
 	</package>
 
 	<package name="adminPvuMapping" extends="trails-struts-default"

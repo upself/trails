@@ -17,12 +17,22 @@ public class InstalledSoftwareBaselineReport extends ReportBase {
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked) {
+			boolean pbIBMO3rdMSearchChecked,
+			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMOibmMSWCOSearchChecked,
+			boolean pbCustOibmMSWCOSearchChecked,
+			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
+			boolean pbSelectAllChecked) {
 		super(pReportService, pOutputStream,
 				pbCustomerOwnedCustomerManagedSearchChecked,
 				pbCustomerOwnedIBMManagedSearchChecked,
 				pbIBMOwnedIBMManagedSearchChecked,
-				pbTitlesNotSpecifiedInContractScopeSearchChecked);
+				pbIBMO3rdMSearchChecked,
+				pbCustO3rdMSearchChecked,
+			    pbIBMOibmMSWCOSearchChecked,
+				pbCustOibmMSWCOSearchChecked,
+				pbTitlesNotSpecifiedInContractScopeSearchChecked,
+				pbSelectAllChecked);
 	}
 
 	@Override
@@ -33,6 +43,11 @@ public class InstalledSoftwareBaselineReport extends ReportBase {
 				super.isCustomerOwnedCustomerManagedSearchChecked(),
 				super.isCustomerOwnedIBMManagedSearchChecked(),
 				super.isIbmOwnedIBMManagedSearchChecked(),
-				super.isTitlesNotSpecifiedInContractScopeSearchChecked());
+				super.isIbmO3rdMSearchChecked(),
+				super.isCustO3rdMSearchChecked(),
+			    super.isIbmOibmMSWCOSearchChecked(),
+				super.isCustOibmMSWCOSearchChecked(),
+				super.isTitlesNotSpecifiedInContractScopeSearchChecked(),
+				super.isSelectAllChecked());
 	}
 }

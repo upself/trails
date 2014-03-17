@@ -2,33 +2,59 @@
 
 <script type="text/javascript">
 <!--
-function setAction() {
-	var lfReportList = document.reportList;
-	var lbCustomerOwnedCustomerManagedSearchChecked = lfReportList.customerOwnedCustomerManagedSearch.checked;
-	var lbCustomerOwnedIBMManagedSearchChecked = lfReportList.customerOwnedIBMManagedSearch.checked;
-	var lbIBMOwnedIBMManagedSearchChecked = lfReportList.ibmOwnedIBMManagedSearch.checked;
-	var lbTitlesNotSpecifiedInContractScopeSearchChecked = lfReportList.titlesNotSpecifiedInContractScopeSearch.checked;
+	function setAction() {
+		var lfReportList = document.reportList;
+		var lbCustomerOwnedCustomerManagedSearchChecked = lfReportList.customerOwnedCustomerManagedSearch.checked;
+		var lbCustomerOwnedIBMManagedSearchChecked = lfReportList.customerOwnedIBMManagedSearch.checked;
+		var lbIBMOwnedIBMManagedSearchChecked = lfReportList.ibmOwnedIBMManagedSearch.checked;
+		var lbIbmO3rdMSearchChecked = lfReportList.ibmO3rdMSearch.checked;
+		var lbCustO3rdMSearchChecked = lfReportList.custO3rdMSearch.checked;
+		var lbIbmOibmMSWCOSearchChecked = lfReportList.ibmOibmMSWCOSearch.checked;
+		var lbCustOibmMSWCOSearchChecked = lfReportList.custOibmMSWCOSearch.checked;
+		var lbTitlesNotSpecifiedInContractScopeSearchChecked = lfReportList.titlesNotSpecifiedInContractScopeSearch.checked;
+		var lbSelectAllChecked = lfReportList.selectAll.checked;
 
-	if (!lbCustomerOwnedCustomerManagedSearchChecked &&
-			!lbCustomerOwnedIBMManagedSearchChecked &&
-			!lbIBMOwnedIBMManagedSearchChecked &&
-			!lbTitlesNotSpecifiedInContractScopeSearchChecked) {
-		alert("Please select at least one checkbox");
+		if (!lbCustomerOwnedCustomerManagedSearchChecked
+				&& !lbCustomerOwnedIBMManagedSearchChecked
+				&& !lbIBMOwnedIBMManagedSearchChecked
+				&& !lbIbmO3rdMSearchChecked
+				&& !lbCustO3rdMSearchChecked
+				&& !lbIbmOibmMSWCOSearchChecked
+				&& !lbCustOibmMSWCOSearchChecked
+				&& !lbTitlesNotSpecifiedInContractScopeSearchChecked
+				&& !lbSelectAllChecked ) {
+			alert("Please select at least one checkbox");
 
-		return false;
-	} else {
-		var lsReportFileName = lfReportList.reportFileName.value;
-	
-		lfReportList.name.value = lsReportFileName;
-		lfReportList.customerOwnedCustomerManagedSearchChecked.value = lbCustomerOwnedCustomerManagedSearchChecked ? "true" : "";
-		lfReportList.customerOwnedIBMManagedSearchChecked.value = lbCustomerOwnedIBMManagedSearchChecked ? "true" : "";
-		lfReportList.ibmOwnedIBMManagedSearchChecked.value = lbIBMOwnedIBMManagedSearchChecked ? "true" : "";
-		lfReportList.titlesNotSpecifiedInContractScopeSearchChecked.value = lbTitlesNotSpecifiedInContractScopeSearchChecked ? "true" : "";
-		lfReportList.action = "/TRAILS/report/download/" + lsReportFileName + "<s:property value='%{#attr.account.account}' />" + ".tsv";
+			return false;
+		} else {
+			var lsReportFileName = lfReportList.reportFileName.value;
 
-		return true;
+			lfReportList.name.value = lsReportFileName;
+			lfReportList.customerOwnedCustomerManagedSearchChecked.value = lbCustomerOwnedCustomerManagedSearchChecked ? "true"
+					: "";
+			lfReportList.customerOwnedIBMManagedSearchChecked.value = lbCustomerOwnedIBMManagedSearchChecked ? "true"
+					: "";
+			lfReportList.ibmOwnedIBMManagedSearchChecked.value = lbIBMOwnedIBMManagedSearchChecked ? "true"
+					: "";
+			lfReportList.ibmO3rdMSearchChecked.value = lbIbmO3rdMSearchChecked ? "true"
+					: "";
+			lfReportList.custO3rdMSearchChecked.value = lbCustO3rdMSearchChecked ? "true"
+					: "";
+			lfReportList.ibmOibmMSWCOSearchChecked.value = lbIbmOibmMSWCOSearchChecked ? "true"
+					: "";
+			lfReportList.custOibmMSWCOSearchChecked.value = lbCustOibmMSWCOSearchChecked ? "true"
+					: "";
+			lfReportList.titlesNotSpecifiedInContractScopeSearchChecked.value = lbTitlesNotSpecifiedInContractScopeSearchChecked ? "true"
+					: "";
+			lfReportList.selectAllChecked.value = lbSelectAllChecked ? "true"
+					: "";
+			lfReportList.action = "/TRAILS/report/download/" + lsReportFileName
+					+ "<s:property value='%{#attr.account.account}' />"
+					+ ".tsv";
+
+			return true;
+		}
 	}
-}
 //-->
 </script>
 <s:form action="reportList" method="get" namespace="/report/download"
@@ -37,43 +63,85 @@ function setAction() {
 	<s:hidden name="customerOwnedCustomerManagedSearchChecked" />
 	<s:hidden name="customerOwnedIBMManagedSearchChecked" />
 	<s:hidden name="ibmOwnedIBMManagedSearchChecked" />
+	<s:hidden name="ibmO3rdMSearchChecked" />
+	<s:hidden name="custO3rdMSearchChecked" />
+	<s:hidden name="ibmOibmMSWCOSearchChecked" />
+	<s:hidden name="custOibmMSWCOSearchChecked" />
 	<s:hidden name="titlesNotSpecifiedInContractScopeSearchChecked" />
+	<s:hidden name="selectAllChecked" />
 	<table class="basic-table" cellspacing="0" cellpadding="0">
-	    <tr>
-	      <td><label for="reportFileName">Report name:</label></td>
-	    </tr>
 		<tr>
-			<td><s:select
-				name="reportFileName" label="Report" list="reportList" id="reportFileName"
-				listKey="reportFileName" listValue="reportDisplayName" />&nbsp;&nbsp;
-			<span class="button-blue"><s:submit value="GO"
-				onclick="return setAction()" alt="Download report" /></span></td>
+			<td><label for="reportFileName">Report name:</label></td>
+		</tr>
+		<tr>
+			<td><s:select name="reportFileName" label="Report"
+					list="reportList" id="reportFileName" listKey="reportFileName"
+					listValue="reportDisplayName" />&nbsp;&nbsp; <span
+				class="button-blue"><s:submit value="GO"
+						onclick="return setAction()" alt="Download report" /></span></td>
 		</tr>
 		<tr>
 			<td><s:checkbox
-				label="Customer owned/customer managed titles/vendors"
-				name="customerOwnedCustomerManagedSearch" id="customerOwnedCustomerManagedSearch"/><label
+					label="Customer owned/customer managed titles/vendors"
+					name="customerOwnedCustomerManagedSearch"
+					id="customerOwnedCustomerManagedSearch" /><label
 				for="customerOwnedCustomerManagedSearch">Customer
-			owned/customer managed titles/vendors</label></td>
+					owned/customer managed titles/vendors</label></td>
 		</tr>
 		<tr>
 			<td><s:checkbox
-				label="Customer owned/IBM managed titles/vendors"
-				name="customerOwnedIBMManagedSearch" id="customerOwnedIBMManagedSearch"/><label
+					label="Customer owned/IBM managed titles/vendors"
+					name="customerOwnedIBMManagedSearch"
+					id="customerOwnedIBMManagedSearch" /><label
 				for="customerOwnedIBMManagedSearch">Customer owned/IBM
-			managed titles/vendors</label></td>
+					managed titles/vendors</label></td>
 		</tr>
 		<tr>
 			<td><s:checkbox label="IBM owned/IBM managed titles/vendors"
-				name="ibmOwnedIBMManagedSearch" id="ibmOwnedIBMManagedSearch"/><label
+					name="ibmOwnedIBMManagedSearch" id="ibmOwnedIBMManagedSearch" /><label
 				for="ibmOwnedIBMManagedSearch">IBM owned/IBM managed
-			titles/vendors</label></td>
+					titles/vendors</label></td>
+		</tr>
+		<tr>
+			<td><s:checkbox label="IBM owned/ managed by 3rd party
+					titles/vendors"
+					name="ibmO3rdMSearch" id="ibmO3rdMSearch" /><label
+				for="ibmO3rdMSearch">IBM owned/ managed by 3rd party
+					titles/vendors</label></td>
+		</tr>
+		<tr>
+			<td><s:checkbox label="Customer owned/ managed by 3rd party 
+					titles/vendors"
+					name="custO3rdMSearch" id="custO3rdMSearch" /><label
+				for="custO3rdMSearch">Customer owned/ managed by 3rd party 
+					titles/vendors</label></td>
+		</tr>
+		<tr>
+			<td><s:checkbox label="IBM owned/IBM managed SW consumption based 
+					titles/vendors"
+					name="ibmOibmMSWCOSearch" id="ibmOibmMSWCOSearch" /><label
+				for="ibmOibmMSWCOSearch">IBM owned/IBM managed SW consumption based 
+					titles/vendors</label></td>
+		</tr>
+				<tr>
+			<td><s:checkbox label="Customer owned/IBM managed SW consumption based 
+					titles/vendors"
+					name="custOibmMSWCOSearch" id="custOibmMSWCOSearch" /><label
+				for="custOibmMSWCOSearch">Customer owned/IBM managed SW consumption based 
+					titles/vendors</label></td>
 		</tr>
 		<tr>
 			<td><s:checkbox label="Titles not specified in contract scope"
-				name="titlesNotSpecifiedInContractScopeSearch" id="titlesNotSpecifiedInContractScopeSearch"/><label
+					name="titlesNotSpecifiedInContractScopeSearch"
+					id="titlesNotSpecifiedInContractScopeSearch" /><label
 				for="titlesNotSpecifiedInContractScopeSearch">Titles not
-			specified in contract scope</label></td>
+					specified in contract scope</label></td>
+		</tr>
+				<tr>
+			<td><s:checkbox label="selectAll"
+					name="selectAll"
+					id="selectAll" /><label
+				for="selectAll">SelectALL</label></td>
 		</tr>
 	</table>
 </s:form>

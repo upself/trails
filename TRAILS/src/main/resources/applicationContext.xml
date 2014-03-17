@@ -81,6 +81,10 @@
 	<bean id="reconAjaxAction" class="com.ibm.asset.trails.action.ReconAjaxAction">
 		<property name="licenseService" ref="licenseService" />
 	</bean>
+	
+	<bean id="ScheduleFAjaxAction" class="com.ibm.asset.trails.action.ScheduleFAjaxAction">
+		<property name="scheduleFService" ref="scheduleFServiceImpl" />
+	</bean>
 
     <bean id="dbdeterminativeService" class="com.ibm.asset.trails.service.impl.DatabaseDeterminativeServiceImpl" >
      <property name="gapseconds">

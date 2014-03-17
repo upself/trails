@@ -17,21 +17,36 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "SCHEDULE_F")
-@NamedQueries( {
+@NamedQueries({
 		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND productInfo = :productInfo"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND productInfo = :productInfo AND id = :id"),
 		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.productInfo WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
-		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account") })
+		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
+		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.productInfo WHERE SF.account = :account AND SF.productInfo = :productInfo AND SF.level = :level") })
 public class ScheduleF {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
+
+	@Column(name = "LEVEL")
+	private String level;
+
+	@Column(name = "HW_OWNER")
+	private String hwOwner;
+
+	@Column(name = "SERIAL")
+	private String serial;
+
+	@Column(name = "MACHINE_TYPE")
+	private String machineType;
+
+	@Column(name = "HOSTNAME")
+	private String hostname;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
@@ -189,6 +204,46 @@ public class ScheduleF {
 		this.scheduleFHList = scheduleFHList;
 	}
 
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+	public String getHwOwner() {
+		return hwOwner;
+	}
+
+	public void setHwOwner(String hwOwner) {
+		this.hwOwner = hwOwner;
+	}
+
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public String getMachineType() {
+		return machineType;
+	}
+
+	public void setMachineType(String machineType) {
+		this.machineType = machineType;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ScheduleF) {
@@ -220,6 +275,45 @@ public class ScheduleF {
 			}
 
 			if (!this.getStatus().getId().equals(other.getStatus().getId())) {
+				return false;
+			}
+
+			if (!this.getLevel().equals(other.getLevel())) {
+				return false;
+			}
+
+			if (this.getHwOwner() != null && other.getHwOwner() != null) {
+				if (!this.getHwOwner().equals(other.getHwOwner())) {
+					return false;
+				}
+			} else if (!((this.getHwOwner() == null ||this.getHwOwner() == "") && (other.getHwOwner() == null || other.getHwOwner() == ""))) {
+				return false;
+			}
+
+			if (this.getSerial() != null && other.getSerial() != null) {
+				if (!this.getSerial().equals(other.getSerial())) {
+					return false;
+				}
+			} else if (!((this.getSerial() == null || this.getSerial() == "") && (other.getSerial() == null || other.getSerial() == "" ))
+					) {
+				return false;
+			}
+
+			if (this.getMachineType() != null && other.getMachineType() != null) {
+				if (!this.getMachineType().equals(other.getMachineType())) {
+					return false;
+				}
+			} else if (!((this.getMachineType() == null || this.getMachineType() == "" ) && (other.getMachineType() == null || other.getMachineType() == ""))
+					) {
+				return false;
+			}
+
+			if (this.getHostname() != null && other.getHostname() != null) {
+				if (!this.getHostname().equals(other.getHostname())) {
+					return false;
+				}
+			} else if (!((this.getHostname() == null || this.getHostname() == "" ) && ( other.getHostname() == null ||  other.getHostname() == "" ))
+					) {
 				return false;
 			}
 

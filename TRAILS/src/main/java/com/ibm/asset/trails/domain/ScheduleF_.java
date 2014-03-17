@@ -23,4 +23,9 @@ public class ScheduleF_ {
 	public static volatile SingularAttribute<ScheduleF, String> remoteUser;
 	public static volatile SingularAttribute<ScheduleF, Date> recordTime;
 	public static volatile ListAttribute<ScheduleF, ScheduleFH> scheduleFHList;
+	public static volatile SingularAttribute<ScheduleF, String> level;
+	public static volatile SingularAttribute<ScheduleF, String> hwOwner;
+	public static volatile SingularAttribute<ScheduleF, String> serial;
+	public static volatile SingularAttribute<ScheduleF, String> machineType;
+	public static volatile SingularAttribute<ScheduleF, String> hostname;
 }

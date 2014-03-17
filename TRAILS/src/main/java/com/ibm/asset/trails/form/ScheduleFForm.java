@@ -8,8 +8,20 @@ public class ScheduleFForm {
 	private String softwareTitle;
 
 	private String softwareName;
+	
+	private Boolean softwareStatus;
 
 	private String manufacturer;
+	
+	private String level;
+	
+	private String hwowner;
+	
+	private String serial;
+	
+	private String machineType;
+	
+	private String hostname;
 
 	private Long scopeId;
 
@@ -44,6 +56,46 @@ public class ScheduleFForm {
 		return manufacturer;
 	}
 
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+	public String getHwowner() {
+		return hwowner;
+	}
+
+	public void setHwowner(String hwowner) {
+		this.hwowner = hwowner;
+	}
+
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public String getMachineType() {
+		return machineType;
+	}
+
+	public void setMachineType(String machineType) {
+		this.machineType = machineType;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
 	@RequiredStringValidator(type = ValidatorType.FIELD, trim = true, message = "Manufacturer is required.")
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
@@ -73,6 +125,14 @@ public class ScheduleFForm {
 	@RequiredStringValidator(type = ValidatorType.FIELD, trim = true, message = "Software title is required.")
 	public void setSoftwareTitle(String softwareTitle) {
 		this.softwareTitle = softwareTitle;
+	}
+
+	public Boolean getSoftwareStatus() {
+		return softwareStatus;
+	}
+
+	public void setSoftwareStatus(Boolean softwareStatus) {
+		this.softwareStatus = softwareStatus;
 	}
 
 	public Long getSourceId() {

@@ -38,6 +38,12 @@ public class VSoftwareLpar extends AbstractDomainEntity {
 
 	@Column(name = "PROCESSOR_COUNT")
 	private Integer processorCount;
+	
+	@Column(name = "NAME")
+	private String name;
+	
+	@Column(name = "STATUS")
+	private String status;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinTable(name = "HW_SW_COMPOSITE", joinColumns = @JoinColumn(name = "SOFTWARE_LPAR_ID"), inverseJoinColumns = @JoinColumn(name = "HARDWARE_LPAR_ID"))
@@ -84,6 +90,22 @@ public class VSoftwareLpar extends AbstractDomainEntity {
 
 	public void setInstalledSoftwares(Set<InstalledSoftware> installedSoftwares) {
 		this.installedSoftwares = installedSoftwares;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Override
