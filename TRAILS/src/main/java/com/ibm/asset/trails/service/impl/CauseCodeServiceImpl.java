@@ -537,7 +537,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 	private List<CauseCode> getCauseCodeById(HSSFCell cell) {
 
 		long causeCodeId;
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+		if (cell !=null && cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 			String content = cell.getStringCellValue();
 			Pattern pattern = Pattern.compile("[0-9]*");
 			if (!pattern.matcher(content).matches()) {

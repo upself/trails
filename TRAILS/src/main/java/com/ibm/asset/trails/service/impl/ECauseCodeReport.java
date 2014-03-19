@@ -6,8 +6,8 @@ public enum ECauseCodeReport
 	// 1. Cause Code|2. target date|3. owner|4. change date|5. change person|6.
 	// Internal
 	// ID|7. message
-	NOLICIBM("Unlicensed IBM SW alert report", 17, 5, 6, 7, 8, 9, 10, 11),
-	NOLICISV("Unlicensed ISV SW alert report", 17, 5, 6, 7, 8, 9, 10, 11),
+	NOLICIBM("Unlicensed IBM SW alert report", 17, 6, 7, 8, 9, 10, 11, 12),
+	NOLICISV("Unlicensed ISV SW alert report", 17, 6, 7, 8, 9, 10, 11, 12),
 	HARDWARE("HW w/o HW LPAR alert report", 3, 9, 10, 11, 12, 13, 14, 15),
 	HW_LPAR("HW LPAR w/o SW LPAR alert report", 4, 10, 11, 12, 13, 14, 15, 16),
 	SW_LPAR("SW LPAR w/o HW LPAR alert report", 5, 8, 9, 10, 11, 12, 13, 14),
