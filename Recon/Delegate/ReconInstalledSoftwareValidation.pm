@@ -137,6 +137,10 @@ sub validate {
 		|| $self->validateSoftwareCategory == 0
 		|| $self->validateBundle == 0
 		|| $self->validateCustomerOwnedAndManaged == 0
+		|| $self->validateIBMOwned3rdManaged == 0
+		|| $self->validateCustomerOwned3rdManaged == 0
+		|| $self->validateIBMOwnedIBMManagedCons == 0
+		|| $self->validateCustOwnedIBMManagedCons == 0
 		|| $self->validateCustomerPendingDecision == 0
 		|| $self->validateLicenseAllocation == 0 )
 	{
@@ -405,13 +409,112 @@ sub validateCustomerOwnedAndManaged {
 	return 1;
 }
 
+sub validateIBMOwned3rdManaged{
+        my $self = shift;
+	dlog("begin validateIBMOwned3rdManaged");
+	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
+	dlog( "reconcile map id"
+		  . $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} );
+	if ( $self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} )
+	{
+		dlog("reconciled as IBM owned, managed by 3rd party");
+		if ( defined $self->installedSoftwareReconData->scopeName
+			&& $self->installedSoftwareReconData->scopeName eq 'IBMO3RDM' )
+		{
+			dlog("reconcile validated");
+			return 1;
+		}
+
+		dlog("reconciled as IBMO3RDM but does not pass validation");
+		return 0;
+	}
+
+	return 1;
+}
+
+sub validateCustomerOwned3rdManaged {
+        my $self = shift;
+	dlog("begin validateCustomerOwned3rdManaged");
+	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
+	dlog( "reconcile map id"
+		  . $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} );
+	if ( $self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} )
+	{
+		dlog("reconciled as Customer owned, managed by 3rd party");
+		if (( defined $self->installedSoftwareReconData->scopeName )
+			&& ( $self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM' )
+			&& ( defined $self->customer->swComplianceMgmt )
+			&& ( $self->customer->swComplianceMgmt eq 'YES' ))
+		{
+			dlog("reconcile validated");
+			return 1;
+		}
+
+		dlog("reconciled as CUSTO3RDM but does not pass validation");
+		return 0;
+	}
+
+	return 1;
+}
+
+sub validateIBMOwnedIBMManagedCons {
+        my $self = shift;
+	dlog("begin validateIBMOwnedIBMManagedCons");
+	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
+	dlog( "reconcile map id"
+		  . $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} );
+	if ( $self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} )
+	{
+		dlog("reconciled as IBM owned, IBM managed SW consumption based");
+		if ( defined $self->installedSoftwareReconData->scopeName
+			&& $self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO' )
+		{
+			dlog("reconcile validated");
+			return 1;
+		}
+
+		dlog("reconciled as IBMOIBMMSWCO but does not pass validation");
+		return 0;
+	}
+
+	return 1;
+}
+
+sub validateCustOwnedIBMManagedCons {
+        my $self = shift;
+	dlog("begin validateCustOwnedIBMManagedCons");
+	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
+	dlog( "reconcile map id"
+		  . $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} );
+	if ( $self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} )
+	{
+		dlog("reconciled as Customer owned, IBM managed SW consumption based");
+		if (( defined $self->installedSoftwareReconData->scopeName )
+			&& ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO' )
+			&& ( defined $self->customer->swComplianceMgmt )
+			&& ( $self->customer->swComplianceMgmt eq 'YES' ))
+		{
+			dlog("reconcile validated");
+			return 1;
+		}
+
+		dlog("reconciled as CUSTOIBMMSWCO but does not pass validation");
+		return 0;
+	}
+
+	return 1;
+}
+
 sub validateScheduleF {
  my ( $self, $ibmOwned ) = @_;
 
  if ( defined $self->customer->swComplianceMgmt ) {
   if ( $self->customer->swComplianceMgmt eq 'YES' ) {
-   if ($self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
-    || $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' )
+   if ($self->installedSoftwareReconData->scopeName =~ /^CUSTO/ )
    {
     if ( $ibmOwned == 1 ) {
      return 0;

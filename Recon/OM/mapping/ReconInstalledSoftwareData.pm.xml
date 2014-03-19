@@ -11,6 +11,7 @@
 	<property name="hServerType" type="scalar" equals="true" />
 	<property name="hCpuMIPS" type="scalar" equals="true" />
 	<property name="hCpuMSU" type="scalar" equals="true" />
+	<property name="hOwner" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
 	<property name="hlId" type="scalar" equals="true" />
 	<property name="hlStatus" type="scalar" equals="true" />
@@ -22,6 +23,7 @@
 	<property name="slName" type="scalar" equals="true" />
 	<property name="slStatus" type="scalar" equals="true" />
 	<property name="processorCount" type="scalar" equals="true" />
+	<property name="sId" type="scalar" equals="true" />
 	<property name="sStatus" type="scalar" equals="true" />
 	<property name="sPriority" type="scalar" equals="true" />
 	<property name="sLevel" type="scalar" equals="true" />
@@ -41,4 +43,5 @@
 	<property name="licsToRecon" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
 	<property name="hChips" type="scalar" equals="true" />
+	<property name="scheduleFlevel" type="scalar" />
 </class>

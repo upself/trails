@@ -17,6 +17,7 @@ sub new {
         ,_hServerType => undef
         ,_hCpuMIPS => undef
         ,_hCpuMSU => undef
+        ,_hOwner => undef
         ,_mtType => undef
         ,_hlId => undef
         ,_hlStatus => undef
@@ -28,6 +29,7 @@ sub new {
         ,_slName => undef
         ,_slStatus => undef
         ,_processorCount => undef
+        ,_sId => undef
         ,_sStatus => undef
         ,_sPriority => undef
         ,_sLevel => undef
@@ -47,6 +49,7 @@ sub new {
         ,_licsToRecon => undef
         ,_scopeName => undef
         ,_hChips => undef
+        ,_scheduleFlevel => undef
     };
     bless $self, $class;
     return $self;
@@ -131,6 +134,13 @@ sub equals {
         $equal = 1 if $self->hCpuMSU eq $object->hCpuMSU;
     }
     $equal = 1 if (!defined $self->hCpuMSU && !defined $object->hCpuMSU);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hOwner && defined $object->hOwner) {
+        $equal = 1 if $self->hOwner eq $object->hOwner;
+    }
+    $equal = 1 if (!defined $self->hOwner && !defined $object->hOwner);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -412,6 +422,12 @@ sub hCpuMSU {
     return $self->{_hCpuMSU};
 }
 
+sub hOwner {
+    my $self = shift;
+    $self->{_hOwner} = shift if scalar @_ == 1;
+    return $self->{_hOwner};
+}
+
 sub mtType {
     my $self = shift;
     $self->{_mtType} = shift if scalar @_ == 1;
@@ -476,6 +492,12 @@ sub processorCount {
     my $self = shift;
     $self->{_processorCount} = shift if scalar @_ == 1;
     return $self->{_processorCount};
+}
+
+sub sId {
+    my $self = shift;
+    $self->{_sId} = shift if scalar @_ == 1;
+    return $self->{_sId};
 }
 
 sub sStatus {
@@ -592,6 +614,12 @@ sub hChips {
     return $self->{_hChips};
 }
 
+sub scheduleFlevel {
+    my $self = shift;
+    $self->{_scheduleFlevel} = shift if scalar @_ == 1;
+    return $self->{_scheduleFlevel};
+}
+
 sub toString {
     my ($self) = @_;
     my $s = "[ReconInstalledSoftwareData] ";
@@ -650,6 +678,11 @@ sub toString {
         $s .= $self->{_hCpuMSU};
     }
     $s .= ",";
+    $s .= "hOwner=";
+    if (defined $self->{_hOwner}) {
+        $s .= $self->{_hOwner};
+    }
+    $s .= ",";
     $s .= "mtType=";
     if (defined $self->{_mtType}) {
         $s .= $self->{_mtType};
@@ -703,6 +736,11 @@ sub toString {
     $s .= "processorCount=";
     if (defined $self->{_processorCount}) {
         $s .= $self->{_processorCount};
+    }
+    $s .= ",";
+    $s .= "sId=";
+    if (defined $self->{_sId}) {
+        $s .= $self->{_sId};
     }
     $s .= ",";
     $s .= "sStatus=";
@@ -798,6 +836,11 @@ sub toString {
     $s .= "hChips=";
     if (defined $self->{_hChips}) {
         $s .= $self->{_hChips};
+    }
+    $s .= ",";
+    $s .= "scheduleFlevel=";
+    if (defined $self->{_scheduleFlevel}) {
+        $s .= $self->{_scheduleFlevel};
     }
     $s .= ",";
     chop $s;

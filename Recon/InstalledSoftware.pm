@@ -120,7 +120,7 @@ sub recon {
 		Recon::Delegate::ReconDelegate->getReconcileTypeMap() );
 	$validation->poolParentCustomers( $self->poolParentCustomers );
 	$validation->valueUnitsPerCore( $self->pvuValue );
-	$validation->validate;
+	$validation->validate; # myyysha todo: validation of new reconciles
 
 	if ( $validation->isValid == 1 ) {
 		dlog("Installed software is reconciled and valid, closing alert");
@@ -236,9 +236,20 @@ sub reconcile {
 	my $self = shift;
 
 	return 1 if $self->attemptVendorManaged == 1;
+	return 1 if $self->attemptCustomerOwnedAndManaged == 1;
+	
+	# new logic for new scope names, added by myyysha
+	
+	return 1 if $self->attemptIBMOwned3rdManaged == 1;
+	return 1 if $self->attemptCustomerOwned3rdManaged == 1;
+	return 1 if $self->attemptIBMOwnedIBMManagedCons == 1;
+	return 1 if $self->attemptCustOwnedIBMManagedCons == 1;
+
+	# this takes slightly longer than the above, so I moved it as the latest - myyysha
+	
 	return 1 if $self->attemptSoftwareCategory == 1;
 	return 1 if $self->attemptBundled == 1;
-	return 1 if $self->attemptCustomerOwnedAndManaged == 1;
+	
 	if($self->poolRunning == 1) {
 	    return 2;
 	}
@@ -391,6 +402,109 @@ sub attemptCustomerOwnedAndManaged {
 	return 0;
 }
 
+sub attemptIBMOwned3rdManaged {
+	my $self = shift;
+	
+	my $reconcileTypeMap =
+	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+
+	if ( defined $self->installedSoftwareReconData->scopeName
+		&& $self->installedSoftwareReconData->scopeName eq 'IBMO3RDM' )
+	{
+		dlog("reconciling as IBM owned and 3rd party managed");
+		###Create reconcile and set id in data.
+		$self->createReconcile(
+			$reconcileTypeMap->{'IBM owned, managed by 3rd party'},
+			0, $self->installedSoftware->id );
+		dlog("end attemptReconcile");
+		return 1;
+	}
+	
+	dlog("Did not reconcile as IBM owned and 3rd party managed");
+	return 0;
+}
+
+sub attemptCustomerOwned3rdManaged {
+	my $self = shift;
+	
+	my $reconcileTypeMap =
+	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+
+	if ( defined $self->installedSoftwareReconData->scopeName
+		&& $self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM' )
+	{
+		dlog("reconciling as customer owned and 3rd party managed");
+		
+		if ( defined $self->customer->swComplianceMgmt
+			&& $self->customer->swComplianceMgmt eq 'YES' ) {
+				###Create reconcile and set id in data.
+				$self->createReconcile(
+					$reconcileTypeMap->{'IBM owned, managed by 3rd party'},
+					0, $self->installedSoftware->id );
+				dlog("end attemptReconcile");
+				return 1;
+			} else {
+				dlog("CUSTO3RDM scope, but not sw compliance - not reconciled.");
+			}
+	}
+	
+	dlog("Did not reconcile as customer owned and 3rd party managed");
+	return 0;
+
+}
+
+sub attemptIBMOwnedIBMManagedCons {
+	my $self = shift;
+	
+	my $reconcileTypeMap =
+	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+
+	if ( defined $self->installedSoftwareReconData->scopeName
+		&& $self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO' )
+	{
+		dlog("reconciling as IBM owned, IBM managed, SW consumption based");
+		###Create reconcile and set id in data.
+		$self->createReconcile(
+			$reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'},
+			0, $self->installedSoftware->id );
+		dlog("end attemptReconcile");
+		return 1;
+	}
+	
+	dlog("Did not reconcile as IBM owned, IBM managed, SW consumption based");
+	return 0;
+	
+}
+
+sub attemptCustOwnedIBMManagedCons {
+	my $self = shift;
+	
+	my $reconcileTypeMap =
+	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+
+	if ( defined $self->installedSoftwareReconData->scopeName
+		&& $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO' )
+	{
+		dlog("reconciling as Customer owned, IBM managed SW consumption based");
+		
+		if ( defined $self->customer->swComplianceMgmt
+			&& $self->customer->swComplianceMgmt eq 'YES' ) {
+				###Create reconcile and set id in data.
+				$self->createReconcile(
+					$reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'},
+					0, $self->installedSoftware->id );
+				dlog("end attemptReconcile");
+				return 1;
+			} else {
+				dlog("CUSTOIBMMSWCO scope, but not sw compliance - not reconciled.");
+			}
+	}
+	
+	dlog("Did not reconcile as Customer owned, IBM managed SW consumption based");
+	return 0;
+
+}
+
 sub attemptExistingMachineLevel {
 	my $self = shift;
 	dlog("attempt existing machine level");
@@ -472,23 +586,29 @@ sub attemptLicenseAllocation {
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 	my $machineLevel;
-
-	###Attempt to reconcile at machine level if one is already reconciled at machine level
-	my ( $licsToAllocate, $reconcileTypeId, $reconcileId ) =
-	  $self->attemptExistingMachineLevel;
-	return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
-	  if defined $licsToAllocate;
+	my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
+	my ( $licsToAllocate, $reconcileTypeId, $reconcileId );
+	
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###Attempt to reconcile at machine level if one is already reconciled at machine level
+		( $licsToAllocate, $reconcileTypeId, $reconcileId ) =
+			$self->attemptExistingMachineLevel;
+		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
+		if defined $licsToAllocate;
+	}
 
 	###Get license free pool by customer id and software id.
 	my $freePoolData = $self->getFreePoolData;
 
-	###License type: hw specific MIPS, machine level
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMIPS( $freePoolData, 1, 1 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: hw specific MIPS, machine level
+		( $licsToAllocate, $machineLevel ) =
+		$self->attemptLicenseAllocationMIPS( $freePoolData, 1, 1 );
+		return ( $licsToAllocate,
+				$reconcileTypeMap->{'Automatic license allocation'},
+				$machineLevel )
+		if defined $licsToAllocate;
+	}
 
 	###License type: hw specific MIPS, lpar level
 	( $licsToAllocate, $machineLevel ) =
@@ -498,13 +618,15 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: hw specific MSU, machine level
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMSU( $freePoolData, 1, 1 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: hw specific MSU, machine level
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationMSU( $freePoolData, 1, 1 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+	}
 
 	###License type: hw specific MSU, lpar level
 	( $licsToAllocate, $machineLevel ) =
@@ -514,13 +636,15 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: MIPS, machine level
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMIPS( $freePoolData, 1, 0 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: MIPS, machine level
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationMIPS( $freePoolData, 1, 0 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+	}
 
 	###License type: MIPS, lpar level
 	( $licsToAllocate, $machineLevel ) =
@@ -530,13 +654,15 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: MSU, machine level
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMSU( $freePoolData, 1, 0 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: MSU, machine level
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationMSU( $freePoolData, 1, 0 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+	}
 
 	###License type: MSU, lpar level
 	( $licsToAllocate, $machineLevel ) =
@@ -546,13 +672,15 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: hardware
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationHardware($freePoolData);
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: hardware
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationHardware($freePoolData);
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+			if defined $licsToAllocate;
+	}
 
 	###License type: hw specific lpar
 	( $licsToAllocate, $machineLevel ) =
@@ -2398,6 +2526,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hServerType( $rec{hServerType} );
 		$installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
 		$installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
+		$installedSoftwareReconData->hOwner( $rec{hOwner} );
 		$installedSoftwareReconData->mtType( $rec{mtType} );
 		$installedSoftwareReconData->hlId( $rec{hlId} );
 		$installedSoftwareReconData->hlStatus( $rec{hlStatus} );
@@ -2408,6 +2537,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->cId( $rec{cId} );
 		$installedSoftwareReconData->slName( $rec{slName} );
 		$installedSoftwareReconData->slStatus( $rec{slStatus} );
+		$installedSoftwareReconData->sId ( $rec{sId} );
 		$installedSoftwareReconData->sStatus( $rec{sStatus} );
 		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
@@ -2418,7 +2548,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->rTypeId( $rec{rTypeId} );
 		$installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
 		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
-		$installedSoftwareReconData->scopeName( $rec{scopeName} );
+##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
 		$installedSoftwareReconData->hChips( $rec{hChips} );
 
 		###The processor logic
@@ -2461,6 +2591,20 @@ sub getInstalledSoftwareReconData {
 		}
 	}
 	$sth->finish;
+	
+	###Reading new scope from scheduleF, procedure added by Michal Gross
+	
+	my ( $scopename_temp, $priofound_temp ) = getScheduleFScope( $self,
+																$installedSoftwareReconData->cId, # customer ID
+																$installedSoftwareReconData->sId, # software ID
+																$installedSoftwareReconData->hOwner, # hardware owner ID
+																$installedSoftwareReconData->hSerial, # hardware serial
+																$installedSoftwareReconData->hMachineTypeId, #machine type
+																$installedSoftwareReconData->slName #hostname
+															  );
+															  
+    $installedSoftwareReconData->scopeName ( $scopename_temp );
+    $installedSoftwareReconData->scheduleFlevel ( $priofound_temp ); # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
 
 	###Execute extended query of all inst sw for this lpar if in category,
 	###a parent of a bundle, or a child in a bundle.
@@ -2585,6 +2729,94 @@ sub getInstalledSoftwareReconData {
 	$self->installedSoftwareReconData($installedSoftwareReconData);
 }
 
+sub getScheduleFScope {
+	my $self=shift;
+	my $custId=shift;
+	my $softId=shift;
+	my $hwOwner=shift;
+	my $hSerial=shift;
+	my $hMachineTypeId=shift;
+	my $slName=shift;
+	
+	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
+	my $scopeToReturn=undef;
+	
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryScheduleFScope() );
+	my $sth = $self->connection->sql->{ScheduleFScope};
+	my %recc;
+	$sth->bind_columns( map { \$recc{$_} }
+		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
+	$sth->execute( $custId, $softId );
+	
+	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softId);
+	
+	while ( $sth->fetchrow_arrayref ) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
+			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softId." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=3;
+		}
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
+			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softId." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=2;
+		}
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
+			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softId." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HWBOX" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=1;
+		}
+		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+	}
+	
+	dlog("custId= $custId, softId=$softId, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
+	
+	return ( $scopeToReturn, $prioFound );
+}
+
+sub queryScheduleFScope {
+	my @fields = qw(
+	  hwOwner
+	  hSerial
+	  hMachineTypeId
+	  hostname
+	  level
+	  scopeName
+	);
+	my $query = '
+	  select
+	    sf.hw_owner,
+	    sf.serial,
+	    mt.id,
+	    sf.hostname,
+	    sf.level,
+	    s.name
+	  from schedule_f sf
+	    left outer join scope s
+	      on sf.scope_id = s.id
+	    left outer join machine_type mt
+	      on mt.name = sf.machine_type
+	  where
+	    sf.customer_id = ?
+	  and
+	    sf.software_id = ?
+	';
+	return('ScheduleFScope', $query, \@fields );
+	
+}
+
+
+
 sub queryReconInstalledSoftwareBaseData {
 	my @fields = qw(
 	  hId
@@ -2599,6 +2831,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  hServerType
 	  hCpuMIPS
 	  hCpuMSU
+	  hOwner
 	  mtType
 	  hlId
 	  hlStatus
@@ -2611,6 +2844,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  slStatus
 	  slProcCount
 	  sleProcCount
+	  sId
 	  sStatus
 	  sPriority
 	  sLevel
@@ -2623,7 +2857,6 @@ sub queryReconInstalledSoftwareBaseData {
 	  rTypeId
 	  rParentInstSwId
 	  rMachineLevel
-	  scopeName
 	);
 	my $query = '
         select
@@ -2639,6 +2872,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.server_type
             ,h.cpu_mips
             ,h.cpu_msu
+            ,h.owner
             ,mt.type
             ,hl.id
             ,hl.lpar_status
@@ -2651,6 +2885,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,sl.status
             ,sl.processor_count
             ,sle.processor_count
+            ,s.software_id
             ,s.status
             ,s.priority
             ,s.level
@@ -2658,12 +2893,11 @@ sub queryReconInstalledSoftwareBaseData {
             ,m.name
             ,sc.software_category_name
             ,bp.id
-            ,bc.software_id
+            ,bc.software_id as bc_software_id
             ,r.id
             ,r.reconcile_type_id
             ,r.parent_installed_software_id
             ,r.machine_level
-            ,scope.name
         from
             installed_software is
             join software_lpar sl on 
@@ -2694,16 +2928,18 @@ sub queryReconInstalledSoftwareBaseData {
                 bc.id = bs.bundle_id
             left outer join reconcile r on 
                 r.installed_software_id = is.id
-            left outer join schedule_f sf on
-                sf.customer_id = sl.customer_id
-                and sf.software_id = is.software_id
-                and sf.status_id = 2
-            left outer join scope scope on
-                scope.id = sf.scope_id
         where
             is.id = ?
 	';
 	return ( 'reconInstalledSoftwareBaseData', $query, \@fields );
+	
+#	            left outer join schedule_f sf on
+#                sf.customer_id = sl.customer_id
+#                and sf.software_id = is.software_id
+#                and sf.status_id = 2
+#            left outer join scope scope on
+#                scope.id = sf.scope_id
+
 }
 
 sub queryReconInstalledSoftwareExtendedData {
@@ -2790,7 +3026,6 @@ sub closeAlertUnlicensedSoftware {
 	dlog("end closeAlertUnlicensedSoftware");
 }
 
-#TODO Fix formatting
 sub ibmArray {
 	my $self = shift;
 

@@ -29,6 +29,10 @@ sub getReconcileTypeMap {
 	$data{'Covered by software category'}        = 8;
 	$data{'Customer owned and customer managed'} = 15;
 	$data{'Pending customer decision'}           = 16;
+	$data{'IBM owned, managed by 3rd party'}     = 17;
+	$data{'Customer owned, managed by 3rd party'}= 18;
+	$data{'IBM owned, IBM managed SW consumption based'} = 19;
+	$data{'Customer owned, IBM managed SW consumption based'} = 20;
 
 	return \%data;
 }
