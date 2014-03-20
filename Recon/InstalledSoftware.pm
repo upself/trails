@@ -2777,7 +2777,7 @@ sub getScheduleFScope {
 			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softId." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
 			$scopeToReturn=$recc{scopeName};
 			$prioFound=1;
 		}
