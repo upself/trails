@@ -417,7 +417,7 @@ sub findUniqueExtIdMatch {
     # if this is a valid TADz match based on SOFTWARE_LPAR.TECH_IMG_ID == HARDWARE_LPAR.TECH_IMG_ID
     if ( defined $self->hardwareLpar ) {
     	# check if techImgId exists and has a value
-    	if ( defined $self->hardwareLpar->techImageId && (length($self->hardwareLpar->techImageId) > 0) ) {
+    	if ( defined $self->hardwareLpar->techImageId && ($self->hardwareLpar->techImageId !~ /^\s*$/ ) ) {
     		# check to see if a match exists in the software_lpar table
     		my $softwareLpar = $self->getSoftwareLparByTechImgId($self->hardwareLpar->techImageId, $self->hardwareLpar->customerId );
     		if ( defined $softwareLpar ) {
@@ -434,7 +434,7 @@ sub findUniqueExtIdMatch {
 
     } elsif ( defined $self->softwareLpar ) {
     	# check if techImgId exists and it is four characters long
-    	if ( defined $self->softwareLpar->techImgId && (length($self->softwareLpar->techImgId) > 0) ) {
+    	if ( defined $self->softwareLpar->techImgId && ($self->softwareLpar->techImgId !~ /^\s*$/ ) ) {
     		# check to see if a match exists in the software_lpar table
     		my $hardwareLpar = $self->getHardwareLparByTechImgId($self->softwareLpar->techImgId, $self->softwareLpar->customerId );
     		if ( defined $hardwareLpar ) {

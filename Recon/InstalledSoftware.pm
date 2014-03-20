@@ -120,7 +120,7 @@ sub recon {
 		Recon::Delegate::ReconDelegate->getReconcileTypeMap() );
 	$validation->poolParentCustomers( $self->poolParentCustomers );
 	$validation->valueUnitsPerCore( $self->pvuValue );
-	$validation->validate; # myyysha todo: validation of new reconciles
+	$validation->validate;
 
 	if ( $validation->isValid == 1 ) {
 		dlog("Installed software is reconciled and valid, closing alert");
@@ -690,29 +690,31 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: hw specific processor
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationProcessor( $freePoolData, 1 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: hw specific processor
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationProcessor( $freePoolData, 1 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
 
-	###License type: hw specific pvu
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationPVU( $freePoolData, 1 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
-
-	###License type: chip(48)
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationChip($freePoolData);
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+		###License type: hw specific pvu
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationPVU( $freePoolData, 1 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+	
+		###License type: chip(48)
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationChip($freePoolData);
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+	}
 
 	###License type: lpar
 	( $licsToAllocate, $machineLevel ) =
@@ -722,17 +724,20 @@ sub attemptLicenseAllocation {
 		$machineLevel )
 	  if defined $licsToAllocate;
 
-	###License type: processor
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationProcessor( $freePoolData, 0 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
+	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+		###License type: processor
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationProcessor( $freePoolData, 0 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+		
 
-	###License type: pvu
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationPVU( $freePoolData, 0 );
+		###License type: pvu
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationPVU( $freePoolData, 0 );
+	}
 
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
