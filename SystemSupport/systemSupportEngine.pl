@@ -32,6 +32,9 @@
 ###################################################################################################################################################################################################
 #                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
 # 2014-01-27  Liu Hai(Larry) 1.6.0           Add New Operation 'STAGING_BRAVO_DATA_SYNC' And Filter Logic Support on TAP Server to process this new Operation
+###################################################################################################################################################################################################
+#                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
+# 2014-03-11  Liu Hai(Larry) 1.7.0           Add New Operation 'ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE' And Filter Logic Support on TAP Server to process this new Operation
 #
 
 #Load required modules
@@ -62,6 +65,7 @@ my $RESTART_IBMIHS_ON_TAP_SERVER         = "RESTART_IBMIHS_ON_TAP_SERVER";#Added
 my $RESTART_BRAVO_WEB_APPLICATION        = "RESTART_BRAVO_WEB_APPLICATION";#Added by Larry for System Support And Self Healing Service Components - Phase 5
 my $RESTART_TRAILS_WEB_APPLICATION       = "RESTART_TRAILS_WEB_APPLICATION";#Added by Larry for System Support And Self Healing Service Components - Phase 5
 my $STAGING_BRAVO_DATA_SYNC              = "STAGING_BRAVO_DATA_SYNC";#Added by Larry for System Support And Self Healing Service Components - Phase 6
+my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
 #Only can be processed on TAP3 Server
 my $RESTART_LOADER_ON_TAP3_SERVER        = "RESTART_LOADER_ON_TAP3_SERVER";
 
@@ -548,6 +552,7 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	  && $operationNameCode ne $RESTART_BRAVO_WEB_APPLICATION#Added by Larry for System Support And Self Healing Service Components - Phase 5
       && $operationNameCode ne $RESTART_TRAILS_WEB_APPLICATION#Added by Larry for System Support And Self Healing Service Components - Phase 5
       && $operationNameCode ne $STAGING_BRAVO_DATA_SYNC#Added by Larry for System Support And Self Healing Service Components - Phase 6
+      && $operationNameCode ne $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE#Added by Larry for System Support And Self Healing Service Components - Phase 7
 	  ){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    

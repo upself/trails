@@ -51,6 +51,9 @@
 ###################################################################################################################################################################################################
 #                                            Phase 6A Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6A'
 # 2014-02-25  Liu Hai(Larry) 1.6.1           System Support And Self Healing Service Components - Phase 6A - Add GSA SSE Shared Log Folder Support Feature  
+###################################################################################################################################################################################################
+#                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
+# 2014-03-11  Liu Hai(Larry) 1.7.0           System Support And Self Healing Service Components - Phase 7 - Add 'ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE' Support Feature  
 #
 
 #Load required modules
@@ -119,8 +122,9 @@ my $RESTART_TRAILS_WEB_APPLICATION            = "RESTART_TRAILS_WEB_APPLICATION"
 #Added by Larry for System Support And Self Healing Service Components - Phase 5 End
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
 #Tool Group
-my $STAGING_BRAVO_DATA_SYNC                   = "STAGING_BRAVO_DATA_SYNC";
+my $STAGING_BRAVO_DATA_SYNC                               = "STAGING_BRAVO_DATA_SYNC";
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
+my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
 
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
@@ -314,6 +318,39 @@ my $GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH = "https://jpngsa.ibm.com/projects/a/am
 my $GSA_USERID                           = "liuhaidl";
 my $GSA_PASSWORD                         = "abcd1234";
 #Added by Larry for System Support And Self Healing Service Components - Phase 6A End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
+my %RECONTABLES = () ;
+$RECONTABLES{'RECON_INSTALLED_SW'} = 1;
+$RECONTABLES{'RECON_SW_LPAR'} = 2;
+$RECONTABLES{'RECON_HW_LPAR'} = 3;
+$RECONTABLES{'RECON_HARDWARE'} = 4;
+$RECONTABLES{'RECON_SOFTWARE'} = 5;
+$RECONTABLES{'RECON_CUSTOMER_SW'} = 6;
+$RECONTABLES{'RECON_LICENSE'} = 7;
+
+my $seINstSwbyId = "select b.customer_id,a.id from installed_software a,software_lpar b where a.software_lpar_id=b.id and a.id in (?) with ur";
+my $seSWLparbyId = "select a.customer_id,a.id from software_lpar a where a.id in (?) with ur";
+my $seHWLparbyId = "select a.customer_id,a.id from hardware_lpar a where a.id in (?) with ur";
+my $seHWbyId =  "select a.customer_id,a.id from hardware a where a.id in (?) with ur";
+my $seSWbyId =  "select a.id from SOFTWARE_ITEM a where a.id in (?) with ur";
+my $seCSSWbyId =  "select a.customer_id,a.software_id from schedule_f a where a.id in (?) with ur";
+my $seLicbyId =  "select a.customer_id,a.id from license a where a.id in (?) with ur";
+my $isINstSwbyId = "INSERT INTO EAADMIN.recon_installed_sw (CUSTOMER_ID,INSTALLED_SOFTWARE_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isSWLparbyId = "INSERT INTO EAADMIN.recon_sw_lpar(CUSTOMER_ID,SOFTWARE_LPAR_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isHWLparbyId = "INSERT INTO EAADMIN.recon_hw_lpar(CUSTOMER_ID,HARDWARE_LPAR_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isHWbyId = "INSERT INTO EAADMIN.recon_hardware(CUSTOMER_ID,HARDWARE_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isSWbyId = "INSERT INTO EAADMIN.recon_software(SOFTWARE_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values ( ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isCSSWbyId = "INSERT INTO EAADMIN.recon_customer_sw(CUSTOMER_ID,SOFTWARE_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $isLicbyId = "INSERT INTO EAADMIN.recon_license(CUSTOMER_ID,LICENSE_ID,ID,ACTION,REMOTE_USER,RECORD_TIME) values (?, ?, DEFAULT,?,'Operation Support GUI',CURRENT TIMESTAMP)";
+my $queryReINstSw = "SELECT * FROM recon_installed_sw WHERE  installed_software_id = ?";
+my $queryReSWLpar = "SELECT * FROM recon_sw_lpar WHERE software_lpar_id = ?";
+my $queryReHWLpar = "SELECT * FROM recon_hw_lpar WHERE hardware_lpar_id = ?";
+my $queryReHW = "SELECT * FROM recon_hardware WHERE hardware_id = ?";
+my $queryReSW = "SELECT * FROM recon_software WHERE software_id = ?";
+my $queryReCSSW = "SELECT * FROM recon_customer_sw WHERE customer_id = ? and software_id = ? ";
+my $queryReLic = "SELECT * FROM recon_license WHERE license_id = ?";
+#Added by Larry for System Support And Self Healing Service Components - Phase 7 End
 
 main();
 
@@ -1623,6 +1660,256 @@ sub coreOperationProcess{
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
 	#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
+	#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
+    elsif($operationNameCode eq $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE){#ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE
+      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+         #Operation has been started to be processed
+         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+         $operationStartedFlag = $TRUE;#Operation has been started to process
+       }
+	    
+  	   my $relatedTicketNumber;#var used to store related ticket number - For example: TI30620-56800
+	   my $reconQueueName;#var used to store recon queue name - For example: recon_installed_sw
+	   my $reconQueueUpperCaseName;#var used to store upper case recon queue name - For example: RECON_INSTALLED_SW
+	   my $relatedIdList;#var used to store related id list - For example: recon installed software id - 103590
+	   my $inputParameterValuesValidationFlag = $TRUE;#var used to store input parameter values validation flag - set $TRUE as the default value
+	   my $processedInvokedCommand;#var used to store processed invoked command
+
+	   my $customerId = ''; 
+	   my $objectId;
+	   my $action;
+	   my $insertion;
+	   my $queryname;
+	   my $insername;
+	   my $querystatement;
+	   my $inserstatement;
+	   my $queryreconname;
+	   my $queryrecons;
+	   my $objectname;
+              
+       my @existedIdsArray = ();
+	   my @successInsertIdsArray = ();
+	   my @failInsertIdsArray = ();
+	   my @finishedIdsArray = ();
+
+	   $relatedTicketNumber = $operationParameter1;
+	   print LOG "The Add Specific Account Related Id List Into Recon Queue - The Operation Parameter - The Related Ticket Number: {$relatedTicketNumber}\n";
+       
+	   #Recon Queue Name Validation Check
+       $reconQueueName = $operationParameter2;
+	   print LOG "The Add Specific Account Related Id List Into Recon Queue - The Operation Parameter - The Recon Queue Name: {$reconQueueName}\n";
+	   $reconQueueUpperCaseName = uc($reconQueueName);#Upper case recon queue name - For example: change from 'recon_installed_sw' to 'RECON_INSTALLED_SW'
+
+       if(exists($RECONTABLES{$reconQueueUpperCaseName})){
+	     print LOG "The Add Specific Account Related Id List Into Recon Queue - The Input Recon Queue Name {$reconQueueName} is a valid Recon Queue Name.\n";     
+	   }#end if(exists($RECONTABLES{$reconQueueName})
+	   else{
+	     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		 if($operationFailedComments ne ""){
+		   $operationFailedComments.="The Input Recon Queue Name {$reconQueueName} is not a valid Recon Queue Name.<br>";  
+		 }#end if($operationFailedComments ne "")
+		 else{
+		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		   $operationFailedComments.="The Input Recon Queue Name {$reconQueueName} is not a valid Recon Queue Name.<br>";
+		 }#end else
+		 print LOG "The Add Specific Account Related Id List Into Recon Queue - The Input Recon Queue Name {$reconQueueName} is not a valid Recon Queue Name.\n";  
+	   }
+
+       #Related Id List Validation Check
+       $relatedIdList = $operationParameter3;
+	   print LOG "The Add Specific Account Related Id List Into Recon Queue - The Operation Parameter - The Related Id List: {$relatedIdList}\n";
+       #Check if the input related Id List exists the invalid char
+	   if(($relatedIdList=~/[a-zA-z!\@\#\$\%\^\&\*\(\) \-\=\_\+\[\]\{\}\;\"\:\'\<\>\.\?\/]/)
+		 ||($relatedIdList eq ",")
+		 ||($relatedIdList=~/^,/)
+	     ||($relatedIdList=~/,$/)
+	     ||(index($relatedIdList,",,")>-1)
+	     ){
+	     $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
+		 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		 if($operationFailedComments ne ""){
+		   $operationFailedComments.="The Input Related Id List {$relatedIdList} is not valid. The valid ones like these two examples: 111 or 111,222,333(Please note that if the Id List includes more than one id, they need to be linked using ',' char)<br>";  
+		 }#end if($operationFailedComments ne "")
+		 else{
+		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		   $operationFailedComments.="The Input Related Id List {$relatedIdList} is not valid. The valid ones like these two examples: 111 or 111,222,333(Please note that if the Id List includes more than one id, they need to be linked using ',' char)<br>";
+		 }#end else
+		 print LOG "The Add Specific Account Related Id List Into Recon Queue - The Input Related Id List {$relatedIdList} is not valid. The valid ones like these two examples: 111 or 111,222,333(Please note that if the Id List includes more than one id, they need to be linked using ',' char)\n";            
+	   }#end if($relatedIdList=~/[a-zA-z!\@\#\$\%\^\&\*\(\) \-\=\_\+\[\]\{\}\;\"\:\'\<\>\.\?\/]/)
+	   else{
+	     print LOG "The Add Specific Account Related Id List Into Recon Queue - The Input Related Id List {$relatedIdList} Format is valid.\n";
+	   }
+       
+	   #If all the necessary input parameter values are valid, then executes related recon records insert operation
+       if($inputParameterValuesValidationFlag == $TRUE){
+	     #1. Set recon insert operation related values
+		 if($reconQueueUpperCaseName eq 'RECON_INSTALLED_SW'){ $objectname = 'installed_software';$queryname = 'seINstSwbyId'; $insername = 'isINstSwbyId' ; $queryreconname = 'queryReINstSw' ; $querystatement = $seINstSwbyId; $inserstatement = $isINstSwbyId ; $queryrecons = $queryReINstSw ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_SW_LPAR'){ $objectname = 'software_lpar';$queryname = 'seSWLparbyId'; $insername = 'isSWLparbyId' ; $queryreconname = 'queryReSWLpar' ; $querystatement = $seSWLparbyId; $inserstatement = $isSWLparbyId ;  $queryrecons = $queryReSWLpar ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_HW_LPAR'){ $objectname = 'hardware_lpar';$queryname = 'seHWLparbyId'; $insername = 'isHWLparbyId' ; $queryreconname = 'queryReHWLpar' ;$querystatement = $seHWLparbyId; $inserstatement = $isHWLparbyId ;  $queryrecons = $queryReHWLpar ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_HARDWARE'){ $objectname = 'hardware';$queryname = 'seHWbyId'; $insername = 'isHWbyId' ; $queryreconname = 'queryReHW' ; $querystatement = $seHWbyId; $inserstatement = $isHWbyId ;  $queryrecons = $queryReHW ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_SOFTWARE'){ $objectname = 'software';$queryname = 'seSWbyId'; $insername = 'isSWbyId' ; $queryreconname = 'queryReSW' ; $querystatement = $seSWbyId; $inserstatement = $isSWbyId ;  $queryrecons = $queryReSW ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_CUSTOMER_SW'){ $objectname = 'schedule';$queryname = 'seCSSWbyId'; $insername = 'isCSSWbyId' ; $queryreconname = 'queryReCSSW' ; $querystatement = $seCSSWbyId; $inserstatement = $isCSSWbyId ;  $queryrecons = $queryReCSSW ;}
+	     elsif($reconQueueUpperCaseName eq 'RECON_LICENSE'){ $objectname = 'license';$queryname = 'seLicbyId'; $insername = 'isLicbyId' ; $queryreconname = 'queryReLic' ; $querystatement = $seLicbyId; $inserstatement = $isLicbyId ;  $queryrecons = $queryReLic ;}
+
+         my $tname = substr($reconQueueUpperCaseName,6);
+		 $action = 'UPDATE';
+	     $querystatement =~ s/\?/$relatedIdList/;
+         print LOG "The Add Specific Account Related Id List Into Recon Queue - The Query Statement SQL: {$querystatement}\n";
+		 my @rs = exec_sql_rs($bravoConnection,$queryname,$querystatement);
+         if($#rs>0){
+		   for my $i (0 .. $#rs){
+	  	     next if $i == 0;
+	  	     if($queryreconname eq 'queryReSW'){
+		       $objectId = $rs[$i][0]; 
+		     }#end if($queryreconname eq 'queryReSW')
+	  	     else{
+			   $customerId = $rs[$i][0];
+			   $objectId = $rs[$i][1];
+		     }#end else
+	         
+		     my @rd;
+	         if($queryreconname eq 'queryReCSSW'){
+	           @rd = exec_sql_rs($bravoConnection,$queryreconname,$queryrecons,$objectId,$customerId);
+	         }#end if($queryreconname eq 'queryReCSSW')
+		     else{
+	           @rd = exec_sql_rs($bravoConnection,$queryreconname,$queryrecons,$objectId);	
+	         }#end else
+
+	         if($#rd>0){
+	           print LOG "The Add Specific Account Related Id List Into Recon Queue - The Recon Record with customerId: {$customerId} and $tname\_Id: {$objectId} has already been in $reconQueueUpperCaseName queue.\n";
+	           push @existedIdsArray,$objectId;
+			   push @finishedIdsArray,$objectId;
+			 }#end if($#rd>0)
+		     else{
+	           my $rc;
+	     	   if($insername eq 'isSWbyId'){
+	             $rc = exec_sql_rc($bravoConnection,$insername,$inserstatement,$objectId,$action);
+	     	   }#end if($insername eq 'isSWbyId')
+			   else{
+	     	     $rc = exec_sql_rc($bravoConnection,$insername,$inserstatement,$objectId,$action,$customerId);
+	     	   }#end else
+
+	    	   if($rc==1){
+                 print LOG "The Add Specific Account Related Id List Into Recon Queue - Insert Into $reconQueueUpperCaseName with customerId: {$customerId} and $tname\_Id: {$objectId} successfully.\n";
+			     push @successInsertIdsArray,$objectId;
+				 push @finishedIdsArray,$objectId;
+			   }#if($rc==1)
+			   else{
+			     print LOG "The Add Specific Account Related Id List Into Recon Queue - Insert Into $reconQueueUpperCaseName with customerId: {$customerId} and $tname\_Id: {$objectId} failed.\n";
+			     push @failInsertIdsArray,$objectId;
+				 push @finishedIdsArray,$objectId;
+			   }#end else
+		     }#end else
+		   }#end for my $i (0 .. $#rs)
+
+		   #Generate Operation Success Specail Comments
+		   if($operationResultFlag == $OPERATION_SUCCESS){
+		     $operationSuccessSpecialFlag = $TRUE;
+		     $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+
+			 #Generate Existed Id List Specail Comments
+			 my $existedIdList = "";
+			 my $existedIdIndex = 1;
+			 my $existedIdListLength = scalar(@existedIdsArray);
+			 if($existedIdListLength>0){
+			   foreach my $existedId (@existedIdsArray){
+			     if($existedIdIndex!=$existedIdListLength){
+			       $existedIdList.="$existedId,";   
+			     }#end if($existedIdIndex!=$existedIdListLength)
+			     else{
+			       $existedIdList.="$existedId";     
+			     }#end else
+                 $existedIdIndex++;
+			   }#end foreach my $existedId (@existedIdsArray)
+               print LOG "The Add Specific Account Related Id List Into Recon Queue - The Existed Id List in the Recon Queue: {$existedIdList}\n"; 
+			   $operationSuccessSpecialComments.="The Existed Id List in the Recon Queue: {$existedIdList}<br>";
+             }#end if($existedIdListLength>0)
+			 
+			 #Generate Success Insert Id List Specail Comments
+			 my $successInsertIdList = "";
+             my $successInsertIdIndex = 1;
+			 my $successInsertIdListLength = scalar(@successInsertIdsArray);
+			 if($successInsertIdListLength>0){
+			   foreach my $successInsertId (@successInsertIdsArray){
+			     if($successInsertIdIndex!=$successInsertIdListLength){
+			       $successInsertIdList.="$successInsertId,";   
+			     }#end if($successInsertIdIndex!=$successInsertIdListLength)
+			     else{
+			       $successInsertIdList.="$successInsertId";     
+			     }#end else
+                 $successInsertIdIndex++;
+			   }#end foreach my $successInsertId (@successInsertIdsArray)
+               print LOG "The Add Specific Account Related Id List Into Recon Queue - The Success Insert Id List to the Recon Queue: {$successInsertIdList}\n"; 
+			   $operationSuccessSpecialComments.="The Success Insert Id List to the Recon Queue: {$successInsertIdList}<br>";
+             }#end if($successInsertIdListLength>0)
+
+             #Generate Fail Insert Id List Specail Comments
+             my $failInsertIdList = "";
+             my $failInsertIdIndex = 1;
+			 my $failInsertIdListLength = scalar(@failInsertIdsArray);
+			 if($failInsertIdListLength>0){
+			   foreach my $failInsertId (@failInsertIdsArray){
+			     if($failInsertIdIndex!=$failInsertIdListLength){
+			       $failInsertIdList.="$failInsertId,";   
+			     }#end if($failInsertIdIndex!=$failInsertIdListLength)
+			     else{
+			       $failInsertIdList.="$failInsertId";     
+			     }#end else
+                 $failInsertIdIndex++;
+			   }#end foreach my $failInsertId (@failInsertIdsArray)
+               print LOG "The Add Specific Account Related Id List Into Recon Queue - The Fail Insert Id List to the Recon Queue: {$failInsertIdList}\n"; 
+			   $operationSuccessSpecialComments.="The Fail Insert Id List to the Recon Queue: {$failInsertIdList}<br>";
+		     }#end if($failInsertIdListLength>0)
+
+             #Generate Invalid Id List Specail Comments
+             my @relatedIdListArray = split(/\,/,$relatedIdList);
+			 my $existFlag = $FALSE;
+			 my $invalidIdList = "";
+			
+		     foreach my $relatedId (@relatedIdListArray){
+			   foreach my $finishedId (@finishedIdsArray){
+                 if($relatedId eq $finishedId){
+				   $existFlag = $TRUE;
+				   last;
+				 }#end if($relatedId eq $finishedId)
+			   }# end foreach my $finishedId (@finishedIdsArray)
+
+			   if($existFlag == $FALSE){
+			     $invalidIdList.= "$relatedId,";
+               }#end if($existFlag == $FALSE)
+
+               $existFlag = $FALSE;#Reset existFlag value to False
+			 }#end foreach my $relatedId (@relatedIdListArray)
+
+			 #Only append Invalid Id List to the Special Comments when Invalid Id List has value
+			 if(length($invalidIdList)>1){
+               $invalidIdList = substr($invalidIdList,0,length($invalidIdList)-1);
+               print LOG "The Add Specific Account Related Id List Into Recon Queue - The Input Id List: {$invalidIdList} is not valid due that these ids don't exist.\n"; 
+			   $operationSuccessSpecialComments.="The Input Id List: {$invalidIdList} is not valid due that these ids don't exist.<br>";
+             }
+
+		     print LOG "The Add Specific Account Related Id List Into Recon Queue - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
+		   }#end if($operationResultFlag == $OPERATION_SUCCESS)
+           
+	  	 }#end if($#rs>0)
+		 else{
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="There is no record existed based on the input Related Id List: {$relatedIdList}<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+		     $operationFailedComments.="There is no record existed based on the input Related Id List: {$relatedIdList}<br>";
+		   }#end else
+		   print LOG "The Add Specific Account Related Id List Into Recon Queue - There is no record existed based on the input Related Id List: {$relatedIdList}\n";      
+		 }
+	   }
+
+       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT)
+	#Added by Larry for System Support And Self Healing Service Components - Phase 7 End
     elsif($operationNameCode eq $DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT){#DELETE_ALL_LPARS_FOR_SPECIAL_BANK_ACCOUNT
       if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
          #Operation has been started to be processed
@@ -1990,3 +2277,56 @@ sub queryCountNumberForCertainAccountNumberAndHostname{
   return ('countNumberForCertainAccountNumberAndHostname', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL);
 }
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
+sub exec_sql_rs {
+    my $dbconnection = shift;
+    my $sqlname = shift;
+    my $sql = shift;
+    my $id = shift;
+    my $customerId = shift;
+    my @rs = ();
+    
+	$dbconnection->prepareSqlQuery($sqlname,$sql);
+    my $sth = $dbconnection->sql->{$sqlname};
+    if(defined $id && defined $customerId){
+      $sth->execute($customerId,$id);
+    }
+	elsif(defined $id){
+      $sth->execute($id);
+    }
+	else{
+      $sth->execute();
+    }
+    
+	push @rs,[@{$sth->{NAME}}];
+    while(my @row = $sth->fetchrow_array()){
+      push @rs,[@row];
+    }
+    
+    return @rs;
+}
+
+sub exec_sql_rc {
+    my $dbconnection = shift;
+    my $sqlname = shift;
+    my $sql = shift;
+    my $objectId = shift;
+    my $action =  shift;
+    my $customerId = shift;    
+    my $rc ;
+   
+    $dbconnection->prepareSqlQuery($sqlname,$sql);
+    my $sth = $dbconnection->sql->{$sqlname};
+    if(defined $customerId){
+      $rc = $sth->execute($customerId,$objectId,$action);
+    } 
+	else{
+      $rc = $sth->execute($objectId,$action);
+    }
+    
+	$sth->finish();
+   
+    return $rc;
+}
+#Added by Larry for System Support And Self Healing Service Components - Phase 7 End
