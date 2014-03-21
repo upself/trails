@@ -33,6 +33,10 @@
 ###################################################################################################################################################################################################
 #                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
 # 2014-02-13  Liu Hai(Larry) 1.6.0           Add Operation Parameter Value Type Check Support Feature
+###################################################################################################################################################################################################
+#                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
+# 2014-03-21  Liu Hai(Larry) 1.7.0           1. Add total input parameter values length check logic. Currently the total length cannot exceed 503 chars
+#                                            2. Improve Operation GUI experience to set the width of Operation Queue Table and Operation Queue Table Columns as fixed width   
 #
 
 #Load required modules
@@ -178,7 +182,6 @@ $authorizedUserList{'eugen.raceanu@cz.ibm.com'}++;
 $authorizedUserList{'martin.kacor@cz.ibm.com'}++;
 $authorizedUserList{'adam.trnka@cz.ibm.com'}++;
 $authorizedUserList{'zengqh@cn.ibm.com'}++;
-$authorizedUserList{'y99xwu@cz.ibm.com'}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 
@@ -388,6 +391,7 @@ sub addJavascriptLogic{
   print "        }\n";
   print "                                                                                                                                                        \n";
   print "        function validateOperationUIFields(){\n";
+  print "          var operationParametersMergedValue = '';//Added by Larry for System Support And Self Healing Service Components - Phase 7\n";
   print "          var operationSelectListObject = document.getElementById('operationList');\n";
   print "          var operationParameterFieldsDefinition = operationSelectListObject.options[operationSelectListObject.selectedIndex].value;\n";
   print "          //alert('Operation Defintion ->'+operationParameterFieldsDefinition);//For function testing using purpose\n";
@@ -433,6 +437,15 @@ sub addJavascriptLogic{
   print "            var trIndex = i-1;\n";
   print "            operationParameterInputFieldObject = document.getElementById(PARM_FLD+trIndex);\n";
   print "            operationParameterInputFieldValue = operationParameterInputFieldObject.value;\n";
+  print "            //Added by Larry for System Support And Self Healing Service Components - Phase 7 Start\n";
+  print "            if(i==(operationParameterFieldsArray.length-1)){\n";
+  print "              operationParametersMergedValue+=operationParameterInputFieldValue;\n";
+  print "            }\n";
+  print "            else{\n";
+  print "              operationParametersMergedValue+=operationParameterInputFieldValue;\n";
+  print "              operationParametersMergedValue+=',';\n";
+  print "            }\n";
+  print "            //Added by Larry for System Support And Self Healing Service Components - Phase 7 End\n";
   print "            //alert('Operation Parameter['+trIndex+'] Input Value: {'+operationParameterInputFieldValue+'}');\n";
   print "            if((operationParameterInputFieldValue == '') && (operationParameterDisplayFlag == true) && (operationParameterRequiredFlag == true)){\n";
   print "              alert('You must input value for {'+operationParameterLabelValue+'} field.');\n";
@@ -464,6 +477,14 @@ sub addJavascriptLogic{
   print "            }//end if((operationParameterInputFieldValue != '') && (operationParameterDisplayFlag == true))\n";
   print "            //Added by Larry for System Support And Self Healing Service Components - Phase 6 End\n";
   print "          }//end for(var i=2; i<operationParameterFieldsArray.length; i++)\n";
+  print "          //Added by Larry for System Support And Self Healing Service Components - Phase 7 Start\n";
+  print "          if(operationParametersMergedValue.length>512){\n";
+  print "            var operationParametersMergedValueLengthWithoutAppendChar = operationParametersMergedValue.length-9;\n";
+  print "            //alert('The Current Operation Parameters Merge Value: {'+operationParametersMergedValue+'}');\n";
+  print "            alert('The total length of you input parameter values cannot exceed 503 chars. The current total length of input parameters is {'+operationParametersMergedValueLengthWithoutAppendChar+'} chars.');\n";
+  print "            return false;\n";
+  print "          }\n";
+  print "          //Added by Larry for System Support And Self Healing Service Components - Phase 7 End\n";
   print "          return true;\n";
   print "        }\n";
   print "                                                                                                                                                        \n";
@@ -1057,7 +1078,8 @@ sub printOperationQueueTableData{
   my @operationQueueDataRecordResultSet = exec_sql_rs($dbh,$GET_OPERATION_QUEUE_DATA_SQL);
   my $operationQueueDataRecordCount = scalar(@operationQueueDataRecordResultSet);
   if($operationQueueDataRecordCount > 0){
-    print "<table border = '1' width='100%'>\n";
+    #print "<table border = '1' width='100%'>\n";
+	print "<table border = '1' width='100%' style='table-layout:fixed'>\n";
     printOperationQueueTableHeader(\@OPERATION_QUEUE_TABLE_HEADER_COLUMN_NAMES);
     printOperationQueueTableRecords(\@operationQueueDataRecordResultSet);
     print "</table>\n";
@@ -1070,28 +1092,28 @@ sub printOperationQueueTableHeader{
 	print "  <tr bgcolor='#FCFCFC' align='left' style='height:30px;'>\n";
     for my $i (0 .. $#{$tableHeaderColumnNames}){
 	  if($i == 0){#'Index #' column - td width='4%'
-        print "   <td width='4%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+        print "   <td width='4%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
       }
 	  elsif($i == 1){#'Operation Name Description' column - td width='15%'
-	    print "   <td width='15%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
       elsif($i == 2){#'Operation Parameters' column - td width='15%'
-	    print "   <td width='15%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='23%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
       elsif($i == 3){#'Operation Status' column - td width='6%'
-	    print "   <td width='6%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='5%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
 	  elsif($i == 4){#'Operation User' column - td width='10%'
-	    print "   <td width='10%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='8%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
 	  elsif($i == 5){#'Operation Add Time' column - td width='10%'
-	    print "   <td width='10%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
 	  elsif($i == 6){#'Operation Update Time' column - td width='10%'
-	    print "   <td width='10%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='11%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
 	  elsif($i == 7){#'Comments' column - td width='30%'
-	    print "   <td width='30%'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+	    print "   <td width='29%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
 	  }
 	}
 	print "  </tr>\n";
@@ -1121,64 +1143,64 @@ sub printOperationQueueTableRecords{
 	   if($j==0){#'Operation Name Description' column - td width='15%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='15%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='15%'><font size='2'>-</font></td>\n";
+           print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }
 	   }
 	   elsif($j==1){#'Operation Parameters' column - td width='15%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='15%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='23%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='15%'><font size='2'>-</font></td>\n";
+           print "    <td width='23%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	   elsif($j==2){#'Operation Status' column - td width='6%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='6%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='5%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='6%'><font size='2'>-</font></td>\n";
+           print "    <td width='5%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	   elsif($j==3){#'Operation User' column - td width='10%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='10%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='8%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='10%'><font size='2'>-</font></td>\n";
+           print "    <td width='8%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	   elsif($j==4){#'Operation Add Time' column - td width='10%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
 		   $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 	  
-	       print "    <td width='10%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='10%'><font size='2'>-</font></td>\n";
+           print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	   elsif($j==5){#'Operation Update Time' column - td width='10%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='10%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='11%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='10%'><font size='2'>-</font></td>\n";
+           print "    <td width='11%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	   elsif($j==6){#'Comments' column - td width='30%'
 	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='30%'><font size='2'>$columnValue</font></td>\n";
+	       print "    <td width='29%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
 	     else{#If the value of column is null, then output '-' as the value of this column
-           print "    <td width='30%'><font size='2'>-</font></td>\n";
+           print "    <td width='29%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
 	     }  
 	   }
 	 }
