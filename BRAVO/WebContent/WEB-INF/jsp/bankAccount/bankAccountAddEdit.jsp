@@ -177,6 +177,7 @@ in to complete the form.</p>
 					<html:option value="1.0">1.0</html:option>
 					<html:option value="4.2">4.2</html:option>
 					<html:option value="4.2.3.2">4.2.3 FixPack 2</html:option>
+					<html:option value="8.1">8.1</html:option>
 				</html:select></td>
 			</tr>
 			<tr>
