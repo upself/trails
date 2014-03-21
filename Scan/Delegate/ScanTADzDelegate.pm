@@ -75,6 +75,84 @@ SELECT  LP.FOSNAME as sid,
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\' ";
 
+# Revision 330: This SQL used to extract HW and LPAR
+# information from TADz DBs. This revision changes the
+# order of reading TADz Tables. It will only work against TADz # DBs which have been built or migrated at TADz V8.1 level.
+# 
+# Start with SYSTEM TABLE, as this has 1:1 relationship with
+# real LPARs.  This points to SYSTEM_NODE TABLE (SYSTEM_KEY)
+# which in turn points to the NODE TABLE (NODE_KEY) to acquire # HW information from SYSTEM TABLE also points to TLOGIQ TABLE #(SID) to obtain scan time.
+#
+# In addition we now supply iq.fosversion as the osMajorVer
+# value. It is the VV.RR.MM of the currently running level of
+# z/OS. TLOGIQ.FOSVERSION is defined a CHAR(8). This is to
+# support MIPS value determination in conjunction with
+# processor model and type. A MIPS value is used some ISV
+# licences.
+#
+# For AG, we also need to populate the techImId with a TSID
+# value which is held in the last 4 characters of the
+#  TLOGIQ.FVERSIONGKB field.
+#
+my $sqlAG81 =     "select 
+          		 node.node_key
+ 		       ,node.lpar_name
+ 		       ,'' as objectId
+ 		       ,node.hw_model
+ 		       ,node.hw_serial
+ 		       ,audit_table.fiqdate as effective_scanTime
+ 		       ,0 as users
+ 		       ,2 as authenticated
+ 		       ,0 as isManual
+ 		       ,0 as authProc
+ 		       ,0 as processor
+ 		       ,system.sid as osName
+ 		       ,node.hw_type as osType
+ 		       ,audit_table.fosversion as osMajorVers
+ 		       ,'' as osMinorVers
+ 		       ,'' as osSubVers
+ 		       ,node.last_update_time as osInstDate
+ 		       ,'' as userName
+ 		       ,'' as biosManufacturer
+ 		       ,'' as biosModel
+ 		       ,'' as computerAlias
+ 		       ,'' as physicalTotalKb
+ 		       ,'' as virtTotalKb
+ 		       ,'' as physicalFreeKb
+ 		       ,'' as virtFreeKb
+ 		       ,'' as biosDate
+ 		       ,'' as biosSerial
+ 		       ,'' as sysUuid
+ 		       ,system.sysplex as boardSerNum
+ 		       ,'' as caseSerNum
+ 		       ,system.smfid as caseAssetTag
+ 		       ,'' as extId
+ 		       ,audit_table.tsid as techImgId
+ 		 from system 
+ 
+ join (
+  
+ select system_key, max(last_update_time) as my_time from system_node
+ group by system_key )
+ 
+ as m on m.system_key =  system.system_key  
+ 
+ join system_node sn 
+ on sn.system_key=m.system_key AND m.my_time=sn.last_update_time 
+ 
+ join node 
+ on node.node_key=sn.node_key      
+ 
+ left outer join ( select iq.fsid, iq.fostype, iq.fosversion,
+                          substr(iq.fversiongkb, 12, 4) as tsid 
+                          max(fiqdate) as fiqdate
+                   from tlogiq as iq
+                   where iq.fostype = 'z/OS'
+                   group by iq.fsid, iq.fostype, iq.fosversion
+                   order by iq.fsid, iq.fostype, iq.fosversion )
+                   as audit_table on audit_table.fsid = system.sid
+ where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
+
 my $sqlEMEA = "select
      node.node_key
       ,lpar_name
@@ -131,46 +209,151 @@ SELECT  LP.FOSNAME as sid,
     ) as scan_table on scan_table.sid = system.sid
 where node_type = \'LPAR\' ";
 
-my $sqlANZ = "select
-     node.node_key
-      ,lpar_name
-      ,'' as objectId
-      ,hw_model
-      ,hw_serial
-      ,node.last_update_time as effective_scanTime
-      ,0 as users
-      ,2 as authenticated
-      ,0 as isManual
-      ,0 as authProc
-      ,0 as processor
-      ,system.sid as osName
-      ,hw_type as osType
-      ,'' as osMajorVers
-      ,'' as osMinorVers
-      ,'' as osSubVers
-      ,node.last_update_time as osInstDate
-      ,'' as userName
-      ,'' as biosManufacturer
-      ,'' as biosModel
-      ,'' as computerAlias
-      ,'' as physicalTotalKb
-      ,'' as virtTotalKb
-      ,'' as physicalFreeKb
-      ,'' as virtFreeKb
-      ,'' as biosDate
-      ,'' as biosSerial
-      ,'' as sysUuid
-      ,system.sysplex as boardSerNum
-      ,'' as caseSerNum
-      ,system.smfid as caseAssetTag
-      , '' as extId
-      , SYSTEM.SID as techImgId
-from system_node
-     join node on node.node_key = system_node.node_key
-     join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
-     as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-     join system on system.system_key = system_node.system_key
-where node_type = \'LPAR\' ";
+# Revision 330: This SQL used to extract HW and LPAR
+# information from TADz DBs. This revision changes the
+# order of reading TADz Tables. It will only work against TADz # DBs which have been built or migrated at TADz V8.1 level.
+# 
+# Start with SYSTEM TABLE, as this has 1:1 relationship with
+# real LPARs.  This points to SYSTEM_NODE TABLE (SYSTEM_KEY)
+# which in turn points to the NODE TABLE (NODE_KEY) to acquire # HW information from SYSTEM TABLE also points to TLOGIQ TABLE #(SID) to obtain scan time.
+#
+# In addition we now supply iq.fosversion as the osMajorVer
+# value. It is the VV.RR.MM of the currently running level of
+# z/OS. TLOGIQ.FOSVERSION is defined a CHAR(8). This is to
+# support MIPS value determination in conjunction with
+# processor model and type. A MIPS value is used some ISV
+# licences.
+#
+my $sqlEMEA81 = "select 
+          		 node.node_key
+ 		       ,node.lpar_name
+ 		       ,'' as objectId
+ 		       ,node.hw_model
+ 		       ,node.hw_serial
+ 		       ,audit_table.fiqdate as effective_scanTime
+ 		       ,0 as users
+ 		       ,2 as authenticated
+ 		       ,0 as isManual
+ 		       ,0 as authProc
+ 		       ,0 as processor
+ 		       ,system.sid as osName
+ 		       ,node.hw_type as osType
+ 		       ,audit_table.fosversion as osMajorVers
+ 		       ,'' as osMinorVers
+ 		       ,'' as osSubVers
+ 		       ,node.last_update_time as osInstDate
+ 		       ,'' as userName
+ 		       ,'' as biosManufacturer
+ 		       ,'' as biosModel
+ 		       ,'' as computerAlias
+ 		       ,'' as physicalTotalKb
+ 		       ,'' as virtTotalKb
+ 		       ,'' as physicalFreeKb
+ 		       ,'' as virtFreeKb
+ 		       ,'' as biosDate
+ 		       ,'' as biosSerial
+ 		       ,'' as sysUuid
+ 		       ,system.sysplex as boardSerNum
+ 		       ,'' as caseSerNum
+ 		       ,system.smfid as caseAssetTag
+ 		       ,'' as extId
+ 		       , system.sid as techImgId
+ 		 from system 
+ 
+ join (
+  
+ select system_key, max(last_update_time) as my_time from system_node
+ group by system_key )
+ 
+ as m on m.system_key =  system.system_key  
+ 
+ join system_node sn 
+ on sn.system_key=m.system_key AND m.my_time=sn.last_update_time 
+ 
+ join node 
+ on node.node_key=sn.node_key      
+ 
+ left outer join ( select iq.fsid, iq.fostype, iq.fosversion, 
+                          max(fiqdate) as fiqdate
+                   from tlogiq as iq
+                   where iq.fostype = 'z/OS'
+                   group by iq.fsid, iq.fostype, iq.fosversion
+                   order by iq.fsid, iq.fostype, iq.fosversion )
+                   as audit_table on audit_table.fsid = system.sid
+ where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
+
+# Revision 330: This SQL used to extract HW and LPAR
+# information from TADz DBs. This revision changes the
+# order of reading TADz Tables. It will only work against TADz # DBs which have been built or migrated at TADz V8.1 level.
+# 
+# Start with SYSTEM TABLE, as this has 1:1 relationship with
+# real LPARs.  This points to SYSTEM_NODE TABLE (SYSTEM_KEY)
+# which in turn points to the NODE TABLE (NODE_KEY) to acquire # HW information from SYSTEM TABLE also points to TLOGIQ TABLE #(SID) to obtain scan time.
+#
+# In addition we now supply iq.fosversion as the osMajorVer
+# value. It is the VV.RR.MM of the currently running level of
+# z/OS. TLOGIQ.FOSVERSION is defined a CHAR(8). This is to
+# support MIPS value determination in conjunction with
+# processor model and type. A MIPS value is used some ISV
+# licences.
+#
+my $sqlANZ = "select 
+          		 node.node_key
+ 		       ,node.lpar_name
+ 		       ,'' as objectId
+ 		       ,node.hw_model
+ 		       ,node.hw_serial
+ 		       ,audit_table.fiqdate as effective_scanTime
+ 		       ,0 as users
+ 		       ,2 as authenticated
+ 		       ,0 as isManual
+ 		       ,0 as authProc
+ 		       ,0 as processor
+ 		       ,system.sid as osName
+ 		       ,node.hw_type as osType
+ 		       ,audit_table.fosversion as osMajorVers
+ 		       ,'' as osMinorVers
+ 		       ,'' as osSubVers
+ 		       ,node.last_update_time as osInstDate
+ 		       ,'' as userName
+ 		       ,'' as biosManufacturer
+ 		       ,'' as biosModel
+ 		       ,'' as computerAlias
+ 		       ,'' as physicalTotalKb
+ 		       ,'' as virtTotalKb
+ 		       ,'' as physicalFreeKb
+ 		       ,'' as virtFreeKb
+ 		       ,'' as biosDate
+ 		       ,'' as biosSerial
+ 		       ,'' as sysUuid
+ 		       ,system.sysplex as boardSerNum
+ 		       ,'' as caseSerNum
+ 		       ,system.smfid as caseAssetTag
+ 		       ,'' as extId
+ 		       , system.sid as techImgId
+ 		 from system 
+ 
+ join (
+  
+ select system_key, max(last_update_time) as my_time from system_node
+ group by system_key )
+ 
+ as m on m.system_key =  system.system_key  
+ 
+ join system_node sn 
+ on sn.system_key=m.system_key AND m.my_time=sn.last_update_time 
+ 
+ join node 
+ on node.node_key=sn.node_key      
+ 
+ left outer join ( select iq.fsid, iq.fostype, iq.fosversion, 
+                          max(fiqdate) as fiqdate
+                   from tlogiq as iq
+                   where iq.fostype = 'z/OS'
+                   group by iq.fsid, iq.fostype, iq.fosversion
+                   order by iq.fsid, iq.fostype, iq.fosversion )
+                   as audit_table on audit_table.fsid = system.sid
+ where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
 
 my $sqlLastFull = "with ur";
 my $sqlLastDelta = " and node.last_update_time > ?  with ur";
@@ -190,12 +373,24 @@ sub getTADzInfrastructure {
     	}
     }  
 }
-
+# Revision 330: This selection logic to determine which 
+# SQL string to use for extracting DB2 data from TADz
+# is enhanced to cater for both DBs at V7.5 and V8.1 levels
+# The value of the VERSION field in the account's bank account
+# will determine choice of V7.5 or V8.1 SQL.
+# 
+# We need this distinction as table TIQHISTORY in V7.5 is
+# replaced with table TLOGIQ in V8.1
+#  
 sub getCorrectSQL {
 	my ($self, $infra, $delta) = @_;
-	if ( $infra eq 'AG' ) {
+	if ( ( $infra eq 'AG' ) && ( $bankAccount->Version eq '8.1' ) {
+		return $sqlAG81 ;
+       } elsif ( $infra eq 'AG' ) {
 		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
-	} elsif ( $infra eq 'EMEA' ) {
+	} elsif ( ( $infra eq 'EMEA' ) && ( $bankAccount->Version eq '8.1' ) ) {
+		return $sqlEMEA81 . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
+       } elsif ( $infra eq 'EMEA' ) {
 		return $sqlEMEA . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
 	} elsif ( $infra eq 'ANZ' ) {
 		return $sqlANZ . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
