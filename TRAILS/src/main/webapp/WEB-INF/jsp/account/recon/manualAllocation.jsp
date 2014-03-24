@@ -4,7 +4,8 @@
 <script type="text/javascript">
 <!--
 	function disableLicenses(pfoAllocation) {
-		if (pfoAllocation.value == 6) {
+		if (pfoAllocation.value == 'PVU') {
+			document.showManualConfirmation.maxLicenses.value="";
 			document.showManualConfirmation.maxLicenses.disabled = true;
 		} else {
 			document.showManualConfirmation.maxLicenses.disabled = false;
