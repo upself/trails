@@ -22,11 +22,15 @@
 #                                            B. Add the loader running mode(start/run-once) support feature
 # 2014-03-10  Liu Hai(Larry) 1.0.8           A. Add the following new loaders into authorized loader list:
 #                                            1) capTypeToBravo.pl
+# 2014-03-25  Liu Hai(Larry) 1.0.9           Add Post Check to judge if all the related loader processes have been killed fully and successfully, retry to kill all the related processes one time, 
+#                                            if still cannot kill fully, then generates the error message
 ###################################################################################################################################################################################################
 #                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
 # 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
 # 2013-09-06  Liu Hai(Larry) 1.2.1           Self Healing Service Component - Phase 2: Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
 # 2013-09-30  Liu Hai(Larry) 1.2.2           Self Healing Service Component - Phase 2: For TAP3 Server, there is no root privilege granted. So the 'sudo' unix command needs to be used to get temp root privilege to execute special unix commands 
+# 2014-03-26  Liu Hai(Larry) 1.2.3           Add Post Check to judge if all the related loader processes have been killed fully and successfully, retry to kill all the related processes one time, 
+#                                            if still cannot kill fully, then generates the error message
 ###################################################################################################################################################################################################
 #                                            Phase 3 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 3'
 # 2013-10-14  Liu Hai(Larry) 1.3.0           System Support And Self Healing Service Components - Phase 3 - Operation Parameters Input String whatever Operation Parameters have values or not. The Operation Parameters String has included 10 values using ^ char to seperate. For example: TI30326-36768^reconEngine.pl^^^^^^^^
@@ -352,6 +356,18 @@ my $queryReCSSW = "SELECT * FROM recon_customer_sw WHERE customer_id = ? and sof
 my $queryReLic = "SELECT * FROM recon_license WHERE license_id = ?";
 #Added by Larry for System Support And Self Healing Service Components - Phase 7 End
 
+#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+my $FAIL    = 0;
+my $SUCCESS = 1;
+my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^softwareDoranaToStaging.pl^scanSoftwareItemToStaging.pl/";
+my $LOADER_REPLACE_STRING  = ".pl";
+my $LOADER_REPLACED_STRING = "Child.pl";
+#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+
+#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+my $HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER = "/ipAddressToBravo.pl^memModToBravo.pl^hardwareToBravo.pl^hdiskToBravo.pl^processorToBravo.pl/";
+#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
+
 main();
 
 #This is the main method of Self Healing Engine
@@ -528,6 +544,8 @@ sub coreOperationProcess{
 	  my $validLoaderFlag = $FALSE;#Set 0(0 = False) as default value
 	  my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing path
 	  my $restartLoaderFullCommand;#var used to store restart loader full command  - For example: "/opt/staging/v2/reconEngine.pl start"
+	  my $killLoaderFlag = $SUCCESS;#var used to store the kill loader flag - For example: SUCCESS or FAIL #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+	  my $restartChildLoaderName;#var used to store restart child loader name #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 
       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been started to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
@@ -577,79 +595,224 @@ sub coreOperationProcess{
 		  }#end else
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
-		  #1. Find out and Kill all the parent and child processes for the target loader name - For example: "reconEngine.pl"
+          #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
 		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
-		    print LOG "The Restart Loader on TAP Server - There is no process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP Server - There are $targetLoaderPidsCnt processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    print LOG "The Restart Loader on TAP Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 
 		    my $targetLoaderPidIndex = 1;
 		    foreach my $targetLoaderPid(@targetLoaderPids){
 		      chomp($targetLoaderPid);#remove the return line char
 		      trim($targetLoaderPid);#Remove space chars
-		      print LOG "The Restart Loader on TAP Server - [$targetLoaderPidIndex]PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on TAP Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
               my $cmdExecResult = system("kill -9 $targetLoaderPid");
 			  if($cmdExecResult == 0){
-                print LOG "The Restart Loader on TAP Server - PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                print LOG "The Restart Loader on TAP Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
               }
 			  else{
-			    print LOG "The Restart Loader on TAP Server - PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+			    print LOG "The Restart Loader on TAP Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+                #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+                $killLoaderFlag = $FAIL;
+				last;
+				#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
 			  }
               $targetLoaderPidIndex++;
 		    }#end foreach my $targetLoaderPid(@targetLoaderPids)
 		  }#end else
-		  
-          #2. Start target loader using loader full name - For exmaple: "/opt/staging/v2/reconEngine.pl"
-		  $restartLoaderFullCommand = $loaderExistingPath;
-          $restartLoaderFullCommand.= $restartLoaderName;
-          $restartLoaderFullCommand.= " $loaderRunningMode";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
-		  print LOG "The Restart Loader on TAP Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
-		  my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
-          print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
-		  if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
-            print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
 
-			#Added by Larry for Self Healing Service Component - Phase 2 Start
-			#Sleep 10 seconds to give the target loader startup time
-			sleep 10;
+          #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+		  #1.1. If all the parent processes have not been fullly killed, then retry one time to kill all the remaining parent processes
+		  if($killLoaderFlag == $FAIL){
+            $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
+            my @targetLoaderRemainingParentPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;
+            my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
+            if($targetLoaderRemainingParentPidsCnt == 0){
+		      print LOG "The Restart Loader on TAP Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    }#end if ($targetLoaderRemainingParentPidsCnt == 0)
+		    else{
+		      print LOG "The Restart Loader on TAP Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+              
+			  my $targetLoaderRemainingParentPidIndex = 1;
+			  my $targetLoaderRemainingParentKilledFailPid = "";
+		      foreach my $targetLoaderRemainingParentPid(@targetLoaderRemainingParentPids){
+		        chomp($targetLoaderRemainingParentPid);#remove the return line char
+		        trim($targetLoaderRemainingParentPid);#Remove space chars
+		        print LOG "The Restart Loader on TAP Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+                my $cmdExecResult = system("kill -9 $targetLoaderRemainingParentPid");
+			    if($cmdExecResult == 0){
+                  print LOG "The Restart Loader on TAP Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                }
+			    else{
+			      print LOG "The Restart Loader on TAP Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+                  $killLoaderFlag = $FAIL;
+				  $targetLoaderRemainingParentKilledFailPid = $targetLoaderRemainingParentPid;
+				  last;
+			    }
+                $targetLoaderRemainingParentPidIndex++;
+		      }#end foreach my $targetLoaderRemainingParentPid(@targetLoaderPids)
+			  
+			  #If retry to kill the remaining parent processes still failed, then generates the error message
+              if($killLoaderFlag == $FAIL){
+			    $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                if($operationFailedComments ne ""){
+                  $operationFailedComments.="The Target Loader {$restartLoaderName} Running Parent Process PID {$targetLoaderRemainingParentKilledFailPid} has been killed failed.\n";
+			    }#end if($operationFailedComments ne "")
+			    else{
+		          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                  $operationFailedComments.="The Target Loader {$restartLoaderName} Running Parent Process PID {$targetLoaderRemainingParentKilledFailPid} has been killed failed.\n";
+			    }#end else
+			  }#end if($killLoaderFlag == $FAIL)
+		    }#end else
+		  }#end if($killLoaderFlag == $FAIL)
+         
+		  #1.2. If the target loader parent processes have been killed fully and successfully, then go on killing the child processes
+          if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP_SERVER,$restartLoaderName)>-1)){
+		    $restartChildLoaderName = $restartLoaderName;
+			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
+			print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
+            
+			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+            my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
+		    if($targetChildLoaderPidsCnt == 0){
+		      print LOG "The Restart Loader on TAP Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    }#end if($targetChildLoaderPidsCnt == 0)
+			else{
+			  print LOG "The Restart Loader on TAP Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+
+		      my $targetChildLoaderPidIndex = 1;
+		      foreach my $targetChildLoaderPid(@targetChildLoaderPids){
+		        chomp($targetChildLoaderPid);#remove the return line char
+		        trim($targetChildLoaderPid);#Remove space chars
+		        print LOG "The Restart Loader on TAP Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                my $cmdExecResult = system("kill -9 $targetChildLoaderPid");
+			    if($cmdExecResult == 0){
+                  print LOG "The Restart Loader on TAP Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                }
+			    else{
+			      print LOG "The Restart Loader on TAP Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  $killLoaderFlag = $FAIL;
+				  last;
+			    }
+                $targetChildLoaderPidIndex++;
+		      }#end foreach my $targetChildLoaderPid(@targetChildLoaderPids)
+			}#end else
+
+            #1.3. If all the child processes have not been fullly killed, then retry one time to kill all the remaining child processes
+			if($killLoaderFlag == $FAIL){
+			  $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
+              my @targetLoaderRemainingChildPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+              my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
+              if($targetLoaderRemainingChildPidsCnt == 0){
+			    print LOG "The Restart Loader on TAP Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+			  }#end if($targetLoaderRemainingChildPidsCnt == 0)
+			  else{
+                print LOG "The Restart Loader on TAP Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+                
+			    my $targetLoaderRemainingChildPidIndex = 1;
+                my $targetLoaderRemainingChildKilledFailPid = "";
+		        foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids){
+		          chomp($targetLoaderRemainingChildPid);#remove the return line char
+		          trim($targetLoaderRemainingChildPid);#Remove space chars
+		          print LOG "The Restart Loader on TAP Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  my $cmdExecResult = system("kill -9 $targetLoaderRemainingChildPid");
+			      if($cmdExecResult == 0){
+                    print LOG "The Restart Loader on TAP Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  }
+			      else{
+			        print LOG "The Restart Loader on TAP Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                    $killLoaderFlag = $FAIL;
+					$targetLoaderRemainingChildKilledFailPid = $targetLoaderRemainingChildPid;
+				    last;
+			      }
+                  $targetLoaderRemainingChildPidIndex++;
+		        }#end foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids)
+
+				#If retry to kill the remaining parent processes still failed, then generates the error message
+                if($killLoaderFlag == $FAIL){
+			      $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                  if($operationFailedComments ne ""){
+                    $operationFailedComments.="The Target Loader {$restartLoaderName} Running Child Process PID {$targetLoaderRemainingChildKilledFailPid} has been killed failed.\n";
+			      }#end if($operationFailedComments ne "")
+			      else{
+		            $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                    $operationFailedComments.="The Target Loader {$restartLoaderName} Running Child Process PID {$targetLoaderRemainingChildKilledFailPid} has been killed failed.\n";
+			      }#end else
+			    }#end if($killLoaderFlag == $FAIL)
+			  }#end else
+			}#end if($killLoaderFlag == $FAIL)
+		  }#if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP_SERVER,$restartLoaderName)>-1))
+          #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+           
+		  #2. Start target loader using loader full name - For exmaple: "/opt/staging/v2/reconEngine.pl"
+          #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+		  if($killLoaderFlag == $SUCCESS){
+            #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+		    $restartLoaderFullCommand = $loaderExistingPath;
+            $restartLoaderFullCommand.= $restartLoaderName;
+            $restartLoaderFullCommand.= " $loaderRunningMode";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		    print LOG "The Restart Loader on TAP Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
+		    my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
+            print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
+		    if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
+              print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
+
+			  #Added by Larry for Self Healing Service Component - Phase 2 Start
+			  #Sleep 10 seconds to give the target loader startup time
+			  sleep 10;
 		
-			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
-            my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
-			foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
-              chomp($loaderRunningProcessMsg); 
-			  print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
-            }
-			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
+			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+              my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+			  foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
+                chomp($loaderRunningProcessMsg); 
+			    print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
+              }
+			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 
-			#Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|wc -l`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
-			chomp($targetLoaderRunningProcessCnt);#remove the return line char
-			#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
-            #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
-			#$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
-            #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
-			if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
-			   print LOG "The Restart Loader on TAP Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
-			   print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
-			}
-			else{#The target loader has been started failed case
-               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
-			   print LOG "The Restart Loader on TAP Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
-			   print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP Server.\n";
-			}
-			#Added by Larry for Self Healing Service Component - Phase 2 End
-		  }
-		  else{#Execute Failed
-			$operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		    $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-            $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
-		    print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
-		  }
+			  #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
+			  my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|wc -l`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+			  chomp($targetLoaderRunningProcessCnt);#remove the return line char
+			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
+              #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
+			  #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+              #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
+			  if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
+			     print LOG "The Restart Loader on TAP Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
+			  }
+			  else{#The target loader has been started failed case
+                 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+			     if($operationFailedComments ne ""){
+                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+			     }#end if($operationFailedComments ne "")
+			     else{
+		           $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+			     }#end else
+			     #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+			     print LOG "The Restart Loader on TAP Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP Server.\n";
+			  }
+			  #Added by Larry for Self Healing Service Component - Phase 2 End
+		    }
+		    else{#Execute Failed
+              $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		      #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
+			  if($operationFailedComments ne ""){
+                $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
+              }#end if($operationFailedComments ne "")
+			  else{
+			    $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
+			  }   
+			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+		      print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
+		    }
+		  }#end if($killLoaderFlag == $SUCCESS)#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 		}
 	  }#end if($operationResultFlag == $OPERATION_SUCCESS) 
 
@@ -672,6 +835,8 @@ sub coreOperationProcess{
 	  my $validLoaderFlag = $FALSE;#Set 0(0 = False) as default value
 	  my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing path
 	  my $restartLoaderFullCommand;#var used to store restart loader full command  - For example: "sudo /opt/staging/v2/start-all.sh"
+	  my $killLoaderFlag = $SUCCESS;#var used to store the kill loader flag - For example: SUCCESS or FAIL #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+	  my $restartChildLoaderName;#var used to store restart child loader name #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 
       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been started to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
@@ -712,67 +877,217 @@ sub coreOperationProcess{
 		  print LOG "The Restart Loader on TAP3 Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP3 Server.\n";
 		}
 		else{#Restart Loader is a valid loader
-		  #1. Find out and Kill all the parent and child processes for the target loader name - For example: "reconEngine.pl"
+		  #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
 		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
-		    print LOG "The Restart Loader on TAP3 Server - There is no process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    print LOG "The Restart Loader on TAP3 Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderPidsCnt processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 
-		    my $targetLoaderPidIndex = 1;
+            my $targetLoaderPidIndex = 1;
 		    foreach my $targetLoaderPid(@targetLoaderPids){
 		      chomp($targetLoaderPid);#remove the return line char
 		      trim($targetLoaderPid);#Remove space chars
-		      print LOG "The Restart Loader on TAP3 Server - [$targetLoaderPidIndex]PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on TAP3 Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
               my $cmdExecResult = system("kill -9 $targetLoaderPid");
 			  if($cmdExecResult == 0){
-                print LOG "The Restart Loader on TAP3 Server - PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                print LOG "The Restart Loader on TAP3 Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
               }
 			  else{
-			    print LOG "The Restart Loader on TAP3 Server - PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+			    print LOG "The Restart Loader on TAP3 Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+				#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+                $killLoaderFlag = $FAIL;
+				last;
+				#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
 			  }
               $targetLoaderPidIndex++;
 		    }#end foreach my $targetLoaderPid(@targetLoaderPids)
 		  }#end else
 		  
-          #2. Start target loader using start-all.sh due that there is no root privilege granted on TAP3 Server we need to use 'sudo' unix command to get temp root privilege - For exmaple: "sudo /opt/staging/v2/start-all.sh"
-		  $restartLoaderFullCommand = "$SUDO_CMD_PREFIX ";#"sudo "
-		  $restartLoaderFullCommand.= $loaderExistingPath;#Append the '/opt/staging/v2/' loader existing path
-          $restartLoaderFullCommand.= $START_ALL_SHELL_NAME;#Append the 'start-all.sh' shell name
-		  print LOG "The Restart Loader on TAP3 Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
-		  my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
-          print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
-		  if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
-            print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
+          #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+		  #1.1. If all the parent processes have not been fullly killed, then retry one time to kill all the remaining parent processes
+		  if($killLoaderFlag == $FAIL){
+            $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
+            my @targetLoaderRemainingParentPids = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
+            my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
+            if($targetLoaderRemainingParentPidsCnt == 0){
+		      print LOG "The Restart Loader on TAP3 Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    }#end if ($targetLoaderRemainingParentPidsCnt == 0)
+		    else{
+		      print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+              
+			  my $targetLoaderRemainingParentPidIndex = 1;
+			  my $targetLoaderRemainingParentKilledFailPid = "";
+		      foreach my $targetLoaderRemainingParentPid(@targetLoaderRemainingParentPids){
+		        chomp($targetLoaderRemainingParentPid);#remove the return line char
+		        trim($targetLoaderRemainingParentPid);#Remove space chars
+		        print LOG "The Restart Loader on TAP3 Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+                my $cmdExecResult = system("kill -9 $targetLoaderRemainingParentPid");
+			    if($cmdExecResult == 0){
+                  print LOG "The Restart Loader on TAP3 Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                }
+			    else{
+			      print LOG "The Restart Loader on TAP3 Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+                  $killLoaderFlag = $FAIL;
+				  $targetLoaderRemainingParentKilledFailPid = $targetLoaderRemainingParentPid;
+				  last;
+			    }
+                $targetLoaderRemainingParentPidIndex++;
+		      }#end foreach my $targetLoaderRemainingParentPid(@targetLoaderPids)
+			  
+			  #If retry to kill the remaining parent processes still failed, then generates the error message
+              if($killLoaderFlag == $FAIL){
+			    $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                if($operationFailedComments ne ""){
+                  $operationFailedComments.="The Target Loader {$restartLoaderName} Running Parent Process PID {$targetLoaderRemainingParentKilledFailPid} has been killed failed.\n";
+			    }#end if($operationFailedComments ne "")
+			    else{
+		          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                  $operationFailedComments.="The Target Loader {$restartLoaderName} Running Parent Process PID {$targetLoaderRemainingParentKilledFailPid} has been killed failed.\n";
+			    }#end else
+			  }#end if($killLoaderFlag == $FAIL)
+		    }#end else
+		  }#end if($killLoaderFlag == $FAIL)
+         
+		  #1.2. If the target loader parent processes have been killed fully and successfully, then go on killing the child processes
+          if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER,$restartLoaderName)>-1)){
+		    $restartChildLoaderName = $restartLoaderName;
+			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
+			print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
+            
+			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+            my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
+		    if($targetChildLoaderPidsCnt == 0){
+		      print LOG "The Restart Loader on TAP3 Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		    }#end if($targetChildLoaderPidsCnt == 0)
+			else{
+			  print LOG "The Restart Loader on TAP3 Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
 
-			#Added by Larry for Self Healing Service Component - Phase 2 Start
-			#Sleep 120 seconds to give the target loader startup time
-			sleep 120;
-            #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-			my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
-			chomp($targetLoaderRunningProcessCnt);#remove the return line char
-            $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
-			if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
-			   print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
-			   print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
-			}
-			else{#The target loader has been started failed case
-               $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-               $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP3 Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
-			   print LOG "The Restart Loader on TAP3 Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
-			   print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP3 Server.\n";
-			}
-			#Added by Larry for Self Healing Service Component - Phase 2 End
-		  }
-		  else{#Execute Failed
-			$operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		    $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-            $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
-		    print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
-		  }
+		      my $targetChildLoaderPidIndex = 1;
+		      foreach my $targetChildLoaderPid(@targetChildLoaderPids){
+		        chomp($targetChildLoaderPid);#remove the return line char
+		        trim($targetChildLoaderPid);#Remove space chars
+		        print LOG "The Restart Loader on TAP3 Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                my $cmdExecResult = system("kill -9 $targetChildLoaderPid");
+			    if($cmdExecResult == 0){
+                  print LOG "The Restart Loader on TAP3 Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                }
+			    else{
+			      print LOG "The Restart Loader on TAP3 Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  $killLoaderFlag = $FAIL;
+				  last;
+			    }
+                $targetChildLoaderPidIndex++;
+		      }#end foreach my $targetChildLoaderPid(@targetChildLoaderPids)
+			}#end else
+
+            #1.3. If all the child processes have not been fullly killed, then retry one time to kill all the remaining child processes
+			if($killLoaderFlag == $FAIL){
+			  $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
+              my @targetLoaderRemainingChildPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+              my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
+              if($targetLoaderRemainingChildPidsCnt == 0){
+			    print LOG "The Restart Loader on TAP3 Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+			  }#end if($targetLoaderRemainingChildPidsCnt == 0)
+			  else{
+                print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+                
+			    my $targetLoaderRemainingChildPidIndex = 1;
+                my $targetLoaderRemainingChildKilledFailPid = "";
+		        foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids){
+		          chomp($targetLoaderRemainingChildPid);#remove the return line char
+		          trim($targetLoaderRemainingChildPid);#Remove space chars
+		          print LOG "The Restart Loader on TAP3 Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  my $cmdExecResult = system("kill -9 $targetLoaderRemainingChildPid");
+			      if($cmdExecResult == 0){
+                    print LOG "The Restart Loader on TAP3 Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  }
+			      else{
+			        print LOG "The Restart Loader on TAP3 Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                    $killLoaderFlag = $FAIL;
+					$targetLoaderRemainingChildKilledFailPid = $targetLoaderRemainingChildPid;
+				    last;
+			      }
+                  $targetLoaderRemainingChildPidIndex++;
+		        }#end foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids)
+
+				#If retry to kill the remaining parent processes still failed, then generates the error message
+                if($killLoaderFlag == $FAIL){
+			      $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                  if($operationFailedComments ne ""){
+                    $operationFailedComments.="The Target Loader {$restartLoaderName} Running Child Process PID {$targetLoaderRemainingChildKilledFailPid} has been killed failed.\n";
+			      }#end if($operationFailedComments ne "")
+			      else{
+		            $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                    $operationFailedComments.="The Target Loader {$restartLoaderName} Running Child Process PID {$targetLoaderRemainingChildKilledFailPid} has been killed failed.\n";
+			      }#end else
+			    }#end if($killLoaderFlag == $FAIL)
+			  }#end else
+			}#end if($killLoaderFlag == $FAIL)
+		  }#if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER,$restartLoaderName)>-1))
+          #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
+
+          #2. Start target loader using start-all.sh due that there is no root privilege granted on TAP3 Server we need to use 'sudo' unix command to get temp root privilege - For exmaple: "sudo /opt/staging/v2/start-all.sh"
+		  #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+		  if($killLoaderFlag == $SUCCESS){
+			if($SERVER_MODE eq $TAP3){
+              $restartLoaderFullCommand = "$SUDO_CMD_PREFIX ";#append "sudo " when TAP3 server
+            }#end if($SERVER_MODE eq $TAP3)
+			else{
+              $restartLoaderFullCommand = "";#append "" when TAP2 server
+			}#end else
+			#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
+		    $restartLoaderFullCommand.= $loaderExistingPath;#Append the '/opt/staging/v2/' loader existing path
+            $restartLoaderFullCommand.= $START_ALL_SHELL_NAME;#Append the 'start-all.sh' shell name
+		    print LOG "The Restart Loader on TAP3 Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
+		    my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
+            print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
+		    if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
+              print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
+
+			  #Added by Larry for Self Healing Service Component - Phase 2 Start
+			  #Sleep 120 seconds to give the target loader startup time
+			  sleep 120;
+              #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
+			  my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
+			  chomp($targetLoaderRunningProcessCnt);#remove the return line char
+              $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
+			  if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
+			     print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
+			  }
+			  else{#The target loader has been started failed case
+				 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		         #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+			     if($operationFailedComments ne ""){
+				   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP3 Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+			     }
+				 else{
+                   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP3 Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+			     }
+				 #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
+				 print LOG "The Restart Loader on TAP3 Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP3 Server.\n";
+			  }
+			  #Added by Larry for Self Healing Service Component - Phase 2 End
+		    }
+		    else{#Execute Failed
+			  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+              #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
+			  if($operationFailedComments ne ""){
+			    $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
+			  }
+			  else{
+			    $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
+			  }
+              #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
+		      print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
+		    }
+		  }#end if($killLoaderFlag == $SUCCESS) #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 		}
 	  }#end if($operationResultFlag == $OPERATION_SUCCESS) 
 
