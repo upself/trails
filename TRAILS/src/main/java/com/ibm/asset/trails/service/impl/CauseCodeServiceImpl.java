@@ -196,7 +196,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 								.getColInternalId());
 
 						List<CauseCode> list = getCauseCodeById(causeCodeIdCell);
-						if (list.size() <= 0) {
+						if (list==null || list.size() <= 0) {
 							buildErrorMsg(errorMsg,
 									colIndexes.getColCauseCode(),
 									"Cause Code (CC)", ERROR_UNKONW_CAUSE_CODE);
@@ -544,7 +544,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				return null;
 			}
 			causeCodeId = Long.valueOf(content);
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
+		} else if (cell !=null && cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
 			causeCodeId = Math.round(cell.getNumericCellValue());
 		} else {
 			return null;
