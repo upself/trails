@@ -112,7 +112,7 @@ sub valueUnitsPerCore {
  my $self = shift;
  $self->{_valueUnitsPerCore} = shift if scalar @_ == 1;
  if ( !defined $self->{_valueUnitsPerCore} ) {
-  $self->{_valueUnitsPerCore} = 100;
+  $self->{_valueUnitsPerCore} = -1; # 100 is no longer a default value
  }
  return $self->{_valueUnitsPerCore};
 }
@@ -549,9 +549,11 @@ sub validateLicenseAllocation {
   $sth->bind_columns( map { \$rec{$_} }
      @{ $self->connection->sql->{validateLicenseAllocationFields} } );
   $sth->execute( $self->installedSoftware->id );
-
+  
   while ( $sth->fetchrow_arrayref ) {
    logRec( 'dlog', \%rec );
+   
+   $machineLevel = $rec{machineLevel};
 
    if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
     $validation->validationCode(0);
@@ -656,23 +658,39 @@ sub validateLicenseAllocation {
   ###Validate used quantity.
   ###Number of processors
   if ( $licCapType eq '2' ) {
-   if ( $self->installedSoftwareReconData->processorCount != $usedQuantity ) {
-    dlog("Processor count greater than used quantity");
+   if ( ( $self->installedSoftwareReconData->processorCount != $usedQuantity ) ||
+        ( $self->installedSoftwareReconData->processorCount == 0 ) ) {
+    dlog("Processor count greater than used quantity or 0");
     return 0;
+   }
+   if (( defined $rec{cpuSerial} ) && ( $rec{cpuSerial} ne $self->installedSoftwareReconData->hSerial )) {
+	   dlog("Number of processors, license with different serialnumber used");
+	   return 0;
+   }
+   if ( $machineLevel == 0 ) {
+	   dlog("Number of processors, reconcile not on machine level!");
+	   return 0;
    }
   }
   ###PVU
   elsif ( $licCapType eq '17' ) {
    if (
-    (
-     $self->installedSoftwareReconData->processorCount *
-     $self->valueUnitsPerCore
-    ) != $usedQuantity
+       (
+        (
+          $self->installedSoftwareReconData->processorCount *
+          $self->valueUnitsPerCore
+        ) != $usedQuantity
+       ) || ( $self->valueUnitsPerCore == -1 ) # added to make the default value invalid
+       || ( $self->installedSoftwareReconData->processorCount == 0 )
      )
    {
-    dlog("PVU needed greater than current used");
+    dlog("PVU needed greater than current used or not found in PVU table");
     return 0;
    }
+     if ( $machineLevel == 0 ) {
+		 dlog("PVU, reconcile not on machine level");
+		 return 0;
+	 }
   }
   elsif ( $licCapType eq '48' ) {
    if ( $self->installedSoftwareReconData->hChips != $usedQuantity ) {
@@ -736,6 +754,7 @@ sub queryValidateLicenseAllocation {
    quantity
    capType
    licenseType
+   machineLevel
    tryAndBuy
    expireDate
    pool
@@ -755,6 +774,7 @@ sub queryValidateLicenseAllocation {
             ,l.quantity
             ,l.cap_type
             ,l.lic_type
+            ,r.machine_level
             ,l.try_and_buy
             ,l.expire_date
             ,l.pool

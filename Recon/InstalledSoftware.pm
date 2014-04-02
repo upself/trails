@@ -1100,10 +1100,10 @@ sub attemptLicenseAllocationProcessor {
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-	else {
-		$machineLevel   = 0;
-		$processorCount = $self->installedSoftwareReconData->processorCount;
-	}
+#	else {
+#		$machineLevel   = 0;
+#		$processorCount = $self->installedSoftwareReconData->processorCount;
+#	}
 
 	return undef if $processorCount == 0;
 
@@ -1205,6 +1205,8 @@ sub attemptLicenseAllocationProcessor {
 					$self->mechineLevelServerType, $lEnv
 				) == 0
 			  );
+			next if (( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
+				# the licenses with DEFINED and different CPU than the one recon'ed are skipped
 			dlog("found matching license - non hw specific");
 			my $neededQuantity = $processorCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1242,6 +1244,8 @@ sub attemptLicenseAllocationProcessor {
 					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
 						$lEnv ) == 0
 				  );
+				next if (( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
+					# the licenses with DEFINED and different CPU than the one recon'ed are skipped
 				dlog("found matching license - non hw specific");
 				my $neededQuantity = $processorCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
@@ -1979,12 +1983,14 @@ sub attemptLicenseAllocationPVU {
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-	else {
-		$machineLevel   = 0;
-		$processorCount = $self->installedSoftwareReconData->processorCount;
-	}
+#	else { no longer used, ticket 394
+#		$machineLevel   = 0;
+#		$processorCount = $self->installedSoftwareReconData->processorCount;
+#	}
 
 	return undef if $processorCount == 0;
+	
+	return undef if ( $self->pvuValue == -1 ); # for PVU not found in table, no PVU recon will be performed
 
 	###Counter to keep allocation count.
 	my $tempQuantityAllocated = 0;
@@ -2165,7 +2171,7 @@ sub attemptLicenseAllocationPVU {
 
 sub getValueUnitsPerProcessor {
 	my ( $self, $chipCount, $processorCount ) = @_;
-	my $defaultValue      = 100;
+	my $defaultValue      = -1; # 100 should no longer be a default value
 	my $valueUnitsPerCore = 0;
 	dlog(
 "start caculating pvu, chipCount=$chipCount processorCount=$processorCount"
