@@ -274,13 +274,13 @@ my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrail
 #Userids and Passwords used to logon the remote server using Telnet Mode
 #TAPMF Web Application Testing Server
 my $TAPMF_SERVER_USERID   = 'liuhaidl';
-my $TAPMF_SERVRE_PASSWORD = 'abcd1253';
+my $TAPMF_SERVRE_PASSWORD = 'abcd1255';
 #Bravo Web Application PROD Server
 my $BRAVO_SERVER_USERID   = 'liuhaidl';
-my $BRAVO_SERVRE_PASSWORD = 'abcd1253';
+my $BRAVO_SERVRE_PASSWORD = 'abcd1255';
 #Trails Web Application PROD Server
 my $TRAILS_SERVER_USERID   = 'liuhaidl';
-my $TRAILS_SERVRE_PASSWORD = 'abcd1253';
+my $TRAILS_SERVRE_PASSWORD = 'abcd1255';
 
 #Vars
 my $operationErrorFlag = $FALSE;#var used to store operation error flag(TRUE or FALSE)
