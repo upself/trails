@@ -15,6 +15,7 @@ my $s;
 my $package;
 my $class;
 my $table;
+our $parsingRecon = 0; # added variable, if parsingRecon, the queryDelete looks differently
 my %props = ();
 my %meths = ();
 
@@ -84,7 +85,12 @@ sub handle_start {
         }
     }
     elsif ( $elem eq "method" ) {
-        $meths{ $attrs{"name"} }++;
+		if ( $attrs{"name"} eq "duplDelete" ) {
+			$parsingRecon=1;
+			print STDERR "INFO: $ARGV[0] is generated with a special duplicates-deletion!\n";
+		} else {
+			$meths{ $attrs{"name"} }++;
+		}
     }
 }
 
@@ -515,29 +521,41 @@ EOL
 
 sub queryDelete {
     my \$query = '
-        delete from $table
-        where
+        delete from $table a where
 EOL
     $flag = 0;
     foreach my $i ( sort { $a <=> $b } keys %props ) {
         my $prop    = $props{$i}->{"name"};
         my $sqlName = $props{$i}->{"sql-name"};
         my $sqlKey  = $props{$i}->{"sql-key"};
+        my $sqlEquals = 1 if (( defined $props{$i}->{"equals"} ) && ( $props{$i}->{"equals"} eq "true"));
         next if $sqlName eq "null";
-        next if $sqlKey  eq "false";
-        my $s = "$sqlName = ?";
+        next if $sqlName eq "idField";
+#        next if $sqlKey  eq "false";
+                next if ((! defined $sqlEquals ) && ( $sqlKey eq "false" ));
+                next if (( $sqlKey eq "false" ) && ( $parsingRecon == 0 ));
+                my $s="";
+                $s="exists ( select b.id from $table b where " if (( $flag == 0 ) && ( $parsingRecon ));
+                if ( $sqlKey eq "true" ) {
+                        $s .= "b." if ( $parsingRecon );
+                        $s .= "a." unless ( $parsingRecon );
+                        $s .= "$sqlName = ?";
+                } else {
+            $s .= "a.$sqlName = b.$sqlName ";
+        }
         $s = "and " . $s unless $flag == 0;
         $flag = 1;
         print <<EOL;
             $s
 EOL
     }
+    print ")" if $parsingRecon;
     print <<EOL;
     ';
     return ('$deleteString', \$query);
 }
 EOL
-} 
+}
 
 if ( exists( $meths{'getByBizKey'} ) ) {
     my $flag;
@@ -819,4 +837,4 @@ EOL
 
 print "\n1;\n";
 
-exit 0;
+exit 0; 

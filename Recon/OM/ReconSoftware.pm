@@ -215,9 +215,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_software
-        where
-            id = ?
+        delete from recon_software a where
+            a.id = ?
     ';
     return ('deleteReconSoftware', $query);
 }

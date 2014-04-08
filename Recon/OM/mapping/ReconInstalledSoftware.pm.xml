@@ -17,4 +17,5 @@
 	<method name="delete" />
 	<method name="getByBizKey" />
 	<method name="getById" />
+	<method name="duplDelete" />
 </class>
