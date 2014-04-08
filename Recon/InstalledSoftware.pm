@@ -236,20 +236,15 @@ sub reconcile {
 	my $self = shift;
 
 	return 1 if $self->attemptVendorManaged == 1;
+	return 1 if $self->attemptSoftwareCategory == 1;
+	return 1 if $self->attemptBundled == 1;
+
 	return 1 if $self->attemptCustomerOwnedAndManaged == 1;
-	
-	# new logic for new scope names, added by myyysha
-	
 	return 1 if $self->attemptIBMOwned3rdManaged == 1;
 	return 1 if $self->attemptCustomerOwned3rdManaged == 1;
 	return 1 if $self->attemptIBMOwnedIBMManagedCons == 1;
 	return 1 if $self->attemptCustOwnedIBMManagedCons == 1;
 
-	# this takes slightly longer than the above, so I moved it as the latest - myyysha
-	
-	return 1 if $self->attemptSoftwareCategory == 1;
-	return 1 if $self->attemptBundled == 1;
-	
 	if($self->poolRunning == 1) {
 	    return 2;
 	}
