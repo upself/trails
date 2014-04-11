@@ -81,10 +81,7 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 			
 				lsfExists = getScheduleFService().findScheduleF(
 						getUserSession().getAccount(), lalProductInfo.get(0), getScheduleFForm().getLevel());
-				sfoExists = findSfInExistsList(lsfExists);
-				System.out.printf("#########\n");
-				System.out.printf(sfoExists.getId().toString() +"\n");
-				System.out.printf("#########\n");
+			if (lsfExists != null) {sfoExists = findSfInExistsList(lsfExists);}
 			if (llScheduleFId != null) {			
 				sfiExists = getScheduleFService().findScheduleF(llScheduleFId,
 						getUserSession().getAccount(), lalProductInfo.get(0));
@@ -263,9 +260,9 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		if (getStatusArrayList() == null) {
 			setStatusArrayList(getScheduleFService().getStatusList());
 		}
-		if (getLevelArrayList() == null) {
-			setLevelArrayList(getScheduleFService().getLevelList());
-		}
+//		if (getLevelArrayList() == null) {
+//			setLevelArrayList(getScheduleFService().getLevelList());
+//		}
 	}
 
 	private Scope findScopeInList(Long plScopeId, ArrayList<Scope> plFind) {

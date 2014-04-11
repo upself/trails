@@ -25,7 +25,7 @@ import com.opensymphony.xwork2.ActionSupport;
 @Results({
         @Result(name = ActionSupport.SUCCESS, type = "stream", params = {
                 "contentType", "application/vnd.ms-excel",
-                "contentDisposition", "attachment;filename='results.xls'",
+                "contentDisposition", "attachment;filename=results.xls",
                 "bufferSize", "1024" }),
         @Result(name = ActionSupport.INPUT, location = "tiles.admin.scheduleF.upload", type = "tiles") })
 public class ScheduleFUploadAction extends FileUploadAction implements
