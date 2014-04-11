@@ -294,7 +294,7 @@
 			<forward name="account" path="/account/view.do" />
 			<forward name="software" path="/software/view.do" />
 			<forward name="lpar" path="/lpar/view.do" />
-			<forward name="success" path="/WEB-INF/jsp/software/detail.jsp" />
+			<forward name="success" path="/software/view.do" />
 			<forward name="error" path="/WEB-INF/jsp/software/form.jsp" />
 			<forward name="search" path="/software/lpar/search.do" />
 		</action>
