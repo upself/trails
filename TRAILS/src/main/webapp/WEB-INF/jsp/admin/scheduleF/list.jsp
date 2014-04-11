@@ -51,7 +51,7 @@
 	<display:column property="serial" sortProperty="SF.serial"
 		title="Serial" sortable="true" />
 	<display:column property="machineType" sortProperty="SF.machineType"
-		title="Mahine Type" sortable="true" />
+		title="Machine Type" sortable="true" />
 	<display:column property="account.account" title="Account Number"
 		media="excel" />
 	<display:column property="softwareTitle" title="Software title"

@@ -596,10 +596,22 @@ public class ReportServiceImpl implements ReportService {
 				+ "left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL "
 				+ "left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id "
 				+ "left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id=am.id ";
-		String lsBaseWhereClause = "where "
+		String lsBaseWhereClausea = "where "
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
-				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) ";
+				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) "
+				+ "and (sf.id in (select ssf.id  "
+                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instPi.id = ssf.software_id order by "
+                + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
+                + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
+                + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
+                + "  4 END END END "
+                + " fetch first 1 row only ) )";
+		String lsBaseWhereClauseb = "where "
+				+ "sl.customer_id = :customerId "
+				+ "and hl.customer_id = :customerId "
+				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) "
+				;
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
@@ -616,7 +628,7 @@ public class ReportServiceImpl implements ReportService {
 					lsBaseSelectClauseOne + lsBaseSelectClauseTwo
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
 					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
-					.append(lsBaseWhereClause);
+					.append(lsBaseWhereClausea);
 			if (pbSelectAllChecked) {				
 					lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
 					pbTitlesNotSpecifiedInContractScopeSearchChecked = true;
@@ -680,7 +692,7 @@ public class ReportServiceImpl implements ReportService {
 					lsBaseSelectClauseOne + lsBaseSelectClauseThree
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
 					.append(" ")
-					.append(lsBaseWhereClause)
+					.append(lsBaseWhereClauseb)
 					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.Software_Id = instSi.Id AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
 		}
 
@@ -800,7 +812,15 @@ public class ReportServiceImpl implements ReportService {
 					}
 			}
 				lsbSql.append(
-						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = SI.Id AND SF.Scope_Id IN (")
+						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = SI.Id AND " 
+								+"(sf.id in (select ssf.id  "
+					                  + " from schedule_f ssf where  ol.customer_id =  ssf.customer_id and SI.software_id = ssf.software_id order by "
+					                  + "  CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = SL.name THEN 1 ELSE "
+					                  + "  CASE WHEN  ssf.level='HWBOX' and ssf.serial = H.serial and ssf.machine_type = mt.name THEN 2 ELSE"
+					                 +  "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = H.owner THEN 3 ELSE"
+					                 +  "   4 END END END "
+					            + "fetch first 1 row only ) )"
+						+"AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
 						.append(") ")
 						.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "

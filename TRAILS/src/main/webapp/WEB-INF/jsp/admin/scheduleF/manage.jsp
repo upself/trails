@@ -43,8 +43,9 @@
 			$("#hwownerLabel").hide();
 			$("div.hwownerva").hide();
 			$("#hwowerid").hide();
-			$("#alertLabel").remove();
+			$("#alertLabel1").remove();
 			$("div.alert1").empty();
+			$("#alertLabel2").remove();
 			$("div.alert2").empty();
 		}
 		if (value == 'HWBOX') {
@@ -74,6 +75,10 @@
 			$("div.serialva").hide();
 			$("div.machinetLb").hide();
 			$("div.machietva").hide();
+			$("#alertLabel1").remove();
+			$("div.alert1").empty();
+			$("#alertLabel2").remove();
+			$("div.alert2").empty();
 		}
 		if (value == 'HOSTNAME') {
 			if ($('#hostname').length) {
@@ -91,13 +96,22 @@
 			$("#hostname").hide();
 			$("div.hwownerLb").hide();
 			$("div.hwownerva").hide();
+			$("#alertLabel1").remove();
+			$("div.alert1").empty();
+			$("#alertLabel2").remove();
+			$("div.alert2").empty();
 		}
     }
     
 	function hwowerChng() {
-		var hwovalue = $('#hwowerid option:selected').val();;
+		var levelvalue = $('#levelArrayList option:selected').val();
+		var hwovalue = $('#hwowerid option:selected').val();
 		var selectedVal = $('#scopeArrayList option:selected').text().split(",")[0];
-	
+		$("#alertLabel1").remove();
+		$("div.alert1").empty();
+		$("#alertLabel2").remove();
+		$("div.alert2").empty();
+	  if (levelvalue == 'HWOWNER') {
 		if (hwovalue == 'IBM' &&  selectedVal != 'IBM owned' ) {
 		
 			$("#level")
@@ -117,6 +131,7 @@
 			$("#alertLabel2").remove();
 			$("div.alert2").empty();
 		}
+	  }
 	}
 	
 	$(document.body)
@@ -279,7 +294,7 @@ var lastValue = '';
 		<label for="scopeArrayList">Level:</label>
 	</div>
 	<div class="float-left" style="width:70%;">
-		<s:select id="levelArrayList" list="#{'PRODUCT':'Product', 'HWOWNER':'Hw Owner', 'HWBOX':'Hw Box', 'HOSTNAME':'Hostname'}" name="scheduleFForm.level"  onchange="levelSltChng(this)" />
+		<s:select id="levelArrayList" list="#{'PRODUCT':'PRODUCT', 'HWOWNER':'HWOWNER', 'HWBOX':'HWBOX', 'HOSTNAME':'HOSTNAME'}" name="scheduleFForm.level"  onchange="levelSltChng(this)" />
 	</div> 
 	<br />
 	<br />

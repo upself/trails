@@ -295,13 +295,13 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			if (!lbHeaderRow) {
 				if (error) {
-					cell = row.createCell(14);
+					cell = row.createCell(15);
 					cell.setCellStyle(lcsError);
 					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
 							.toString()));
 				} else {
 					saveScheduleF(sf, psRemoteUser);
-					cell = row.createCell(14);
+					cell = row.createCell(15);
 					cell.setCellStyle(lcsMessage);
 					cell.setCellValue( new StringBuffer("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
 				}
@@ -326,7 +326,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.setParameter("account", inswtemp.getSoftwareLpar().getAccount())
 						.setParameter("installedSoftware", inswtemp)
 						.getResultList();
-		if (results == null && results.isEmpty()){
+		if (results == null || results.isEmpty()){
             ReconInstalledSoftware rcInswSave = new ReconInstalledSoftware();
             rcInswSave.setAccount(inswtemp.getSoftwareLpar().getAccount());
             rcInswSave.setInstalledSoftware(inswtemp);
@@ -341,6 +341,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public void saveScheduleF(ScheduleF psfSave, String psRemoteUser) {
 		boolean lbSaveReconRow = false;
+		boolean lbSaveExistReconRow = false;
 		if (psfSave.getAccount() != null && psfSave.getProductInfo() != null && psfSave.getLevel() != null ) {
 			List<ScheduleF> lsfExists = findScheduleF(psfSave.getAccount(),
 					psfSave.getProductInfo(),psfSave.getLevel());
@@ -367,6 +368,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			
 			if (!psfSave.getScope().equals(lsfExists.getScope()) || !psfSave.getStatus().equals(lsfExists.getStatus())){
 					lbSaveReconRow = true;
+					lbSaveExistReconRow = true;
 			}
 
 			
@@ -415,6 +417,62 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			getEntityManager().merge(lsfExists);
 			getEntityManager().flush();
+			
+			if (lbSaveExistReconRow){
+				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.PRODUCT.toString()) ){
+					@SuppressWarnings("unchecked")
+					List<ReconCustomerSoftware> results = getEntityManager()
+							.createNamedQuery("reconCustomerSwExists")
+							.setParameter("productInfo", lsfhSave.getProductInfo())
+							.setParameter("account", lsfhSave.getAccount())
+							.getResultList();
+					
+					if (results == null || results.isEmpty()) {
+						ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
+
+						lrcsSave.setAccount(lsfhSave.getAccount());
+						lrcsSave.setProductInfo(lsfhSave.getProductInfo());
+						lrcsSave.setAction("UPDATE");
+						lrcsSave.setRecordTime(new Date());
+						lrcsSave.setRemoteUser(psRemoteUser);
+						getEntityManager().persist(lrcsSave);
+					}
+				}
+				
+				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.HWOWNER.toString()) ){
+					@SuppressWarnings("unchecked")
+					List<InstalledSoftware> installedswlist = getEntityManager()
+							.createQuery(
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.productInfo = :productInfo AND b.account = :account AND d.owner = :owner")
+							.setParameter("productInfo",lsfhSave.getProductInfo())
+							.setParameter("account",lsfhSave.getAccount())
+							.setParameter("owner", lsfhSave.getHwOwner()).getResultList();
+					insertInswRecon(installedswlist,psRemoteUser);
+				}
+				
+				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.HWBOX.toString()) ){
+					@SuppressWarnings("unchecked")
+					List<InstalledSoftware> installedswlist = getEntityManager()
+							.createQuery(
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and d.serial = :serail and e.name = :name")
+							.setParameter("productInfo",lsfhSave.getProductInfo())
+							.setParameter("account",lsfhSave.getAccount())
+							.setParameter("serail", lsfhSave.getSerial())
+							.setParameter("name", lsfhSave.getMachineType()).getResultList();
+					insertInswRecon(installedswlist,psRemoteUser);
+				}
+				
+				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.HOSTNAME.toString())){
+					@SuppressWarnings("unchecked")
+					List<InstalledSoftware> installedswlist = getEntityManager()
+							.createQuery(
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and b.name = :hostname")
+							.setParameter("productInfo",lsfhSave.getProductInfo())
+							.setParameter("account",lsfhSave.getAccount())
+							.setParameter("hostname", lsfhSave.getHostname()).getResultList();
+					insertInswRecon(installedswlist,psRemoteUser);
+				}
+			}
 		} else {
 			// Insert a ScheduleF record
 			psfSave.setRemoteUser(psRemoteUser);
@@ -479,7 +537,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.setParameter("account",psfSave.getAccount())
 						.setParameter("hostname", psfSave.getHostname()).getResultList();
 				insertInswRecon(installedswlist,psRemoteUser);
-			}
+			}		
 		}
 
 	}
@@ -552,21 +610,21 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				throw new Exception("Level is not a string.");
 			} else if (cell.getRichStringCellValue().getString()
 					.equals(ScheduleFLevelEnumeration.HWOWNER.toString())
-					&& StringUtils.isEmpty(cell.getRow().getCell(1)
-							.getRichStringCellValue().getString())) {
+					&& (cell.getRow().getCell(1)==null || StringUtils.isEmpty(cell.getRow().getCell(1)
+							.getRichStringCellValue().getString()))) {
 				throw new Exception("HW owner is required.");
 			} else if (cell.getRichStringCellValue().getString()
 					.equals(ScheduleFLevelEnumeration.HWBOX.toString())
-					&& (StringUtils.isEmpty(cell.getRow().getCell(3)
-							.getRichStringCellValue().getString()) || StringUtils
+					&& ((cell.getRow().getCell(3)==null || StringUtils.isEmpty(cell.getRow().getCell(3)
+							.getRichStringCellValue().getString())) || (cell.getRow().getCell(4)==null || StringUtils
 							.isEmpty(cell.getRow().getCell(4)
-									.getRichStringCellValue().getString()))) {
+									.getRichStringCellValue().getString())))) {
 				throw new Exception(
 						"Serial number and Machine type are required.");
 			} else if (cell.getRichStringCellValue().getString()
 					.equals(ScheduleFLevelEnumeration.HOSTNAME.toString())
-					&& StringUtils.isEmpty(cell.getRow().getCell(2)
-							.getRichStringCellValue().getString())) {
+					&& (cell.getRow().getCell(2)==null || StringUtils.isEmpty(cell.getRow().getCell(2)
+							.getRichStringCellValue().getString()))) {
 				throw new Exception("Hostname is required.");
 			} else if (ScheduleFLevelEnumeration.contains(cell
 					.getRichStringCellValue().getString())) {
@@ -732,12 +790,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.setParameter(
 								"description",
 								cell.getRichStringCellValue().getString()
-										.toUpperCase()).getResultList();
-				String[] scDesParts = results.get(0).getDescription().split(",");
+										.toUpperCase()).getResultList();			
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Scope is invalid.");
-				} else if (cell.getRichStringCellValue().getString()
+				} else if (cell.getRow().getCell(0).getRichStringCellValue().getString()
 						.equals(ScheduleFLevelEnumeration.HWOWNER.toString())){
+					String[] scDesParts = results.get(0).getDescription().split(",");
 					if (scDesParts[0].contains("IBM owned") && cell.getRow().getCell(1).getRichStringCellValue()
 							.getString().equals("IBM")) {
 						sf.setScope(results.get(0));
