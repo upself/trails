@@ -175,6 +175,7 @@ $authorizedUserList{'petr_soufek@cz.ibm.com'}++;
 $authorizedUserList{'zhysz@cn.ibm.com'}++;
 $authorizedUserList{'bobrutig@us.ibm.com'}++;
 $authorizedUserList{'HDRUST@de.ibm.com'}++;
+$authorizedUserList{'tomas.sima@cz.ibm.com'}++;
 #AM Suppot Team
 $authorizedUserList{'gonght@cn.ibm.com'}++;
 $authorizedUserList{'evazeng@cn.ibm.com'}++;
@@ -182,6 +183,7 @@ $authorizedUserList{'eugen.raceanu@cz.ibm.com'}++;
 $authorizedUserList{'martin.kacor@cz.ibm.com'}++;
 $authorizedUserList{'adam.trnka@cz.ibm.com'}++;
 $authorizedUserList{'zengqh@cn.ibm.com'}++;
+$authorizedUserList{'y99xwu@cz.ibm.com'}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 
