@@ -133,9 +133,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	public void reconCustomerOwned(Account account, String remoteUser,
 			List<ReconWorkspace> selectedList, Recon pRecon, String runon,
 			boolean automated, boolean manual, String comments) {
-		log.debug(account.toString() + " " + remoteUser + " "
-				+ pRecon.getReconcileType().toString() + " " + runon + " "
-				+ automated + " " + manual);
+		log.debug(account.toString()
+				+ " "
+				+ remoteUser
+				+ " "
+				+ pRecon.getReconcileType().toString()
+				+ " "
+				+ runon
+				+ " "
+				+ automated
+				+ " "
+				+ manual);
 
 		String owner = null;
 
@@ -469,7 +477,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			log.debug("alertList: " + alertList.size());
 			for (Long alertId : alertList) {
 				AlertUnlicensedSw alert = alertDAO.findById(alertId);
-				//bug fix for #166. alert may null under multi-threads. 
+				// bug fix for #166. alert may null under multi-threads.
 				if (alert == null || alert.getReconcile() == null) {
 					continue;
 				}
@@ -582,7 +590,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 						} else {
 							List<PvuInfo> llPvuInfo = null;
 							PvuInfo lpvuiAlert = null;
-							if (liNumberOfCores == 1 || liNumberOfCores == 2
+							if (liNumberOfCores == 1
+									|| liNumberOfCores == 2
 									|| liNumberOfCores == 4) {
 								llPvuInfo = pvuInfoDAO.find(lpvumAlert
 										.getProcessorValueUnit().getId(),
