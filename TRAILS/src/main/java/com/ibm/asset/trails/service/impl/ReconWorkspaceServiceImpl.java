@@ -47,7 +47,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	private static final Log log = LogFactory
 			.getLog(ReconWorkspaceServiceImpl.class);
 
-	private final int DEFAULT_PVU_VALUE = 100;
+	private final int DEFAULT_PVU_VALUE = 0;
 
 	@Autowired
 	private ReconService reconService;
@@ -544,21 +544,21 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					.getChips().intValue()
 					* liMaxLicenses;
 		} else if (lsPer.equalsIgnoreCase("PVU")) {
-			int liChips = pAlertUnlicensedSw.getInstalledSoftware()
+			int hwChips = pAlertUnlicensedSw.getInstalledSoftware()
 					.getSoftwareLpar().getHardwareLpar().getHardware()
 					.getChips();
-			int liProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
+			int hwProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
 					.getSoftwareLpar().getHardwareLpar().getHardware()
 					.getProcessorCount();
 
-			if (liProcessorCount < 1) {
-				liProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
+			if (hwProcessorCount < 1) {
+				hwProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
 						.getSoftwareLpar().getProcessorCount();
 			}
 
-			if (liProcessorCount > 0) {
-				if (liChips == 0) {
-					liLicensesNeeded = DEFAULT_PVU_VALUE * liProcessorCount;
+			if (hwProcessorCount > 0) {
+				if (hwChips == 0) {
+					liLicensesNeeded = DEFAULT_PVU_VALUE * hwProcessorCount;
 				} else {
 					String lsProcessorBrand = pAlertUnlicensedSw
 							.getInstalledSoftware().getSoftwareLpar()
@@ -571,29 +571,29 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					MachineType lmtAlert = pAlertUnlicensedSw
 							.getInstalledSoftware().getSoftwareLpar()
 							.getHardwareLpar().getHardware().getMachineType();
-					PvuMap lpvumAlert = null;
+					PvuMap pvuMap = null;
 					int liNumberOfCores = 0;
 
-					lpvumAlert = pvuMapDAO
+					pvuMap = pvuMapDAO
 							.getPvuMapByBrandAndModelAndMachineTypeId(
 									lsProcessorBrand, lsProcessorModel,
 									lmtAlert);
 
-					if (lpvumAlert == null) {
-						liLicensesNeeded = DEFAULT_PVU_VALUE * liProcessorCount;
+					if (pvuMap == null) {
+						liLicensesNeeded = DEFAULT_PVU_VALUE * hwProcessorCount;
 					} else {
-						liNumberOfCores = liProcessorCount / liChips;
+						liNumberOfCores = hwProcessorCount / hwChips;
 
 						if (liNumberOfCores == 0) {
 							liLicensesNeeded = DEFAULT_PVU_VALUE
-									* liProcessorCount;
+									* hwProcessorCount;
 						} else {
 							List<PvuInfo> llPvuInfo = null;
 							PvuInfo lpvuiAlert = null;
 							if (liNumberOfCores == 1
 									|| liNumberOfCores == 2
 									|| liNumberOfCores == 4) {
-								llPvuInfo = pvuInfoDAO.find(lpvumAlert
+								llPvuInfo = pvuInfoDAO.find(pvuMap
 										.getProcessorValueUnit().getId(),
 										liNumberOfCores);
 								if (llPvuInfo != null && llPvuInfo.size() > 0) {
@@ -606,9 +606,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 											.intValue() > 0) {
 								liLicensesNeeded = lpvuiAlert
 										.getValueUnitsPerCore().intValue()
-										* liProcessorCount;
+										* hwProcessorCount;
 							} else {
-								llPvuInfo = pvuInfoDAO.find(lpvumAlert
+								llPvuInfo = pvuInfoDAO.find(pvuMap
 										.getProcessorValueUnit().getId());
 								if (llPvuInfo != null && llPvuInfo.size() > 0) {
 									lpvuiAlert = llPvuInfo.get(0);
@@ -618,11 +618,11 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 										|| lpvuiAlert.getValueUnitsPerCore()
 												.intValue() == 0) {
 									liLicensesNeeded = DEFAULT_PVU_VALUE
-											* liProcessorCount;
+											* hwProcessorCount;
 								} else {
 									liLicensesNeeded = lpvuiAlert
 											.getValueUnitsPerCore().intValue()
-											* liProcessorCount;
+											* hwProcessorCount;
 								}
 							}
 						}
