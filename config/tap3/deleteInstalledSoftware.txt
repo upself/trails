@@ -2,4 +2,4 @@ server=tap3
 debugLevel=error
 testMode=0
 testCustomerIds=414,562
-ageDaysDelete=365
+ageDaysDelete=180

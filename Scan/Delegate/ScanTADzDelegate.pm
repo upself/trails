@@ -383,8 +383,8 @@ sub getTADzInfrastructure {
 # replaced with table TLOGIQ in V8.1
 #  
 sub getCorrectSQL {
-	my ($self, $infra, $delta) = @_;
-	if ( ( $infra eq 'AG' ) && ( $bankAccount->Version eq '8.1' ) {
+	my ($self, $infra, $delta, $bankAccount) = @_;
+	if ( ( $infra eq 'AG' ) && ( $bankAccount->Version eq '8.1' )) {
 		return $sqlAG81 ;
        } elsif ( $infra eq 'AG' ) {
 		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );

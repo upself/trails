@@ -96,14 +96,14 @@ my $infra5 = ScanTADzDelegate->getTADzInfrastructure(undef);
 
 print "\nP0DDB2C mapping\n";
 is( $infra1, "AG", "P0DDB2C mapped to AG" );
-print "\nAG FULL SQL:" . ScanTADzDelegate->getCorrectSQL( $infra1, 0 ) . "\n";
+print "\nAG FULL SQL:" . ScanTADzDelegate->getCorrectSQL( $infra1, 0, $bankAccount1 ) . "\n";
 print "\nAAZDDBEP mapping\n";
 is( $infra2, "ANZ", "AAZDDBEP mapped to ANZ" );
-print "\nANZ FULL SQL:" . ScanTADzDelegate->getCorrectSQL( $infra2, 0 ) . "\n";
+print "\nANZ FULL SQL:" . ScanTADzDelegate->getCorrectSQL( $infra2, 0, $bankAccount2 ) . "\n";
 print "\nEGN0DBS0 mapping\n";
 is( $infra3, "EMEA", "EGN0DBS0 mapped to EMEA" );
 print "\nEMEA Delta SQL:"
-  . ScanTADzDelegate->getCorrectSQL( $infra3, 1 ) . "\n";
+  . ScanTADzDelegate->getCorrectSQL( $infra3, 1,$bankAccount3 ) . "\n";
 print "\nInvalid databaseName mapping\n";
 is( $infra4, "ERROR", "NO_DB2 worked" );
 print "\nblank bankAccount mapping\n";

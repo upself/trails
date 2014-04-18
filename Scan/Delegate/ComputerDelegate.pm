@@ -308,7 +308,7 @@ sub getConnectedScanRecordData {
         elsif ( $bankAccount->type eq 'TADZ' ) {
         	dlog("Performing Delta query for TADZ " . $bankAccount->name);
 			my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
-    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 1);
+    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 1, $bankAccount);
             $connection->prepareSqlQuery( queryTAD4ZDeltaData() );
             $sth = $connection->sql->{tad4zDeltaData};
         }
@@ -342,7 +342,7 @@ sub getConnectedScanRecordData {
         }
         elsif ( $bankAccount->type eq 'TADZ' ) {
 			my $infra = ScanTADzDelegate->getTADzInfrastructure($bankAccount);
-    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 0);
+    		$tadzSQL = ScanTADzDelegate->getCorrectSQL($infra, 0, $bankAccount);
         	dlog("Performing full query for TADZ " . $bankAccount->name);
             $connection->prepareSqlQuery( queryTAD4ZData() );
             $sth = $connection->sql->{tad4zData};
