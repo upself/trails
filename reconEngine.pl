@@ -384,8 +384,6 @@ sub queryPriorityCustomerIds{
             ,date(a.record_time)
         from
             v_recon_queue a
-        where 
-            a.table!=\'RECON_CUSTOMER\'
         group by
             a.customer_id
             ,date(a.record_time)
