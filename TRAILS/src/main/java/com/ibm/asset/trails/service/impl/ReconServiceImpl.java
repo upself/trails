@@ -290,7 +290,7 @@ public class ReconServiceImpl implements ReconService {
 	}
 
 	private AlertUnlicensedSw openAlert(AlertUnlicensedSw alert) {
-		alert.setRecordTime(new Date());
+		alert.setCreationTime(new Date());
 		alert.setOpen(true);
 		return getEntityManager().merge(alert);
 	}
