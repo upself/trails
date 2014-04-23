@@ -239,8 +239,9 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_hs_composite a where
-            a.id = ?
+        delete from recon_hs_composite
+        where
+            id = ?
     ';
     return ('deleteReconHwSwComposite', $query);
 }
