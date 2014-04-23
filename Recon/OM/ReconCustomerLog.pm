@@ -407,9 +407,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_customer_log
-        where
-            id = ?
+        delete from recon_customer_log a where
+            a.id = ?
     ';
     return ('deleteReconCustomerLog', $query);
 }

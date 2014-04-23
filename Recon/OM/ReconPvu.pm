@@ -225,9 +225,8 @@ sub delete {
 
 sub queryDelete {
     my $query = '
-        delete from recon_pvu
-        where
-            id = ?
+        delete from recon_pvu a where
+            a.id = ?
     ';
     return ('deleteReconPvu', $query);
 }

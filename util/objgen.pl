@@ -86,8 +86,9 @@ sub handle_start {
     }
     elsif ( $elem eq "method" ) {
 		if ( $attrs{"name"} eq "duplDelete" ) {
-			$parsingRecon=1;
-			print STDERR "INFO: $ARGV[0] is generated with a special duplicates-deletion!\n";
+#			$parsingRecon=1; 
+#			print STDERR "INFO: $ARGV[0] is generated with a special duplicates-deletion!\n";
+#       DUPLICATES DELETION WILL NOT BE DONE, AS IT WAS A DUMB IDEA
 		} else {
 			$meths{ $attrs{"name"} }++;
 		}

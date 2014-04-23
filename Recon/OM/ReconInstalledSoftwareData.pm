@@ -221,6 +221,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->sId && defined $object->sId) {
+        $equal = 1 if $self->sId eq $object->sId;
+    }
+    $equal = 1 if (!defined $self->sId && !defined $object->sId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->sStatus && defined $object->sStatus) {
         $equal = 1 if $self->sStatus eq $object->sStatus;
     }
