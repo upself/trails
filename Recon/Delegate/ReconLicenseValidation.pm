@@ -362,6 +362,19 @@ sub validatePhysicalCpuSerialMatch {
         }
     }
 
+    if ( $licenseCapType eq '2' ) {
+        if ( $isManual == 0 ) {
+            if ( defined $licenseSerial && ($hardwareSerial ne $licenseSerial) && ( $licenseType eq 'NAMED CPU' )) {
+                dlog("cpu serial does not match lic, adding to list to break");
+                $self->addToReconcilesToBreak($reconcileId)
+                  if defined $reconcileId;
+                $self->addToDeleteQueue($licenseId) if defined $licenseId;
+                $self->validationCode(0);
+            }
+        }
+    }
+
+
     return 1;
 }
 
