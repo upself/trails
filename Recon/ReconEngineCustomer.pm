@@ -278,6 +278,7 @@ sub queryReconQueueByCustomerId {
                     a.fk = b.fk and
                     a.table = b.table and
                     a.action = b.action and
+                    a.date(record_time) = b.date(record_time) and
                     a.id > b.id
             )
     ';
