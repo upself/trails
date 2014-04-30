@@ -298,6 +298,7 @@ sub getLicenseAllocationsData {
         $lav->slName( $rec{slName} );
         $lav->hId( $rec{hId} );
         $lav->hSerial( $rec{hSerial} );
+        $lav->hProcessorCount ( $rec{hProcessorCount} );
         $lav->hlName( $rec{hlName} );
         $lav->mtType( $rec{mtType} );
         $lav->scopeName( $rec{scopeName} );
@@ -328,6 +329,7 @@ sub queryLicenseAllocationsData {
         slName
         hId
         hSerial
+        hProcessorCount
         hlName
         mtType
         scopeName
@@ -349,6 +351,7 @@ sub queryLicenseAllocationsData {
             ,sl.name
             ,h.id
             ,h.serial
+            ,h.processor_count
             ,hl.name
             ,mt.type
             ,scope.name

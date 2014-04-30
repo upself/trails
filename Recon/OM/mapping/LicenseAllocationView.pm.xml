@@ -14,6 +14,7 @@
 	<property name="slName" type="scalar" equals="true" />
 	<property name="hId" type="scalar" equals="true" />
 	<property name="hSerial" type="scalar" equals="true" />
+	<property name="hProcessorCount" type="scalar" equals="true" />
 	<property name="hlName" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />

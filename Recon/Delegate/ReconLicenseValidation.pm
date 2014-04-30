@@ -151,6 +151,7 @@ sub validate {
         $self->validateSubCapacity( $self->license->licType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
         $self->validateLicenseAllocationCustomer($licenseAllocationView);
         $self->validateCapacityType( $licenseAllocationView->lrmCapType, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
+        $self->validateProcCount ( $licenseAllocationView->hProcessorCount, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
         $self->validatePhysicalCpuSerialMatch(
             $self->license->capType,  $self->license->licType,   $licenseAllocationView->hSerial, $self->license->cpuSerial,
             $licenseAllocationView->rId, $self->license->id,              $licenseAllocationView->rtIsManual
@@ -345,6 +346,23 @@ sub validateCapacityType {
     }
 
     return 1;
+}
+
+sub validateProcCount {
+	my ( $self, $hProcessorCount, $licenseCapType, $reconcileId, $licenseId ) = @_;
+	
+	## for license type 17 (PVU), validate proc count > 0
+	
+	if ( $licenseCapType eq '17' ) {
+		if ( ( defined $hProcessorCount ) && (( $hProcessorCount == 0 ) || ( $hProcessorCount < 0 )) ) {
+			dlog("license ID $licenseId, lic type 17, hProcessorCount == 0");
+			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
+			$self->addToDeleteQueue ( $self->license->id ) if defined $licenseId;
+			$self->validationCode(0);
+		}
+	}
+	
+	return 1;
 }
 
 sub validatePhysicalCpuSerialMatch {

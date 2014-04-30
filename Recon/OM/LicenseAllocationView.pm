@@ -20,6 +20,7 @@ sub new {
         ,_slName => undef
         ,_hId => undef
         ,_hSerial => undef
+        ,_hProcessorCount => undef
         ,_hlName => undef
         ,_mtType => undef
         ,_scopeName => undef
@@ -129,6 +130,13 @@ sub equals {
         $equal = 1 if $self->hSerial eq $object->hSerial;
     }
     $equal = 1 if (!defined $self->hSerial && !defined $object->hSerial);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hProcessorCount && defined $object->hProcessorCount) {
+        $equal = 1 if $self->hProcessorCount eq $object->hProcessorCount;
+    }
+    $equal = 1 if (!defined $self->hProcessorCount && !defined $object->hProcessorCount);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -246,6 +254,12 @@ sub hSerial {
     return $self->{_hSerial};
 }
 
+sub hProcessorCount {
+    my $self = shift;
+    $self->{_hProcessorCount} = shift if scalar @_ == 1;
+    return $self->{_hProcessorCount};
+}
+
 sub hlName {
     my $self = shift;
     $self->{_hlName} = shift if scalar @_ == 1;
@@ -341,6 +355,11 @@ sub toString {
     $s .= "hSerial=";
     if (defined $self->{_hSerial}) {
         $s .= $self->{_hSerial};
+    }
+    $s .= ",";
+    $s .= "hProcessorCount=";
+    if (defined $self->{_hProcessorCount}) {
+        $s .= $self->{_hProcessorCount};
     }
     $s .= ",";
     $s .= "hlName=";
