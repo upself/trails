@@ -2173,12 +2173,13 @@ sub getMainframeFeatureIdByGUID{
     $connection->prepareSqlQuery($self->queryMainframeFeatureIdByGUID());
     my $sth = $connection->sql->{getMainframeFeatureId};
     my $featureId=undef;
+    my $lowerGuid=lc($guid);
   
     $sth->bind_columns(
         \$featureId
     );
     $sth->execute(
-        $guid
+        $lowerGuid,$guid
     );
     my $found = $sth->fetchrow_arrayref;
     $sth->finish;
@@ -2189,7 +2190,7 @@ sub getMainframeFeatureIdByGUID{
 
 sub queryMainframeFeatureIdByGUID {
     my $query = '
-        select id from kb_definition where upper(guid) =  ?
+        select id from kb_definition where guid =  ? or guid = ?
     ';
     return ('getMainframeFeatureId', $query);
 }
