@@ -2812,10 +2812,12 @@ sub queryScheduleFScope {
 	      on sf.scope_id = s.id
 	    left outer join machine_type mt
 	      on mt.name = sf.machine_type
+	    join software_item si
+	      on si.name = sf.software_name
 	  where
 	    sf.customer_id = ?
 	  and
-	    sf.software_id = ?
+	    si.id = ?
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
