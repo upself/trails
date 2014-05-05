@@ -1260,21 +1260,24 @@ sub load {
                         $bravoInstalledSoftware->save($self->bravoConnection);
                         $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
                         dlog("saved bravo installed software object");
-                        
-                        if ( $bravoSoftwareLpar->customerId ne '999999'){
-                        ###Call the recon engine for the object.
-                        dlog("calling recon engine for bravo installed software object");
-                        my $queue =
-                            Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
-                        $queue->add;
-                        $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
-                        dlog("called recon engine for bravo installed software object");
+						dlog("checking if bravo installed software is in scope of recon engine");
+                        my ($sw_license_mgmt, $status) = $self->getCustomerDataByID ($self->bravoConnection, $bravoSoftwareLpar->customerId);
+                        if ( $bravoSoftwareLpar->customerId ne '999999' && $sw_license_mgmt eq 'YES' && $status eq 'ACTIVE'){
+                        	###Call the recon engine for the object.
+                        	dlog("calling recon engine for bravo installed software object");
+                        	my $queue =
+                        	    Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
+                        	$queue->add;
+                        	$statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+                        	dlog("called recon engine for bravo installed software object");
+                        }else{
+                        	dlog("customer is not in scope of recon engine");
                         }
                     }
                 }
                 else {
                     dlog("not saving bravo installed software per flag");
-                }
+                }						
 
                 if ( $saveInstalledType == 1 ) {
 
@@ -1342,15 +1345,19 @@ sub load {
                             $bravoInstalledSoftware->save($self->bravoConnection);
                             $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
                             dlog("saved bravo installed software object");
+                            dlog("checking if customer is in scope for recon engine");
 
-                            if ( $bravoSoftwareLpar->customerId ne '999999' ){
-                            ###Call the recon engine for the object.
-                            dlog("calling recon engine for bravo installed software object");
-                            my $queue =
-                                Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
-                            $queue->add;
-                            $statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
-                            dlog("called recon engine for bravo installed software object");
+              				my ($sw_license_mgmt, $status) = $self->getCustomerDataByID ($self->bravoConnection, $bravoSoftwareLpar->customerId);
+                            if ( $bravoSoftwareLpar->customerId ne '999999' && $sw_license_mgmt eq 'YES' && $status eq 'ACTIVE'){
+                            	###Call the recon engine for the object.
+                            	dlog("calling recon engine for bravo installed software object");
+                            	my $queue =
+                            	    Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
+                            	$queue->add;
+                            	$statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+                            	dlog("called recon engine for bravo installed software object");
+                            }else{
+                            	dlog("customer is not in scope");
                             }
                             
                             ###Check if this was the last installed software on the associated
@@ -2242,13 +2249,42 @@ sub getProductIdByVersionId{
     return $id;
 }
 
-
 sub queryGetProductIdByVersionId {
     my $query = '
         select product_id from mainframe_version where id =  ?
     ';
     return ('getProductId', $query);
 }
+
+sub getCustomerDataByID{
+   my ($self, $connection, $customerID)  = @_;
+   
+    $connection->prepareSqlQuery($self->queryCustomersByID());
+    my $sth = $connection->sql->{getCustomersByID};
+    my $sw_license_mgmt = undef;
+    my $status = undef;
+  
+    $sth->bind_columns(
+        \$sw_license_mgmt,
+        \$status
+    );
+    $sth->execute(
+        $customerID
+    );
+    my $found = $sth->fetchrow_arrayref;
+    $sth->finish;
+    
+    return ($sw_license_mgmt, $status);
+}
+
+sub queryCustomersByID{
+	my $query = '
+		select sw_license_mgmt, status from customer where customer_id = ?
+	';
+	return ('getCustomersByID', $query); 
+}
+
+
 
 sub updateStagingInstalledType{
   my($self,$stagingInstalledType, $action) = @_;
