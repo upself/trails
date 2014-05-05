@@ -2204,7 +2204,7 @@ sub getValueUnitsPerProcessor {
 			$processorSql = " processor_type like \'%QUAD-CORE%\' ";
 		}
 
-		if ( $processorSql != '' ) {
+		if ( $processorSql ne '' ) {
 			$valueUnitsPerCore =
 			  $self->getValueUnitsPerCore( $processorSql, $pvuMap->pvuId );
 		}
