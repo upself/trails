@@ -24,6 +24,7 @@
 	<property name="slStatus" type="scalar" equals="true" />
 	<property name="processorCount" type="scalar" equals="true" />
 	<property name="sId" type="scalar" equals="true" />
+	<property name="sName" type="scalar" equals="true" />
 	<property name="sStatus" type="scalar" equals="true" />
 	<property name="sPriority" type="scalar" equals="true" />
 	<property name="sLevel" type="scalar" equals="true" />

@@ -30,6 +30,7 @@ sub new {
         ,_slStatus => undef
         ,_processorCount => undef
         ,_sId => undef
+        ,_sName => undef
         ,_sStatus => undef
         ,_sPriority => undef
         ,_sLevel => undef
@@ -225,6 +226,13 @@ sub equals {
         $equal = 1 if $self->sId eq $object->sId;
     }
     $equal = 1 if (!defined $self->sId && !defined $object->sId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->sName && defined $object->sName) {
+        $equal = 1 if $self->sName eq $object->sName;
+    }
+    $equal = 1 if (!defined $self->sName && !defined $object->sName);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -507,6 +515,12 @@ sub sId {
     return $self->{_sId};
 }
 
+sub sName {
+    my $self = shift;
+    $self->{_sName} = shift if scalar @_ == 1;
+    return $self->{_sName};
+}
+
 sub sStatus {
     my $self = shift;
     $self->{_sStatus} = shift if scalar @_ == 1;
@@ -748,6 +762,11 @@ sub toString {
     $s .= "sId=";
     if (defined $self->{_sId}) {
         $s .= $self->{_sId};
+    }
+    $s .= ",";
+    $s .= "sName=";
+    if (defined $self->{_sName}) {
+        $s .= $self->{_sName};
     }
     $s .= ",";
     $s .= "sStatus=";

@@ -2544,6 +2544,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->slName( $rec{slName} );
 		$installedSoftwareReconData->slStatus( $rec{slStatus} );
 		$installedSoftwareReconData->sId ( $rec{sId} );
+		$installedSoftwareReconData->sName ( $rec{sName} );
 		$installedSoftwareReconData->sStatus( $rec{sStatus} );
 		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
@@ -2602,7 +2603,7 @@ sub getInstalledSoftwareReconData {
 	
 	my ( $scopename_temp, $priofound_temp ) = getScheduleFScope( $self,
 																$installedSoftwareReconData->cId, # customer ID
-																$installedSoftwareReconData->sId, # software ID
+																$installedSoftwareReconData->sName, # software name
 																$installedSoftwareReconData->hOwner, # hardware owner ID
 																$installedSoftwareReconData->hSerial, # hardware serial
 																$installedSoftwareReconData->hMachineTypeId, #machine type
@@ -2738,7 +2739,7 @@ sub getInstalledSoftwareReconData {
 sub getScheduleFScope {
 	my $self=shift;
 	my $custId=shift;
-	my $softId=shift;
+	my $softName=shift;
 	my $hwOwner=shift;
 	my $hSerial=shift;
 	my $hMachineTypeId=shift;
@@ -2753,13 +2754,13 @@ sub getScheduleFScope {
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
-	$sth->execute( $custId, $softId );
+	$sth->execute( $custId, $softName );
 	
-	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softId);
+	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
 	
 	while ( $sth->fetchrow_arrayref ) {
 		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
-			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softId." found twice!");
+			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
@@ -2767,7 +2768,7 @@ sub getScheduleFScope {
 			$prioFound=3;
 		}
 		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
-			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softId." found twice!");
+			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
@@ -2775,7 +2776,7 @@ sub getScheduleFScope {
 			$prioFound=2;
 		}
 		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
-			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softId." found twice!");
+			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
@@ -2785,7 +2786,7 @@ sub getScheduleFScope {
 		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
 	}
 	
-	dlog("custId= $custId, softId=$softId, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
+	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
 	
 	return ( $scopeToReturn, $prioFound );
 }
@@ -2812,12 +2813,10 @@ sub queryScheduleFScope {
 	      on sf.scope_id = s.id
 	    left outer join machine_type mt
 	      on mt.name = sf.machine_type
-	    join software_item si
-	      on si.name = sf.software_name
 	  where
 	    sf.customer_id = ?
 	  and
-	    si.id = ?
+	    sf.software_name = ?
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
@@ -2853,6 +2852,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  slProcCount
 	  sleProcCount
 	  sId
+	  sName
 	  sStatus
 	  sPriority
 	  sLevel
@@ -2894,6 +2894,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,sl.processor_count
             ,sle.processor_count
             ,s.software_id
+            ,s.software_name
             ,s.status
             ,s.priority
             ,s.level
