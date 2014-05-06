@@ -1116,10 +1116,8 @@ sub attemptLicenseAllocationProcessor {
 		next
 		  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 		next unless $licView->capType eq '2';
-		next unless defined $licView->cpuSerial;
-		next
-		  unless $licView->cpuSerial eq
-		  $self->installedSoftwareReconData->hSerial;
+		next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
+		next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
 		dlog("attemptLicenseAllocationProcessor license environment=$lEnv");
 		next
 		  if ( $machineLevel == 1
@@ -1149,12 +1147,10 @@ sub attemptLicenseAllocationProcessor {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
 			next unless $licView->capType eq '2';
-			next unless defined $licView->cpuSerial;
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			next
-			  unless $licView->cpuSerial eq
-			  $self->installedSoftwareReconData->hSerial;
+			next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
+			next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
 			dlog("attemptLicenseAllocationProcessor license environment=$lEnv");
 			next
 			  if (
@@ -1200,7 +1196,7 @@ sub attemptLicenseAllocationProcessor {
 					$self->mechineLevelServerType, $lEnv
 				) == 0
 			  );
-			next if (( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
+			next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
 				# the licenses with DEFINED and different CPU than the one recon'ed are skipped
 			dlog("found matching license - non hw specific");
 			my $neededQuantity = $processorCount - $tempQuantityAllocated;
@@ -1239,8 +1235,8 @@ sub attemptLicenseAllocationProcessor {
 					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
 						$lEnv ) == 0
 				  );
-				next if (( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
-					# the licenses with DEFINED and different CPU than the one recon'ed are skipped
+				next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
+				
 				dlog("found matching license - non hw specific");
 				my $neededQuantity = $processorCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );

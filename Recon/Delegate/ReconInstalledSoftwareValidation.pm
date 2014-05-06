@@ -663,8 +663,8 @@ sub validateLicenseAllocation {
     dlog("Processor count greater than used quantity or 0");
     return 0;
    }
-   if (( defined $rec{cpuSerial} ) && ( $rec{cpuSerial} ne $self->installedSoftwareReconData->hSerial )) {
-	   dlog("Number of processors, license with different serialnumber used");
+   if (( $rec{licenseType} eq "NAMED CPU" ) && ( defined $rec{cpuSerial} ) && ( $rec{cpuSerial} ne $self->installedSoftwareReconData->hSerial )) {
+	   dlog("Number of processors and NAMED CPU, license with different serialnumber used");
 	   return 0;
    }
    if ( $machineLevel == 0 ) {
