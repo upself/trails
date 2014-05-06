@@ -384,11 +384,11 @@ sub getTADzInfrastructure {
 #  
 sub getCorrectSQL {
 	my ($self, $infra, $delta, $bankAccount) = @_;
-	if ( ( $infra eq 'AG' ) && ( $bankAccount->Version eq '8.1' )) {
+	if ( ( $infra eq 'AG' ) && ( $bankAccount->version eq '8.1' )) {
 		return $sqlAG81 ;
        } elsif ( $infra eq 'AG' ) {
 		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
-	} elsif ( ( $infra eq 'EMEA' ) && ( $bankAccount->Version eq '8.1' ) ) {
+	} elsif ( ( $infra eq 'EMEA' ) && ( $bankAccount->version eq '8.1' ) ) {
 		return $sqlEMEA81 . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
        } elsif ( $infra eq 'EMEA' ) {
 		return $sqlEMEA . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
