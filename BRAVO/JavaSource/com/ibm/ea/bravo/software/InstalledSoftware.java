@@ -126,6 +126,13 @@ public class InstalledSoftware extends OrmBase {
 					logger.debug(software.getSoftwareName()
 							+ " disabled due to key managed");
 				}
+			} else if(discrepancyType != null
+					&& discrepancyType.getName().equalsIgnoreCase(
+							Constants.TADZ_DISCREPANCY)){
+				if (software != null
+						&& (software.getLevel().equalsIgnoreCase("LICENSABLE"))) {
+					disabled = "false";
+				}
 			}
 		}
 		return disabled;

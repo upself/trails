@@ -243,6 +243,7 @@ public class Constants {
 	public static final String VALID_DISCREPANCY = "VALID";
 	public static final String MISSING_DISCREPANCY = "MISSING";
 	public static final String NONE_DISCREPANCY = "NONE";
+	public static final String TADZ_DISCREPANCY = "TADZ";
 	public static final String INACTIVE = "INACTIVE";
 	public static final String IMAGETAG_ADD = "imagetag_add";
 	public static final String IMAGETAG_DELETE = "imagetag_delete";
