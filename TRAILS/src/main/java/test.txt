@@ -1,0 +1,12 @@
+$Author$
+$Date$
+$Id$
+$Rev$
+$URL$
+
+
+content of the file;
+testxxx
+test
+
+xxx
