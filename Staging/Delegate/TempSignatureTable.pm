@@ -73,7 +73,7 @@ sub save {
 sub queryInsert {
  my $self  = shift;
  my $query = '
-         insert into SESSION.TEMP_SIGNATURE_' . $self->bankAccount->name . ' (
+         insert into TEMP_SIGNATURE_' . $self->bankAccount->name . ' (
             software_id
             ,scan_record_id
             ,software_signature_id
@@ -104,7 +104,7 @@ sub update {
 sub queryUpdate {
  my $self  = shift;
  my $query = '
-        update SESSION.TEMP_SIGNATURE_' . $self->bankAccount->name . '
+        update TEMP_SIGNATURE_' . $self->bankAccount->name . '
         set           
              action = ?
             ,path = ?
@@ -131,7 +131,7 @@ sub delete {
 sub queryDelete {
  my $self  = shift;
  my $query = '
-        delete from SESSION.TEMP_SIGNATURE_' . $self->bankAccount->name . '
+        delete from TEMP_SIGNATURE_' . $self->bankAccount->name . '
         where 
             software_id = ?
             and scan_record_id = ?
@@ -166,7 +166,7 @@ sub queryGetByBizKey {
             ,path
             ,id
         from
-            SESSION.TEMP_SIGNATURE_' . $self->bankAccount->name . '
+            TEMP_SIGNATURE_' . $self->bankAccount->name . '
         where
             software_id = ?
             and scan_record_id = ?
