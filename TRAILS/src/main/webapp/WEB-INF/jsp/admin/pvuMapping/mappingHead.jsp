@@ -105,7 +105,7 @@ function getMachineTypes(psValue) {
 	}
 
 	var lsPostString = "processorBrand=" +
-		encodeURI($("#asset_processor_brand_select").val()) + "&pvuId=" +
+		encodeURIComponent($("#asset_processor_brand_select").val()) + "&pvuId=" +
 		encodeURI(${pvu.id});
 	
 	goXmlHttp.onreadystatechange = machineTypesStateChanged;
