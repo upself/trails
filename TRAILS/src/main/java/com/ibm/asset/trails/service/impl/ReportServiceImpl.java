@@ -601,7 +601,7 @@ public class ReportServiceImpl implements ReportService {
 				+ "and hl.customer_id = :customerId "
 				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) "
 				+ "and (sf.id in (select ssf.id  "
-                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instPi.id = ssf.software_id order by "
+                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instSi.name = ssf.SOFTWARE_NAME  order by "
                 + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
                 + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
                 + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
@@ -627,7 +627,7 @@ public class ReportServiceImpl implements ReportService {
 			lsbSql.append(
 					lsBaseSelectClauseOne + lsBaseSelectClauseTwo
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
-					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
+					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instSi.name = sf.SOFTWARE_NAME inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
 					.append(lsBaseWhereClausea);
 			if (pbSelectAllChecked) {				
 					lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
@@ -693,7 +693,7 @@ public class ReportServiceImpl implements ReportService {
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
 					.append(" ")
 					.append(lsBaseWhereClauseb)
-					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.Software_Id = instSi.Id AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
+					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instSi.name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
 		}
 
 		lsbSql.append("ORDER BY 4");
