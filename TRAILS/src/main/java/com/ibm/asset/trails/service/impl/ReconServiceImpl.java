@@ -110,6 +110,7 @@ public class ReconServiceImpl implements ReconService {
 			createAlertHistory(alert);
 			alert.setOpen(false);
 			alert.setRecordTime(new Date());
+			alert.setComments("Manual Close");
 			getEntityManager().merge(alert);
 		}
 	}
@@ -292,6 +293,7 @@ public class ReconServiceImpl implements ReconService {
 	private AlertUnlicensedSw openAlert(AlertUnlicensedSw alert) {
 		alert.setRecordTime(new Date());
 		alert.setOpen(true);
+		alert.setComments("Manual Open");
 		return getEntityManager().merge(alert);
 	}
 
@@ -386,6 +388,7 @@ public class ReconServiceImpl implements ReconService {
 
 						// Close the alert
 						lausTemp.setOpen(false);
+						lausTemp.setComments("Manual Close");
 						lausTemp.setRecordTime(new Date());
 						aush = getEntityManager().merge(aush);
 					} else {
