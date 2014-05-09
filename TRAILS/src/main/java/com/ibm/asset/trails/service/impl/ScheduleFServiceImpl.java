@@ -420,10 +420,14 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			
 			if (lbSaveExistReconRow){
 				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.PRODUCT.toString()) ){
+					ArrayList<ProductInfo> llProductInfo = null;
+					llProductInfo = findProductInfoBySoftwareName(lsfhSave.getSoftwareName());
+					if (llProductInfo != null && !llProductInfo.isEmpty()) {
+						for (ProductInfo productInfotemp : llProductInfo){
 					@SuppressWarnings("unchecked")
 					List<ReconCustomerSoftware> results = getEntityManager()
 							.createNamedQuery("reconCustomerSwExists")
-							.setParameter("productInfo", lsfhSave.getProductInfo())
+							.setParameter("productInfo", productInfotemp)
 							.setParameter("account", lsfhSave.getAccount())
 							.getResultList();
 					
@@ -431,11 +435,13 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
 
 						lrcsSave.setAccount(lsfhSave.getAccount());
-						lrcsSave.setProductInfo(lsfhSave.getProductInfo());
+						lrcsSave.setProductInfo(productInfotemp);
 						lrcsSave.setAction("UPDATE");
 						lrcsSave.setRecordTime(new Date());
 						lrcsSave.setRemoteUser(psRemoteUser);
 						getEntityManager().persist(lrcsSave);
+					}
+						}
 					}
 				}
 				
@@ -443,8 +449,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.productInfo = :productInfo AND b.account = :account AND d.owner = :owner")
-							.setParameter("productInfo",lsfhSave.getProductInfo())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.productInfo.name = :productName AND b.account = :account AND d.owner = :owner")
+							.setParameter("productName",lsfhSave.getProductInfo().getName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("owner", lsfhSave.getHwOwner()).getResultList();
 					insertInswRecon(installedswlist,psRemoteUser);
@@ -454,8 +460,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and d.serial = :serail and e.name = :name")
-							.setParameter("productInfo",lsfhSave.getProductInfo())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.productInfo.name = :productName and b.account = :account and d.serial = :serail and e.name = :name")
+							.setParameter("productName",lsfhSave.getProductInfo().getName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("serail", lsfhSave.getSerial())
 							.setParameter("name", lsfhSave.getMachineType()).getResultList();
@@ -466,8 +472,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and b.name = :hostname")
-							.setParameter("productInfo",lsfhSave.getProductInfo())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.productInfo.name = :productName and b.account = :account and b.name = :hostname")
+							.setParameter("productName",lsfhSave.getProductInfo().getName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("hostname", lsfhSave.getHostname()).getResultList();
 					insertInswRecon(installedswlist,psRemoteUser);
