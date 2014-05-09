@@ -1,6 +1,5 @@
-// $Id$
 // File name: $HeadURL$
-// Revision: $Revison$
+// Revision: $Rev$
 // Last modified: $Date$
 // Last modified by: $Author$
 
