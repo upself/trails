@@ -131,17 +131,27 @@ THEN 'Yellow' ELSE 'Green' END ,aus.creation_time
 , case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) else days(aus.record_time) - days(aus.creation_time) end 
 ,sl.name as swLparName 
 ,h.serial as hwSerial 
-,mt.name as hwMachType 
+,mt.name as hwMachType
+,h.MODEL
+,h.CHASSIS_ID
+,h.CLOUD_NAME 
 ,h.owner as hwOwner 
 ,h.country as hwCountry 
 ,mt.type as hwAssetType 
-,hl.SPLA,hl.SYSPLEX
+,hl.SPLA
+,hl.VIRTUAL_FLAG
+,hl.VIRTUAL_MOBILITY_RESTRICTION
+,hl.SYSPLEX
+,hl.CLUSTER_TYPE
+,hl.BACKUPMETHOD
 ,hl.INTERNET_ICC_FLAG
+,hl.CAPPED_LPAR
 ,h.MAST_PROCESSOR_TYPE
 ,h.PROCESSOR_MANUFACTURER
 ,h.PROCESSOR_MODEL
 ,h.NBR_CORES_PER_CHIP
 ,h.NBR_OF_CHIPS_MAX
+,h.SHARED_PROCESSOR
 ,h.CPU_MIPS
 ,h.CPU_GARTNER_MIPS
 ,h.CPU_MSU,hl.PART_MIPS
@@ -231,16 +241,26 @@ sl_customer.account_number
 ,sl.name as swLparName 
 ,h.serial as hwSerial 
 ,mt.name as hwMachType 
+,h.MODEL
+,h.CHASSIS_ID
+,h.CLOUD_NAME
 ,h.owner as hwOwner 
 ,h.country as hwCountry 
 ,mt.type as hwAssetType 
-,hl.SPLA,hl.SYSPLEX
+,hl.SPLA
+,hl.VIRTUAL_FLAG
+,hl.VIRTUAL_MOBILITY_RESTRICTION
+,hl.SYSPLEX
+,hl.CLUSTER_TYPE
+,hl.BACKUPMETHOD
 ,hl.INTERNET_ICC_FLAG
+,hl.CAPPED_LPAR
 ,h.MAST_PROCESSOR_TYPE
 ,h.PROCESSOR_MANUFACTURER
 ,h.PROCESSOR_MODEL
 ,h.NBR_CORES_PER_CHIP
 ,h.NBR_OF_CHIPS_MAX
+,h.SHARED_PROCESSOR
 ,h.CPU_MIPS
 ,h.CPU_GARTNER_MIPS
 ,h.CPU_MSU
