@@ -83,6 +83,6 @@ sleep $SLEEP
 sleep $SLEEP
 ./scanSoftwareItemToStaging.pl start
 sleep $SLEEP
-./deleteInstalledSoftware.pl
+./deleteInstalledSoftware.pl run-once
 sleep $SLEEP
 exit 0
