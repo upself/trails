@@ -221,7 +221,7 @@ left outer join eaadmin.capacity_type ct on l.cap_type = ct.code
 left outer join eaadmin.customer c on l.customer_id = c.customer_id
 left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL 
 left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id 
-inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.id = sf.software_id 
+inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instPi.name = sf.software_name 
 inner join EAADMIN.Scope scp on SF.scope_id=scp.id 
 , eaadmin.customer sl_customer
 
@@ -339,7 +339,7 @@ where
  sl.customer_id = $customerId and hl.customer_id = $customerId and sl.customer_id = sl_customer.customer_id and 
  (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id))  
  AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 
- WHERE SF.Customer_Id = $customerId AND SF.Software_Id = instSi.Id AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE')
+ WHERE SF.Customer_Id = $customerId AND SF.Software_name = instSi.name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE')
  ORDER BY 4
 
 with ur
