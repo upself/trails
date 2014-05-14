@@ -344,6 +344,9 @@ my $REMOTE_FILE_SFTP_GET_METHOD                         = "SFTP";
 my $REMOTE_FILE_GSA_GET_METHOD                          = "GSA";
 my $BRAVO_SERVER_FILE_SYSTEM_INFO_FILE                  = "/home/liuhaidl/working/scripts/bravoServerFileSystemUsedDiskInfo.txt";
 my $TRAILS_SERVER_FILE_SYSTEM_INFO_FILE                 = "/home/liuhaidl/working/scripts/trailsServerFileSystemUsedDiskInfo.txt";
+#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 6a Start
+my $TAP3_SERVER_FILE_SYSTEM_INFO_FILE                 = "/home/liuhaidl/working/scripts/tap3ServerFileSystemUsedDiskInfo.txt";
+#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 6a End
 #File System Information Definition Indexes for 6 Fields
 my $FILE_SYSTEM_MOUNT_INDEX_6_FIELDS                    = 1;
 my $TOTAL_DISK_INDEX_6_FIELDS                           = 2;
@@ -1109,6 +1112,15 @@ sub eventRuleCheck{
                  my @parsedTrailsServerMonitoringFileSystemListArray;#array used to store parsed trails server monitoring file system list array - (("/opt/trails","90%"),("/var/trails","95%"))
                  my @trailsServerFileSystemEmailAlertMessageArray = ();#array used to store the trails server file system email alert messages
 				 my $trailsServerFileSystemEmailAlertMessageArrayCount = 0;#var used to store the count of the trails server file system email alert messages
+				 #Vars Definition for Trails Server
+                 my @tap3ServerFileSystemRecords = ();
+				 my @tap3ServerFileSystemRecord;
+                 my $tap3ServerMonitoringFileSystemList;#var used to store trails server monitoring file system list - "/opt/trails~90%'/var/trails~95%"
+                 my @tap3ServerMonitoringFileSystemListArray;#array used to store trails server monitoring file system list array - ("/opt/trails~90%","/var/trails~95%") 
+				 my @parsedTap3ServerMonitoringFileSystemArray;#array used to store parsed trails server monitoring file system array - for example, ("/opt/trails","90"%)
+                 my @parsedTap3ServerMonitoringFileSystemListArray;#array used to store parsed trails server monitoring file system list array - (("/opt/trails","90%"),("/var/trails","95%"))
+                 my @tap3ServerFileSystemEmailAlertMessageArray = ();#array used to store the trails server file system email alert messages
+				 my $tap3ServerFileSystemEmailAlertMessageArrayCount = 0;#var used to store the count of the trails server file system email alert messages
 			     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Filespace monitoring on @1 Server'
@@ -1134,13 +1146,13 @@ sub eventRuleCheck{
 					$monitorFileSystemList = $metaRuleParameter6;#Filesystem Monitor List: '/opt/trails~90%'/var/trails~95%'
 				 }
                  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
-				 #elsif($serverMode eq $metaRuleParameter7){#TAP3 Server
-                 #   $monitorFileSystemList = $metaRuleParameter8;#TBD for TAP3
-				 #}
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
-                 elsif($serverMode eq $metaRuleParameter9){#TAP2 Server
-                    $monitorFileSystemList = $metaRuleParameter10;#TBD for TAP2
+				 elsif($serverMode eq $metaRuleParameter9){#TAP3 Server
+                    $monitorFileSystemList = $metaRuleParameter10;#Filesystem Monitor List: '/boot~90%'/opt/reports~90%'/opt/tap~90%'/var/staging~90%'/opt/staging~90%'/usr~90%'/var~90%'/tmp~90%'/opt~90%'/home~90%D for TAP3
 				 }
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+                 #elsif($serverMode eq $metaRuleParameter9){#TAP2 Server
+                 #   $monitorFileSystemList = $metaRuleParameter10;#TBD for TAP2
+				 #}
 
 				 print LOG "File System Monitor Server Mode: {$serverMode}\n";
                  print LOG "File System Monitor List: {$monitorFileSystemList}\n";
@@ -1193,7 +1205,7 @@ sub eventRuleCheck{
 
                  if(($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG) #$REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG = "Y"
                   &&($serverMode eq $TAP || $serverMode eq $TAP2)){#Only TAP or TAP2 Server can trigger the remote server file system monitoring logic
-                    print LOG "The Remote Server File System Monitoring Function has been turned on for Bravo and Trails servers.\n";
+                    print LOG "The Remote Server File System Monitoring Function has been turned on for Bravo, Trails and TAP3 servers.\n";
                     print LOG "Remote File Get Method: {$remoteFileGetMethod}\n";
 					
 					#Bravo Server File System Used Disk Monitoring Logic Feature Start 
@@ -1396,6 +1408,107 @@ sub eventRuleCheck{
                     }#end if($trailsServerMonitoringFileSystemList ne "") 
                     #Trails Server File System Used Disk Monitoring Logic Feature End
 
+					#TAP3 Server File System Used Disk Monitoring Logic Feature Start
+                    $tap3ServerMonitoringFileSystemList = $metaRuleParameter10;#TAP3 Server - Filesystem Monitoring List: "/boot~90%'/opt/reports~90%'/opt/tap~90%'/var/staging~90%'/opt/staging~90%'/usr~90%'/var~90%'/tmp~90%'/opt~90%'/home~90%"
+             		if($tap3ServerMonitoringFileSystemList ne ""){
+                       @tap3ServerMonitoringFileSystemListArray = split(/\'/,$tap3ServerMonitoringFileSystemList);
+				       foreach my $tap3ServerMonitoringFileSystemDefinition (@tap3ServerMonitoringFileSystemListArray){#go loop for file system list array
+                          print LOG "TAP3 Server - Monitoring File System Definition: {$tap3ServerMonitoringFileSystemDefinition}\n";
+                          @parsedTap3ServerMonitoringFileSystemArray = split(/\~/,$tap3ServerMonitoringFileSystemDefinition);
+                          my $tap3ServerMonitoringFileSystem = $parsedTap3ServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX];#monitoring file system - for example: "/opt/TAP3"
+                          $tap3ServerMonitoringFileSystem = trim($tap3ServerMonitoringFileSystem);#Remove space chars
+				          print LOG "TAP3 Server - Monitoring File System: {$tap3ServerMonitoringFileSystem}\n";
+                          my $tap3ServerMonitoringFileSystemThreshold = $parsedTap3ServerMonitoringFileSystemArray[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX];#monitoring file system threshold - for example: "90%"
+                          $tap3ServerMonitoringFileSystemThreshold = trim($tap3ServerMonitoringFileSystemThreshold);#Remove space chars
+                          print LOG "TAP3 Server - Monitoring File System Threshold: {$tap3ServerMonitoringFileSystemThreshold}\n";
+
+						  push @parsedTap3ServerMonitoringFileSystemListArray, [@parsedTap3ServerMonitoringFileSystemArray];
+                       }#end 
+
+                       #Read File System Using Percentage Information of the download files from Tap3 Servers
+					   #Open Tap3 Server File System Information File Handler
+				       open(TAP3_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER, "<", $TAP3_SERVER_FILE_SYSTEM_INFO_FILE ) or die "Tap3 Server File System Information File {$TAP3_SERVER_FILE_SYSTEM_INFO_FILE} doesn't exist. Perl script exits due to this reason.";
+                       #Read Record From Tap3 Server File System Information File
+					   while (my $tap3ServerFileSystemUsedPctInfoRecord = <TAP3_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER>){
+						  @tap3ServerFileSystemRecord = ();#Reset @tap3ServerFileSystemRecord Object Array to be Empty Every Time
+
+					      chomp $tap3ServerFileSystemUsedPctInfoRecord;
+						  #Remove before and after space chars of a string
+						  $tap3ServerFileSystemUsedPctInfoRecord = trim($tap3ServerFileSystemUsedPctInfoRecord);
+						  print LOG "Tap3 Server - File System Used Percentage Information Record: {$tap3ServerFileSystemUsedPctInfoRecord}\n";
+                          my $tap3ServerColumnCnt = `echo $tap3ServerFileSystemUsedPctInfoRecord|awk '{print NF;}'`;
+						  chomp $tap3ServerColumnCnt;
+                          $tap3ServerColumnCnt = trim($tap3ServerColumnCnt);
+						  print LOG "Tap3 Server - The Number of Columns for File System Used Percentage Information Record: {$tap3ServerColumnCnt}\n";
+
+	                      my $tap3ServerUsedDiskPct;
+                          my $tap3ServerFileSystem;
+						
+						  if($tap3ServerColumnCnt == 5){
+						     $tap3ServerUsedDiskPct = `echo $tap3ServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX;}'`;
+							 $tap3ServerFileSystem = `echo $tap3ServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX;}'`;
+						   }
+						   elsif($tap3ServerColumnCnt == 6){
+						     $tap3ServerUsedDiskPct = `echo $tap3ServerFileSystemUsedPctInfoRecord|awk '{print \$$USED_DISK_PCT_INDEX_6_FIELDS;}'`;
+							 $tap3ServerFileSystem = `echo $tap3ServerFileSystemUsedPctInfoRecord|awk '{print \$$FILE_SYSTEM_INDEX_6_FIELDS;}'`;
+						   }
+						  
+                           chomp $tap3ServerFileSystem;
+                           $tap3ServerFileSystem = trim($tap3ServerFileSystem);
+	                       print LOG "Tap3 Server - File System: {$tap3ServerFileSystem}\n";
+						   push @tap3ServerFileSystemRecord, $tap3ServerFileSystem;
+
+						   chomp $tap3ServerUsedDiskPct;
+                           $tap3ServerUsedDiskPct = trim($tap3ServerUsedDiskPct);
+	                       print LOG "Tap3 Server - Used Disk Percentage: {$tap3ServerUsedDiskPct}\n";
+						   push @tap3ServerFileSystemRecord, $tap3ServerUsedDiskPct;
+
+                           push @tap3ServerFileSystemRecords, [@tap3ServerFileSystemRecord]; 
+                       }#end of while
+
+                       #Close Tap3 Server File System Information File Handler
+					   close TAP3_SERVER_FILE_SYSTEM_INFO_FILE_HANDLER;
+					   
+					   #Compare the Defined File System Monitoring Threshold with the Current File System Used Percentage Value
+					   my $parsedTap3ServerMonitoringFileSystemListArrayCnt = scalar(@parsedTap3ServerMonitoringFileSystemListArray);
+					   print LOG "Tap3 Server - The Count of Defined Monitoring File System List: {$parsedTap3ServerMonitoringFileSystemListArrayCnt}\n";
+					   my $tap3ServerFileSystemRecordsCnt = scalar(@tap3ServerFileSystemRecords);
+                       print LOG "Tap3 Server - The Count of File System List: {$tap3ServerFileSystemRecordsCnt}\n";
+					   if(($parsedTap3ServerMonitoringFileSystemListArrayCnt > 0)
+					    &&($tap3ServerFileSystemRecordsCnt > 0)){#only go loop file system list array when the count of it is > 0
+					       
+						   foreach my $parsedTap3ServerMonitoringFileSystemArrayAddress (@parsedTap3ServerMonitoringFileSystemListArray){
+                           my $tap3ServerMonitoringFileSystem = trim($parsedTap3ServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                           print LOG "Tap3 Server - the Defined Monitoring File System: {$tap3ServerMonitoringFileSystem}\n";
+						   my $tap3ServerMonitoringFileSystemThreshold = trim($parsedTap3ServerMonitoringFileSystemArrayAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+                          
+                           foreach my $tap3ServerFileSystemRecordAddress (@tap3ServerFileSystemRecords){
+						      my $tap3ServerFileSystem = trim($tap3ServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX]);
+                              print LOG "Tap3 Server - the Current File System: {$tap3ServerFileSystem}\n";
+							  my $tap3ServerUsedDiskPct = trim($tap3ServerFileSystemRecordAddress->[$EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX]);
+							  if($tap3ServerMonitoringFileSystem eq $tap3ServerFileSystem){#judge if the current file system is the defined monitoring file system 
+							     print LOG "Tap3 Server - the Current File System: {$tap3ServerFileSystem} is equal to the Defined Monitoring File System: {$tap3ServerMonitoringFileSystem}\n";
+							     print LOG "Tap3 Server - the Current File System Used Disk Percentage: {$tap3ServerUsedDiskPct}\n";
+								 print LOG "Tap3 Server - the Defined Monitoring File System Threshold: {$tap3ServerMonitoringFileSystemThreshold}\n";
+
+								 if(compareUsedDiskPctWithFileSystemThreshold($tap3ServerUsedDiskPct,$tap3ServerMonitoringFileSystemThreshold) >=0){
+								    print LOG "Tap3 Server - the Current File System Used Disk Percentage: {$tap3ServerUsedDiskPct} is great then or equal to the Defined Monitoring File System Threshold: {$tap3ServerMonitoringFileSystemThreshold}\n";
+                                    
+									$processedRuleMessage = $metaRuleMessage;
+                                    $processedRuleMessage =~ s/\@2/$tap3ServerUsedDiskPct/g;#replace @2 with the current used file system percentage value - for example: '98%'
+                                    $processedRuleMessage =~ s/\@3/$tap3ServerMonitoringFileSystem/g;#replace @3 with the monitoring file system value - for example: '/db2/cndb'
+                                    $processedRuleMessage =~ s/\@4/$tap3ServerMonitoringFileSystemThreshold/g;#replace @4 with the monitoring file system threshold value - for example: '95%'
+									
+                                    push @tap3ServerFileSystemEmailAlertMessageArray, "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage";
+                                 }
+							  }#end if($tap3ServerMonitoringFileSystem eq $bravoServerFileSystem)
+						   }#end foreach my $bravoServerFileSystemRecordAddress (@bravoServerFileSystemRecords)
+					   }#end foreach my $parsedTap3ServerMonitoringFileSystemArrayAddress (@parsedTap3ServerMonitoringFileSystemListArray)
+					   }#end if($parsedTap3ServerMonitoringFileSystemListArrayCnt > 0)
+                    }#end if($tap3ServerMonitoringFileSystemList ne "") 
+                    #TAP3 Server File System Used Disk Monitoring Logic Feature End
+
+
 				 }#end if($remoteServerFileSystemMonitoringFlag eq $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG)
 				 else{
 				    print LOG "The Remote Server File System Monitroing Function has been turned off for Bravo and Trails servers.\n";  
@@ -1450,6 +1563,26 @@ sub eventRuleCheck{
                           print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
                        }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
 					}
+					
+					#Append Tap3 Server File System Alert Messages into Email Content
+                    $tap3ServerFileSystemEmailAlertMessageArrayCount = scalar(@tap3ServerFileSystemEmailAlertMessageArray);
+					if($tap3ServerFileSystemEmailAlertMessageArrayCount > 0){
+					   $emailFullContent.="\n";#append a new break line into email content
+                       
+					   $processedRuleTitle = $metaRuleTitle;
+                       $processedRuleTitle =~ s/\@1/$TAP3/g;#replace @1 with TAP3 server mode value
+                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+				       print LOG "Tap3 Server - The Processed Rule Title: {$processedRuleTitle}\n";
+
+                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
+                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
+				       print LOG "Tap3 Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+
+                       foreach my $tap3ServerFileSystemEmailAlertMessage (@tap3ServerFileSystemEmailAlertMessageArray){#go loop for tap3 server file system email alert message
+	                      $emailFullContent.="$tap3ServerFileSystemEmailAlertMessage\n";#append tap3 server file system email alert message into email content
+                          print LOG "Tap3 Server - The Processed Rule Message: {$tap3ServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $tap3ServerFileSystemEmailAlertMessage (@tap3ServerFileSystemEmailAlertMessageArray)
+					}
 					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 	                $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
                  }#end if($fileSystemEmailAlertMessageCount > 2)
@@ -1457,25 +1590,10 @@ sub eventRuleCheck{
 				 else{
 				    $bravoServerFileSystemEmailAlertMessageArrayCount = scalar(@bravoServerFileSystemEmailAlertMessageArray);
 				    $trailsServerFileSystemEmailAlertMessageArrayCount = scalar(@trailsServerFileSystemEmailAlertMessageArray);
-                    if(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0)){
-					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
-                       #Append Bravo Server File System Alert Messages into Email Content
-					   $processedRuleTitle = $metaRuleTitle;
-                       $processedRuleTitle =~ s/\@1/$BRAVO/g;#replace @1 with BRAVO server mode value
-                       $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
-				       print LOG "Bravo Server - The Processed Rule Title: {$processedRuleTitle}\n";
-
-                       $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
-                       $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
-				       print LOG "Bravo Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
-
-                       foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray){#go loop for bravo server file system email alert message
-	                      $emailFullContent.="$bravoServerFileSystemEmailAlertMessage\n";#append bravo server file system email alert message into email content
-                          print LOG "Bravo Server - The Processed Rule Message: {$bravoServerFileSystemEmailAlertMessage}\n";
-                       }#end foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray)    
-                       
+				    $tap3ServerFileSystemEmailAlertMessageArrayCount = scalar(@tap3ServerFileSystemEmailAlertMessageArray);
+	  			    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+                    if($trailsServerFileSystemEmailAlertMessageArrayCount > 0){
 					   #Append Trails Server File System Alert Messages into Email Content
-                       $emailFullContent.="\n";#append a new break line into email content
 					   $processedRuleTitle = $metaRuleTitle;
                        $processedRuleTitle =~ s/\@1/$TRAILS/g;#replace @1 with TRAILS server mode value
                        $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
@@ -1490,10 +1608,8 @@ sub eventRuleCheck{
                           print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
                        }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
 
-					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-					}#end if($bravoServerFileSystemEmailAlertMessageArrayCount > 0 && $trailsServerFileSystemEmailAlertMessageArrayCount > 0)
-					elsif(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount == 0)){
-					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+					}#end if($trailsServerFileSystemEmailAlertMessageArrayCount > 0)
+					if($bravoServerFileSystemEmailAlertMessageArrayCount > 0){
                        #Append Bravo Server File System Alert Messages into Email Content
 					   $processedRuleTitle = $metaRuleTitle;
                        $processedRuleTitle =~ s/\@1/$BRAVO/g;#replace @1 with BRAVO server mode value
@@ -1509,30 +1625,27 @@ sub eventRuleCheck{
                           print LOG "Bravo Server - The Processed Rule Message: {$bravoServerFileSystemEmailAlertMessage}\n";
                        }#end foreach my $bravoServerFileSystemEmailAlertMessage (@bravoServerFileSystemEmailAlertMessageArray)
 					   
-                       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-					}#end elsif(($bravoServerFileSystemEmailAlertMessageArrayCount > 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount == 0))
-                    elsif(($bravoServerFileSystemEmailAlertMessageArrayCount == 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0)){
-					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+					}#end if($bravoServerFileSystemEmailAlertMessageArrayCount > 0)
+                    if($tap3ServerFileSystemEmailAlertMessageArrayCount > 0){
                        #Append Trails Server File System Alert Messages into Email Content
                  	   $processedRuleTitle = $metaRuleTitle;
-                       $processedRuleTitle =~ s/\@1/$TRAILS/g;#replace @1 with TRAILS server mode value
+                       $processedRuleTitle =~ s/\@1/$TAP3/g;#replace @1 with TRAILS server mode value
                        $emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
-				       print LOG "Trails Server - The Processed Rule Title: {$processedRuleTitle}\n";
+				       print LOG "TAP3 Server - The Processed Rule Title: {$processedRuleTitle}\n";
 
                        $processedRuleHandlingInstructionCode = $metaRuleHandlingInstrcutionCode;
                        $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
-				       print LOG "Trails Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
+				       print LOG "TAP3 Server - The Processed Rule Handling Instruction Code: {$processedRuleHandlingInstructionCode}\n";
 
-                       foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray){#go loop for trails server file system email alert message
-	                      $emailFullContent.="$trailsServerFileSystemEmailAlertMessage\n";#append trails server file system email alert message into email content
-                          print LOG "Trails Server - The Processed Rule Message: {$trailsServerFileSystemEmailAlertMessage}\n";
-                       }#end foreach my $trailsServerFileSystemEmailAlertMessage (@trailsServerFileSystemEmailAlertMessageArray)
+                       foreach my $tap3ServerFileSystemEmailAlertMessage (@tap3ServerFileSystemEmailAlertMessageArray){#go loop for trails server file system email alert message
+	                      $emailFullContent.="$tap3ServerFileSystemEmailAlertMessage\n";#append trails server file system email alert message into email content
+                          print LOG "Tap3 Server - The Processed Rule Message: {$tap3ServerFileSystemEmailAlertMessage}\n";
+                       }#end foreach my $tap3ServerFileSystemEmailAlertMessage (@tap3ServerFileSystemEmailAlertMessageArray)
 					   
-					   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
-					}#end elsif(($bravoServerFileSystemEmailAlertMessageArrayCount == 0) && ($trailsServerFileSystemEmailAlertMessageArrayCount > 0))
+					}#end if($tap3ServerFileSystemEmailAlertMessageArrayCount > 0)
 				 }#end else
                  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
-
+			     $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 			 }
