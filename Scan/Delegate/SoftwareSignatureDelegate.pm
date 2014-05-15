@@ -223,14 +223,14 @@ sub getDisconnectedSoftwareSignatureData {
                
              dlog('query='.$querySetUpdate);
              $tempStagingTableConnection->prepareSqlQuery('setToUpdate',$querySetUpdate);
-             my $sth = $tempStagingTableConnection->sql->{setToUpdate};
+             $sth = $tempStagingTableConnection->sql->{setToUpdate};
              $sth->execute(); 
              
              
              my $querySetToComplete='update TEMP_SIGNATURE_'.$bankAccount->name.' set action=\'COMPLETE\' where action is null';
              dlog('query='.$querySetToComplete);
              $tempStagingTableConnection->prepareSqlQuery('setToComplete',$querySetToComplete);
-             my $sth = $tempStagingTableConnection->sql->{setToComplete};
+             $sth = $tempStagingTableConnection->sql->{setToComplete};
              $sth->execute();
                
         }
