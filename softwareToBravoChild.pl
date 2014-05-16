@@ -24,6 +24,10 @@ die "Usage: $0"
              && defined $opt_c
              && defined $opt_p
              && defined $opt_s );
+             
+logfile($opt_l);
+logging_level('debug');
+dlog('softwareToBravoChild start');
 
 ###Close handles to avoid console output.
 open( STDIN, $opt_l )
@@ -38,12 +42,12 @@ my $trailsConnection;
 my $swassetConnection;
 eval {
     my $cfgMgr = Base::ConfigManager->instance($opt_c);
+    logging_level( $cfgMgr->debugLevel );
     $stagingConnection = Database::Connection->new('staging');
     $trailsConnection = Database::Connection->new('trails');
     $swassetConnection = Database::Connection->new('swasset');
 
-    logfile($opt_l);
-    logging_level( $cfgMgr->debugLevel );
+
 
     ilog(   "starting child: loadDeltaOnly=$opt_d, applyChanges=$opt_a"
           . ", customerId=$opt_i"
