@@ -136,6 +136,14 @@ sub setDBInfo {
             $dbs{'sims'}{'user'}     = $cfg->getProperty('sims.user');
             $dbs{'sims'}{'name'}     = $cfg->getProperty('sims.name');
             
+            $dbs{'trailsrp'}{'password'} = $cfg->getProperty('trailsrp.password');
+            $dbs{'trailsrp'}{'user'}     = $cfg->getProperty('trailsrp.user');
+            $dbs{'trailsrp'}{'name'}     = $cfg->getProperty('trailsrp.name');            
+            
+            $dbs{'trailsst'}{'password'} = $cfg->getProperty('trailsst.password');
+            $dbs{'trailsst'}{'user'}     = $cfg->getProperty('trailsst.user');
+            $dbs{'trailsst'}{'name'}     = $cfg->getProperty('trailsst.name');
+            
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
