@@ -128,7 +128,8 @@ use Net::FTP;
                                                                                          
 # db access                                                                              
 use IBM::Schema::BRAVO;
-use IBM::Schema::SWMULTI;                                                              
+use IBM::Schema::SWMULTI;
+use Config::Properties::Simple;                                                             
                                                                                          
 ###############################################################################          
 ### Define Script Variables                                                              
@@ -140,7 +141,8 @@ use vars qw (
   $logFile                                                                               
   $bravoSoftware                                                                         
   $reportDir                                                                             
-  $JAR                                                                                   
+  $JAR
+  $connConfigFile                                                                                  
 );                                                                                       
                                                                                          
 my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =                     
@@ -174,7 +176,8 @@ if ( exists $ENV{SWMULTI_TEST} ) {
 	#run test on tap2.                                                                     
 	$reportDir = '/var/bravo/web/sw_vers_test';                                           
 	$JAR       = '/var/bravo/web/sw_vers_test';                                           
-	$logFile   = '/var/bravo/web/sw_vers_test/log/bravoReport-test.log';                  
+	$logFile   = '/var/bravo/web/sw_vers_test/log/bravoReport-test.log';
+	$connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'              
 	                                                                                       
 #	$reportDir = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                            
 #    $JAR       = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                          
@@ -183,7 +186,8 @@ if ( exists $ENV{SWMULTI_TEST} ) {
 else {                                                                                   
         $reportDir = '/opt/bravo/scripts/report/target/bin';
         $JAR       = '/opt/bravo/scripts/report/target';
-        $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log';                                      
+        $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log';
+        $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'                                
 }                                                                                        
                                                                                          
 ###############################################################################          
@@ -627,18 +631,23 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 		logit( $cmd, $logFile );
 		`$cmd`;
 		chmod 0664, $zipfile;
-		unlink <$reportDir/$accountNumber*.xls>;
+	    unlink <$reportDir/$accountNumber*.xls>;
 
-	   my $server = 'bejgsa.ibm.com';
-       my $user = 'trails';
-       my $pw = 'B0sBru1n';
+
+       my $cfg=Config::Properties::Simple->new(file=>$connConfigFile);
+       my $server=$cfg->getProperty('gsa.swmulti.report.server');
+       my $user=$cfg->getProperty('gsa.swmulti.report.user');
+       my $pw=$cfg->getProperty('gsa.swmulti.report.password');
+       my $targetFolder = $cfg->getProperty('gsa.swmulti.report.target.folder');
+       
        my $ftp = Net::FTP->new($server, Debug => 0, Timeout => 600) or die "Cannot connect.\n";
        $ftp->login($user, $pw) or die "Could not login.\n";
-       $ftp->cwd('/gsa/bejgsa/projects/s/swtools/swMultiReport/') or die "Cannot change working directory.\n";
-       my $bin=$ftp->binary or die "Can not change the Type to Binary\n";       
+      
+       $ftp->cwd($targetFolder) or die "Cannot change working directory.\n";
+       my $bin=$ftp->binary or die "Can not change the Type to Binary\n"; 
+            
        $ftp->put($zipfile, "MULTI.$accountNumber.zip") or die "Could not upload.\n";
-       $ftp->quit;
-       
+       $ftp->quit;       
        
        unlink("$zipfile");
 	}
