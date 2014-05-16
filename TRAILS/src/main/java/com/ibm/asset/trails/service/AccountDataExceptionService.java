@@ -1,8 +1,9 @@
-// File name: $HeadURL$
-// Revision: $Rev$
-// Last modified: $Date$
-// Last modified by: $Author$
-
+/*
+ File path: $HeadURL$
+ Revision: $Rev$
+ Last modified: $Date$
+ Last modified by: $Author$
+*/
 
 package com.ibm.asset.trails.service;
 
