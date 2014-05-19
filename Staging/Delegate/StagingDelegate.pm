@@ -801,7 +801,7 @@ sub queryScanRecordData {
             manufacturer
             biosModel
             serverType
-            techImageId
+            techImgId
             extId
             memory
             disk
