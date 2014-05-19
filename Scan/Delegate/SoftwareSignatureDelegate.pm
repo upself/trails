@@ -57,7 +57,14 @@ sub getDisconnectedSoftwareSignatureData {
     my %signatureList;
     my $scanSoftwareActionCombination = undef;
     
-    my $tempStagingTableConnection = Database::Connection->new('staging');  
+    my $tempStagingTableConnection = Database::Connection->new('staging');
+    eval{
+     $self->dropTempTable($tempStagingTableConnection, $bankAccount);
+    };
+    if($@){     
+      die $@ if(!$@=~m/SQLSTATE=42704/);
+    }
+    
     $self->createTempTable($tempStagingTableConnection, $bankAccount);
 
     if ($fileToProcess) {
@@ -128,38 +135,6 @@ sub getDisconnectedSoftwareSignatureData {
             
             $csv->print( $fh, \@rows );
             
-            
-            
-          
-            
-#            if(!$self->isSignatureExists($tempStagingTableConnection,$bankAccount, $softwareId,$softwareSignatureId,$scanMap->{ $rec{computerId} })){
-#               my $action = 'UPDATE';
-#                if( $bankAccount->type eq 'TAD4D' || $bankAccount->type eq 'TLM' ){
-#                   my $key =  $scanMap->{ $rec{computerId} } .'|'.$softwareId;
-#                   if($scanSoftwareActionCombination->{$key.'|UPDATE'}||
-#                          (!$scanSoftwareActionCombination->{$key.'|UPDATE'} && $scanSoftwareActionCombination->{$key.'|COMPLETE'})
-#                   ){
-#                      $action= 'COMPLETE';
-#                      dlog('processed srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
-#                   }else{
-#                      $scanSoftwareActionCombination->{$key.'|UPDATE'} = 1;
-#                      dlog('new srId='.$scanMap->{ $rec{computerId} }.'swId='.$softwareId);
-#                  }
-#                }
-#                
-#                dlog('before insert into temp table');                
-#                $self->insertIntoSignatureTemp($tempStagingTableConnection, $bankAccount,
-#                                               $softwareId, 
-#                                               $softwareSignatureId,
-#                                               $scanMap->{ $rec{computerId} }, 
-#                                               $action,
-#                                               $rec{path},
-#                                               0);
-#               dlog('after insert into temp table');
-#            }
-            
-
-            
         }
         close $fh or die "$tempFileName: $!";
         my $logFile= logfile;
@@ -202,7 +177,7 @@ sub getDisconnectedSoftwareSignatureData {
                    $sth->execute(); 
              };
              if ($@) {
-               
+               wlog($@);
              }
                        
              
@@ -259,6 +234,21 @@ sub createTempTable{
   dlog('query='.$query);
   $connection->prepareSqlQuery('createTempTable',$query);
   my $sth = $connection->sql->{createTempTable};
+  $sth->execute(); 
+  
+}
+
+
+sub dropTempTable{
+ 
+ my ($self,$connection,$bankAccount)=@_;
+ 
+ 
+ my $query = 'drop table TEMP_SIGNATURE_'.$bankAccount->name;
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('dropTempTable',$query);
+  my $sth = $connection->sql->{dropTempTable};
   $sth->execute(); 
   
 }
