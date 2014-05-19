@@ -831,13 +831,13 @@ from
                     left outer join eaadmin.machine_type mt
                         on j.machine_type_id = mt.id 
                     left outer join eaadmin.schedule_f sf 
-                        on ol.customer_id =  sf.customer_id and ol.software_id = sf.software_id
+                        on ol.customer_id =  sf.customer_id and ol.software_name = sf.software_name
                     left outer join eaadmin.status st
                         on sf.status_id = st.id  and st.description = 'ACTIVE' 
                     left outer join eaadmin.scope sc
                         on sf.scope_id = sc.id 
                     WHERE (sf.id in (select ssf.id  
-                    from schedule_f ssf where  ol.customer_id =  ssf.customer_id and ol.software_id = ssf.software_id order by 
+                    from schedule_f ssf where  ol.customer_id =  ssf.customer_id and ol.software_name = ssf.software_name order by 
                      CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = ol.nodename THEN 1 ELSE 
                      CASE WHEN  ssf.level='HWBOX' and ssf.serial = j.serial and ssf.machine_type = mt.name THEN 2 ELSE
                      CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = j.owner THEN 3 ELSE
