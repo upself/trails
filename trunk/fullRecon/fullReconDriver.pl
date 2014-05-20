@@ -15,14 +15,14 @@ use File::Copy;
 use Getopt::Std;
 use Config::Properties::Simple;
 use File::Basename;
-use lib "/opt/reports/bin";
-use Report;
+use ReportProperty;
 
-my $report = new Report();
+my $report = new ReportProperty();
 $report->initReportingSystem;
 
 my $fileName = $report->thisReport;
 my $fileDirectory = $report->thisDir;
+print $fileDirectory;
 
 
 use vars qw (
@@ -38,14 +38,8 @@ my $reportDatabasePassword = $report->reportDatabasePassword;
 my $tmpDir = $report->tmpDir;
 
 $finalDir = "/gsa/pokgsa/projects/a/amsd/adp/accounts/e/alerts/";
-$errDir = "/opt/reports/bin/";
+$errDir = $report->thisDir;
 $reportDir = "/tmp/";
-#$reportDir = "/gsa/pokgsa/projects/a/amsd/adp/global/test/";
-#only for testing cron safely
-#$reportDir = "/opt/reports/test/";
-
-$thisDir = $report->thisDir;
-
 
 chdir $reportDir;
 
@@ -85,7 +79,7 @@ if ( $opt_r ) {
 foreach $key ( keys %regions ) {
 	$region = $key;
 	$regionId = $regions{$key};
-	my $regionFile = $tmpDir . $region;
+	my $regionFile = $tmpDir .'/'. $region;
 	my $regionDataFile = $reportDir . $region . ".tsv";
 	$makeList = "
 connect to $reportDatabase user $reportDatabaseUser using $reportDatabasePassword;
@@ -97,7 +91,7 @@ and cu.status = 'ACTIVE'
 and cu.sw_license_mgmt = 'YES'
 and exists (select 1 from software_lpar sl where cu.customer_id = sl.customer_id and sl.status='ACTIVE') with ur;
 ";
-my $fileSQL = $tmpDir . "/" . $fileName . "_tmp.sql" ;
+my $fileSQL = $tmpDir . '/' . $fileName . "_tmp.sql" ;
 	system( "echo \" $makeList . \" > $fileSQL" );
 
 #chmod 0744, $fileSQL;
@@ -105,7 +99,7 @@ my $fileSQL = $tmpDir . "/" . $fileName . "_tmp.sql" ;
 	$generateFiles = "db2 -tvf $fileSQL";
 	$compressFile = "zip -j " . $reportDir . $region . ".zip $regionDataFile";
 	system($generateFiles);
-	$makeheader    = "cat " . $fileDirectory . $fileName . "_header.txt > $regionDataFile";
+	$makeheader    = "cat " . $fileDirectory . "fullReconDriver_header.txt > $regionDataFile";
 	system($makeheader);
 
 	open( INPUT, "<" . $regionFile )
@@ -115,7 +109,7 @@ my $fileSQL = $tmpDir . "/" . $fileName . "_tmp.sql" ;
 		chomp;
 		$customerId = $_;
 		$customerId =~ s/\n|\r|\f//gm;
-		my $customerFile = $tmpDir . $customerId;
+		my $customerFile = $tmpDir .'/'. $customerId;
 
 		$selectFullReconSQL = 
 		"
