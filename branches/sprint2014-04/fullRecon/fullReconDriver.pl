@@ -22,8 +22,6 @@ $report->initReportingSystem;
 
 my $fileName = $report->thisReport;
 my $fileDirectory = $report->thisDir;
-print $fileDirectory;
-
 
 use vars qw (
     $opt_r
