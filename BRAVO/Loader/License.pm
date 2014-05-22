@@ -87,9 +87,9 @@ sub logicFromBravoToStaging{
 }
 
 sub saveFromBravoToStaging{
+   my $self = shift;
  
    $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 );
-   
    $self->recon if ( $self->saveBravoLicense == 1 );
    
 }
