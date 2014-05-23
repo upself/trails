@@ -23,11 +23,9 @@ $report->initReportingSystem;
 my $fileName = $report->thisReport;
 my $fileDirectory = $report->thisDir;
 
-use vars qw (
-    $opt_r
-);
+use vars qw ( $opt_r $opt_t);
+getopts("r:t:");
 
-getopt("r");
 
 my $reportDatabase = $report->reportDatabase;
 my $reportDatabaseUser = $report->reportDatabaseUser;
@@ -35,7 +33,7 @@ my $reportDatabasePassword = $report->reportDatabasePassword;
 
 my $tmpDir = $report->tmpDir;
 
-$finalDir = "/gsa/pokgsa/projects/a/amsd/adp/accounts/e/alerts/";
+$finalDir = $report->reportDeliveryFolder;
 $errDir = $report->thisDir;
 $reportDir = "/tmp/";
 
@@ -102,8 +100,19 @@ my $fileSQL = $tmpDir . '/' . $fileName . "_tmp.sql" ;
 
 	open( INPUT, "<" . $regionFile )
 	  or die "Cannot open $region";
+	
+	
+	my $testAccount=undef;  
+	if($opt_t){
+	  $testAccount = $opt_t
+	}
 
+
+    my $counter = 0;
 	while (<INPUT>) {
+	    $counter++;
+	    last 
+	      if (defined $testAccount && $counter> $testAccount);
 		chomp;
 		$customerId = $_;
 		$customerId =~ s/\n|\r|\f//gm;
