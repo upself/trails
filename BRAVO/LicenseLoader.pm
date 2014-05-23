@@ -123,7 +123,7 @@ sub getBravoActiveLicenseIds {
     my %rec;
 
     $self->bravoConnection->prepareSqlQueryAndFields(
-                                                     $self->queryBravoActiveLicenseData() );
+                                                     $self->queryBravoActiveLicenseData($self->testMode) );
     my $sth = $self->bravoConnection->sql->{bravoActiveLicenseData};
     $sth->bind_columns( map { \$rec{$_} } @{ $self->bravoConnection->sql->{bravoActiveLicenseDataFields} } );
     $sth->execute();
@@ -157,7 +157,7 @@ sub processLicenseIds {
 
 
 sub queryBravoActiveLicenseData {
-    my $self   = shift;
+    my ($self,$testMode)   = @_;
     my @fields = qw(
       id
     );
@@ -170,6 +170,14 @@ sub queryBravoActiveLicenseData {
            l.status != \'INACTIVE\'
     ';    
 
+
+
+   if ( $self->testMode == 1 ) {
+        $query .=
+          ' and l.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+    }
+    
+    
     dlog("queryBravoActiveLicenseData=$query");
     return ( 'bravoActiveLicenseData', $query, \@fields );
 }
