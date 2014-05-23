@@ -111,6 +111,7 @@ sub getData {
 
         my $hwCustomerId;
         my $hwLparCustomerId;
+        my $newProcessorCount;
         if ( $customerNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
             dlog('Customer number is unique, assigning to hardware');
             foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{customerNumber} } } ) {
@@ -146,6 +147,13 @@ sub getData {
             dlog( "No unique customer number/country code defined for lpar, assigining hw customer id" );
             $hwLparCustomerId = $hwCustomerId;
         }
+        
+        if ($rec{processorCount} - $rec{nbrFreeProcessorCores} >= 0 ) {
+        	$newProcessorCount = $rec{processorCount} - $rec{nbrFreeProcessorCores} ;
+        }
+        else {
+        	$newProcessorCount = 0 ;
+        }
 
         ###Construct the key
         my $key = $machineTypeMap->{ $rec{machineType} } . '|' . $rec{serial} . '|' . $rec{country};
@@ -161,7 +169,7 @@ sub getData {
         $hardware->country( $rec{country} );
         $hardware->status( $rec{status} );
         $hardware->updateDate( $rec{hwDate} );
-        $hardware->processorCount( $rec{processorCount} );
+        $hardware->processorCount( $newProcessorCount );
         $hardware->customerId($hwCustomerId);
         $hardware->model( $rec{model} );
         $hardware->classification( $rec{classification} );
@@ -346,7 +354,8 @@ sub queryATPData {
             clusterType
             vMobilRestrict
             cappedLpar
-            virtualFlag)
+            virtualFlag
+            nbrFreeProcessorCores)
     );
     my $query = '
         select
@@ -403,7 +412,8 @@ sub queryATPData {
 			,ltrim(rtrim(CLUSTER_TYPE))
 			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
 			,ltrim(rtrim(CAPPED_LPAR))
-			,ltrim(rtrim(VIRTUALFLAG))			
+			,ltrim(rtrim(VIRTUALFLAG))
+			,ltrim(rtrim(NBR_FREE_PROCESSOR_CORES))			
         from
             atpprod.bravo
     ';
