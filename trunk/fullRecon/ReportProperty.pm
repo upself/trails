@@ -41,6 +41,7 @@ sub new
         _db2profile => $cfg->getProperty('db2profile'),
         _gsaUser => $cfg->getProperty("gsaUser"),
         _gsaPassword => $cfg->getProperty("gsaPassword"),
+        _gsaCell => $cfg->getProperty("gsaCell")
     };
     bless $self, $class;
 
@@ -139,16 +140,17 @@ sub reportDeliveryFolder {
     return $self->{_reportDeliveryFolder};
 }
 
+sub gsaCell {
+    my $self = shift;
+    $self->{_gsaCell} = shift if scalar @_ == 1;
+    return $self->{_gsaCell};
+}
+
 sub initReportingSystem {
         my $self = shift;
-                
-        my $host = hostname;
-        my $shost = ( split( /\./, $host ) )[0]; 
-        
-        if('tap3' eq $shost){
-          system ("echo " . $self->{_gsaPassword} . " | gsa_login -c pokgsa -p ". $self->{_gsaUser});
-          umask("0002");
-        }
+
+        system ("echo " . $self->gsaPassword . " | gsa_login -c ".$self->gsaCell ." -p ". $self->{_gsaUser});
+        umask("0002");
 }
 
 1;
