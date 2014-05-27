@@ -180,6 +180,8 @@ sub queryInsSwByBrandModel {
   from
 			installed_software is join
 			software_lpar sl on is.software_lpar_id = sl.id
+			join customer c on c.customer_id = sl.customer_id
+			join software vs on is.software_id = vs.software_id
 			left outer join hw_sw_composite hsc on hsc.software_lpar_id = sl.id
 			left outer join hardware_lpar hl on hl.id = hsc.hardware_lpar_id
 			join hardware h on h.id = hl.hardware_id
@@ -188,13 +190,20 @@ sub queryInsSwByBrandModel {
 			join used_license ul on rul.used_license_id = ul.id
 			left outer join alert_unlicensed_sw aus on aus.installed_software_id = is.id
 
-  where 
+  where
+			vs.level = \'LICENSABLE\' and
+			is.status = \'ACTIVE\' and
+			is.discrepancy_type_id in ( 1, 2, 4 ) and
+			c.status = \'ACTIVE\' and
+			c.sw_license_mgmt = \'YES\' and
 			h.processor_type= ? and 
 			h.model= ? and
 			h.machine_type_id= ? and
 			(';
 			
-$query.=' ( aus.open = 1 ) or' if ( uc($action) eq 'ADD' );
+$query.='      ( aus.open = 1 )
+                 or
+' if ( uc($action) eq 'ADD' );
 $query.='					( ( r.reconcile_type_id in ( 1, 5 ) ) and ( ul.capacity_type_id = 17 ) )
 			)';
 			
