@@ -276,8 +276,8 @@ my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrail
 my $TAPMF_SERVER_USERID   = 'liuhaidl';
 my $TAPMF_SERVRE_PASSWORD = 'abcd1256';
 #Bravo Web Application PROD Server
-my $BRAVO_SERVER_USERID   = 'liuhaidl';
-my $BRAVO_SERVRE_PASSWORD = 'abcd1256';
+my $BRAVO_SERVER_USERID   = 'asket';
+my $BRAVO_SERVRE_PASSWORD = 'Zlivtom7';
 #Trails Web Application PROD Server
 my $TRAILS_SERVER_USERID   = 'liuhaidl';
 my $TRAILS_SERVRE_PASSWORD = 'abcd1256';
@@ -2571,11 +2571,6 @@ sub error
   $operationFailedComments.="$place: $reason.";
   printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Restart Web Appliction is failed due to reason: {$place: $reason}");
   $operationErrorFlag = $TRUE;
-#For selfHealing Invoke Command Mode, return 1 as error value for HME call
-  if($selfHealingEngineInvokedMode eq $COMMAND_MODE){
-    exit 1;
-  }
-  
 }
 
 sub printMessageWithTimeStamp{
