@@ -66,6 +66,7 @@ my $RESTART_BRAVO_WEB_APPLICATION        = "RESTART_BRAVO_WEB_APPLICATION";#Adde
 my $RESTART_TRAILS_WEB_APPLICATION       = "RESTART_TRAILS_WEB_APPLICATION";#Added by Larry for System Support And Self Healing Service Components - Phase 5
 my $STAGING_BRAVO_DATA_SYNC              = "STAGING_BRAVO_DATA_SYNC";#Added by Larry for System Support And Self Healing Service Components - Phase 6
 my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
+my $REMOVE_CERTAIN_BANK_ACCOUNT			 = "REMOVE_CERTAIN_BANK_ACCOUNT"; #Added by Tomas for System Support And Self Healing Service Components - Phase 8
 #Only can be processed on TAP3 Server
 my $RESTART_LOADER_ON_TAP3_SERVER        = "RESTART_LOADER_ON_TAP3_SERVER";
 
@@ -553,6 +554,7 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
       && $operationNameCode ne $RESTART_TRAILS_WEB_APPLICATION#Added by Larry for System Support And Self Healing Service Components - Phase 5
       && $operationNameCode ne $STAGING_BRAVO_DATA_SYNC#Added by Larry for System Support And Self Healing Service Components - Phase 6
       && $operationNameCode ne $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE#Added by Larry for System Support And Self Healing Service Components - Phase 7
+      && $operationNameCode ne $REMOVE_CERTAIN_BANK_ACCOUNT#Added by Tom for System Support And Self Healing Service Components - Phase 8
 	  ){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    

@@ -368,6 +368,19 @@ my $LOADER_REPLACED_STRING = "Child.pl";
 my $HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER = "/ipAddressToBravo.pl^memModToBravo.pl^hardwareToBravo.pl^hdiskToBravo.pl^processorToBravo.pl/";
 #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
 
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
+my $BATCH_SIZE = 1000;
+my $QUERY_ACCOUNT_ID_BY_NAME = 'select ID from BANK_ACCOUNT where NAME = ? and CONNECTION_TYPE = ?';
+my $QUERY_DELETE_ACCOUNT_1 = 'update hdisk hd set hd.action=\'DELETE\' where hd.id in (select hhd.id from hdisk hhd join scan_record sr on hhd.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and hhd.action <> \'DELETE\' fetch first $BATCH_SIZE row only);';
+my $QUERY_DELETE_ACCOUNT_2 = 'update ip_address ip set ip.action=\'DELETE\' where ip.id in (select iip.id from ip_address iip join scan_record sr on iip.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and iip.action <> \'DELETE\' fetch first $BATCH_SIZE row only);';
+my $QUERY_DELETE_ACCOUNT_3 = 'update mem_mod mm set mm.action=\'DELETE\' where mm.id in (select mmm.id from mem_mod mmm join scan_record sr on mmm.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and mmm.action <> \'DELETE\' fetch first $BATCH_SIZE row only);';
+my $QUERY_DELETE_ACCOUNT_4 = 'update processor ps set ps.action=\'DELETE\' where ps.id in (select pps.id from processor pps join scan_record sr on pps.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and pps.action <> \'DELETE\' fetch first $BATCH_SIZE row only);';
+my $QUERY_DELETE_ACCOUNT_5 = 'update software_signature s set s.action=\'DELETE\' where s.id in (select ss.id from software_signature ss join scan_record sr on ss.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and ss.action <> \'DELETE\' fetch first $BATCH_SIZE row only );';
+my $QUERY_DELETE_ACCOUNT_6 = 'update software_filter f set f.action=\'DELETE\' where f.id in (select ft.id from software_filter ft join scan_record sr on ft.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>\'DELETE\' and ft.action <> \'DELETE\' fetch first $BATCH_SIZE row only ) ;';
+my $QUERY_DELETE_ACCOUNT_7 = 'update scan_record set action=\'DELETE\' where bank_account_id = ? and action<>\'DELETE\';';
+my $QUERY_DELETE_ACCOUNT_8 = 'PDATE BANK_ACCOUNT SET STATUS = \'INACTIVE\', REMOTE_USER = \'Operation GUI\', RECORD_TIME = CURRENT TIMESTAMP where name = ?';
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
+
 main();
 
 #This is the main method of Self Healing Engine
@@ -2255,6 +2268,28 @@ sub coreOperationProcess{
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $UPDATE_SW_LICENSES_STATUS)
+    #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
+    elsif($operationNameCode eq $REMOVE_CERTAIN_BANK_ACCOUNT){#REMOVE_CERTAIN_BANK_ACCOUNT
+       if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+         #Operation has been started to be processed
+         updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+         $operationStartedFlag = $TRUE;#Operation has been started to process
+       }
+       my $bankAccountName = $operationParameter2;
+       my $connectionType  = $operationParameter3;
+       my $bankAccountID = getBankAccountID($bankAccountName,$connectionType,$bravoConnection);
+       if($bankAccountID ne ""){ # there is exactly one bank account in the database
+       		deleteBankAccountFromStaging($bankAccountID);
+       		deleteBankAccountFromTrails($bankAccountName);
+       		if($connectionType eq "DISCONNECTED"){
+       			deleteDisconnectedFiles($bankAccountName);
+       		}
+       } 
+
+       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $REMOVE_CERTAIN_BANK_ACCOUNT)
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
     #A piece of code template which is used for 'New Operatoin' business logic
     #elsif($operationNameCode eq "SAMPLE_OPERATION_NAME_CODE"){#SAMPLE_OPERATION_NAME_CODE
 	#  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
@@ -2568,6 +2603,108 @@ sub queryCountNumberForCertainAccountNumber{
   print LOG "[queryCountNumberForCertainAccountNumber] Query SQL: {$GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL}\n";
   return ('countNumberForCertainAccountNumber', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL);
 }
+
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
+sub deleteBankAccountFromTrails(){
+  my $accountName = shift;
+  my $counter = 0; 
+  my $connection = $stagingConnection;
+
+  $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_8);
+  my $sth = $connection->sql->{$accountName,$connectionType};
+  $sth->execute($accountNumber,$hostname);
+  $sth->finish;
+  $counter = $sth->rows();
+}
+
+sub deleteBankAccountFromStaging(){
+  my $accountName = shift;
+  my $counter = 0; 
+  my $connection = $bravoConnection;
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_1);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_2);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_3);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_4);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($$QUERY_DELETE_ACCOUNT_5);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_6);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_7);
+    my $sth = $connection->sql->{$accountName};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+
+}
+
+sub deleteDisconnectedFiles{
+  my $accountName = shift;
+  my $output = `rm /var/staging/disconnected/$accountName*`;
+}
+
+sub getBankAccountID{
+  my $accountName = shift;
+  my $connectionType = shift;
+  my $connection= shift;
+
+  $connection->prepareSqlQuery($QUERY_ACCOUNT_ID_BY_NAME);
+  my $sth = $connection->sql->{$accountName,$connectionType};
+  $sth->execute($accountNumber,$hostname);
+  $sth->finish;
+
+  my @IDs = $sth->fetchrow_array();
+  my $countOfIDs = @IDs;
+  if($countOfIDs = 1){
+  	return $countOfIDs[0]; 
+  }
+  return "";
+	
+}
+
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
 
 #my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT(*) FROM SOFTWARE_LPAR SL, CUSTOMER C WHERE C.ACCOUNT_NUMBER = ? AND SL.NAME = ? AND C.CUSTOMER_ID = SL.CUSTOMER_ID AND C.STATUS = 'ACTIVE' AND SL.STATUS ='ACTIVE' WITH UR";
 sub getCountNumberForCertainAccountNumberAndHostnameFunction{
