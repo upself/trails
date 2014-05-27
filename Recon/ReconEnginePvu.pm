@@ -7,6 +7,7 @@ use Carp qw( croak );
 use Database::Connection;
 use Recon::Pvu;
 use Recon::OM::ReconPvu;
+use Recon::Delegate::ReconDelegate;
 
 ###Object constructor.
 sub new {
@@ -40,26 +41,20 @@ sub recon {
  eval {
   $self->loadQueue;
 
-  my @savedReconSwlparIds;
-
   foreach my $reconPvuId ( @{ $self->queue } ) {
    my $queue = new Recon::OM::ReconPvu;
    $queue->id($reconPvuId);
    $queue->getById( $self->connection );
+   
+   dlog("Spawning recon job for PVU job ID $reconPvuId");
 
    my $recon = Recon::Pvu->new( $self->connection, $queue );
-   $recon->isUnitTest(1)
-     if ( $self->isUnitTest );
    $recon->recon;
 
-   if ( $self->isUnitTest ) {
-    push @savedReconSwlparIds, @{ $recon->savedReconSwlparIds };
-   }
-
    $queue->delete( $self->connection );
+   
   }
 
-  $self->savedReconSwlparIds( \@savedReconSwlparIds );
  };
  if ($@) {
   ###Something died in the eval, set dieMsg so
@@ -118,17 +113,15 @@ sub loadQueue {
 sub queryReconPvuQueue {
  my @fields = qw(
    id
-   procBrand
  );
  my $query = '
         select
-            a.id,
-            a.processor_brand
+            a.id
         from
             recon_pvu a
         order by 
             a.record_time asc
-        
+        fetch first 1 rows only
     ';
  dlog("queryReconPvuQueue=$query");
  return ( 'reconPvuQueue', $query, \@fields );

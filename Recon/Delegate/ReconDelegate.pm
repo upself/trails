@@ -47,6 +47,11 @@ sub breakReconcileById {
 	$reconcile->id($reconcileId);
 	$reconcile->getById($connection);
 	dlog( "reconcile=" . $reconcile->toString() );
+	
+	if ( ! defined $reconcile->reconcileTypeId ) {
+		wlog ("Reconcile $reconcileId not found!");
+		return;
+	}
 
 	###Get installed software object
 	my $installedSoftware = new BRAVO::OM::InstalledSoftware();

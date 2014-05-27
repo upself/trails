@@ -11,6 +11,7 @@ use Base::ConfigManager;
 use Tap::NewPerl;
 use Recon::ReconEngineCustomer;
 use Recon::ReconEngineSoftware;
+use Recon::ReconEnginePvu;
 
 my $logfile    = "/var/staging/logs/reconEngine/reconEngine.log";
 my $pidFile    = "/tmp/reconEngine.pid";
@@ -75,7 +76,7 @@ sub keepTicking {
     my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
-             newSoftwareChild(shift @softwareIds)
+             newSoftwareAndPvuChild(shift @softwareIds)
                if(scalar @softwareIds != 0 );
              my $connection = Database::Connection->new('trails');
              @customerIds = getReconCustomerQueue( $connection, $testMode );
@@ -205,7 +206,7 @@ sub newChild {
     exit;
 }
 
-sub newSoftwareChild {
+sub newSoftwareAndPvuChild {
     my $softwareId = shift;
     my $pid;
 
@@ -222,6 +223,9 @@ sub newSoftwareChild {
 
     my $reconEngine = new Recon::ReconEngineSoftware( $softwareId );
     $reconEngine->recon;
+    
+   	my $pvuEngine = new Recon::ReconEnginePvu;
+	$pvuEngine->recon; # spawning one PVU job... the called entity will read the PVU queue by itself and process one record of it, or die if none found
 
     wlog("$rNo Child software: $softwareId complete");
     exit;
