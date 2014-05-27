@@ -2571,6 +2571,11 @@ sub error
   $operationFailedComments.="$place: $reason.";
   printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Restart Web Appliction is failed due to reason: {$place: $reason}");
   $operationErrorFlag = $TRUE;
+#For selfHealing Invoke Command Mode, return 1 as error value for HME call
+  if($selfHealingEngineInvokedMode eq $COMMAND_MODE){
+    exit 1;
+  }
+  
 }
 
 sub printMessageWithTimeStamp{
