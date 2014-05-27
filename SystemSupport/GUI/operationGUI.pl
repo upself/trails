@@ -186,7 +186,7 @@ $authorizedUserList{'zengqh@cn.ibm.com'}++;
 $authorizedUserList{'y99xwu@cz.ibm.com'}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
-
+$authorizedUserList{'petra.povolna@cz.ibm.com'}++;
 #Invoke loginUserAuthentication method to do login user authentication
 loginUserAuthentication();
 
