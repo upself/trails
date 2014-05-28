@@ -129,6 +129,7 @@ my $RESTART_TRAILS_WEB_APPLICATION            = "RESTART_TRAILS_WEB_APPLICATION"
 my $STAGING_BRAVO_DATA_SYNC                               = "STAGING_BRAVO_DATA_SYNC";
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
+my $REMOVE_CERTAIN_BANK_ACCOUNT = "REMOVE_CERTAIN_BANK_ACCOUNT"; #Added by Tomas for System Support And Self Healing Service Components - Phase 8
 
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
@@ -2268,28 +2269,37 @@ sub coreOperationProcess{
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $UPDATE_SW_LICENSES_STATUS)
+
     #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
     elsif($operationNameCode eq $REMOVE_CERTAIN_BANK_ACCOUNT){#REMOVE_CERTAIN_BANK_ACCOUNT
        if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+	     print LOG "Updating operation status\n";
          #Operation has been started to be processed
          updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
          $operationStartedFlag = $TRUE;#Operation has been started to process
        }
        my $bankAccountName = $operationParameter2;
        my $connectionType  = $operationParameter3;
+	   print LOG "Getting bank account ID from name\n";
        my $bankAccountID = getBankAccountID($bankAccountName,$connectionType,$bravoConnection);
        if($bankAccountID ne ""){ # there is exactly one bank account in the database
+	   		print LOG "Bank account ID found\n";
        		deleteBankAccountFromStaging($bankAccountID);
        		deleteBankAccountFromTrails($bankAccountName);
        		if($connectionType eq "DISCONNECTED"){
+	     		print LOG "Deleting files for disconnected bank account - start";
        			deleteDisconnectedFiles($bankAccountName);
+	     		print LOG "Deleting files for disconnected bank account - end";
        		}
+       }else{
+	     print LOG "Found multiple or 0 account IDs for given name, ending";
        } 
 
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $REMOVE_CERTAIN_BANK_ACCOUNT)
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
+
     #A piece of code template which is used for 'New Operatoin' business logic
     #elsif($operationNameCode eq "SAMPLE_OPERATION_NAME_CODE"){#SAMPLE_OPERATION_NAME_CODE
 	#  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
@@ -2614,18 +2624,24 @@ sub deleteBankAccountFromTrails(){
   my $accountName = shift;
   my $counter = 0; 
   my $connection = $stagingConnection;
-
-  $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_8);
-  my $sth = $connection->sql->{$accountName,$connectionType};
-  $sth->execute($accountNumber,$hostname);
-  $sth->finish;
-  $counter = $sth->rows();
+  print LOG "Deleting bank account from TRAILS - start";
+  do{
+    $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_8);
+    my $sth = $connection->sql->{$accountName,$connectionType};
+    $sth->execute($accountNumber,$hostname);
+    $sth->finish;
+    $counter = $sth->rows();
+  }while($counter>0) 
+  print LOG "Deleting bank account from TRAILS - end";
 }
 
 sub deleteBankAccountFromStaging(){
+  print LOG "Deleting bank account from staging\n";
   my $accountName = shift;
   my $counter = 0; 
   my $connection = $bravoConnection;
+
+  print LOG "Starting query 1";
 
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_1);
@@ -2635,6 +2651,9 @@ sub deleteBankAccountFromStaging(){
     $counter = $sth->rows();
   }while($counter>0) 
 
+  print LOG "End of query 1";
+  print LOG "Starting query 2";
+
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_2);
     my $sth = $connection->sql->{$accountName};
@@ -2642,6 +2661,9 @@ sub deleteBankAccountFromStaging(){
     $sth->finish;
     $counter = $sth->rows();
   }while($counter>0) 
+
+  print LOG "End of query 2";
+  print LOG "Starting query 3";
 
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_3);
@@ -2651,6 +2673,9 @@ sub deleteBankAccountFromStaging(){
     $counter = $sth->rows();
   }while($counter>0) 
 
+  print LOG "End of query 3";
+  print LOG "Starting query 4";
+
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_4);
     my $sth = $connection->sql->{$accountName};
@@ -2658,6 +2683,9 @@ sub deleteBankAccountFromStaging(){
     $sth->finish;
     $counter = $sth->rows();
   }while($counter>0) 
+
+  print LOG "End of query 4";
+  print LOG "Starting query 5";
 
   do{
     $connection->prepareSqlQuery($$QUERY_DELETE_ACCOUNT_5);
@@ -2667,6 +2695,9 @@ sub deleteBankAccountFromStaging(){
     $counter = $sth->rows();
   }while($counter>0) 
 
+  print LOG "End of query 5";
+  print LOG "Starting query 6";
+
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_6);
     my $sth = $connection->sql->{$accountName};
@@ -2675,6 +2706,9 @@ sub deleteBankAccountFromStaging(){
     $counter = $sth->rows();
   }while($counter>0) 
 
+  print LOG "End of query 6";
+  print LOG "Starting query 7";
+
   do{
     $connection->prepareSqlQuery($QUERY_DELETE_ACCOUNT_7);
     my $sth = $connection->sql->{$accountName};
@@ -2682,6 +2716,7 @@ sub deleteBankAccountFromStaging(){
     $sth->finish;
     $counter = $sth->rows();
   }while($counter>0) 
+  print LOG "End of query 7";
 
 }
 
