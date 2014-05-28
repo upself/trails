@@ -71,7 +71,7 @@ sub recon {
 	Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $hashiSW{rId} );
 	
 	$reIDsbroken{$curr_rId} = 1;
-		
+	
 	# todo: open alert? ( searching for "IBM" or "ISV" would be difficult, and both iSW and License and in recon queue anyway )
 
   } elsif ( (( defined $hashiSW{rId} ) && ( defined $hashiSW{rTypeId} ) && ( $hashiSW{rTypeId} == 5 )) or (( defined $hashiSW{aOpen} ) && ( $hashiSW{aOpen} == 1 )) )
@@ -170,7 +170,7 @@ sub queryInsSwByBrandModel {
  );
 
  my $query = '
- select
+select
    is.id
    ,sl.id
    ,sl.customer_id
@@ -178,21 +178,22 @@ sub queryInsSwByBrandModel {
    ,r.reconcile_type_id
    ,aus.open
   from
-			installed_software is join
+			installed_software is inner join
 			software_lpar sl on is.software_lpar_id = sl.id
-			join customer c on c.customer_id = sl.customer_id
-			join software vs on is.software_id = vs.software_id
-			left outer join hw_sw_composite hsc on hsc.software_lpar_id = sl.id
-			left outer join hardware_lpar hl on hl.id = hsc.hardware_lpar_id
-			join hardware h on h.id = hl.hardware_id
+			inner join customer c on c.customer_id = sl.customer_id
+			inner join software vs on is.software_id = vs.software_id
+			inner join hw_sw_composite hsc on hsc.software_lpar_id = sl.id
+			inner join hardware_lpar hl on hl.id = hsc.hardware_lpar_id
+			inner join hardware h on h.id = hl.hardware_id
 			left outer join reconcile r on r.installed_software_id = is.id
-			join reconcile_used_license rul on rul.reconcile_id = r.id
-			join used_license ul on rul.used_license_id = ul.id
+			left outer join reconcile_used_license rul on rul.reconcile_id = r.id
+			left outer join used_license ul on rul.used_license_id = ul.id
 			left outer join alert_unlicensed_sw aus on aus.installed_software_id = is.id
 
   where
 			vs.level = \'LICENSABLE\' and
 			is.status = \'ACTIVE\' and
+			sl.status = \'ACTIVE\' and
 			is.discrepancy_type_id in ( 1, 2, 4 ) and
 			c.status = \'ACTIVE\' and
 			c.sw_license_mgmt = \'YES\' and
