@@ -353,6 +353,7 @@ from
  inner join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id
+ left outer join eaadmin.allocation_methodology am on am.id = r.allocation_methodology_id
  left outer join eaadmin.installed_software parent on r.parent_installed_software_id = parent.id
  left outer join eaadmin.product_info parentPi on parent.software_id = parentPi.id
  left outer join eaadmin.product parentP on parentPi.id = parentP.id
