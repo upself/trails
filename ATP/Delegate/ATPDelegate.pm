@@ -413,7 +413,7 @@ sub queryATPData {
 			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
-			,ltrim(rtrim(NBR_FREE_PROCESSOR_CORES))			
+			,NBR_FREE_PROCESSOR_CORES		
         from
             atpprod.bravo
     ';
