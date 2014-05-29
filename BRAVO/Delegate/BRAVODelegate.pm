@@ -1070,6 +1070,28 @@ sub querySoftwareLparsByHardwareId {
     return ( 'softwareLparsByHardwareId', $query, \@fields );
 }
 
+sub makeInactiveScheduleFbyCustomerId {
+    my ( $self, $connection, $customerId ) = @_;
+
+    $connection->prepareSqlQuery( $self->queryInactiveScheduleFbyCustomerId() );
+
+    my $sth = $connection->sql->{inactiveScheduleFbyCustomerId};
+    $sth->execute($customerId);
+    $sth->finish;
+}
+
+sub queryInactiveScheduleFbyCustomerId {
+    my $query = '
+        update schedule_f
+        set
+            status_id = 1
+        where
+            status_id !=1 
+        and customer_id = ?
+    ';
+    return ( 'inactiveScheduleFbyCustomerId', $query );
+}
+
 sub queryContactData {
     my ($self) = @_;
 

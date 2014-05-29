@@ -703,7 +703,13 @@ sub queryHardwareData {
             ,a.customer_number
             ,a.hardware_status
             ,a.status
-            ,a.action
+            ,CASE WHEN a.action = \'COMPLETE\' THEN \'0\' ELSE 
+                  CASE WHEN a.action = \'UPDATE\' THEN \'1\' ELSE
+                       CASE WHEN a.action = \'DELETE\' THEN \'2\' ELSE
+                            substr(a.action,length(a.action),1)
+                       END
+                  END
+             END
             ,a.update_date
             ,a.processor_count
             ,a.model
@@ -729,7 +735,13 @@ sub queryHardwareData {
             ,b.customer_id
             ,b.status
             ,b.lpar_status
-            ,b.action
+            ,CASE WHEN b.action = \'COMPLETE\' THEN \'0\' ELSE 
+                  CASE WHEN b.action = \'UPDATE\' THEN \'1\' ELSE
+                       CASE WHEN b.action = \'DELETE\' THEN \'2\' ELSE
+                            substr(b.action,length(b.action),1)
+                       END
+                  END
+             END
             ,b.update_date
             ,b.ext_id
             ,b.tech_image_id
@@ -747,7 +759,13 @@ sub queryHardwareData {
             ,c.id
             ,c.processor_count
             ,c.status
-            ,c.action
+            ,CASE WHEN c.action = \'COMPLETE\' THEN \'0\' ELSE 
+                  CASE WHEN c.action = \'UPDATE\' THEN \'1\' ELSE
+                       CASE WHEN c.action = \'DELETE\' THEN \'2\' ELSE
+                            substr(c.action,length(c.action),1)
+                       END
+                  END
+             END
         from
             hardware a
             left outer join hardware_lpar b on
@@ -759,9 +777,9 @@ sub queryHardwareData {
     if ( $deltaOnly == 1 ) {
         $query .= '
         ' . $clause . '
-            (a.action != \'COMPLETE\'
-                or b.action != \'COMPLETE\'
-                or c.action != \'COMPLETE\')
+            (a.action != \'COMPLETE\' or substr(a.action,length(a.action),1) != \'0\'
+                or b.action != \'COMPLETE\' or substr(b.action,length(b.action),1) != \'0\'
+                or c.action != \'COMPLETE\' or substr(c.action,length(c.action),1) != \'0\')
         ';
         $clause = 'and';
     }
