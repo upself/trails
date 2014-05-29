@@ -174,6 +174,7 @@ sub doDelta {
     my $hwDelCount     = 0;
     my $hwLparDelCount = 0;
     my $effDelCount    = 0;
+    my $action         = 0;
 
     ilog('Executing staging hardware query');
     $sth->execute();
@@ -233,57 +234,74 @@ sub doDelta {
             if ( !$hardware->equals( $self->hardware->{$key} ) ) {
                 dlog('hardware is not equal');
                 dlog( $self->hardware->{$key}->toString );
+                
+                    $action = 10 + $action if ( $hardware->status ne $self->hardware->{$key}->status );
+                	$action = 10**2 + $action if ( $hardware->hardwareStatus ne $self->hardware->{$key}->hardwareStatus );
+                	$action = 10**3 + $action if ( $hardware->processorCount ne $self->hardware->{$key}->processorCount );
+                	$action = 10**4 + $action if ( $hardware->chips ne $self->hardware->{$key}->chips );
+                	$action = 10**5 + $action if ( $hardware->model ne $self->hardware->{$key}->model );
+                	$action = 10**6 + $action if ( $hardware->mastProcessorType ne $self->hardware->{$key}->mastProcessorType );
+                	$action = 10**7 + $action if ( $hardware->processorType ne $self->hardware->{$key}->processorType );
+                	$action = 10**8 + $action if ( $hardware->serverType ne $self->hardware->{$key}->serverType );
+                	$action = 10**9 + $action if ( $hardware->owner ne $self->hardware->{$key}->owner );
+                	$action = 10**10 + $action if ( $hardware->cpuMIPS ne $self->hardware->{$key}->cpuMIPS );
+                	$action = 10**11 + $action if ( $hardware->cpuGartnerMIPS ne $self->hardware->{$key}->cpuGartnerMIPS );
+                	$action = 10**12 + $action if ( $hardware->cpuMSU ne $self->hardware->{$key}->cpuMSU );
+                	$action = 10**13 + $action if ( $hardware->processorManufacturer ne $self->hardware->{$key}->processorManufacturer );
+                	$action = 10**14 + $action if ( $hardware->processorModel ne $self->hardware->{$key}->processorModel );
+                	$action = 10**15 + $action if ( $hardware->nbrOfChipsMax ne $self->hardware->{$key}->nbrOfChipsMax );
 
-                if ( $hardware->action eq 'COMPLETE' ) {
-                    ###Set to update if the hardware is currently complete
-                    $self->hardware->{$key}->action('UPDATE');
+                if ( $hardware->action eq '0' ) {
+                	###Set to update if the hardware is currently complete
+                    $action = $action + 1 ;                	
                 }
-                elsif ( $hardware->action eq 'ERROR' ) {
+                elsif ( $hardware->action eq '-1' ) {
                     ###Set to update if the hardware is currently complete
-                    $self->hardware->{$key}->action('UPDATE');
+                    $action = $action + 1 ;
                 }
                 else {
                     ###Set to complete so we don't save
-                    $self->hardware->{$key}->action('COMPLETE');
+                    $action = 0 ;
                 }
             }
             else {
-                if ( $hardware->action eq 'ERROR' ) {
-                    $self->hardware->{$key}->action('UPDATE');
+                if ( $hardware->action eq '-1' ) {
+                	$action = 1 ;
                 }
                 else {
                     dlog('hardware is equal, setting to complete');
-                    $self->hardware->{$key}->action('COMPLETE');
+                    $action = 0 ;
                 }
             }
+            $self->hardware->{$key}->action($action);
         }
         else {
             dlog('Hardware does not exist in atp');
 
             if ( $self->SUPER::loadDeltaOnly == 1 ) {
                 dlog("Setting to complete as this is delta only");
-                $hardware->action('COMPLETE');
+                $action = 0 ;
             }
             else {
-                if ( $hardware->action eq 'COMPLETE' ) {
+                if ( $hardware->action eq '0' ) {
                     dlog('Setting hardware to delete');
-                    $hardware->action('DELETE');
+                    $action = 2 ;
                     $hwDelCount++;
                 }
-                elsif ( $hardware->action eq 'ERROR' ) {
+                elsif ( $hardware->action eq '-1' ) {
                     dlog('Setting hardware to delete');
-                    $hardware->action('DELETE');
+                    $action = 2 ;
                     $hwDelCount++;
                 }
                 else {
                     dlog('Hardware is in update or delete, setting to complete');
-                    $hardware->action('COMPLETE');
+                    $action = 0 ;
                 }
 
                 $hardware->hardwareStatus('REMOVED');
                 $hardware->status('INACTIVE');
             }
-
+             $hardware->action($action);
             $self->hardware->{$key} = $hardware;
         }
 
@@ -324,7 +342,7 @@ sub doDelta {
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
 
         dlog( $hardwareLpar->toString );
-
+        $action = 0 ;
         if ( $self->hardwareLpar->{$lparKey} ) {
             dlog('Hardware lpar exists in atp');
 
@@ -334,56 +352,68 @@ sub doDelta {
             if ( !$hardwareLpar->equals( $self->hardwareLpar->{$lparKey} ) ) {
                 dlog('Hardware lpars are not equal');
                 dlog( $self->hardwareLpar->{$lparKey}->toString );
+                    $action = 10 + $action if ( $hardware->status ne $self->hardware->{$key}->status );
+                	$action = 10**2 + $action if ( $hardware->lparStatus ne $self->hardware->{$key}->lparStatus );
+                	$action = 10**3 + $action if ( $hardware->extId ne $self->hardware->{$key}->extId );
+                	$action = 10**4 + $action if ( $hardware->techImageId ne $self->hardware->{$key}->techImageId );
+                	$action = 10**5 + $action if ( $hardware->partMIPS ne $self->hardware->{$key}->partMIPS );
+                	$action = 10**6 + $action if ( $hardware->partMSU ne $self->hardware->{$key}->partMSU );
+                	$action = 10**7 + $action if ( $hardware->partGartnerMIPS ne $self->hardware->{$key}->partGartnerMIPS );
+                	$action = 10**8 + $action if ( $hardware->serverType ne $self->hardware->{$key}->serverType );
 
-                if ( $hardwareLpar->action eq 'COMPLETE' ) {
-                    ###Set lpar to update if it is complete
-                    $self->hardwareLpar->{$lparKey}->action('UPDATE');
+                if ( $hardwareLpar->action eq '0' ) {                    	                	           	
+                    ###Set lpar to update if it is complete              
+                	$action = $action + 1 ;          	
                 }
-                elsif ( $hardwareLpar->action eq 'ERROR' ) {
+                elsif ( $hardwareLpar->action eq '-1' ) {
                     ###Set lpar to update if it is complete
-                    $self->hardwareLpar->{$lparKey}->action('UPDATE');
+                    $action = $action + 1 ;
                 }
                 else {
                     ###set lpar to complete so we don't save
-                    $self->hardwareLpar->{$lparKey}->action('COMPLETE');
+                    $action = 0 ;
                 }
             }
             else {
                 dlog('Lpars are equal');
-                $self->hardwareLpar->{$lparKey}->action('COMPLETE');
+                $action = 0 ;
 
-                if ( $hardwareLpar->action eq 'ERROR' ) {
+                if ( $hardwareLpar->action eq '-1' ) {
                     ###Set lpar to update if it is complete
-                    $self->hardwareLpar->{$lparKey}->action('UPDATE');
+                    $action = 1 ;
                 }
             }
+            $self->hardwareLpar->{$lparKey}->action($action);
         }
         else {
             dlog('Hardware lpar is no longer in atp');
 
             if ( $self->SUPER::loadDeltaOnly == 1 ) {
                 dlog("Setting to complete as this is delta only");
-                $hardwareLpar->action('COMPLETE');
+                $action = 0 ;
+             
             }
             else {
-                if ( $hardwareLpar->action eq 'COMPLETE' ) {
+                if ( $hardwareLpar->action eq '0' ) {
                     dlog("Setting hardware lpar to delete");
-                    $hardwareLpar->action('DELETE');
+                    $action = 2 ;
+                   
                     $hwLparDelCount++;
                 }
-                elsif ( $hardwareLpar->action eq 'ERROR' ) {
+                elsif ( $hardwareLpar->action eq '-1' ) {
                     dlog('Setting hardware lpar to delete');
-                    $hardwareLpar->action('DELETE');
+                    $action = 2 ;
+                    
                     $hwLparDelCount++;
                 }
                 else {
                     dlog('Setting hardware lpar to complete to not save');
-                    $hardwareLpar->action('COMPLETE');
+                    $action = 0 ;
                 }
 
                 $hardwareLpar->status('INACTIVE');
             }
-
+            $hardwareLpar->action($action);
             $self->hardwareLpar->{$lparKey} = $hardwareLpar;
         }
 
@@ -402,7 +432,7 @@ sub doDelta {
         $effProc->status( $rec{effStatus} );
         $effProc->action( $rec{effAction} );
         dlog( $effProc->toString );
-
+        $action = 0;
         if ( $self->effProcessor->{$lparKey} ) {
             dlog('Processor count exists');
 
@@ -413,52 +443,53 @@ sub doDelta {
                 dlog('Effective processor count not equal');
                 dlog( $self->effProcessor->{$lparKey}->toString );
 
-                if ( $effProc->action eq 'COMPLETE' ) {
+                if ( $effProc->action eq '0' ) {
                     dlog('Setting effective processor count to update');
-                    $self->effProcessor->{$lparKey}->action('UPDATE');
+                    $action = 1 ;
                 }
-                elsif ( $effProc->action eq 'ERROR' ) {
+                elsif ( $effProc->action eq '-1' ) {
                     dlog('Setting effective processor count to update');
-                    $self->effProcessor->{$lparKey}->action('UPDATE');
+                    $action = 1 ;
                 }
                 else {
                     dlog('Setting processor count to complete to not save');
-                    $self->effProcessor->{$lparKey}->action('COMPLETE');
+                    $action = 0 ;
                 }
             }
             else {
                 dlog('processor count is equal');
-                $self->effProcessor->{$lparKey}->action('COMPLETE');
+                $action = 0 ;
 
-                if ( $effProc->action eq 'ERROR' ) {
+                if ( $effProc->action eq '-1' ) {
                     dlog('Setting effective processor count to update');
-                    $self->effProcessor->{$lparKey}->action('UPDATE');
+                    $action = 1 ;
                 }
             }
+            $self->effProcessor->{$lparKey}->action($action);
         }
         else {
             dlog('Processor count does not exist in atp');
 
             if ( $self->SUPER::loadDeltaOnly == 1 ) {
                 dlog("Setting to complete as this is delta only");
-                $effProc->action('COMPLETE');
+                $action = 0 ;
             }
             else {
-                if ( $effProc->action eq 'COMPLETE' ) {
-                    $effProc->action('DELETE');
+                if ( $effProc->action eq '0' ) {
+                	$action = 2 ;
                     $effDelCount++;
                 }
-                elsif ( $effProc->action eq 'ERROR' ) {
-                    $effProc->action('DELETE');
+                elsif ( $effProc->action eq '-1' ) {
+                	$action = 2 ;
                     $effDelCount++;
                 }
                 else {
-                    $effProc->action('COMPLETE');
+                	$action = 0 ;
                 }
 
                 $effProc->status('INACTIVE');
             }
-
+            $effProc->action($action);
             $self->effProcessor->{$lparKey} = $effProc;
         }
 
@@ -549,16 +580,16 @@ sub applyHardwareDeltas {
     foreach my $key ( keys %{ $self->hardware } ) {
         dlog("Applying key=$key");
 
-        $self->hardware->{$key}->action('UPDATE')
+        $self->hardware->{$key}->action(3)
             if ( !defined $self->hardware->{$key}->action );
 
-        if ( $self->hardware->{$key}->action eq 'COMPLETE' ) {
+        if ( $self->hardware->{$key}->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
             $self->hardware->{$key}->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE', $self->hardware->{$key}->action );
-            $self->hardware->{$key}->action('COMPLETE');
+            $self->hardware->{$key}->action(0);
         }
     }
 
@@ -580,23 +611,23 @@ sub applyHardwareLparDeltas {
     foreach my $key ( keys %{ $self->hardwareLpar } ) {
         dlog("Applying key=$key");
 
-        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('UPDATE')
+        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(3)
             if ( !defined $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
 
-        if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq 'COMPLETE' ) {
+        if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE',
                                   $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
-            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('COMPLETE');
+            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(0);
         }
 
-        $self->hardwareLpar->{$key}->action('UPDATE')
+        $self->hardwareLpar->{$key}->action(3)
             if ( !defined $self->hardwareLpar->{$key}->action );
 
-        if ( $self->hardwareLpar->{$key}->action eq 'COMPLETE' ) {
+        if ( $self->hardwareLpar->{$key}->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
@@ -604,7 +635,7 @@ sub applyHardwareLparDeltas {
                 ->hardwareId( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->id );
             $self->hardwareLpar->{$key}->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE_LPAR', $self->hardwareLpar->{$key}->action );
-            $self->hardwareLpar->{$key}->action('COMPLETE');
+            $self->hardwareLpar->{$key}->action(0);
         }
     }
 
@@ -622,23 +653,23 @@ sub applyEffectiveProcessorDeltas {
     foreach my $key ( keys %{ $self->effProcessor } ) {
         dlog("Applying key=$key");
 
-        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('UPDATE')
+        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(3)
             if ( !defined $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
 
-        if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq 'COMPLETE' ) {
+        if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE',
                                   $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
-            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('COMPLETE');
+            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(0);
         }
 
-        $self->hardwareLpar->{$key}->action('UPDATE')
+        $self->hardwareLpar->{$key}->action(3)
             if ( !defined $self->hardwareLpar->{$key}->action );
 
-        if ( $self->hardwareLpar->{$key}->action eq 'COMPLETE' ) {
+        if ( $self->hardwareLpar->{$key}->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
@@ -646,20 +677,20 @@ sub applyEffectiveProcessorDeltas {
                 ->hardwareId( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->id );
             $self->hardwareLpar->{$key}->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE_LPAR', $self->hardwareLpar->{$key}->action );
-            $self->hardwareLpar->{$key}->action('COMPLETE');
+            $self->hardwareLpar->{$key}->action(0);
         }
 
-        $self->effProcessor->{$key}->action('UPDATE')
+        $self->effProcessor->{$key}->action(3)
             if ( !defined $self->effProcessor->{$key}->action );
 
-        if ( $self->effProcessor->{$key}->action eq 'COMPLETE' ) {
+        if ( $self->effProcessor->{$key}->action eq '0' ) {
             dlog("Skipping this as is complete");
         }
         else {
             $self->effProcessor->{$key}->hardwareLparId( $self->hardwareLpar->{$key}->id );
             $self->effProcessor->{$key}->save($connection);
             $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', $self->effProcessor->{$key}->action );
-            $self->effProcessor->{$key}->action('COMPLETE');
+            $self->effProcessor->{$key}->action(0);
         }
     }
 }
