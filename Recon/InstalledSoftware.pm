@@ -999,6 +999,8 @@ sub attemptLicenseAllocationLpar {
 		### next unless these are lpar capacity types
 		next
 		  unless $licView->capType eq '13' || $licView->capType eq '14';
+		next
+		  if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
 		next unless defined $licView->cpuSerial;
 		next
 		  unless $licView->cpuSerial eq
@@ -1018,6 +1020,8 @@ sub attemptLicenseAllocationLpar {
 			next
 			  unless $licView->capType eq '13'
 			  || $licView->capType     eq '14';
+			next
+				if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
 			next unless defined $licView->cpuSerial;
 			next
 			  unless $licView->cpuSerial eq
@@ -1042,6 +1046,8 @@ sub attemptLicenseAllocationLpar {
 			next
 			  unless $licView->capType eq '13'
 			  || $licView->capType     eq '14';
+			next
+				if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
 			dlog("found matching license - non hw specific");
 			$licsToAllocate{$lId}  = 1;
 			$tempQuantityAllocated = 1;
@@ -1056,6 +1062,8 @@ sub attemptLicenseAllocationLpar {
 				next
 				  unless $licView->capType eq '13'
 				  || $licView->capType     eq '14';
+				next
+					if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
 				next
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;

@@ -158,6 +158,7 @@ sub validate {
         );
         
         $self->validateLparNameMatch( $self->license->capType, $self->license->licType, $self->license->lparName, $licenseAllocationView->slName, $licenseAllocationView->hlName, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
+        $self->validateMachineTypeMatch ( $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->mtType, $licenseAllocationView->rId, $self->license->id );
         
         $self->validateLicenseSoftwareMap(
             $self->licSwMap->softwareId,          $licenseAllocationView->rtIsManual,
@@ -413,6 +414,23 @@ sub validateLparNameMatch{
 
     return 1;
 }
+
+sub validateMachineTypeMatch {
+	my ( $self, $licenseCapType, $isManual, $mtType, $reconcileId, $licenseId ) = @_;
+	if( ($licenseCapType == 14 ) && ( $mtType ne 'WORKSTATION' ) )
+	{
+        if ( $isManual == 0 ) {
+                dlog("license captype 14 used on non-workstation, adding to list to break");
+                $self->addToReconcilesToBreak($reconcileId)
+                  if defined $reconcileId;
+                $self->addToDeleteQueue($licenseId) if defined $licenseId;
+                $self->validationCode(0);
+        }
+    }
+
+    return 1;
+}
+
 
 sub validateLicenseSoftwareMap {
     my ( $self, $swMapSoftwareId, $isManual, $isSoftwareId, $reconcileId, $licenseId ) = @_;

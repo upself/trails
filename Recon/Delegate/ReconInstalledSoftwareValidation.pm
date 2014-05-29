@@ -737,6 +737,11 @@ sub validateLicenseAllocation {
         }	
     }
     	
+  } elsif ($licCapType eq '14' ) {
+	  if ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) {
+		  dlog("cap.type PER WORKSTATION used on a non-workstation");
+		  return 0;
+	  }
   }  	
  }
  return 1;
