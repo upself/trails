@@ -17,7 +17,7 @@ sub needOpenAlert(){
  
    my $query = "
 select 
-h.processor_type
+h.mast_processor_type
 from 
 hardware h, hardware_lpar hl 
 where 

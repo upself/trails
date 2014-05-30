@@ -2878,7 +2878,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.serial
             ,h.processor_count
             ,h.chips
-            ,h.processor_type
+            ,h.mast_processor_type
             ,h.model
             ,h.machine_type_id
             ,h.server_type

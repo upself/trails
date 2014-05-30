@@ -197,7 +197,7 @@ select
 			is.discrepancy_type_id in ( 1, 2, 4 ) and
 			c.status = \'ACTIVE\' and
 			c.sw_license_mgmt = \'YES\' and
-			h.processor_type= ? and 
+			h.mast_processor_type= ? and 
 			h.model= ? and
 			h.machine_type_id= ? and
 			(';

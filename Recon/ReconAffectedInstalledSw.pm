@@ -100,7 +100,7 @@ sub getMappedInstalledSwQuery {
   where 
    hl.id = hsc.hardware_lpar_id
    and hw.id = hl.hardware_id
-   and pvuMap.processor_brand = hw.processor_type
+   and pvuMap.processor_brand = hw.mast_processor_type
    and pvuMap.processor_model = hw.model
    and hsc.software_lpar_id =  is.software_lpar_id
    ';
@@ -130,7 +130,7 @@ sub getMappedInstalledSwlpar {
   where 
    hl.id = hsc.hardware_lpar_id
    and hw.id = hl.hardware_id
-   and pvuMap.processor_brand = hw.processor_type
+   and pvuMap.processor_brand = hw.mast_processor_type
    and pvuMap.processor_model = hw.model
    and hsc.software_lpar_id =  is.software_lpar_id
    ';
