@@ -36,6 +36,10 @@
 #                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
 # 2014-03-11  Liu Hai(Larry) 1.7.0           Add New Operation 'ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE' And Filter Logic Support on TAP Server to process this new Operation
 #
+###################################################################################################################################################################################################
+#                                            Phase 8 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 8'
+# 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
+#
 
 #Load required modules
 use strict;

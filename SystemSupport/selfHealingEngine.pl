@@ -59,6 +59,10 @@
 #                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
 # 2014-03-11  Liu Hai(Larry) 1.7.0           System Support And Self Healing Service Components - Phase 7 - Add 'ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE' Support Feature  
 #
+###################################################################################################################################################################################################
+#                                            Phase 8 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 8'
+# 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
+#
 
 #Load required modules
 use strict;
@@ -371,7 +375,7 @@ my $HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER = "/ipAddressToBravo.pl^memModToBravo.p
 
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
 my $BATCH_SIZE = 1000;
-my $QUERY_ACCOUNT_ID_BY_NAME = "select ID from BANK_ACCOUNT where NAME = ? and CONNECTION_TYPE = ?";
+my $QUERY_ACCOUNT_ID_BY_NAME = "select ID from BANK_ACCOUNT where NAME = ? and CONNECTION_TYPE = ? and STATUS = 'ACTIVE'";
 my $QUERY_DELETE_ACCOUNT_1 = "update hdisk hd set hd.action='DELETE' where hd.id in (select hhd.id from hdisk hhd join scan_record sr on hhd.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>'DELETE' and hhd.action <> 'DELETE' fetch first $BATCH_SIZE row only);";
 my $QUERY_DELETE_ACCOUNT_2 = "update ip_address ip set ip.action='DELETE' where ip.id in (select iip.id from ip_address iip join scan_record sr on iip.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>'DELETE' and iip.action <> 'DELETE' fetch first $BATCH_SIZE row only);";
 my $QUERY_DELETE_ACCOUNT_3 = "update mem_mod mm set mm.action='DELETE' where mm.id in (select mmm.id from mem_mod mmm join scan_record sr on mmm.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>'DELETE' and mmm.action <> 'DELETE' fetch first $BATCH_SIZE row only);";
