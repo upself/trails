@@ -2607,7 +2607,7 @@ sub getInstalledSoftwareReconData {
 	
 	my ( $scopename_temp, $priofound_temp ) = getScheduleFScope( $self,
 																$installedSoftwareReconData->cId, # customer ID
-																$installedSoftwareReconData->sName, # software name
+																$installedSoftwareReconData->sId, # software ID
 																$installedSoftwareReconData->hOwner, # hardware owner ID
 																$installedSoftwareReconData->hSerial, # hardware serial
 																$installedSoftwareReconData->hMachineTypeId, #machine type
@@ -2743,7 +2743,7 @@ sub getInstalledSoftwareReconData {
 sub getScheduleFScope {
 	my $self=shift;
 	my $custId=shift;
-	my $softName=shift;
+	my $softId=shift;
 	my $hwOwner=shift;
 	my $hSerial=shift;
 	my $hMachineTypeId=shift;
@@ -2758,13 +2758,13 @@ sub getScheduleFScope {
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
-	$sth->execute( $custId, $softName );
+	$sth->execute( $custId, $softId );
 	
-	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
+	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softId);
 	
 	while ( $sth->fetchrow_arrayref ) {
 		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
-			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
+			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softId." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
@@ -2772,7 +2772,7 @@ sub getScheduleFScope {
 			$prioFound=3;
 		}
 		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
-			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
+			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softId." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
@@ -2780,7 +2780,7 @@ sub getScheduleFScope {
 			$prioFound=2;
 		}
 		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
-			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
+			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softId." found twice!");
 			return undef;
 		}
 		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
@@ -2790,7 +2790,7 @@ sub getScheduleFScope {
 		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
 	}
 	
-	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
+	dlog("custId= $custId, softId=$softId, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
 	
 	return ( $scopeToReturn, $prioFound );
 }
@@ -2820,7 +2820,7 @@ sub queryScheduleFScope {
 	  where
 	    sf.customer_id = ?
 	  and
-	    sf.software_name = ?
+	    sf.software_id = ?
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
