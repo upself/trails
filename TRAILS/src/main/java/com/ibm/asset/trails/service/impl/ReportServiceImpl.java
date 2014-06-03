@@ -593,7 +593,7 @@ public class ReportServiceImpl implements ReportService {
 				+ "l.cap_type = ct.code "
 				+ "left outer join eaadmin.customer c on "
 				+ "l.customer_id = c.customer_id "
-				+ "left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL "
+				+ "left outer join eaadmin.pvu_map pvum on h.MACHINE_TYPE_ID = pvum.MACHINE_TYPE_ID and h.MAST_PROCESSOR_TYPE = pvum.PROCESSOR_BRAND and h.MODEL = pvum.PROCESSOR_MODEL "
 				+ "left outer join eaadmin.ibm_brand ibmb on instSwMan.id=ibmb.manufacturer_id "
 				+ "left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id=am.id ";
 		String lsBaseWhereClausea = "where "
