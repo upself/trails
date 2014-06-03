@@ -61,7 +61,8 @@ sub getDisconnectedSoftwareSignatureData {
     eval{
      $self->dropTempTable($tempStagingTableConnection, $bankAccount);
     };
-    if($@){     
+    if($@){ 
+      #skip the warning if the temp table not exists.     
       die $@ if(!$@=~m/SQLSTATE=42704/);
     }
     
@@ -177,10 +178,12 @@ sub getDisconnectedSoftwareSignatureData {
                    $sth->execute(); 
              };
              if ($@) {
-               wlog($@);
+               #skip the warning
+               #DBD::DB2::st execute failed: [IBM][CLI Driver][DB2/LINUX] SQL0513W  The SQL statement will modify an entire table or view.  SQLSTATE=01504
+               die $@ if(!$@=~m/SQLSTATE=01504/);
              }
                        
-             
+             #set the first scan_record_id + software_id combination item to update, only for new items. 
              my $querySetUpdate='
               update 
                (select t.*, rownumber() over(partition by t.SCAN_RECORD_ID,t.SOFTWARE_ID order by t.software_signature_id asc) as rowid 
