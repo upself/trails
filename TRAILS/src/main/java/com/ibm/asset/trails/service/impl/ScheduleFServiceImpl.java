@@ -285,7 +285,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						}
 					} catch (Exception e) {					
 							cell.setCellStyle(lcsError);
-							e.printStackTrace();
+//							e.printStackTrace();
 							lsbErrorMessage.append(error ? "\n" : "").append(
 									e.getMessage());
 							error = true;
