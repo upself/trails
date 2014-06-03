@@ -4,10 +4,12 @@ use strict;
 use Base::Utils;
 use Staging::Loader;
 use Staging::OM::SoftwareSignature;
+use Sigbank::OM::BankAccount;
 use Scan::Delegate::ScanDelegate;
 use Staging::Delegate::StagingDelegate;
 use Scan::Delegate::SoftwareSignatureDelegate;
 use Staging::Delegate::TempSignatureTable;
+
 
 our @ISA = qw(Loader);
 
@@ -150,73 +152,19 @@ sub doDeltaWithTempTable{
     $self->removeActionDelete();
     $self->insertDeletedItems();
     
-    $connection->prepareSqlQuery( Staging::Delegate::StagingDelegate->querySoftwareSignatureData() );
+    my $bankAccountType = $self->SUPER::bankAccount->type;
+    if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
+    {
+       dlog('bank account type TLM or TAD4D');
+       $self->deleteForTad4dTLM();
+       $self->updateScanId();
+    }else{
+       dlog('bank account type none TLM or TAD4D');
+       $self->deleteForNoneTad4dTLM();
+       $self->updateNoneTad4dTLMAction();
+       $self->updateScanId();   
+    } 
 
-    ###Define our fields
-    my @fields = (qw(id softwareSignatureId softwareId action path scanRecordId scanRecordAction));
-
-    ###Get the statement handle
-    my $sth = $connection->sql->{softwareSignatureData};
-
-    ###Bind our columns
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @fields );
-
-    ###Excute the query
-    $sth->execute( $self->SUPER::bankAccount->id );
-    while ( $sth->fetchrow_arrayref ) {   
-     
-        if($rec{action} eq 'DELETE' || $rec{scanRecordAction} eq 'DELETE' ) {
-            next;
-        }
-
-        $self->SUPER::incrTotalCnt();
-        
-        dlog('softwareId='.$rec{softwareId}.' softwareSignatureId='.$rec{softwareSignatureId}.' scanRecordId='.$rec{scanRecordId} );
-                    
-        my $tempTableObj = new Staging::Delegate::TempSignatureTable;
-        $tempTableObj->softwareId($rec{softwareId});
-        $tempTableObj->softwareSignatureId($rec{softwareSignatureId});
-        $tempTableObj->scanRecordId($rec{scanRecordId} );
-        $tempTableObj->bankAccount($self->SUPER::bankAccount);
-        $tempTableObj->id(-1);
-        dlog('bank account name is:'.$tempTableObj->bankAccount->name);
-                    
-        $tempTableObj->getByBizKey($self->tempStagingTableConnection);
-        if($tempTableObj->id eq -1){
-           die 'softwareId='.$rec{softwareId}.' softwareSignatureId='.$rec{softwareSignatureId}.' scanRecordId='.$rec{scanRecordId}.
-           'not exists in source, check query in removeActionDelete()' ;
-        }
-                    
-        $tempTableObj->id($rec{id});
-                           
-
-        #Get all the keys even though there should only be one
-        my $path =  $tempTableObj->path;
-        my $scanAction= $tempTableObj->action;
-                    
-        my $bankAccountType = $self->SUPER::bankAccount->type;
-        if($bankAccountType eq 'TLM' || $bankAccountType eq 'TAD4D')
-        {
-           if( stringEqual( $rec{action}, $scanAction)||($rec{action} eq 'UPDATE' && $scanAction eq 'COMPLETE')){
-               $tempTableObj->delete($self->tempStagingTableConnection);
-            }
-            $tempTableObj->update($self->tempStagingTableConnection); 
-         }else{
-            if($self->pathChanged($path, $rec{path})){
-                if( $rec{action} eq 'COMPLETE' && $self->SUPER::bankAccountName ne 'S03INV40'){
-                      dlog("Setting record to update since path has changed");
-                      $tempTableObj->action('UPDATE');
-                      $tempTableObj->update($self->tempStagingTableConnection); 
-                 }else{
-                      $tempTableObj->delete($self->tempStagingTableConnection);
-                 }
-            }else{
-                  $tempTableObj->delete($self->tempStagingTableConnection);
-            }
-         }
-    }  ###end of while.
-    
     my $actionQty = $self->checkUpdateDeleteCnt();
     my $deleteQty  = 0;
     my $updateQty = 0;
@@ -226,8 +174,11 @@ sub doDeltaWithTempTable{
     $updateQty = $actionQty->{'UPDATE'}
                    if($actionQty->{'UPDATE'});
                    
+                   
+    $self->SUPER::totalCnt($self->getTotalCount($connection));               
     $self->SUPER::deleteCnt($deleteQty);
     $self->SUPER::updateCnt($updateQty);
+   
             
 }
 
@@ -257,6 +208,34 @@ sub checkUpdateDeleteCnt{
   return \%actionQty;  
 }
 
+
+sub getTotalCount{
+ 
+ dlog('start getTotalCount');
+ my ($self,$connection)=@_;
+ 
+ my $query = '
+ select count(*) from software_signature ss, scan_record sr
+ where 
+ ss.scan_record_id  = sr.id 
+ and (ss.action!=\'DELETE\' or sr.action!=\'DELETE\')
+ and sr.bank_account_id =?
+ ';
+
+  dlog('query='.$query);
+  $connection->prepareSqlQuery('totalCnt',$query);
+  my @fields = (qw(qty));
+  my $sth = $connection->sql->{totalCnt};
+  my %rec;
+     $sth->bind_columns( map { \$rec{$_} } @fields );
+  $sth->execute($self->SUPER::bankAccount->id); 
+  $sth->fetchrow_arrayref;
+  
+  dlog('end getTotalCount');
+  
+  return $rec{qty};  
+}
+
 sub checkTempTable{
  
  dlog('in isSignatureExists method');
@@ -278,6 +257,7 @@ sub checkTempTable{
   return $rec{qty};  
 }
 
+#insert records that exists in staging but not in temp table. 
 sub insertDeletedItems{
   my ($self)=@_;
   
@@ -298,6 +278,7 @@ and not exists (select 1 from TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name.'
   $sth->execute($self->SUPER::bankAccount->id);   
 }
 
+#remove the items in temp table that scan_record.action or software_signature.action is 'DELETE'. 
 sub removeActionDelete{
  dlog('start removeActionDelete');
  my ($self)=@_; 
@@ -319,6 +300,145 @@ where
   
   
   dlog('end removeActionDelete');
+}
+
+
+sub deleteForTad4dTLM{
+ dlog('start deleteForTad4dTLM');
+ my ($self)=@_; 
+ my $query ='
+delete from TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name.' temp
+where exists
+(
+  select 1 from 
+  scan_record sr, 
+  software_signature ss
+  where 
+  sr.bank_account_id  = ?
+  and sr.id  = ss.scan_record_id 
+  and temp.software_id = ss.software_id
+  and temp.software_signature_id = ss.software_signature_id
+  and temp.scan_record_id = sr.id
+  and (
+        (ss.action in (\'UPDATE\', \'DELETE\')  and temp.action = \'COMPLETE\')
+          or 
+        (ss.action = temp.action)
+     ) 
+)';
+      
+  dlog('queryDeleteForTad4dTLM='.$query);
+  $self->tempStagingTableConnection->prepareSqlQuery('queryDeleteForTad4dTLM',$query);
+  my $sth = $self->tempStagingTableConnection->sql->{queryDeleteForTad4dTLM};
+  $sth->execute($self->SUPER::bankAccount->id); 
+  
+  
+  dlog('end deleteForTad4dTLM');
+}
+
+
+sub deleteForNoneTad4dTLM{
+ dlog('start deleteForNoneTad4dTLM');
+ my ($self)=@_; 
+ 
+ #find the bank account under name S03INV40.
+ my $s03BA = Sigbank::Delegate::BankAccountDelegate->getBankAccountByName('S03INV40'); 
+ my $orStmt = '';
+ 
+ $orStmt = ' or (ss.path != temp.path and sr.bank_account_id = '.$s03BA->id.')'
+    if defined $s03BA->id;
+    
+ my $query ='
+delete from TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name.' temp
+where exists
+(
+  select 1 from 
+  scan_record sr, 
+  software_signature ss
+  where 
+  sr.bank_account_id  = ?
+  and sr.id  = ss.scan_record_id 
+  and temp.software_id = ss.software_id
+  and temp.software_signature_id = ss.software_signature_id
+  and temp.scan_record_id = sr.id
+  and (
+        ss.path = temp.path
+		or
+		(ss.path != temp.path and ss.action != \'COMPLETE\')
+        '.$orStmt.'		
+	)
+)';
+      
+  dlog('queryDeleteForNoneTad4dTLM='.$query);
+  $self->tempStagingTableConnection->prepareSqlQuery('queryDeleteForNoneTad4dTLM',$query);
+  my $sth = $self->tempStagingTableConnection->sql->{queryDeleteForNoneTad4dTLM};
+  $sth->execute($self->SUPER::bankAccount->id); 
+  
+  
+  dlog('end deleteForNoneTad4dTLM');
+}
+
+
+sub updateNoneTad4dTLMAction{
+ dlog('start deleteForNoneTad4dTLM');
+ my ($self)=@_; 
+ 
+ #find the bank account under name S03INV40.
+ my $s03BA = Sigbank::Delegate::BankAccountDelegate->getBankAccountByName('S03INV40'); 
+ my $andStmt = '';
+ 
+ $andStmt = ' and (ss.path != temp.path and sr.bank_account_id != '.$s03BA->id.')'
+      if defined $s03BA->id;
+    
+ my $query ='
+update TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name.' temp set temp.action = \'UPDATE\'
+where exists
+(
+  select 1 from 
+  scan_record sr, 
+  software_signature ss
+  where 
+  sr.bank_account_id  = ?
+  and sr.id  = ss.scan_record_id 
+  and temp.software_id = ss.software_id
+  and temp.software_signature_id = ss.software_signature_id
+  and temp.scan_record_id = sr.id
+  and (
+		(ss.path != temp.path and ss.action = \'COMPLETE\')
+		'.$andStmt.'
+	)
+)';
+      
+  dlog('queryUpdateNoneTad4dTLMAction='.$query);
+  $self->tempStagingTableConnection->prepareSqlQuery('queryUpdateNoneTad4dTLMAction',$query);
+  my $sth = $self->tempStagingTableConnection->sql->{queryUpdateNoneTad4dTLMAction};
+  $sth->execute($self->SUPER::bankAccount->id); 
+  
+  
+  dlog('end deleteForNoneTad4dTLM');
+}
+
+sub updateScanId{
+ dlog('start updateScanId');
+ my ($self)=@_; 
+ my $query ='
+update TEMP_SIGNATURE_'.$self->SUPER::bankAccount->name.' temp set temp.id =
+(select ss.id from 
+software_signature ss, 
+scan_record sr
+where 
+ss.scan_record_id =sr.id
+and temp.software_id  = ss.software_id
+and temp.software_signature_id  = ss.software_signature_id
+and temp.scan_record_id  = sr.id)
+where temp.id  = 0 or temp.id is null';
+      
+ dlog('queryUpdateScanId='.$query);
+ $self->tempStagingTableConnection->prepareSqlQuery('queryUpdateScanId',$query);
+ my $sth = $self->tempStagingTableConnection->sql->{queryUpdateScanId};
+ $sth->execute(); 
+   
+  
+ dlog('end updateScanId');
 }
 
 sub doDelta {
