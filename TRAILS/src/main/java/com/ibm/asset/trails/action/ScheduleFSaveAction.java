@@ -244,10 +244,14 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 				lsffManage.setMachineType(getScheduleF().getMachineType());
 				lsffManage.setHostname(getScheduleF().getHostname());
 			}
+		if (getAccount().getSoftwareFinancialManagement() != null){
 			lsffManage
 					.setComplianceReporting(getAccount()
 							.getSoftwareFinancialManagement().equalsIgnoreCase(
 									"YES") ? "YES" : "NO");
+		} else {
+			lsffManage.setComplianceReporting("NO");
+		}
 			setScheduleFForm(lsffManage);
 		}
 
