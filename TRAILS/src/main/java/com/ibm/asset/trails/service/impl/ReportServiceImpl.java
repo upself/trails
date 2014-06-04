@@ -514,8 +514,15 @@ public class ReportServiceImpl implements ReportService {
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE' else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
 				+ ",instSi.name as instSwName ";
 		
-		String lsBaseSelectClauseTwo = ", scp.DESCRIPTION as swOwner";
-		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner";
+		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from scope scop join schedule_f sf on sf.scope_id = scop.id "
+                + "where sf.customer_id = :customerId "
+                + "and sf.software_id = parentSi.id "
+                + "and ( ( sf.level = 'PRODUCT' ) "
+                + "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
+                + "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
+                + "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
+                + "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
+		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner ";
 		String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
 				+ ",aus.comments as alertAssComments "
 				+ ",instSwMan.name as instSwManName "
@@ -599,14 +606,14 @@ public class ReportServiceImpl implements ReportService {
 		String lsBaseWhereClausea = "where "
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
-				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) "
-				+ "and (sf.id in (select ssf.id  "
-                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instSi.name = ssf.SOFTWARE_NAME  order by "
-                + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
-                + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
-                + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
-                + "  4 END END END "
-                + " fetch first 1 row only ) )";
+				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) ";
+//				+ "and (sf.id in (select ssf.id  "
+//                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instSi.name = ssf.SOFTWARE_NAME  order by "
+//                + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
+//                + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
+//                + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
+//                + "  4 END END END "
+//                + " fetch first 1 row only ) )";
 		String lsBaseWhereClauseb = "where "
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
