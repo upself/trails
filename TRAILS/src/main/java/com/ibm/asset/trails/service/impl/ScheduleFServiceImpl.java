@@ -366,7 +366,11 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			// table
 			// for the new data and the old data
 			
-			if (!psfSave.getScope().equals(lsfExists.getScope()) || !psfSave.getStatus().equals(lsfExists.getStatus())){
+			if (!psfSave.getScope().equals(lsfExists.getScope()) || !psfSave.getStatus().equals(lsfExists.getStatus())
+					|| !psfSave.getSoftwareName().equals(lsfExists.getSoftwareName()) || !psfSave.getLevel().equals(lsfExists.getLevel())
+					|| !psfSave.getHostname().equals(lsfExists.getHostname()) || !psfSave.getHwOwner().equals(lsfExists.getHwOwner()) 
+					|| !psfSave.getMachineType().equals(lsfExists.getMachineType()) || !psfSave.getSerial().equals(lsfExists.getSerial()) 
+					 ){
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 			}
