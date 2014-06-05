@@ -908,23 +908,24 @@ sub load {
                                         ###BIT
                                         if ( defined $bravoInstalledType->id ) {
                                             ###BIS=SIT
-                                            dlog('BIS=A DT!=M SIT!=M BIT BIS=SIT');
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
                                                  && numericEqualOrBothUndef(
-                                                                             $bravoInstalledSoftware->users,
-                                                                             $rec{installedSoftwareTypeUsers}
+                                                                            $bravoInstalledSoftware->users,
+                                                                            $rec{installedSoftwareTypeUsers}
                                                  )
-                                                 && stringEqualOrBothUndef(
+                                                 &&( ($rec{installedSoftwareType} ne 'MANUAL')
+                                                     ||
+                                                           stringEqualOrBothUndef(
                                                                  $bravoInstalledSoftware->version,
                                                                  $rec{installedSoftwareTypeVersion}
+                                                           )
                                                  )
-                                                 && ( 
-                                                      ($rec{installedSoftwareType} eq 'TAD4Z') 
-                                                      && ($bravoInstalledSoftware->discrepancyTypeId != $self->discrepancyTypeMap->{'TADZ'}) 
-                                                  )                                               
-                                                )
+                                                 &&( ($rec{installedSoftwareType} ne 'TAD4Z')
+                                                      || ($bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'TADZ'}) 
+                                                 )
+                                               )
                                             {
                                                 ###AUTH=AUTH|1
                                                 if (
@@ -957,23 +958,24 @@ sub load {
                                         ###!BIT
                                         else {
                                             ###BIS=SIT
-                                            dlog('BIS=A DT!=M SIT!=M !BIT BIS=SIT');
                                             if (
                                                  numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
                                                                           $rec{processorCount} )
                                                  && numericEqualOrBothUndef(
                                                                              $bravoInstalledSoftware->users,
                                                                              $rec{installedSoftwareTypeUsers}
+                                                 )  
+                                                 &&( ($rec{installedSoftwareType} ne 'MANUAL') 
+                                                     ||
+                                                     stringEqualOrBothUndef(
+                                                                            $bravoInstalledSoftware->version,
+                                                                            $rec{installedSoftwareTypeVersion}
+                                                     )
                                                  )
-                                                 && stringEqualOrBothUndef(
-                                                                 $bravoInstalledSoftware->version,
-                                                                 $rec{installedSoftwareTypeVersion}
-                                                 )
-                                                 && ( 
-                                                      ($rec{installedSoftwareType} eq 'TAD4Z') 
-                                                      && ($bravoInstalledSoftware->discrepancyTypeId != $self->discrepancyTypeMap->{'TADZ'}) 
-                                                  )  
-                                                )
+                                                 &&( ($rec{installedSoftwareType} ne 'TAD4Z')
+                                                      || ($bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'TADZ'}) 
+                                                  ) 
+                                               )
                                             {
                                                 ###AUTH=AUTH|1
                                                 if (
