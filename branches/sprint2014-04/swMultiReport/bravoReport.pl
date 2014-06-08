@@ -179,9 +179,7 @@ if ( exists $ENV{SWMULTI_TEST} ) {
 	$logFile   = '/var/bravo/web/sw_vers_test/log/bravoReport-test.log';
 	$connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'              
 	                                                                                       
-#	$reportDir = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                            
-#    $JAR       = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                          
-#    $logFile   = '/tmp/bravoReport-test.log';                                            
+                                        
 }                                                                                        
 else {                                                                                   
         $reportDir = '/opt/bravo/scripts/report/target/bin';
@@ -189,7 +187,8 @@ else {
         $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log';
         $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'                                
 }                                                                                        
-                                                                                         
+
+sub max_sw_version (@);                                                                                         
 ###############################################################################          
 ### Basic Checks                                                                         
 ###                                                                                      
