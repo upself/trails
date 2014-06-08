@@ -59,6 +59,7 @@ sub load {
     my $dieMsg = undef;
     eval {
         $self->stagingLicenseIds( $self->getStagingLicenseIds );
+        $self->bravoLicenseIds( $self->getBravoActiveLicenseIds );
         $self->processLicenseIds;
     };
     if ($@) {
@@ -114,15 +115,73 @@ sub getStagingLicenseIds {
     return \@ids;
 }
 
+
+sub getBravoActiveLicenseIds {
+    my $self = shift;
+
+    my @ids;
+    my %rec;
+
+    $self->bravoConnection->prepareSqlQueryAndFields(
+                                                     $self->queryBravoActiveLicenseData($self->testMode) );
+    my $sth = $self->bravoConnection->sql->{bravoActiveLicenseData};
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->bravoConnection->sql->{bravoActiveLicenseDataFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
+        push @ids, $rec{id};
+    }
+    $sth->finish;
+
+    return \@ids;
+}
+
 sub processLicenseIds {
     my $self = shift;
 
     foreach my $id ( sort @{ $self->stagingLicenseIds } ) {
-        my $license = new BRAVO::Loader::License( $self->stagingConnection, $self->bravoConnection, $id );
+        my $license = new BRAVO::Loader::License( $self->stagingConnection, $self->bravoConnection, $id, 0  );
         $license->logic;
         $license->save if $self->applyChanges == 1;
     }
+    
+    
+    foreach my $id ( sort @{ $self->bravoLicenseIds } ) {
+        my $license = new BRAVO::Loader::License( $self->stagingConnection, $self->bravoConnection, $id, 1 );
+        $license->logicFromBravoToStaging;
+        $license->saveFromBravoToStaging if $self->applyChanges == 1;
+    }
+    
+    
+   
 }
+
+
+sub queryBravoActiveLicenseData {
+    my ($self,$testMode)   = @_;
+    my @fields = qw(
+      id
+    );
+    my $query = '
+        select
+            l.id
+        from
+            license l
+        where
+           l.status != \'INACTIVE\'
+    ';    
+
+
+
+   if ( $self->testMode == 1 ) {
+        $query .=
+          ' and l.customer_id in (' . Base::ConfigManager->instance()->testCustomerIdsAsString() . ')';
+    }
+    
+    
+    dlog("queryBravoActiveLicenseData=$query");
+    return ( 'bravoActiveLicenseData', $query, \@fields );
+}
+
 
 sub queryLicenseData {
     my $self   = shift;
@@ -173,6 +232,12 @@ sub stagingLicenseIds {
     my ( $self, $value ) = @_;
     $self->{_stagingLicenseIds} = $value if defined($value);
     return ( $self->{_stagingLicenseIds} );
+}
+
+sub bravoLicenseIds {
+    my ( $self, $value ) = @_;
+    $self->{_bravoLicenseIds} = $value if defined($value);
+    return ( $self->{_bravoLicenseIds} );
 }
 
 sub testMode {

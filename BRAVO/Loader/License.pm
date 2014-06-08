@@ -10,11 +10,12 @@ use Staging::OM::License;
 
 ###Object constructor.
 sub new {
-    my ( $class, $stagingConnection, $bravoConnection, $stagingId ) = @_;
+    my ( $class, $stagingConnection, $bravoConnection, $stagingId, $fromBravo ) = @_;
     my $self = {
         _stagingConnection   => $stagingConnection,
         _bravoConnection     => $bravoConnection,
         _stagingId           => $stagingId,
+        _fromBravo           => $fromBravo,
         _stagingLicense      => undef,
         _bravoLicense        => undef,
         _bravoLicSwMap       => undef,
@@ -42,16 +43,55 @@ sub validate {
 
     croak 'staging id is undefined'
       unless defined $self->stagingId;
+      
+      
+   if($self->fromBravo eq 0){
+      ###Get the staging license
+      $self->stagingLicense( new Staging::OM::License() );
+      $self->stagingLicense->id( $self->stagingId );
+      $self->stagingLicense->getById( $self->stagingConnection );
+      dlog( $self->stagingLicense->toString );
 
-    ###Get the staging license
-    $self->stagingLicense( new Staging::OM::License() );
-    $self->stagingLicense->id( $self->stagingId );
-    $self->stagingLicense->getById( $self->stagingConnection );
-    dlog( $self->stagingLicense->toString );
+      #TODO getbyid should return a null object
+      croak 'Cannot find staging license by ID'
+        unless defined $self->stagingLicense->extSrcId;
+    }
+    
+    
+    if($self->fromBravo eq 1){
+      ###Get the staging license
+      $self->bravoLicense( new BRAVO::OM::License() );
+      $self->bravoLicense->id( $self->stagingId );
+      $self->bravoLicense->getById( $self->bravoConnection );
+      dlog( $self->bravoLicense->toString );
 
-    #TODO getbyid should return a null object
-    croak 'Cannot find staging license by ID'
-      unless defined $self->stagingLicense->extSrcId;
+      #TODO getbyid should return a null object
+      croak 'Cannot find staging license by ID'
+        unless defined $self->bravoLicense->extSrcId;
+    } 
+    
+}
+
+sub logicFromBravoToStaging{
+  my $self = shift; 
+  
+  my $stagingLicense = new Staging::OM::License();
+  $stagingLicense->extSrcId($self->bravoLicense->extSrcId);
+  $stagingLicense->getByBizKey($self->stagingConnection);
+  dlog( $stagingLicense->toString );
+  
+  if( !defined $stagingLicense->id ){
+     $self->bravoLicense->status('INACTIVE');
+     $self->saveBravoLicense(1);
+  }
+}
+
+sub saveFromBravoToStaging{
+   my $self = shift;
+ 
+   $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 );
+   $self->recon if ( $self->saveBravoLicense == 1 );
+   
 }
 
 sub logic {
@@ -157,7 +197,7 @@ sub save {
     return if $self->stagingLicense->action eq 'COMPLETE';
 
     ###Delete the staging license and return, if we're supposed to
-    if ( $self->stagingLicense->action eq 'DELETE' ) {
+    if ( $self->stagingLicense->action eq 'DELETE' && $self->bravoLicense->status eq 'INACTIVE') {
         $self->stagingLicense->delete( $self->stagingConnection );
         return;
     }
@@ -258,6 +298,13 @@ sub deleteBravoLicSwMap {
     my ( $self, $value ) = @_;
     $self->{_deleteBravoLicSwMap} = $value if defined($value);
     return ( $self->{_deleteBravoLicSwMap} );
+}
+
+
+sub fromBravo {
+    my ( $self, $value ) = @_;
+    $self->{_fromBravo} = $value if defined($value);
+    return ( $self->{_fromBravo} );
 }
 
 1;

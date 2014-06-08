@@ -685,6 +685,126 @@ sub queryDelete {
     return ('deleteLicense', $query);
 }
 
+sub getByBizKey {
+    my($self, $connection) = @_;
+    $connection->prepareSqlQuery($self->queryGetByBizKey());
+    my $sth = $connection->sql->{getByBizKeyLicense};
+    my $id;
+    my $licType;
+    my $capType;
+    my $customerId;
+    my $softwareId;
+    my $quantity;
+    my $ibmOwned;
+    my $draft;
+    my $pool;
+    my $tryAndBuy;
+    my $expireDate;
+    my $endDate;
+    my $poNumber;
+    my $prodName;
+    my $fullDesc;
+    my $version;
+    my $cpuSerial;
+    my $licenseStatus;
+    my $swcmRecordTime;
+    my $agreementType;
+    my $environment;
+    my $lparName;
+    my $status;
+    my $action;
+    $sth->bind_columns(
+        \$id
+        ,\$licType
+        ,\$capType
+        ,\$customerId
+        ,\$softwareId
+        ,\$quantity
+        ,\$ibmOwned
+        ,\$draft
+        ,\$pool
+        ,\$tryAndBuy
+        ,\$expireDate
+        ,\$endDate
+        ,\$poNumber
+        ,\$prodName
+        ,\$fullDesc
+        ,\$version
+        ,\$cpuSerial
+        ,\$licenseStatus
+        ,\$swcmRecordTime
+        ,\$agreementType
+        ,\$environment
+        ,\$lparName
+        ,\$status
+        ,\$action
+    );
+    $sth->execute(
+        $self->extSrcId
+    );
+    $sth->fetchrow_arrayref;
+    $sth->finish;
+    $self->id($id);
+    $self->licType($licType);
+    $self->capType($capType);
+    $self->customerId($customerId);
+    $self->softwareId($softwareId);
+    $self->quantity($quantity);
+    $self->ibmOwned($ibmOwned);
+    $self->draft($draft);
+    $self->pool($pool);
+    $self->tryAndBuy($tryAndBuy);
+    $self->expireDate($expireDate);
+    $self->endDate($endDate);
+    $self->poNumber($poNumber);
+    $self->prodName($prodName);
+    $self->fullDesc($fullDesc);
+    $self->version($version);
+    $self->cpuSerial($cpuSerial);
+    $self->licenseStatus($licenseStatus);
+    $self->swcmRecordTime($swcmRecordTime);
+    $self->agreementType($agreementType);
+    $self->environment($environment);
+    $self->lparName($lparName);
+    $self->status($status);
+    $self->action($action);
+}
+
+sub queryGetByBizKey {
+    my $query = '
+        select
+            id
+            ,lic_type
+            ,cap_type
+            ,customer_id
+            ,software_id
+            ,quantity
+            ,ibm_owned
+            ,draft
+            ,pool
+            ,try_and_buy
+            ,expire_date
+            ,end_date
+            ,po_number
+            ,prod_name
+            ,full_desc
+            ,version
+            ,cpu_serial
+            ,license_status
+            ,swcm_record_time
+            ,agreement_type
+            ,environment
+            ,lpar_name
+            ,status
+            ,action
+        from
+            license
+        where
+            ext_src_id = ?
+    ';
+    return ('getByBizKeyLicense', $query);
+}
+
 sub getById {
     my($self, $connection) = @_;
     $connection->prepareSqlQuery($self->queryGetById());

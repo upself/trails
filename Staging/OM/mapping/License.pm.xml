@@ -46,4 +46,5 @@
 	<method name="save" />
 	<method name="delete" />
 	<method name="getById" />
+	<method name="getByBizKey" />
 </class>
