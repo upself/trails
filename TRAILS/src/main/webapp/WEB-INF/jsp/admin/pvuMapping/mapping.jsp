@@ -20,7 +20,7 @@ Processor model: ${pvu.processorModel}
 </div>
 
 <div class="map_hidden" id="map_stat_not_available">
-<h3>All assert models had been mapped with other processor
+<h3>All asset models had been mapped with other processor
 brand/model of software group.</h3>
 </div>
 
