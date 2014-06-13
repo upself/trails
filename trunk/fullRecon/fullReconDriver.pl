@@ -304,6 +304,7 @@ else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base 
 ,instSi.name as instSwName
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 where sf.customer_id = $customerId
+and sf.status_id=2
 and sf.software_name = parentSi.name
 and ( ( sf.level = 'PRODUCT' )
 or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' ))
@@ -353,7 +354,7 @@ from
  inner join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id
- left outer join eaadmin.allocation_methodology am on am.id = r.allocation_methodology_id
+ left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id = am.id
  left outer join eaadmin.installed_software parent on r.parent_installed_software_id = parent.id
  left outer join eaadmin.product_info parentPi on parent.software_id = parentPi.id
  left outer join eaadmin.product parentP on parentPi.id = parentP.id
