@@ -3,6 +3,8 @@ package BRAVO::CustomerLoader;
 use strict;
 use Base::Utils;
 use CNDB::Delegate::CNDBDelegate;
+use BRAVO::OM::ScheduleF;
+use BRAVO::OM::ScheduleFHistory;
 use BRAVO::Delegate::BRAVODelegate;
 use Sigbank::Delegate::SystemScheduleStatusDelegate;
 
@@ -275,7 +277,42 @@ sub list {
 sub inactiveScheduleF {
     my ( $self, $connection, $customerId ) = @_;
     dlog('Start inactiveSheduleF method');
-    BRAVO::Delegate::BRAVODelegate->makeInactiveScheduleFbyCustomerId($connection, $customerId);
+    my @scheduleFIds = 
+              BRAVO::Delegate::BRAVODelegate->getScheduleFbyCustomerId($connection, $customerId);
+     foreach my $scheduleFId (@scheduleFIds) {
+        my $scheduleF = new BRAVO::OM::ScheduleF();
+        $scheduleF->id( $scheduleFId );
+        $scheduleF->getById($connection); 
+        if (defined $scheduleF->id){
+            my $scheduleFh = new BRAVO::OM::ScheduleFHistory();
+                $scheduleFh->scheduleFId($scheduleF->id);
+                $scheduleFh->softwareId( $scheduleF->softwareId);
+                $scheduleFh->customerId($scheduleF->customerId);
+                $scheduleFh->softwareTitile($scheduleF->softwareTitile);
+                $scheduleFh->softwareName($scheduleF->softwareName);
+                $scheduleFh->manufacturer($scheduleF->manufacturer);
+                $scheduleFh->scopeId($scheduleF->scopeId);
+                $scheduleFh->sourceId($scheduleF->sourceId);
+                $scheduleFh->sourceLocation($scheduleF->sourceLocation);
+                $scheduleFh->statusId($scheduleF->statusId);
+                $scheduleFh->businessJustification($scheduleF->businessJustification);
+                $scheduleFh->remoteUser($scheduleF->remoteUser);
+                $scheduleFh->recordTime($scheduleF->recordTime);
+                $scheduleFh->level($scheduleF->level);
+                $scheduleFh->hwOwner($scheduleF->hwOwner);
+                $scheduleFh->serial($scheduleF->serial);
+                $scheduleFh->machineType($scheduleF->machineType);
+                $scheduleFh->hostname($scheduleF->hostname);
+                dlog( $scheduleFh->toString );
+                $scheduleFh->save($connection);
+                dlog('ScheduleFHistory Saved');
+                 $scheduleF->remoteUser('STAGING');
+                 $scheduleF->businessJustification('Customer set Out of scope for SWLM');
+                 dlog( $scheduleF->toString );
+                 $scheduleF->save($connection);	
+                 dlog('ScheduleF Updated');
+        }
+     }
 }
 
 ###Checks arguments passed to load method.

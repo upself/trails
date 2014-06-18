@@ -1070,26 +1070,42 @@ sub querySoftwareLparsByHardwareId {
     return ( 'softwareLparsByHardwareId', $query, \@fields );
 }
 
-sub makeInactiveScheduleFbyCustomerId {
-    my ( $self, $connection, $customerId ) = @_;
+sub getScheduleFbyCustomerId {
+  my ( $self, $connection, $customerId ) = @_;
 
-    $connection->prepareSqlQuery( $self->queryInactiveScheduleFbyCustomerId() );
+    my @scheduleFIds;
 
-    my $sth = $connection->sql->{inactiveScheduleFbyCustomerId};
-    $sth->execute($customerId);
-    $sth->finish;
+    ###Prepare and execute the necessary sql
+    $connection->prepareSqlQueryAndFields( $self->queryScheduleFbyCustomerId() );
+    my $sth = $connection->sql->{scheduleFbyCustomerId};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{scheduleFbyCustomerIdFields} } );
+	$sth->execute( $customerId );
+	while ( $sth->fetchrow_arrayref ) {
+		push @scheduleFIds, $rec{id};
+	}
+	$sth->finish;
+	return @scheduleFIds;
 }
 
-sub queryInactiveScheduleFbyCustomerId {
+sub queryScheduleFbyCustomerId {
+    my ($self) = @_;
+
+    my @fields = (
+        qw(
+            id
+            )
+    );
     my $query = '
-        update schedule_f
-        set
-            status_id = 1
+        select 
+         id 
+        from 
+         schedule_f 
         where
             status_id !=1 
         and customer_id = ?
     ';
-    return ( 'inactiveScheduleFbyCustomerId', $query );
+    return ( 'scheduleFbyCustomerId', $query, \@fields );
 }
 
 sub queryContactData {
