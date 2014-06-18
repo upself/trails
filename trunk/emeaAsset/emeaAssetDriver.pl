@@ -62,7 +62,7 @@ my $sth1 = $dbh->prepare("set schema eaadmin");
 $sth1->execute;
 
 $generateFilesSQL =
-"select account_number from customer where country_code_id in (select id from eaadmin.country_code where region_id in (select id from eaadmin.region where geography_id = 2)) with ur";
+"select account_number from customer where country_code_id in (select id from eaadmin.country_code where region_id in (select id from eaadmin.region where geography_id in (2,6))) with ur";
 
 my @accountNumbers;
 
