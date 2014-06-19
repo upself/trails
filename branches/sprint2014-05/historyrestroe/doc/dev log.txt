@@ -1,0 +1,148 @@
+--
+SELECT ID FROM FINAL TABLE ( 
+INSERT INTO RECONCILE_H( 
+INSTALLED_SOFTWARE_ID, 
+RECONCILE_TYPE_ID, 
+PARENT_INSTALLED_SOFTWARE_ID, 
+COMMENTS, 
+REMOTE_USER, 
+RECORD_TIME, 
+MACHINE_LEVEL, 
+RECONCILE_H, 
+MANUAL_BREAK 
+) VALUES ( 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+? 
+)) 
+
+
+SELECT ID FROM FINAL TABLE( 
+INSERT INTO H_USED_LICENSE( 
+LICENSE_ID, 
+USED_QUANTITY, 
+CAPACITY_TYPE_ID 
+) VALUES ( 
+?, 
+?, 
+? 
+)) 
+
+
+
+
+--insert into reconcile_h table. 
+INSERT INTO RECONCILE_H( 
+INSTALLED_SOFTWARE_ID, 
+RECONCILE_TYPE_ID, 
+PARENT_INSTALLED_SOFTWARE_ID, 
+COMMENTS, 
+REMOTE_USER, 
+RECORD_TIME, 
+MACHINE_LEVEL, 
+RECONCILE_H, 
+MANUAL_BREAK 
+) VALUES ( 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+?, 
+? 
+) 
+
+-- insert into h_used_license table. 
+INSERT INTO H_USED_LICENSE( 
+LICENSE_ID, 
+USED_QUANTITY, 
+CAPACITY_TYPE_ID 
+) VALUES ( 
+?, 
+?, 
+? 
+) 
+
+
+-- insert into reconcile used license mapping table. 
+INSERT INTO H_RECONCILE_USED_LICENSE(
+H_RECONCILE_ID, 
+H_USED_LICENSE_ID 
+) VALUES ( 
+?, 
+? 
+) 
+
+
+--schema of reconcile table. sample data. 
+INSTALLED_SOFTWARE_ID RECONCILE_TYPE_ID ID                   PARENT_INSTALLED_SOFTWARE_ID COMMENTS                                                                                                                                                                                                                                                        REMOTE_USER                      RECORD_TIME                MACHINE_LEVEL RECONCILE_H MANUAL_BREAK ALLOCATION_METHODOLOGY_ID
+--------------------- ----------------- -------------------- ---------------------------- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------------------------------- -------------------------- ------------- ----------- ------------ -------------------------
+                  647                 3              6310050                          647 Covered with IBM TIVOLI STORAGE MANAGER, PO: 53897164, SWCM id: 618185, on same HW box level with IBM Tivoli Storage Manager                                                                                                                                    michaelajandova@cz.ibm.com       2012-12-03-07.57.35.382000             0           0            0                         -
+
+  1 record(s) selected.
+
+
+
+--testing of insert into reconcile_h
+INSERT INTO RECONCILE_H( INSTALLED_SOFTWARE_ID, RECONCILE_TYPE_ID, PARENT_INSTALLED_SOFTWARE_ID, COMMENTS, REMOTE_USER, RECORD_TIME, MACHINE_LEVEL, RECONCILE_H, MANUAL_BREAK ) VALUES ( 647, 1, 647, 'AUTO RECON', 'STAGING', '2013-10-01 17:49:33.385', 1, 0, 0 ) 
+7232619
+
+
+--testing, created mappings. 
+ids:7232619,2283486
+
+-- constraints on reconcile_h.
+IID    TABSCHEMA                                                                                                                        TABNAME                                                                                                                          INDSCHEMA                                                                                                                        INDNAME                                                                                                                          INDEXTYPE UNIQUERULE COLCOUNT UNIQUE_COLCOUNT TABLESPACE                                                                                                                       COLNAMES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------ -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- --------- ---------- -------- --------------- -------------------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     3 EAADMIN                                                                                                                          RECONCILE_H                                                                                                                      EAADMIN                                                                                                                          IF1RECONCILEH                                                                                                                    REG       D                 1              -1 HISTORYINDEX                                                                                                                     +RECONCILE_TYPE_ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+     5 EAADMIN                                                                                                                          RECONCILE_H                                                                                                                      EAADMIN                                                                                                                          IF2RECONCILEH                                                                                                                    REG       D                 1              -1 HISTORYINDEX                                                                                                                     +PARENT_INSTALLED_SOFTWARE_ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+     2 EAADMIN                                                                                                                          RECONCILE_H                                                                                                                      EAADMIN                                                                                                                          IF3RECONCILEH                                                                                                                    REG       U                 1               1 HISTORYINDEX                                                                                                                     +INSTALLED_SOFTWARE_ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+     4 EAADMIN                                                                                                                          RECONCILE_H                                                                                                                      EAADMIN                                                                                                                          IF4RECONCILEH                                                                                                                    CLUS      U                 3               3 HISTORYINDEX                                                                                                                     +INSTALLED_SOFTWARE_ID+RECONCILE_TYPE_ID+ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+     1 EAADMIN                                                                                                                          RECONCILE_H                                                                                                                      EAADMIN                                                                                                                          PKRECONCILEH                                                                                                                     REG       P                 1               1 HISTORYINDEX                                                                                                                     +ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
+  5 record(s) selected.
+  
+  
+ -- constraints on h_used_license. 
+IID    TABSCHEMA                                                                                                                        TABNAME                                                                                                                          INDSCHEMA                                                                                                                        INDNAME                                                                                                                          INDEXTYPE UNIQUERULE COLCOUNT UNIQUE_COLCOUNT TABLESPACE                                                                                                                       COLNAMES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------ -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- --------- ---------- -------- --------------- -------------------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     2 EAADMIN                                                                                                                          H_USED_LICENSE                                                                                                                   EAADMIN                                                                                                                          IF1HUSEDLICENSE                                                                                                                  CLUS      U                 3               2 HISTORYINDEX                                                                                                                     +LICENSE_ID+ID+USED_QUANTITY                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+     1 EAADMIN                                                                                                                          H_USED_LICENSE                                                                                                                   EAADMIN                                                                                                                          PKHUSEDLICENSE                                                                                                                   REG       P                 1               1 HISTORYINDEX                                                                                                                     +ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+	 
+	 
+	 
+-- constraints on reconcile mapping table. 	 
+	 IID    TABSCHEMA                                                                                                                        TABNAME                                                                                                                          INDSCHEMA                                                                                                                        INDNAME                                                                                                                          INDEXTYPE UNIQUERULE COLCOUNT UNIQUE_COLCOUNT TABLESPACE                                                                                                                       COLNAMES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------ -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- --------- ---------- -------- --------------- -------------------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     1 EAADMIN                                                                                                                          H_RECONCILE_USED_LICENSE                                                                                                         EAADMIN                                                                                                                          PKHRECONCILEUSEDLI                                                                                                               CLUS      P                 2               2 HISTORYINDEX                                                                                                                     +H_RECONCILE_ID+H_USED_LICENSE_ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+
+  1 record(s) selected.
+
+
+  2 record(s) selected.
+ 
+
+-- command to boot the loader. 
+cat /dev/null > log.txt;
+nohup java -cp restore.jar:db2jcc_license_cu.jar:db2jcc.jar Restore /home/zyizhang/restore/conf.txt > log.txt &
+
+
+--config for dst. 
+driver=com.ibm.db2.jcc.DB2Driver
+url=jdbc:db2://dst20lp05.boulder.ibm.com:50000/trailspd
+user=eaadmin
+password=<deleted>
+
+-- config for trailspd
+driver=com.ibm.db2.jcc.DB2Driver
+url=jdbc:db2://9.17.246.19:60084/trailspd
+user=eaadmin
+password=<deleted>
