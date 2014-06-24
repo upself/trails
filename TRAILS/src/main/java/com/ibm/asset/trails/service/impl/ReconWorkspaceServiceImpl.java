@@ -563,7 +563,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					String lsProcessorBrand = pAlertUnlicensedSw
 							.getInstalledSoftware().getSoftwareLpar()
 							.getHardwareLpar().getHardware()
-							.getProcessorBrand();
+							.getMastProcessorType();
 					String lsProcessorModel = pAlertUnlicensedSw
 							.getInstalledSoftware().getSoftwareLpar()
 							.getHardwareLpar().getHardware()
