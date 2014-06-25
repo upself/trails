@@ -383,7 +383,7 @@ my $QUERY_DELETE_ACCOUNT_4 = "update processor ps set ps.action='DELETE' where p
 my $QUERY_DELETE_ACCOUNT_5 = "update software_signature s set s.action='DELETE' where s.id in (select ss.id from software_signature ss join scan_record sr on ss.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>'DELETE' and ss.action <> 'DELETE' fetch first $BATCH_SIZE row only );";
 my $QUERY_DELETE_ACCOUNT_6 = "update software_filter f set f.action='DELETE' where f.id in (select ft.id from software_filter ft join scan_record sr on ft.scan_record_id=sr.id where sr.bank_account_id = ? and sr.action<>'DELETE' and ft.action <> 'DELETE' fetch first $BATCH_SIZE row only ) ;";
 my $QUERY_DELETE_ACCOUNT_7 = "update scan_record set action='DELETE' where bank_account_id = ? and action<>'DELETE';";
-my $QUERY_DELETE_ACCOUNT_8 = "UPDATE BANK_ACCOUNT SET STATUS = 'INACTIVE', REMOTE_USER = 'Operation GUI', RECORD_TIME = CURRENT TIMESTAMP where name = ";
+my $QUERY_DELETE_ACCOUNT_8 = "UPDATE BANK_ACCOUNT SET STATUS = 'INACTIVE', REMOTE_USER = 'Operation GUI', RECORD_TIME = CURRENT TIMESTAMP where name = ?";
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
 
 main();
@@ -2631,10 +2631,9 @@ sub deleteBankAccountFromTrails(){
   my $accountName = shift;
   my $connection = $bravoConnection;
   print LOG "Deleting bank account from TRAILS - start\n";
-  $QUERY_DELETE_ACCOUNT_8 .= "'$accountName'"; # I know this is bad, I am sry, I am having weird bug when using normally binding values.
-  $connection->prepareSqlQuery($accountName,$QUERY_DELETE_ACCOUNT_8);
-  my $sth = $connection->sql->{$accountName};
-  $sth->execute();
+  $connection->prepareSqlQuery("DELETE8",$QUERY_DELETE_ACCOUNT_8);
+  my $sth = $connection->sql->{"DELETE8"};
+  $sth->execute($accountName);
   $sth->finish;
   print LOG "Deleting bank account from TRAILS - end\n";
 }
@@ -2648,77 +2647,89 @@ sub deleteBankAccountFromStaging(){
   print LOG "Starting query 1\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_1);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE1",$QUERY_DELETE_ACCOUNT_1);
+    my $sth = $connection->sql->{"DELETE1"};
     $sth->execute($accountID);
-    $sth->finish;
     $counter = $sth->rows();
+    $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 1\n";
+  print LOG "counter: $counter \n";
   print LOG "Starting query 2\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_2);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE2",$QUERY_DELETE_ACCOUNT_2);
+    my $sth = $connection->sql->{"DELETE2"};
     $sth->execute($accountID);
-    $sth->finish;
     $counter = $sth->rows();
+    $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 2\n";
+  print LOG "counter: $counter \n";
   print LOG "Starting query 3\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_3);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE3",$QUERY_DELETE_ACCOUNT_3);
+    my $sth = $connection->sql->{"DELETE3"};
     $sth->execute($accountID);
-    $sth->finish;
     $counter = $sth->rows();
+    $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 3\n";
+  print LOG "counter: $counter \n";
   print LOG "Starting query 4\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_4);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE4",$QUERY_DELETE_ACCOUNT_4);
+    my $sth = $connection->sql->{"DELETE4"};
     $sth->execute($accountID);
-    $sth->finish;
     $counter = $sth->rows();
+    $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 4\n";
+  print LOG "counter: $counter \n";
   print LOG "Starting query 5\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_5);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE5",$QUERY_DELETE_ACCOUNT_5);
+    my $sth = $connection->sql->{"DELETE5"};
     $sth->execute($accountID);
     $counter = $sth->rows();
     $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 5\n";
   print LOG "Starting query 6\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_6);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE6",$QUERY_DELETE_ACCOUNT_6);
+    my $sth = $connection->sql->{"DELETE6"};
     $sth->execute($accountID);
     $counter = $sth->rows();
     $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
 
   print LOG "End of query 6\n";
+  print LOG "counter: $counter \n";
   print LOG "Starting query 7\n";
 
   do{
-    $connection->prepareSqlQuery($accountID,$QUERY_DELETE_ACCOUNT_7);
-    my $sth = $connection->sql->{$accountID};
+    $connection->prepareSqlQuery("DELETE7",$QUERY_DELETE_ACCOUNT_7);
+    my $sth = $connection->sql->{"DELETE7"};
     $sth->execute($accountID);
     $counter = $sth->rows();
     $sth->finish;
+  print LOG "counter: $counter \n";
   }while($counter>0);
   print LOG "End of query 7\n";
 
