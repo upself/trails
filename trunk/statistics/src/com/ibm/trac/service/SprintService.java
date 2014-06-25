@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.ibm.trac.DBConnect;
 import com.ibm.trac.domain.Sprint;
@@ -180,9 +181,14 @@ public class SprintService extends AbstractJDBCService {
 			ResultSet effortRs = tracStmt.executeQuery();
 
 			while (effortRs.next()) {
-				float effort = effortRs.getFloat(3);
-				if (Float.NaN == effort) {
-					effort = 0;
+				String effortStr = effortRs.getString(3).trim();
+				float effort = 0;
+
+				Pattern pattern = Pattern.compile("^(-)?\\d+(\\.\\d+)?$");
+				if (effortStr != null
+						&& !"".equals(effortStr)
+						&& pattern.matcher(effortStr).matches()) {
+					effort = Float.valueOf(effortStr);
 				}
 				effortTotal += effort;
 			}
