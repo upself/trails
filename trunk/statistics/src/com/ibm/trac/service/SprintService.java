@@ -79,7 +79,7 @@ public class SprintService extends AbstractJDBCService {
 			queryAll = c.createStatement();
 
 			ResultSet rs = queryAll
-					.executeQuery("select id, name, start,end, effort,width, height from sprint");
+					.executeQuery("select id, name, start,end, effort,width, height from sprint order by name");
 
 			while (rs.next()) {
 				Sprint s = new Sprint();
@@ -180,7 +180,11 @@ public class SprintService extends AbstractJDBCService {
 			ResultSet effortRs = tracStmt.executeQuery();
 
 			while (effortRs.next()) {
-				effortTotal += effortRs.getFloat(3);
+				float effort = effortRs.getFloat(3);
+				if (Float.NaN == effort) {
+					effort = 0;
+				}
+				effortTotal += effort;
 			}
 
 			if (effortTotal > 0) {
