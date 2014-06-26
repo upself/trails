@@ -179,7 +179,7 @@ else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base 
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 where sf.customer_id = $customerId
 and sf.status_id=2
-and sf.software_name = parentSi.name
+and sf.software_name = instSi.name
 and ( ( sf.level = 'PRODUCT' )
 or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' ))
 or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' ))
