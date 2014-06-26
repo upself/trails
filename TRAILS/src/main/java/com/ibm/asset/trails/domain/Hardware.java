@@ -17,9 +17,9 @@ import javax.persistence.Table;
 @Table(name = "HARDWARE")
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
-        @NamedQuery(name = "assetProcessorModels", query = "select distinct processorModel from Hardware h where h.processorBrand = :processorBrand and h.processorModel is not null and h.processorModel != ''"),
-        @NamedQuery(name = "processorBrandList", query = "select distinct processorBrand from Hardware where processorBrand is not null and processorBrand != ''"),
-        @NamedQuery(name = "machineTypeListForProcessorBrand", query = "SELECT distinct m FROM Hardware H join h.machineType m WHERE H.processorBrand = :processorBrand ORDER BY m.name") })
+        @NamedQuery(name = "assetProcessorModels", query = "select distinct processorModel from Hardware h where h.mastProcessorType = :processorBrand and h.processorModel is not null and h.processorModel != ''"),
+        @NamedQuery(name = "processorBrandList", query = "select distinct mastProcessorType from Hardware where mastProcessorType is not null and processorBrand != ''"),
+        @NamedQuery(name = "machineTypeListForProcessorBrand", query = "SELECT distinct m FROM Hardware H join h.machineType m WHERE H.mastProcessorType = :processorBrand ORDER BY m.name") })
 public class Hardware {
 
     @Id
