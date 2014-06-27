@@ -34,16 +34,22 @@ public class DatabaseDeterminativeServiceImpl implements DatabaseDeterminativeSe
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	@Qualifier("trailsst")
 	public boolean checkSyncTime() throws HibernateException, Exception {
+		try {
 		 Integer result = (Integer) ((Session) getStEntityManager()
 					.getDelegate())
 					.createSQLQuery(
 							"SELECT ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET")
 					.uniqueResult();
+		
        if (result < gapseconds) {
     	   return true;
        } else {
 		return false;
        }
+       
+		} catch (Exception e){		
+				return false;		
+		}
 	}
 	
 	private EntityManager getPdEntityManager() {
