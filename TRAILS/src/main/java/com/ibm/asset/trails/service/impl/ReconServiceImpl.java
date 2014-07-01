@@ -26,11 +26,14 @@ import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
 import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
+import com.ibm.asset.trails.domain.MachineType;
+import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconInstalledSoftware;
 import com.ibm.asset.trails.domain.ReconLicense;
 import com.ibm.asset.trails.domain.Reconcile;
 import com.ibm.asset.trails.domain.ReconcileH;
+import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
 import com.ibm.asset.trails.service.AllocationMethodologyService;
@@ -98,13 +101,58 @@ public class ReconServiceImpl implements ReconService {
 		if (hwStatus.equalsIgnoreCase("ACTIVE")) {
 			if (lparStatus.equalsIgnoreCase("ACTIVE")
 					|| lparStatus.equalsIgnoreCase("INACTIVE")
-					|| lparStatus.equalsIgnoreCase(null)) {
+					|| lparStatus.equalsIgnoreCase(null)) {			
 				return true;
 			}
 		}
 		return false;
 	}
+	
+	public int validateScheduleFowner(AlertUnlicensedSw alert){
+		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				    alert.getInstalledSoftware().getProductInfo().getName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+		int owner = 2;
+		if (scheduleF != null){
+		String[] scDesParts = scheduleF.getScope().getDescription().split(",");
+		
+	    	if (scDesParts[0].contains("IBM owned")) {
+		    	owner = 1;
+		    } else if (scDesParts[0].contains("Customer owned")) {
+		    	owner = 0;
+		    } 
+		}
+		return owner;
+	}
 
+	private ScheduleF getScheduleFItem(Account account, String swname, String name, String owner, String machineType, String serial) {
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createQuery(
+						" from ScheduleF a where a.account =:account and a.productInfo.name =:swname order by " +
+						" CASE WHEN  a.level='HOSTNAME' and a.hostname =:hostname THEN 1 ELSE " +
+                        " CASE WHEN  a.level='HWBOX' and a.serial =:serial and a.machineType =:machineType THEN 2 ELSE " +
+                        " CASE WHEN  a.level='HWOWNER' and  a.hwOwner =:owner THEN 3 ELSE " +
+                        " 4 END END END " +
+                        "  ")
+				.setParameter("account", account)
+				.setParameter("swname", swname)
+				.setParameter("hostname", name)
+				.setParameter("serial", serial)
+				.setParameter("machineType", machineType)
+				.setParameter("owner", owner).getResultList();
+		ScheduleF result;
+		if (results == null || results.isEmpty()) {
+			result = null;
+		} else {
+			result = results.get(0);
+		}
+		return result;
+	}
+	
 	private void closeAlert(AlertUnlicensedSw alert) {
 		if (alert.isOpen()) {
 			createAlertHistory(alert);
@@ -317,7 +365,7 @@ public class ReconServiceImpl implements ReconService {
 	public Long manualReconcileByAlert(Long alertId,
 			InstalledSoftware parentInstalledSoftware, Recon pRecon,
 			String remoteUser, String comments, Account account,
-			Map<License, Integer> pmLicenseApplied, String psMethod) {
+			Map<License, Integer> pmLicenseApplied, String psMethod, int owner) {
 		AlertUnlicensedSw aus = getEntityManager().find(
 				AlertUnlicensedSw.class, alertId);
 		List<AlertUnlicensedSw> llAlertUnlicensedSw = new ArrayList<AlertUnlicensedSw>();
@@ -376,7 +424,9 @@ public class ReconServiceImpl implements ReconService {
 
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
 				boolean bReconcileValidation = reconcileValidate(lausTemp);
-				if (bReconcileValidation) {
+				int alertlistSwOwner = validateScheduleFowner(lausTemp);
+				if (alertlistSwOwner == owner && owner !=2) {
+				 if (bReconcileValidation) {
 					if (lausTemp.isOpen()) {
 						reconcile = createReconcile(
 								lausTemp.getInstalledSoftware(),
@@ -424,6 +474,7 @@ public class ReconServiceImpl implements ReconService {
 							remoteUser);
 				}
 			}
+		  }
 
 			return aus.getInstalledSoftware().getSoftwareLpar()
 					.getHardwareLpar().getHardware().getId();

@@ -17,8 +17,9 @@ public interface ReconService {
     public Long manualReconcileByAlert(Long alertId,
             InstalledSoftware parentInstalledSoftware, Recon pRecon,
             String remoteUser, String comments, Account account,
-            Map<License, Integer> pmLicenseApplied, String psMethod);
+            Map<License, Integer> pmLicenseApplied, String psMethod,int owner);
 
     public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
             Account account, String remoteUser);
+    public int validateScheduleFowner(AlertUnlicensedSw alert);
 }

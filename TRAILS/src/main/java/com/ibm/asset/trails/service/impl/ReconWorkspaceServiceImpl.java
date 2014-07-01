@@ -253,8 +253,15 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 		setAlertsProcessed(0);
 		setAlertsTotal(lalAlertUnlicensedSw.size());
-		if (!lalAlertUnlicensedSw.isEmpty() && liLicensesNeeded > 0) {
+		int owner = reconService.validateScheduleFowner(lausTemp);
+		if (!lalAlertUnlicensedSw.isEmpty() && liLicensesNeeded > 0 && owner!=2) {
+			
 			for (License llTemp : pRecon.getLicenseList()) {
+				
+				if(llTemp.getIbmOwned() != (owner == 1?true:false)){
+					continue;
+				}
+				
 				if (!lmLicenseAvailableQty.containsKey(llTemp.getId())) {
 					lmLicenseAvailableQty.put(llTemp.getId(),
 							llTemp.getAvailableQty());
@@ -291,7 +298,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			if (liLicensesNeeded == 0) {
 				reconService.manualReconcileByAlert(alertId, null, pRecon,
 						psRemoteUser, null, pAccount, lmLicenseApplied,
-						"selected");
+						"selected", owner);
 			}
 		}
 		setAlertsProcessed(getAlertsProcessed() + 1);
@@ -316,15 +323,21 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		log.debug("lalAlertUnlicensedSw: " + lalAlertUnlicensedSw.size());
 		for (Long alertId : lalAlertUnlicensedSw) {
 			AlertUnlicensedSw lausTemp = alertDAO.findById(alertId);
+			int owner = reconService.validateScheduleFowner(lausTemp);
 			liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
 			lbProcessAlert = processAlert(pRecon, lmHardwareId, lausTemp);
 
-			if (liLicensesNeeded > 0 && lbProcessAlert) {
+			if (liLicensesNeeded > 0 && lbProcessAlert && owner!=2) {
 				lmTempLicenseAvailableQty = new HashMap<Long, Integer>();
 				copyMap(lmLicenseAvailableQty, lmTempLicenseAvailableQty);
 				lmLicenseApplied = new HashMap<License, Integer>();
 
 				for (License llTemp : pRecon.getLicenseList()) {
+
+					if(llTemp.getIbmOwned() != (owner == 1?true:false)){
+						continue;
+					}
+					
 					if (!lmTempLicenseAvailableQty.containsKey(llTemp.getId())) {
 						lmTempLicenseAvailableQty.put(llTemp.getId(),
 								llTemp.getAvailableQty());
@@ -366,7 +379,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				if (liLicensesNeeded == 0) {
 					llHardwareId = reconService.manualReconcileByAlert(alertId,
 							null, pRecon, psRemoteUser, null, pAccount,
-							lmLicenseApplied, "group");
+							lmLicenseApplied, "group", owner);
 					if (llHardwareId != null) {
 						lmHardwareId.put(llHardwareId, llHardwareId);
 					}
