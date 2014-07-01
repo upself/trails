@@ -367,12 +367,53 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			// for the new data and the old data
 			
 			if (!psfSave.getScope().equals(lsfExists.getScope()) || !psfSave.getStatus().equals(lsfExists.getStatus())
-					|| !psfSave.getSoftwareName().equals(lsfExists.getSoftwareName()) || !psfSave.getLevel().equals(lsfExists.getLevel())
-					|| !psfSave.getHostname().equals(lsfExists.getHostname()) || !psfSave.getHwOwner().equals(lsfExists.getHwOwner()) 
-					|| !psfSave.getMachineType().equals(lsfExists.getMachineType()) || !psfSave.getSerial().equals(lsfExists.getSerial()) 
-					 ){
+					){
+					lbSaveExistReconRow = true;
+			}
+			
+			if ( !psfSave.getSoftwareName().equals(lsfExists.getSoftwareName()) || !psfSave.getLevel().equals(lsfExists.getLevel())) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+			
+			if ( psfSave.getHostname() !=null && lsfExists.getHostname() != null) {
+				if ( !psfSave.getHostname().equals(lsfExists.getHostname())){
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
+				}
+			} else if((psfSave.getHostname() !=null && lsfExists.getHostname() == null)||(psfSave.getHostname() ==null && lsfExists.getHostname() != null)) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+			
+			if ( psfSave.getHwOwner() !=null && lsfExists.getHwOwner() != null) {
+				if ( !psfSave.getHwOwner().equals(lsfExists.getHwOwner())){
+					lbSaveReconRow = true;
+					lbSaveExistReconRow = true;
+				}
+			} else if((psfSave.getHwOwner() !=null && lsfExists.getHwOwner() == null)||(psfSave.getHwOwner() ==null && lsfExists.getHwOwner() != null)) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+			
+			if ( psfSave.getMachineType() !=null && lsfExists.getMachineType() != null) {
+				if ( !psfSave.getMachineType().equals(lsfExists.getMachineType())){
+					lbSaveReconRow = true;
+					lbSaveExistReconRow = true;
+				}
+			} else if((psfSave.getMachineType() !=null && lsfExists.getMachineType() == null)||(psfSave.getMachineType() ==null && lsfExists.getMachineType() != null)) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+			
+			if ( psfSave.getSerial() !=null && lsfExists.getSerial() != null) {
+				if ( !psfSave.getSerial().equals(lsfExists.getSerial())){
+					lbSaveReconRow = true;
+					lbSaveExistReconRow = true;
+				}
+			} else if((psfSave.getSerial() !=null && lsfExists.getSerial() == null)||(psfSave.getSerial() ==null && lsfExists.getSerial() != null)) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
 			}
 
 			
