@@ -6,18 +6,20 @@ PROPERTY_FILE=/opt/trails/conf/trails.properties
 GSA_USER=`cat $PROPERTY_FILE|grep gsa.user.name|cut -d'=' -f2`
 GSA_PWD=`cat $PROPERTY_FILE|grep gsa.password|cut -d'=' -f2`
 MY_LOG=$LOGS_FOLDER/TrailsArchiveLogs.log
-LOG_CONTENT="starting TrailsArchiveLogs script\n"
+LOG_CONTENT="===============`date '+%Y%m%d%H%M'`====================\n"
+LOG_CONTENT+="starting TrailsArchiveLogs script"
 RETURN_CODE=0;
 
-
 cd $TEMP_FOLDER
-tar -zcvf $ARCHIVE_FILE_NAME $LOGSFOLDER/* >/dev/null 2>tar.error
+rm ftp.error
+rm tar.error
+tar -Pzcvf $ARCHIVE_FILE_NAME $LOGS_FOLDER/* >/dev/null 2>tar.error
 
-if [ -s tar.error ] then 
-	LOG_CONTENT.="Error during 'taring' logs transaction\n" 
-	RETURN_CODE=1
-else 
-	LOG_CONTENT.="Succesfully 'tared' the logs\n" 
+if [ -s tar.error ]; then
+    LOG_CONTENT+="Error during 'taring' logs transaction\n"
+    RETURN_CODE=1
+else
+    LOG_CONTENT+="Succesfully 'tared' the logs\n"
 fi
 
 ftp -n<<! 2> ftp.error
@@ -25,7 +27,7 @@ close
 open bejgsa.ibm.com
 user $GSA_USER $GSA_PWD
 binary
-prompt
+.prompt
 
 cd /gsa/bejgsa/projects/s/swtools/trails/
 
@@ -36,18 +38,19 @@ close
 bye
 !
 
-
-if [ test -s ftp.error ] then 
-	LOG_CONTENT.="Error during 'ftping' logs transaction\n" 
-	RETURN_CODE=1
+if [ -s ftp.error ]; then
+    LOG_CONTENT+="Error during 'ftping' logs transaction\n"
+    RETURN_CODE=1
 else
-	LOG_CONTENT.="Succesfully 'ftped' the logs\n" 
+    LOG_CONTENT+="Succesfully 'ftped' the logs\n"
 fi
 
 cd $LOGS_FOLDER
 rm -f *
 rm -f $TEMP_FOLDER/$ARCHIVE_FILE_NAME
 
-LOG_CONTENT="Removed logs file\n"
-LOG_CONTENT="Ending TrailsArchiveLogs script\n"
-return RETURN_CODE
+LOG_CONTENT+='Removed logs file\n'
+LOG_CONTENT+='Ending TrailsArchiveLogs script\n'
+LOG_CONTENT+='=================================================\n'
+echo -e $LOG_CONTENT >> $MY_LOG
+exit $RETURN_CODE
