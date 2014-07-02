@@ -59,6 +59,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"SW Processor Count"
 		,"HW Processor Count"
 		,"HW_EXT_ID"
+		,"SW_EXT_ID"
 		,"HW_TI_ID"
 		,"SW_TI_ID"
 		,"HW Chips"

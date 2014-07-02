@@ -20,6 +20,7 @@
 			</c:if>
 			<th class="blue-med">Scan Time</th>
 			<th class="blue-med">Acquisition Time</th>
+			<th class="blue-med">SW_EXT_ID</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -64,6 +65,8 @@
 						value="${lpar.softwareLpar.scantimeDate}" /></font></td>
 					<td><font class="orange-dark"><c:out
 						value="${lpar.softwareLpar.acquisitionDate}" /></font></td>
+					<td><font class="orange-dark"><c:out
+						value="${lpar.softwareLpar.extId}" /></font></td>
 				</c:otherwise>
 			</c:choose>
 		</tr>

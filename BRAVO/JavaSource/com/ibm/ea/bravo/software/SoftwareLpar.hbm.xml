@@ -45,7 +45,9 @@
 			type="timestamp" not-null="true" />
 
 		<property name="status" column="STATUS" length="32"
-			not-null="true" index="IDX_SWLSTS" /><!--
+			not-null="true" index="IDX_SWLSTS" />
+		<property name="extId" column="EXT_ID" length="8" />
+		<!--
 
 		<property name="objectId" column="OBJECT_ID" length="128" />
 
@@ -75,8 +77,6 @@
 		<property name="serverType" column="SERVER_TYPE" length="64" />
 
 		<property name="techImgId" column="TECH_IMG_ID" length="64" />
-
-		<property name="extId" column="EXT_ID" length="8" />
 
 		<property name="memory" column="MEMORY" type="integer" />
 

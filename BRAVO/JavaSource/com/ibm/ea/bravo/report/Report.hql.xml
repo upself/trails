@@ -379,7 +379,8 @@
 				,case when software_lpar_eff.status = 'ACTIVE' then software_lpar_eff.processor_count
 				 else software_lpar.processor_count end as processor_count
 				,hardware.processor_count as hw_processor_count
-				,hardware_lpar.ext_id as ext_id
+				,hardware_lpar.ext_id as hw_ext_id
+				,software_lpar.ext_id as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
 				,software_lpar.TECH_IMG_ID as sw_ti_id
 				,hardware.chips as chips
@@ -450,7 +451,8 @@
 				,date(nullif(1,1)) as scan_time
 				,0 as processor_count
 				,hardware.processor_count as hw_processor_count
-				,hardware_lpar.ext_id as ext_id
+				,hardware_lpar.ext_id as hw_ext_id
+				,'' as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
 				,'' as sw_ti_id
 				,hardware.chips as chips
@@ -516,7 +518,8 @@
 				,date(nullif(1,1)) as scan_time
 				,0 as processor_count
 				,0 as hw_processor_count
-				,'' as ext_id
+				,'' as hw_ext_id
+				,'' as sw_ext_id
 				,'' as hw_ti_id
 				,'' as sw_ti_id
 				,0 as chips
