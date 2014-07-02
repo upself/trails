@@ -74,7 +74,7 @@ function getAvailableProcessorModels(value)
   }
   
     
-  var poststr = "processorBrand="+encodeURI($("#asset_processor_brand_select").val())
+  var poststr = "processorBrand="+encodeURIComponent($("#asset_processor_brand_select").val())
                +"&pvuId="+encodeURI(${pvu.id}) + "&machineTypeId=" +
                encodeURI($("#machineTypeSelect").val());
   
