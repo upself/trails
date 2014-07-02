@@ -95,6 +95,7 @@ use Base::ConfigManager;#Require the Staging Project Package
 use Database::Connection;
 use HealthCheck::OM::Event;
 use HealthCheck::Delegate::EventLoaderDelegate;
+use Config::Properties::Simple;
 
 #Globals
 my $eventRuleDefinitionFile = "/home/liuhaidl/working/scripts/eventCheckRuleDefinition.properties";
@@ -434,6 +435,8 @@ my $DB_CONNECTION_SUCCESS_KEY_MESSAGE = "Database Connection Information";
 my %WEEKDAY_HASH = ("Monday"=>1,"Tuesday"=>2,"Wednesday"=>3,"Thursday"=>4,"Friday"=>5,"Saturday"=>6,"Sunday"=>7);
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
 
+my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');       
+my %dbs; # To store database login credentials
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
 
 ###Initialize properties
@@ -499,8 +502,9 @@ sub init{
     #Load Event Meta Data
     loadEventMetaData();
 
-	#Load Event Rule And Email Information Definition
+	#Load Event Rule And Email Information Definition                                                                                                                         
     loadEventRuleAndEmailInformationDefinition();
+    
 }
 
 #This method is used to load event meta data
@@ -2572,18 +2576,28 @@ sub eventRuleCheck{
                    `. $monitoringDBProfile`;
                    print LOG "Database Exception Status Check Monitoring - The Monitoring Database Profile {$monitoringDBProfile} has been set.\n"; 
 
-				   my @monitoringDBsDefinitionArray = split(/\'/,$monitoringDBsDefinitionList);
+				   my @monitoringDBsDefinitionArray = split(/\&/,$monitoringDBsDefinitionList);
 				   my $monitoringDBDefinition;#var used to store monitoring database definition - for example: 'TRAILS~TRAILSPD~eaadmin~Gr77nday~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
 				   foreach $monitoringDBDefinition(@monitoringDBsDefinitionArray){
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Definition: {$monitoringDBDefinition}\n";
 				     my @monitoringDBDefinitionArray = split(/\~/,$monitoringDBDefinition);
 				     my $monitoringDBAlias = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX]);#For example: 'TRAILS'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Alias: {$monitoringDBAlias}\n";
-				     my $monitoringDBRealName = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX]);#For example: 'TRAILSPD'
+				     my $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX];#For example: 'trails.name'
+				     my $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'TRAILS'
+				     my $monitoringDBRealName = trim($monitoringDBtmp2);#For example: 'TRAILS'
+                               
+                     if ( $monitoringDBRealName eq "TRAILS" ){ # In HME config, it was TRAILSPD. In connection config, it just says TRAILS. Nasty workaroud here.
+					   $monitoringDBRealName.="DB";
+				     }
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Real Name: {$monitoringDBRealName}\n";
-				     my $monitoringDBUserId = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX]);#For example: 'eaadmin'
+				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX];#For example: 'trails.name'
+				     $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'eaadmin'
+				     my $monitoringDBUserId = trim($monitoringDBtmp2);#For example: 'eaadmin'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database UserId: {$monitoringDBUserId}\n";
-				     my $monitoringDBPassword = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX]);#For example: 'Gr77nday'
+				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX];#For example: 'trails.password'
+				     $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'Gr77nday'
+				     my $monitoringDBPassword = trim($monitoringDBtmp2);#For example: 'Gr77nday'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Password: {$monitoringDBPassword}\n";
 				     my $monitoringDBLocatedServer = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_LOCATED_SERVER_INDEX]);#For example: 'dst20lp05.boulder.ibm.com'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Located Server: {$monitoringDBLocatedServer}\n";
