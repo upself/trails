@@ -63,6 +63,9 @@
 #                                            Phase 8 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 8'
 # 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
 #
+######################################################################
+#                                            Phase 5A Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 5A'
+# 2014-07-02 Tomas 1.5.1 System Support And Self Healing Service Components - Phase 5A - Enhancement for Restart Remote Web App Feature of SelfHealing? Engine to check and cleanup filesystem space 
 
 #Load required modules
 use strict;
@@ -260,7 +263,7 @@ my $LOGIN = "/[l|L]ogin:/";
 my $PASSWORD = "/[p|P]assword:/";
 my $MATCH = "Match";
 #General Prompt Pattern
-my $PROMPT = '/[\?>] ?$|\? ?$|\$ ?$|[\?\>] ?$|\% +$|hp\)\s*$/';
+my $PROMPT = '/[\?>] ?$|\? ?$|\$ ?$|[\?\>] ?$|tapmf*#|\% +$|hp\)\s*$/';
 my $SHELL_XTERM_TYPE = "xterm";
 
 my $EXECUTE_SUCCESS_STRING = "done";
@@ -386,6 +389,11 @@ my $QUERY_DELETE_ACCOUNT_7 = "update scan_record set action='DELETE' where bank_
 my $QUERY_DELETE_ACCOUNT_8 = "UPDATE BANK_ACCOUNT SET STATUS = 'INACTIVE', REMOTE_USER = 'Operation GUI', RECORD_TIME = CURRENT TIMESTAMP where name = ?";
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
 
+my $TRAILS_FILESPACE_FOLDER = "/var/trails";
+my $BRAVO_FILESPACE_FOLDER = "/var/bravo";
+my $BRAVO_ARCHIVE_SCRIPTS_DIR="/opt/bravo/war/";
+my $TRAILS_ARCHIVE_SCRIPTS_DIR="/opt/trails/war/";
+my $LOGFILESPACETHRESHOLD = 70;
 main();
 
 #This is the main method of Self Healing Engine
@@ -397,6 +405,7 @@ sub main{
 
 #This method is used to do init operations
 sub init{
+	
   #Log File Operation
   $currentDate = getCurrentTimeStamp($STYLE3);#Get the current date using format YYYYMMDD
   $selfHealingEngineLogFile.= ".$currentDate";
@@ -1647,14 +1656,19 @@ sub coreOperationProcess{
 		}#end elsif($SERVER_MODE eq $TAP)
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Host Server: {$targetHostServer}.");
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - Telnet the Remote {$targetHostServer} Server started.");
-
+		my $executeClearLoggingSpace = ""; 
+		my $executeLoggingSpaceCheckCommand  = "";
 		if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
 		  $executeStopCommand = $STOP_TOMCAT_FOR_BRAVO;
 		  $executeStartCommand = $START_TOMCAT_FOR_BRAVO;
+		  $executeClearLoggingSpace = "sudo bash -c '$BRAVO_ARCHIVE_SCRIPTS_DIR/ArchiveLogs.sh && bash $BRAVO_ARCHIVE_SCRIPTS_DIR/ArchiveTomcatLogs.sh && echo CLEANED_FILESPACE'";
+		  $executeLoggingSpaceCheckCommand = "df -h 2>/dev/null | grep $BRAVO_FILESPACE_FOLDER\$ | rev | cut -d' ' -f2 | cut -c 2- | rev";
 		}#end if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION)
 		elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
 		  $executeStopCommand = $STOP_TOMCAT_FOR_TRAILS;
 		  $executeStartCommand = $START_TOMCAT_FOR_TRAILS;
+		  $executeClearLoggingSpace = "sudo bash -c  '$TRAILS_ARCHIVE_SCRIPTS_DIR/ArchiveLogs.sh && sudo bash $TRAILS_ARCHIVE_SCRIPTS_DIR/ArchiveTomcatLogs.sh && echo CLEANED_FILESPACE'";
+		  $executeLoggingSpaceCheckCommand = "df -h 2>/dev/null | grep $TRAILS_FILESPACE_FOLDER\$ | rev | cut -d' ' -f2 | cut -c 2- | rev";
 		}#end elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION)
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command: {$executeStopCommand} has been set.");
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command: {$executeStartCommand} has been set.");
@@ -1662,6 +1676,7 @@ sub coreOperationProcess{
 		#Create Telnet Object
 		$telnet=new Net::Telnet('Host'=>$targetHostServer
 							   ,'Port'=>$PORT);
+		$telnet->errmode('return');					   
 
 		#Set Timeout Time
 		$telnet->timeout($COMMAND_MONITOR_TIMEOUT);
@@ -1702,85 +1717,119 @@ sub coreOperationProcess{
 			    #Execute the Stop Tomcat for Bravo/Trails Unix Command
 			    $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Basic Input Line with Regex String {$PROMPT}",$telnet->errmsg);
 
-			    if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 4
-				  $telnet->print($executeStopCommand);
+				  if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 3B	
 
-				  $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Sudo Password with Regex String {$PASSWORD}",$telnet->errmsg);
+				    @msgReturnLines = $telnet->cmd($executeLoggingSpaceCheckCommand);
+                    #@msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Basic Input Line with Regex String {$PROMPT}",$telnet->errmsg);
+				    if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD){ # Is there enought filespace for logs?
+                      printMessageWithTimeStamp("The filespace for logs are full, cleaning the filespace\n");
+				      $telnet->print($executeClearLoggingSpace); # clean the filespace
+           		      $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Login Password with Regex String {$PASSWORD}",$telnet->errmsg);
 
-				  if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 5
-				    $telnet->print($telnetPassword);#Login Password
+       			      $telnet->print($telnetPassword);# Fill the password for 'sudo' command
+				      @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Stop Status with Regex String {$PROMPT}",$telnet->errmsg);
 
-				    @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Stop Status with Regex String {$PROMPT}",$telnet->errmsg);
-                    printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Stop Messages have been returned successfully.");
+	  				  if (!grep( "CLEANED_FILESPACE", @msgReturnLines )) { # Was in the output of command for cleaning filespace a string "CLEANED_FILESPACE"? eq. Did ArchiveLogs scripts ran correctly?
+					    printMessageWithTimeStamp("Scripts for cleaning log files failed");
+	  					if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
+		                  &error("The Self Healing Engine - Restart Web Application Bravo Operation has been executed failed due to reason", "The Web Application related file system space cleanup operation has been executed failed.");
+		                }#end if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION)
+		                  elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
+		                    &error("The Self Healing Engine - Restart Web Application Trails Operation has been executed failed due to reason", "The Web Application related file system space cleanup operation has been executed failed.");
+	  			        }
+				      }
+
+				      @msgReturnLines = $telnet->cmd($executeLoggingSpaceCheckCommand);
+	  				  #@msgReturnLines = $telnet->waitfor($PROMPT) or &error("Operation for restarting BRAVO/TRAILS web applicatioin failed due the failure during cleaning up logs to free the filespace {$PROMPT}",$telnet->errmsg);
+
+				      if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD){ # we check if filespace is free after cleanup
+				  	    printMessageWithTimeStamp("The filespace for logs are still full, We were not succesful cleaning the logs\n");
+		                &error("The Self Healing Engine - Restart Web Application Trails Operation has been executed failed due to reason", "The Web Application related file system space cleanup operation has been executed failed.");
+				      }else{
+				  	    printMessageWithTimeStamp("Cleaniung of the filespace was succesfull, continuing with BRAVO/TRAILS restart operation.");
+				      } #if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD)
+				    } #if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD)
+
+  			        if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 4
+				      $telnet->print($executeStopCommand);
+
+				      $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Sudo Password with Regex String {$PASSWORD}",$telnet->errmsg);
+
+				      if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 5
+				        $telnet->print($telnetPassword);#Login Password
+
+				        @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Stop Status with Regex String {$PROMPT}",$telnet->errmsg);
+                        printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Stop Messages have been returned successfully.");
 				   
-				    if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 6
-					  my $msgReturnLineIndex = 1;
-					  my $successStringPosition;
-					  $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
+					    if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 6
+
+  					      my $msgReturnLineIndex = 1;
+					      my $successStringPosition;
+					      $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
 				   
-					  foreach my $msgReturnLine(@msgReturnLines){
-					    chomp($msgReturnLine);
-					    print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Stop Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
-					    $msgReturnLineIndex++;
+					      foreach my $msgReturnLine(@msgReturnLines){
+					        chomp($msgReturnLine);
+					        print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Stop Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
+					        $msgReturnLineIndex++;
 					  
-					    $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
-					    if($successStringPosition!=-1){
-						  $executeResultValue = $EXECUTE_SUCCESS;
-						  last;
-					    }#end if($successStringPosition!=-1)
-					  }#end foreach my $msgReturnLine(@msgReturnLines)
+					        $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
+					        if($successStringPosition!=-1){
+						      $executeResultValue = $EXECUTE_SUCCESS;
+						      last;
+					        }#end if($successStringPosition!=-1)
+					      }#end foreach my $msgReturnLine(@msgReturnLines)
 
-					  if($executeResultValue == $EXECUTE_SUCCESS){
-					     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed successfully.");
+					      if($executeResultValue == $EXECUTE_SUCCESS){
+					         printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed successfully.");
 		 
-					     #Execute the Start Tomcat for Bravo/Trails Unix Command 
-					     $telnet->print($executeStartCommand);
-					     @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Start Status with Regex String {$PROMPT}",$telnet->errmsg);
-                         printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Start Messages have been returned successfully.");
+					         #Execute the Start Tomcat for Bravo/Trails Unix Command 
+					         $telnet->print($executeStartCommand);
+					         @msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Web Application Start Status with Regex String {$PROMPT}",$telnet->errmsg);
+                             printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Web Application Start Messages have been returned successfully.");
 				
-              	         if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 7
-						   my $msgReturnLineIndex = 1;
-						   my $successStringPosition;
-						   $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
+              	             if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 7
+						       $msgReturnLineIndex = 1;
+						       $executeResultValue = $EXECUTE_FAIL;#set the initail value to be fail
 
-						   foreach my $msgReturnLine(@msgReturnLines){
-						     chomp($msgReturnLine);
-						     print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Start Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
-						     $msgReturnLineIndex++;
+						       foreach my $msgReturnLine(@msgReturnLines){
+						         chomp($msgReturnLine);
+						         print LOG "The Restart Remote Bravo/Tails Web Application - The Web Application Start Message Return Line[$msgReturnLineIndex]: {$msgReturnLine}\n";
+						         $msgReturnLineIndex++;
 						  
-						     $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
-						     if($successStringPosition!=-1){
-						 	   $executeResultValue = $EXECUTE_SUCCESS;
-						 	   last;
-						     }#end if($successStringPosition!=-1)
-						   }#end foreach my $msgReturnLine(@msgReturnLines)
+						         $successStringPosition = index($msgReturnLine,$EXECUTE_SUCCESS_STRING);
+						         if($successStringPosition!=-1){
+						 	       $executeResultValue = $EXECUTE_SUCCESS;
+						 	       last;
+						         }#end if($successStringPosition!=-1)
+						       }#end foreach my $msgReturnLine(@msgReturnLines)
 						
-						   if($executeResultValue == $EXECUTE_SUCCESS){ 
-						     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed successfully.");
-						   }#end if($executeResultValue == $EXECUTE_SUCCESS)
-						   else{
-						     $operationErrorFlag = $TRUE;
-					         $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-                             $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-                             $operationFailedComments.="The Target Execute Start Command {$executeStartCommand} has been executed failed.";
-						     printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed failed.");
-					       }
-					     }#end if($operationErrorFlag == $FALSE) - 7
-					   }#end if($executeResultValue == $EXECUTE_SUCCESS)
-					   else{
-					      $operationErrorFlag = $TRUE;
-						  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-                          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-                          $operationFailedComments.="The Target Execute Stop Command {$executeStopCommand} has been executed failed.";
-						  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed failed.");
-				       }
-				    }#$operationErrorFlag == $FALSE - 6
-				  }#$operationErrorFlag == $FALSE - 5
-			    }#$operationErrorFlag == $FALSE - 4
-              }#$operationErrorFlag == $FALSE - 3A 
-			}#$operationErrorFlag == $FALSE - 3   
-		  }#$operationErrorFlag == $FALSE - 2
-		}#$operationErrorFlag == $FALSE - 1
+						       if($executeResultValue == $EXECUTE_SUCCESS){ 
+						         printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed successfully.");
+						       }#end if($executeResultValue == $EXECUTE_SUCCESS)
+						       else{
+						         $operationErrorFlag = $TRUE;
+					             $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                                 $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                                 $operationFailedComments.="The Target Execute Start Command {$executeStartCommand} has been executed failed.";
+						         printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Start Command {$executeStartCommand} has been executed failed.");
+					           }
+					         }#end if($operationErrorFlag == $FALSE) - 7
+					       }#end if($executeResultValue == $EXECUTE_SUCCESS)
+					       else{
+					          $operationErrorFlag = $TRUE;
+						      $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+                              $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                              $operationFailedComments.="The Target Execute Stop Command {$executeStopCommand} has been executed failed.";
+						      printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Execute Stop Command {$executeStopCommand} has been executed failed.");
+				           }
+				        }#$operationErrorFlag == $FALSE - 6
+				      }#$operationErrorFlag == $FALSE - 5
+			        }#$operationErrorFlag == $FALSE - 4
+		          }#$operationErrorFlag == $FALSE - 3b
+                }#$operationErrorFlag == $FALSE - 3A 
+			  }#$operationErrorFlag == $FALSE - 3   
+		    }#$operationErrorFlag == $FALSE - 2
+		  }#$operationErrorFlag == $FALSE - 1
 
 		if($operationErrorFlag == $FALSE){
 		  printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Remote Web Application Restart Operation has been finished successfully.");
