@@ -337,6 +337,18 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					if(llTemp.getIbmOwned() != (owner == 1?true:false)){
 						continue;
 					}
+					if(pRecon.getPer().equalsIgnoreCase("HWGARTMIPS") && llTemp.getCapacityType().getCode()!=70){
+						continue;    }
+					if(pRecon.getPer().equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=5){
+						continue; 	}
+					if(pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
+						continue; 	}
+					if(pRecon.getPer().equalsIgnoreCase("LPARLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
+						continue; 	}
+					if(pRecon.getPer().equalsIgnoreCase("HWMSU")  && llTemp.getCapacityType().getCode()!=9){
+						continue; 	}
+					if(pRecon.getPer().equalsIgnoreCase("LPARMSU")  && llTemp.getCapacityType().getCode()!=9){
+						continue; 	}
 					
 					if (!lmTempLicenseAvailableQty.containsKey(llTemp.getId())) {
 						lmTempLicenseAvailableQty.put(llTemp.getId(),
@@ -545,7 +557,12 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			AlertUnlicensedSw pAlertUnlicensedSw) {
 		int liLicensesNeeded = 0;
 		String lsPer = pRecon.getPer();
-		int liMaxLicenses = lsPer.equalsIgnoreCase("PVU") ? 0 : pRecon
+		int liMaxLicenses = (lsPer.equalsIgnoreCase("PVU")||lsPer.equalsIgnoreCase("HWGARTMIPS")
+				||lsPer.equalsIgnoreCase("LPARGARTMIPS")
+				||lsPer.equalsIgnoreCase("HWLSPRMIPS")
+				||lsPer.equalsIgnoreCase("LPARLSPRMIPS")
+				||lsPer.equalsIgnoreCase("HWMSU")
+				||lsPer.equalsIgnoreCase("LPARMSU")) ? 0 : pRecon
 				.getMaxLicenses().intValue();
 
 		if (lsPer.equalsIgnoreCase("LPAR")
@@ -644,7 +661,39 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			} else {
 				liLicensesNeeded = 0;
 			}
-		} else { // lsPer.equalsIgnoreCase("PROCESSOR") || //
+		} else if (lsPer.equalsIgnoreCase("HWGARTMIPS")
+				||lsPer.equalsIgnoreCase("LPARGARTMIPS")
+				||lsPer.equalsIgnoreCase("HWLSPRMIPS")
+				||lsPer.equalsIgnoreCase("LPARLSPRMIPS")
+				||lsPer.equalsIgnoreCase("HWMSU")
+				||lsPer.equalsIgnoreCase("LPARMSU")) {
+			
+			if(lsPer.equalsIgnoreCase("HWGARTMIPS")){
+			liLicensesNeeded = Integer.valueOf( pAlertUnlicensedSw.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getCpuGartnerMips() == null? 0 : pAlertUnlicensedSw.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getCpuGartnerMips().intValue());}
+			if(lsPer.equalsIgnoreCase("LPARGARTMIPS")){
+				liLicensesNeeded = Integer.valueOf( pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartGartnerMips() == null? 0 :pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartGartnerMips().intValue());}
+			if(lsPer.equalsIgnoreCase("HWLSPRMIPS")){
+				liLicensesNeeded = Integer.valueOf( pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getCpuLsprMips() == null? 0 : pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getCpuLsprMips().intValue());}
+			if(lsPer.equalsIgnoreCase("LPARLSPRMIPS")){
+				liLicensesNeeded = Integer.valueOf(pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartLsprMips() == null? 0 : pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartLsprMips().intValue());}
+			if(lsPer.equalsIgnoreCase("HWMSU")){
+				liLicensesNeeded = Integer.valueOf( pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getCpuMsu() == null? 0 : pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getCpuMsu().intValue());}
+			if(lsPer.equalsIgnoreCase("LPARMSU")){
+				liLicensesNeeded = Integer.valueOf( pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartMsu() == null? 0 : pAlertUnlicensedSw.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getPartMsu().intValue());}
+		}
+		else { // lsPer.equalsIgnoreCase("PROCESSOR") || //
 			// lsPer.equalsIgnoreCase("HWPROCESSOR")
 			VSoftwareLpar lVSoftwareLpar = vSwLparDAO
 					.findById(pAlertUnlicensedSw.getInstalledSoftware()

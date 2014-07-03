@@ -4,7 +4,15 @@
 <script type="text/javascript">
 <!--
 	function disableLicenses(pfoAllocation) {
-		if (pfoAllocation.value == 'PVU') {
+		if (pfoAllocation.value == 'PVU'
+				|| pfoAllocation.value == 'PVU'
+				|| pfoAllocation.value == 'HWGARTMIPS'
+				|| pfoAllocation.value == 'LPARGARTMIPS'
+				|| pfoAllocation.value == 'HWLSPRMIPS'
+				|| pfoAllocation.value == 'LPARLSPRMIPS'
+				|| pfoAllocation.value == 'HWMSU'
+				|| pfoAllocation.value == 'LPARMSU'
+			) {
 			document.showManualConfirmation.maxLicenses.value="";
 			document.showManualConfirmation.maxLicenses.disabled = true;
 		} else {

@@ -108,6 +108,52 @@ public class ReconServiceImpl implements ReconService {
 		return false;
 	}
 	
+	private boolean reconcileValidate(AlertUnlicensedSw alert, Recon lrecon,int totalUsedlicenses) {
+		String hwStatus = alert.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getHardware().getHardwareStatus();
+		String lparStatus = alert.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getLparStatus();
+		if (hwStatus.equalsIgnoreCase("ACTIVE")) {
+			if (lparStatus.equalsIgnoreCase("ACTIVE")
+					|| lparStatus.equalsIgnoreCase("INACTIVE")
+					|| lparStatus.equalsIgnoreCase(null)) {		
+			
+				if(lrecon.getPer().equalsIgnoreCase("HWGARTMIPS") && 
+					totalUsedlicenses < Integer.valueOf(alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware().getCpuGartnerMips().intValue())){
+					return false;
+					}
+				if(lrecon.getPer().equalsIgnoreCase("LPARGARTMIPS") &&
+					totalUsedlicenses < Integer.valueOf( alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getPartGartnerMips().intValue())){
+					return false;
+					}
+				if(lrecon.getPer().equalsIgnoreCase("HWLSPRMIPS") &&
+					totalUsedlicenses < Integer.valueOf(  alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getHardware().getCpuLsprMips().intValue())){
+					return false;
+				    }
+				if(lrecon.getPer().equalsIgnoreCase("LPARLSPRMIPS") &&
+					totalUsedlicenses < Integer.valueOf( alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getPartLsprMips().intValue())){
+					return false;
+				    }
+				if(lrecon.getPer().equalsIgnoreCase("HWMSU") && 
+					totalUsedlicenses < Integer.valueOf( alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getHardware().getCpuMsu().intValue())){
+					return false;
+				    }
+				if(lrecon.getPer().equalsIgnoreCase("LPARMSU") && 
+					totalUsedlicenses < Integer.valueOf( alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getPartMsu().intValue())){
+					return false;
+				    }		
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public int validateScheduleFowner(AlertUnlicensedSw alert){
 		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				    alert.getInstalledSoftware().getProductInfo().getName(),
@@ -390,7 +436,10 @@ public class ReconServiceImpl implements ReconService {
 		if (!lbFoundZero) {
 			if (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
 					|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
-					|| pRecon.getPer().equalsIgnoreCase("PVU")) {
+					|| pRecon.getPer().equalsIgnoreCase("PVU")
+					|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
+					|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
+					|| pRecon.getPer().equalsIgnoreCase("HWMSU")) {
 				llAlertUnlicensedSw.addAll(findAffectedAlertList(account, aus
 						.getInstalledSoftware().getProductInfo().getId(), aus
 						.getInstalledSoftware().getSoftwareLpar()
@@ -403,7 +452,7 @@ public class ReconServiceImpl implements ReconService {
 			liLicenseApplied = pmLicenseApplied.entrySet().iterator();
 			Set<UsedLicense> usedLicenses = new HashSet<UsedLicense>();
 			Set<UsedLicenseHistory> usedLicenseHistories = new HashSet<UsedLicenseHistory>();
-
+            int totalUsedLicenses = 0 ;
 			while (liLicenseApplied.hasNext()) {
 				leTemp = liLicenseApplied.next();
 
@@ -413,6 +462,7 @@ public class ReconServiceImpl implements ReconService {
 				ul.setCapacityType(leTemp.getKey().getCapacityType());
 				getEntityManager().persist(ul);
 				usedLicenses.add(ul);
+				totalUsedLicenses += ul.getUsedQuantity();
 
 				UsedLicenseHistory ulh = new UsedLicenseHistory();
 				ulh.setLicense(leTemp.getKey());
@@ -423,7 +473,7 @@ public class ReconServiceImpl implements ReconService {
 			}
 
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
-				boolean bReconcileValidation = reconcileValidate(lausTemp);
+				boolean bReconcileValidation = reconcileValidate(lausTemp,pRecon,totalUsedLicenses);
 				int alertlistSwOwner = validateScheduleFowner(lausTemp);
 				if (alertlistSwOwner == owner && owner !=2) {
 				 if (bReconcileValidation) {
@@ -454,7 +504,10 @@ public class ReconServiceImpl implements ReconService {
 								.equalsIgnoreCase("HWDEVICE")
 								|| pRecon.getPer().equalsIgnoreCase(
 										"HWPROCESSOR")
-								|| pRecon.getPer().equalsIgnoreCase("PVU") ? 1
+								|| pRecon.getPer().equalsIgnoreCase("PVU") 
+								|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
+					            || pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
+					            || pRecon.getPer().equalsIgnoreCase("HWMSU")? 1
 								: 0));
 						if (pRecon.getPer() != null) {
 							AllocationMethodology allocationMethodology = allocationMethodologyService
@@ -505,7 +558,10 @@ public class ReconServiceImpl implements ReconService {
 						&& (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
 								|| pRecon.getPer().equalsIgnoreCase(
 										"HWPROCESSOR") || pRecon.getPer()
-								.equalsIgnoreCase("PVU")) ? 1 : 0));
+								.equalsIgnoreCase("PVU")
+								|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
+								|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
+								|| pRecon.getPer().equalsIgnoreCase("HWMSU")) ? 1 : 0));
 
 		reconcile.setUsedLicenses(usedLicenses);
 		if (pRecon.getPer() != null) {
