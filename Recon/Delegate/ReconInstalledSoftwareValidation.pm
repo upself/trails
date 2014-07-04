@@ -509,23 +509,6 @@ sub validateCustOwnedIBMManagedCons {
 	return 1;
 }
 
-sub validateScheduleF {
- my ( $self, $ibmOwned ) = @_;
-
- if ( defined $self->customer->swComplianceMgmt ) {
-  if ( $self->customer->swComplianceMgmt eq 'YES' ) {
-   if ($self->installedSoftwareReconData->scopeName =~ /^CUSTO/ )
-   {
-    if ( $ibmOwned == 1 ) {
-     return 0;
-    }
-   }
-  }
- }
-
- return 1;
-}
-
 sub validateLicenseAllocation {
  my $self = shift;
 
@@ -554,10 +537,13 @@ sub validateLicenseAllocation {
    logRec( 'dlog', \%rec );
    
    $machineLevel = $rec{machineLevel};
+   
+   $validation->validateScheduleF( $rec{ibmOwned}, $self->customer->swComplianceMgmt,
+					$self->installedSoftwareReconData->scopeName, undef, 0 );
 
-   if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
-    $validation->validationCode(0);
-   }
+#   if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
+#    $validation->validationCode(0);
+#   }
 
    ###Add used quantity.
    $usedQuantity = $usedQuantity + $rec{lrmUsedQuantity};
@@ -751,6 +737,31 @@ sub validateLicenseAllocation {
 	  }
   }  	
  }
+ 
+ if ( $self->installedSoftwareReconData->rTypeId ==
+ $self->reconcileTypeMap->{'Manual license allocation'} ) {
+   dlog("reconciled as manual license allocation");
+
+  my $validation = new Recon::Delegate::ReconLicenseValidation();
+  $validation->validationCode(1);
+
+  $self->connection->prepareSqlQueryAndFields(
+   $self->queryValidateLicenseAllocation() );
+  my $sth = $self->connection->sql->{validateLicenseAllocation};
+  my %rec;
+  $sth->bind_columns( map { \$rec{$_} }
+     @{ $self->connection->sql->{validateLicenseAllocationFields} } );
+  $sth->execute( $self->installedSoftware->id );
+  
+  while ( $sth->fetchrow_arrayref ) {
+   logRec( 'dlog', \%rec );
+   
+   $validation->validateScheduleF( $rec{ibmOwned}, $self->customer->swComplianceMgmt,
+					$self->installedSoftwareReconData->scopeName, undef, 1 );
+	}
+   return 0 if ( $validation->validationCode == 0 );
+ }
+
  return 1;
 }
 

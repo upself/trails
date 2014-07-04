@@ -591,9 +591,15 @@ sub attemptLicenseAllocation {
 		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
 		if defined $licsToAllocate;
 	}
-
+	
+	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
+		( $self->installedSoftwareReconData->scopeName eq '' )) {
+			dlog("ScheduleF not defined, license allocation won't be performed!");
+			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
+	}
+	
 	###Get license free pool by customer id and software id.
-	my $freePoolData = $self->getFreePoolData;
+	my $freePoolData = $self->getFreePoolData ( $self->installedSoftwareReconData->scopeName );
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###License type: GARTNER MIPS, machine level
@@ -724,12 +730,13 @@ sub attemptLicenseAllocation {
 
 sub getFreePoolData {
 	my $self = shift;
+	my $scopeName=shift;
 	dlog("begin getFreePoolData");
 
 	my %data = ();
 	my %machineLevel;
 
-	$self->connection->prepareSqlQueryAndFields( $self->queryFreePoolData() );
+	$self->connection->prepareSqlQueryAndFields( $self->queryFreePoolData( $scopeName ) );
 	my $sth = $self->connection->sql->{freePoolData};
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
@@ -2036,6 +2043,9 @@ sub attemptLicenseAllocationChip {
 }
 
 sub queryFreePoolData {
+	my $self=shift;
+	my $scopeName=shift;
+	
 	my @fields = qw(
 	  lId
 	  lEnvironment
@@ -2098,10 +2108,16 @@ from
             and l.lic_type != \'SC\'   
             and s.software_id = ?
             and l.status = \'ACTIVE\'
-            and s.status = \'ACTIVE\'
+            and s.status = \'ACTIVE\' ';
+    $query .= 'and l.ibm_owned = 0' if ( ( $scopeName eq 'CUSTOIBMM' ) || ( $scopeName eq 'CUSTO3RDM' ) || ( $scopeName eq 'CUSTOIBMMSWCO' ) );
+    $query .= 'and l.ibm_owned = 1' if ( ( $scopeName eq 'IBMOIBMM' ) );
+    $query.='
         order by
         	l.id
     ';
+    
+    dlog("Reading licenses query: $query"); # debug
+    
 	return ( 'freePoolData', $query, \@fields );
 }
 

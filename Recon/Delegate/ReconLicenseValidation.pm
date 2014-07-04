@@ -537,35 +537,74 @@ sub validateSubCapacity {
 sub validateScheduleF {
     my ( $self, $ibmOwned, $swComplianceMgmt, $scopeName, $reconcileId, $isManual ) = @_;
 
-    if ( $isManual == 0 ) {
-        ###Automatic reconciliation
         if ( defined $scopeName ) {
             ###Schedule f defined
-            if ( $scopeName eq 'CUSTOCUSTM' || $scopeName eq 'IBMO3RDM' || $scopeName eq 'IBMOIBMMSWCO' )
-				{ # these license reconciles for licenses should be broken everytime
-					 $self->addToReconcilesToBreak($reconcileId);
-                     $self->validationCode(0);
+			if ( $scopeName eq 'IBMOIBMM' ) # This must be IBM owned license, regardless whether manual or automatic
+				{
+					if ( $ibmOwned == 0 ) {
+						# This license is not IBM owned
+						$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
+						$self->validationCode(0);
+						return 0;
+					}
+					return 1;
+				}
+				
+			if (( $scopeName eq 'IBMO3RDM' ) || ( $scopeName eq 'IBMOIBMMSWCO' ))
+				{ # these two scopes should never exist for automatic allocation and only IBM-owned licenses for manual
+					if (( $isManual == 0 ) || ( $ibmOwned == 0 )) {
+						# This license is not IBM owned
+						$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
+						$self->validationCode(0);
+						return 0;
+					}
+					return 1;
+				}
+			if ( $scopeName eq 'CUSTOCUSTM' )
+				{ # these reconciles for licenses should be broken for automatic alloc.
+					if ( $isManual == 0 ) {
+						$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
+						$self->validationCode(0);
+						return 0;
+					}
+					return 1;
 				 }
-			if ( $scopeName eq 'CUSTOIBMM' || $scopeName eq 'CUSTO3RDM' || $scopeName eq 'CUSTOIBMMSWCO' )
+			if ( $scopeName eq 'CUSTOIBMM' )
+				{
+					if ( $ibmOwned == 1 ) { # these recociles should be broken if license is IBM owned
+						$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
+						$self->validationCode(0);
+						return 0;
+					}
+					return 1;
+				 }
+			if ( $scopeName eq 'CUSTO3RDM' || $scopeName eq 'CUSTOIBMMSWCO' )
 				{ # these license reconciles depend on various flags
 					if (( defined $swComplianceMgmt ) && ( $swComplianceMgmt eq 'NO' ))
 						{
 							if ( $ibmOwned == 1 ) {
 								# This license is IBM owned
-								$self->addToReconcilesToBreak($reconcileId);
+								$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
 								$self->validationCode(0);
+								return 0;
 							}
 						}
 					if (( defined $swComplianceMgmt ) && ( $swComplianceMgmt eq 'YES' ))
 						{
-							$self->addToReconcilesToBreak($reconcileId);
+							$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
 							$self->validationCode(0);
+							return 0;
 						}
+					return 1;
 				}
-        }
     }
+    
+	dlog("ScopeName not defined or not recognized, the license reconcile is invalid!");
 
-    return 1;
+	$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
+	$self->validationCode(0);
+
+    return 0;
 }
 
 sub isLicenseSoftwareMapValidToReconcile {
