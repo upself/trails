@@ -74,7 +74,9 @@
 #                                                                                                    3) Database Exception Email Switch for DBA Team Support 
 #                                                                                                    
 #
-
+########################################################################################################################################################################                                   
+#                                            Phase 10 Development Formal Tag: 'Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10'
+# 2014-07-02  Tomas 1.10.0                   HealthCheck and Monitoring Service Component - Phase 10: Design and Develop Database Monitoring - Recon Queues Duplicate Data Monitoring and Cleanup Basic Architecture and Business Logic
 my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
 my $cdFlag = system('cd $HOME_DIR');
 if($cdFlag!=0){
@@ -434,7 +436,15 @@ my $DB_CONNECTION_SUCCESS_KEY_MESSAGE = "Database Connection Information";
 
 my %WEEKDAY_HASH = ("Monday"=>1,"Tuesday"=>2,"Wednesday"=>3,"Thursday"=>4,"Friday"=>5,"Saturday"=>6,"Sunday"=>7);
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
-
+#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
+my $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP = "RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP";
+my $RECON_QUEUE_DUPLICATE_CHECK_1 = "select count(*) from EAADMIN.recon_sw_lpar r where r.id in(select max(rc.id) from eaadmin.recon_sw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.software_lpar_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_CHECK_2 = "select count(*) from EAADMIN.recon_hw_lpar r where r.id in (select max(rc.id) from eaadmin.recon_hw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_lpar_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_CHECK_3 = "select count(*) from EAADMIN.recon_license r where r.id in (select max(rc.id) from eaadmin.recon_license rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.license_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_CHECK_4 = "select count(*) from EAADMIN.recon_hardware r where r.id in (select max(rc.id) from eaadmin.recon_hardware rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_CHECK_5 = "select count(*) from EAADMIN.recon_customer r where r.id in (select max(rc.id) from eaadmin.recon_customer rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.customer_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_CHECK_6 = "select count(*) from EAADMIN.recon_installed_sw r where r.id in (select max(rc.id) from eaadmin.recon_installed_sw rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.installed_software_id having count(rc.id)>2) with ur";
+#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
 my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');       
 my %dbs; # To store database login credentials
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
@@ -527,6 +537,7 @@ sub loadEventMetaData{
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","11","TRAILSRP_DB_APPLY_GAP_MONITORING_2")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
   #push @eventMetaRecords, [("4","APPLICATION_MONITORING","12","WEBAPP_RUNNING_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8
   #push @eventMetaRecords, [("3","DATABASE_MONITORING","13","DB_EXCEPTION_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
+  #push @eventMetaRecords, [("3","DATABASE_MONITORING","14","RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP")]; # Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10
 }
 
 #This method is used to load event rule and email information definition
@@ -793,6 +804,13 @@ sub eventLogicProcess{
 	  eventRuleCheck($groupName,$eventName,0);
    } 
    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
+   #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
+   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
+  	  #For Event Type "DB_EXCEPTION_STATUS_CHECK_MONITORING",the eventValue value is not needed.
+	  #So set 0 for eventValue var
+	  eventRuleCheck($groupName,$eventName,0);
+   } 
+   #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
    #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
    #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
    #Add 'New Event Group' + 'New Event Type' business logic here
@@ -2700,6 +2718,279 @@ sub eventRuleCheck{
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 			 }#end elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
              #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
+             #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
+             elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP)#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
+				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+                 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
+				 print LOG "Recon queues duplicate data monitoring - Server Mode: {$serverMode}\n";
+				 my $AllowSelfHealingExecution = $metaRuleParameter2;#var used to store warning trailsRP DB Apply Gap - for example: '3600'
+				 print LOG "Recon queues duplicate data monitoring - Allow SelfHealingEngine: {$AllowSelfHealingExecution }\n";
+				 my $executeSelfHealingEngine = $metaRuleParameter3;#var used to store warning event rule message - for example: 'Apply Gap of TrailsRP too high. Current Apply Gap is: <@2 hrs and @3 mins>'
+				 $executeSelfHealingEngine =~ s/\~/\^/g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+				 $executeSelfHealingEngine =~ s/\'/\ /g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+				 $executeSelfHealingEngine = 'cd /opt/staging/v2/ && ./'.$executeSelfHealingEngine;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+
+				 print LOG "Recon queues duplicate data monitoring - Command for invoking SelfHealingEngine: {$executeSelfHealingEngine}\n";
+                 my $SuccesMessage = $metaRuleParameter4;#var used to store warning event rule handling instruction code - for example: 'W-DBM-TRP-001'
+                 print LOG "Recon queues duplicate data monitoring - Success Message: {$SuccesMessage }\n";
+                 my $FailedMessage = $metaRuleParameter5;#var used to store error trailsRP DB Apply Gap - for example: '36000'
+                 print LOG "Recon queues duplicate data monitoring - Failed Message: {$FailedMessage}\n";
+				 my $DuplicatesInfoMessageAfterCleanup = $metaRuleParameter6;#var used to store error event rule message - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@2 hrs and @3 mins>'
+				 print LOG "Recon queues duplicate data monitoring - Duplicates info message after SHE call: {$DuplicatesInfoMessageAfterCleanup}\n";
+                 my $MessageTitle = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TRP-001'
+				 print LOG "Recon queues duplicate data monitoring - Message title: {$MessageTitle}\n";
+				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
+				 my $DuplicatesInfoMessage = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
+				 print LOG "Recon queues duplicate data monitoring - Duplicate info message before cleanup: {$DuplicatesInfoMessage}\n";
+                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
+                 my $bravo_connection = Database::Connection->new('trails');
+                 my @Duplicate;
+                 my @NumbersOfDuplicates;
+                 my $FlagDuplicatesExist = $FALSE ;
+                 my $FlagSHEError = $FALSE ;
+
+                 print LOG "Starting query 1\n";
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 1', $RECON_QUEUE_DUPLICATE_CHECK_1);
+                 my $sth = $bravo_connection->sql->{'Recon duplicate 1'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+
+                 print LOG "End of query 1\n";
+                 print LOG "Starting query 2\n";
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 2', $RECON_QUEUE_DUPLICATE_CHECK_2);
+                 $sth = $bravo_connection->sql->{'Recon duplicate 2'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+
+                 print LOG "End of query 2\n";
+                 print LOG "Starting query 3\n";
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 3', $RECON_QUEUE_DUPLICATE_CHECK_3);
+                 $sth = $bravo_connection->sql->{'Recon duplicate 3'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+                 print LOG "End of query 3\n";
+                 print LOG "Starting query 4\n";
+
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 4', $RECON_QUEUE_DUPLICATE_CHECK_4);
+                 $sth = $bravo_connection->sql->{'Recon duplicate 4'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+                 print LOG "End of query 4\n";
+                 print LOG "Starting query 5\n";
+
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 5', $RECON_QUEUE_DUPLICATE_CHECK_5);
+                 $sth = $bravo_connection->sql->{'Recon duplicate 5'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+                 print LOG "End of query 5\n";
+                 print LOG "Starting query 6\n";
+
+                 $bravo_connection->prepareSqlQuery('Recon duplicate 6', $RECON_QUEUE_DUPLICATE_CHECK_6);
+                 $sth = $bravo_connection->sql->{'Recon duplicate 6'};
+                 $sth->execute();
+                 while (@Duplicate = $sth->fetchrow_array()){
+                   push @NumbersOfDuplicates, $Duplicate[0];  
+                 }
+                 $sth->finish;
+                 print LOG "End of query 6\n";
+
+                 my $i;
+				 foreach $i(@NumbersOfDuplicates) {
+			       if($i > 0) {
+                     print LOG "Duplicates in queues found\n" ;
+                     $FlagDuplicatesExist = $TRUE ;
+                   }
+                 }
+
+                 my @NumbersOfDuplicates2;
+
+                 if($FlagDuplicatesExist){
+                   if($AllowSelfHealingExecution){
+					    print LOG "Invoking SHE to remove duplicate recon queues.\n";
+  						my $CmdExecResult = system($executeSelfHealingEngine);
+                        if($CmdExecResult == 0){
+					      print LOG "SHE command to remove duplicates in recond queues was SUCCESSFUL.\n";
+					      print LOG "Checking duplicates again.\n";
+
+     		              print LOG "Starting query 1\n";
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 1', $RECON_QUEUE_DUPLICATE_CHECK_1);
+                          my $sth = $bravo_connection->sql->{'After Recon duplicate 1'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          $sth->finish;
+		                  print LOG "End of query 1\n";
+     		              print LOG "Starting query 2\n";
+
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 2', $RECON_QUEUE_DUPLICATE_CHECK_2);
+                          $sth = $bravo_connection->sql->{'After Recon duplicate 2'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          $sth->finish;
+		                  print LOG "End of query 2\n";
+     		              print LOG "Starting query 3\n";
+
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 3', $RECON_QUEUE_DUPLICATE_CHECK_3);
+                          $sth = $bravo_connection->sql->{'After Recon duplicate 3'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          $sth->finish;
+
+		                  print LOG "End of query 3\n";
+     		              print LOG "Starting query 4\n";
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 4', $RECON_QUEUE_DUPLICATE_CHECK_4);
+                          $sth = $bravo_connection->sql->{'After Recon duplicate 4'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          $sth->finish;
+
+		                  print LOG "End of query 4\n";
+     		              print LOG "Starting query 5\n";
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 5', $RECON_QUEUE_DUPLICATE_CHECK_5);
+                          $sth = $bravo_connection->sql->{'After Recon duplicate 5'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          $sth->finish;
+
+		                  print LOG "End of query 5\n";
+     		              print LOG "Starting query 6\n";
+                          $bravo_connection->prepareSqlQuery('After Recon duplicate 6', $RECON_QUEUE_DUPLICATE_CHECK_6);
+                          $sth = $bravo_connection->sql->{'After Recon duplicate 6'};
+                          $sth->execute();
+                          while (@Duplicate = $sth->fetchrow_array()){
+                            push @NumbersOfDuplicates2, $Duplicate[0];  
+                          }
+                          #print join(' $$$ ',@NumbersOfDuplicates2);
+                          $sth->finish;
+		                  print LOG "End of query 6\n";
+                 
+                 
+					    }#end if($restartWebAppCmdExecResult == 0)
+					    else{
+					      print LOG "SHE command to remove duplicates in recond queues FAILED\n";
+                          my $FlagSHEError = $TRUE ;
+					    }#end else	
+                   }else{
+					 print LOG "There are duplicates in recon queue, but we are forbidden to run SHE to fix it.\n";
+                   }
+                 }else{
+                    print LOG "There were no duplicate reports.\n"; 
+                 }
+                 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+                 print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
+                
+                 my $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[1]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE_LPAR/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[2]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[3]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[4]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[5]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 my $mail_line;
+                 if($FlagSHEError){
+                   $mail_line = $FailedMessage;
+                   $mail_line =~ s/\@5/'SHE failed during recon queues cleanup'/g;
+				 }else{
+                   $mail_line = $SuccesMessage;
+				 }
+                 $emailFullContent.="$mail_line\n";
+
+  			     if($FlagDuplicatesExist){
+  			     	
+  			       $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[0]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[1]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE_LPAR/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[3]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[4]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[5]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+				   
+				 }else{
+				 	$emailFullContent.="There were no duplicates found in recon queues, so there was no cleanup\n"
+				 }
+				   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+			 }
+                 #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     

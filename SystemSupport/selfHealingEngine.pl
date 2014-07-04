@@ -137,7 +137,7 @@ my $STAGING_BRAVO_DATA_SYNC                               = "STAGING_BRAVO_DATA_
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
 my $REMOVE_CERTAIN_BANK_ACCOUNT = "REMOVE_CERTAIN_BANK_ACCOUNT"; #Added by Tomas for System Support And Self Healing Service Components - Phase 8
-
+my $CLEANUP_RECON_QUEUES_DUPLICATE_DATA = "CLEANUP_RECON_QUEUES_DUPLICATE_DATA";
 #SQL Statement
 my $UPDATE_CERTAIN_OPERATION_STATUS_SQL                = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
 my $GET_COUNT_NUMBER_FOR_CERTAIN_BANK_ACCOUNT_NAME_SQL = "SELECT COUNT(*) FROM BANK_ACCOUNT WHERE NAME = ? WITH UR";#Added by Larry for System Support And Self Healing Service Components - Phase 3
@@ -388,6 +388,13 @@ my $QUERY_DELETE_ACCOUNT_6 = "update software_filter f set f.action='DELETE' whe
 my $QUERY_DELETE_ACCOUNT_7 = "update scan_record set action='DELETE' where bank_account_id = ? and action<>'DELETE';";
 my $QUERY_DELETE_ACCOUNT_8 = "UPDATE BANK_ACCOUNT SET STATUS = 'INACTIVE', REMOTE_USER = 'Operation GUI', RECORD_TIME = CURRENT TIMESTAMP where name = ?";
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
+
+my $RECON_QUEUE_DUPLICATE_DELETE_1 = "delete from EAADMIN.recon_sw_lpar r where r.id in (select max(rc.id) from eaadmin.recon_sw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.software_lpar_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_DELETE_2 = "delete from EAADMIN.recon_hw_lpar r where r.id in (select max(rc.id) from eaadmin.recon_hw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_lpar_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_DELETE_3 = "delete from EAADMIN.recon_license r where r.id in (select max(rc.id) from eaadmin.recon_license rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.license_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_DELETE_4 = "delete from EAADMIN.recon_hardware r where r.id in (select max(rc.id) from eaadmin.recon_hardware rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_DELETE_5 = "delete from EAADMIN.recon_customer r where r.id in (select max(rc.id) from eaadmin.recon_customer rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.customer_id having count(rc.id)>1) with ur";
+my $RECON_QUEUE_DUPLICATE_DELETE_6 = "delete from EAADMIN.recon_installed_sw r where r.id in (select max(rc.id) from eaadmin.recon_installed_sw rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.installed_software_id having count(rc.id)>2) with ur";
 
 my $TRAILS_FILESPACE_FOLDER = "/var/trails";
 my $BRAVO_FILESPACE_FOLDER = "/var/bravo";
@@ -2354,6 +2361,56 @@ sub coreOperationProcess{
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $REMOVE_CERTAIN_BANK_ACCOUNT)
+    elsif($operationNameCode eq $CLEANUP_RECON_QUEUES_DUPLICATE_DATA){#CLEANUP_RECON_QUEUES_DUPLICATE_DATA
+      if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+	    print LOG "Updating operation status\n";
+        #Operation has been started to be processed
+        updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_PROGRESSING_CODE,$PROGRESSING_COMMENTS,$parameterOperationId);
+        $operationStartedFlag = $TRUE;#Operation has been started to process
+      }
+	  print LOG "Start of Clean up recon queues data operation. \n";
+
+      print LOG "Starting query 1\n";
+      $bravoConnection->prepareSqlQuery('Recon duplicate 1', $RECON_QUEUE_DUPLICATE_DELETE_1);
+      my $sth = $bravoConnection->sql->{'Recon duplicate 1'};
+      $sth->execute();
+      $sth->finish ;
+      print LOG "End of query 1\n";
+      print LOG "Starting query 2\n";
+      $bravoConnection->prepareSqlQuery('Recon duplicate 2', $RECON_QUEUE_DUPLICATE_DELETE_2);
+      $sth = $bravoConnection->sql->{'Recon duplicate 2'};
+      $sth->execute();
+      $sth->finish;
+	  print LOG "End of query 2\n";
+      print LOG "Starting query 3\n";
+      $bravoConnection->prepareSqlQuery('Recon duplicate 3', $RECON_QUEUE_DUPLICATE_DELETE_3);
+      $sth = $bravoConnection->sql->{'Recon duplicate 3'};
+      $sth->execute();
+      $sth->finish;
+	  print LOG "End of query 3\n";
+      print LOG "Starting query 4\n";
+      $bravoConnection->prepareSqlQuery('Recon duplicate 4', $RECON_QUEUE_DUPLICATE_DELETE_4);
+      $sth = $bravoConnection->sql->{'Recon duplicate 4'};
+      $sth->execute();
+      $sth->finish;
+	  print LOG "End of query 4\n";
+      print LOG "Starting query 5\n";
+	  $bravoConnection->prepareSqlQuery('Recon duplicate 5', $RECON_QUEUE_DUPLICATE_DELETE_5);
+      $sth = $bravoConnection->sql->{'Recon duplicate 5'};
+      $sth->execute();
+      $sth->finish;
+	  print LOG "End of query 5\n";
+      print LOG "Starting query 6\n";
+      $bravoConnection->prepareSqlQuery('Recon duplicate 6', $RECON_QUEUE_DUPLICATE_DELETE_6);
+      $sth = $bravoConnection->sql->{'Recon duplicate 6'};
+      $sth->execute();
+      print LOG "End of query 6\n";
+      print LOG "Starting query 2\n";
+      $sth->finish;
+	  $operationResultFlag = $OPERATION_SUCCESS;
+	  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+	  print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
+    }#end elsif($operationNameCode eq $CLEANUP_RECON_QUEUES_DUPLICATE_DATA)
 #Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
 
     #A piece of code template which is used for 'New Operatoin' business logic
