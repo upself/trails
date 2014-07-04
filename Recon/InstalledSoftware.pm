@@ -37,7 +37,6 @@ sub new {
 	bless $self, $class;
 
 	$self->validate;
-	##test
 
 	return $self;
 }
