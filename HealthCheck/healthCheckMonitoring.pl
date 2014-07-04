@@ -2723,24 +2723,25 @@ sub eventRuleCheck{
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                  my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
 				 print LOG "Recon queues duplicate data monitoring - Server Mode: {$serverMode}\n";
-				 my $AllowSelfHealingExecution = $metaRuleParameter2;#var used to store warning trailsRP DB Apply Gap - for example: '3600'
+				 my $AllowSelfHealingExecution = $metaRuleParameter2;#var used to store flag if SHE can be invoked
 				 print LOG "Recon queues duplicate data monitoring - Allow SelfHealingEngine: {$AllowSelfHealingExecution }\n";
-				 my $executeSelfHealingEngine = $metaRuleParameter3;#var used to store warning event rule message - for example: 'Apply Gap of TrailsRP too high. Current Apply Gap is: <@2 hrs and @3 mins>'
+				 my $executeSelfHealingEngine = $metaRuleParameter3;#var used to store the command for invoking SHE
 				 $executeSelfHealingEngine =~ s/\~/\^/g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
-				 $executeSelfHealingEngine =~ s/\'/\ /g;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
-				 $executeSelfHealingEngine = 'cd /opt/staging/v2/ && ./'.$executeSelfHealingEngine;#replace all the chars '~' with '^' - for example: from '^^^^^^^^^' to '~~~~~~~~~' 
+				 $executeSelfHealingEngine =~ s/\'/\ /g;
+				 $executeSelfHealingEngine = 'cd /opt/staging/v2/ && ./'.$executeSelfHealingEngine;#switching to right directory to SHE
 
 				 print LOG "Recon queues duplicate data monitoring - Command for invoking SelfHealingEngine: {$executeSelfHealingEngine}\n";
-                 my $SuccesMessage = $metaRuleParameter4;#var used to store warning event rule handling instruction code - for example: 'W-DBM-TRP-001'
+                 my $SuccesMessage = $metaRuleParameter4;#var used to store message to display when SHE succesfuly ran
                  print LOG "Recon queues duplicate data monitoring - Success Message: {$SuccesMessage }\n";
-                 my $FailedMessage = $metaRuleParameter5;#var used to store error trailsRP DB Apply Gap - for example: '36000'
+                 my $FailedMessage = $metaRuleParameter5;#var used to store message to display when SHE failed
                  print LOG "Recon queues duplicate data monitoring - Failed Message: {$FailedMessage}\n";
-				 my $DuplicatesInfoMessageAfterCleanup = $metaRuleParameter6;#var used to store error event rule message - for example: 'Apply Gap is out of sync. Current Apply Gap is: <@2 hrs and @3 mins>'
+				 my $DuplicatesInfoMessageAfterCleanup = $metaRuleParameter6;#var used to store message to put in HME mail
 				 print LOG "Recon queues duplicate data monitoring - Duplicates info message after SHE call: {$DuplicatesInfoMessageAfterCleanup}\n";
-                 my $MessageTitle = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TRP-001'
+                 my $MessageTitle = $metaRuleParameter7;#var used to store message Title
+				 $MessageTitle =~ s/\@1/$SERVER_MODE/g;# Add server mode into message title, for example 'TAP'
 				 print LOG "Recon queues duplicate data monitoring - Message title: {$MessageTitle}\n";
 				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
-				 my $DuplicatesInfoMessage = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
+				 my $DuplicatesInfoMessage = $metaRuleParameter8;#var used to store message to put in HME mail
 				 print LOG "Recon queues duplicate data monitoring - Duplicate info message before cleanup: {$DuplicatesInfoMessage}\n";
                  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
                  my $bravo_connection = Database::Connection->new('trails');
@@ -2884,7 +2885,6 @@ sub eventRuleCheck{
                           while (@Duplicate = $sth->fetchrow_array()){
                             push @NumbersOfDuplicates2, $Duplicate[0];  
                           }
-                          #print join(' $$$ ',@NumbersOfDuplicates2);
                           $sth->finish;
 		                  print LOG "End of query 6\n";
                  
@@ -2897,40 +2897,48 @@ sub eventRuleCheck{
                    }else{
 					 print LOG "There are duplicates in recon queue, but we are forbidden to run SHE to fix it.\n";
                    }
-                 }else{
-                    print LOG "There were no duplicate reports.\n"; 
-                 }
+
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
-                
+
+				 $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+			     $emailFullContent.="$EVENT_RULE_TITLE_TXT: $MessageTitle\n";#append event rule title into email content
+         		 $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $metaRuleHandlingInstrcutionCode\n";
+
                  my $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
                  $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[1]/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE_LPAR/g;
-				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
-                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
-                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[2]/g;
                  $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
                  $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                  $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
-                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[3]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[1]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HW_LPAR/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[2]/g;
                  $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
                  $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                  $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[3]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
+				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+
+                 $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
                  $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[4]/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                  $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
                  $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[5]/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
-                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                  my $mail_line;
@@ -2940,55 +2948,46 @@ sub eventRuleCheck{
 				 }else{
                    $mail_line = $SuccesMessage;
 				 }
-                 $emailFullContent.="$mail_line\n";
+                 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $mail_line\n";
 
-  			     if($FlagDuplicatesExist){
-  			     	
-  			       $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
                    $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[0]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
 				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
+  		
                    $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
                    $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[1]/g;
                    $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE_LPAR/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HW_LPAR/g;
 				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
+				   
                    $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[3]/g;
+  		           $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
                    $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
                    $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
 				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
+  			     	
+  			       $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[3]/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
+				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+		
                    $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
                    $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[4]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
 				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                    $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
                    $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[5]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
+                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
 				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 				   
-				 }else{
-				 	$emailFullContent.="There were no duplicates found in recon queues, so there was no cleanup\n"
-				 }
 				   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				 }
 			 }
                  #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
