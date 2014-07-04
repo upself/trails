@@ -16,6 +16,7 @@ sub new {
         ,_hMachineTypeId => undef
         ,_hServerType => undef
         ,_hCpuMIPS => undef
+        ,_hCpuGartnerMIPS => undef
         ,_hCpuMSU => undef
         ,_hOwner => undef
         ,_mtType => undef
@@ -23,6 +24,7 @@ sub new {
         ,_hlStatus => undef
         ,_hlName => undef
         ,_hlPartMIPS => undef
+        ,_hlPartGartnerMIPS => undef
         ,_hlPartMSU => undef
         ,_slId => undef
         ,_cId => undef
@@ -131,6 +133,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->hCpuGartnerMIPS && defined $object->hCpuGartnerMIPS) {
+        $equal = 1 if $self->hCpuGartnerMIPS eq $object->hCpuGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->hCpuGartnerMIPS && !defined $object->hCpuGartnerMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->hCpuMSU && defined $object->hCpuMSU) {
         $equal = 1 if $self->hCpuMSU eq $object->hCpuMSU;
     }
@@ -177,6 +186,13 @@ sub equals {
         $equal = 1 if $self->hlPartMIPS eq $object->hlPartMIPS;
     }
     $equal = 1 if (!defined $self->hlPartMIPS && !defined $object->hlPartMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hlPartGartnerMIPS && defined $object->hlPartGartnerMIPS) {
+        $equal = 1 if $self->hlPartGartnerMIPS eq $object->hlPartGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->hlPartGartnerMIPS && !defined $object->hlPartGartnerMIPS);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -431,6 +447,12 @@ sub hCpuMIPS {
     return $self->{_hCpuMIPS};
 }
 
+sub hCpuGartnerMIPS {
+    my $self = shift;
+    $self->{_hCpuGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_hCpuGartnerMIPS};
+}
+
 sub hCpuMSU {
     my $self = shift;
     $self->{_hCpuMSU} = shift if scalar @_ == 1;
@@ -471,6 +493,12 @@ sub hlPartMIPS {
     my $self = shift;
     $self->{_hlPartMIPS} = shift if scalar @_ == 1;
     return $self->{_hlPartMIPS};
+}
+
+sub hlPartGartnerMIPS {
+    my $self = shift;
+    $self->{_hlPartGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_hlPartGartnerMIPS};
 }
 
 sub hlPartMSU {
@@ -694,6 +722,11 @@ sub toString {
         $s .= $self->{_hCpuMIPS};
     }
     $s .= ",";
+    $s .= "hCpuGartnerMIPS=";
+    if (defined $self->{_hCpuGartnerMIPS}) {
+        $s .= $self->{_hCpuGartnerMIPS};
+    }
+    $s .= ",";
     $s .= "hCpuMSU=";
     if (defined $self->{_hCpuMSU}) {
         $s .= $self->{_hCpuMSU};
@@ -727,6 +760,11 @@ sub toString {
     $s .= "hlPartMIPS=";
     if (defined $self->{_hlPartMIPS}) {
         $s .= $self->{_hlPartMIPS};
+    }
+    $s .= ",";
+    $s .= "hlPartGartnerMIPS=";
+    if (defined $self->{_hlPartGartnerMIPS}) {
+        $s .= $self->{_hlPartGartnerMIPS};
     }
     $s .= ",";
     $s .= "hlPartMSU=";

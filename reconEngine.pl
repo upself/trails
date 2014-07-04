@@ -76,8 +76,8 @@ sub keepTicking {
     my $count = 0;
     while (1) {
         if ( scalar @customerIds == 0 ) {
-             newSoftwareAndPvuChild(shift @softwareIds)
-               if(scalar @softwareIds != 0 );
+             newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
+             newPvuChild();
              my $connection = Database::Connection->new('trails');
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              ( $masters, $members ) = getPoolCustomers($connection);
@@ -87,7 +87,7 @@ sub keepTicking {
             wlog("$rNo sleeping");
             sleep;
             
-            wlog("$rNo beofre reset array size:". scalar @customerIds);
+            wlog("$rNo before reset array size:". scalar @customerIds);
             my $connection = Database::Connection->new('trails');
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             ( $masters, $members ) = getPoolCustomers($connection);
@@ -206,7 +206,7 @@ sub newChild {
     exit;
 }
 
-sub newSoftwareAndPvuChild {
+sub newSoftwareChild {
     my $softwareId = shift;
     my $pid;
 
@@ -223,11 +223,31 @@ sub newSoftwareAndPvuChild {
 
     my $reconEngine = new Recon::ReconEngineSoftware( $softwareId );
     $reconEngine->recon;
-    
-   	my $pvuEngine = new Recon::ReconEnginePvu;
-	$pvuEngine->recon; # spawning one PVU job... the called entity will read the PVU queue by itself and process one record of it, or die if none found
 
     wlog("$rNo Child software: $softwareId complete");
+    
+    exit;
+}
+
+sub newPvuChild {
+    my $pid;
+
+    wlog("$rNo spawning PVU child");
+    my $sigset = POSIX::SigSet->new(SIGINT);
+    sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
+    die "Cannot fork child: $!\n" unless defined( $pid = fork );
+    if ($pid) {
+        $children{$pid} = 1;
+        $children++;
+        ilog("forked new child, we now have $children children");
+        return;
+    }
+
+   	my $pvuEngine = new Recon::ReconEnginePvu;
+	$pvuEngine->recon; # spawning one PVU job... the called entity will read the PVU queue by itself and process one record of it, or die if none found
+	
+	wlog("$rNo PVU child complete");
+
     exit;
 }
 

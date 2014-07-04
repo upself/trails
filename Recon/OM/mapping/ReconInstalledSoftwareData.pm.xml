@@ -10,6 +10,7 @@
 	<property name="hMachineTypeId" type="scalar" equals="true" />
 	<property name="hServerType" type="scalar" equals="true" />
 	<property name="hCpuMIPS" type="scalar" equals="true" />
+	<property name="hCpuGartnerMIPS" type="scalar" equals="true" />
 	<property name="hCpuMSU" type="scalar" equals="true" />
 	<property name="hOwner" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
@@ -17,6 +18,7 @@
 	<property name="hlStatus" type="scalar" equals="true" />
 	<property name="hlName" type="scalar" equals="true" />
 	<property name="hlPartMIPS" type="scalar" equals="true" />
+	<property name="hlPartGartnerMIPS" type="scalar" equals="true" />
 	<property name="hlPartMSU" type="scalar" equals="true" />
 	<property name="slId" type="scalar" equals="true" />
 	<property name="cId" type="scalar" equals="true" />

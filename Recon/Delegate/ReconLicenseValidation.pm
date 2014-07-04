@@ -166,7 +166,7 @@ sub validate {
             $self->license->id
         );
         $self->validateMaintenanceExpiration(
-            $licenseAllocationView->mtType, $licenseAllocationView->rtIsManual, $licenseAllocationView->expireAge,
+            $licenseAllocationView->mtType, $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->expireAge,
             $licenseAllocationView->rId,    $self->license->id
         );
         $self->validateScheduleF(
@@ -176,6 +176,12 @@ sub validate {
         $self->validateProcessorChip(
             $licenseAllocationView->rtIsManual,   $self->license->capType, $licenseAllocationView->mtType,
             $licenseAllocationView->machineLevel, $licenseAllocationView->rId
+        );
+        $self->validateMipsGartnerMsu(
+			$licenseAllocationView->rtIsManual, $self->license->capType, $licenseAllocationView->mtType,
+			$licenseAllocationView->machineLevel, $licenseAllocationView->rId,
+			$licenseAllocationView->hCpuMIPS, $licenseAllocationView->hCpuGartnerMIPS, $licenseAllocationView->hCpuMSU,
+			$licenseAllocationView->hlPartMIPS, $licenseAllocationView->hlPartGartnerMIPS, $licenseAllocationView->hlPartMSU
         );
 
 		if(exists $machineLevel{$licenseAllocationView->lrmId}) {
@@ -369,7 +375,7 @@ sub validateProcCount {
 sub validatePhysicalCpuSerialMatch {
     my ( $self, $licenseCapType, $licenseType, $hardwareSerial, $licenseSerial, $reconcileId, $licenseId, $isManual ) = @_;
     ###Validate hw serial if phy cpu license. 34 - Physical CPU, 5 - MIPS, 9 - MSU
-    if ( $licenseCapType eq '34' || (($licenseCapType eq '5' || $licenseCapType eq '9') && $licenseType eq 'NAMED CPU')) {
+    if ( $licenseCapType eq '34' || (($licenseCapType eq '5' || $licenseCapType eq '9' || $licenseCapType eq '70' ) && $licenseType eq 'NAMED CPU')) {
         if ( $isManual == 0 ) {
             if ( !defined $licenseSerial ||($hardwareSerial ne $licenseSerial) ) {
                 dlog("cpu serial does not match lic, adding to list to break");
@@ -399,7 +405,7 @@ sub validatePhysicalCpuSerialMatch {
 
 sub validateLparNameMatch{
 	my ( $self, $licenseCapType, $licenseType, $lparName, $slName, $hlName, $reconcileId, $licenseId, $isManual ) = @_;
-	if( ($licenseCapType == 5 || $licenseCapType == 9) && $licenseType eq 'NAMED LPAR')
+	if( ($licenseCapType == 5 || $licenseCapType == 9 || $licenseCapType == 70) && $licenseType eq 'NAMED LPAR')
 	{
         if ( $isManual == 0 ) {
             if ( !defined $lparName ||($lparName ne $slName && $lparName ne $hlName)) {
@@ -427,6 +433,18 @@ sub validateMachineTypeMatch {
                 $self->validationCode(0);
         }
     }
+    
+    if ( ( ( $licenseCapType == 5 ) || ( $licenseCapType == 9 ) || ( $licenseCapType == 70 ) ) && ( $mtType ne 'MAINFRAME' ) )
+	{
+        if ( $isManual == 0 ) {
+                dlog("license captype 5,9,70 used on non-mainframe, adding to list to break");
+                $self->addToReconcilesToBreak($reconcileId)
+                  if defined $reconcileId;
+                $self->addToDeleteQueue($licenseId) if defined $licenseId;
+                $self->validationCode(0);
+        }
+    }
+    
 
     return 1;
 }
@@ -454,10 +472,10 @@ sub validateLicenseSoftwareMap {
 }
 
 sub validateMaintenanceExpiration {
-    my ( $self, $machineType, $isManual, $expireAge, $reconcileId, $licenseId ) = @_;
+    my ( $self, $machineType, $capType, $isManual, $expireAge, $reconcileId, $licenseId ) = @_;
 
     ###Validate expire date based on mt type if recon was auto.
-    if ( $machineType ne 'WORKSTATION' ) {
+    if (( $machineType ne 'WORKSTATION' ) && ( $capType ne '9' )) {
         if ( $isManual == 0 ) {
             if (!defined $expireAge || $expireAge < 0 ) {
                 dlog("license is expired, adding to list to break");
@@ -573,6 +591,46 @@ sub isLicenseSoftwareMapValidToReconcile {
             $self->validationCode(0);
         }
     }
+}
+
+sub validateMipsGartnerMsu {
+    my ( $self, $isManual, $capType, $machineType, $isMachineLevel, $reconcileId,
+		$hCpuMIPS, $hCpuGartnerMIPS, $hCpuMSU, $hlPartMIPS, $hlPartGartnerMIPS, $hlPartMSU ) = @_;
+		
+	my $isValid=1;
+	
+	return 1 if ( ( $isManual == 1 ) || (( $capType ne '5' ) && ( $capType ne '9' ) && ( $capType ne '70' )) );
+	
+	dlog("Validating Gartner/MIPS/MSU");
+
+    $isValid=0 if ( $machineType ne 'MAINFRAME' );
+    
+    $isValid=0 if (( $capType eq '5' ) && ( $isMachineLevel == 1 ) && ( !defined $hCpuMIPS ));
+    $isValid=0 if (( $capType eq '5' ) && ( $isMachineLevel == 1 ) && ( defined $hCpuMIPS ) && ( $hCpuMIPS <= 0 ));
+    
+    $isValid=0 if (( $capType eq '70' ) && ( $isMachineLevel == 1 ) && ( !defined $hCpuGartnerMIPS ));
+    $isValid=0 if (( $capType eq '70' ) && ( $isMachineLevel == 1 ) && ( defined $hCpuGartnerMIPS ) && ( $hCpuGartnerMIPS <= 0 ));
+    
+    $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 1 ) && ( !defined $hCpuMSU ));
+    $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 1 ) && ( defined $hCpuMSU ) && ( $hCpuMSU <= 0 ));
+
+    $isValid=0 if (( $capType eq '5' ) && ( $isMachineLevel == 0 ) && ( !defined $hlPartMIPS ));
+    $isValid=0 if (( $capType eq '5' ) && ( $isMachineLevel == 0 ) && ( defined $hlPartMIPS ) && ( $hlPartMIPS <= 0 ));
+    
+    $isValid=0 if (( $capType eq '70' ) && ( $isMachineLevel == 0 ) && ( !defined $hlPartGartnerMIPS ));
+    $isValid=0 if (( $capType eq '70' ) && ( $isMachineLevel == 0 ) && ( defined $hlPartGartnerMIPS ) && ( $hlPartGartnerMIPS <= 0 ));
+    
+    $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 0 ) && ( !defined $hlPartMSU ));
+    $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 0 ) && ( defined $hlPartMSU ) && ( $hlPartMSU <= 0 ));
+    
+    if ($isValid == 0 ) {
+		 dlog("Reconcile not validated, Gartner/MIPS/MSU");
+		 
+         $self->validationCode(0);
+         $self->addToReconcilesToBreak($reconcileId);
+    }
+    
+    return $isValid;
 }
 
 sub validateProcessorChip {

@@ -434,7 +434,7 @@ sub attemptCustomerOwned3rdManaged {
 			&& $self->customer->swComplianceMgmt eq 'YES' ) {
 				###Create reconcile and set id in data.
 				$self->createReconcile(
-					$reconcileTypeMap->{'IBM owned, managed by 3rd party'},
+					$reconcileTypeMap->{'Customer owned, managed by 3rd party'},
 					0, $self->installedSoftware->id );
 				dlog("end attemptReconcile");
 				return 1;
@@ -596,36 +596,18 @@ sub attemptLicenseAllocation {
 	my $freePoolData = $self->getFreePoolData;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
-		###License type: hw specific MIPS, machine level
+		###License type: GARTNER MIPS, machine level
 		( $licsToAllocate, $machineLevel ) =
-		$self->attemptLicenseAllocationMIPS( $freePoolData, 1, 1 );
+		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 1 );
 		return ( $licsToAllocate,
 				$reconcileTypeMap->{'Automatic license allocation'},
 				$machineLevel )
 		if defined $licsToAllocate;
 	}
 
-	###License type: hw specific MIPS, lpar level
+	###License type: GARTNER MIPS, lpar level
 	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMIPS( $freePoolData, 0, 1 );
-	return ( $licsToAllocate,
-		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
-	  if defined $licsToAllocate;
-
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
-		###License type: hw specific MSU, machine level
-		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationMSU( $freePoolData, 1, 1 );
-		return ( $licsToAllocate,
-			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
-	}
-
-	###License type: hw specific MSU, lpar level
-	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMSU( $freePoolData, 0, 1 );
+	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
 		$machineLevel )
@@ -634,16 +616,16 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###License type: MIPS, machine level
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationMIPS( $freePoolData, 1, 0 );
+		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 1 );
 		return ( $licsToAllocate,
-			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+				$reconcileTypeMap->{'Automatic license allocation'},
+				$machineLevel )
 		if defined $licsToAllocate;
 	}
 
 	###License type: MIPS, lpar level
 	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMIPS( $freePoolData, 0, 0 );
+	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
 		$machineLevel )
@@ -652,7 +634,7 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###License type: MSU, machine level
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationMSU( $freePoolData, 1, 0 );
+			$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
 			$machineLevel )
@@ -661,7 +643,7 @@ sub attemptLicenseAllocation {
 
 	###License type: MSU, lpar level
 	( $licsToAllocate, $machineLevel ) =
-	  $self->attemptLicenseAllocationMSU( $freePoolData, 0, 0 );
+	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
 		$machineLevel )
@@ -857,7 +839,7 @@ sub getFreePoolData {
 			$self->customer->swFinancialResponsibility,
 			$licView->ibmOwned, undef );
 		$validation->validateMaintenanceExpiration(
-			$self->installedSoftwareReconData->mtType,
+			$self->installedSoftwareReconData->mtType, $licView->capType,
 			0, $licView->expireAge, undef, undef );
 		$validation->validatePhysicalCpuSerialMatch( $licView->capType,
 			$licView->licenseType, $self->installedSoftwareReconData->hSerial,
@@ -1279,30 +1261,55 @@ sub attemptLicenseAllocationProcessor {
 	dlog("end attemptLicenseAllocationProcessor");
 }
 
-sub attemptLicenseAllocationMIPS {
-	my ( $self, $freePoolData, $machineLevel, $hwSpecificOnly ) = @_;
+sub attemptLicenseAllocationMipsMsuGartner {
+	my ( $self, $freePoolData, $myCapType, $machineLevel ) = @_;
 	dlog("begin attemptLicenseAllocationMIPS");
 	dlog( "machineLevel=" . $machineLevel );
-	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
+#	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
 
 	return undef
-	  if $self->installedSoftwareReconData->mtType eq ' MAINFRAME ';
+	  if $self->installedSoftwareReconData->mtType ne 'MAINFRAME';
+
+# 	only MAINFRAME
 
 	###Hash to return.
 	my %licsToAllocate;
-	my $mipsCount = 0;
+	my $myCount = 0;
+	
+	if ( $myCapType eq '5' ) { # MIPS
+		dlog("Allocating MIPS...");
+		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMIPS > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hCpuMIPS;
+			}
+		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartMIPS > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hlPartMIPS;
+			}
+	} elsif ( $myCapType eq '9' ) { # MSU
+		dlog("Allocating MSU...");
+		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMSU > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hCpuMSU;
+			}
+		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartMSU > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hlPartMSU;
+			}
+	} elsif ( $myCapType eq '70' ) { # GARTNER MIPS
+		dlog("Allocating Gartner MIPS...");
+		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuGartnerMIPS > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hCpuGartnerMIPS;
+			}
+		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartGartnerMIPS > 0 )
+			{
+				$myCount = $self->installedSoftwareReconData->hlPartGartnerMIPS;
+			}
+	}
 
-	if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMIPS > 0 )
-	{
-		$mipsCount = $self->installedSoftwareReconData->hCpuMIPS;
-	}
-	elsif ($machineLevel == 0
-		&& $self->installedSoftwareReconData->hlPartMIPS > 0 )
-	{
-		$mipsCount = $self->installedSoftwareReconData->hlPartMIPS;
-	}
-	return undef if $mipsCount == 0;
-	dlog( "mipsCount=" . $mipsCount );
+	return undef if $myCount == 0;
+	dlog( "myCount=" . $myCount );
 	###Counter to keep allocation count.
 	my $tempQuantityAllocated = 0;
 
@@ -1311,101 +1318,33 @@ sub attemptLicenseAllocationMIPS {
 
 	###Iterate over free pool and attempt allocation - hw specific.
 
-	###Named CPU
-	foreach my $lId ( keys %{$freePoolData} ) {
-		my $licView = $freePoolData->{$lId};
-		my $lEnv    = $freePoolData->{$lId}->environment;
-		next unless $licView->capType     eq '5';
-		next unless $licView->licenseType eq 'NAMED CPU';
-		next
-		  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-		dlog("license environment=$lEnv");
-		next
-		  if ( $machineLevel == 1
-			&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-			== 0 );
-
-		my $neededQuantity = $mipsCount - $tempQuantityAllocated;
-		dlog( "neededQuantity=" . $neededQuantity );
-		dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
-
-		if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-			$licsToAllocate{$lId}  = $neededQuantity;
-			$tempQuantityAllocated = $tempQuantityAllocated + $neededQuantity;
-			$isFullyAllocated      = 1;
-			last;
-		}
-		else {
-			$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-			$tempQuantityAllocated =
-			  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-			$freePoolData->{$lId}->quantity(0);
-		}
-	}
-	if ( $isFullyAllocated == 0 ) {
+	if ( $machineLevel == 1 ) {
+		###Named CPU, customer's licenses
 		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
+			my $lEnv    = $freePoolData->{$lId}->environment;
+			next unless $licView->capType     eq $myCapType;
 			next unless $licView->licenseType eq 'NAMED CPU';
 			next
-			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $mipsCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-	}
-
-	###Named LPAR
-	if ( $isFullyAllocated == 0 && $machineLevel == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
-			next unless $licView->licenseType eq 'NAMED LPAR';
-			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
+			next unless defined $licView->cpuSerial;
+			next
+			  unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
+	
 			dlog("license environment=$lEnv");
 			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $mipsCount - $tempQuantityAllocated;
+			  if ( $machineLevel == 1
+				&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
+				== 0 );
+	
+			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
-
+	
 			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
+				$licsToAllocate{$lId}  = $neededQuantity;
+				$tempQuantityAllocated = $tempQuantityAllocated + $neededQuantity;
+				$isFullyAllocated      = 1;
 				last;
 			}
 			else {
@@ -1415,15 +1354,101 @@ sub attemptLicenseAllocationMIPS {
 				$freePoolData->{$lId}->quantity(0);
 			}
 		}
-		if ( $isFullyAllocated == 0 ) {
+		if ( $isFullyAllocated == 0 ) { # named CPU, pool master's licenses
 			foreach my $lId ( keys %{$freePoolData} ) {
 				my $lEnv    = $freePoolData->{$lId}->environment;
 				my $licView = $freePoolData->{$lId};
-				next unless $licView->capType     eq '5';
+				next unless $licView->capType     eq $myCapType;
+				next unless $licView->licenseType eq 'NAMED CPU';
+				next
+				  unless $licView->cId ne $self->installedSoftwareReconData->cId;
+				next unless defined $licView->cpuSerial;
+				next
+					unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
+	
+				dlog("license environment=$lEnv");
+				next
+				  if (
+					$machineLevel == 1
+					&& $self->isEnvironmentSame(
+						$self->mechineLevelServerType, $lEnv
+					) == 0
+				  );
+	
+				my $neededQuantity = $myCount - $tempQuantityAllocated;
+				dlog( "neededQuantity=" . $neededQuantity );
+				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
+	
+				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
+					$licsToAllocate{$lId} = $neededQuantity;
+					$tempQuantityAllocated =
+					  $tempQuantityAllocated + $neededQuantity;
+					$isFullyAllocated = 1;
+					last;
+				}
+				else {
+					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
+					$tempQuantityAllocated =
+					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
+					$freePoolData->{$lId}->quantity(0);
+				}
+			}
+		}
+	}
+	
+	###Named LPAR, customer's licenses
+	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 0 )) {
+		foreach my $lId ( keys %{$freePoolData} ) {
+			my $lEnv    = $freePoolData->{$lId}->environment;
+			my $licView = $freePoolData->{$lId};
+			next unless $licView->capType     eq $myCapType;
+			next unless $licView->licenseType eq 'NAMED LPAR';
+			next
+			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
+			next unless defined $licView->lparName;
+			next
+				unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
+				
+			dlog("license environment=$lEnv");
+			next
+			  if (
+				$machineLevel == 1
+				&& $self->isEnvironmentSame(
+					$self->mechineLevelServerType, $lEnv
+				) == 0
+			  );
+
+			my $neededQuantity = $myCount - $tempQuantityAllocated;
+			dlog( "neededQuantity=" . $neededQuantity );
+			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
+
+			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
+				$licsToAllocate{$lId} = $neededQuantity;
+				$tempQuantityAllocated =
+				  $tempQuantityAllocated + $neededQuantity;
+				$isFullyAllocated = 1;
+				last;
+			}
+			else {
+				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
+				$tempQuantityAllocated =
+				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
+				$freePoolData->{$lId}->quantity(0);
+			}
+		}
+		if ( $isFullyAllocated == 0 ) { # named LPAR, master pool's licenses
+			foreach my $lId ( keys %{$freePoolData} ) {
+				my $lEnv    = $freePoolData->{$lId}->environment;
+				my $licView = $freePoolData->{$lId};
+				next unless $licView->capType     eq $myCapType;
 				next unless $licView->licenseType eq 'NAMED LPAR';
 				next
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
+				next unless defined $licView->lparName;
+				next
+					unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
+				
 				dlog("license environment=$lEnv");
 				next
 				  if (
@@ -1432,7 +1457,7 @@ sub attemptLicenseAllocationMIPS {
 						$lEnv ) == 0
 				  );
 
-				my $neededQuantity = $mipsCount - $tempQuantityAllocated;
+				my $neededQuantity = $myCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
 				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
 
@@ -1452,19 +1477,16 @@ sub attemptLicenseAllocationMIPS {
 			}
 		}
 	}
-	###FC
-	if ( $isFullyAllocated == 0 ) {
+	###other licenses
+	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 1 )) { # customer's own
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
-			next unless $licView->licenseType eq 'FC';
+			next unless $licView->capType     eq $myCapType;
+			next if (( $licView->licenseType eq 'NAMED CPU' ) || ( $licView->licenseType eq 'NAMED LPAR' ));
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			next unless defined $licView->cpuSerial;
-			next
-			  unless $licView->cpuSerial eq
-			  $self->installedSoftwareReconData->hSerial;
+
 			dlog("license environment=$lEnv");
 			next
 			  if (
@@ -1474,7 +1496,7 @@ sub attemptLicenseAllocationMIPS {
 				) == 0
 			  );
 
-			my $neededQuantity = $mipsCount - $tempQuantityAllocated;
+			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 
 			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
@@ -1493,18 +1515,15 @@ sub attemptLicenseAllocationMIPS {
 			}
 		}
 	}
-	if ( $isFullyAllocated == 0 ) {
+	if ( $isFullyAllocated == 0 ) { # master pool
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
-			next unless $licView->licenseType eq 'FC';
+			next unless $licView->capType     eq $myCapType;
+			next if (( $licView->licenseType eq 'NAMED CPU' ) || ( $licView->licenseType eq 'NAMED LPAR' ));
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			next unless defined $licView->cpuSerial;
-			next
-			  unless $licView->cpuSerial eq
-			  $self->installedSoftwareReconData->hSerial;
+
 			dlog("license environment=$lEnv");
 			next
 			  if (
@@ -1514,7 +1533,7 @@ sub attemptLicenseAllocationMIPS {
 				) == 0
 			  );
 
-			my $neededQuantity = $mipsCount - $tempQuantityAllocated;
+			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 
 			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
@@ -1529,76 +1548,6 @@ sub attemptLicenseAllocationMIPS {
 				$tempQuantityAllocated =
 				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
 				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-	}
-	if ( $isFullyAllocated == 0 && $hwSpecificOnly == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
-			next unless $licView->licenseType eq 'FC';
-			next
-			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $mipsCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-		if ( $isFullyAllocated == 0 ) {
-			foreach my $lId ( keys %{$freePoolData} ) {
-				my $lEnv    = $freePoolData->{$lId}->environment;
-				my $licView = $freePoolData->{$lId};
-				next unless $licView->capType     eq '5';
-				next unless $licView->licenseType eq 'FC';
-				next
-				  unless $licView->cId ne
-				  $self->installedSoftwareReconData->cId;
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
-
-				my $neededQuantity = $mipsCount - $tempQuantityAllocated;
-				dlog( "neededQuantity=" . $neededQuantity );
-
-				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-					$licsToAllocate{$lId} = $neededQuantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $neededQuantity;
-					$isFullyAllocated = 1;
-					last;
-				}
-				else {
-					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-					$freePoolData->{$lId}->quantity(0);
-				}
 			}
 		}
 	}
@@ -1613,359 +1562,7 @@ sub attemptLicenseAllocationMIPS {
 		return undef;
 	}
 
-	dlog("end attemptLicenseAllocationMIPS");
-}
-
-sub attemptLicenseAllocationMSU {
-	my ( $self, $freePoolData, $machineLevel, $hwSpecificOnly ) = @_;
-	dlog("begin attemptLicenseAllocationMSU");
-	dlog( "machineLevel=" . $machineLevel );
-	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
-
-	return undef
-	  if $self->installedSoftwareReconData->mtType eq ' MAINFRAME ';
-
-	###Hash to return.
-	my %licsToAllocate;
-	my $msuCount = 0;
-
-	if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMSU > 0 )
-	{
-		$msuCount = $self->installedSoftwareReconData->hCpuMSU;
-	}
-	elsif ($machineLevel == 0
-		&& $self->installedSoftwareReconData->hlPartMSU > 0 )
-	{
-		$msuCount = $self->installedSoftwareReconData->hlPartMSU;
-	}
-	return undef if $msuCount == 0;
-	dlog( "msuCount=" . $msuCount );
-	###Counter to keep allocation count.
-	my $tempQuantityAllocated = 0;
-
-	###Flag to indicate we have enough to fully cover.
-	my $isFullyAllocated = 0;
-
-	###Iterate over free pool and attempt allocation - hw specific.
-
-	###Named CPU
-	foreach my $lId ( keys %{$freePoolData} ) {
-		my $lEnv    = $freePoolData->{$lId}->environment;
-		my $licView = $freePoolData->{$lId};
-		next unless $licView->capType     eq '9';
-		next unless $licView->licenseType eq 'NAMED CPU';
-		next
-		  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-
-		#        next unless defined $licView->cpuSerial;
-		#        next
-		#             unless $licView->cpuSerial eq
-		#                $self->installedSoftwareReconData->hSerial;
-		dlog("license environment=$lEnv");
-		next
-		  if ( $machineLevel == 1
-			&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-			== 0 );
-
-		my $neededQuantity = $msuCount - $tempQuantityAllocated;
-		dlog( "neededQuantity=" . $neededQuantity );
-
-		if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-			$licsToAllocate{$lId}  = $neededQuantity;
-			$tempQuantityAllocated = $tempQuantityAllocated + $neededQuantity;
-			$isFullyAllocated      = 1;
-			last;
-		}
-		else {
-			$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-			$tempQuantityAllocated =
-			  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-			$freePoolData->{$lId}->quantity(0);
-		}
-	}
-	if ( $isFullyAllocated == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '5';
-			next unless $licView->licenseType eq 'NAMED CPU';
-			next
-			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			#            next unless defined $licView->cpuSerial;
-			#            next
-			#                 unless $licView->cpuSerial eq
-			#                    $self->installedSoftwareReconData->hSerial;
-
-			my $neededQuantity = $msuCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-	}
-
-	###Named LPAR
-	if ( $isFullyAllocated == 0 && $machineLevel == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '9';
-			next unless $licView->licenseType eq 'NAMED LPAR';
-
-#            next unless defined $licView->lparName;
-#            next
-#                unless ($licView->lparName eq
-#                $self->installedSoftwareReconData->slName || $licView->lparName eq
-#                $self->installedSoftwareReconData->hlName);
-			next
-			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-			my $neededQuantity = $msuCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-		if ( $isFullyAllocated == 0 ) {
-			foreach my $lId ( keys %{$freePoolData} ) {
-				my $lEnv    = $freePoolData->{$lId}->environment;
-				my $licView = $freePoolData->{$lId};
-				next unless $licView->capType     eq '9';
-				next unless $licView->licenseType eq 'NAMED LPAR';
-
-#                next unless defined $licView->lparName;
-#                next
-#                    unless ($licView->lparName eq
-#                    $self->installedSoftwareReconData->slName || $licView->lparName eq
-#                $self->installedSoftwareReconData->hlName);
-				next
-				  unless $licView->cId ne
-				  $self->installedSoftwareReconData->cId;
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
-				my $neededQuantity = $msuCount - $tempQuantityAllocated;
-				dlog( "neededQuantity=" . $neededQuantity );
-
-				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-					$licsToAllocate{$lId} = $neededQuantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $neededQuantity;
-					$isFullyAllocated = 1;
-					last;
-				}
-				else {
-					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-					$freePoolData->{$lId}->quantity(0);
-				}
-			}
-		}
-	}
-	###FC
-	if ( $isFullyAllocated == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '9';
-			next unless $licView->licenseType eq 'FC';
-			next
-			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			next unless defined $licView->cpuSerial;
-			next
-			  unless $licView->cpuSerial eq
-			  $self->installedSoftwareReconData->hSerial;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $msuCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-	}
-	if ( $isFullyAllocated == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '9';
-			next unless $licView->licenseType eq 'FC';
-			next
-			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			next unless defined $licView->cpuSerial;
-			next
-			  unless $licView->cpuSerial eq
-			  $self->installedSoftwareReconData->hSerial;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $msuCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-	}
-	if ( $isFullyAllocated == 0 && $hwSpecificOnly == 0 ) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq '9';
-			next unless $licView->licenseType eq 'FC';
-			next
-			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
-			my $neededQuantity = $msuCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId} = $neededQuantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-		if ( $isFullyAllocated == 0 ) {
-			foreach my $lId ( keys %{$freePoolData} ) {
-				my $lEnv    = $freePoolData->{$lId}->environment;
-				my $licView = $freePoolData->{$lId};
-				next unless $licView->capType     eq '9';
-				next unless $licView->licenseType eq 'FC';
-				next
-				  unless $licView->cId ne
-				  $self->installedSoftwareReconData->cId;
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
-				my $neededQuantity = $msuCount - $tempQuantityAllocated;
-				dlog( "neededQuantity=" . $neededQuantity );
-
-				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-					$licsToAllocate{$lId} = $neededQuantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $neededQuantity;
-					$isFullyAllocated = 1;
-					last;
-				}
-				else {
-					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-					$freePoolData->{$lId}->quantity(0);
-				}
-			}
-		}
-	}
-
-	###Return lics to allocate if able to fully allocate, else undef.
-	if ( $isFullyAllocated == 1 ) {
-		dlog("allocated");
-		return ( \%licsToAllocate, $machineLevel );
-	}
-	else {
-		dlog("unable to allocate");
-		return undef;
-	}
-
-	dlog("end attemptLicenseAllocationMSU");
+	dlog("end attemptLicenseAllocationMipsMsuGartner");
 }
 
 sub attemptLicenseAllocationPVU {
@@ -2497,7 +2094,7 @@ from
            on h. id = hl. hardware_id 
       where
            ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where member_account_id = ? ))
-            and ((l.cap_type in( 2, 13, 14, 17, 34, 48 ) and l.try_and_buy = 0) or l.cap_type =5 or l.cap_type =9)
+            and ((l.cap_type in( 2, 13, 14, 17, 34, 48 ) and l.try_and_buy = 0) or l.cap_type =5 or l.cap_type =9 or l.cap_type=70)
             and l.lic_type != \'SC\'   
             and s.software_id = ?
             and l.status = \'ACTIVE\'
@@ -2535,6 +2132,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hMachineTypeId( $rec{hMachineTypeId} );
 		$installedSoftwareReconData->hServerType( $rec{hServerType} );
 		$installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
+		$installedSoftwareReconData->hCpuGartnerMIPS ( $rec{hCpuGartnerMIPS} );
 		$installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
 		$installedSoftwareReconData->hOwner( $rec{hOwner} );
 		$installedSoftwareReconData->mtType( $rec{mtType} );
@@ -2542,6 +2140,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hlStatus( $rec{hlStatus} );
 		$installedSoftwareReconData->hlName( $rec{hlName} );
 		$installedSoftwareReconData->hlPartMIPS( $rec{hlPartMIPS} );
+		$installedSoftwareReconData->hlPartGartnerMIPS ( $rec{hlPartGartnerMIPS} );
 		$installedSoftwareReconData->hlPartMSU( $rec{hlPartMSU} );
 		$installedSoftwareReconData->slId( $rec{slId} );
 		$installedSoftwareReconData->cId( $rec{cId} );
@@ -2821,6 +2420,8 @@ sub queryScheduleFScope {
 	    sf.customer_id = ?
 	  and
 	    sf.software_name = ?
+	  and
+	    sf.status_id = 2
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
@@ -2841,6 +2442,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  hMachineTypeId
 	  hServerType
 	  hCpuMIPS
+	  hCpuGartnerMIPS
 	  hCpuMSU
 	  hOwner
 	  mtType
@@ -2848,6 +2450,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  hlStatus
 	  hlName
 	  hlPartMIPS
+	  hlCpuGartnerMIPS
 	  hlPartMSU
 	  slId
 	  cId
@@ -2883,6 +2486,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.machine_type_id
             ,h.server_type
             ,h.cpu_mips
+            ,h.cpu_gartner_mips
             ,h.cpu_msu
             ,h.owner
             ,mt.type
@@ -2890,6 +2494,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,hl.lpar_status
             ,hl.name
             ,hl.part_mips
+            ,hl.part_gartner_mips
             ,hl.part_msu
             ,sl.id
             ,sl.customer_id

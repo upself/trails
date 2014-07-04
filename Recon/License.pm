@@ -268,6 +268,61 @@ sub queryPotentialInstalledSoftwares {
     return ( 'potentialInstalledSoftwares', $query, \@fields );
 }
 
+sub getScheduleFScope {
+	my $self=shift;
+	my $custId=shift;
+	my $softName=shift;
+	my $hwOwner=shift;
+	my $hSerial=shift;
+	my $hMachineTypeId=shift;
+	my $slName=shift;
+	
+	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
+	my $scopeToReturn=undef;
+	
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryScheduleFScope() );
+	my $sth = $self->connection->sql->{ScheduleFScope};
+	my %recc;
+	$sth->bind_columns( map { \$recc{$_} }
+		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
+	$sth->execute( $custId, $softName );
+	
+#	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
+	
+	while ( $sth->fetchrow_arrayref ) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
+			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=3;
+		}
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
+			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=2;
+		}
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
+			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=1;
+		}
+		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+	}
+	
+#	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
+	
+	return ( $scopeToReturn, $prioFound );
+}
+
 sub getLicenseAllocationsData {
     my $self = shift;
     dlog("begin getLicenseAllocationsData");
@@ -301,8 +356,19 @@ sub getLicenseAllocationsData {
         $lav->hProcessorCount ( $rec{hProcessorCount} );
         $lav->hlName( $rec{hlName} );
         $lav->mtType( $rec{mtType} );
-        $lav->scopeName( $rec{scopeName} );
+#        $lav->scopeName( $rec{scopeName} );
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
+        
+       	my ( $scopename_temp, undef ) = getScheduleFScope( 	$self,
+															$self->license->customerId, # customer ID
+															$rec{swName}, # software name
+															$rec{hOwner}, # hardware owner ID
+															$rec{hSerial}, # hardware serial
+															$rec{mtType}, #machine type
+															$rec{slName} #hostname
+															  );
+															  
+		$lav->scopeName ( $scopename_temp );
 
         ###Add lic allocation view object to data hash.
         $data{ $rec{rId} } = $lav;
@@ -311,6 +377,42 @@ sub getLicenseAllocationsData {
 
     dlog("end getLicenseAllocationsData");
     $self->licenseAllocationData( \%data );
+}
+
+sub queryScheduleFScope {
+	# this needs to be updated if there ever is a level other than HOSTNAME HWBOX HWOWNER PRODUCT, that does not alphabetically
+	# fit into the correct priority-spot
+	my @fields = qw(
+	  hwOwner
+	  hSerial
+	  hMachineTypeId
+	  hostname
+	  level
+	  scopeName
+	);
+	my $query = '
+	  select
+	    sf.hw_owner,
+	    sf.serial,
+	    mt.id,
+	    sf.hostname,
+	    sf.level,
+	    s.name
+	  from schedule_f sf
+	    left outer join scope s
+	      on sf.scope_id = s.id
+	    left outer join machine_type mt
+	      on mt.name = sf.machine_type
+	  where
+	    sf.customer_id = ?
+	  and
+	    sf.software_name = ?
+	  and
+	    sf.status_id = 2
+	  order by sf.level fetch first 1 rows only
+	';
+	return('ScheduleFScope', $query, \@fields );
+	
 }
 
 sub queryLicenseAllocationsData {
@@ -327,12 +429,19 @@ sub queryLicenseAllocationsData {
         isSoftwareId
         slCustomerId
         slName
+        swName
         hId
         hSerial
         hProcessorCount
+        hCpuMIPS
+        hCpuGartnerMIPS
+        hCpuMSU
+        hOwner
         hlName
+        hlPartMIPS
+        hlPartGartnerMIPS
+        hlPartMSU
         mtType
-        scopeName
         slComplianceMgmt
     );
     my $query = '
@@ -349,12 +458,19 @@ sub queryLicenseAllocationsData {
             ,is.software_id
             ,sl.customer_id
             ,sl.name
+            ,si.name
             ,h.id
             ,h.serial
             ,h.processor_count
+            ,h.owner
+            ,h.cpu_mips
+            ,h.cpu_gartner_mips
+            ,h.cpu_msu
             ,hl.name
+            ,hl.part_mips
+            ,hl.part_gartner_mips
+            ,hl.part_msu
             ,mt.type
-            ,scope.name
             ,c.sw_compliance_mgmt
         from
         	used_license ul
@@ -364,13 +480,8 @@ sub queryLicenseAllocationsData {
         	join reconcile r on r.id = rul.reconcile_id
             join reconcile_type rt on rt.id = r.reconcile_type_id
             join installed_software is on is.id = r.installed_software_id
+            join software_item si on si.id = is.software_id
             join software_lpar sl on sl.id = is.software_lpar_id
-            left outer join schedule_f sf on 
-                sl.customer_id = sf.customer_id
-                and sf.software_id = is.software_id
-                and sf.status_id = 2
-            left outer join scope scope on
-                sf.scope_id = scope.id
             join customer c on sl.customer_id = c.customer_id
             join hw_sw_composite hsc on hsc.software_lpar_id = sl.id
             join hardware_lpar hl on hl.id = hsc.hardware_lpar_id

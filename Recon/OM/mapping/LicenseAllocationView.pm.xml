@@ -15,7 +15,13 @@
 	<property name="hId" type="scalar" equals="true" />
 	<property name="hSerial" type="scalar" equals="true" />
 	<property name="hProcessorCount" type="scalar" equals="true" />
+	<property name="hCpuMIPS" type="scalar" equals="true" />
+	<property name="hCpuGartnerMIPS" type="scalar" equals="true" />
+	<property name="hCpuMSU" type="scalar" equals="true" />
 	<property name="hlName" type="scalar" equals="true" />
+	<property name="hlPartMIPS" type="scalar" equals="true" />
+	<property name="hlPartGartnerMIPS" type="scalar" equals="true" />
+	<property name="hlPartMSU" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
 	<property name="slComplianceMgmt" type="scalar" equals="true" />

@@ -21,7 +21,13 @@ sub new {
         ,_hId => undef
         ,_hSerial => undef
         ,_hProcessorCount => undef
+        ,_hCpuMIPS => undef
+        ,_hCpuGartnerMIPS => undef
+        ,_hCpuMSU => undef
         ,_hlName => undef
+        ,_hlPartMIPS => undef
+        ,_hlPartGartnerMIPS => undef
+        ,_hlPartMSU => undef
         ,_mtType => undef
         ,_scopeName => undef
         ,_slComplianceMgmt => undef
@@ -140,10 +146,52 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->hCpuMIPS && defined $object->hCpuMIPS) {
+        $equal = 1 if $self->hCpuMIPS eq $object->hCpuMIPS;
+    }
+    $equal = 1 if (!defined $self->hCpuMIPS && !defined $object->hCpuMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hCpuGartnerMIPS && defined $object->hCpuGartnerMIPS) {
+        $equal = 1 if $self->hCpuGartnerMIPS eq $object->hCpuGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->hCpuGartnerMIPS && !defined $object->hCpuGartnerMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hCpuMSU && defined $object->hCpuMSU) {
+        $equal = 1 if $self->hCpuMSU eq $object->hCpuMSU;
+    }
+    $equal = 1 if (!defined $self->hCpuMSU && !defined $object->hCpuMSU);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->hlName && defined $object->hlName) {
         $equal = 1 if $self->hlName eq $object->hlName;
     }
     $equal = 1 if (!defined $self->hlName && !defined $object->hlName);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hlPartMIPS && defined $object->hlPartMIPS) {
+        $equal = 1 if $self->hlPartMIPS eq $object->hlPartMIPS;
+    }
+    $equal = 1 if (!defined $self->hlPartMIPS && !defined $object->hlPartMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hlPartGartnerMIPS && defined $object->hlPartGartnerMIPS) {
+        $equal = 1 if $self->hlPartGartnerMIPS eq $object->hlPartGartnerMIPS;
+    }
+    $equal = 1 if (!defined $self->hlPartGartnerMIPS && !defined $object->hlPartGartnerMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hlPartMSU && defined $object->hlPartMSU) {
+        $equal = 1 if $self->hlPartMSU eq $object->hlPartMSU;
+    }
+    $equal = 1 if (!defined $self->hlPartMSU && !defined $object->hlPartMSU);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -260,10 +308,46 @@ sub hProcessorCount {
     return $self->{_hProcessorCount};
 }
 
+sub hCpuMIPS {
+    my $self = shift;
+    $self->{_hCpuMIPS} = shift if scalar @_ == 1;
+    return $self->{_hCpuMIPS};
+}
+
+sub hCpuGartnerMIPS {
+    my $self = shift;
+    $self->{_hCpuGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_hCpuGartnerMIPS};
+}
+
+sub hCpuMSU {
+    my $self = shift;
+    $self->{_hCpuMSU} = shift if scalar @_ == 1;
+    return $self->{_hCpuMSU};
+}
+
 sub hlName {
     my $self = shift;
     $self->{_hlName} = shift if scalar @_ == 1;
     return $self->{_hlName};
+}
+
+sub hlPartMIPS {
+    my $self = shift;
+    $self->{_hlPartMIPS} = shift if scalar @_ == 1;
+    return $self->{_hlPartMIPS};
+}
+
+sub hlPartGartnerMIPS {
+    my $self = shift;
+    $self->{_hlPartGartnerMIPS} = shift if scalar @_ == 1;
+    return $self->{_hlPartGartnerMIPS};
+}
+
+sub hlPartMSU {
+    my $self = shift;
+    $self->{_hlPartMSU} = shift if scalar @_ == 1;
+    return $self->{_hlPartMSU};
 }
 
 sub mtType {
@@ -362,9 +446,39 @@ sub toString {
         $s .= $self->{_hProcessorCount};
     }
     $s .= ",";
+    $s .= "hCpuMIPS=";
+    if (defined $self->{_hCpuMIPS}) {
+        $s .= $self->{_hCpuMIPS};
+    }
+    $s .= ",";
+    $s .= "hCpuGartnerMIPS=";
+    if (defined $self->{_hCpuGartnerMIPS}) {
+        $s .= $self->{_hCpuGartnerMIPS};
+    }
+    $s .= ",";
+    $s .= "hCpuMSU=";
+    if (defined $self->{_hCpuMSU}) {
+        $s .= $self->{_hCpuMSU};
+    }
+    $s .= ",";
     $s .= "hlName=";
     if (defined $self->{_hlName}) {
         $s .= $self->{_hlName};
+    }
+    $s .= ",";
+    $s .= "hlPartMIPS=";
+    if (defined $self->{_hlPartMIPS}) {
+        $s .= $self->{_hlPartMIPS};
+    }
+    $s .= ",";
+    $s .= "hlPartGartnerMIPS=";
+    if (defined $self->{_hlPartGartnerMIPS}) {
+        $s .= $self->{_hlPartGartnerMIPS};
+    }
+    $s .= ",";
+    $s .= "hlPartMSU=";
+    if (defined $self->{_hlPartMSU}) {
+        $s .= $self->{_hlPartMSU};
     }
     $s .= ",";
     $s .= "mtType=";

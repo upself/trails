@@ -573,12 +573,12 @@ sub validateLicenseAllocation {
    $validation->validateCapacityType( $rec{lrmCapType}, $rec{capType}, undef,
     undef );
 
-   ###Validate cap_type 34, 5, 9 serial match
+   ###Validate cap_type 34, 5, 9, 70 serial match
    $validation->validatePhysicalCpuSerialMatch( $rec{capType}, $rec{licenseType},
     $self->installedSoftwareReconData->hSerial,
     $rec{cpuSerial}, undef, undef, 0 );
     
-   ###Validate cap_type 5, 9 lpar name match   
+   ###Validate cap_type 5, 9, 70 lpar name match   
    $validation->validateLparNameMatch( $rec{capType}, $rec{licenseType}, $rec{lparName}, 
     $self->installedSoftwareReconData->slName, 
     $self->installedSoftwareReconData->hlName,
@@ -594,10 +594,17 @@ sub validateLicenseAllocation {
 
    ###Validate subcapacity
    $validation->validateSubCapacity( $rec{licenseType}, undef, 0 );
+   
+   ###Validate MIPS / Gartner MIPS / MSU, the component count on the hardware box
+   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $self->installedSoftwareReconData->mtType,
+			$self->installedSoftwareReconData->rMachineLevel, undef,
+			$self->installedSoftwareReconData->hCpuMIPS, $self->installedSoftwareReconData->hCpuGartnerMIPS, $self->installedSoftwareReconData->hCpuMSU,
+			$self->installedSoftwareReconData->hlPartMIPS, $self->installedSoftwareReconData->hlPartGartnerMIPS, $self->installedSoftwareReconData->hlPartMSU
+   );
 
    ###Validate expire date based on mt type if recon was auto.
    $validation->validateMaintenanceExpiration(
-    $self->installedSoftwareReconData->mtType,
+    $self->installedSoftwareReconData->mtType, $rec{capType},
     0, $rec{expireAge}, undef, undef );
 
    $validation->validateProcessorChip(
