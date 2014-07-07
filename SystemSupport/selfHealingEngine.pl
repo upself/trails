@@ -66,6 +66,10 @@
 ######################################################################
 #                                            Phase 5A Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 5A'
 # 2014-07-02  Tomas Sima(Tomas) 1.5.1 		 System Support And Self Healing Service Components - Phase 5A - Enhancement for Restart Remote Web App Feature of SelfHealing? Engine to check and cleanup filesystem space 
+###################################################################################################################################################################################################
+#                                            Phase 9 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 9'
+# 2014-03-11  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
+
 
 #Load required modules
 use strict;
@@ -401,8 +405,11 @@ my $BRAVO_FILESPACE_FOLDER = "/var/bravo";
 my $BRAVO_ARCHIVE_SCRIPTS_DIR="/opt/bravo/war/";
 my $TRAILS_ARCHIVE_SCRIPTS_DIR="/opt/trails/war/";
 my $LOGFILESPACETHRESHOLD = 70;
+
+#Added by Tomas for System Support And Self Healing Service Components - Phase 9 - Start
 my $QUERY_CLEAN_HISTORY = "DELETE FROM EAADMIN.BANK_ACCOUNT_JOB WHERE ID IN(SELECT B.ID FROM EAADMIN.BANK_ACCOUNT A INNER JOIN EAADMIN.BANK_ACCOUNT_JOB B ON A.ID = B.BANK_ACCOUNT_ID where A.NAME || ' ' != substring(b.name, 1,length(A.NAME)+1,OCTETS ))";	
 my $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS = "CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS";
+#Added by Tomas for System Support And Self Healing Service Components - Phase 9 - End
 
 main();
 
@@ -2414,6 +2421,8 @@ sub coreOperationProcess{
 	  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }#end elsif($operationNameCode eq $CLEANUP_RECON_QUEUES_DUPLICATE_DATA)
+#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
+#Added by Tomas for System Support And Self Healing Service Components - Phase 9 - Start
     elsif($operationNameCode eq $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS){
 	  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
         #Operation has been started to be processed
@@ -2430,7 +2439,7 @@ sub coreOperationProcess{
       $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
     }
-#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
+#Added by Tomas for System Support And Self Healing Service Components - Phase 9 - End
 
     #A piece of code template which is used for 'New Operatoin' business logic
     #elsif($operationNameCode eq "SAMPLE_OPERATION_NAME_CODE"){#SAMPLE_OPERATION_NAME_CODE
