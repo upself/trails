@@ -68,7 +68,7 @@
 # 2014-07-02  Tomas Sima(Tomas) 1.5.1 		 System Support And Self Healing Service Components - Phase 5A - Enhancement for Restart Remote Web App Feature of SelfHealing? Engine to check and cleanup filesystem space 
 ###################################################################################################################################################################################################
 #                                            Phase 9 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 9'
-# 2014-03-11  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
+# 2014-07-07  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
 
 
 #Load required modules

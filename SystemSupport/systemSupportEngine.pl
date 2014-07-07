@@ -41,7 +41,7 @@
 # 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
 ###################################################################################################################################################################################################
 #                                            Phase 9 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 9'
-# 2014-03-11  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
+# 2014-07-07  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
 
 #Load required modules
 use strict;
