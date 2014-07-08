@@ -1,0 +1,101 @@
+package IBM::Schema::CNDB::CndbDownloadCnView;
+
+use strict;
+use warnings;
+
+use base 'DBIx::Class';
+
+__PACKAGE__->load_components("Core");
+__PACKAGE__->table("CNDB_DOWNLOAD_CN_VIEW");
+__PACKAGE__->add_columns(
+  "customer_number",
+  { data_type => "VARCHAR", is_nullable => 0, size => 255 },
+  "app_code",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "cust_pool_email",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "cno_serial",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "cno_email",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "fa_code",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "tower",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "sub_group",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "area",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "division",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "state",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "country",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "postal_code",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "address_title",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "address1",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "address2",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "city",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "aa_central_recv_supp",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "aa_contact_dock_email",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "taxable_status",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "exemption_reason",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "charge_to_dept",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "clli",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "major_name",
+  { data_type => "VARCHAR", is_nullable => 0, size => 255 },
+  "lpid_name",
+  { data_type => "VARCHAR", is_nullable => 0, size => 255 },
+  "function",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "igf_customer_number",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "branch_office_code",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "claim_work_item",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "claim_activity_code",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "status",
+  { data_type => "VARCHAR", is_nullable => 0, size => 32 },
+  "active_date",
+  { data_type => "VARCHAR", is_nullable => 1, size => 10 },
+  "cnc_comments",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "validation_date",
+  { data_type => "VARCHAR", is_nullable => 1, size => 10 },
+  "validated_by",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "validation_status",
+  { data_type => "VARCHAR", is_nullable => 1, size => 64 },
+  "cno_exception_justification",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "aa_cn_contact_sw_email",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "aa_cn_contact_hw_email",
+  { data_type => "VARCHAR", is_nullable => 1, size => 255 },
+  "aa_cr_service_level",
+  { data_type => "VARCHAR", is_nullable => 1, size => 32 },
+  "account_number",
+  { data_type => "BIGINT", is_nullable => 0, size => 19 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.04003 @ 2007-12-12 17:12:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZN4eXNeF428LrukU3GwqsQ
+
+
+# You can replace this text with custom content, and it will be preserved on regeneration
+1;
