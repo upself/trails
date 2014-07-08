@@ -561,8 +561,8 @@ sub validateScheduleF {
 					return 1;
 				}
 			if ( $scopeName eq 'CUSTOCUSTM' )
-				{ # these reconciles for licenses should be broken for automatic alloc.
-					if ( $isManual == 0 ) {
+				{ # these reconciles for licenses should be broken for automatic alloc. or for manual when lic. is IBM owned
+					if (( $isManual == 0 ) || ( $ibmOwned == 1 )) {
 						$self->addToReconcilesToBreak($reconcileId) if defined($reconcileId);
 						$self->validationCode(0);
 						return 0;
