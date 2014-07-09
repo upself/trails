@@ -477,7 +477,8 @@ sub queryATPDeltaData {
             clusterType
             vMobilRestrict
             cappedLpar
-            virtualFlag)
+            virtualFlag
+            nbrFreeProcessorCores)
     );
     my $query = '
         select
@@ -535,6 +536,7 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
+			,NBR_FREE_PROCESSOR_CORES
         from
             atpprod.bravo
         where  

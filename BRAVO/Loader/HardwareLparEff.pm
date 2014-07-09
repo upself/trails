@@ -92,10 +92,10 @@ sub save {
     }
 
     ###Return here if the staging license is already in complete
-    return if $self->stagingHardwareLparEff->action eq 'COMPLETE';
+    return if ($self->stagingHardwareLparEff->action eq 'COMPLETE' || substr($self->stagingHardwareLparEff->action,-1) eq '0');
 
     ###Delete the staging license and return, if we're supposed to
-    if ( $self->stagingHardwareLparEff->action eq 'DELETE' ) {
+    if ( $self->stagingHardwareLparEff->action eq 'DELETE' || substr($self->stagingHardwareLparEff->action,-1) eq '2') {
         $self->stagingHardwareLparEff->delete( $self->stagingConnection );
         $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', 'DELETE' );
         return;

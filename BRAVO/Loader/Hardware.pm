@@ -131,8 +131,8 @@ sub processHardwareLpars {
 		$stagingHardwareLpar->getById( $self->stagingConnection );
 		dlog( $stagingHardwareLpar->toString );
 
-		if ( $self->stagingHardware->action eq 'DELETE' ) {
-			if ( $stagingHardwareLpar->action ne 'DELETE' ) {
+		if ( $self->stagingHardware->action eq 'DELETE' || substr($self->stagingHardware->action,-1) eq '2' ) {
+			if ( $stagingHardwareLpar->action ne 'DELETE' || substr($stagingHardwareLpar->action,-1) ne '2' ) {
 				$self->error(1);
 				$self->stagingHardware->action('UPDATE');
 				$self->stagingHardware->save( $self->stagingConnection );
@@ -181,10 +181,10 @@ sub save {
 	  if ( $self->saveBravoHardware == 1 );
 
 	###Return here if the staging hardware is already in complete
-	return if $self->stagingHardware->action eq 'COMPLETE';
+	return if ( $self->stagingHardware->action eq 'COMPLETE' || substr($self->stagingHardware->action,-1) eq '0' );
 
 	###Delete the staging hardware and return, if we're supposed to
-	if ( $self->stagingHardware->action eq 'DELETE' ) {
+	if ( $self->stagingHardware->action eq 'DELETE' || substr($self->stagingHardware->action,-1) eq '2' ) {
 		$self->stagingHardware->delete( $self->stagingConnection );
 		$self->addToCount( 'STAGING', 'HARDWARE', 'DELETE' );
 		return;

@@ -26,7 +26,7 @@ sub getDisconnectedFile {
         dlog("$rootDir/$fileName exists");
 
         my $st = stat("$rootDir/$fileName") or die "No $rootDir/$fileName: $!";
-        ##TODO from the bbus_computer_memory I am not getting a value....odd
+        ##TODO from the bbus_computer_memory I am ncot getting a value....odd
         my $mtime = $st->mtime;
         dlog("mtime=$mtime");
         my $minutes = ( time - $st->mtime ) / 60;

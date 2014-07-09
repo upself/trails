@@ -124,7 +124,7 @@ sub logic {
 		}
 
 		if (
-			$self->stagingHardwareLpar->action eq 'DELETE'
+			($self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2')
 			&& (   $self->bravoHardwareLpar->status ne 'INACTIVE'
 				|| $self->bravoHardwareLpar->lparStatus ne 'INACTIVE' )
 		  )
@@ -156,8 +156,8 @@ sub processHardwareLparEff {
 
 	return if ( !defined $stagingHardwareLparEff->id );
 
-	if ( $self->stagingHardwareLpar->action eq 'DELETE' ) {
-		if ( $stagingHardwareLparEff->action ne 'DELETE' ) {
+	if ( $self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2' ) {
+		if ( $stagingHardwareLparEff->action ne 'DELETE' ||  substr($stagingHardwareLparEff->action,-1) eq '2') {
 			$self->error(1);
 			$self->stagingHardwareLpar->action('UPDATE');
 			$self->stagingHardwareLpar->save( $self->stagingConnection );
@@ -209,10 +209,10 @@ sub save {
 	}
 
 	###Return here if the staging license is already in complete
-	return if $self->stagingHardwareLpar->action eq 'COMPLETE';
+	return if ($self->stagingHardwareLpar->action eq 'COMPLETE' || substr($self->stagingHardwareLpar->action,-1) eq '0' );
 
 	###Delete the staging license and return, if we're supposed to
-	if ( $self->stagingHardwareLpar->action eq 'DELETE' ) {
+	if ( $self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2') {
 		$self->stagingHardwareLpar->delete( $self->stagingConnection );
 		$self->addToCount( 'STAGING', 'HARDWARE_LPAR', 'DELETE' );
 		return;
@@ -306,7 +306,7 @@ sub buildBravoHardwareLpar {
 
 	my $action     = $self->stagingHardwareLpar->action;
 	my $lparStatus = $self->stagingHardwareLpar->lparStatus;
-	if ( 'DELETE' eq $action
+	if (( 'DELETE' eq $action || substr($action,-1) eq '2')
 		&& (   !defined $lparStatus
 			|| "null" eq $lparStatus
 			|| '' eq $lparStatus ) )
