@@ -71,7 +71,7 @@
 			</tbody>
 		</table>
 
-        <display:table name="list">
+        <display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 			<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 			<display:column title="Type" sortable="false"/>

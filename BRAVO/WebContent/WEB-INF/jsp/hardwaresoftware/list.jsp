@@ -258,7 +258,7 @@ Reports</a><br />
 				</html:link></td>
 	</tr>
 </table>
-<display:table name="composites" requestURI="" class="bravo" id="tall"
+<display:table name="composites" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two" id="tall"
 	defaultsort="1" defaultorder="ascending">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:column sortProperty="name" title="HW name" sortable="true"
@@ -289,7 +289,7 @@ Reports</a><br />
 		width="14" height="14" alt="contextual field help icon" />
 </html:link></h3>
 </div>
-<display:table name="softwareLpars" requestURI="" class="bravo"
+<display:table name="softwareLpars" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 	id="tall" defaultsort="2" defaultorder="ascending">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:column property="statusImage" title="" sortable="true"
@@ -312,7 +312,7 @@ Reports</a><br />
 		width="14" height="14" alt="contextual field help icon" />
 </html:link></h3>
 </div>
-<display:table name="hardwareLpars" requestURI="" class="bravo"
+<display:table name="hardwareLpars" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 	id="tall" defaultsort="2" defaultorder="ascending">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:column property="statusImage" title="" sortable="true"
@@ -341,7 +341,7 @@ Reports</a><br />
 		width="14" height="14" alt="contextual field help icon" />
 </html:link></h3>
 </div>
-<display:table name="hardwares" requestURI="" class="bravo" id="tall"
+<display:table name="hardwares" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two" id="tall"
 	defaultsort="2" defaultorder="ascending">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:column property="statusImage" title="" sortable="true"

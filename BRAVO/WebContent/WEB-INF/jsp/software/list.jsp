@@ -57,7 +57,7 @@
 	</html:form>
 	
 	<br/>
-	<display:table name="list" requestURI="" class="bravo">
+	<display:table name="list" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column title="foo" headerClass="blue-light"/>

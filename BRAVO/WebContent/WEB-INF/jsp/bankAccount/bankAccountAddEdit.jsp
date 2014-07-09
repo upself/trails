@@ -1,106 +1,152 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ page language="java" contentType="text/html"%>
-<%@ taglib prefix="html" uri="http://struts.apache.org/tags-html"%>
-<%@ taglib prefix="tmp" uri="http://struts.apache.org/tags-tiles"%>
-<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
-<%@ taglib prefix="logic" uri="http://struts.apache.org/tags-logic"%>
-<%@ taglib prefix="bean" uri="http://struts.apache.org/tags-bean"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
+<meta name="DC.Rights" content="?Copyright IBM Corp. 2011" />
+<meta name="Keywords" content="REPLACE" />
+<meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
+<meta name="Source"
+	content="v17 template generator, template 17.02 delivery:IBM  authoring:IBM" />
+
+<meta name="Security" content="Public" />
+<meta name="Abstract" content="REPLACE" />
+<meta name="IBM.Effective" scheme="W3CDTF" content="2012-09-19" />
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="REPLACE" />
+<meta name="Owner" content="Replace" />
+<meta name="DC.Language" scheme="rfc1766" content="en" />
+<meta name="IBM.Country" content="ZZ" />
+<meta name="Robots" content="index,follow" />
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="REPLACE" />
+<meta name="Description" content="REPLACE" />
+
+<%@ page language="java"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-html"
+	prefix="html"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-bean"
+	prefix="bean"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-logic"
+	prefix="logic"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
+<%@ taglib prefix="req"
+	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
+<%@ taglib prefix="tmp" uri="http://struts.apache.org/tags-tiles"%>
+
+
 <title>Bank accounts - <logic:equal scope="request"
-	name="bankAccountForm" property="connectionType" value="CONNECTED">Connected</logic:equal><logic:equal
-	scope="request" name="bankAccountForm" property="connectionType"
-	value="DISCONNECTED">Disconnected</logic:equal> - Add/Edit</title>
-<tmp:insert page="/WEB-INF/jsp/common/w3Header.jsp" />
+		name="bankAccountForm" property="connectionType" value="CONNECTED">Connected</logic:equal><logic:equal
+		scope="request" name="bankAccountForm" property="connectionType"
+		value="DISCONNECTED">Disconnected</logic:equal> - Add/Edit
+</title>
+
+<link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet"
+	title="w3" type="text/css" />
+<script src="//1.w3.s81c.com/common/js/dojo/w3.js"
+	type="text/javascript"></script>
 </head>
+<body id="ibm-com">
+	<div id="ibm-top" class="ibm-liquid">
 
-<body id="w3-ibm-com" class="article">
-<tmp:insert page="/WEB-INF/jsp/common/w3Accessibility.jsp" />
-<tmp:insert page="/WEB-INF/jsp/common/w3Masthead.jsp" />
-<script type="text/javascript">
-<!--
-function setChange() {
-	var lbankAccountForm = document.bankAccountForm;
-	var bankAccountType = lbankAccountForm.type.value;
-	if ( bankAccountType && bankAccountType=='TADZ') {
+		<!-- v17 SSIs: version 1.1 -->
+		<!-- MASTHEAD_BEGIN -->
+		<div id="ibm-masthead">
+			<div id="ibm-mast-options">
+				<ul>
+					<li id="ibm-geo"><a
+						href="http://www.ibm.com/planetwide/select/selector.html"><span
+							class="ibm-access">Select a country/region: </span>Worldwide</a></li>
+				</ul>
+			</div>
+			<div id="ibm-universal-nav">
+				<ul id="ibm-unav-links">
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM?/a></li>
+				</ul>
+				<ul id="ibm-menu-links">
+					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
+				</ul>
+				<div id="ibm-search-module">
+					<form id="ibm-search-form" action="http://www.ibm.com/Search/"
+						method="get">
+						<p>
+							<label for="q"><span class="ibm-access">Search</span></label> <input
+								type="text" maxlength="100" value="" name="q" id="q" /> <input
+								type="hidden" value="17" name="v" /> <input type="hidden"
+								value="utf" name="en" /> <input type="hidden" value="en"
+								name="lang" /> <input type="hidden" value="zz" name="cc" /> <input
+								type="submit" id="ibm-search" class="ibm-btn-search"
+								value="Submit" />
+						</p>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- MASTHEAD_END -->
 
-		alert("You can not change the TAD4Z bank account to disconnected!");
-       return false;
-	} else {
-		self.location="/BRAVO/bankAccount/updateConnectionType.do?id="+lbankAccountForm.id.value ;
-		return true;
-	}
-		
-}
--->
-</script>
+		<div id="ibm-pcon">
+			<!-- CONTENT_BEGIN -->
+			<div id="ibm-content">
+				<div id="ibm-leadspace-head" class="ibm-alternate">
+					<div id="ibm-leadspace-body">
+						<p id="breadcrumbs">
+							<html:link page="/">BRAVO</html:link>
+							&gt;
+							<html:link page="/bankAccount/home.do">Bank accounts</html:link>
+							&gt;
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="CONNECTED">
+								<html:link page="/bankAccount/connected.do">Connected</html:link>
+							</logic:equal>
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="DISCONNECTED">
+								<html:link page="/bankAccount/disconnected.do">Disconnected</html:link>
+							</logic:equal>
+						</p>
+					</div>
+				</div>
+				<!-- CONTENT_BODY -->
+				<div id="ibm-content-body">
+					<div id="ibm-content-main">
+						<div class="ibm-columns">
+							<div class="ibm-col-1-1">
+						<h1>
+							Add/Edit
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="CONNECTED">connected</logic:equal>
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="DISCONNECTED">disconnected</logic:equal>
+							bank account
+						</h1>
+						<p>
+							Use this form to
+							<logic:empty scope="request" name="bankAccountForm" property="id">request a new</logic:empty>
+							<logic:notEmpty scope="request" name="bankAccountForm"
+								property="id">update a</logic:notEmpty>
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="CONNECTED">connected</logic:equal>
+							<logic:equal scope="request" name="bankAccountForm"
+								property="connectionType" value="DISCONNECTED">disconnected</logic:equal>
+							bank account. When you are finished, press the Submit button.
+							Press the Cancel button to discard your changes.
+						</p>
+						<p>Required fields are marked with an asterisk(*) and must be
+							filled in to complete the form.</p>
+						<p class="hrule-dots" />
 
-<!-- BEGIN CONTENT -->
-<div id="content">
-<h1 class="access">Start of main content</h1>
-
-<!-- BEGIN CONTENT HEAD -->
-<div id="content-head">
-<p id="date-stamp">New as of 17 February 2009</p>
-<div class="hrule-dots"></div>
-<p id="breadcrumbs"><html:link page="/">BRAVO</html:link> &gt; <html:link
-	page="/bankAccount/home.do">Bank accounts</html:link> &gt; <logic:equal
-	scope="request" name="bankAccountForm" property="connectionType"
-	value="CONNECTED">
-	<html:link page="/bankAccount/connected.do">Connected</html:link>
-</logic:equal> <logic:equal scope="request" name="bankAccountForm"
-	property="connectionType" value="DISCONNECTED">
-	<html:link page="/bankAccount/disconnected.do">Disconnected</html:link>
-</logic:equal></p>
-</div>
-
-<!-- BEGIN MAIN CONTENT -->
-<div id="content-main"><!-- BEGIN PARTIAL-SIDEBAR -->
-<div id="partial-sidebar">
-<h2 class="access">Start of sidebar content</h2>
-
-<div class="action">
-<h2 class="bar-gray-med-dark">Actions <html:link
-	page="/help/help.do#H9">
-	<img alt="Help"
-		src="//w3.ibm.com/ui/v8/images/icon-help-contextual-light.gif"
-		width="14" height="14" alt="Contextual field help icon" />
-</html:link></h2>
-</div>
-<br />
-
-</div>
-<!-- END PARTIAL-SIDEBAR -->
-
-<h1>Add/Edit <logic:equal scope="request" name="bankAccountForm"
-	property="connectionType" value="CONNECTED">connected</logic:equal><logic:equal
-	scope="request" name="bankAccountForm" property="connectionType"
-	value="DISCONNECTED">disconnected</logic:equal> bank account</h1>
-<p>Use this form to <logic:empty scope="request"
-	name="bankAccountForm" property="id">request a new</logic:empty> <logic:notEmpty
-	scope="request" name="bankAccountForm" property="id">update a</logic:notEmpty>
-<logic:equal scope="request" name="bankAccountForm"
-	property="connectionType" value="CONNECTED">connected</logic:equal> <logic:equal
-	scope="request" name="bankAccountForm" property="connectionType"
-	value="DISCONNECTED">disconnected</logic:equal> bank account. When you
-are finished, press the Submit button. Press the Cancel button to
-discard your changes.</p>
-<p>Required fields are marked with an asterisk(*) and must be filled
-in to complete the form.</p>
-<p class="hrule-dots" />
-
-<p><logic:notEmpty scope="request" name="bankAccountForm"
-	property="id">
+						<p>
+							<logic:notEmpty scope="request" name="bankAccountForm"
+								property="id">
 					To change this bank account to a
 					<logic:equal scope="request" name="bankAccountForm"
-		property="connectionType" value="CONNECTED">disconnected</logic:equal>
-	<logic:equal scope="request" name="bankAccountForm"
-		property="connectionType" value="DISCONNECTED">connected</logic:equal>
+									property="connectionType" value="CONNECTED">disconnected</logic:equal>
+								<logic:equal scope="request" name="bankAccountForm"
+									property="connectionType" value="DISCONNECTED">connected</logic:equal>
 					bank account click
 					<html:submit onclick="setChange()">here</html:submit>.
-				</logic:notEmpty></p>
+				</logic:notEmpty>
+						</p>
 
 <logic:messagesPresent>
 	<html:messages id="msg">
@@ -396,4 +442,5 @@ in to complete the form.</p>
 <!-- END CONTENT -->
 <tmp:insert page="/WEB-INF/jsp/common/w3Navigation.jsp" />
 </body>
+</html>
 </html>

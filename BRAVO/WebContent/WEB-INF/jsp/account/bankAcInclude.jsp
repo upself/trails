@@ -49,7 +49,7 @@
 				<p class="confidential">IBM Confidential</p>
 				<h1>Included Bank Accounts</h1>
 
-				<display:table name="bankInclude" requestURI="" class="bravo"
+				<display:table name="bankInclude" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 					id="includes">
 					<display:setProperty name="basic.empty.showtable" value="true"/>
 			value='<tr class="empty" align="center"><td colspan="{0}">Nothing found to display</td></tr>' />

@@ -8,7 +8,7 @@
 			Click on Icon to Add to Contact List
 		</h3>
 	</div>
-	<display:table name="contactList" requestURI="" class="bravo">
+	<display:table name="contactList" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column value="${imageTag}" title="" href="/BRAVO/contact/edit.do?lparName=${lparName}&accountId=${accountId}&customerid=${customerid}&context=${context}&id=" paramId="email" paramProperty="email" headerClass="blue-med" />

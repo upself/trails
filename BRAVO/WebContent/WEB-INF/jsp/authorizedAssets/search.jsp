@@ -234,7 +234,7 @@ Reports</a><br />
 		width="14" height="14" alt="contextual field help icon" />
 </html:link></h3>
 </div>
-<display:table name="hardwareLpars" requestURI="" class="bravo"
+<display:table name="hardwareLpars" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 	id="tall" defaultsort="2" defaultorder="ascending">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 	<display:column property="statusImage" title="" sortable="true"

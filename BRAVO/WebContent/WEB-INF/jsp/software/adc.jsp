@@ -10,7 +10,7 @@
 			</html:link>
 		</h3>
 	</div>
-	<display:table id="adc" name="softwareLparADC" requestURI="" class="bravo">
+	<display:table id="adc" name="softwareLparADC" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="Customer <BR />&nbsp;&nbsp; GU" headerClass="blue-med">
 	        <c:out value="${adc.cust}"/>

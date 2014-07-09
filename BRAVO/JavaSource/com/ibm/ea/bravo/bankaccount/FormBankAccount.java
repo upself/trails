@@ -91,8 +91,11 @@ public class FormBankAccount extends ValidatorForm {
 					.selectBankAccountDetails(getId());
 
 			if (lBankAccount != null) {
+//				setName(lBankAccount.getName().trim());
+//				
+//				logger.info("lBankAccount.getName(): ->" + lBankAccount.getName() + "<-");
 				setName(lBankAccount.getName());
-				setDescription(lBankAccount.getDescription());
+				setDescription(lBankAccount.getDescription().trim());
 				setType(lBankAccount.getType());
 				setVersion(lBankAccount.getVersion());
 				setDataType(lBankAccount.getDataType());

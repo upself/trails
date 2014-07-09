@@ -1,118 +1,319 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ page language="java" contentType="text/html"%>
-<%@ taglib prefix="html" uri="http://struts.apache.org/tags-html"%>
-<%@ taglib prefix="tmp" uri="http://struts.apache.org/tags-tiles"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
+<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
+<meta name="Keywords" content="REPLACE" />
+<meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
+<meta name="Source"
+	content="v17 template generator, template 17.02 delivery:IBM  authoring:IBM" />
+
+<meta name="Security" content="Public" />
+<meta name="Abstract" content="REPLACE" />
+<meta name="IBM.Effective" scheme="W3CDTF" content="2012-09-19" />
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="REPLACE" />
+<meta name="Owner" content="Replace" />
+<meta name="DC.Language" scheme="rfc1766" content="en" />
+<meta name="IBM.Country" content="ZZ" />
+<meta name="Robots" content="index,follow" />
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="REPLACE" />
+<meta name="Description" content="REPLACE" />
+
+<%@ page language="java"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-html"
+	prefix="html"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-bean"
+	prefix="bean"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-logic"
+	prefix="logic"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles"
+	prefix="tmp"%>
 <%@ taglib prefix="req"
 	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
 
-<html lang="en">
-<head>
 <title>Welcome to BRAVO</title>
-<tmp:insert page="/WEB-INF/jsp/common/w3Header.jsp" />
+<link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet" title="w3" type="text/css"/>
+<script src="//1.w3.s81c.com/common/js/dojo/w3.js" type="text/javascript"></script>
+
+<!-- <link href="//1.www.s81c.com/common/v17/css/www.css" rel="stylesheet" -->
+<!-- 	title="www" type="text/css" /> -->
+<!-- <script src="//1.www.s81c.com/common/js/dojo/www.js" -->
+<!-- 	type="text/javascript"> -->
+<!-- </script> -->
+
 </head>
-<body id="w3-ibm-com" class="article">
-<tmp:insert page="/WEB-INF/jsp/common/w3Accessibility.jsp" />
-<tmp:insert page="/WEB-INF/jsp/common/w3Masthead.jsp" />
-<div id="content">
-<h1 class="access">Start of main content</h1>
-<div id="content-head">
-<p id="breadcrumbs"></p>
-</div>
-<div id="content-main"><!-- START CONTENT HERE -->
+<body id="ibm-com">
+	<div id="ibm-top" class="ibm-liquid">
 
-<h1>BRAVO Home</h1>
-<br />
-<html:img alt="Scenic overlook telescope" page="/images/p1_w3v8_19.jpg"
-	align="left" hspace="10" vspace="10" /> <br />
-<p style="color: #c60" class="caption">Welcome to BRAVO</p>
-<br />
-Navigate using the toolbar to the left or <strong style="color: #7a3"
-	class="caption">search</strong> below.<br />
+		<!-- v17 SSIs: version 1.1 -->
+		<!-- MASTHEAD_BEGIN -->
+		<div id="ibm-masthead">
+			<div id="ibm-mast-options">
+				<ul>
+					<li id="ibm-geo"><a
+						href="http://www.ibm.com/planetwide/select/selector.html"><span
+							class="ibm-access">Select a country/region: </span>Worldwide</a></li>
+				</ul>
+			</div>
+			<div id="ibm-universal-nav">
+				<ul id="ibm-unav-links">
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
+				</ul>
+				<ul id="ibm-menu-links">
+					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
+				</ul>
+				<div id="ibm-search-module">
+					<form id="ibm-search-form" action="http://www.ibm.com/Search/"
+						method="get">
+						<p>
+							<label for="q"><span class="ibm-access">Search</span></label> <input
+								type="text" maxlength="100" value="" name="q" id="q" /> <input
+								type="hidden" value="17" name="v" /> <input type="hidden"
+								value="utf" name="en" /> <input type="hidden" value="en"
+								name="lang" /> <input type="hidden" value="zz" name="cc" /> <input
+								type="submit" id="ibm-search" class="ibm-btn-search"
+								value="Submit" />
+						</p>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- MASTHEAD_END -->
 
-<br clear="all" />
+		<div id="ibm-pcon">
+			<!-- CONTENT_BEGIN -->
+			<div id="ibm-content">
+				<div id="ibm-leadspace-head" class="ibm-alternate">
+					<div id="ibm-leadspace-body">
+						<h1>BRAVO Home</h1>
+					</div>
+				</div>
+				<!-- CONTENT_BODY -->
+				<div id="ibm-content-body">
+					<div id="ibm-content-main">
+						<div class="ibm-columns">
+							<div class="ibm-col-1-1">
+							
+								<html:img alt="Scenic overlook telescope"
+									style="margin: 0 10px 0 0" page="/images/p1_w3v8_19.jpg" align="left" hspace="10"
+									vspace="10" />
+								<br />
+								<p style="color: #c60; margin: 0 0 0 10px" class="caption">Welcome
+									to BRAVO</p>
+								<br /> Navigate using the toolbar to the left or <strong
+									style="color: #7a3" class="caption">search</strong> below.<br />
+								<br clear="all" />
+		
+								<html:form action="/search">
+									<html:hidden property="context" value="home" />
+									<table>
+										<div class="invalid">
+											<html:errors />
+										</div>
+										<tbody>
+												<tr>
+													<td><label for="id_type">Search</label>:</td>
+													<td><html:select styleId="id_type" property="type"
+															>
+															<html:option value="ACCOUNT">Account Id/Name/Dept</html:option>
+															<html:option value="SOFTWARELPARNAME">Software LPAR name</html:option>
+															<html:option value="SOFTWARELPARNAMEFUZZY">Software LPAR name fuzzy</html:option>
+															<html:option value="SOFTWARELPARSERIAL">Software LPAR serial</html:option>
+															<html:option value="HARDWARELPARNAME">Hardware LPAR name</html:option>
+															<html:option value="HARDWARELPARSERIAL">Hardware LPAR serial</html:option>
+														</html:select>
+														</td>
+														<td>
+															<a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+													</td>
+												</tr>
+												<tr>
+													<td><label for="id_search">Search text</label>:</td>
+													<td><html:text styleId="id_search" property="search"
+															styleClass="ibm-styled" /> <span class="ibm-btn-view-pri">
+															<!-- 											<input class="ibm-btn-view-pri" name="ibm-search" type="button" value="Search"/> -->
+															<html:submit property="type" value="Search" styleClass="ibm-btn-view-pri" />
+													</span></td>
+												</tr>
+										</tbody>
+									</table>
+								</html:form>
+							</div>
+						</div>
+					</div>
+					<!-- 					FEATURES_BEGIN -->
+					<!-- 					<div id="ibm-content-sidebar"> -->
+					<!-- 						<div id="ibm-contact-module"> -->
+					<!-- 							IBM Contact Module -->
+					<!-- 						</div> -->
+					<!-- 						<div id="ibm-merchandising-module"> -->
+					<!-- 							IBM Web Merchandising Module -->
+					<!-- 						</div> -->
+					<!-- 						%%sidebarspace%% -->
+					<!-- 					</div> -->
+					<!-- 					FEATURES_END -->
+					<!-- CONTENT_BODY_END -->
+				</div>
+			</div>
+			<!-- CONTENT_END -->
+			<!-- NAVIGATION_BEGIN -->
+			<div id="ibm-navigation">
+				<h2 class="ibm-access">Content navigation</h2>
+				<ul id="ibm-primary-links">
 
-<html:form action="/search">
-	<html:hidden property="context" value="home" />
-	<table border="0" width="65%" cellspacing="10" cellpadding="0">
-		<div class="invalid"><html:errors /></div>
-		<tbody>
-			<tr>
-				<td><label for="id_type">Search</label>:</td>
-				<td><html:select styleId="id_type" property="type"
-					styleClass="inputlong">
-					<html:option value="ACCOUNT">Account Id/Name/Dept</html:option>
-					<html:option value="SOFTWARELPARNAME">Software LPAR name</html:option>
-					<html:option value="SOFTWARELPARNAMEFUZZY">Software LPAR name fuzzy</html:option>
-					<html:option value="SOFTWARELPARSERIAL">Software LPAR serial</html:option>
-					<html:option value="HARDWARELPARNAME">Hardware LPAR name</html:option>
-					<html:option value="HARDWARELPARSERIAL">Hardware LPAR serial</html:option>
-				</html:select><html:link page="/help/help.do#H1">
-					<img src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
-						width="14" height="14" alt="contextual field help icon" />
-				</html:link></td>
-			</tr>
-			<tr>
-				<td><label for="id_search">Search text</label>:</td>
-				<td><html:text styleId="id_search" property="search"
-					styleClass="inputlong" /> <span class="button-blue"><html:submit
-					property="type" value="Search" /></span></td>
-			</tr>
-		</tbody>
-	</table>
-</html:form> <br />
-<br />
+					<li id="ibm-parent-link"><a href="http://tap.raleigh.ibm.com">Asset
+							Tools Home</a></li>
+					<li id="ibm-overview"><a href="/BRAVO/home.do">BRAVO</a> <a
+						href="/BRAVO/mswiz.do">MS Wizard</a> <a href="/BRAVO/help/help.do">Help</a>
+						<a href="/BRAVO/report/home.do">Reports</a> <a
+						href="/BRAVO/systemStatus/home.do">System status</a></li>
 
 
-<br clear="all" />
+					<%
+						boolean lbValidRole = false;
+						boolean lbAdminRole = false;
+					%>
+					<req:isUserInRole role="com.ibm.tap.admin">
+						<%
+							lbValidRole = true;
+								lbAdminRole = true;
+						%>
+					</req:isUserInRole>
 
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
-	<tr>
-		<td width="40%" style="color: #7a3" class="caption">Quick Links:</td>
-		<td style="color: #7a3" class="caption">Help Contacts:</td>
-	</tr>
-	<tr>
-		<td colspan=2>
-		<div class="hrule-dots"></div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-		<%
-			/*
-		%> <img alt="Action"
-			src="//w3.ibm.com/ui/v8/images/icon-link-action.gif" width="13"
-			height="13" /> <html:link page="/access/init.do">Register for access to BRAVO</html:link>
-		<br />
-		<%
-			*/
-		%> <!--<img alt="Download"
-			src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-			height="12" /> <html:link page="/downloads/BRAVO Overview v1.ppt">BRAVO
-		Overview</html:link> <br />
+					<req:isUserInRole role="com.ibm.tap.sigbank.admin">
+						<%
+							lbValidRole = true;
+								lbAdminRole = true;
+						%>
+					</req:isUserInRole>
 
-		<img alt="Download"
-			src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-			height="12" /> <html:link page="/downloads/Account Baseline.xls">Account
-		Scope Listing (AG GEO only)</html:link> <br />
+					<req:isUserInRole role="com.ibm.tap.sigbank.user">
+						<%
+							lbValidRole = true;
+						%>
+					</req:isUserInRole>
+					<%
+						if (lbValidRole) {
+					%>
+					<li id="ibm-overview"><a href="/BRAVO/bankAccount/home.do">Bank
+							accounts</a> <logic:present scope="request" name="bankAccountSection">
+							<ul>
+								<li><a href="/BRAVO/bankAccount/connected.do">Connected</a>
 
-		<img alt="Download"
-			src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-			height="12" /> <html:link
-			page="/downloads/2006 Americas SW Recon SOW.doc">Americas
-		SW Recon Statement of Work (AG GEO only)</html:link> <br />
+									<logic:equal scope="request" name="bankAccountSection"
+										value="CONNECTED">
+										<%
+											if (lbAdminRole) {
+										%>
+										<ul>
+											<li><a href="/BRAVO/bankAccount/connectedAddEdit.do">Add</a>
+											</li>
+										</ul>
+										<%
+											}
+										%>
+									</logic:equal></li>
 
-		</td>
-		-->
-		<td>Please direct all inquires to:<br />
-		</td>
-	</tr>
-</table>
-<br />
-<br />
+								<li><a href="/BRAVO/bankAccount/disconnected.do">Disconnected</a>
 
-<!-- END CONTENT HERE --></div>
-</div>
-<tmp:insert page="/WEB-INF/jsp/common/w3Navigation.jsp" />
+									<logic:equal scope="request" name="bankAccountSection"
+										value="DISCONNECTED">
+										<%
+											if (lbAdminRole) {
+										%>
+										<ul>
+											<li><a href="/BRAVO/bankAccount/disconnectedAddEdit.do">Add</a>
+											</li>
+										</ul>
+										<%
+											}
+										%>
+									</logic:equal></li>
+							</ul>
+						</logic:present></li>
+					<%
+						}
+					%>
+
+					<%
+						boolean validRole = false;
+					%>
+					<req:isUserInRole role="com.ibm.ea.bravo.admin">
+						<%
+							validRole = true;
+						%>
+					</req:isUserInRole>
+					<req:isUserInRole role="com.ibm.ea.asset.admin">
+						<%
+							validRole = true;
+						%>
+					</req:isUserInRole>
+					<req:isUserInRole role="com.ibm.ea.admin">
+						<%
+							validRole = true;
+						%>
+					</req:isUserInRole>
+					<req:isUserInRole role="com.ibm.tap.admin">
+						<%
+							validRole = true;
+						%>
+					</req:isUserInRole>
+					<%
+						if (validRole) {
+					%>
+					<li id="ibm-overview"><a href="/BRAVO/admin/home.do">Administration</a>
+					</li>
+					<%
+						}
+					%>
+				</ul>
+
+				<div id="ibm-secondary-navigation">
+					<!-- SECONDARY NAVIGATION SECTION -->
+					<h2>Related links</h2>
+					<ul id="ibm-related-links">
+						<li><a
+							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
+								Global Procurement</a></li>
+						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
+								citizenship</a></li>
+						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
+								Responsibility Report</a></li>
+
+					</ul>
+					<br /> Legend:
+					<hr />
+					<span class="ibm-check-link">Active</span><br /> <span
+						class="ibm-incorrect-link">Inactive</span><br /> <span
+						class="ibm-caution-link">Alert</span>
+				</div>
+
+			</div>
+			<!-- NAVIGATION_END -->
+		</div>
+		<div id="ibm-related-content"></div>
+
+		<!-- v17 SSIs: version 1.1 -->
+		<!-- FOOTER_BEGIN -->
+		<div id="ibm-footer-module"></div>
+		<div id="ibm-footer">
+			<h2 class="ibm-access">Footer links</h2>
+			<ul>
+				<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+				<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+				<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+			</ul>
+		</div>
+		<!-- FOOTER_END -->
+	</div>
+	<div id="ibm-metrics">
+		<script src="//www.ibm.com/common/stats/stats.js"
+			type="text/javascript">
+			//
+		</script>
+	</div>
 </body>
 </html>

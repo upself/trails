@@ -98,7 +98,7 @@
 			</h3>
 		</div>
 		
-		<display:table name="scrtRecords" requestURI="" class="bravo">
+		<display:table name="scrtRecords" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 					<display:setProperty name="basic.empty.showtable" value="true"/>		
 					<display:column property="year" title="Report Year" sortable="false" headerClass="blue-med"/>
 					<display:column property="month" title="Report Month" sortable="false" headerClass="blue-med"/>

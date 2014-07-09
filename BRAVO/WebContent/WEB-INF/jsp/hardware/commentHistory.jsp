@@ -8,7 +8,7 @@
 			<img src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif" width="14" height="14" alt="contextual field help icon"/>
 		</h3>
 	</div>
-	<display:table name="commentList" requestURI="" class="bravo">
+	<display:table name="commentList" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column property="action" title="Action" headerClass="blue-med"/>

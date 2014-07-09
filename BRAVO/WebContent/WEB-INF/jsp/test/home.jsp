@@ -44,7 +44,7 @@
 	<h2>Download:</h2>
 	<br/>
 	
-	<display:table name="list" requestURI="" class="bravo">
+	<display:table name="list" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column property="name" title="Name" headerClass="blue-med" href="/BRAVO/test/download.do" paramId="id" paramProperty="id"/>

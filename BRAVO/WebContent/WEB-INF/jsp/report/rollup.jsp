@@ -31,7 +31,7 @@
 <h1>Department Roll up</h1>
 <p class="confidential">IBM Confidential</p>
 <br />
-<display:table name="report" requestURI="" class="bravo">
+<display:table name="report" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 	<display:setProperty name="basic.empty.showtable" value="true" />
 
 	<display:column property="customerName" title=""

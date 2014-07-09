@@ -29,6 +29,8 @@ public abstract class DelegateDiscrepancy extends HibernateDelegate {
 
 		list = session.getNamedQuery("discrepancies").list();
 
+		System.out.println("list: " + list);
+		
 		closeSession(session);
 
 		return list;

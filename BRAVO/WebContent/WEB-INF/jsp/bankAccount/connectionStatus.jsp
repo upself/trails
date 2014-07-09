@@ -53,7 +53,7 @@
 
 				<h1>Bank account status detail</h1>
 				<display:table cellspacing="2" cellpadding="0" name="bankAccount"
-					id="row" requestURI="" class="bravo">
+					id="row" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 					<display:setProperty name="basic.empty.showtable" value="true" />
 					<display:column title="Connection status" property="connectionStatus"
 						headerClass="blue-med" />

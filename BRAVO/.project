@@ -71,4 +71,26 @@
 		<nature>org.eclipse.jem.beaninfo.BeanInfoNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>atp-common</name>
+			<type>2</type>
+			<location>C:/Users/IBM_ADMIN/Desktop/atp-common</location>
+		</link>
+		<link>
+			<name>conf</name>
+			<type>2</type>
+			<location>C:/opt/bravo/conf</location>
+		</link>
+		<link>
+			<name>atp-common/ustracking.jsp</name>
+			<type>1</type>
+			<location>C:/Users/IBM_ADMIN/Desktop/ustracking.jsp</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/jsp/atp-common/index.html</name>
+			<type>1</type>
+			<location>C:/Users/IBM_ADMIN/Desktop/index.html</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -88,7 +88,7 @@
 			<img src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif" width="14" height="14" alt="contextual field help icon"/>
 		</h3>
 	</div>
-	<display:table name="list" requestURI="" class="bravo">
+	<display:table name="list" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column property="statusImage" title="" headerClass="blue-med"/>

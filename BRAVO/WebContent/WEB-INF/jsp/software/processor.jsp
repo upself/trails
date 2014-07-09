@@ -10,7 +10,7 @@
 			</html:link>
 		</h3>
 	</div>
-	<display:table id="processor" name="softwareLparProcessor" requestURI="" class="bravo">
+	<display:table id="processor" name="softwareLparProcessor" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="Bus Speed <BR />&nbsp;&nbsp; Cache" headerClass="blue-med">
 	        <c:out value="${processor.busSpeed}"/>

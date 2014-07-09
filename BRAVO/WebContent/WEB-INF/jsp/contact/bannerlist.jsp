@@ -8,7 +8,7 @@
 			Click on Icon to Remove from Contact List
 		</h3>
 	</div>
-	<display:table name="contactList" requestURI="" class="bravo">
+	<display:table name="contactList" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column value="${imageTag}" title="" href="/BRAVO/contact/edit.do?lparName=${lparName}&accountId=${accountId}&context=${context}&customerid=${customerid}" paramId="id" paramProperty="contact.id" headerClass="blue-med" />
