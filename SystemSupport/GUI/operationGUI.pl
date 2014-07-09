@@ -184,6 +184,7 @@ $authorizedUserList{'martin.kacor@cz.ibm.com'}++;
 $authorizedUserList{'adam.trnka@cz.ibm.com'}++;
 $authorizedUserList{'zengqh@cn.ibm.com'}++;
 $authorizedUserList{'y99xwu@cz.ibm.com'}++;
+$authorizedUserList{'marek.adamka@cz.ibm.com '}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 $authorizedUserList{'petra.povolna@cz.ibm.com'}++;
