@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>statistics</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>sprintAdmin</servlet-name>
+		<servlet-class>com.ibm.trac.servlet.SprintAdmin</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>draw</servlet-name>
+		<servlet-class>com.ibm.trac.servlet.DrawProgress</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>effortProgressServlet</servlet-name>
+		<servlet-class>com.ibm.trac.servlet.EffortProgressServlet</servlet-class>
+	</servlet>
+
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintAdmin</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintAdd</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintLoadEffort</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintDelete</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintEdit</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>sprintAdmin</servlet-name>
+		<url-pattern>/sprintUpdate</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>effortProgressServlet</servlet-name>
+		<url-pattern>/effortProgress</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>effortProgressServlet</servlet-name>
+		<url-pattern>/addProgress</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>effortProgressServlet</servlet-name>
+		<url-pattern>/deleteProgress</url-pattern>
+	</servlet-mapping>
+
+
+
+	<servlet-mapping>
+		<servlet-name>draw</servlet-name>
+		<url-pattern>/showProgress</url-pattern>
+	</servlet-mapping>
+</web-app>
