@@ -1,4 +1,4 @@
-package ReportProperty;
+package Conf::ReportProperty;
 use lib "/opt/staging/v2";
 
 use Config::Properties::Simple;
@@ -18,7 +18,7 @@ sub new
         die "!!! ONLY RUN THIS SCRIPT ON tap2/tap3 !!!\n"
                     if($shost ne 'tap2' && $shost ne 'tap3');                        
         
-        my $profileFile = "$shost.report.properties";
+        my $profileFile = "/opt/report/bin/Conf/$shost.report.properties";
         my $systemFile = "/opt/staging/v2/config/connectionConfig.txt";
         my $cfg = Config::Properties::Simple->new(file => $profileFile);
         my $cfg2 = Config::Properties::Simple->new(file => $systemFile);
@@ -28,6 +28,7 @@ sub new
         system(". " .$cfg->getProperty('db2profile'));
 
     my $self = {
+        _cfg =>  $cfg,
         _thisReport  => $fileName,
         _thisUser => $login,
         _thisUid => $uid,
@@ -37,7 +38,6 @@ sub new
         _reportDatabase => $cfg->getProperty('reportDatabase'),
         _reportDatabaseUser => $cfg->getProperty('reportDatabaseUser'),
         _reportDatabasePassword => $cfg->getProperty('reportDatabasePassword'),
-        _reportDeliveryFolder => $cfg->getProperty('reportDeliveryFolder'),
         _db2profile => $cfg->getProperty('db2profile'),
         _gsaUser => $cfg->getProperty("gsaUser"),
         _gsaPassword => $cfg->getProperty("gsaPassword"),
@@ -135,15 +135,23 @@ sub gsaPassword {
 }
 
 sub reportDeliveryFolder {
-    my $self = shift;
-    $self->{_reportDeliveryFolder} = shift if scalar @_ == 1;
-    return $self->{_reportDeliveryFolder};
+    my ($self,$reportName) = @_;
+    if(!defined $reportName){
+      die 'Did not give report name';
+    }
+    return $self->cfg->getProperty($reportName);
 }
 
 sub gsaCell {
     my $self = shift;
     $self->{_gsaCell} = shift if scalar @_ == 1;
     return $self->{_gsaCell};
+}
+
+sub cfg {
+    my $self = shift;
+    $self->{_cfg} = shift if scalar @_ == 1;
+    return $self->{_cfg};
 }
 
 sub initReportingSystem {
