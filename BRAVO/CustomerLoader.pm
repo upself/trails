@@ -187,6 +187,7 @@ sub doDelta {
         $customer->swFinancialMgmt( $rec{swFinancialMgmt} );
         $customer->creationDateTime( $rec{creationDateTime} );
         $customer->updateDateTime( $rec{updateDateTime} );
+        $customer->tmeObjectId( $rec{tmeObjectId} );
 
         dlog( $customer->toString );
 

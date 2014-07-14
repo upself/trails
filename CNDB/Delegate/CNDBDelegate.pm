@@ -1314,6 +1314,7 @@ sub getCustomerData {
         $customer->swFinancialMgmt( $rec{swFinancialMgmt} );
         $customer->creationDateTime( $rec{creationDateTime} );
         $customer->updateDateTime( $rec{updateDateTime} );
+        $customer->tmeObjectId( $rec{tmeObjectId} );        
 
         $data{$key} = $customer;
     }
@@ -1361,6 +1362,7 @@ sub queryCustomerData {
             swFinancialMgmt
             creationDateTime
             updateDateTime
+            tmeObjectId
             )
     );
 
@@ -1397,6 +1399,7 @@ sub queryCustomerData {
         	,a.sw_financial_mgmt
             ,a.creation_date_time
             ,a.update_date_time
+            ,a.tme_object_id
         from
             customer a
     ';
