@@ -71,6 +71,40 @@ sub queryCapacityTypeMap {
     return ( 'capacityTypeMap', $query, \@fields );
 }
 
+sub getStatusTypeMap {
+    my ( $self, $connection ) = @_;
+
+    my %data;
+
+    $connection->prepareSqlQueryAndFields( $self->queryStatusTypeMap() );
+    my $sth = $connection->sql->{statusTypeMap};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @{ $connection->sql->{statusTypeMapFields} } );
+    $sth->execute();
+    while ( $sth->fetchrow_arrayref ) {
+        $data{ $rec{description} } = $rec{id};
+    }
+    $sth->finish;
+
+    return \%data;
+}
+
+sub queryStatusTypeMap {
+    my @fields = qw(
+        id
+        description
+    );
+    my $query = '
+        select
+            a.id
+            ,a.description
+        from
+            status a
+    ';
+
+    return ( 'statusTypeMap', $query, \@fields );
+}
+
 sub getMachineTypeNameMap {
     my ( $self, $connection ) = @_;
 

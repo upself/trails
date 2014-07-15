@@ -15,7 +15,8 @@ sub new {
         _testMode      => undef,
         _loadDeltaOnly => undef,
         _applyChanges  => undef,
-        _list          => undef
+        _list          => undef,
+        _statusTypeMap => undef
     };
     bless $self, $class;
     dlog("instantiated self");
@@ -39,6 +40,12 @@ sub applyChanges {
     my ( $self, $value ) = @_;
     $self->{_applyChanges} = $value if defined($value);
     return ( $self->{_applyChanges} );
+}
+
+sub statusTypeMap {
+    my ( $self, $value ) = @_;
+    $self->{_statusTypeMap} = $value if defined($value);
+    return ( $self->{_statusTypeMap} );
 }
 
 sub load {
@@ -130,7 +137,8 @@ sub doDelta {
     my ( $self, $connection ) = @_;
 
     dlog('Start doDelta method');
-
+    dlog('Getting statusTypeMap method');
+    $self->statusTypeMap(BRAVO::Delegate::BRAVODelegate->getStatusTypeMap($connection));
     dlog('Preparing bravo customer query');
     $connection->prepareSqlQueryAndFields(
         BRAVO::Delegate::BRAVODelegate->queryCustomerData() );
@@ -306,6 +314,8 @@ sub inactiveScheduleF {
                 dlog( $scheduleFh->toString );
                 $scheduleFh->save($connection);
                 dlog('ScheduleFHistory Saved');
+                 $scheduleF->statusId($self->statusTypeMap->{'INACTIVE'});
+                  dlog('schduleF statusId is ' . $self->statusTypeMap->{'INACTIVE'});
                  $scheduleF->remoteUser('STAGING');
                  $scheduleF->businessJustification('Customer set Out of scope for SWLM');
                  dlog( $scheduleF->toString );
