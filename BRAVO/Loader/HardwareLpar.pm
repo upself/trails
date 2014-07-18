@@ -159,7 +159,7 @@ sub processHardwareLparEff {
 	if ( $self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2' ) {
 		if ( $stagingHardwareLparEff->action ne 'DELETE' ||  substr($stagingHardwareLparEff->action,-1) eq '2') {
 			$self->error(1);
-			$self->stagingHardwareLpar->action('UPDATE');
+			$self->stagingHardwareLpar->action('1');
 			$self->stagingHardwareLpar->save( $self->stagingConnection );
 			$self->addToCount( 'STAGING', 'HARDWARE_LPAR', 'STATUS_UPDATE' );
 			return;
@@ -219,7 +219,7 @@ sub save {
 	}
 
 	###Set the staging license to complete
-	$self->stagingHardwareLpar->action('COMPLETE');
+	$self->stagingHardwareLpar->action('0');
 
 	###Save the staging license
 	$self->stagingHardwareLpar->save( $self->stagingConnection );
