@@ -186,6 +186,7 @@ sub doDelta {
         ###Get the key
         my $key = $rec{machineTypeId} . '|' . $rec{serial} . '|' . $rec{country};
         dlog("hardware key=$key");
+        $action = 0;
 
         ###Create and populate a new hardware object
         my $hardware = new Staging::OM::Hardware();
