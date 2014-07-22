@@ -447,11 +447,11 @@ sub doDelta {
 
                 if ( $effProc->action eq '0' ) {
                     dlog('Setting effective processor count to update');
-                    $action = 1 ;
+                    $action = 10**9 + $action ;
                 }
                 elsif ( $effProc->action eq '-1' ) {
                     dlog('Setting effective processor count to update');
-                    $action = 1 ;
+                    $action = 10**9 + $action ;
                 }
                 else {
                     dlog('Setting processor count to complete to not save');
@@ -464,7 +464,7 @@ sub doDelta {
 
                 if ( $effProc->action eq '-1' ) {
                     dlog('Setting effective processor count to update');
-                    $action = 1 ;
+                    $action = 10**9 + $action ;
                 }
             }
             $self->effProcessor->{$lparKey}->action($action->bstr());
