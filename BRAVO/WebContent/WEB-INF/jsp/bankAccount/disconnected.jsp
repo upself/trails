@@ -200,32 +200,6 @@
 								lbAdminRole = true;
 						%>
 					</req:isUserInRole>
-				<% if (lbAdminRole) { %>
-					<display:column title="Name" property="name" headerClass="blue-med"
-						sortable="true" href="disconnectedAddEdit.do" paramId="id"
-						paramProperty="id" />
-				<% } else { %>
-					<display:column title="Name" property="name" headerClass="blue-med"
-						sortable="true" />
-				<% } %>
-					<display:column title="Bank account ID" property="id"
-						headerClass="blue-med" sortable="true" />
-					<display:column title="Type" property="type" headerClass="blue-med"
-						sortable="true" />
-					<display:column title="Version" property="version"
-						headerClass="blue-med" sortable="true" />
-					<display:column title="Authenicated data" headerClass="blue-med"
-						property="authenticatedData" sortable="true" />
-					<display:column title="Technical Contact" headerClass="blue-med"
-						property="technicalContact" sortable="true" />
-					<display:column title="Business Contact" headerClass="blue-med"
-						property="businessContact" sortable="true" />
-					<display:column title="Editor" headerClass="blue-med"
-						property="remoteUser" sortable="true" />
-					<display:column title="Last edited" headerClass="blue-med"
-						property="recordTime" sortable="true" class="date"
-						format="{0,date,MM-dd-yyyy HH:mm:ss}" />
-				</display:table>
 
 					<req:isUserInRole role="com.ibm.tap.sigbank.user">
 						<%

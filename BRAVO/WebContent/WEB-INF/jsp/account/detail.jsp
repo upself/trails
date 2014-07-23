@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="?Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -47,14 +47,9 @@
 <script>                                                                                                                               
 function popupTrailsReports(accountId) { 
 	<%Properties properties = new Properties();
-			properties.load(new FileInputStream(Constants.CONF_DIR
-					+ Constants.PROPERTIES));
-			String trailsServerName = properties
-					.getProperty("server.name.trails");%>                                                                                                         
-	newWin=window.open('<%=trailsServerName%>
-	/TRAILS/account/trailsreports/home.htm?accountId='
-								+ accountId,
-						'popupWindow',
+			properties.load(new FileInputStream(Constants.CONF_DIR + Constants.PROPERTIES));
+			String trailsServerName = properties.getProperty("server.name.trails");%>                                                                                                         
+	newWin=window.open('<%=trailsServerName%>/TRAILS/account/trailsreports/home.htm?accountId=' + accountId,'popupWindow',
 						'height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes');
 		newWin.focus();
 		void (0);
@@ -82,7 +77,7 @@ function popupTrailsReports(accountId) {
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM?/a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -239,37 +234,6 @@ function popupTrailsReports(accountId) {
 									</tbody>
 								</table>
 
-<!-- Software Downloads Multi Report --> <img
-	src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-	height="12" /> <c:if test="${account.multiReport}">
-	<a
-		href="/BRAVO/download/MULTI.${account.customer.accountNumber}.zip?name=softwareMulti&accountId=${account.customer.accountNumber}">
-	Software Multi Report </a>
-</c:if> <c:if test="${!account.multiReport}">
-					Software Multi Report
-				</c:if> <br />
-<!-- Outdated Scan Report --> <!--  
-<img
-	src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-	height="12" /> <a
-	href="http://trails.boulder.ibm.com/TRAILS/report/download/alertExpiredScan${account.customer.accountNumber}.tsv?name=alertExpiredScan">
-Expired Scan Report</a> --> Only scans within the last
-${account.customer.scanValidity} days are valid. <br />
-<!-- Trails reports --> <img
-	src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-	height="12" /> <a
-	href="javascript:popupTrailsReports(${account.customer.customerId})">Trails
-Reports</a><br />
-<c:if test="${isAPMMAccount}">
-	<!-- Authorized Asset Search -->
-	<img src="//w3.ibm.com/ui/v8/images/icon-link-download.gif" width="14"
-		height="12" />
-	<html:link
-		page="/authorizedAsset/search.do?accountId=${account.customer.accountNumber}">Authorized assets search</html:link>
-	<br />
-</c:if></p>
-</div>
-<br />
 
 								<%
 									/*
@@ -591,8 +555,11 @@ Reports</a><br />
 											<a class="ibm-download-link"
 												href="/BRAVO/download/MULTI.${account.customer.accountNumber}.zip?name=softwareMulti&accountId=${account.customer.accountNumber}">
 												Software Multi Report </a>
+																Only scans within the last ${account.customer.scanValidity} days are valid. <br />
 										</c:if> <c:if test="${!account.multiReport}">
 											Software Multi Report
+											<br />
+															Only scans within the last ${account.customer.scanValidity} days are valid. <br />
 										</c:if></li>
 
 									<!-- Trails reports -->
