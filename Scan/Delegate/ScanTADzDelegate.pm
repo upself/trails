@@ -19,61 +19,72 @@ sub insertTechImgId {
 	
 }
 
-my $sqlAG = "	select
-     node.node_key
-      ,lpar_name
-      ,'' as objectId
-      ,hw_model
-      ,hw_serial
-      ,case when scan_table.myfostype is null then node.last_update_time
-      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
-      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
-      else node.last_update_time
-        end as effective_scanTime
-      ,0 as users
-      ,2 as authenticated
-      ,0 as isManual
-      ,0 as authProc
-      ,0 as processor
-      ,system.sid as osName
-      ,hw_type as osType
-      ,'' as osMajorVers
-      ,'' as osMinorVers
-      ,'' as osSubVers
-      ,node.last_update_time as osInstDate
-      ,'' as userName
-      ,'' as biosManufacturer
-      ,'' as biosModel
-      ,'' as computerAlias
-      ,'' as physicalTotalKb
-      ,'' as virtTotalKb
-      ,'' as physicalFreeKb
-      ,'' as virtFreeKb
-      ,'' as biosDate
-      ,'' as biosSerial
-      ,'' as sysUuid
-      ,system.sysplex as boardSerNum
-      ,'' as caseSerNum
-      ,system.smfid as caseAssetTag
-      , '' as extId
-      , SCAN_TABLE.TSID as techImgId
-from system_node
-     join node on node.node_key = system_node.node_key
-     join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
-     as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-     join system on system.system_key = system_node.system_key
-     left outer join (
-SELECT  LP.FOSNAME as sid, 
-        MAX(LP.FOSTYPE) as myfostype, 
-        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
-        MAX(LP.FIQDATE) as myfiqdate,
-        LP.FOSVERSION AS TSID
-       FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\' 
-       GROUP BY LP.FOSNAME, LP.FINVID,LP.FOSVERSION
-       ORDER BY SID, myfoslastbootdate
-    ) as scan_table on scan_table.sid = system.sid
-where node_type = \'LPAR\' ";
+#sql updated by GAM #TI40620-50622 and TRAC #471
+#
+# 2 July 2014 Ticket 471 Bob McCormack Bravo extract on TADz HW is changed to start with the system
+#                                      table rather than the system_node to avoid duplicated hardware
+#
+my $sqlAG = "   select
+  	       node.node_key
+	      ,lpar_name
+	      ,'' as objectId
+	      ,hw_model
+	      ,hw_serial
+	      ,case when scan_table.myfostype is null then node.last_update_time
+	      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate
+	      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
+	      else node.last_update_time
+	        end as effective_scanTime
+	      ,0 as users
+	      ,2 as authenticated
+	      ,0 as isManual
+	      ,0 as authProc
+	      ,0 as processor
+	      ,system.sid as osName
+	      ,hw_type as osType
+	      ,'' as osMajorVers
+	      ,'' as osMinorVers
+	      ,'' as osSubVers
+	      ,node.last_update_time as osInstDate
+	      ,'' as userName
+	      ,'' as biosManufacturer
+	      ,'' as biosModel
+	      ,'' as computerAlias
+	      ,'' as physicalTotalKb
+	      ,'' as virtTotalKb
+	      ,'' as physicalFreeKb
+	      ,'' as virtFreeKb
+              ,'' as biosDate
+ 	      ,'' as biosSerial
+	      ,'' as sysUuid
+	      ,system.sysplex as boardSerNum
+	      ,'' as caseSerNum
+	      ,system.smfid as caseAssetTag
+	      , '' as extId
+              , SCAN_TABLE.TSID as techImgId
+	from system
+        JOIN (                                                       
+              SELECT SYSTEM_KEY, MAX(LAST_UPDATE_TIME)               
+              AS MY_TIME FROM SYSTEM_NODE           
+              GROUP BY SYSTEM_KEY )                                  
+              AS M ON M.SYSTEM_KEY = SYSTEM.SYSTEM_KEY                    
+        JOIN SYSTEM_NODE  AS SN                     
+             ON SN.SYSTEM_KEY   = M.SYSTEM_KEY    
+             AND M.MY_TIME = SN.LAST_UPDATE_TIME  
+        JOIN NODE                             
+             ON NODE.NODE_KEY       = SN.NODE_KEY 
+	     left outer join (
+	SELECT  LP.FOSNAME as sid,
+	        MAX(LP.FOSTYPE) as myfostype,
+	        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
+	        MAX(LP.FIQDATE) as myfiqdate,
+	        LP.FOSVERSION AS TSID
+	       FROM TIQHISTORY AS LP
+	       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\'
+	       GROUP BY LP.FOSNAME, LP.FINVID, LP.FOSVERSION
+	       ORDER BY SID, myfoslastbootdate
+	    ) as scan_table on scan_table.sid = system.sid
+	where node_type = \'LPAR\' "; 
 
 # Revision 330: This SQL used to extract HW and LPAR
 # information from TADz DBs. This revision changes the
@@ -153,61 +164,72 @@ my $sqlAG81 =     "select
                    as audit_table on audit_table.fsid = system.sid
  where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
 
+#sql updated by GAM #TI40620-50622 and TRAC #471
+#
+# 2 July 2014 Ticket 471 Bob McCormack Bravo extract on TADz HW is changed to start with the system
+#                                      table rather than the system_node to avoid duplicated hardware
+#
 my $sqlEMEA = "select
-     node.node_key
-      ,lpar_name
-      ,'' as objectId
-      ,hw_model
-      ,hw_serial
-      ,case when scan_table.myfostype is null then node.last_update_time
-      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate 
-      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
-      else node.last_update_time
-        end as effective_scanTime
-      ,0 as users
-      ,2 as authenticated
-      ,0 as isManual
-      ,0 as authProc
-      ,0 as processor
-      ,system.sid as osName
-      ,hw_type as osType
-      ,'' as osMajorVers
-      ,'' as osMinorVers
-      ,'' as osSubVers
-      ,node.last_update_time as osInstDate
-      ,'' as userName
-      ,'' as biosManufacturer
-      ,'' as biosModel
-      ,'' as computerAlias
-      ,'' as physicalTotalKb
-      ,'' as virtTotalKb
-      ,'' as physicalFreeKb
-      ,'' as virtFreeKb
-      ,'' as biosDate
-      ,'' as biosSerial
-      ,'' as sysUuid
-      ,system.sysplex as boardSerNum
-      ,'' as caseSerNum
-      ,system.smfid as caseAssetTag
-      , '' as extId
-      , SYSTEM.SID as techImgId
-from system_node
-     join node on node.node_key = system_node.node_key
-     join (select node_key, max(last_update_time) as my_time from system_node group by node_key) 
-     as mapping on mapping.node_key = node.node_key and mapping.my_time = system_node.last_update_time
-     join system on system.system_key = system_node.system_key
-     left outer join (
-SELECT  LP.FOSNAME as sid, 
-        MAX(LP.FOSTYPE) as myfostype, 
-        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
-        MAX(LP.FIQDATE) as myfiqdate,
-        LP.FOSVERSION AS TSID
-       FROM TIQHISTORY AS LP
-       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\' 
-       GROUP BY LP.FOSNAME, LP.FINVID, LP.FOSVERSION
-       ORDER BY SID, myfoslastbootdate
-    ) as scan_table on scan_table.sid = system.sid
-where node_type = \'LPAR\' ";
+        node.node_key
+	      ,lpar_name
+	      ,'' as objectId
+	      ,hw_model
+	      ,hw_serial
+	      ,case when scan_table.myfostype is null then node.last_update_time
+	      when scan_table.myfoslastbootdate >= scan_table.myfiqdate then scan_table.myfoslastbootdate
+	      when scan_table.myfiqdate > scan_table.myfoslastbootdate then scan_table.myfiqdate
+	      else node.last_update_time
+	        end as effective_scanTime
+	      ,0 as users
+	      ,2 as authenticated
+	      ,0 as isManual
+	      ,0 as authProc
+	      ,0 as processor
+	      ,system.sid as osName
+	      ,hw_type as osType
+	      ,'' as osMajorVers
+	      ,'' as osMinorVers
+	      ,'' as osSubVers
+	      ,node.last_update_time as osInstDate
+	      ,'' as userName
+	      ,'' as biosManufacturer
+	      ,'' as biosModel
+	      ,'' as computerAlias
+	      ,'' as physicalTotalKb
+	      ,'' as virtTotalKb
+	      ,'' as physicalFreeKb
+	      ,'' as virtFreeKb
+              ,'' as biosDate
+ 	      ,'' as biosSerial
+	      ,'' as sysUuid
+	      ,system.sysplex as boardSerNum
+	      ,'' as caseSerNum
+	      ,system.smfid as caseAssetTag
+	      , '' as extId
+              , SYSTEM.SID as techImgId
+	from system
+        JOIN (                                                       
+              SELECT SYSTEM_KEY, MAX(LAST_UPDATE_TIME)               
+              AS MY_TIME FROM SYSTEM_NODE           
+              GROUP BY SYSTEM_KEY )                                  
+              AS M ON M.SYSTEM_KEY = SYSTEM.SYSTEM_KEY                    
+        JOIN SYSTEM_NODE  AS SN                     
+             ON SN.SYSTEM_KEY   = M.SYSTEM_KEY    
+             AND M.MY_TIME = SN.LAST_UPDATE_TIME  
+        JOIN NODE                             
+             ON NODE.NODE_KEY       = SN.NODE_KEY 
+	     left outer join (
+	SELECT  LP.FOSNAME as sid,
+	        MAX(LP.FOSTYPE) as myfostype,
+	        MAX(LP.FOSLASTBOOTDATE) as myfoslastbootdate,
+	        MAX(LP.FIQDATE) as myfiqdate,
+	        LP.FOSVERSION AS TSID
+	       FROM TIQHISTORY AS LP
+	       WHERE LP.FINVID = 1 AND LP.FOSNAME <> \'\' AND LP.FOSTYPE <> \'\'
+	       GROUP BY LP.FOSNAME, LP.FINVID, LP.FOSVERSION
+	       ORDER BY SID, myfoslastbootdate
+	    ) as scan_table on scan_table.sid = system.sid
+	where node_type = \'LPAR\' ";
 
 # Revision 330: This SQL used to extract HW and LPAR
 # information from TADz DBs. This revision changes the
