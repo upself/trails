@@ -159,7 +159,7 @@ sub processHardwareLparEff {
 	if ( $self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2' ) {
 		if ( $stagingHardwareLparEff->action ne 'DELETE' ||  substr($stagingHardwareLparEff->action,-1) eq '2') {
 			$self->error(1);
-			$self->stagingHardwareLpar->action('UPDATE');
+			$self->stagingHardwareLpar->action('1');
 			$self->stagingHardwareLpar->save( $self->stagingConnection );
 			$self->addToCount( 'STAGING', 'HARDWARE_LPAR', 'STATUS_UPDATE' );
 			return;
@@ -202,8 +202,15 @@ sub save {
 	elsif ( $self->reconDeep == 1 ) {
 		$self->recon;
 	}
-	elsif ( defined $self->hardwareLparEffLoader ) {
+	
+	if ( defined $self->hardwareLparEffLoader ) {
 		if ( $self->hardwareLparEffLoader->saveBravoHardwareLparEff == 1 ) {
+			if( $self->bravoHardwareLpar->action =~ m/\d/){
+			$self->bravoHardwareLpar->action( $self->bravoHardwareLpar->action + $self->hardwareLparEffLoader->bravoHardwareLparEff->action);
+			} else {
+		     $self->bravoHardwareLpar->action($self->hardwareLparEffLoader->bravoHardwareLparEff->action);
+			}
+			dlog( 'bravoHardwareLpar action ' . $self->bravoHardwareLpar->action );
 			$self->recon;
 		}
 	}
@@ -219,7 +226,7 @@ sub save {
 	}
 
 	###Set the staging license to complete
-	$self->stagingHardwareLpar->action('COMPLETE');
+	$self->stagingHardwareLpar->action('0');
 
 	###Save the staging license
 	$self->stagingHardwareLpar->save( $self->stagingConnection );
@@ -338,6 +345,8 @@ sub buildBravoHardwareLpar {
 		$self->stagingHardwareLpar->cappedLpar );
 	$bravoHardwareLpar->virtualFlag(
 		$self->stagingHardwareLpar->virtualFlag );
+	$bravoHardwareLpar->action(
+		$self->stagingHardwareLpar->action );
 
 	$self->bravoHardwareLpar($bravoHardwareLpar);
 	dlog( 'build hw lpar from staging ' . $bravoHardwareLpar->toString );

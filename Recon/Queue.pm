@@ -94,8 +94,8 @@ sub addHardwareToQueue {
 
 	ilog("Checking for existing hardware in queue");
 	my $recon = new Recon::OM::ReconHardware();
-	$recon->hardwareId( $self->object->id );
-	$recon->action('UPDATE');
+	$recon->hardwareId( $self->object->id);
+	$recon->action($self->object->action);
 	$recon->getByBizKey( $self->connection );
 
 	if ( !defined $recon->id ) {
@@ -117,7 +117,7 @@ sub addHardwareLparToQueue {
 	ilog("Checking for existing hardware lpar in queue");
 	my $recon = new Recon::OM::ReconHardwareLpar();
 	$recon->hardwareLparId( $self->object->id );
-	$recon->action('UPDATE');
+	$recon->action($self->object->action);
 	$recon->getByBizKey( $self->connection );
 
 	if ( !defined $recon->id ) {

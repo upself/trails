@@ -102,7 +102,7 @@ sub save {
     }
 
     ###Set the staging license to complete
-    $self->stagingHardwareLparEff->action('COMPLETE');
+    $self->stagingHardwareLparEff->action('0');
 
     ###Save the staging license
     $self->stagingHardwareLparEff->save( $self->stagingConnection );
@@ -116,6 +116,7 @@ sub buildBravoHardwareLparEff {
     $bravoHardwareLparEff->hardwareLparId( $self->bravoHardwareLpar->id );
     $bravoHardwareLparEff->processorCount( $self->stagingHardwareLparEff->processorCount );
     $bravoHardwareLparEff->status( $self->stagingHardwareLparEff->status );
+    $bravoHardwareLparEff->action( $self->stagingHardwareLparEff->action );
 
     $self->bravoHardwareLparEff($bravoHardwareLparEff);
 }

@@ -7,7 +7,7 @@
 	<property name="processorCount" type="scalar" equals="true"
 		sql-name="processor_count" />
 	<property name="status" type="scalar" equals="true" sql-name="status" />
-	<property name="action" type="scalar" equals="true" />
+	<property name="action" type="scalar"  />
 	<property name="table" type="scalar" default="hardware_lpar_eff" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

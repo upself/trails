@@ -134,7 +134,7 @@ sub processHardwareLpars {
 		if ( $self->stagingHardware->action eq 'DELETE' || substr($self->stagingHardware->action,-1) eq '2' ) {
 			if ( $stagingHardwareLpar->action ne 'DELETE' || substr($stagingHardwareLpar->action,-1) ne '2' ) {
 				$self->error(1);
-				$self->stagingHardware->action('UPDATE');
+				$self->stagingHardware->action('1');
 				$self->stagingHardware->save( $self->stagingConnection );
 				$self->addToCount( 'STAGING', 'HARDWARE', 'STATUS_UPDATE' );
 				next;
@@ -190,10 +190,10 @@ sub save {
 		return;
 	}
 
-	###Set the staging license to complete
-	$self->stagingHardware->action('COMPLETE');
+	###Set the staging hardware to complete
+	$self->stagingHardware->action('0');
 
-	###Save the staging license
+	###Save the staging hardware
 	$self->stagingHardware->save( $self->stagingConnection );
 	$self->addToCount( 'STAGING', 'HARDWARE', 'COMPLETE' );
 }
@@ -281,6 +281,7 @@ sub buildBravoHardware {
 	my $accountNumber = $self->stagingHardware->customerNumber;
 	$accountNumber =~ s/X//g;
 	$bravoHardware->accountNumber($accountNumber);
+	$bravoHardware->action($self->stagingHardware->action);
 
 	$self->bravoHardware($bravoHardware);
 }

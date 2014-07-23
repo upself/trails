@@ -50,13 +50,6 @@ sub equals {
     $equal = 1 if (!defined $self->status && !defined $object->status);
     return 0 if $equal == 0;
 
-    $equal = 0;
-    if (defined $self->action && defined $object->action) {
-        $equal = 1 if $self->action eq $object->action;
-    }
-    $equal = 1 if (!defined $self->action && !defined $object->action);
-    return 0 if $equal == 0;
-
     return 1;
 }
 
