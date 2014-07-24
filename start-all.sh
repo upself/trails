@@ -25,8 +25,6 @@ fi
 
 SLEEP=2
 set -x
-./doranaToSwasset.pl start
-sleep $SLEEP
 ./hdiskToStaging.pl start
 sleep $SLEEP
 ./ipAddressToStaging.pl start
@@ -38,8 +36,6 @@ sleep $SLEEP
 ./processorToStaging.pl start
 sleep $SLEEP
 ./scanRecordToStaging.pl start
-sleep $SLEEP
-./softwareDoranaToStaging.pl start
 sleep $SLEEP
 ./softwareFilterToStaging.pl start
 sleep $SLEEP

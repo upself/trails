@@ -25,11 +25,7 @@ fi
 
 SLEEP=2
 set -x
-./adcToStaging.pl stop
-sleep $SLEEP
 ./atpToStaging.pl stop
-sleep $SLEEP
-./doranaToSwasset.pl stop
 sleep $SLEEP
 ./hdiskToStaging.pl stop
 sleep $SLEEP
@@ -42,8 +38,6 @@ sleep $SLEEP
 ./processorToStaging.pl stop
 sleep $SLEEP
 ./scanRecordToStaging.pl stop
-sleep $SLEEP
-./softwareDoranaToStaging.pl stop
 sleep $SLEEP
 ./softwareFilterToStaging.pl stop
 sleep $SLEEP
