@@ -92,6 +92,17 @@ public class License extends AbstractDomainEntity {
 
 	@Column(name = "POOL")
 	private Integer pool;
+	
+	@Column(name = "ENVIRONMENT")
+	private String environment;
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String environment) {
+		this.environment = environment;
+	}
 
 	public int getAvailableQty() {
 		int result = this.quantity;

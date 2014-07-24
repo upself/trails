@@ -86,7 +86,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				license.get(License_.quantity).alias("quantity"),
 				license.get(License_.expireDate).alias("expireDate"), license
 						.get(License_.cpuSerial).alias("cpuSerial"), license
-						.get(License_.extSrcId).alias("extSrcId"), account
+						.get(License_.extSrcId).alias("extSrcId"), license.get(License_.environment)
+						.alias("environment"), account
 						.get(Account_.account));
 
 		q.groupBy(
@@ -99,7 +100,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				license.get(License_.quantity),
 				license.get(License_.expireDate),
 				license.get(License_.cpuSerial),
-				license.get(License_.extSrcId), account.get(Account_.account));
+				license.get(License_.extSrcId), license.get(License_.environment), account.get(Account_.account));
 		q.having(cb.greaterThan(cb.coalesce(
 				cb.diff(license.get(License_.quantity),
 						cb.sum(usedLicense.get(UsedLicense_.usedQuantity))),
@@ -220,7 +221,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						.alias("quantity"), license.get(License_.expireDate)
 						.alias("expireDate"), license.get(License_.cpuSerial)
 						.alias("cpuSerial"), license.get(License_.extSrcId)
-						.alias("extSrcId"), account.get(Account_.account)
+						.alias("extSrcId"), license.get(License_.environment)
+						.alias("environment"), account.get(Account_.account)
 						.alias("accountName"));
 		q.groupBy(
 				license.get(License_.id),
@@ -232,7 +234,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				license.get(License_.quantity),
 				license.get(License_.expireDate),
 				license.get(License_.cpuSerial),
-				license.get(License_.extSrcId), account.get(Account_.account));
+				license.get(License_.extSrcId), license.get(License_.environment), account.get(Account_.account));
 		q.having(cb.greaterThan(cb.coalesce(
 				cb.diff(license.get(License_.quantity),
 						cb.sum(usedLicense.get(UsedLicense_.usedQuantity))),

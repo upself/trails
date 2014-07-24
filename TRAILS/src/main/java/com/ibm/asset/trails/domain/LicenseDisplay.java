@@ -25,6 +25,8 @@ public class LicenseDisplay {
     private String cpuSerial;
 
     private String extSrcId;
+    
+    private String environment;
 
     private Long ownerAccountNumber;
 
@@ -34,7 +36,7 @@ public class LicenseDisplay {
     public LicenseDisplay(Long licenseId, String productName, String product,
             Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
-            String extSrcId, Long ownerAccountNumber) {
+            String extSrcId, String environment, Long ownerAccountNumber) {
         super();
         this.licenseId = licenseId;
         this.productName = productName;
@@ -46,6 +48,7 @@ public class LicenseDisplay {
         this.expireDate = expireDate;
         this.cpuSerial = cpuSerial;
         this.extSrcId = extSrcId;
+        this.environment = environment;
         this.ownerAccountNumber = ownerAccountNumber;
     }
 
@@ -150,4 +153,12 @@ public class LicenseDisplay {
     public void setProduct(String product) {
         this.product = product;
     }
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String environment) {
+		this.environment = environment;
+	}
 }

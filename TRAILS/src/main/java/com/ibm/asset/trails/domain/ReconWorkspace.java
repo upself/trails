@@ -165,6 +165,16 @@ public class ReconWorkspace implements Serializable {
 	private BigDecimal nbrOfChipsMax;
 
 	private String shared;
+	
+	private String lparServerType;
+
+	public String getLparServerType() {
+		return lparServerType;
+	}
+
+	public void setLparServerType(String lparServerType) {
+		this.lparServerType = lparServerType;
+	}
 
 	public Integer getAlertAgeI() {
 		return alertAgeI;

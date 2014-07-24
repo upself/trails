@@ -112,6 +112,7 @@
 			<display:column property="country" title="Country" />
 			<display:column property="owner" title="HW Owner" />
 			<display:column property="assetType" title="Asset type" />
+			<display:column property="lparServerType" title="Server type" />
 			<display:column property="productInfoName" title="SW Name" />
 			<display:column property="processorManufacturer" title="Proc mfg" />
 			<display:column property="mastProcessorType" title="Proc type" />
@@ -162,6 +163,7 @@
 			<display:column property="expireDate" title="Exp date" class="date"
 				format="{0,date,MM-dd-yyyy}" sortable="true" />
 			<display:column property="cpuSerial" title="Serial" sortable="true" />
+			<display:column property="environment" title="Environment" sortable="true" />
 			<display:column property="extSrcId" title="SWCM ID" sortable="true" />
 		</display:table>
 	</small>
@@ -194,6 +196,7 @@
 			<display:column property="expireDate" title="Exp date" class="date"
 				format="{0,date,MM-dd-yyyy}" sortable="true" />
 			<display:column property="cpuSerial" title="Serial" sortable="true" />
+			<display:column property="environment" title="Environment" sortable="true" />
 			<display:column property="extSrcId" title="SWCM ID" sortable="true" />
 		</display:table>
 	</small>

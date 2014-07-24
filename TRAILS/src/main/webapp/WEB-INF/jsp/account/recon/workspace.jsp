@@ -274,6 +274,8 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
+				value="%{#attr.row.lparServerType}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareStatus"
 				value="%{#attr.row.hardwareStatus}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparStatus"

@@ -48,6 +48,17 @@ public class HardwareLpar {
 
 	@Column(name = "PART_MIPS")
 	private Integer partLsprMips;
+	
+	@Column(name = "SERVER_TYPE")
+	private String serverType;
+
+	public String getServerType() {
+		return serverType;
+	}
+
+	public void setServerType(String serverType) {
+		this.serverType = serverType;
+	}
 
 	/**
 	 * @return the partLsprMips

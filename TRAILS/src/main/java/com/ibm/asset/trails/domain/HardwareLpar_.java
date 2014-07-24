@@ -24,4 +24,5 @@ public class HardwareLpar_ {
 	public static volatile SingularAttribute<HardwareLpar, String> spla;
 	public static volatile SingularAttribute<HardwareLpar, String> sysplex;
 	public static volatile SingularAttribute<HardwareLpar, String> internetIccFlag;
+	public static volatile SingularAttribute<HardwareLpar, String> serverType;
 }
