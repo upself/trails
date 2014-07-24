@@ -37,10 +37,39 @@ sub getReconcileTypeMap {
 	return \%data;
 }
 
+sub getAllocationMethodologyMap {
+	my ($self) = @_;
+
+	my %data;
+
+	###NOTE: Hard coding these values from the database
+	###b/c they are extremely static and this data is
+	###required by the recon engine for the recon of
+	###every piece of installed software, and the recon
+	###engine children are short lived which does not
+	###allow for ability to get once and reuse across
+	###multiple recons.
+	
+	$data{'Per LPAR'} = "1, ";
+	$data{'Per processor'} = "2, ";
+	$data{'Per hardware device'} = "3, ";
+	$data{'Per hardware processor'} = "4, ";
+	$data{'Per hardware chip'} = "5, ";
+	$data{'Per PVU'} = "6, ";
+	$data{'Per hardware Gartner MIPS'} = "21, ";
+	$data{'Per LPAR Gartner MIPS'} = "22, ";
+	$data{'Per hardware IBM LSPR MIPS'} = "23, ";
+	$data{'Per LPAR IBM LSPR MIPS'} = "24, ";
+	$data{'Per hardware MSU'} = "25, ";
+	$data{'Per LPAR MSU'} = "26, ";
+
+	return \%data;
+}
+
+
 sub breakReconcileById {
 	my ( $self, $connection, $reconcileId ) = @_;
 	dlog("begin breakReconcileById");
-	dlog($reconcileId);
 
 	###Get reconcile object.
 	my $reconcile = new Recon::OM::Reconcile();

@@ -113,7 +113,8 @@ sub queuePotentialInstalledSoftware {
          && $self->license->capType ne '14'
          && $self->license->capType ne '17'
          && $self->license->capType ne '34'
-         && $self->license->capType ne '48' )
+         && $self->license->capType ne '48'
+         && $self->license->capType ne '70' )
     {
         return;
     }
@@ -318,7 +319,7 @@ sub getScheduleFScope {
 		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
 	}
 	
-#	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
+	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
 	
 	return ( $scopeToReturn, $prioFound );
 }

@@ -94,7 +94,7 @@ sub recon {
                     $hardware->getById( $self->connection );
 
                     ###Call recon delegate to perform recon.
-                    $recon = Recon::Hardware->new( $self->connection, $hardware );
+                    $recon = Recon::Hardware->new( $self->connection, $hardware, $action );
                     $recon->recon;
 
                     ###Remove recon job from queue.
@@ -111,7 +111,7 @@ sub recon {
                     dlog( $hardwareLpar->toString );
 
                     ###Call recon delegate to perform recon.
-                    $recon = Recon::HardwareLpar->new( $self->connection, $hardwareLpar );
+                    $recon = Recon::HardwareLpar->new( $self->connection, $hardwareLpar, $action );
                     $recon->recon;
 
                     ###Remove recon job from queue.

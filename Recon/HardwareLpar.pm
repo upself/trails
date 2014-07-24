@@ -11,12 +11,14 @@ use Recon::AlertZeroHwChipCount;
 use Recon::AlertHwLparNoCpuModel;
 use Recon::AlertHwLparNoProcType;
 use Recon::Hardware;
+use Recon::Delegate::ReconDelegate;
 
 sub new {
-    my ( $class, $connection, $hardwareLpar ) = @_;
+    my ( $class, $connection, $hardwareLpar, $action ) = @_;
     my $self = {
                  _connection   => $connection,
-                 _hardwareLpar => $hardwareLpar
+                 _hardwareLpar => $hardwareLpar,
+                 _action       => $action
     };
     bless $self, $class;
 
@@ -33,6 +35,85 @@ sub validate {
 
     croak 'Hardware Lpar is undefined'
       unless defined $self->hardwareLpar;
+}
+
+sub catchRight { # chops the rightmost character from a string (referenced), returns the character
+	my $string=shift;
+	
+	return undef if (length($$string)==0);
+	
+	my $toret= substr $$string, -1, 1;
+	$$string = substr $$string, 0, ( length($$string) - 1 );
+	
+	return $toret;
+}
+
+sub recon0101 {
+	my $self = shift;
+	my $action = $self->action;
+	
+	my $allocMethodologyMap =
+	  Recon::Delegate::ReconDelegate->getAllocationMethodologyMap();
+	
+	my $sqlquery = "";
+	
+	return unless $action =~ /^[01]+[0123]$/ ; # action is not composed of 0's and 1's (with 0123 at the end)
+	
+	wlog("Reconing action $action, HW LPAR ".$self->hardwareLpar->id);
+	
+	chomp($action);
+	
+	# now we will slice the $action string from left, character by character
+	for (my $i=0; $i<5; $i++) # 10^0 to 10^4 ignored
+		{ catchRight(\$action); }
+	
+	$sqlquery.=$allocMethodologyMap->{'Per LPAR IBM LSPR MIPS'} if catchRight(\$action) == "1"; # 10^5
+	$sqlquery.=$allocMethodologyMap->{'Per LPAR MSU'} if catchRight(\$action) == "1"; # 10^6
+	$sqlquery.=$allocMethodologyMap->{'Per LPAR Gartner MIPS'} if catchRight(\$action) == "1"; # 10^7
+	catchRight(\$action); # 10^8 ignored
+	$sqlquery.=$allocMethodologyMap->{'Per processor'} if catchRight(\$action) == "1"; # 10^9
+		
+	return if ($sqlquery == "");
+	
+	$sqlquery =~ s/, $//; # removing the closing ", " in the $sqlquery
+	
+	wlog("Breaking these allocation methodologies: $sqlquery");
+	
+	my %rec;
+	
+    $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($sqlquery) );
+
+    ###access statement handle
+    my $sth = $self->connection->sql->{getReconcilesByMethodology};
+
+    ###Bind columns
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{getReconcilesByMethodologyFields} } );
+
+    ###Execute query
+    $sth->execute( $self->hardwareLpar->id );
+    
+    my %reIDsbroken;
+
+    ###Loop through results
+    while ( $sth->fetchrow_arrayref ) {
+       	my $curr_rId=$rec{rId};
+	
+		next if ( exists $reIDsbroken{$curr_rId} );
+	
+		dlog("Breaking reconcile $curr_rId");
+		
+		Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $curr_rId );
+	
+		$reIDsbroken{$curr_rId} = 1;
+
+    }
+    ###End loop
+
+    ###close statement handle
+    $sth->finish;
+    
+    dlog(scalar(keys %reIDsbroken)." reconciles broken, returning to HW LPAR recon");
+		
 }
 
 sub recon {
@@ -64,6 +145,9 @@ sub recon {
     ilog("Performing recon");
     $reconLpar->recon;
     ilog("Recon complete");
+    
+    ###Perform the special actions
+    $self->recon0101();
 
     ###Run the alert logic
     ilog("Performing alert logic");
@@ -89,7 +173,7 @@ sub recon {
     ilog("Additional reconciliations complete");
 
     ###Call recon on the hardware object
-    my $recon = Recon::Hardware->new( $self->connection, $hardware );
+    my $recon = Recon::Hardware->new( $self->connection, $hardware, "UPDATE" );
     $recon->recon;
 
     ilog("Recon complete");
@@ -101,10 +185,40 @@ sub connection {
     return $self->{_connection};
 }
 
+sub action {
+    my $self = shift;
+    $self->{_action} = shift if scalar @_ == 1;
+    return $self->{_action};
+}
+
 sub hardwareLpar {
     my $self = shift;
     $self->{_hardwareLpar} = shift if scalar @_ == 1;
     return $self->{_hardwareLpar};
+}
+
+sub queryGetReconcilesByMethodology {
+	my $self=shift;
+	my $methodologies=shift;
+
+    my @fields = qw(
+      rId
+    );
+
+    my $query = qq{
+      select
+          r.id
+      from
+		  reconcile r
+		  join installed_software is on is.id = r.installed_software_id
+		  join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id
+      where
+          hsc.hardware_lpar_id = ?
+          and r.reconcile_type_id = 1
+          and r.allocation_methodology_id in ( $methodologies )
+    };
+
+    return ( 'getReconcilesByMethodology', $query, \@fields );
 }
 
 1;

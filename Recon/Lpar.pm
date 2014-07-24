@@ -1497,7 +1497,7 @@ sub performAdditionalRecons {
             $hardwareLpar->id($id);
             $hardwareLpar->getById( $self->connection );
 
-            my $recon = Recon::HardwareLpar->new( $self->connection, $hardwareLpar );
+            my $recon = Recon::HardwareLpar->new( $self->connection, $hardwareLpar, "UPDATE" );
             $recon->recon;
         }
     }
