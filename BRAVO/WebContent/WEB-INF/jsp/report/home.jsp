@@ -99,35 +99,36 @@
 				<div id="ibm-content-body">
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
-							<div class="ibm-col-1-1"></div>
+							<div class="ibm-col-4-2"></div>
 						</div>
 					</div>
 
 					<!-- FEATURES_BEGIN -->
 					<div id="ibm-content-sidebar">
-						<div class="ibm-container">
-							<h2 class="ibm-first">
-								Actions <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
-							</h2>
-							<div class="ibm-container-body">
-								<!-- Department reports -->
-								<a class="ibm-download-link" href="department.do">Department
-									Scan Reports</a> <br />
+							Actions&nbsp;<a class="ibm-question-link"
+									href="help/help.do"></a>
 
-								<!-- Global scanning reports -->
-								<a class="ibm-download-link" href="georeport.do">Global Scan
-									Report</a> <br />
-
-								<!-- Discrepancy Summary report -->
-								<a class="ibm-download-link" href="discrepancySummary.do">Discrepancy
-									Summary Report</a> <br />
-
-								<!-- Mainframe Scan Report -->
-								<a class="ibm-download-link"
-									href="/BRAVO/download/mainframeScan.tsv?name=mainframeScan">Mainframe
-									Scan Report</a> <br />
-							</div>
-						</div>
+								<ul class="ibm-link-list">
+									<!-- Department reports -->
+									<li><a class="ibm-add1-link"
+										href="department.do">Department Scan Reports</a>
+									</li>
+									
+									<!-- Global scanning reports -->
+									<li><a class="ibm-add1-link"
+										href="georeport.do">Global Scan Report</a>
+									</li>
+									
+									<!-- Discrepancy Summary report -->
+									<li><a class="ibm-add1-link"
+										href="discrepancySummary.do">Mainframe Scan Report</a>
+									</li>
+									
+									<!-- Mainframe Scan Report -->
+									<li><a class="ibm-add1-link"
+										href="/BRAVO/download/mainframeScan.tsv?name=mainframeScan">Department Scan Reports</a>
+									</li>
+								</ul>
 					</div>
 
 					<!-- FEATURES_END -->
@@ -250,17 +251,6 @@
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

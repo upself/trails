@@ -118,8 +118,8 @@
 
 								<div class="indent">
 									<h3>
-										Hardware <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Hardware&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -197,8 +197,8 @@
 								</table>
 								<div class="indent">
 									<h3>
-										Hardware LPAR <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Hardware LPAR&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -289,8 +289,8 @@
 
 								<div class="indent">
 									<h3>
-										Software LPAR <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Software LPAR&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -377,8 +377,8 @@
 
 									<div class="indent">
 										<h3>
-											Software <a class="ibm-question-link"
-												href="BRAVO/help/help.do"></a>
+											Software&nbsp;<a class="ibm-question-link"
+												href="help/help.do"></a>
 										</h3>
 									</div>
 									<display:table name="list" requestURI=""
@@ -438,7 +438,7 @@
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
@@ -607,17 +607,6 @@
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

@@ -146,7 +146,7 @@ function popupTrailsReports(accountId) {
 
 								<div class="indent">
 									<h3>
-										Account <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+										Account&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -196,8 +196,8 @@ function popupTrailsReports(accountId) {
 								<br />
 								<div class="indent">
 									<h3>
-										Account Statistics <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Account Statistics&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -242,8 +242,8 @@ function popupTrailsReports(accountId) {
 								<table border="0" width="65%" cellspacing="10" cellpadding="0">
 									<thead>
 										<tr>
-											<th>LPAR Name/Serial Search: <a
-												class="ibm-question-link" href="BRAVO/help/help.do"></a></th>
+											<th>LPAR Name/Serial Search:&nbsp;<a
+												class="ibm-question-link" href="help/help.do"></a></th>
 											<th>Software Search: <img
 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 												width="14" height="14" alt="contextual field help icon" /></th>
@@ -293,8 +293,8 @@ function popupTrailsReports(accountId) {
 									<table border="0" width="65%" cellspacing="10" cellpadding="0">
 										<thead>
 											<tr>
-												<th>LPAR Name/Serial Search: <a
-													class="ibm-question-link" href="BRAVO/help/help.do"></a></th>
+												<th>LPAR Name/Serial Search:&nbsp;<a
+													class="ibm-question-link" href="help/help.do"></a></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -319,8 +319,8 @@ function popupTrailsReports(accountId) {
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="small">
 									<tr>
-										<th>Composite List <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a></th>
+										<th>Composite List&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a></th>
 										<td width="1%" nowrap="nowrap"><html:link
 												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
 													Show All
@@ -370,8 +370,8 @@ function popupTrailsReports(accountId) {
 								red, the scan is considered invalid.</font> <br />
 								<div class="indent">
 									<h3>
-										Software lpars w/o Hardware <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Software lpars w/o Hardware&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""
@@ -395,8 +395,8 @@ function popupTrailsReports(accountId) {
 								<br />
 								<div class="indent">
 									<h3>
-										Hardware lpars w/o Software <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Hardware lpars w/o Software&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="hardwareLpars" requestURI=""
@@ -426,8 +426,8 @@ function popupTrailsReports(accountId) {
 								<br />
 								<div class="indent">
 									<h3>
-										Hardware w/o Hardware Lpar <a class="ibm-question-link"
-											href="BRAVO/help/help.do"></a>
+										Hardware w/o Hardware Lpar&nbsp;<a class="ibm-question-link"
+											href="help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="hardwares" requestURI=""
@@ -469,7 +469,7 @@ function popupTrailsReports(accountId) {
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
@@ -535,7 +535,7 @@ function popupTrailsReports(accountId) {
 
 
 								<h2 class="ibm-rule">
-									Reports <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+									Reports&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 								</h2>
 
 								<ul class="ibm-link-list">
@@ -713,17 +713,6 @@ function popupTrailsReports(accountId) {
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

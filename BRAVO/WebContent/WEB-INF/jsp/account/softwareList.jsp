@@ -107,8 +107,7 @@
 
 								<div class="indent">
 									<h3>
-										Composites
-										<a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+										Composites&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="composites" requestURI=""
@@ -137,7 +136,7 @@
 
 								<div class="indent">
 									<h3>
-										Software lpars w/o Hardware <a class="ibm-question-link" href="BRAVO/help/help.do"></a>
+										Software lpars w/o Hardware&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""
@@ -293,17 +292,6 @@
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

@@ -13,7 +13,7 @@
 	<br/>
 	
 	<!-- User Guides -->
-	<a class="ibm-generic-link" href="<bean:message bundle="HelpPrompts" key="help.link.guides.href"/>">User guides</a>
+	<a class="ibm-generic-link" href="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/AMTS/page/BRAVO"/>Bravo wiki</a>
 	<br/><br/>
 	
 		<!-- Frequently Asked Questions -->

@@ -35,8 +35,10 @@
 	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
 
 <title>Welcome to BRAVO</title>
-<link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet" title="w3" type="text/css"/>
-<script src="//1.w3.s81c.com/common/js/dojo/w3.js" type="text/javascript"></script>
+<link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet"
+	title="w3" type="text/css" />
+<script src="//1.w3.s81c.com/common/js/dojo/w3.js"
+	type="text/javascript"></script>
 
 <!-- <link href="//1.www.s81c.com/common/v17/css/www.css" rel="stylesheet" -->
 <!-- 	title="www" type="text/css" /> -->
@@ -95,49 +97,61 @@
 				<div id="ibm-content-body">
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
-							<div class="ibm-col-1-1">
-							
+							<div class="ibm-col-4-3">
+
 								<html:img alt="Scenic overlook telescope"
-									style="margin: 0 10px 0 0" page="/images/p1_w3v8_19.jpg" align="left" hspace="10"
-									vspace="10" />
+									style="margin: 0 10px 0 0" page="/images/p1_w3v8_19.jpg"
+									align="left" hspace="10" vspace="10" />
 								<br />
 								<p style="color: #c60; margin: 0 0 0 10px" class="caption">Welcome
 									to BRAVO</p>
 								<br /> Navigate using the toolbar to the left or <strong
 									style="color: #7a3" class="caption">search</strong> below.<br />
-								<br clear="all" />
-		
-								<html:form action="/search">
+								<br /> <br />
+
+
+								<html:form action="/search"
+									styleClass="ibm-column-form ibm-styled-form">
 									<html:hidden property="context" value="home" />
 									<table>
 										<div class="invalid">
 											<html:errors />
 										</div>
 										<tbody>
-												<tr>
-													<td><label for="id_type">Search</label>:</td>
-													<td><html:select styleId="id_type" property="type"
-															>
-															<html:option value="ACCOUNT">Account Id/Name/Dept</html:option>
-															<html:option value="SOFTWARELPARNAME">Software LPAR name</html:option>
-															<html:option value="SOFTWARELPARNAMEFUZZY">Software LPAR name fuzzy</html:option>
-															<html:option value="SOFTWARELPARSERIAL">Software LPAR serial</html:option>
-															<html:option value="HARDWARELPARNAME">Hardware LPAR name</html:option>
-															<html:option value="HARDWARELPARSERIAL">Hardware LPAR serial</html:option>
-														</html:select>
-														</td>
-														<td>
-															<a class="ibm-question-link" href="BRAVO/help/help.do"></a>
-													</td>
-												</tr>
-												<tr>
-													<td><label for="id_search">Search text</label>:</td>
-													<td><html:text styleId="id_search" property="search"
-															styleClass="ibm-styled" /> <span class="ibm-btn-view-pri">
-															<!-- 											<input class="ibm-btn-view-pri" name="ibm-search" type="button" value="Search"/> -->
-															<html:submit property="type" value="Search" styleClass="ibm-btn-view-pri" />
-													</span></td>
-												</tr>
+											<tr>
+												<td style="width: 10%"><label for="id_type">Search:</label></td>
+												<td style="width: 30%"><html:select styleId="id_type"
+														property="type">
+														<html:option value="ACCOUNT">Account Id/Name/Dept</html:option>
+														<html:option value="SOFTWARELPARNAME">Software LPAR name</html:option>
+														<html:option value="SOFTWARELPARNAMEFUZZY">Software LPAR name fuzzy</html:option>
+														<html:option value="SOFTWARELPARSERIAL">Software LPAR serial</html:option>
+														<html:option value="HARDWARELPARNAME">Hardware LPAR name</html:option>
+														<html:option value="HARDWARELPARSERIAL">Hardware LPAR serial</html:option>
+													</html:select></td>
+												<td style="width: 1%"><a class="ibm-question-link"
+													href="help/help.do"></a></td>
+												<td style="width: 65%"></td>
+
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>											
+											<tr>
+												<td><label for="id_search">Search text:</label></td>
+												<td><html:text styleId="id_search" property="search"
+														styleClass="ibm-styled" /> <span class="ibm-btn-view-pri">
+														<!-- 											<input class="ibm-btn-view-pri" name="ibm-search" type="button" value="Search"/> -->
+												</span></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><html:submit property="type" value="Search"
+														styleClass="ibm-btn-view-pri" /></td>
+
+											</tr>
 										</tbody>
 									</table>
 								</html:form>
@@ -273,17 +287,6 @@
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

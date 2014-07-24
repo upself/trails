@@ -226,18 +226,12 @@
 		</ul>
 
 		<div id="ibm-secondary-navigation">
-			<!-- SECONDARY NAVIGATION SECTION -->
-			<h2>Related links</h2>
-			<ul id="ibm-related-links">
-				<li><a
-					href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-						Global Procurement</a></li>
-				<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-						citizenship</a></li>
-				<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-						Responsibility Report</a></li>
-
-			</ul>
+		<!-- SECONDARY NAVIGATION SECTION -->
+		<br /> Legend:
+		<hr />
+		<span class="ibm-check-link">Active</span><br /> <span
+			class="ibm-incorrect-link">Inactive</span><br /> <span
+			class="ibm-caution-link">Alert</span>
 		</div>
 
 	</div>

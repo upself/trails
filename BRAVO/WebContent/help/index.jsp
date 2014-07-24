@@ -88,14 +88,15 @@
 						<!-- START CONTENT HERE -->
 						<p id="breadcrumbs">
 							<a href="/BRAVO/">BRAVO</a> &gt; <a href="/BRAVO/help/help.do">Help</a>
-							&gt; <a
-								href="/BRAVO/help/link.do?lang=<bean:write name="lang"/>&file=<bean:write name="file"/>">User
-								Guides</a>
 						</p>
-						<tiles:insert
-							page="<%=((java.lang.String) ((org.apache.struts.action.DynaActionForm) request
-					.getAttribute(\"helpForm\")).get(\"fileContext\"))%>" />
 
+						<h1>BRAVO Help Home</h1>
+						<br /> <br />
+
+						<!-- User Guides -->
+						<a class="ibm-generic-link"
+							href="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/AMTS/page/BRAVO" />Bravo wiki</a> <br />
+						<br />
 					</div>
 				</div>
 			</div>
@@ -214,17 +215,6 @@
 
 				<div id="ibm-secondary-navigation">
 					<!-- SECONDARY NAVIGATION SECTION -->
-					<h2>Related links</h2>
-					<ul id="ibm-related-links">
-						<li><a
-							href="http://www-03.ibm.com/procurement/proweb.nsf/ContentDocsByTitle/United+States~Global+Procurement">IBM
-								Global Procurement</a></li>
-						<li><a href="//www.ibm.com/ibm/ibmgives/">Corporate
-								citizenship</a></li>
-						<li><a href="http://www.ibm.com/ibm/responsibility/">Corporate
-								Responsibility Report</a></li>
-
-					</ul>
 					<br /> Legend:
 					<hr />
 					<span class="ibm-check-link">Active</span><br /> <span

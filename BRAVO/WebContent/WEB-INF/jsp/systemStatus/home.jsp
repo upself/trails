@@ -91,13 +91,13 @@
 			<div id="ibm-content">
 				<div id="ibm-leadspace-head" class="ibm-alternate">
 					<div id="ibm-leadspace-body">
-						<br />
-						<h1>System Status Home</h1>
 						<p id="breadcrumbs">
 							<html:link page="/">BRAVO</html:link>
 							&gt;
 							<html:link page="/systemStatus/home.do">System status</html:link>
 						</p>
+						<br />
+						<h1>System Status Home</h1>
 					</div>
 				</div>
 				<!-- CONTENT_BODY -->
@@ -106,174 +106,208 @@
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
 
-						<html:form action="/systemStatus/submit_form">
-							<table border="0" width="40%" cellspacing="10" cellpadding="0">
-								<tbody>
-									<tr>
-										<td><label for="id_type">Bank account</label>:</td>
+								<br />
+								<html:form action="/systemStatus/submit_form"
+									styleClass="ibm-column-form">
 
-										<td><html:select property="bankAccount">
-												<html:option value="0">Show All Bank Accounts</html:option>
-												<html:options collection="bankAccountNames"
-													labelProperty="name" property="id" />
-											</html:select></td>
-									</tr>
-									<tr>
-										<td><label for="id_type">Module/Loader</label>:</td>
-										<td><select name="moduleLoader" id="moduleLoader">
-												<option value="Show All">Show All</option>
-												<option value="SCAN RECORD">SCAN RECORD</option>
-												<option value="SCAN SOFTWARE">SCAN SOFTWARE</option>
-												<option value="SOFTWARE SIGNATURE">SOFTWARE SIGNATURE</option>
-												<option value="SOFTWARE FILTER">SOFTWARE FILTER</option>
-												<option value="PROCESSOR">PROCESSOR</option>
-												<option value="HDISK">HDISK</option>
-												<option value="MEMMOD">MEMMOD</option>
-												<option value="IP ADDRESS">IP ADDRESS</option>
-											</select></td>
-									</tr>
-									<tr>
-										<td></td>
-										<td><html:checkbox property="delta_checkbox"
-												styleClass="ibm-styled" /> <label for="id_type">Include
-												delta loads</label></td>
-									</tr>
-									<tr>
-										<td><label for="id_type">Loader status</label>:</td>
-										<td><html:select property="loaderStatus">
-												<html:option value="Show All">Show All</html:option>
-												<html:option value="COMPLETE">COMPLETE</html:option>
-												<html:option value="PENDING">PENDING</html:option>
-												<html:option value="ERROR">ERROR</html:option>
-											</html:select></td>
-									</tr>
-									<tr>
-										<td><label for="id_type">Bank Account Type</label>:</td>
-										<td><html:select property="type">
-												<html:option value="Show All">Show All</html:option>
-												<html:option value="TCM">TCM</html:option>
-												<html:option value="TLM">TLM</html:option>
-												<html:option value="SMS">SMS</html:option>
-												<html:option value="SNAPSHOT">SNAPSHOT</html:option>
-												<html:option value="EESM">EESM</html:option>
-												<html:option value="BLAZANT">BLAZANT</html:option>
-												<html:option value="ALTIRIS">ALTIRIS</html:option>
-												<html:option value="IDD">IDD</html:option>
-												<html:option value="TADZ">TADZ</html:option>
-												<html:option value="FACTS">FACTS</html:option>
-												<html:option value="TAD4D">TAD4D</html:option>
-											</html:select></td>
-									</tr>
-									<tr>
-										<td><label for="id_type">Connection Type</label>:</td>
-										<td><html:select property="connectionType">
-												<html:option value="Show All">Show All</html:option>
-												<html:option value="DISCONNECTED">DISCONNECTED</html:option>
-												<html:option value="CONNECTED">CONNECTED</html:option>
-											</html:select></td>
-									</tr>
-									<tr>
-										<td colspan="2">Date from:<html:text
-												styleId="datepicker_from" property="date_from"
-												styleClass="ibm-styled" /> Date to:<html:text
-												styleId="datepicker_to" property="date_to"
-												styleClass="ibm-styled" />
-										</td>
+									<table border="0" width="100%" cellspacing="10" cellpadding="0">
+										<tbody>
+											<tr>
+												<td style="width: 10%"><label for="id_type">Bank
+														account:</label></td>
+
+												<td style="width: 30%"><html:select
+														property="bankAccount">
+														<html:option value="0">Show All Bank Accounts</html:option>
+														<html:options collection="bankAccountNames"
+															labelProperty="name" property="id" />
+													</html:select></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Module/Loader:</label></td>
+												<td><select name="moduleLoader" id="moduleLoader">
+														<option value="Show All">Show All</option>
+														<option value="SCAN RECORD">SCAN RECORD</option>
+														<option value="SCAN SOFTWARE">SCAN SOFTWARE</option>
+														<option value="SOFTWARE SIGNATURE">SOFTWARE
+															SIGNATURE</option>
+														<option value="SOFTWARE FILTER">SOFTWARE FILTER</option>
+														<option value="PROCESSOR">PROCESSOR</option>
+														<option value="HDISK">HDISK</option>
+														<option value="MEMMOD">MEMMOD</option>
+														<option value="IP ADDRESS">IP ADDRESS</option>
+												</select></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Include delta loads</label></td>
+												<td><html:checkbox property="delta_checkbox"
+														styleClass="ibm-styled" /></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Loader status:</label></td>
+												<td><html:select property="loaderStatus">
+														<html:option value="Show All">Show All</html:option>
+														<html:option value="COMPLETE">COMPLETE</html:option>
+														<html:option value="PENDING">PENDING</html:option>
+														<html:option value="ERROR">ERROR</html:option>
+													</html:select></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Bank Account Type:</label></td>
+												<td><html:select property="type">
+														<html:option value="Show All">Show All</html:option>
+														<html:option value="TCM">TCM</html:option>
+														<html:option value="TLM">TLM</html:option>
+														<html:option value="SMS">SMS</html:option>
+														<html:option value="SNAPSHOT">SNAPSHOT</html:option>
+														<html:option value="EESM">EESM</html:option>
+														<html:option value="BLAZANT">BLAZANT</html:option>
+														<html:option value="ALTIRIS">ALTIRIS</html:option>
+														<html:option value="IDD">IDD</html:option>
+														<html:option value="TADZ">TADZ</html:option>
+														<html:option value="FACTS">FACTS</html:option>
+														<html:option value="TAD4D">TAD4D</html:option>
+													</html:select></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Connection Type:</label></td>
+												<td><html:select property="connectionType">
+														<html:option value="Show All">Show All</html:option>
+														<html:option value="DISCONNECTED">DISCONNECTED</html:option>
+														<html:option value="CONNECTED">CONNECTED</html:option>
+													</html:select></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label>Date from:</label></td>
+												<td><html:text styleId="datepicker_from"
+														property="date_from" styleClass="ibm-styled" /></td>
 
 
-									</tr>
-									<tr>
-										<td></td>
-										<td><html:checkbox property="systemStatus_checkbox"
-												styleClass="ibm-styled" /> <label for="id_type">Include
-												system status</label></td>
-									</tr>
-									<tr>
-										<td><span class="ibm-btn-view-pri"> <html:submit
-													property="action" value="Submit"
-													styleClass="ibm-btn-view-pri" />
-										</span></td>
-									</tr>
-								</tbody>
-							</table>
-						</html:form>
-						<br /> <br />
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label>Date to:</label></td>
+												<td><html:text styleId="datepicker_to"
+														property="date_to" styleClass="ibm-styled" /></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><label for="id_type">Include system status</label>
+												</td>
+												<td><html:checkbox property="systemStatus_checkbox"
+														styleClass="ibm-styled" /></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td><span class="ibm-btn-view-pri"> <html:submit
+															property="action" value="Submit"
+															styleClass="ibm-btn-view-pri" />
+												</span></td>
+											</tr>
+										</tbody>
+									</table>
+								</html:form>
+								<br /> <br />
 
-						<script>
-							$(function() {
-								$("#datepicker_from").datepicker({
-									dateFormat : 'yy-mm-dd'
-								}).val();
-							});
-						</script>
+								<script>
+									$(function() {
+										$("#datepicker_from").datepicker({
+											dateFormat : 'yy-mm-dd'
+										}).val();
+									});
+								</script>
 
-						<script>
-							$(function() {
-								$("#datepicker_to").datepicker({
-									dateFormat : 'yy-mm-dd'
-								}).val();
-							});
-						</script>
+								<script>
+									$(function() {
+										$("#datepicker_to").datepicker({
+											dateFormat : 'yy-mm-dd'
+										}).val();
+									});
+								</script>
 
-						<h1>Bank account jobs</h1>
-						<display:table cellspacing="2" cellpadding="0"
-							name="bankAccountJobList" id="table_bank_account_jobs_row"
-							requestURI=""
-							class="ibm-data-table ibm-sortable-table ibm-alternate-two"
-							defaultsort="1" defaultorder="ascending">
-							<display:setProperty name="basic.empty.showtable" value="true" />
-							<display:column property="bankAccount.name"
-								title="Bank account name" sortable="true" headerClass="blue-med"
-								group="1">
-							</display:column>
+								<h1>Bank account jobs</h1>
+								<display:table cellspacing="2" cellpadding="0"
+									name="bankAccountJobList" id="table_bank_account_jobs_row"
+									requestURI=""
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									defaultsort="1" defaultorder="ascending">
+									<display:setProperty name="basic.empty.showtable" value="true" />
+									<display:column property="bankAccount.name"
+										title="Bank account name" sortable="true"
+										headerClass="blue-med" group="1">
+									</display:column>
 
-							<display:column property="name" title="Module" sortable="true"
-								headerClass="blue-med" />
-							<display:column property="comments" title="Comments"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="startTime" class="date"
-								format="{0,date,MM-dd-yyyy HH:mm:ss}" title="Start time"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="endTime" class="date"
-								format="{0,date,MM-dd-yyyy HH:mm:ss}" title="End time"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="elapsedTime" title="Elapsed time"
-								sortable="false" headerClass="blue-med"
-								style="white-space:nowrap" />
-							<display:column property="bankAccount.type" title="Account Type"
-								sortable="true" headerClass="blue-med"
-								style="white-space:nowrap" />
-							<display:column property="bankAccount.connectionType"
-								title="Connection Type" sortable="true" headerClass="blue-med"
-								style="white-space:nowrap" />
-							<display:column property="status" title="Status" sortable="true"
-								headerClass="blue-med" />
-						</display:table>
+									<display:column property="name" title="Module" sortable="true"
+										headerClass="blue-med" />
+									<display:column property="comments" title="Comments"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="startTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="Start time"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="endTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="End time"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="elapsedTime" title="Elapsed time"
+										sortable="false" headerClass="blue-med"
+										style="white-space:nowrap" />
+									<display:column property="bankAccount.type"
+										title="Account Type" sortable="true" headerClass="blue-med"
+										style="white-space:nowrap" />
+									<display:column property="bankAccount.connectionType"
+										title="Connection Type" sortable="true" headerClass="blue-med"
+										style="white-space:nowrap" />
+									<display:column property="status" title="Status"
+										sortable="true" headerClass="blue-med" />
+								</display:table>
 
-						<h1>System status</h1>
-						<display:table cellspacing="2" cellpadding="0"
-							name="systemScheduleStatusList" id="table_system status_row"
-							requestURI=""
-							class="ibm-data-table ibm-sortable-table ibm-alternate-two"
-							defaultsort="1" defaultorder="ascending">
-							<display:setProperty name="basic.empty.showtable" value="true" />
-							<display:column property="name" title="Module" sortable="true"
-								headerClass="blue-med" />
-							<display:column property="comments" title="Comments"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="startTime" class="date"
-								format="{0,date,MM-dd-yyyy HH:mm:ss}" title="Start time"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="endTime" class="date"
-								format="{0,date,MM-dd-yyyy HH:mm:ss}" title="End time"
-								sortable="true" headerClass="blue-med" />
-							<display:column property="elapsedTime" title="Elapsed time"
-								sortable="false" headerClass="blue-med"
-								style="white-space:nowrap" />
-							<display:column property="status" title="Status" sortable="true"
-								headerClass="blue-med" />
-						</display:table>
-						
+								<h1>System status</h1>
+								<display:table cellspacing="2" cellpadding="0"
+									name="systemScheduleStatusList" id="table_system status_row"
+									requestURI=""
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									defaultsort="1" defaultorder="ascending">
+									<display:setProperty name="basic.empty.showtable" value="true" />
+									<display:column property="name" title="Module" sortable="true"
+										headerClass="blue-med" />
+									<display:column property="comments" title="Comments"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="startTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="Start time"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="endTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="End time"
+										sortable="true" headerClass="blue-med" />
+									<display:column property="elapsedTime" title="Elapsed time"
+										sortable="false" headerClass="blue-med"
+										style="white-space:nowrap" />
+									<display:column property="status" title="Status"
+										sortable="true" headerClass="blue-med" />
+								</display:table>
+
 							</div>
 						</div>
 					</div>
