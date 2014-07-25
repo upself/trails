@@ -238,7 +238,8 @@ function popupTrailsReports(accountId) {
 								<%
 									/*
 								%>
-
+								<br />
+								<br />
 								<table border="0" width="65%" cellspacing="10" cellpadding="0">
 									<thead>
 										<tr>
@@ -285,6 +286,8 @@ function popupTrailsReports(accountId) {
 								<%
 									*/
 								%>
+								<br />
+								<br />
 								<html:form action="/lpar/search">
 									<html:hidden property="context" value="lpar" />
 									<html:hidden property="type" value="Search" />
@@ -315,12 +318,17 @@ function popupTrailsReports(accountId) {
 								</html:form>
 
 								<br />
+								<br />
+
+								<h3>
+									Composite List <a class="ibm-question-link"
+										href="BRAVO/help/help.do"></a>
+								</h3>
 								<table
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="small">
 									<tr>
-										<th>Composite List&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a></th>
+										<td></td>
 										<td width="1%" nowrap="nowrap"><html:link
 												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
 													Show All
@@ -366,6 +374,8 @@ function popupTrailsReports(accountId) {
 										%>
 									</display:column>
 								</display:table>
+								<br />
+								<br />
 								<font color="red">*IF the scan time reflected above is in
 								red, the scan is considered invalid.</font> <br />
 								<div class="indent">
@@ -392,6 +402,7 @@ function popupTrailsReports(accountId) {
 										sortable="true" headerClass="blue-med" />
 								</display:table>
 
+								<br />
 								<br />
 								<div class="indent">
 									<h3>

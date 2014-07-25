@@ -37,7 +37,7 @@
 	import="java.util.Calendar,java.util.Properties,java.io.FileInputStream,java.lang.String,com.ibm.tap.misld.framework.Constants"%>
 
 <title>Bravo Account: <c:out
-	value="${account.customer.customerName}" /></title>
+		value="${account.customer.customerName}" /></title>
 
 <link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet"
 	title="w3" type="text/css" />
@@ -47,9 +47,14 @@
 <script>                                                                                                                               
 function popupTrailsReports(accountId) { 
 	<%Properties properties = new Properties();
-			properties.load(new FileInputStream(Constants.CONF_DIR + Constants.PROPERTIES));
-			String trailsServerName = properties.getProperty("server.name.trails");%>                                                                                                         
-	newWin=window.open('<%=trailsServerName%>/TRAILS/account/trailsreports/home.htm?accountId=' + accountId,'popupWindow',
+			properties.load(new FileInputStream(Constants.CONF_DIR
+					+ Constants.PROPERTIES));
+			String trailsServerName = properties
+					.getProperty("server.name.trails");%>                                                                                                         
+	newWin=window.open('<%=trailsServerName%>
+	/TRAILS/account/trailsreports/home.htm?accountId='
+								+ accountId,
+						'popupWindow',
 						'height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes');
 		newWin.focus();
 		void (0);
@@ -106,15 +111,21 @@ function popupTrailsReports(accountId) {
 				<div id="ibm-leadspace-head" class="ibm-alternate">
 					<div id="ibm-leadspace-body">
 
-						<p id="breadcrumbs"><html:link page="/">
+						<p id="breadcrumbs">
+							<html:link page="/">
 				BRAVO
-			</html:link> &gt; <html:link
-	page="/account/view.do?accountId=${account.customer.accountNumber}">
-	<c:out value="${account.customer.customerName}" />
-</html:link></p>
+			</html:link>
+							&gt;
+							<html:link
+								page="/account/view.do?accountId=${account.customer.accountNumber}">
+								<c:out value="${account.customer.customerName}" />
+							</html:link>
+						</p>
 
-						<h1>Account Detail: <font class="green-dark"><c:out
-	value="${account.customer.customerName}" /></font></h1>
+						<h1>
+							Account Detail: <font class="green-dark">
+							<c:out value="${account.customer.customerName}" /></font>
+						</h1>
 						<p class="confidential">IBM Confidential</p>
 					</div>
 				</div>
@@ -233,6 +244,7 @@ function popupTrailsReports(accountId) {
 									/*
 								%>
 
+								<br /> <br />
 								<table border="0" width="65%" cellspacing="10" cellpadding="0">
 									<thead>
 										<tr>
@@ -279,6 +291,7 @@ function popupTrailsReports(accountId) {
 								<%
 									*/
 								%>
+								<br /> <br />
 								<html:form action="/lpar/search">
 									<html:hidden property="context" value="lpar" />
 									<html:hidden property="type" value="Search" />
@@ -309,16 +322,17 @@ function popupTrailsReports(accountId) {
 								</html:form>
 
 								<br />
-								
+
 								<h3>
 									Composite List&nbsp;<a class="ibm-question-link"
-												href="help/help.do"></a>
+										href="help/help.do"></a>
 								</h3>
-								
+
 								<table
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="small">
 									<tr>
+										<td></td>
 										<td width="1%" nowrap="nowrap"><html:link
 												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
 													Show All
@@ -364,8 +378,8 @@ function popupTrailsReports(accountId) {
 										%>
 									</display:column>
 								</display:table>
-								<font color="red">*IF the scan time reflected above is in
-								red, the scan is considered invalid.</font> <br />
+								<br /> <br /> <font color="red">*IF the scan time
+								reflected above is in red, the scan is considered invalid.</font> <br />
 								<div class="indent">
 									<h3>
 										Software lpars w/o Hardware&nbsp;<a class="ibm-question-link"
@@ -390,7 +404,7 @@ function popupTrailsReports(accountId) {
 										sortable="true" headerClass="blue-med" />
 								</display:table>
 
-								<br />
+								<br /> <br />
 								<div class="indent">
 									<h3>
 										Hardware lpars w/o Software&nbsp;<a class="ibm-question-link"
@@ -421,7 +435,7 @@ function popupTrailsReports(accountId) {
 										sortable="true" headerClass="blue-med" />
 								</display:table>
 
-								<br />
+								<br /> <br />
 								<div class="indent">
 									<h3>
 										Hardware w/o Hardware Lpar&nbsp;<a class="ibm-question-link"
@@ -471,10 +485,11 @@ function popupTrailsReports(accountId) {
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
-								
+
 									<!-- Create Hardware Discrepancy -->
 									<li><a class="ibm-add1-link"
-										href="/BRAVO//hardware/lpar/create.do?accountId=${account.customer.accountNumber}">Create HW LPAR Discrepancy</a></li>
+										href="/BRAVO//hardware/lpar/create.do?accountId=${account.customer.accountNumber}">Create
+											HW LPAR Discrepancy</a></li>
 
 									<!-- Add New Contact -->
 									<li><a class="ibm-add1-link"
@@ -505,12 +520,12 @@ function popupTrailsReports(accountId) {
 										<br />
 										<br />
 									</c:if>
-									
-									<c:if
-										test="${isAPMMAccount}">
+
+									<c:if test="${isAPMMAccount}">
 										<!-- Upload authorized Assets -->
 										<li><a class="ibm-upload-link"
-											href="/BRAVO/upload/authorizedAssets.do?id=${account.customer.accountNumber}">Upload authorized Assets</a></li>
+											href="/BRAVO/upload/authorizedAssets.do?id=${account.customer.accountNumber}">Upload
+												authorized Assets</a></li>
 										<br />
 										<br />
 									</c:if>
