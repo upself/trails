@@ -267,7 +267,7 @@ sub applyDelta {
                $queue->add;
             }
         }
-        if ( $self->list->{$key}->swComplianceMgmt eq 'NO' ) {
+        if ( $self->list->{$key}->swLicenseMgmt eq 'NO' ) {
             dlog("Inactiving ScheduleF items while account Inactive");
             $self->inactiveScheduleF($connection,$self->list->{$key}->customerId);
         }
