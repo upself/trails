@@ -159,6 +159,7 @@ sub validate {
         
         $self->validateLparNameMatch( $self->license->capType, $self->license->licType, $self->license->lparName, $licenseAllocationView->slName, $licenseAllocationView->hlName, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
         $self->validateMachineTypeMatch ( $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->mtType, $licenseAllocationView->rId, $self->license->id );
+        $self->validateEnvironmentMatch ( $self->license->environment, $licenseAllocationView->hServerType, $licenseAllocationView->rtIsManual, $licenseAllocationView->rId );
         
         $self->validateLicenseSoftwareMap(
             $self->licSwMap->softwareId,          $licenseAllocationView->rtIsManual,
@@ -365,6 +366,24 @@ sub validateProcCount {
 			dlog("license ID $licenseId, lic type 17, hProcessorCount == 0");
 			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
 			$self->addToDeleteQueue ( $self->license->id ) if defined $licenseId;
+			$self->validationCode(0);
+		}
+	}
+	
+	return 1;
+}
+
+sub validateEnvironmentMatch {
+	my ( $self, $licEnvironment, $serverType, $isManual, $reconcileId ) = @_;
+	### Validate if HW server type is the same as the license environment
+	
+	$serverType = 'PRODUCTION' if ((!defined $serverType) || ($serverType eq ""));
+	$licEnvironment = 'PRODUCTION' if ((!defined $licEnvironment ) || ( $licEnvironment eq "" ));
+	
+	if (( $licEnvironment eq 'DEVELOPMENT' ) || ( $licEnvironment ne $serverType )) {
+		if ( $isManual == 0 ) {
+			dlog("License environment DEVELOPMENT or different from server type!");
+			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
 			$self->validationCode(0);
 		}
 	}

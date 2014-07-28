@@ -18,6 +18,7 @@
 	<property name="hCpuMIPS" type="scalar" equals="true" />
 	<property name="hCpuGartnerMIPS" type="scalar" equals="true" />
 	<property name="hCpuMSU" type="scalar" equals="true" />
+	<property name="hServerType" type="scalar" equals="true" />
 	<property name="hlName" type="scalar" equals="true" />
 	<property name="hlPartMIPS" type="scalar" equals="true" />
 	<property name="hlPartGartnerMIPS" type="scalar" equals="true" />

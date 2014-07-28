@@ -2108,7 +2108,9 @@ from
             and l.lic_type != \'SC\'   
             and s.software_id = ?
             and l.status = \'ACTIVE\'
-            and s.status = \'ACTIVE\' ';
+            and s.status = \'ACTIVE\'
+            and l.environment <> \'DEVELOPMENT\'
+            ';
     $query .= 'and l.ibm_owned = 0' if ( ( $scopeName eq 'CUSTOIBMM' ) || ( $scopeName eq 'CUSTO3RDM' ) || ( $scopeName eq 'CUSTOIBMMSWCO' ) );
     $query .= 'and l.ibm_owned = 1' if ( ( $scopeName eq 'IBMOIBMM' ) );
     $query.='

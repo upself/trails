@@ -569,6 +569,9 @@ sub validateLicenseAllocation {
     $self->installedSoftwareReconData->slName, 
     $self->installedSoftwareReconData->hlName,
     undef, undef, 0 );
+    
+   ###Validate environment match
+   $validation->validateEnvironmentMatch( $rec{licEnvironment}, $self->installedSoftwareReconData->hServerType, 0, undef );
 
    ###Validate license software map
    $validation->validateLicenseSoftwareMap( $rec{sId}, 0,
@@ -783,6 +786,7 @@ sub queryValidateLicenseAllocation {
    pool
    ibmOwned
    licenseStatus
+   licEnvironment
    sId
  );
  my $query = '
@@ -803,6 +807,7 @@ sub queryValidateLicenseAllocation {
             ,l.pool
             ,l.ibm_owned
             ,l.status
+            ,l.environment
             ,lsm.software_id
         from
             reconcile r

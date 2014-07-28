@@ -355,6 +355,7 @@ sub getLicenseAllocationsData {
         $lav->hId( $rec{hId} );
         $lav->hSerial( $rec{hSerial} );
         $lav->hProcessorCount ( $rec{hProcessorCount} );
+        $lav->hServerType ( $rec{hServerType} );
         $lav->hlName( $rec{hlName} );
         $lav->mtType( $rec{mtType} );
 #        $lav->scopeName( $rec{scopeName} );
@@ -438,6 +439,7 @@ sub queryLicenseAllocationsData {
         hCpuGartnerMIPS
         hCpuMSU
         hOwner
+        hServerType
         hlName
         hlPartMIPS
         hlPartGartnerMIPS
@@ -463,10 +465,11 @@ sub queryLicenseAllocationsData {
             ,h.id
             ,h.serial
             ,h.processor_count
-            ,h.owner
             ,h.cpu_mips
             ,h.cpu_gartner_mips
             ,h.cpu_msu
+            ,h.owner
+            ,h.server_type
             ,hl.name
             ,hl.part_mips
             ,hl.part_gartner_mips

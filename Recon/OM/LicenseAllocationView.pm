@@ -24,6 +24,7 @@ sub new {
         ,_hCpuMIPS => undef
         ,_hCpuGartnerMIPS => undef
         ,_hCpuMSU => undef
+        ,_hServerType => undef
         ,_hlName => undef
         ,_hlPartMIPS => undef
         ,_hlPartGartnerMIPS => undef
@@ -164,6 +165,13 @@ sub equals {
         $equal = 1 if $self->hCpuMSU eq $object->hCpuMSU;
     }
     $equal = 1 if (!defined $self->hCpuMSU && !defined $object->hCpuMSU);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hServerType && defined $object->hServerType) {
+        $equal = 1 if $self->hServerType eq $object->hServerType;
+    }
+    $equal = 1 if (!defined $self->hServerType && !defined $object->hServerType);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -326,6 +334,12 @@ sub hCpuMSU {
     return $self->{_hCpuMSU};
 }
 
+sub hServerType {
+    my $self = shift;
+    $self->{_hServerType} = shift if scalar @_ == 1;
+    return $self->{_hServerType};
+}
+
 sub hlName {
     my $self = shift;
     $self->{_hlName} = shift if scalar @_ == 1;
@@ -459,6 +473,11 @@ sub toString {
     $s .= "hCpuMSU=";
     if (defined $self->{_hCpuMSU}) {
         $s .= $self->{_hCpuMSU};
+    }
+    $s .= ",";
+    $s .= "hServerType=";
+    if (defined $self->{_hServerType}) {
+        $s .= $self->{_hServerType};
     }
     $s .= ",";
     $s .= "hlName=";
