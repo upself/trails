@@ -1,0 +1,4 @@
+The contents of the amreportsBatch is ONLY here for historical purposes. It is scheduled to be turned
+off on tap.raleigh.ibm.com as it no longer is running any children reports.
+
+However, it contains several good ideas that should be incorporated into our reporting framework.
