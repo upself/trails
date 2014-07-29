@@ -141,44 +141,46 @@ sub validate {
     $self->validateSubCapacity( $self->license->licType, undef, undef );
 
     foreach my $rId ( keys %{ $self->licenseAllocationData } ) {
+		my $rValid = 1; # starts as 1 and gets multiplied by each validation... if it gets zero, stays zero, otherwise is 1 at the end
+		
         my $licenseAllocationView = $self->licenseAllocationData->{$rId};
         dlog( $licenseAllocationView->rId );
 
-        $self->validateCustomer( $self->customer->status, $self->customer->swLicenseMgmt, $licenseAllocationView->rId );
-        $self->isLicInFinRespScope( $self->customer->swFinancialResponsibility, $self->license->ibmOwned, $licenseAllocationView->rId );
-        $self->validateLicense( $self->license->status, $licenseAllocationView->rId );
-        $self->validateTryAndBuy( $self->license->tryAndBuy, $licenseAllocationView->lrmCapType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
-        $self->validateSubCapacity( $self->license->licType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
-        $self->validateLicenseAllocationCustomer($licenseAllocationView);
-        $self->validateCapacityType( $licenseAllocationView->lrmCapType, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
-        $self->validateProcCount ( $licenseAllocationView->hProcessorCount, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
-        $self->validatePhysicalCpuSerialMatch(
+        $rValid *= $self->validateCustomer( $self->customer->status, $self->customer->swLicenseMgmt, $licenseAllocationView->rId );
+        $rValid *= $self->isLicInFinRespScope( $self->customer->swFinancialResponsibility, $self->license->ibmOwned, $licenseAllocationView->rId );
+        $rValid *= $self->validateLicense( $self->license->status, $licenseAllocationView->rId );
+        $rValid *= $self->validateTryAndBuy( $self->license->tryAndBuy, $licenseAllocationView->lrmCapType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
+        $rValid *= $self->validateSubCapacity( $self->license->licType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
+        $rValid *= $self->validateLicenseAllocationCustomer($licenseAllocationView);
+        $rValid *= $self->validateCapacityType( $licenseAllocationView->lrmCapType, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
+        $rValid *= $self->validateProcCount ( $licenseAllocationView->hProcessorCount, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
+        $rValid *= $self->validatePhysicalCpuSerialMatch(
             $self->license->capType,  $self->license->licType,   $licenseAllocationView->hSerial, $self->license->cpuSerial,
             $licenseAllocationView->rId, $self->license->id,              $licenseAllocationView->rtIsManual
         );
         
-        $self->validateLparNameMatch( $self->license->capType, $self->license->licType, $self->license->lparName, $licenseAllocationView->slName, $licenseAllocationView->hlName, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
-        $self->validateMachineTypeMatch ( $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->mtType, $licenseAllocationView->rId, $self->license->id );
-        $self->validateEnvironmentMatch ( $self->license->environment, $licenseAllocationView->hServerType, $licenseAllocationView->rtIsManual, $licenseAllocationView->rId );
+        $rValid *= $self->validateLparNameMatch( $self->license->capType, $self->license->licType, $self->license->lparName, $licenseAllocationView->slName, $licenseAllocationView->hlName, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
+        $rValid *= $self->validateMachineTypeMatch ( $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->mtType, $licenseAllocationView->rId, $self->license->id );
+        $rValid *= $self->validateEnvironmentMatch ( $self->license->environment, $licenseAllocationView->hServerType, $licenseAllocationView->rtIsManual, $licenseAllocationView->rId );
         
-        $self->validateLicenseSoftwareMap(
+        $rValid *= $self->validateLicenseSoftwareMap(
             $self->licSwMap->softwareId,          $licenseAllocationView->rtIsManual,
             $licenseAllocationView->isSoftwareId, $licenseAllocationView->rId,
             $self->license->id
         );
-        $self->validateMaintenanceExpiration(
+        $rValid *= $self->validateMaintenanceExpiration(
             $licenseAllocationView->mtType, $self->license->capType, $licenseAllocationView->rtIsManual, $licenseAllocationView->expireAge,
             $licenseAllocationView->rId,    $self->license->id
         );
-        $self->validateScheduleF(
+        $rValid *= $self->validateScheduleF(
             $self->license->ibmOwned,    $licenseAllocationView->slComplianceMgmt, $licenseAllocationView->scopeName,
             $licenseAllocationView->rId, $licenseAllocationView->rtIsManual
         );
-        $self->validateProcessorChip(
+        $rValid *= $self->validateProcessorChip(
             $licenseAllocationView->rtIsManual,   $self->license->capType, $licenseAllocationView->mtType,
             $licenseAllocationView->machineLevel, $licenseAllocationView->rId
         );
-        $self->validateMipsGartnerMsu(
+        $rValid *= $self->validateMipsGartnerMsu(
 			$licenseAllocationView->rtIsManual, $self->license->capType, $licenseAllocationView->mtType,
 			$licenseAllocationView->machineLevel, $licenseAllocationView->rId,
 			$licenseAllocationView->hCpuMIPS, $licenseAllocationView->hCpuGartnerMIPS, $licenseAllocationView->hCpuMSU,
@@ -191,15 +193,17 @@ sub validate {
 		else {
 			$machineLevel{$licenseAllocationView->lrmId}++;
 		}
+		
+		if ($rValid) {
+			$tempUsedCapacity = $tempUsedCapacity + $licenseAllocationView->lrmUsedQuantity;
+			dlog("temp capacity: " . $tempUsedCapacity);
 
-        $tempUsedCapacity = $tempUsedCapacity + $licenseAllocationView->lrmUsedQuantity;
-        dlog("temp capacity: " . $tempUsedCapacity);
-
-        if ( $tempUsedCapacity > $self->license->quantity ) {
-            $self->addToReconcilesToBreak( $licenseAllocationView->rId );
-            $tempUsedCapacity = $tempUsedCapacity - $licenseAllocationView->lrmUsedQuantity;
-            delete $machineLevel{$licenseAllocationView->lrmId};
-        }
+			if ( $tempUsedCapacity > $self->license->quantity ) {
+				$self->addToReconcilesToBreak( $licenseAllocationView->rId );
+				$tempUsedCapacity = $tempUsedCapacity - $licenseAllocationView->lrmUsedQuantity;
+				delete $machineLevel{$licenseAllocationView->lrmId};
+			}
+		}
     }
 
     $self->freeCapacity( $self->license->quantity - $tempUsedCapacity );
@@ -246,12 +250,14 @@ sub validateCustomer {
         dlog("Customer is inactive");
         $self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
         $self->validationCode(0);
+        return 0;
     }
     ###Check if in scope for license management
     elsif ( $customerSwLicMgmt ne 'YES' ) {
         dlog("not in scope for swlm, marking as invalid");
         $self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
         $self->validationCode(0);
+        return 0;
     }
 
     return 1;
@@ -312,6 +318,7 @@ sub validateLicense {
         dlog("license is not active, adding to list to break");
         $self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
         $self->validationCode(0);
+        return 0;
     }
     return 1;
 }
@@ -339,7 +346,7 @@ sub validateLicenseAllocationCustomer {
     $self->addToDeleteQueue( $self->license->id );
     $self->validationCode(0);
 
-    return 1;
+    return 0;
 }
 
 sub validateCapacityType {
@@ -351,6 +358,7 @@ sub validateCapacityType {
         $self->addToReconcilesToBreak($reconcileId)   if defined $reconcileId;
         $self->addToDeleteQueue( $self->license->id ) if defined $licenseId;
         $self->validationCode(0);
+        return 0;
     }
 
     return 1;
@@ -367,6 +375,7 @@ sub validateProcCount {
 			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
 			$self->addToDeleteQueue ( $self->license->id ) if defined $licenseId;
 			$self->validationCode(0);
+			return 0;
 		}
 	}
 	
@@ -385,9 +394,11 @@ sub validateEnvironmentMatch {
 			dlog("License environment DEVELOPMENT or different from server type!");
 			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
 			$self->validationCode(0);
+			return 0;
 		}
 	}
 	
+	dlog("Environment doesn't match, but recon is manual");
 	return 1;
 }
 
@@ -402,6 +413,7 @@ sub validatePhysicalCpuSerialMatch {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
             }
         }
     }
@@ -414,6 +426,7 @@ sub validatePhysicalCpuSerialMatch {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
             }
         }
     }
@@ -433,6 +446,7 @@ sub validateLparNameMatch{
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
             }
         }
     }
@@ -450,6 +464,7 @@ sub validateMachineTypeMatch {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
         }
     }
     
@@ -461,6 +476,7 @@ sub validateMachineTypeMatch {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
         }
     }
     
@@ -483,6 +499,7 @@ sub validateLicenseSoftwareMap {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
             }
         }
     }
@@ -502,6 +519,7 @@ sub validateMaintenanceExpiration {
                   if defined $reconcileId;
                 $self->addToDeleteQueue($licenseId) if defined $licenseId;
                 $self->validationCode(0);
+                return 0;
             }
         }
     }
@@ -522,6 +540,7 @@ sub validateTryAndBuy {
             if ( $isManual == 0 ) {
                 dlog("License is try and buy, adding to list to break");
                 $self->addToReconcilesToBreak($reconcileId);
+                return 0;
             }
         }
 
@@ -543,6 +562,7 @@ sub validateSubCapacity {
                 dlog("License is subcapacity, adding to list to break");
                 $self->addToReconcilesToBreak($reconcileId);
                 $self->validationCode(0);
+                return 0;
             }
         }
 
@@ -685,7 +705,7 @@ sub validateMipsGartnerMsu {
 		 dlog("Reconcile not validated, Gartner/MIPS/MSU");
 		 
          $self->validationCode(0);
-         $self->addToReconcilesToBreak($reconcileId);
+         $self->addToReconcilesToBreak($reconcileId) if defined ($reconcileId);
     }
     
     return $isValid;
@@ -699,12 +719,16 @@ sub validateProcessorChip {
             if ( $machineType eq 'WORKSTATION' ) {
                 $self->validationCode(0);
                 $self->addToReconcilesToBreak($reconcileId);
+                return 0;
             }
             elsif ( $isMachineLevel == 0 ) {
                 $self->validationCode(0);
                 $self->addToReconcilesToBreak($reconcileId);
+                return 0;
             }
         }
     }
+    
+    return 1;
 }
 1;
