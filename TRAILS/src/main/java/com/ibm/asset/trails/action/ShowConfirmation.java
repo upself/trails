@@ -416,7 +416,7 @@ public class ShowConfirmation extends AccountBaseAction {
 				lbAllGSLMLicenses = false;
 				break;
 			  }
-			if(per.equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=5){
+			if(per.equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=70){
 				lbAllGSLMLicenses = false;
 				break; 	}
 			if(per.equalsIgnoreCase("HWLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){

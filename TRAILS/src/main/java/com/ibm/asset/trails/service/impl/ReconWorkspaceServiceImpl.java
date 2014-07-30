@@ -339,7 +339,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					}
 					if(pRecon.getPer().equalsIgnoreCase("HWGARTMIPS") && llTemp.getCapacityType().getCode()!=70){
 						continue;    }
-					if(pRecon.getPer().equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=5){
+					if(pRecon.getPer().equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=70){
 						continue; 	}
 					if(pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
 						continue; 	}
