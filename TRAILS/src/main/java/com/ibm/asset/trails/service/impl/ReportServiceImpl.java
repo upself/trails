@@ -480,7 +480,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.owner as hwOwner "
 				+ ",h.country as hwCountry "
 				+ ",mt.type as hwAssetType "
-				+ ",hl.server as serverType "
+				+ ",hl.server_type as serverType "
 				+ ",hl.SPLA"
 				+ ",hl.virtual_flag"
 				+ ",hl.virtual_mobility_restriction"
@@ -730,7 +730,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,HL.server,HL.SPLA,cast(hl.SYSPLEX as VARCHAR(8)),HL.INTERNET_ICC_FLAG,H.MAST_PROCESSOR_TYPE,H.PROCESSOR_MANUFACTURER,H.PROCESSOR_MODEL,H.NBR_CORES_PER_CHIP,H.NBR_OF_CHIPS_MAX,H.SHARED,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
+						"SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,HL.server_type,HL.SPLA,cast(hl.SYSPLEX as VARCHAR(8)),HL.INTERNET_ICC_FLAG,H.MAST_PROCESSOR_TYPE,H.PROCESSOR_MANUFACTURER,H.PROCESSOR_MODEL,H.NBR_CORES_PER_CHIP,H.NBR_OF_CHIPS_MAX,H.SHARED,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
