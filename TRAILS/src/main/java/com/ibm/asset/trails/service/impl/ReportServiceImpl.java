@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -516,7 +515,7 @@ public class ReportServiceImpl implements ReportService {
 		
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from scope scop join schedule_f sf on sf.scope_id = scop.id "
                 + "where sf.customer_id = :customerId "
-                + "and sf.software_id = parentSi.id "
+                + "and sf.software_name = instSi.name "
                 + "and ( ( sf.level = 'PRODUCT' ) "
                 + "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
                 + "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
@@ -688,11 +687,17 @@ public class ReportServiceImpl implements ReportService {
 				}
 			}
 			lsbSql.append(" AND SF.Scope_Id IN (")
-					.append(lsbScopeSql)
-					.append(") ")
-					.append(" AND SF.STATUS_ID = 2 ")
-					.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
-							: "");
+			.append(lsbScopeSql)
+			.append(") ")
+			.append(" AND SF.STATUS_ID = 2 ")
+			.append(" and (\r\n"
+					+ "  sf.level = 'PRODUCT'\r\n"
+					+ " or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n"
+					+ " or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n"
+					+ " or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n"
+					+ " )")
+			.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
+					: "");
 		}
 		if (pbTitlesNotSpecifiedInContractScopeSearchChecked) {
 			lsbSql.append(
@@ -837,7 +842,14 @@ public class ReportServiceImpl implements ReportService {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(" ")
 						.append(lsBaseWhereClause)
-						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S WHERE SF.Customer_Id = :customerId AND SF.Software_Id = SI.Id AND S.Id = SF.Status_Id AND S.Description = 'ACTIVE') ");
+						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S WHERE SF.Customer_Id = :customerId AND SF.Software_Id = SI.Id AND S.Id = SF.Status_Id AND S.Description = 'ACTIVE'" +
+								" AND (\r\n" + 
+								"  sf.level = 'PRODUCT'\r\n" + 
+								" or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n" + 
+								" or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n" + 
+								" or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n" + 
+								" )" +
+								") ");
 			}
 		} else {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
