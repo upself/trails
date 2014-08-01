@@ -178,7 +178,7 @@ public class ReconServiceImpl implements ReconService {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
-						" from ScheduleF a where a.account =:account and a.productInfo.name =:swname order by " +
+						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.productInfo.name =:swname order by " +
 						" CASE WHEN  a.level='HOSTNAME' and a.hostname =:hostname THEN 1 ELSE " +
                         " CASE WHEN  a.level='HWBOX' and a.serial =:serial and a.machineType =:machineType THEN 2 ELSE " +
                         " CASE WHEN  a.level='HWOWNER' and  a.hwOwner =:owner THEN 3 ELSE " +
