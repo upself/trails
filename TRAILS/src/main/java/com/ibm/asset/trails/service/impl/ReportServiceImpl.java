@@ -70,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
 			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
-			"Owner", "Country", "Asset type","SPLA","Virtual Flag","Virtual Mobility restriction",
+			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
 			"NBR of Chips Max","Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
@@ -85,13 +85,13 @@ public class ReportServiceImpl implements ReportService {
 			"Reconciliation comments", "Reconciliation parent product",
 			"License account number", "Full product description",
 			"Catalog match", "License product name", "Version",
-			"Capacity type", "Quantity used", "Machine level",
+			"Capacity type","Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
 			"License serial number", "License owner", "SWCM ID",
 			"License last updated" };
 	private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
 	private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
-			"Machine type", "Hostname", "Asset type", "SPLA", "SysPlex",
+			"Machine type", "Hostname", "Asset type", "Server type", "SPLA", "SysPlex",
 			"Internet ACC Flag", "Processor Type", "Processor Manufacturer",
 			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
 			"SHARED", "Hardware Status", "Lpar Status", "Composite" };
@@ -104,7 +104,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
 	private final String[] LICENSE_COLUMN_HEADERS = { "Product name",
 			"Catalog match", "Full product description", "Capacity type",
-			"Total qty", "Available qty", "Expiration date", "PO number",
+			"Environment","Total qty", "Available qty", "Expiration date", "PO number",
 			"Serial number", "License owner", "SWCM ID", "Pool",
 			"Record date/time" };
 	private final String NON_WORKSTATION_ACCOUNTS_REPORT_NAME = "Non-workstation accounts with workstations report";
@@ -480,6 +480,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.owner as hwOwner "
 				+ ",h.country as hwCountry "
 				+ ",mt.type as hwAssetType "
+				+ ",hl.server as serverType "
 				+ ",hl.SPLA"
 				+ ",hl.virtual_flag"
 				+ ",hl.virtual_mobility_restriction"
@@ -540,6 +541,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",l.prod_name as licProdName "
 				+ ",l.version as licVersion "
 				+ ",CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description) "
+				+ ",l.environment as licEnvironment "
 				+ ",ul.used_quantity " + ",case when r.id is null then '' "
 				+ "when r.machine_level = 0 then 'No' " + "else 'Yes' end "
 				+ ", REPLACE(RTRIM(CHAR(DATE(L.Expire_Date), USA)), '/', '-') "
@@ -728,7 +730,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,HL.SPLA,cast(hl.SYSPLEX as VARCHAR(8)),HL.INTERNET_ICC_FLAG,H.MAST_PROCESSOR_TYPE,H.PROCESSOR_MANUFACTURER,H.PROCESSOR_MODEL,H.NBR_CORES_PER_CHIP,H.NBR_OF_CHIPS_MAX,H.SHARED,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
+						"SELECT H.Serial, MT.Name AS MT_Name, HL.Name AS HL_Name, MT.Type,HL.server,HL.SPLA,cast(hl.SYSPLEX as VARCHAR(8)),HL.INTERNET_ICC_FLAG,H.MAST_PROCESSOR_TYPE,H.PROCESSOR_MANUFACTURER,H.PROCESSOR_MODEL,H.NBR_CORES_PER_CHIP,H.NBR_OF_CHIPS_MAX,H.SHARED,H.Hardware_Status,HL.Lpar_Status, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END FROM EAADMIN.Hardware H LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Hardware_Id = H.Id LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Hardware_Lpar_Id = HL.Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id WHERE HL.Customer_Id = :customerId AND HL.Status = 'ACTIVE' ORDER BY H.Serial ASC")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
@@ -883,7 +885,7 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT COALESCE(SI.Name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.Software_Item SI ON SI.Id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
+		String lsBaseSelectAndFromClause = "SELECT COALESCE(SI.Name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.Software_Item SI ON SI.Id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
