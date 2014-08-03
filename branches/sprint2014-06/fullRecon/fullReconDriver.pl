@@ -143,6 +143,7 @@ ELSE 'Green' END
 ,h.owner as hwOwner
 ,h.country as hwCountry
 ,mt.type as hwAssetType
+,hl.server_type as Server_Type	
 ,hl.SPLA
 ,hl.VIRTUAL_FLAG
 ,hl.VIRTUAL_MOBILITY_RESTRICTION
@@ -203,6 +204,7 @@ when rt.is_manual = 1 then rt.name || '(MANUAL)' end
 ,l.prod_name as licProdName
 ,l.version as licVersion
 ,CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description)
+,l.environment as Environment
 ,ul.used_quantity
 ,case when r.id is null then ''
 when r.machine_level = 0 then 'No' else 'Yes' end
