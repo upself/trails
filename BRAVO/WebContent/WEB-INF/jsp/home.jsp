@@ -148,6 +148,7 @@
 												<td>&nbsp;</td>
 											</tr>
 											<tr>
+												<td></td>
 												<td><html:submit property="type" value="Search"
 														styleClass="ibm-btn-view-pri" /></td>
 

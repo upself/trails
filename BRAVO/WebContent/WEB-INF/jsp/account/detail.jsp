@@ -245,9 +245,9 @@ function popupTrailsReports(accountId) {
 										<tr>
 											<th>LPAR Name/Serial Search:&nbsp;<a
 												class="ibm-question-link" href="help/help.do"></a></th>
-											<th>Software Search: <img
-												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
-												width="14" height="14" alt="contextual field help icon" /></th>
+<!-- 											<th>Software Search: <img -->
+<!-- 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif" -->
+<!-- 												width="14" height="14" alt="contextual field help icon" /></th> -->
 										</tr>
 									</thead>
 									<tbody>
@@ -260,14 +260,14 @@ function popupTrailsReports(accountId) {
 													<span class="button-blue" id="smallbutton"><html:submit
 															property="type" value="Search" /></span>
 												</html:form></td>
-											<td><html:form action="/lpar/search">
-													<html:hidden property="context" value="lpar" />
-													<html:hidden property="accountId"
-														value="${account.customer.accountNumber}" />
-													<html:text property="search" styleClass="inputshortish" />
-													<span class="button-blue" id="smallbutton"><html:submit
-															property="type" value="Search" /></span>
-												</html:form></td>
+<%-- 											<td><html:form action="/lpar/search"> --%>
+<%-- 													<html:hidden property="context" value="lpar" /> --%>
+<%-- 													<html:hidden property="accountId" --%>
+<%-- 														value="${account.customer.accountNumber}" /> --%>
+<%-- 													<html:text property="search" styleClass="inputshortish" /> --%>
+<%-- 													<span class="button-blue" id="smallbutton"><html:submit --%>
+<%-- 															property="type" value="Search" /></span> --%>
+<%-- 												</html:form></td> --%>
 										</tr>
 										<tr>
 											<td>
@@ -275,11 +275,11 @@ function popupTrailsReports(accountId) {
 													<html:errors property="search" />
 												</div>
 											</td>
-											<td>
-												<div class="invalid">
-													<html:errors property="search" />
-												</div>
-											</td>
+<!-- 											<td> -->
+<!-- 												<div class="invalid"> -->
+<%-- 													<html:errors property="search" /> --%>
+<!-- 												</div> -->
+<!-- 											</td> -->
 										</tr>
 									</tbody>
 								</table>
@@ -324,17 +324,19 @@ function popupTrailsReports(accountId) {
 									Composite List <a class="ibm-question-link"
 										href="BRAVO/help/help.do"></a>
 								</h3>
-								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
-									id="small">
-									<tr>
-										<td></td>
-										<td width="1%" nowrap="nowrap"><html:link
-												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
+<!-- 								<table -->
+<!-- 									class="ibm-data-table ibm-sortable-table ibm-alternate-two" -->
+<!-- 									id="small"> -->
+<!-- 									<tr> -->
+<%-- 										<td width="1%" nowrap="nowrap"><html:link --%>
+<%-- 												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all"> --%>
+<!-- 													Show All -->
+<%-- 											</html:link></td> --%>
+<!-- 									</tr> -->
+<!-- 								</table> -->
+								<html:link page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
 													Show All
-											</html:link></td>
-									</tr>
-								</table>
+											</html:link>
 								<display:table name="composites" requestURI=""
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="tall" defaultsort="1" defaultorder="ascending">

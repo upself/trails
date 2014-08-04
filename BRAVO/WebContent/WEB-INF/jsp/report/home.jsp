@@ -126,7 +126,7 @@
 									
 									<!-- Mainframe Scan Report -->
 									<li><a class="ibm-add1-link"
-										href="/BRAVO/download/mainframeScan.tsv?name=mainframeScan">Department Scan Reports</a>
+										href="/BRAVO/download/mainframeScan.tsv?name=mainframeScan">Mainframe Scan Reports</a>
 									</li>
 								</ul>
 					</div>

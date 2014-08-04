@@ -129,9 +129,6 @@
 
 							</c:otherwise>
 						</c:choose>
-
-
-						<h1>Select Missing Software</h1>
 					</div>
 				</div>
 				<!-- CONTENT_BODY -->
