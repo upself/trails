@@ -121,7 +121,7 @@
 									
 									<!-- Discrepancy Summary report -->
 									<li><a class="ibm-add1-link"
-										href="discrepancySummary.do">Mainframe Scan Report</a>
+										href="discrepancySummary.do">Discrepancy Summary Report</a>
 									</li>
 									
 									<!-- Mainframe Scan Report -->
