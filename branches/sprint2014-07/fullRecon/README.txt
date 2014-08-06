@@ -30,6 +30,9 @@ NOTE: keep the full path of the script after command perl.
 4. launch the script with parameters. 
 There are 2 parameters for this script for optional selection 
 'perl /opt/report/bin/fullRecon/fullReconDriver.pl [-r regionName] [-t accountQty]'
+e.g. 
+nohup perl /opt/report/bin/fullRecon/fullReconDriver.pl -r US_IMT -t 2 &
+
 
 4.1 regionName 
 - could be any of following string. Default regionName will be US_IMT.
