@@ -129,6 +129,9 @@
 												<td></td>
 											</tr>
 											<tr>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
 												<td></td>
 												<td nowrap="nowrap"><span class="button-blue"> <html:submit
 															property="action" value="Upload File" />
