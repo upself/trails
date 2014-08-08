@@ -104,83 +104,98 @@
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
-							
-						<h1>Machine Type Search</h1>
-						<br />
-						<html:img alt="Scenic overlook telescope"
-							page="/images/p1_w3v8_19.jpg" align="left" hspace="10"
-							vspace="10" />
-						<br />
-						<p style="color: #c60" class="caption">Machine Type Search</p>
-						<br /> Navigate using the toolbar to the left or <b><font
-							style="color: #7a3" class="caption">search</font></b> below.<br /> <br
-							clear="all" />
 
-						<req:isUserInRole role="com.ibm.ea.bravo.user">
-							<html:form action="/search">
-								<html:hidden property="context" value="machineType" />
-								<table border="0" width="80%" cellspacing="10" cellpadding="0">
-									<tbody>
-										<tr align="center">
-											<td nowrap="nowrap">
-												<div class="invalid">
-													<html:errors property="search" />
-												</div>
-											</td>
-										</tr>
-										<tr align="center">
-											<td nowrap="nowrap"><html:text property="search"
-													styleClass="input" /></td>
-										</tr>
-										<tr align="center">
-											<td nowrap="nowrap"><span class="button-blue"><html:submit
-														property="type" value="Name" /></span> <span class="button-blue"><html:submit
-														property="type" value="Type" /></span> <span class="button-blue"><html:submit
-														property="type" value="Definition" /></span></td>
-										</tr>
-									</tbody>
+								<html:img alt="Scenic overlook telescope"
+									page="/images/p1_w3v8_19.jpg" align="left" hspace="10"
+									vspace="10" />
+								<br />
+								<p style="color: #c60" class="caption">Machine Type Search</p>
+								<br /> Navigate using the toolbar to the left or <b><font
+									style="color: #7a3" class="caption">search</font></b> below.<br />
+								<br clear="all" />
+
+								<req:isUserInRole role="com.ibm.ea.bravo.user">
+									<html:form action="/search">
+										<html:hidden property="context" value="machineType" />
+										<table border="0" width="80%" cellspacing="10" cellpadding="0">
+											<tbody>
+												<tr align="center">
+													<td nowrap="nowrap">
+														<div class="invalid">
+															<html:errors property="search" />
+														</div>
+													</td>
+												</tr>
+												<tr align="center">
+													<td nowrap="nowrap"><html:text property="search"
+															styleClass="input" /></td>
+												</tr>
+												<tr align="center">
+													<td nowrap="nowrap"><span class="button-blue"><html:submit
+																property="type" value="Name" /></span> <span
+														class="button-blue"><html:submit property="type"
+																value="Type" /></span> <span class="button-blue"><html:submit
+																property="type" value="Definition" /></span></td>
+												</tr>
+											</tbody>
+										</table>
+									</html:form>
+								</req:isUserInRole>
+								
+								<br />
+								<br />
+								<table border="0" cellpadding="2" cellspacing="0" width="100%">
+									<tr>
+										<td width="33%"><font style="color: #7a3" class="caption">Quick
+											Links:</font></td>
+										<td width="33%" style="color: #7a3" class="caption">Quick
+											Search:</td>
+										<td width="33%" style="color: #7a3" class="caption">Help
+											Contacts:</td>
+									</tr>
+									<tr>
+										<td colspan=3>
+											<div class="hrule-dots"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><img alt=""
+											src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif"
+											width="13" height="13" /> <html:link page="/access/init.do">Register for access to BRAVO</html:link>
+											<br /> <br /></td>
+										<td><img alt=""
+											src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=all">All Active Types</html:link>
+										</td>
+										<td>Please direct all inquires to:<br />
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><img alt=""
+											src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=all">All Records</html:link>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><img alt=""
+											src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=recentadd">Recently Added Types</html:link>
+										</td>
+										<td></td>
+									</tr>
 								</table>
-							</html:form>
-						</req:isUserInRole>
-						<br /> <br /> <br clear="all" />
-						<table border="0" cellpadding="2" cellspacing="0" width="100%">
-							<tr>
-								<td width="33%"><font style="color: #7a3" class="caption">Quick
-									Links:</font></td>
-								<td width="33%" />
-								<td width="33%" />
-							</tr>
-							<tr>
-								<td colspan="3">
-									<div class="hrule-dots"></div>
-								</td>
-							</tr>
-							<tr>
-								<td><img alt=""
-									src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif"
-									width="13" height="13" /> <html:link page="/access/init.do">Register for access to BRAVO</html:link>
-									<br /> <br /></td>
-								<td />
-								<td />
-							</tr>
-						</table>
-						<br /> <br />
+								<br /> <br />
 
+							</div>
+
+						</div>
 					</div>
-					<!-- 					FEATURES_BEGIN -->
-					<!-- 					<div id="ibm-content-sidebar"> -->
-					<!-- 						<div id="ibm-contact-module"> -->
-					<!-- 							IBM Contact Module -->
-					<!-- 						</div> -->
-					<!-- 						<div id="ibm-merchandising-module"> -->
-					<!-- 							IBM Web Merchandising Module -->
-					<!-- 						</div> -->
-					<!-- 						%%sidebarspace%% -->
-					<!-- 					</div> -->
-					<!-- 					FEATURES_END -->
-					<!-- CONTENT_BODY_END -->
-				</div>
-				</div>
 				</div>
 			</div>
 			<!-- CONTENT_END -->
