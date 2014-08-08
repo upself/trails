@@ -492,7 +492,7 @@ function popupTrailsReports(accountId) {
 
 									<!-- Create Hardware Discrepancy -->
 									<li><a class="ibm-add1-link"
-										href="/BRAVO//hardware/lpar/create.do?accountId=${account.customer.accountNumber}">Create
+										href="/BRAVO/hardware/lpar/create.do?accountId=${account.customer.accountNumber}">Create
 											HW LPAR Discrepancy</a></li>
 
 									<!-- Add New Contact -->

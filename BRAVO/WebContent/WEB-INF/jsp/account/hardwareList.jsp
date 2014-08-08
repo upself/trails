@@ -296,7 +296,7 @@ function popupTrailsReports(accountId) {
 									<c:if test="${isAPMMAccount}">
 										<!-- Upload authorized Assets -->
 										<li><a class="ibm-delete-link"
-											href="/BRAVO//upload/authorizedAssets.do?id=${account.customer.accountNumber}">Upload
+											href="/BRAVO/upload/authorizedAssets.do?id=${account.customer.accountNumber}">Upload
 												authorized Assets</a></li>
 										<br />
 									</c:if>

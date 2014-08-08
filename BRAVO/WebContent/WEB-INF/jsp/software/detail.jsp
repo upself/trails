@@ -353,7 +353,7 @@
 								<ul class="ibm-link-list">
 									<!-- Global Discrepancies Report -->
 									<li><a class="ibm-download-link"
-										href="/BRAVO//download/${software.software.softwareName} on ${account.customer.accountNumber}.tsv?name=accountSoftware&softwareId=${software.software.softwareId}&accountId=${account.customer.accountNumber}">All
+										href="/BRAVO/download/${software.software.softwareName} on ${account.customer.accountNumber}.tsv?name=accountSoftware&softwareId=${software.software.softwareId}&accountId=${account.customer.accountNumber}">All
 											LPARs With This Software</a></li>
 
 								</ul>

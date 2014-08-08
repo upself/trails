@@ -153,7 +153,7 @@
 								<ul class="ibm-link-list">
 									<!-- Create Machine Type -->
 									<li><a class="ibm-add1-link"
-										href="/BRAVO//admin/machinetype/create.do?context=list&search=${search}&searchtype=${searchtype}&id=">Create
+										href="/BRAVO/admin/machinetype/create.do?context=list&search=${search}&searchtype=${searchtype}&id=">Create
 											New Machine Type</a></li>
 								</ul>
 							</div>
