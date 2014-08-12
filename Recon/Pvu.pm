@@ -205,7 +205,9 @@ select
 $query.='      ( aus.open = 1 )
                  or
 ' if ( uc($action) eq 'ADD' );
-$query.='					( ( r.reconcile_type_id in ( 1, 5 ) ) and ( ul.capacity_type_id = 17 ) )
+$query.='					( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id = 17 ) )
+					or
+							( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id = 6 ) )
 			)';
 			
  dlog($query);
