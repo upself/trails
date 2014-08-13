@@ -99,11 +99,12 @@
 						<br /> <br /> <br />
 						<display:table cellspacing="2" cellpadding="0" name="list"
 							id="row" requestURI=""
-							class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+							class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-table-scroll"
 							defaultsort="2" defaultorder="ascending">
 							<display:setProperty name="basic.empty.showtable" value="true" />
 							<display:column title="Status" property="statusImage"
 								headerClass="blue-med" sortable="true" />
+<!-- 								 style="background-color:#00649D;" -->
 							<%
 								boolean lbAdminRole = false;
 							%>

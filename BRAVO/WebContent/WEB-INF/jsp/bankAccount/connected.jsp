@@ -91,7 +91,7 @@
 							<div class="ibm-col-1-1">
 						<br /> <br /> <br />
 						<display:table cellspacing="2" cellpadding="0" name="list"
-							id="row" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two" defaultsort="2"
+							id="row" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-table-scroll" defaultsort="2"
 							defaultorder="ascending">
 							<display:setProperty name="basic.empty.showtable" value="true" />
 							<display:column title="Status" property="statusImage"
