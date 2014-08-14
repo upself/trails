@@ -21,6 +21,7 @@ sub new {
         ,_partMIPS => undef
         ,_partMSU => undef
         ,_partGartnerMIPS => undef
+        ,_effectiveThreads => undef
         ,_backupMethod => undef
         ,_clusterType => undef
         ,_vMobilRestrict => undef
@@ -129,6 +130,13 @@ sub equals {
         $equal = 1 if $self->partGartnerMIPS eq $object->partGartnerMIPS;
     }
     $equal = 1 if (!defined $self->partGartnerMIPS && !defined $object->partGartnerMIPS);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->effectiveThreads && defined $object->effectiveThreads) {
+        $equal = 1 if $self->effectiveThreads eq $object->effectiveThreads;
+    }
+    $equal = 1 if (!defined $self->effectiveThreads && !defined $object->effectiveThreads);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -264,6 +272,12 @@ sub partGartnerMIPS {
     my $self = shift;
     $self->{_partGartnerMIPS} = shift if scalar @_ == 1;
     return $self->{_partGartnerMIPS};
+}
+
+sub effectiveThreads {
+    my $self = shift;
+    $self->{_effectiveThreads} = shift if scalar @_ == 1;
+    return $self->{_effectiveThreads};
 }
 
 sub backupMethod {
@@ -404,6 +418,11 @@ sub toString {
         $s .= $self->{_partGartnerMIPS};
     }
     $s .= ",";
+    $s .= "effectiveThreads=";
+    if (defined $self->{_effectiveThreads}) {
+        $s .= $self->{_effectiveThreads};
+    }
+    $s .= ",";
     $s .= "backupMethod=";
     if (defined $self->{_backupMethod}) {
         $s .= $self->{_backupMethod};
@@ -481,6 +500,7 @@ sub save {
             ,$self->partMIPS
             ,$self->partMSU
             ,$self->partGartnerMIPS
+            ,$self->effectiveThreads
             ,$self->backupMethod
             ,$self->clusterType
             ,$self->vMobilRestrict
@@ -511,6 +531,7 @@ sub save {
             ,$self->partMIPS
             ,$self->partMSU
             ,$self->partGartnerMIPS
+            ,$self->effectiveThreads
             ,$self->backupMethod
             ,$self->clusterType
             ,$self->vMobilRestrict
@@ -545,6 +566,7 @@ sub queryInsert {
             ,part_mips
             ,part_msu
             ,PART_GARTNER_MIPS
+            ,EFFECTIVE_THREADS
             ,BACKUPMETHOD
             ,CLUSTER_TYPE
             ,VIRTUAL_MOBILITY_RESTRICTION
@@ -554,6 +576,7 @@ sub queryInsert {
             ,update_date
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -597,6 +620,7 @@ sub queryUpdate {
             ,part_mips = ?
             ,part_msu = ?
             ,PART_GARTNER_MIPS = ?
+            ,EFFECTIVE_THREADS = ?
             ,BACKUPMETHOD = ?
             ,CLUSTER_TYPE = ?
             ,VIRTUAL_MOBILITY_RESTRICTION = ?
@@ -650,6 +674,7 @@ sub getById {
     my $partMIPS;
     my $partMSU;
     my $partGartnerMIPS;
+    my $effectiveThreads;
     my $backupMethod;
     my $clusterType;
     my $vMobilRestrict;
@@ -672,6 +697,7 @@ sub getById {
         ,\$partMIPS
         ,\$partMSU
         ,\$partGartnerMIPS
+        ,\$effectiveThreads
         ,\$backupMethod
         ,\$clusterType
         ,\$vMobilRestrict
@@ -699,6 +725,7 @@ sub getById {
     $self->partMIPS($partMIPS);
     $self->partMSU($partMSU);
     $self->partGartnerMIPS($partGartnerMIPS);
+    $self->effectiveThreads($effectiveThreads);
     $self->backupMethod($backupMethod);
     $self->clusterType($clusterType);
     $self->vMobilRestrict($vMobilRestrict);
@@ -726,6 +753,7 @@ sub queryGetById {
             ,part_mips
             ,part_msu
             ,PART_GARTNER_MIPS
+            ,EFFECTIVE_THREADS
             ,BACKUPMETHOD
             ,CLUSTER_TYPE
             ,VIRTUAL_MOBILITY_RESTRICTION

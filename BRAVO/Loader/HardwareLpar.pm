@@ -331,6 +331,7 @@ sub buildBravoHardwareLpar {
 	$bravoHardwareLpar->partMIPS( $self->stagingHardwareLpar->partMIPS );
 	$bravoHardwareLpar->partMSU( $self->stagingHardwareLpar->partMSU );
 	$bravoHardwareLpar->partGartnerMIPS( $self->stagingHardwareLpar->partGartnerMIPS );
+	$bravoHardwareLpar->effectiveThreads( $self->stagingHardwareLpar->effectiveThreads );
 	$bravoHardwareLpar->spla( $self->stagingHardwareLpar->spla );
 	$bravoHardwareLpar->sysplex( $self->stagingHardwareLpar->sysplex );
 	$bravoHardwareLpar->internetIccFlag(

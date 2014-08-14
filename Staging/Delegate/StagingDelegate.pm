@@ -682,6 +682,7 @@ sub queryHardwareData {
             spla
             sysplex
             internetIccFlag
+            effectiveThreads
             backupMethod
             clusterType
             vMobilRestrict
@@ -751,6 +752,7 @@ sub queryHardwareData {
             ,b.spla
             ,b.sysplex
             ,b.internet_icc_flag
+            ,b.effective_threads
             ,b.backupmethod
             ,b.cluster_type
             ,b.virtual_mobility_restriction

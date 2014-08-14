@@ -246,6 +246,7 @@ sub getData {
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
         $hardwareLpar->partGartnerMIPS( $rec{partGartnerMIPS} );
+        $hardwareLPar->effectiveThreads( $rec{effectiveThreads}  );
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
@@ -344,6 +345,7 @@ sub queryATPData {
             shared
             nbrCoresPerChip
             nbrOfChipsMax
+            effectiveThreads
             spla
             sysplex
             internetIccFlag
@@ -402,6 +404,7 @@ sub queryATPData {
 			,ltrim(rtrim(SHARED))
 			,CAST(NBR_CORES_PER_CHIP AS DECIMAL(3,0))
 			,CAST(NBR_OF_CHIPS_MAX AS DECIMAL(4,0))
+			,CAST(EFFECTIVE_THREADS AS DECIMAL(14,3))
 			,ltrim(rtrim(SPLA))
 			,ltrim(rtrim(SYSPLEX))
 			,ltrim(rtrim(INTERNET_ACC_FLAG ))
@@ -467,6 +470,7 @@ sub queryATPDeltaData {
             shared
             nbrCoresPerChip
             nbrOfChipsMax
+            effectiveThreads
             spla
             sysplex
             internetIccFlag
@@ -523,8 +527,9 @@ sub queryATPDeltaData {
             ,ltrim(rtrim(PROCESSOR_MANUFACTURER))
 			,ltrim(rtrim(PROCESSOR_MODEL))
 			,ltrim(rtrim(SHARED))
-			,CAST(NBR_CORES_PER_CHIP AS FLOAT)
-			,CAST(NBR_OF_CHIPS_MAX AS FLOAT)
+			,CAST(NBR_CORES_PER_CHIP AS DECIMAL(3,0))
+			,CAST(NBR_OF_CHIPS_MAX AS DECIMAL(4,0))
+			,CAST(EFFECTIVE_THREADS AS DECIMAL(14,3))
 			,ltrim(rtrim(SPLA))
 			,ltrim(rtrim(SYSPLEX))
 			,ltrim(rtrim(INTERNET_ACC_FLAG ))

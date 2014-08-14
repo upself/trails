@@ -26,6 +26,7 @@
 		sql-name="part_mips" />
 	<property name="partMSU" type="scalar" equals="true" sql-name="part_msu" />
 	<property name="partGartnerMIPS" type="scalar" equals="true" sql-name="PART_GARTNER_MIPS" />
+	<property name="effectiveThreads" type="scalar" equals="true" sql-name="EFFECTIVE_THREADS" />
 	<property name="backupMethod" type="scalar" equals="true" sql-name="BACKUPMETHOD" />
 	<property name="clusterType" type="scalar" equals="true" sql-name="CLUSTER_TYPE" />
 	<property name="vMobilRestrict" type="scalar" equals="true" sql-name="VIRTUAL_MOBILITY_RESTRICTION" />

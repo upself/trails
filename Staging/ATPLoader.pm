@@ -334,6 +334,7 @@ sub doDelta {
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
         $hardwareLpar->partGartnerMIPS( $rec{partGartnerMIPS} );
+        $hardwareLpar->effectiveThreads( $rec{effectiveThreads} );
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
