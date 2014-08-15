@@ -12,6 +12,7 @@
 			where 
 				a.customer = :customerId
 				and a.status='ACTIVE'
+				and a.lparStatus = 'ACTIVE'
 				and ( b.hardwareStatus is null
 				or b.hardwareStatus = '' or b.hardwareStatus = 'ACTIVE')
 				and a.softwareLpar is not null
@@ -79,6 +80,7 @@
 			where 
 				l.customer = :customerId
 				and l.status = 'ACTIVE'
+				and l.lparStatus = 'ACTIVE'
 				and (h.hardwareStatus is null or h.hardwareStatus = ''
 				or h.hardwareStatus = 'ACTIVE')
 		]]>
