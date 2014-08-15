@@ -39,6 +39,8 @@ public class HardwareLpar {
 	
 	private Integer partMSU;
 	
+	private BigDecimal effectiveThreads;
+	
 	private String lparStatus;
 	
 	private String spla;
@@ -97,6 +99,14 @@ public class HardwareLpar {
 	
 	public void setPartMSU(Integer partMSU) {
 		this.partMSU = partMSU;
+	}
+
+	public BigDecimal getEffectiveThreads() {
+		return effectiveThreads;
+	}
+
+	public void setEffectiveThreads(BigDecimal effectiveThreads) {
+		this.effectiveThreads = effectiveThreads;
 	}
 
 	public Customer getCustomer() {

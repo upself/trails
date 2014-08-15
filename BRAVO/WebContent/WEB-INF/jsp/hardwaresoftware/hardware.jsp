@@ -92,6 +92,7 @@
 			<th class="blue-med">Name</th>
 			<th class="blue-med">Server Type</th>
 			<th class="blue-med">Eff Proc</th>
+			<th class="blue-med">Eff Thr</th>
 			<th class="blue-med">Sysplex</th>
 			<th class="blue-med">SPLA</th>
 			<th class="blue-med">Internet Acc</th>
@@ -140,6 +141,8 @@
 								value="${lpar.hardwareLpar.hardware.serverType}" /> </font></td>
 					<td><font class="orange-dark"><c:out
 								value="${lpar.hardwareLpar.hardwareLparEff.processorCount}" /> </font></td>
+					<td><font class="orange-dark"><c:out
+								value="${lpar.hardwareLpar.effectiveThreads}" /> </font></td>
 					<td><font class="orange-dark"><c:out
 								value="${lpar.hardwareLpar.sysplex}" /> </font></td>
 					<td><font class="orange-dark"><c:out

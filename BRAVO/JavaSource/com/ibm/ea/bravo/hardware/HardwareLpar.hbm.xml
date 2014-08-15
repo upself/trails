@@ -65,6 +65,9 @@
         <property name="partMSU" column="PART_MSU"
             type="integer" />
             
+        <property name="effectiveThreads" column="EFFECTIVE_THREADS"
+            type="java.math.BigDecimal" /> 
+            
 		<join table="HW_SW_COMPOSITE" optional="true">
 			<key column="HARDWARE_LPAR_ID" unique="true" />
 			<many-to-one name="softwareLpar" column="SOFTWARE_LPAR_ID"

@@ -58,6 +58,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Scantime Date"
 		,"SW Processor Count"
 		,"HW Processor Count"
+		,"Effective Threads Count"
 		,"HW_EXT_ID"
 		,"SW_EXT_ID"
 		,"HW_TI_ID"

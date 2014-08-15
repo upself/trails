@@ -98,6 +98,8 @@ public class FormHardware extends FormBase {
 	
 	private Integer partMSU;
 	
+	private BigDecimal effectiveThreads;
+	
 	private String lparStatus;
 	
 	private String lparStatusIcon;
@@ -164,6 +166,14 @@ public class FormHardware extends FormBase {
 
 	public void setPartMSU(Integer partMSU) {
 		this.partMSU = partMSU;
+	}
+
+	public BigDecimal getEffectiveThreads() {
+		return effectiveThreads;
+	}
+
+	public void setEffectiveThreads(BigDecimal effectiveThreads) {
+		this.effectiveThreads = effectiveThreads;
 	}
 
 	public Integer getChips() {
@@ -289,7 +299,8 @@ public class FormHardware extends FormBase {
 				this.country = hardwareLpar.getHardware().getCountry();
 				this.processorCount = hardwareLpar.getHardware()
 						.getProcessorCount();
-				this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();
+				//this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();
+				if(hardwareLpar.getHardwareLparEff() !=null) {this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();}
 				this.chips = hardwareLpar.getHardware().getChips();
 				this.owner = hardwareLpar.getHardware().getOwner();
 				this.serverType = hardwareLpar.getServerType();
@@ -302,6 +313,7 @@ public class FormHardware extends FormBase {
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
 				this.cpuGartnerMIPS = hardwareLpar.getHardware().getCpuGartnerMIPS();
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
+				this.effectiveThreads = hardwareLpar.getEffectiveThreads();
 				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
 			}
 
