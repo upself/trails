@@ -169,6 +169,7 @@ ELSE 'Green' END
 ,h.processor_count as hwProcCount
 ,h.chips as hwChips
 ,case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount
+,hl.EFFECTIVE_THREADS
 ,case when ibmb.id is not null then
 COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and
 (case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then 'SINGLE-CORE'
