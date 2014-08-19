@@ -419,10 +419,10 @@ my $PWD_UNIX_COMMAND = "pwd";
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
 
 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
-my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX                   = 0;#For example: 'TRAILS'
-my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX               = 1;#For example: 'TRAILS'
-my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX                  = 2;#For example: 'eaadmin'
-my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX                = 3;#For example: 'Gr77nday'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX               = 0;#For example: 'TRAILS'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX                   = 1;#For example: 'trails.name'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX                  = 2;#For example: 'trails.user'
+my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_PASSWORD_INDEX                = 3;#For example: 'trails.password'
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_LOCATED_SERVER_INDEX          = 4;#For example: 'dst20lp05.boulder.ibm.com'
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_LIST_INDEX   = 5;#For example: 'liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_DBA_NOTIFY_EMAIL_SWITCH_INDEX = 6;#For example: 'Y' - means turn no the DBA notify email function or 'N' - means turn off the DBA notify email function
@@ -2599,17 +2599,14 @@ sub eventRuleCheck{
 				   foreach $monitoringDBDefinition(@monitoringDBsDefinitionArray){
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Definition: {$monitoringDBDefinition}\n";
 				     my @monitoringDBDefinitionArray = split(/\~/,$monitoringDBDefinition);
-				     my $monitoringDBAlias = trim($monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX]);#For example: 'TRAILS'
-                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Alias: {$monitoringDBAlias}\n";
-				     my $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX];#For example: 'trails.name'
+				     my $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX];#For example: 'trails.name'
 				     my $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'TRAILS'
-				     my $monitoringDBRealName = trim($monitoringDBtmp2);#For example: 'TRAILS'
-                               
-                     if ( $monitoringDBRealName eq "TRAILS" ){ # In HME config, it was TRAILSPD. In connection config, it just says TRAILS. Nasty workaroud here.
-					   $monitoringDBRealName.="DB";
-				     }
+				     my $monitoringDBAlias = trim($monitoringDBtmp2);#For example: 'TRAILS'
+                     print LOG "Database Exception Status Check Monitoring - The Monitoring Database Alias: {$monitoringDBAlias}\n";
+				     my $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX];#For example: 'TRAILSPD'
+				     my $monitoringDBRealName = trim($monitoringDBtmp);#For example: 'TRAILS'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Real Name: {$monitoringDBRealName}\n";
-				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX];#For example: 'trails.name'
+				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX];#For example: 'trails.user'
 				     $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'eaadmin'
 				     my $monitoringDBUserId = trim($monitoringDBtmp2);#For example: 'eaadmin'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database UserId: {$monitoringDBUserId}\n";
