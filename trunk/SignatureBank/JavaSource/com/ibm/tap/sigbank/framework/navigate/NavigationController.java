@@ -68,6 +68,8 @@ public class NavigationController extends BaseAction implements Controller {
 	public static final String uploadSignaturesLink = "/UploadSignatures.do";
 
 	public static final String templatesLink = "/Templates.do";
+	
+	public static final String uploadCOTGuidLink = "/UploadCOTGuid.do";
 
 	// Bank Account Links
 	public static final String connectedLink = "/Connected.do";
@@ -159,6 +161,8 @@ public class NavigationController extends BaseAction implements Controller {
 		uploadVector
 				.add(getNavigationItem(templatesLink, "Templates", request));
 		uploadNavigationItem.setChildren(uploadVector);
+		uploadVector.add(getNavigationItem(uploadCOTGuidLink, "COT GUID",
+				request));
 
 		// Bank Account Link
 		/*

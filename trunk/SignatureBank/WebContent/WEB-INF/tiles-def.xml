@@ -197,6 +197,11 @@
 	<definition name=".signature.upload" extends=".basic.layout">
 		<put name="content" value="/WEB-INF/jsp/admin/signature/UploadSignature.jsp" />
 	</definition>
+	
+	<!-- COT GUID upload -->
+	<definition name=".cotguid.upload" extends=".basic.layout">
+		<put name="content" value="/WEB-INF/jsp/admin/report/UploadCOTGuid.jsp" />
+	</definition>
 
 	<!-- Connected Bank Account -->
 	<definition name=".connected.bank.account.admin" extends=".basic.layout">

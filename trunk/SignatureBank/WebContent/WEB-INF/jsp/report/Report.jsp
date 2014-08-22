@@ -45,6 +45,12 @@ management.</p>
 		<td>- A Report of the Signatures and Environments they made
 		matches.</td>
 	</tr>
+		<tr>
+		<td><div class="download-link"><html:link page="/reports/COTProductReport.tsv">Component Only Product</html:link>
+		</div></td>
+		<td>- A Report of Component Only Table Products from swkbt to Sigbank
+		.</td>
+	</tr>
 </table>
 
 

@@ -35,7 +35,7 @@ product.</p>
 	<display:caption>Assigned Software Filters</display:caption>
 	<display:column title="Status" property="statusImage"
 		headerClass="blue-med" />
-	<display:column title="Filter Name" property="softwareName"
+	<display:column title="Filter Name" property="softwareName" style="white-space:pre;"
 		headerClass="blue-med" />
 	<display:column title="Filter Version" property="softwareVersion"
 		headerClass="blue-med" />

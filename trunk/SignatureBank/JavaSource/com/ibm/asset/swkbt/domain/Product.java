@@ -43,6 +43,7 @@ import com.ibm.tap.sigbank.framework.common.Constants;
 		@NamedQuery(name = "productByManufacturer", query = "FROM Product WHERE deleted!=1 and manufacturer= :manufacturer order by upper(name)"),
 		@NamedQuery(name = "productBySoftwareCategory", query = "FROM Product WHERE productInfo.softwareCategory = :softwareCategory"),
 		@NamedQuery(name = "searchProductByName", query = "FROM Product WHERE deleted!=1 and name !='UNKNOWN' and upper(name) like :search order by upper(name)"),
+		@NamedQuery(name = "searchProductByGuid", query = "FROM Product WHERE guid=:guid order by upper(name)"),
 		@NamedQuery(name = "searchProductByNameAndCategory", query = "FROM Product WHERE deleted!=1 and name !='UNKNOWN' and productInfo.softwareCategory.softwareCategoryId = :softwareCategoryId and upper(name) like :search order by upper(name)"),
 		@NamedQuery(name = "searchProductByNameAndManufacturer", query = "FROM Product WHERE deleted!=1 and name !='UNKNOWN' and  manufacturer.id= :manufacturerId and upper(name) like :search order by upper(name)"),
 		@NamedQuery(name = "searchProductByNameManufacturerCategory", query = "FROM Product WHERE deleted!=1 and name !='UNKNOWN' and  manufacturer.id= :manufacturerId and productInfo.softwareCategory.softwareCategoryId = :softwareCategoryId and upper(name) like :search order by upper(name)"),

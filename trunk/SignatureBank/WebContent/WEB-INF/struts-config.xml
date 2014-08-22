@@ -419,6 +419,22 @@
 			<forward name="success" path=".templates" />
 		</action>
 		
+		<action path="/UploadCOTGuid"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="cotguid">
+			<forward name="success" path=".cotguid.upload" />
+		</action>
+
+		<action path="/UploadCOTGuidSave"
+			type="com.ibm.tap.sigbank.upload.ActionAdministrationLoader"
+			parameter="cotGuidSave" name="fileLoaderForm" scope="request"
+			validate="false" input=".cotguid.upload">
+			<forward name="success" path="/UploadCOTGuid.do"
+				redirect="true">
+			</forward>
+			<forward name="error" path=".cotguid.upload" />
+		</action>
+		
 		<action path="/Reports" type="com.ibm.tap.sigbank.reports.ActionReport"
 			parameter="report">
 			<forward name="edit" path=".report.admin"></forward>

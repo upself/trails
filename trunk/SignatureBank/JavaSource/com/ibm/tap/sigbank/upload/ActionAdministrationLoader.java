@@ -97,6 +97,20 @@ public class ActionAdministrationLoader extends BaseAction {
 
 		return mapping.findForward(Constants.SUCCESS);
 	}
+	
+	public ActionForward cotguid(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+
+		UserContainer user = loadUser(request);
+		if (!user.isAdminAccess()) {
+			throw new InvalidAccessException();
+		}
+
+		user.setLevelOneOpenLink(NavigationController.uploadLink);
+
+		return mapping.findForward(Constants.SUCCESS);
+	}
 
 	public ActionForward userSave(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response)
@@ -311,6 +325,83 @@ public class ActionAdministrationLoader extends BaseAction {
 		logger.debug("getting batch");
 
 		batch = (IBatch) new MassLoadFilterBatch(request.getRemoteUser(), dir
+				+ holder.getFileName(), this.getResources(request), dir,
+				request);
+
+		logger.debug("batch received for: " + fname);
+
+		// Stick it on the batch and move on...
+		if (batch != null) {
+			logger.info(request.getRemoteUser() + " loaded " + batch.getName()
+					+ "using file: " + fname);
+			addBatch(batch);
+		}
+
+		// Send back to the loader page.
+		return mapping.findForward(Constants.SUCCESS);
+
+	}
+	
+	public ActionForward cotGuidSave(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+
+		UserContainer user = loadUser(request);
+		if (!user.isAdminAccess()) {
+			throw new InvalidAccessException();
+		}
+
+		// Crappy work around for tomcat 4
+		if (!loaded) {
+			init();
+			loaded = true;
+		}
+
+		String dir = properties.getProperty("workingDir") + "/";
+
+		// Get the action form and some basic file checks
+		FormUploadFile tff = (FormUploadFile) form;
+		if (tff == null) {
+			return mapping.findForward(Constants.GLOBAL_HOME);
+		}
+
+		FormFile file = tff.getFile();
+
+		if (file == null) {
+			return mapping.findForward(Constants.GLOBAL_HOME);
+		}
+
+		String fname = file.getFileName();
+		long dateStamp = new Date().getTime();
+		fname = dateStamp + "." + request.getRemoteUser() + "." + fname;
+
+		// -- From here below just copies the file to a standard location
+		InputStream streamIn = file.getInputStream();
+		OutputStream streamOut = new FileOutputStream(dir + fname);
+
+		int bytesRead = 0;
+		byte[] buffer = new byte[8192];
+
+		logger.debug("writing to " + dir + fname);
+		while ((bytesRead = streamIn.read(buffer, 0, 8192)) != -1) {
+			streamOut.write(buffer, 0, bytesRead);
+		}
+
+		streamOut.close();
+		streamIn.close();
+
+		// -- Stop copying...
+
+		HolderFormFile holder = new HolderFormFile();
+		holder.setFileName(fname);
+
+		// Init the batch Interface
+		IBatch batch = null;
+
+		// Get the loader based on the users choice
+		logger.debug("getting batch");
+
+		batch = (IBatch) new MassLoadCOTGuidBatch(request.getRemoteUser(), dir
 				+ holder.getFileName(), this.getResources(request), dir,
 				request);
 

@@ -108,7 +108,7 @@ public class MassLoadFilterBatch extends BatchBase implements IBatch,
 
 			EmailDelegate.sendMessage("Upload Complete", remoteUser, message);
 
-			System.out.println("done with load");
+	//		System.out.println("done with load");
 
 			boolean success = (new File(fileName)).delete();
 			if (!success) {

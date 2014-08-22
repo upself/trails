@@ -142,6 +142,16 @@ public abstract class ProductDelegate extends Delegate {
 
 		return results;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static Product searchProductByGuid(String guid, Product product,
+			Session session) {
+
+		product = (Product) session.getNamedQuery("searchProductByGuid").setString(
+				"guid", guid).uniqueResult();
+
+		return product;
+	}
 
 	private static Integer getPriority(SoftwareCategory softwareCategory,
 			Integer priority, Session session) {
