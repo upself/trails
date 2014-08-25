@@ -135,6 +135,7 @@ sub recon {
 		Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection,
 			$self->installedSoftwareReconData->rId )
 		  if defined $self->installedSoftwareReconData->rId;
+		$self->queueSoftwareCategory( $self->installedSoftware->id );
 	}
 	elsif ( $validation->validationCode == 1 ) {
 		dlog("Installed software is not reconciled");
@@ -749,19 +750,19 @@ sub getFreePoolData {
 
 	while ( $sth->fetchrow_arrayref ) {
 		dlog("lId =$rec{lId}");
-		if ( defined $rec{usedQuantity} && $rec{machineLevel} == 1 ) {
-			my $hwServerType = $self->mechineLevelServerType;
-			dlog("it is machine level");
-			###not do auto recon if hw and lic don't have the same environment.
-			dlog(
-				"serverType=$hwServerType,rec{lEnvironment}=$rec{lEnvironment}"
-			);
-			next
-			  if (
-				$self->isEnvironmentSame( $hwServerType, $rec{lEnvironment} ) ==
-				0 );
-			dlog('getFreePoolData-license and hw environment same');
-		}
+#		if ( defined $rec{usedQuantity} && $rec{machineLevel} == 1 ) {
+#			my $hwServerType = $self->mechineLevelServerType;
+#			dlog("it is machine level");
+#			###not do auto recon if hw and lic don't have the same environment.
+#			dlog(
+#				"serverType=$hwServerType,rec{lEnvironment}=$rec{lEnvironment}"
+#			);
+#			next
+#			  if (
+#				$self->isEnvironmentSame( $hwServerType, $rec{lEnvironment} ) ==
+#				0 );
+#			dlog('getFreePoolData-license and hw environment same');
+#		}
 
 		###I should centralize this check
 		if ( defined $self->customer->swComplianceMgmt
@@ -888,6 +889,8 @@ sub getFreePoolData {
 }
 
 sub isEnvironmentSame {
+	return 1;
+	
 	my ( $self, $hwEnv, $licEnv ) = @_;
 	$hwEnv = 'PRODUCTION'
 	  if !defined $hwEnv || $hwEnv eq '';
@@ -923,11 +926,6 @@ sub attemptLicenseAllocationHardware {
 		next
 		  unless $licView->cpuSerial eq
 		  $self->installedSoftwareReconData->hSerial;
-		dlog("license environment=$lEnv");
-		next
-		  if (
-			$self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv ) ==
-			0 );
 		dlog("found matching license");
 		$licsToAllocate{$lId} = 1;
 		$isFullyAllocated = 1;
@@ -1115,11 +1113,6 @@ sub attemptLicenseAllocationProcessor {
 		next unless $licView->capType eq '2';
 		next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
 		next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
-		dlog("attemptLicenseAllocationProcessor license environment=$lEnv");
-		next
-		  if ( $machineLevel == 1
-			&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-			== 0 );
 		dlog("found matching license - hw specific");
 		my $neededQuantity = $processorCount - $tempQuantityAllocated;
 		dlog( "neededQuantity=" . $neededQuantity );
@@ -1148,14 +1141,6 @@ sub attemptLicenseAllocationProcessor {
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
 			next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
 			next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
-			dlog("attemptLicenseAllocationProcessor license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			dlog("found matching license - hw specific");
 			my $neededQuantity = $processorCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1185,14 +1170,6 @@ sub attemptLicenseAllocationProcessor {
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 			next unless $licView->capType eq '2';
-			dlog("attemptLicenseAllocationProcessor license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
 				# the licenses with DEFINED and different CPU than the one recon'ed are skipped
 			dlog("found matching license - non hw specific");
@@ -1223,15 +1200,6 @@ sub attemptLicenseAllocationProcessor {
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
 				next unless $licView->capType eq '2';
-				dlog(
-"attemptLicenseAllocationProcessor license environment=$lEnv"
-				);
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
 				next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
 				
 				dlog("found matching license - non hw specific");
@@ -1338,12 +1306,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			next
 			  unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
 	
-			dlog("license environment=$lEnv");
-			next
-			  if ( $machineLevel == 1
-				&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-				== 0 );
-	
 			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
@@ -1372,15 +1334,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 				next unless defined $licView->cpuSerial;
 				next
 					unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
-	
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame(
-						$self->mechineLevelServerType, $lEnv
-					) == 0
-				  );
 	
 				my $neededQuantity = $myCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
@@ -1416,15 +1369,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			next
 				unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
 				
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
 			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
@@ -1456,14 +1400,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 				next
 					unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
 				
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
-
 				my $neededQuantity = $myCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
 				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
@@ -1494,15 +1430,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
-
 			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 
@@ -1530,15 +1457,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			next if (( $licView->licenseType eq 'NAMED CPU' ) || ( $licView->licenseType eq 'NAMED LPAR' ));
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 
 			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1613,11 +1531,6 @@ sub attemptLicenseAllocationPVU {
 		next
 		  unless $licView->cpuSerial eq
 		  $self->installedSoftwareReconData->hSerial;
-		dlog("license environment=$lEnv");
-		next
-		  if ( $machineLevel == 1
-			&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-			== 0 );
 		dlog("found matching license - hw specific");
 		my $valueUnitsPerProcessor = $self->pvuValue;
 		my $neededQuantity         =
@@ -1650,14 +1563,6 @@ sub attemptLicenseAllocationPVU {
 			next
 			  unless $licView->cpuSerial eq
 			  $self->installedSoftwareReconData->hSerial;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			dlog("found matching license - hw specific");
 			my $valueUnitsPerProcessor = $self->pvuValue;
 			my $neededQuantity         =
@@ -1690,14 +1595,6 @@ sub attemptLicenseAllocationPVU {
 			next unless $licView->capType eq '17';
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			dlog("found matching license - non hw specific");
 			my $valueUnitsPerProcessor = $self->pvuValue;
 			my $neededQuantity         =
@@ -1728,13 +1625,6 @@ sub attemptLicenseAllocationPVU {
 				next
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
 				dlog("found matching license - non hw specific");
 				my $valueUnitsPerProcessor = $self->pvuValue;
 				my $neededQuantity         =
@@ -1893,11 +1783,6 @@ sub attemptLicenseAllocationChip {
 		next
 		  unless $licView->cpuSerial eq
 		  $self->installedSoftwareReconData->hSerial;
-		dlog("license environment=$lEnv");
-		next
-		  if ( $machineLevel == 1
-			&& $self->isEnvironmentSame( $self->mechineLevelServerType, $lEnv )
-			== 0 );
 		dlog("found matching license - hw specific");
 		my $neededQuantity = $chips - $tempQuantityAllocated;
 		dlog( "neededQuantity=" . $neededQuantity );
@@ -1928,14 +1813,6 @@ sub attemptLicenseAllocationChip {
 			next
 			  unless $licView->cpuSerial eq
 			  $self->installedSoftwareReconData->hSerial;
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			dlog("found matching license - hw specific");
 			my $neededQuantity = $chips - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1965,14 +1842,6 @@ sub attemptLicenseAllocationChip {
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 			next unless $licView->capType eq '48';
-			dlog("license environment=$lEnv");
-			next
-			  if (
-				$machineLevel == 1
-				&& $self->isEnvironmentSame(
-					$self->mechineLevelServerType, $lEnv
-				) == 0
-			  );
 			dlog("found matching license - non hw specific");
 			my $neededQuantity = $chips - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -2001,13 +1870,6 @@ sub attemptLicenseAllocationChip {
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
 				next unless $licView->capType eq '48';
-				dlog("license environment=$lEnv");
-				next
-				  if (
-					$machineLevel == 1
-					&& $self->isEnvironmentSame( $self->mechineLevelServerType,
-						$lEnv ) == 0
-				  );
 				dlog("found matching license - non hw specific");
 				my $neededQuantity = $chips - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
@@ -2755,14 +2617,6 @@ sub getExistingMachineLevelRecon {
 	while ( $sth->fetchrow_arrayref ) {
 		logRec( 'dlog', \%rec );
 
-		###exclude the license that the environment is differnet with hw server type.
-		next
-		  if (
-			$self->isEnvironmentSame( $self->mechineLevelServerType,
-				$rec{licenseEnvironment} ) == 0
-		  );
-		dlog('getExistingMachineLevelRecon->license and hw environment same');
-
 		$data{ $rec{reconcileId} }{ $rec{licenseId} }{'usedQuantity'} =
 		  $rec{usedQuantity};
 		$data{ $rec{reconcileId} }{ $rec{licenseId} }{'reconcileTypeId'} =
@@ -2798,6 +2652,74 @@ sub fetchMechineLevelServerType {
 	  if ( $prodHwlparCount > 0 );
 
 	return 'DEVELOPMENT';
+}
+
+sub queueSoftwareCategory { # puts all the installed software, who's category parent 
+							# is the software just considered invalid, into queue
+	my $self=shift;
+	my $swId=shift;
+	
+	dlog("Checking for installed SW ID $swId to be used as software category parent");
+	
+	 #Prepare the query.
+	$self->connection->prepareSqlQueryAndFields( $self->queryInsSwByParentProduct() );
+
+	#Acquire the statement handle.
+	my $sth = $self->connection->sql->{queryInsSwByParentProduct};
+
+ #Bind fields.
+ my %rec;
+ $sth->bind_columns( map { \$rec{$_} }
+    @{ $self->connection->sql->{queryInsSwByParentProductFields} } );
+
+ #Fetch correspond sw recon infor.
+ $sth->execute( $swId );
+ 
+ my $total = 0;
+  
+ while ( $sth->fetchrow_arrayref ) {
+	 
+  dlog("Software ID ".$rec{isId}." found.");
+  
+  my $childInstSw = new BRAVO::OM::InstalledSoftware();
+  $childInstSw->id($rec{isId});
+  $childInstSw->getById( $self->connection );
+
+  my $childSwLpar = new BRAVO::OM::SoftwareLpar();
+  $childSwLpar->id( $childInstSw->softwareLparId );
+  $childSwLpar->getById( $self->connection );
+
+  my $queue = Recon::Queue->new( $self->connection, $childInstSw, $childSwLpar );
+  $queue->add;
+  
+  $total++;
+
+ }
+
+ $sth->finish;
+ 
+ dlog("$total installed SW's added into queue.");
+ 
+ return 0;
+	
+}
+
+sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (software category)
+	my @fields = qw(
+	  isId
+	);
+	
+	my $query = '
+    select 
+      is.id
+    from
+      installed_software is
+      join reconcile r on r.installed_software_id = is.id and r.reconcile_type_id in ( 4, 7, 8 )
+    where
+      r.parent_installed_software_id = ?
+    ';
+
+	return ( 'queryInsSwByParentProduct', $query, \@fields );
 }
 
 sub queryProductionHwlparCount {
