@@ -342,12 +342,13 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 	$software->write( $lineCount, 5,  "OS VERSION" );
 	$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
 	$software->write( $lineCount, 7,  "CHIP COUNT" );
-	$software->write( $lineCount, 8,  "SOFTWARE NAME" );
-	$software->write( $lineCount, 9,  "SOFTWARE VERSION" );
-	$software->write( $lineCount, 10, "DISCREPANCY TYPE");
-	$software->write( $lineCount, 11,  "LICENSE" );
-	$software->write( $lineCount, 12, "BANK ACCOUNT" );
-	$software->write( $lineCount, 13, "SCOPE" );
+	$software->write( $lineCount, 8,  "MANUFACTURER" );	
+	$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+	$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
+	$software->write( $lineCount, 11, "DISCREPANCY TYPE");
+	$software->write( $lineCount, 12,  "LICENSE" );
+	$software->write( $lineCount, 13, "BANK ACCOUNT" );
+	$software->write( $lineCount, 14, "SCOPE" );
 
 	$lineCount++;
 
@@ -400,16 +401,19 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 				  ->{'chipCount'} );
 			$software->write( $lineCount, 8,
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareManufacturer'} );
+			$software->write( $lineCount, 9,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'softwareName'} );
-			$software->write( $lineCount, 9, $softwareVersions );
-			$software->write( $lineCount, 10,
+			$software->write( $lineCount, 10, $softwareVersions );
+			$software->write( $lineCount, 11,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'discrepancyType'} );
-			$software->write( $lineCount, 11,
+			$software->write( $lineCount, 12,
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'level'} );
-			$software->write( $lineCount, 12, $bankAccounts );
-			$software->write( $lineCount, 13,
+			$software->write( $lineCount, 13, $bankAccounts );
+			$software->write( $lineCount, 14,
                 $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
                   ->{$softwareCategory}->{'scopeDescription'} );
 
@@ -441,12 +445,13 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 				$software->write( $lineCount, 5,  "OS VERSION" );
 				$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
 				$software->write( $lineCount, 7,  "CHIP COUNT" );
-				$software->write( $lineCount, 8,  "SOFTWARE NAME" );
-				$software->write( $lineCount, 9,  "SOFTWARE VERSION" );
-				$software->write( $lineCount, 10, "DISCREPANCY TYPE");
-				$software->write( $lineCount, 11,  "LICENSE" );
-				$software->write( $lineCount, 12, "BANK ACCOUNT" );
-				$software->write( $lineCount, 13, "SCOPE" );
+				$software->write( $lineCount, 8,  "MANUFACTURER" );	
+				$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+				$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
+				$software->write( $lineCount, 11, "DISCREPANCY TYPE");
+				$software->write( $lineCount, 12,  "LICENSE" );
+				$software->write( $lineCount, 13, "BANK ACCOUNT" );
+				$software->write( $lineCount, 14, "SCOPE" );
 			$lineCount++;
 			}
 
@@ -517,18 +522,19 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			    $software->write( $lineCount, 7,
 					$bravoSoftware->{$accountNumber}->{$hostname}
 					  ->{'chipCount'} );
-				$software->write( $lineCount, 8, $softwareName );
-				$software->write( $lineCount, 9, $softwareVersions );
-				$software->write( $lineCount, 10,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
+				$software->write( $lineCount, 8, $softwareManufacturer );					  
+				$software->write( $lineCount, 9, $softwareName );
+				$software->write( $lineCount, 10, $softwareVersions );
 				$software->write( $lineCount, 11,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}->{$softwareName}->{'level'} );
+					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
 				$software->write( $lineCount, 12,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'level'} );
+				$software->write( $lineCount, 13,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
 					  ->{$softwareCategory}->{$softwareName}->{'bankAccount'} );
-			   $software->write( $lineCount, 13,
+			   $software->write( $lineCount, 14,
                     $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
                       ->{$softwareCategory}->{$softwareName}->{'scopeDescription'} );
 
@@ -561,12 +567,13 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 					$software->write( $lineCount, 5,  "OS VERSION" );
 					$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
 					$software->write( $lineCount, 7,  "CHIP COUNT" );
-					$software->write( $lineCount, 8,  "SOFTWARE NAME" );
-					$software->write( $lineCount, 9,  "SOFTWARE VERSION" );
-					$software->write( $lineCount, 10, "DISCREPANCY TYPE");
-					$software->write( $lineCount, 11, "LICENSE" );
-					$software->write( $lineCount, 12, "BANK ACCOUNT" );
-					$software->write( $lineCount, 13, "SCOPE" );
+					$software->write( $lineCount, 8,  "MANUFACTURER" );					
+					$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+					$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
+					$software->write( $lineCount, 11, "DISCREPANCY TYPE");
+					$software->write( $lineCount, 12, "LICENSE" );
+					$software->write( $lineCount, 13, "BANK ACCOUNT" );
+					$software->write( $lineCount, 14, "SCOPE" );
 					$lineCount++;
 				}
 
@@ -596,11 +603,12 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
 	$prodCount->write( $pLineCount, 0, "CUSTOMER" );
 	$prodCount->write( $pLineCount, 1, "OS" );
-	$prodCount->write( $pLineCount, 2, "SOFTWARE NAME" );
-	$prodCount->write( $pLineCount, 3, "LICENSE TYPE" );
-	$prodCount->write( $pLineCount, 4, "PRODUCT COUNT" );
-	$prodCount->write( $pLineCount, 5, "PROCESSOR COUNT" );
-    $prodCount->write( $pLineCount, 6, "CHIP COUNT" );
+	$prodCount->write( $pLineCount, 2, "MANUFACTURER" );	
+	$prodCount->write( $pLineCount, 3, "SOFTWARE NAME" );
+	$prodCount->write( $pLineCount, 4, "LICENSE TYPE" );
+	$prodCount->write( $pLineCount, 5, "PRODUCT COUNT" );
+	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
+    $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
 
 	$pLineCount++;
 
@@ -608,14 +616,15 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
 			$prodCount->write( $pLineCount, 0, $accountNumber );
 			$prodCount->write( $pLineCount, 1, $osName );
-			$prodCount->write( $pLineCount, 2, $softwareName );
-			$prodCount->write( $pLineCount, 3,
-				$productCount->{$osName}->{$softwareName}->{'license'} );
+			$prodCount->write( $pLineCount, 2, $softwareManufacturer );
+			$prodCount->write( $pLineCount, 3, $softwareName );
 			$prodCount->write( $pLineCount, 4,
-				$productCount->{$osName}->{$softwareName}->{'productCount'} );
+				$productCount->{$osName}->{$softwareName}->{'license'} );
 			$prodCount->write( $pLineCount, 5,
-				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
+				$productCount->{$osName}->{$softwareName}->{'productCount'} );
 			$prodCount->write( $pLineCount, 6,
+				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
+			$prodCount->write( $pLineCount, 7,
 				$productCount->{$osName}->{$softwareName}->{'chipCount'} );
 			$pLineCount++;
 		}
@@ -723,6 +732,7 @@ sub getBravoSoftwareReport {
 	my $chipCount;
 	my $scantime;
 	my $softwareName;
+	my $softwareManufacturer;
 	my $level;
 	my $priority;
 	my $softwareVersion;
@@ -752,6 +762,7 @@ select 				   ol.account_number
                       ,COALESCE(j.chips, 0)
                       ,ol.scantime
                       ,ol.software_name
+                      ,ol.manufacturer
                       ,ol.level
                       ,ol.priority
                       ,ol.version
@@ -805,6 +816,8 @@ from
                           on g.software_lpar_id = b.software_lpar_id
                       ,eaadmin.software_item c
                       ,eaadmin.product_info pi
+                      ,eaadmin.product instP
+                      ,eaadmin.manufacturer SwMan
                       ,eaadmin.bank_account d
                       ,eaadmin.software_category e
                       ,eaadmin.discrepancy_type f
@@ -828,6 +841,7 @@ from
                         on i.id = h.hardware_lpar_id 
                     left outer join eaadmin.hardware j
                         on j.id = i.hardware_id
+                        
                     left outer join eaadmin.machine_type mt
                         on j.machine_type_id = mt.id 
                     left outer join eaadmin.schedule_f sf 
@@ -853,7 +867,8 @@ from
 	$sth->bind_columns(
 		\$accountNumber,   	\$name,           	\$model,
 		\$biosSerial,      	\$processorCount, 	\$chipCount,
-		\$scantime,        	\$softwareName,   	\$level,          
+		\$scantime,        	\$softwareName,   	\$softwareManufacturer,
+		\$level,          
 		\$priority, 	   	\$softwareVersion, 	\$bankAccount,    
 		\$softwareCategory,	\$osMinorVers,     	\$osSubVers, 
 		\$discrepancyType,     
@@ -930,6 +945,8 @@ from
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareName'} = $softwareName;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
+			  {'softwareManufacturer'} = $softwareManufacturer;  
+			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'level'} = $level;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'priority'} = $priority;
@@ -969,6 +986,8 @@ from
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
 		$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareName'} = $softwareName;
+			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
+			  {'softwareManufacturer'} = $softwareManufacturer;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'level'} = $level;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
