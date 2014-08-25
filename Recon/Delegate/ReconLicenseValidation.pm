@@ -386,19 +386,20 @@ sub validateEnvironmentMatch {
 	my ( $self, $licEnvironment, $serverType, $isManual, $reconcileId ) = @_;
 	### Validate if HW server type is the same as the license environment
 	
-	$serverType = 'PRODUCTION' if ((!defined $serverType) || ($serverType eq ""));
-	$licEnvironment = 'PRODUCTION' if ((!defined $licEnvironment ) || ( $licEnvironment eq "" ));
+#	$serverType = 'PRODUCTION' if ((!defined $serverType) || ($serverType eq ""));
+#	$licEnvironment = 'PRODUCTION' if ((!defined $licEnvironment ) || ( $licEnvironment eq "" ));
 	
-	if (( $licEnvironment eq 'DEVELOPMENT' ) || ( $licEnvironment ne $serverType )) {
+	if ( $licEnvironment eq 'DEVELOPMENT' ) {
 		if ( $isManual == 0 ) {
-			dlog("License environment DEVELOPMENT or different from server type!");
+#			dlog("License environment DEVELOPMENT or different from server type!");
+			dlog("License environment DEVELOPMENT used for auto-recon!");
 			$self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
 			$self->validationCode(0);
 			return 0;
 		}
+		dlog("License envir. DEVELOPMENT, but recon is manual.");
 	}
 	
-	dlog("Environment doesn't match, but recon is manual");
 	return 1;
 }
 
