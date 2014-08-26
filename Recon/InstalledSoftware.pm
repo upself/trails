@@ -2711,11 +2711,12 @@ sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (s
 	
 	my $query = '
     select 
-      is.id
+      r.installed_software_id
     from
-      installed_software is
-      join reconcile r on r.installed_software_id = is.id and r.reconcile_type_id in ( 4, 7, 8 )
+      reconcile r
     where
+      r.reconcile_type_id in ( 4, 7, 8 )
+         and
       r.parent_installed_software_id = ?
     ';
 

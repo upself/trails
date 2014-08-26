@@ -23,6 +23,7 @@ sub getReconcileTypeMap {
 	###multiple recons.
 
 	$data{'Manual license allocation'}           = 1;
+	$data{'Included with other product'}		 = 4;
 	$data{'Automatic license allocation'}        = 5;
 	$data{'Vendor managed product'}              = 6;
 	$data{'Bundled software product'}            = 7;

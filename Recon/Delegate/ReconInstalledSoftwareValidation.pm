@@ -142,6 +142,7 @@ sub validate {
 		|| $self->validateIBMOwnedIBMManagedCons == 0
 		|| $self->validateCustOwnedIBMManagedCons == 0
 		|| $self->validateCustomerPendingDecision == 0
+		|| $self->validateParentInstalledSW == 0
 		|| $self->validateLicenseAllocation == 0 )
 	{
 		$self->validationCode(2);
@@ -300,6 +301,32 @@ sub validateVendorManaged {
  }
 
  return 1;
+}
+
+sub validateParentInstalledSW {
+ my $self = shift;
+
+ return 1 if ( ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Included with other product'} ) &&
+      ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Bundled software product'} ) &&
+      ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Covered by software category'} ) );
+      
+ dlog("applicable to parent-installed-software validation");
+
+ my $conn = $self->connection;
+ 
+ $conn->prepareSqlQuery( 'getISWstatus',
+  'select 1 from installed_software is where is.id = ? and is.status=\'ACTIVE\' and is.discrepancy_type_id in ( 1, 2, 4 )' );
+ my $sth = $conn->sql->{getISWstatus};
+ $sth->execute ( $self->installedSoftwareReconData->rParentInstSwId );
+ my ($result) = $sth->fetchrow_array;
+ $sth->finish;
+
+ return 1 if (( defined $result ) && ( $result == 1 )); # iSW with the given ID which is active and correct discrepancy still exists
+ 
+ dlog("invalid parent installed SW ID, the reconcile is invalid!");
+ 
+ return 0;
+ 
 }
 
 sub validateSoftwareCategory {
