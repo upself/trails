@@ -23,12 +23,12 @@
 	my $reportDatabasePassword = $cfg->stagingDatabasePassword();
 	my $db2profile = $cfg->db2profile();
 	my $tmpDir = $cfg->tmpDir();
-	my $testDir = $cfg-> bankacc();
+	my $reportDir = $cfg-> bankacc();
 	
 	$tmpDir    = "$tmpDir/";
 	
 	# Report dir 
-	$reportDir = "/gsa/pokgsa/projects/s/sseshe/staging/";
+	#$reportDir = "/gsa/pokgsa/projects/s/sseshe/staging/";
 		
 	my $tmpFile1 = $tmpDir . "p_bank_acc.txt";
 	my $tmpFile2 = $tmpDir . "AllBankTmp2.txt";
