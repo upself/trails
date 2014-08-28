@@ -119,7 +119,7 @@ sub setDBInfo {
             $dbs{'staging'}{'user'}     = 'eaadmin';
             $dbs{'staging'}{'name'}     = 'STAGING';
 
-            $dbs{'trails'}{'password'} = 'Blu3pag3';
+            $dbs{'trails'}{'password'} = 'P1lsn3rs';
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
@@ -136,13 +136,13 @@ sub setDBInfo {
             $dbs{'sims'}{'name'}     = 'SIMS';
 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-            $dbs{'trailsrp'}{'password'} = 'Blu3pag3';
+            $dbs{'trailsrp'}{'password'} = 'P1lsn3rs';
             $dbs{'trailsrp'}{'user'}     = 'eaadmin';
             $dbs{'trailsrp'}{'name'}     = 'TRAHERP'; 
             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
-            $dbs{'trailsst'}{'password'} = 'Blu3pag3';
+            $dbs{'trailsst'}{'password'} = 'P1lsn3rs';
             $dbs{'trailsst'}{'user'}     = 'eaadmin';
             $dbs{'trailsst'}{'name'}     = 'TRAHEST'; 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End

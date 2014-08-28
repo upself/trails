@@ -119,7 +119,7 @@ sub setDBInfo {
             $dbs{'staging'}{'user'}     = 'eaadmin';
             $dbs{'staging'}{'name'}     = 'STAGINGR';
 
-            $dbs{'trails'}{'password'} = 'Blu3pag3';
+            $dbs{'trails'}{'password'} = 'P1lsn3rs';
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
