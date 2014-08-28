@@ -191,6 +191,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert Outdated SWLpar Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
@@ -227,6 +233,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert HWLpar Report Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
@@ -264,6 +276,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_HARDWARE_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert HW Report Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
@@ -302,6 +320,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert SWLpar Report Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
@@ -372,6 +396,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert UIBM SW Report Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
@@ -409,6 +439,12 @@ public class ReportServiceImpl implements ReportService {
 				ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert UISV SW Report Sheet"+k);
+				i = 1;
+			}
 			HSSFRow row = sheet.createRow((int) i);
 			outputData(lsrReport.get(), row);
 			i++;
