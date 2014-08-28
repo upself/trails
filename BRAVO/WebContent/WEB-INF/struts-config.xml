@@ -509,7 +509,7 @@
 
 		<action path="/upload/dorana" type="com.ibm.ea.bravo.parser.ActionLoad"
 			parameter="dorana">
-			<forward name="success" path="/WEB-INF/jsp/upload/dorana.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/upload/error.jsp" />
 			<forward name="error" path="/WEB-INF/jsp/upload/dorana.jsp" />
 		</action>
 

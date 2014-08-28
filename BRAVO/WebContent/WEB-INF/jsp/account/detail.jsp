@@ -96,11 +96,13 @@ function popupTrailsReports(accountId) {
 	height="12" /> <html:link
 	page="/upload/softAudit.do?id=${account.customer.accountNumber}">Upload TLCMz Software</html:link>
 <br />
-<!-- Upload Dorana file --> <img
+
+<!-- Upload Dorana file -- sunseted > <!--  <img
 	src="//w3.ibm.com/ui/v8/images/icon-link-upload.gif" width="14"
 	height="12" /> <html:link
 	page="/upload/dorana.do?id=${account.customer.accountNumber}">Upload Dorana Scan</html:link>
 <br />
+-->
 <!-- Delete SWASSET data --> <img
 	src="//w3.ibm.com/ui/v8/images/icon-link-delete-dark.gif" width="13"
 	height="13" /> <html:link
