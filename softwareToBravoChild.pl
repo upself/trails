@@ -129,12 +129,12 @@ sub querySoftwareLparsByCustomerIdByDate {
             c.id = sm.scan_record_id
         ';
     }
-    elsif ( $phase == 2 ) {
-        $query .= '
-        left outer join software_dorana sd on
-            c.id = sd.scan_record_id
-        ';
-    }
+##    elsif ( $phase == 2 ) {
+##        $query .= '
+##        left outer join software_dorana sd on
+##            c.id = sd.scan_record_id
+##        ';
+##    }
     elsif ( $phase == 3 ) {
         $query .= '
         left outer join software_tlcmz st on

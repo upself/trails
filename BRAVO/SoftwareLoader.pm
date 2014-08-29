@@ -11,7 +11,7 @@ use Staging::OM::SoftwareManual;
 use Staging::OM::SoftwareSignature;
 use Staging::OM::SoftwareFilter;
 use Staging::OM::SoftwareTlcmz;
-use Staging::OM::SoftwareDorana;
+##use Staging::OM::SoftwareDorana;
 use Staging::OM::ScanSoftwareItem;
 use BRAVO::Delegate::BRAVODelegate;
 use BRAVO::OM::SoftwareLpar;
@@ -19,7 +19,7 @@ use BRAVO::OM::InstalledSoftware;
 use BRAVO::OM::InstalledSignature;
 use BRAVO::OM::InstalledFilter;
 use BRAVO::OM::InstalledTLCMZ;
-use BRAVO::OM::InstalledDorana;
+##use BRAVO::OM::InstalledDorana;
 use BRAVO::OM::InstalledTADZ;
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use SWASSET::Delegate::SWASSETDelegate;
@@ -761,14 +761,14 @@ sub load {
                 $bravoInstalledType = new BRAVO::OM::InstalledTLCMZ();
                 $bravoInstalledType->tlcmzProductId( $rec{installedSoftwareTypeId} );
             }
-            elsif ( $rec{installedSoftwareType} eq 'DORANA' ) {
-
-                $stagingInstalledType = new Staging::OM::SoftwareDorana();
-                $stagingInstalledType->softwareDoranaId( $rec{installedSoftwareTypeId} );
-
-                $bravoInstalledType = new BRAVO::OM::InstalledDorana();
-                $bravoInstalledType->doranaProductId( $rec{installedSoftwareTypeId} );
-            }
+##            elsif ( $rec{installedSoftwareType} eq 'DORANA' ) {
+##
+##                $stagingInstalledType = new Staging::OM::SoftwareDorana();
+##                $stagingInstalledType->softwareDoranaId( $rec{installedSoftwareTypeId} );
+##
+##                $bravoInstalledType = new BRAVO::OM::InstalledDorana();
+##                $bravoInstalledType->doranaProductId( $rec{installedSoftwareTypeId} );
+##            }
             elsif ( $rec{installedSoftwareType} eq 'MANUAL' ) {
 
                 $stagingInstalledType = new Staging::OM::SoftwareManual();
@@ -1696,10 +1696,10 @@ sub querySoftwareLparDataByCustomerId {
         $query .= '
             union
         ';
-        $query .= $self->getDoranaQuery();
-        $query .= '
-            union
-        ';
+##      $query .= $self->getDoranaQuery();
+##      $query .= '
+##          union
+##      ';
         $query .= $self->getTad4zQuery();
     $query .= '
         ) as x

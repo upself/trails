@@ -85,7 +85,7 @@ sub spawnChildren {
 
 sub keepTicking {
  wlog("$rNo Keep on ticking");
- my $count = 5;
+ my $count = 4;
  while (1) {
   if ( $children >= $maxChildren ) {
    wlog("$rNo sleeping");
@@ -125,7 +125,7 @@ sub keepTicking {
          dlog('scalar @customerIds == 0');
          sleep 5;
          $count++;
-         if($count>6){
+         if($count>5){
            $count = 0;
          }
      last;
@@ -363,31 +363,31 @@ sub p1Query {
             c.id = sm.scan_record_id
         ';
  }
+## elsif ( $count == 2 ) {
+##  $query .= '
+##        left outer join software_dorana sd on
+##            c.id = sd.scan_record_id
+##        ';
+## }
  elsif ( $count == 2 ) {
-  $query .= '
-        left outer join software_dorana sd on
-            c.id = sd.scan_record_id
-        ';
- }
- elsif ( $count == 3 ) {
   $query .= '
         left outer join software_tlcmz st on
             c.id = st.scan_record_id
         ';
  }
- elsif ( $count == 4 ) {
+ elsif ( $count == 3 ) {
   $query .= '
         left outer join software_filter sf on
             c.id = sf.scan_record_id
         ';
  }
- elsif ( $count == 5 ) {
+ elsif ( $count == 4 ) {
   $query .= '
         left outer join software_signature ss on
             c.id = ss.scan_record_id
         ';
  }
- elsif ( $count == 6 ) {
+ elsif ( $count == 5 ) {
   $query .= '
         left outer join scan_software_item si on
             c.id = si.scan_record_id
@@ -417,27 +417,27 @@ sub p1Query {
                 or sm.action != \'COMPLETE\'
             ';
  }
+## elsif ( $count == 2 ) {
+##  $query .= '
+##                or sd.action != \'COMPLETE\'
+##            ';
+## }
  elsif ( $count == 2 ) {
-  $query .= '
-                or sd.action != \'COMPLETE\'
-            ';
- }
- elsif ( $count == 3 ) {
   $query .= '
                 or st.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 4 ) {
+ elsif ( $count == 3 ) {
   $query .= '
                 or sf.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 5 ) {
+ elsif ( $count == 4 ) {
   $query .= '
                 or ss.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 6 ) {
+ elsif ( $count == 5 ) {
   ### 0-COMPLETE 1-UPDATE 2-DELETE 3-CATALOG MISSING
   $query .= '
                 or si.action in (1,2)
@@ -477,31 +477,31 @@ sub p2Query {
             c.id = sm.scan_record_id
         ';
  }
+## elsif ( $count == 2 ) {
+##  $query .= '
+##        left outer join software_dorana sd on
+##            c.id = sd.scan_record_id
+##        ';
+## }
  elsif ( $count == 2 ) {
-  $query .= '
-        left outer join software_dorana sd on
-            c.id = sd.scan_record_id
-        ';
- }
- elsif ( $count == 3 ) {
   $query .= '
         left outer join software_tlcmz st on
             c.id = st.scan_record_id
         ';
  }
- elsif ( $count == 4 ) {
+ elsif ( $count == 3 ) {
   $query .= '
         left outer join software_filter sf on
             c.id = sf.scan_record_id
         ';
  }
- elsif ( $count == 5 ) {
+ elsif ( $count == 4 ) {
   $query .= '
         left outer join software_signature ss on
             c.id = ss.scan_record_id
         ';
  }
- elsif ( $count == 6 ) {
+ elsif ( $count == 5 ) {
   $query .= '
         left outer join scan_software_item si on
             c.id = si.scan_record_id
@@ -515,27 +515,27 @@ sub p2Query {
                 or sm.action != \'COMPLETE\'
             ';
  }
+## elsif ( $count == 2 ) {
+##  $query .= '
+##                or sd.action != \'COMPLETE\'
+##            ';
+## }
  elsif ( $count == 2 ) {
-  $query .= '
-                or sd.action != \'COMPLETE\'
-            ';
- }
- elsif ( $count == 3 ) {
   $query .= '
                 or st.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 4 ) {
+ elsif ( $count == 3 ) {
   $query .= '
                 or sf.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 5 ) {
+ elsif ( $count == 4 ) {
   $query .= '
                 or ss.action != \'COMPLETE\'
             ';
  }
- elsif ( $count == 6 ) {
+ elsif ( $count == 5 ) {
   ### 0-COMPLETE 1-UPDATE 2-DELETE
   $query .= '
                 or si.action in (1,2)
@@ -626,31 +626,31 @@ sub querySoftwareLparsByCustomerIdByDate {
             c.id = sm.scan_record_id
         ';
  }
+## elsif ( $phase == 2 ) {
+##  $query .= '
+##        left outer join software_dorana sd on
+##            c.id = sd.scan_record_id
+##        ';
+## }
  elsif ( $phase == 2 ) {
-  $query .= '
-        left outer join software_dorana sd on
-            c.id = sd.scan_record_id
-        ';
- }
- elsif ( $phase == 3 ) {
   $query .= '
         left outer join software_tlcmz st on
             c.id = st.scan_record_id
         ';
  }
- elsif ( $phase == 4 ) {
+ elsif ( $phase == 3 ) {
   $query .= '
         left outer join software_filter sf on
             c.id = sf.scan_record_id
         ';
  }
- elsif ( $phase == 5 ) {
+ elsif ( $phase == 4 ) {
   $query .= '
         left outer join software_signature ss on
             c.id = ss.scan_record_id
         ';
  }
- elsif ( $phase == 6 ) {
+ elsif ( $phase == 5 ) {
   $query .= '
         left outer join scan_software_item si on
             c.id = si.scan_record_id
@@ -668,27 +668,27 @@ sub querySoftwareLparsByCustomerIdByDate {
                 or sm.action != \'COMPLETE\'
             ';
  }
+## elsif ( $phase == 2 ) {
+##  $query .= '
+##                or sd.action != \'COMPLETE\'
+##            ';
+## }
  elsif ( $phase == 2 ) {
-  $query .= '
-                or sd.action != \'COMPLETE\'
-            ';
- }
- elsif ( $phase == 3 ) {
   $query .= '
                 or st.action != \'COMPLETE\'
             ';
  }
- elsif ( $phase == 4 ) {
+ elsif ( $phase == 3 ) {
   $query .= '
                 or sf.action != \'COMPLETE\'
             ';
  }
- elsif ( $phase == 5 ) {
+ elsif ( $phase == 4 ) {
   $query .= '
                 or ss.action != \'COMPLETE\'
             ';
  }
- elsif ( $phase == 6 ) {
+ elsif ( $phase == 5 ) {
   ### 0-COMPLETE 1-UPDATE 2-DELETE 3-CATALOG MISSING
   $query .= '
                 or si.action in (1,2)
