@@ -661,7 +661,13 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
 
-		if (pbCustomerOwnedCustomerManagedSearchChecked
+// ------- BUGFIX --------
+		lsbSql.append(
+							lsBaseSelectClauseOne + lsBaseSelectClauseTwo
+									+ lsBaseSelectClauseFour + lsBaseFromClause)
+							.append(lsBaseWhereClausea);
+// --------------------------		
+/*		if (pbCustomerOwnedCustomerManagedSearchChecked
 				|| pbCustomerOwnedIBMManagedSearchChecked
 				|| pbIBMOwnedIBMManagedSearchChecked
 				|| pbIBMO3rdMSearchChecked
@@ -746,7 +752,7 @@ public class ReportServiceImpl implements ReportService {
 					.append(lsBaseWhereClauseb)
 					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instSi.name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
 		}
-
+*/
 		lsbSql.append("ORDER BY 4");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())
