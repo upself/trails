@@ -10,4 +10,10 @@
 *************************
 *DEPLOYEMENT - production
 *************************
-just export each index.html under each folder. 
+just export each index.html under each folder.
+ 
+server
+tap.raleigh.ibm.com
+
+path 
+/opt/IBMIHS/htdocs/en_US
