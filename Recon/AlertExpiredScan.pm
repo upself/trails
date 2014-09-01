@@ -100,7 +100,7 @@ sub isScanExpired {
 sub queryIsScanExpired {
 	my $query = '
         select
-            (c.scan_validity - timestampdiff(16, char(current timestamp - sl.scantime)))
+            (coalesce ( integer(c.scan_validity), 365 ) - timestampdiff(16, char(current timestamp - sl.scantime)))
         from
             software_lpar sl
             join customer c on c.customer_id = sl.customer_id
