@@ -11,30 +11,31 @@
 #  r5a simultaneous runtime member
 #  rt8 new region base, all new processing
 # ========================================================
+use lib "/opt/report/bin";
 use File::Copy;
 use Getopt::Std;
 use Config::Properties::Simple;
 use File::Basename;
-use ReportProperty;
+use Conf::ReportProperty;
 
-my $report = new ReportProperty();
-$report->initReportingSystem;
+my $cfg = new Conf::ReportProperty();
+$cfg->initReportingSystem;
 
-my $fileName = $report->thisReport;
-my $fileDirectory = $report->thisDir;
+my $fileName = $cfg->thisReport;
+my $fileDirectory = $cfg->thisDir;
 
 use vars qw ( $opt_r $opt_t);
 getopts("r:t:");
 
 
-my $reportDatabase = $report->reportDatabase;
-my $reportDatabaseUser = $report->reportDatabaseUser;
-my $reportDatabasePassword = $report->reportDatabasePassword;
+my $reportDatabase = $cfg->reportDatabase;
+my $reportDatabaseUser = $cfg->reportDatabaseUser;
+my $reportDatabasePassword = $cfg->reportDatabasePassword;
 
-my $tmpDir = $report->tmpDir;
+my $tmpDir = $cfg->tmpDir;
 
-$finalDir = $report->reportDeliveryFolder;
-$errDir = $report->thisDir;
+$finalDir = $cfg->reportDeliveryFolder('fullRecon');
+$errDir = $cfg->thisDir;
 $reportDir = "/tmp/";
 
 chdir $reportDir;

@@ -3,38 +3,30 @@
 # IBM Confidential -- INTERNAL USE ONLY
 # programmer: dbryson@us.ibm.com
 # ========================================================
+use lib "/opt/report/bin";
 use File::Copy;
-use Config::Properties::Simple;
 use File::Basename;
+use Conf::ReportProperty;
 use DBI;
 
 
-
 my $thisReportName = $0;
-# getlogin will NOT work when ran from cron
-my ($login, $pass, $uid, $gid) = getpwuid($<);
-my $thisUser = $login;
-my $profileFile    = "/home/$thisUser" . "/report.properties";
+
 my ( $fileName, $fileDirectory ) = fileparse( $thisReportName, ".pl" );
 my $individualTempFileName = "MY_REPORT_TEMP_" . $fileName;
 
-my $cfg = Config::Properties::Simple->new( file => $profileFile );
+my $cfg = new Conf::ReportProperty();
+$cfg->initReportingSystem;
 
-my $reportDatabase         = $cfg->getProperty('reportDatabase');
-my $reportDatabaseUser     = $cfg->getProperty('reportDatabaseUser');
-my $reportDatabasePassword = $cfg->getProperty('reportDatabasePassword');
+my $reportDatabase = $cfg->reportDatabase();
+my $reportDatabaseUser = $cfg->reportDatabaseUser();
+my $reportDatabasePassword = $cfg->reportDatabasePassword();
+my $db2profile = $cfg->db2profile();
+my $tmpDir = $cfg->tmpDir();
+my $gsaUser = $cfg->gsaUser();
+my $gsaPassword = $cfg->gsaPassword();
+my $reportDir = $cfg->reportDeliveryFolder('emeaAsset');
 
-my $db2profile = $cfg->getProperty('db2profile');
-my $tmpDir     = $cfg->getProperty("tmpDir");
-
-my $gsaUser     = $cfg->getProperty("gsaUser");
-my $gsaPassword = $cfg->getProperty("gsaPassword");
-
-$reportDir = "/gsa/pokgsa/projects/e/emea_assets/";
-
-# for testing
-$reportDir = "/opt/reports/bin/";
-$tmpDir    = "$tmpDir";
 
 my $listFile = $reportDir . "emea_list.txt";
 my $dataFile = $reportDir . "emea_asset.tsv";
