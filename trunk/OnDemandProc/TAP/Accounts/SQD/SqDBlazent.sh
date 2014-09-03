@@ -6,13 +6,14 @@
 # originated: 2010-01-04
 # creator: KFaler
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-dbName="ATP"
-dbUser="atbravo"
-pw=`tail /gsa/pokgsa/projects/a/amsd/adp/OnDemandProc/TAP/kbin/atppw`
+#dbName="ATP"
+#dbUser="atbravo"
+#pw=`tail /gsa/pokgsa/projects/a/amsd/adp/OnDemandProc/TAP/kbin/atppw`
+source /opt/staging/v2/config/connectionConfig.txt
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 . /db2/tap/sqllib/db2profile;
 
-db2 connect to ${dbName} user ${dbUser} using ${pw};
+db2 connect to $ATPdb user $ATPuser using $ATPpassword;
 
 WDIR="/gsa/pokgsa/projects/a/amsd/adp/OnDemandProc/TAP"
 
