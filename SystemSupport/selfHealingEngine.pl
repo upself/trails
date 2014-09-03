@@ -2379,7 +2379,6 @@ sub coreOperationProcess{
         $operationStartedFlag = $TRUE;#Operation has been started to process
       }
 	  print LOG "Start of Clean up recon queues data operation. \n";
-
       print LOG "Starting query 1\n";
       $bravoConnection->prepareSqlQuery('Recon duplicate 1', $RECON_QUEUE_DUPLICATE_DELETE_1);
       my $sth = $bravoConnection->sql->{'Recon duplicate 1'};
@@ -2414,9 +2413,9 @@ sub coreOperationProcess{
       $bravoConnection->prepareSqlQuery('Recon duplicate 6', $RECON_QUEUE_DUPLICATE_DELETE_6);
       $sth = $bravoConnection->sql->{'Recon duplicate 6'};
       $sth->execute();
-      print LOG "End of query 6\n";
-      print LOG "Starting query 2\n";
       $sth->finish;
+      print LOG "End of query 6\n";
+      print LOG "End of Clean up recon queues data operation. \n";
 	  $operationResultFlag = $OPERATION_SUCCESS;
 	  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
