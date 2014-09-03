@@ -2898,7 +2898,7 @@ sub eventRuleCheck{
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
 
-				 $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+				 $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
 			     $emailFullContent.="$EVENT_RULE_TITLE_TXT: $MessageTitle\n";#append event rule title into email content
          		 $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $metaRuleHandlingInstrcutionCode\n";
 
