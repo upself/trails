@@ -1670,7 +1670,7 @@ sub eventRuleCheck{
 				 }#end else
                  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
                  if($trailsServerFileSystemEmailAlertMessageArrayCount > 0 || $bravoServerFileSystemEmailAlertMessageArrayCount > 0 || $tap3ServerFileSystemEmailAlertMessageArrayCount > 0){
-	  			   	$emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+	  			   	$emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
                  }
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
