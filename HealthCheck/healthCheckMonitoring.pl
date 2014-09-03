@@ -2603,7 +2603,7 @@ sub eventRuleCheck{
 				     my $monitoringDBtmp2 =  $cfg->getProperty("$monitoringDBtmp");#For example: 'TRAILS'
 				     my $monitoringDBAlias = trim($monitoringDBtmp2);#For example: 'TRAILS'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Alias: {$monitoringDBAlias}\n";
-				     my $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX];#For example: 'TRAILSPD'
+				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX];#For example: 'TRAILSPD'
 				     my $monitoringDBRealName = trim($monitoringDBtmp);#For example: 'TRAILS'
                      print LOG "Database Exception Status Check Monitoring - The Monitoring Database Real Name: {$monitoringDBRealName}\n";
 				     $monitoringDBtmp = $monitoringDBDefinitionArray[$DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX];#For example: 'trails.user'
