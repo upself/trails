@@ -12,6 +12,9 @@ then
 elif [ "$SHOST" = "tap2" ]
 then
 	. /home/eaadmin/sqllib/db2profile
+elif [ "$SHOST" = "lexbz2250" ]
+then
+	. /db2/staging/sqllib/db2profile
 elif [ "$SHOST" = "tap3" ]
 then
     . /home/eaadmin/sqllib/db2profile

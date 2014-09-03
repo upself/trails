@@ -132,7 +132,7 @@ sub processHardwareLpars {
 		dlog( $stagingHardwareLpar->toString );
 
 		if ( $self->stagingHardware->action eq 'DELETE' || substr($self->stagingHardware->action,-1) eq '2' ) {
-			if ( $stagingHardwareLpar->action ne 'DELETE' || substr($stagingHardwareLpar->action,-1) ne '2' ) {
+			if ( $stagingHardwareLpar->action ne 'DELETE' && substr($stagingHardwareLpar->action,-1) ne '2' ) {
 				$self->error(1);
 				$self->stagingHardware->action('1');
 				$self->stagingHardware->save( $self->stagingConnection );

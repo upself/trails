@@ -133,9 +133,10 @@ sub queryCustomerMaps {
             ,customer_suffix
             ,customer_prefix
         from
-            customer
+            LGCY_ACCOUNT
         where
             status = \'ACTIVE\'
+        with ur
     ';
 
     return ( 'customerMaps', $query, \@fields );
@@ -197,8 +198,8 @@ sub queryCustomerNumberMap {
             ,cn.customer_number
             ,cc.code
         from
-            customer c
-            left outer join customer_number cn on
+            LGCY_ACCOUNT c
+            left outer join V_SOFTWARE_CUST_NBR cn on
                 cn.customer_id = c.customer_id
                 and cn.status = \'ACTIVE\'
             left outer join country_code cc on
@@ -245,7 +246,7 @@ sub queryAllAccountNumberMap {
             a.account_number
             ,a.customer_id
         from
-            customer a
+            lgcy_account a
         with ur
     ';
 
@@ -293,6 +294,7 @@ sub queryAccountPoolParents {
             and a.master_account_id = b.customer_id
             and b.status = \'ACTIVE\'
             and b.sw_license_mgmt = \'YES\'
+        with ur
     ';
 
     return ( 'accountPoolParents', $query, \@fields );
@@ -340,6 +342,7 @@ sub queryAccountPoolChildren {
             and a.member_account_id = b.customer_id
             and b.status = \'ACTIVE\'
             and b.sw_license_mgmt = \'YES\'
+        with ur
     ';
 
     return ( 'accountPoolChildren', $query, \@fields );
@@ -379,7 +382,7 @@ sub queryAccountNumberMap {
             a.account_number
             ,a.customer_id
         from
-            customer a
+            lgcy_account a
         where
             a.status = \'ACTIVE\'
         with ur
@@ -436,10 +439,10 @@ sub getCustomerNameMap {
 sub queryCustomerNameMap {
     my $query = '
         select
-            a.customer_name
+            a.account_name
             ,a.customer_id
         from
-            customer a
+            lgcy_account a
         where
             a.status = \'ACTIVE\'
         with ur
@@ -478,6 +481,7 @@ sub queryCustomerIdByAccountNumber {
             customer a
         where
             a.account_number = ?
+        with ur
     ';
     return ( 'customerIdByAccountNumber', $query );
 }
@@ -527,6 +531,7 @@ sub queryIsInScopeForSwlm {
             customer a
         where
             a.customer_id = ?
+        with ur
     ';
     return ( 'isInScopeForSwlm', $query );
 }
@@ -575,7 +580,7 @@ sub queryCustomerIdMap {
             a.customer_id
             ,a.account_number
         from
-            customer a
+            lgcy_account a
         with ur
     ';
 
@@ -592,7 +597,7 @@ sub queryCustomerIdMapByStatus {
             a.customer_id
             ,a.account_number
         from
-            customer a
+            lgcy_account a
         where
             a.status = \'' . $status . '\'
         with ur
@@ -643,7 +648,7 @@ sub queryCustomerIdsByGeography {
             a.customer_id
             ,a.account_number
         from
-            customer a
+            lgcy_account a
             ,country_code b
             ,region c
             ,geography d
@@ -727,6 +732,7 @@ sub queryContactData {
             ,a.update_date_time
         from
             contact a
+        with ur
     ';
 
     return ( 'contactData', $query, \@fields );
@@ -789,6 +795,7 @@ sub queryGeographyData {
             ,a.update_date_time
         from
             geography a
+        with ur
     ';
 
     return ( 'geographyData', $query, \@fields );
@@ -854,6 +861,7 @@ sub queryRegionData {
             ,a.update_date_time
         from
             region a
+        with ur
     ';
 
     return ( 'regionData', $query, \@fields );
@@ -922,6 +930,7 @@ sub queryCountryCodeData {
             ,a.update_date_time
         from
             country_code a
+        with ur
     ';
 
     return ( 'countryCodeData', $query, \@fields );
@@ -978,12 +987,13 @@ sub queryPodData {
 
     my $query = '
         select
-            a.pod_id
-            ,a.pod_name
+            a.AA_DEPT_ID
+            ,a.ASSET_ADMIN_DEPT_NAME
             ,a.creation_date_time
             ,a.update_date_time
         from
-            pod a
+            ASSET_ADMIN_DEPT a
+        with ur
     ';
 
     return ( 'podData', $query, \@fields );
@@ -1046,6 +1056,7 @@ sub querySectorData {
             ,a.update_date_time
         from
             sector a
+        with ur
     ';
 
     return ( 'sectorData', $query, \@fields );
@@ -1110,7 +1121,8 @@ sub queryIndustryData {
             ,a.creation_date_time
             ,a.update_date_time
         from
-            industry a
+            V_SOFTWARE_INDUSTRY a
+        with ur
     ';
 
     return ( 'industryData', $query, \@fields );
@@ -1185,16 +1197,17 @@ sub queryOutsourceProfileData {
         	a.id
             ,a.customer_id
             ,a.asset_process_id
-            ,country_id
-            ,outsourceable
-            ,comment
-            ,approver
-            ,record_time
-            ,current
+            ,a.country_id
+            ,a.outsourceable
+            ,a.comment
+            ,a.approver
+            ,a.record_time
+            ,a.current
             ,a.creation_date_time
             ,a.update_date_time
         from
-            outsource_profile a
+            V_SOFTWARE_OP a
+        with ur
     ';
 
     return ( 'outsourceProfileData', $query, \@fields );
@@ -1257,6 +1270,7 @@ sub queryCustomerTypeData {
             ,a.update_date_time
         from
             customer_type a
+        with ur
     ';
 
     return ( 'customerTypeData', $query, \@fields );
@@ -1370,18 +1384,18 @@ sub queryCustomerData {
         select
         	a.customer_id
         	,a.customer_type_id
-        	,a.pod_id
-        	,a.industry_id
+        	,a.ASSET_ADMIN_DEPT_ID
+        	,SIref.id
         	,a.account_number
-        	,a.customer_name
-        	,a.contact_dpe_id
-        	,a.contact_fa_id
-        	,a.contact_hw_id
-        	,a.contact_sw_id
-        	,a.contact_focal_asset_id
-        	,a.contact_transition_id
-        	,a.contract_sign_date
-        	,a.asset_tools_billing_code
+        	,a.ACCOUNT_NAME
+        	,a.DPE_CONTACT_ID
+        	,a.FIN_ANALYST_CONTACT_ID
+        	,a.HW_CONTACT_ID
+        	,a.SW_CONTACT_ID
+        	,a.FOCAL_ASSET_CONTACT_ID
+        	,a.TRANSITION_CONTACT_ID
+        	,a.CONTRACT_SIGN_DATE
+        	,a.ASSET_TOOLS_BILLING_CODE
         	,a.status
         	,a.hw_interlock
         	,a.sw_interlock
@@ -1401,7 +1415,9 @@ sub queryCustomerData {
             ,a.update_date_time
             ,a.tme_object_id
         from
-            customer a
+            LGCY_ACCOUNT a
+            join LGCY_SECTOR_INDUSTRY_REF SIref on (SIref.industry_id=a.industry_id and SIref.sector_id=a.sector_id)
+        with ur
     ';
 
     return ( 'customerData', $query, \@fields );
@@ -1475,7 +1491,8 @@ sub queryCustomerNumberData {
             ,a.creation_date_time
             ,a.update_date_time
         from
-            customer_number a
+            V_SOFTWARE_CUST_NBR a
+        with ur
     ';
 
     return ( 'customerNumberData', $query, \@fields );
@@ -1541,6 +1558,7 @@ sub queryAccountPoolData {
             ,logical_delete_ind            
         from
             account_pool
+        with ur
     ';
 
     return ( 'accountPoolData', $query, \@fields );

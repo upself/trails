@@ -87,7 +87,7 @@ eval {
 	}
 };
 if ($@) {
-	
+	my $dieMsg = $@	
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 	###Notify the Event Engine that we had an error
     ilog("erroring $eventTypeName event status");
@@ -95,8 +95,8 @@ if ($@) {
     ilog("errored $eventTypeName event status");
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
-	elog($@);
-	die $@;
+	elog($dieMsg);
+	die $dieMsg;
 }
 else {
 

@@ -3,6 +3,7 @@ package Staging::Delegate::StagingDelegate;
 ###Modules
 use strict;
 use Base::Utils;
+use POSIX;
 use CNDB::Delegate::CNDBDelegate;
 use Base::ConfigManager;
 use Staging::OM::LoaderStatus;
@@ -18,7 +19,7 @@ sub insertCount {
                     $loaderStatus->database($db);
                     $loaderStatus->objectType($object);
                     $loaderStatus->action($action);
-                    $loaderStatus->count($count);
+                    $loaderStatus->count(floor($count));
                     $loaderStatus->save($connection);
                     dlog( $loaderStatus->toString );
                 }
@@ -789,6 +790,8 @@ sub queryHardwareData {
         $query .= '
         ' . $clause . '
             a.customer_number in (\'35400XX\', \'39780XX\')
+            or a.customer_id in (2541, 2979)
+            or b.customer_id in (2541, 2979)
         ';
         $clause = 'and';
     }

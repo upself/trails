@@ -157,7 +157,7 @@ sub processHardwareLparEff {
 	return if ( !defined $stagingHardwareLparEff->id );
 
 	if ( $self->stagingHardwareLpar->action eq 'DELETE' || substr($self->stagingHardwareLpar->action,-1) eq '2' ) {
-		if ( $stagingHardwareLparEff->action ne 'DELETE' ||  substr($stagingHardwareLparEff->action,-1) eq '2') {
+		if ( $stagingHardwareLparEff->action ne 'DELETE' &&  substr($stagingHardwareLparEff->action,-1) ne '2') {
 			$self->error(1);
 			$self->stagingHardwareLpar->action('1');
 			$self->stagingHardwareLpar->save( $self->stagingConnection );
