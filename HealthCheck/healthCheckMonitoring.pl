@@ -3236,12 +3236,20 @@ sub setupDB2Env {
 #This method is used to append start and stop script email alerts into email content
 sub appendStartAndStopScriptEmailAlertsIntoEmailContent{
    my $startAndStopScriptEmailAlertsMessageCount = scalar(@startAndStopScriptsEmailAlertArray);
+   my $countIndex = 0; 
    if($startAndStopScriptEmailAlertsMessageCount > 0){#append email content if has start and stop script email alert message
        $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
        foreach my $startAndStopScriptEmailAlertMessage (@startAndStopScriptsEmailAlertArray){#go loop for start and stop script email alert message
-	     $emailFullContent.="$startAndStopScriptEmailAlertMessage";#append start and stop script email alert message into email content
-       }  
-	   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+         $countIndex++;
+	     if($countIndex==$startAndStopScriptEmailAlertsMessageCount){
+	       my $startAndStopScriptEmailAlertMessageTemp = substr($startAndStopScriptEmailAlertMessage,0,length($startAndStopScriptEmailAlertMessage)-1);#remove the last return line char '\n'
+	       $emailFullContent.="$startAndStopScriptEmailAlertMessageTemp";#append start and stop script email alert message into email content   
+	     }
+	     else{
+	       $emailFullContent.="$startAndStopScriptEmailAlertMessage";#append start and stop script email alert message into email content
+	     }
+       }
+       $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
    }
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
@@ -3254,7 +3262,7 @@ sub appendAlertEmailSignatureIntoEmailContent{
    $emailFullContent.="Error/Warning Event Instruction Codes Mapping List Wiki Link:\n";
    $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Error%20or%20Warning%20Event%20Instruction%20Codes%20Mapping%20List\n\n";
    $emailFullContent.="Filesystem Monitoring Threshold Definition List Wiki Link:\n";
-   $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Filesystem%20Monitoring\n\n";
+   $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Filesystem%20Monitoring\n";
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
