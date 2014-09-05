@@ -2889,7 +2889,7 @@ sub eventRuleCheck{
 					    }#end if($restartWebAppCmdExecResult == 0)
 					    else{
 					      print LOG "SHE command to remove duplicates in recond queues FAILED\n";
-                          my $FlagSHEError = $TRUE ;
+                          $FlagSHEError = $TRUE ;
 					    }#end else	
                    }else{
 					 print LOG "There are duplicates in recon queue, but we are forbidden to run SHE to fix it.\n";
@@ -2903,7 +2903,7 @@ sub eventRuleCheck{
          		 $emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $metaRuleHandlingInstrcutionCode\n";
 
                  my $DuplicatesInfoMessageTmp = $DuplicatesInfoMessage;
-                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[1]/g;
+                 $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates[0]/g;
                  $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
                  $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
@@ -2939,49 +2939,51 @@ sub eventRuleCheck{
 				 $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
                  my $mail_line;
-                 if($FlagSHEError){
+                 if($FlagSHEError == $TRUE){
                    $mail_line = $FailedMessage;
                    $mail_line =~ s/\@5/'SHE failed during recon queues cleanup'/g;
 				 }else{
                    $mail_line = $SuccesMessage;
 				 }
                  $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $mail_line\n";
+                   
+				   if($FlagSHEError == $FALSE){
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[0]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+			
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[1]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HW_LPAR/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+					   
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+						
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[3]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+			
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[4]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
 
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[0]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/SW LPAR/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_SW_LPAR/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-  		
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[1]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/HW LPAR/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HW_LPAR/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-				   
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-  		           $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[2]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/LICENSE/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_LICENSE/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-  			     	
-  			       $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[3]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/HW/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_HARDWARE/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-		
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[4]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/CUSTOMER/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_CUSTOMER/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
-
-                   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
-                   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[5]/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
-                   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
-				   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+					   $DuplicatesInfoMessageTmp = $DuplicatesInfoMessageAfterCleanup;
+					   $DuplicatesInfoMessageTmp =~ s/\@2/$NumbersOfDuplicates2[5]/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@3/INSTALLED SW/g;
+					   $DuplicatesInfoMessageTmp =~ s/\@4/RECON_INSTALLED_SW/g;
+					   $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $DuplicatesInfoMessageTmp\n";#append event rule message into email content
+				   }#end if($FlagSHEError == $FALSE)
 				   
 				   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 				 }
