@@ -1015,7 +1015,7 @@ public class ReportServiceImpl implements ReportService {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
 					.append(lsBaseWhereClause).append(" ");
 		}
-		lsbSql.append("group by COALESCE(SI.Name, L.Full_Desc), CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
+		lsbSql.append("group by COALESCE(SI.Name, L.Full_Desc), CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
 		lsbSql.append("ORDER BY Product_Name ASC");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())

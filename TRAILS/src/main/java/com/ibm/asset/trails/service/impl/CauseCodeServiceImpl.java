@@ -353,11 +353,12 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			HSSFCell targetDateCell = row
 					.getCell(colIndexes.getColTargetDate());
 			Date colTargetDate = null;
-			if (targetDateCell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC
+			if (targetDateCell != null){
+			   if (targetDateCell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC
 					&& HSSFDateUtil.isCellDateFormatted(targetDateCell)) {
 				colTargetDate = targetDateCell.getDateCellValue();
+			   }
 			}
-
 			String owner = causeCode.getOwner();
 			String colOwner = row.getCell(colIndexes.getColOwner())
 					.getStringCellValue().trim();
