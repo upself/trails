@@ -10,7 +10,7 @@
 			</html:link>
 		</h3>
 	</div>
-	<display:table id="memMod" name="softwareLparMemMod" requestURI="" class="bravo">
+	<display:table id="memMod" name="softwareLparMemMod" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column property="socketName" title="Socket Name" headerClass="blue-med" />
 	    <display:column property="memoryType" title="Memory Type" headerClass="blue-med" />

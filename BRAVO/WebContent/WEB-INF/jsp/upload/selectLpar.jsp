@@ -40,7 +40,7 @@
 <input type="checkbox" name="submitInternal" checked="checked"/>Submit internal CPU and LPAR information of this file<br>
 		<h2>Select Addtional LPARS to apply to the same file</h2>
 
-<display:table name="hardwareLpars" requestURI="" class="bravo" id="tall" >
+<display:table name="hardwareLpars" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two" id="tall" >
 
 	<display:setProperty name="basic.empty.showtable" value="true" />
 		<display:setProperty name="basic.msg.empty_list_row"

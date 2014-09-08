@@ -10,7 +10,7 @@
 			</html:link>
 		</h3>
 	</div>
-	<display:table id="hdisk" name="softwareLparHDisk" requestURI="" class="bravo">
+	<display:table id="hdisk" name="softwareLparHDisk" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column property="manufacturer" title="Manufacturer" 
 	   		headerClass="blue-med" />

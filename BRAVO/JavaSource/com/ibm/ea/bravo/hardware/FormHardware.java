@@ -299,7 +299,6 @@ public class FormHardware extends FormBase {
 				this.country = hardwareLpar.getHardware().getCountry();
 				this.processorCount = hardwareLpar.getHardware()
 						.getProcessorCount();
-				//this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();
 				if(hardwareLpar.getHardwareLparEff() !=null) {this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();}
 				this.chips = hardwareLpar.getHardware().getChips();
 				this.owner = hardwareLpar.getHardware().getOwner();

@@ -2,7 +2,7 @@
 <%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
 
 	<c:if test="${displayOS}">
-	<display:table id="os" name="software" requestURI="" class="bravo">
+	<display:table id="os" name="software" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="OS Name" headerClass="blue-med">
 	        <c:out value="${os.softwareLpar.osName}"/>
@@ -26,7 +26,7 @@
 	</c:if>
 
 	<c:if test="${displayBios}">
-	<display:table id="bios" name="software" requestURI="" class="bravo">
+	<display:table id="bios" name="software" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="false" />
 	    <display:column title="Bios Manufacturer" headerClass="blue-med">
 	        <c:out value="${bios.softwareLpar.biosManufacturer}"/>
@@ -47,7 +47,7 @@
 	</c:if>
 	
 	<c:if test="${displayMisc}">
-	<display:table id="lpar" name="software" requestURI="" class="bravo">
+	<display:table id="lpar" name="software" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="Server Type" headerClass="blue-med">
 	        <c:out value="${lpar.softwareLpar.serverType}"/>
@@ -68,7 +68,7 @@
 	</c:if>
 
 	<c:if test="${displayProcessors}">	
-	<display:table id="processors" name="software" requestURI="" class="bravo">
+	<display:table id="processors" name="software" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="Dedicated Processors" headerClass="blue-med">
 	        <c:out value="${processors.softwareLpar.dedicatedProcessors}"/>
@@ -95,7 +95,7 @@
 	</c:if>
 
 	<c:if test="${displayMemory}">
-	<display:table id="lparMemory" name="software" requestURI="" class="bravo">
+	<display:table id="lparMemory" name="software" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 	    <display:column title="Memory" headerClass="blue-med">
 	        <c:out value="${lparMemory.softwareLpar.memory}"/>

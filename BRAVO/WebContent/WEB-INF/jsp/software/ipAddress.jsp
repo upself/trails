@@ -7,7 +7,7 @@
 			<img src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif" width="14" height="14" alt="contextual field help icon"/>
 		</h3>
 	</div>
-	<display:table id="ipAddress" name="softwareLparIPAddress" requestURI="" class="bravo">
+	<display:table id="ipAddress" name="softwareLparIPAddress" requestURI="" class="ibm-data-table ibm-sortable-table ibm-alternate-two">
 		<display:setProperty name="basic.empty.showtable" value="true" />
 		<display:column title="Gateway <BR />&nbsp;&nbsp; Instance ID" headerClass="blue-med">
 	        <c:out value="${ipAddress.gateway}"/>
