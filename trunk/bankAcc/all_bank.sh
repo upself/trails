@@ -1,4 +1,4 @@
-:
+#!/bin/bash
 
 /opt/reports/bin/all_bank_test.pl
 
