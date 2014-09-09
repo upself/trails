@@ -35,11 +35,12 @@ $VERSION = 'Version 1.0';
 ### Use/Require Statements
 ###
 ###############################################################################
-
+use lib '/opt/bravo/scripts/report/lib'; 
+use lib '/opt/staging/v2'; 
 use strict;
 use Getopt::Std;
 use POSIX ":sys_wait_h";
-use TAP::DBConnection;
+use Tap::DBConnection;
 use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 require '/opt/common/utils/loggingUtils.pl';
@@ -64,7 +65,7 @@ my $sleepTime     = 5;
 my @logArray      = qw(1 2 3 4 5 6);
 my $scriptDir     = '/opt/bravo/scripts/report';
 my $trailsSqlFile = $scriptDir . '/trails_sql.xml';
-my $logFile       = '/var/bravo/logs/report/bravoReportFork.log';
+my $logFile       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
 my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
@@ -113,11 +114,9 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
 	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
-   $bravoConnection = getConnection('traherp', $trailsSqlFile);#Define $bravoConnection var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
-
+   $bravoConnection = getConnection('trails', $trailsSqlFile);#Define $bravoConnection var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
    $customerIds = getDistinctBravoCustomerIds();#Define $customerIds var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
-
-$bravoConnection->disconnect;
+   $bravoConnection->disconnect;
 
 foreach my $customerId (sort @{$customerIds}) {
 
@@ -186,9 +185,7 @@ sub spawnScript {
 
         # i am the child, i *CANNOT* return only exit
         logit("Spawning script $customerId", $logFile);
-        #`$reportScript -c $customerId`;
-        #exec "/usr/perl5_8_8/bin/perl $reportScript $customerId";
-        exec "/usr/perl5_8_8/bin/perl $reportScript -c $customerId";
+        exec "/opt/perl-5.10.1/bin/perl $reportScript -c $customerId";
         #exit 0;
     }
 }
@@ -220,7 +217,7 @@ sub getConnection {
     my $connection;
     logit("Preparing $database connection", $logFile);
     eval {
-        $connection = new DBConnection();
+        $connection = new Tap::DBConnection();
         $connection->setDatabase($database);
         $connection->connect;
         $connection->prepareSql($sqlFile);
@@ -250,3 +247,4 @@ sub usage {
         "bravoImportFork.pl -c <children> -m <med children> -b <big children> \n";
     exit 0;
 }
+
