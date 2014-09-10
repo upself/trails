@@ -246,7 +246,7 @@ sub getData {
         $hardwareLpar->partMIPS( $rec{partMIPS} );
         $hardwareLpar->partMSU( $rec{partMSU} );
         $hardwareLpar->partGartnerMIPS( $rec{partGartnerMIPS} );
-        $hardwareLPar->effectiveThreads( $rec{effectiveThreads}  );
+        $hardwareLpar->effectiveThreads( $rec{effectiveThreads} );
         $hardwareLpar->spla( $rec{spla} );
         $hardwareLpar->sysplex( $rec{sysplex} );
         $hardwareLpar->internetIccFlag( $rec{internetIccFlag} );
