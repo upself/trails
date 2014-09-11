@@ -198,9 +198,9 @@ sub queryHardwareData {
     my $clause = ' and ';
 
     if ( $self->loadDeltaOnly == 1 ) {
-        $query .= ' ' . $clause . ' (h.action != \'COMPLETE\' and substr(h.action,length(h.action),1) != \'0\' )
+        $query .= ' ' . $clause . ' ((h.action != \'COMPLETE\' and substr(h.action,length(h.action),1) != \'0\' )
                 or (hl.action != \'COMPLETE\' and substr(hl.action,length(hl.action),1) != \'0\')
-                or (ep.action != \'COMPLETE\' and substr(ep.action,length(ep.action),1) != \'0\' ) ';
+                or (ep.action != \'COMPLETE\' and substr(ep.action,length(ep.action),1) != \'0\' )) ';
         $clause = ' and ';
     }
 
