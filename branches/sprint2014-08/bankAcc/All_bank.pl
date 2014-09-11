@@ -6,6 +6,8 @@
 	# ========================================================
 	use lib "/opt/report/bin";
 	use File::Copy;
+	use Getopt::Std;
+	use Config::Properties::Simple;
 	use File::Basename;
 	use Conf::ReportProperty;
 	use DBI;
@@ -23,7 +25,7 @@
 	my $reportDatabasePassword = $cfg->stagingDatabasePassword();
 	my $db2profile = $cfg->db2profile();
 	my $tmpDir = $cfg->tmpDir();
-	my $reportDir = $cfg-> bankacc();
+	my $reportDir = $cfg->reportDeliveryFolder('bankacc');
 	
 	$tmpDir    = "$tmpDir/";
 	
@@ -36,11 +38,8 @@
 	my $tmpFileT4D2 = $tmpDir . "T4DBankTmp2.txt";
 	my $tmpSQL = $tmpDir . $fileName . ".sql";
 		
-	# for Testing
-	# my $dataFile = $testDir . "all_bank.tsv";
-	# my $dataFileT4D = $testDir . "tad4d_bank.tsv";
 	
-	# Production to be consider!!
+	# Production 
 	my $dataFile = $reportDir . "all_bank.tsv";
 	my $dataFileT4D = $reportDir . "tad4d_bank.tsv";
 	
