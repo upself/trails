@@ -8,7 +8,7 @@
 	<property name="hardwareId" type="scalar" equals="true"
 		sql-name="hardware_id" />
 	<property name="status" type="scalar" equals="true" sql-name="status" />
-	<property name="action" type="scalar" equals="true" />
+	<property name="action" type="scalar" equals="true" default="0" />
 	<property name="remoteUser" type="scalar" sql-name="remote_user"
 		default="ATP" />
 	<property name="recordTime" type="scalar" sql-name="record_time" />
@@ -32,7 +32,6 @@
 	<property name="vMobilRestrict" type="scalar" equals="true" sql-name="VIRTUAL_MOBILITY_RESTRICTION" />
 	<property name="cappedLpar" type="scalar" equals="true" sql-name="CAPPED_LPAR" />
 	<property name="virtualFlag" type="scalar" equals="true" sql-name="VIRTUAL_FLAG" />
-	<property name="action" type="scalar" default="0" />
 	<property name="table" type="scalar" default="hardware_lpar" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />
