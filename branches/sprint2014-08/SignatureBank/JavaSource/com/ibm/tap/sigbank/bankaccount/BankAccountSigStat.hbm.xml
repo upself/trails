@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.tap.sigbank.bankaccount.BankAccountSigStat"
+		table="BANK_ACCOUNT_SIG_STAT" lazy="true">
+
+		<id name="bankAccountSigStatId" type="long"
+			column="BANK_ACCOUNT_SIG_STAT_ID">
+			<generator class="increment" />
+		</id>
+
+		<property name="count" column="COUNT" type="long"
+			not-null="false" />
+
+		<many-to-one name="softwareSignature"
+			column="SOFTWARE_SIGNATURE_ID"
+			class="com.ibm.tap.sigbank.signature.SoftwareSignature"
+			not-null="true" />
+
+		<many-to-one name="bankAccount" column="BANK_ACCOUNT_ID"
+			class="com.ibm.tap.sigbank.bankaccount.BankAccount" not-null="true" />
+
+
+	</class>
+</hibernate-mapping>
+
