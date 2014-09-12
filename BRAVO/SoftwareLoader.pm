@@ -143,7 +143,7 @@ sub load {
 
         ###Excute the query
         ilog("executing software lpar data query");
-        $sth->execute( $self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId);
+        $sth->execute( $self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId,$self->customerId,$self->lparId);
         ilog("executed software lpar data query");
 
         ###Helper variables to store the currently processing software lpar object.
