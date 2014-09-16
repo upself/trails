@@ -110,6 +110,7 @@
 	$count = 0;
 	$lastId = 0;
 	$bankText = "";
+	$str = "";
 	print OUTPUT "Bank ID\tAction\tHostname\n";
 	while (<BANK>) {
 		chomp;
