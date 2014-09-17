@@ -363,6 +363,7 @@ sub doDelta {
                 	$action = 10**6 + $action if ( $hardwareLpar->partMSU ne $self->hardwareLpar->{$lparKey}->partMSU );
                 	$action = 10**7 + $action if ( $hardwareLpar->partGartnerMIPS ne $self->hardwareLpar->{$lparKey}->partGartnerMIPS );
                 	$action = 10**8 + $action if ( $hardwareLpar->serverType ne $self->hardwareLpar->{$lparKey}->serverType );
+                	$action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads );
 
                 if ( $hardwareLpar->action eq '0' ) {                    	                	           	
                     ###Set lpar to update if it is complete              
