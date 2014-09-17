@@ -49,18 +49,19 @@
 	export to $tmpFile1 of del modified by nochardel coldelx09
 	SELECT     
 	     sr.BANK_ACCOUNT_ID,
-	
-	     slm.ACTION as action_map,
+		 sr.ACTION as action_sr,
+	     slm.ACTION as action_lpar,
 	     count(*) as countHost
 	FROM      
 	    EAADMIN.SCAN_RECORD sr 
 	    left outer join EAADMIN.SOFTWARE_LPAR_MAP slm on sr.id=slm.scan_record_id
-	group by sr.BANK_ACCOUNT_ID,slm.ACTION
+	group by sr.BANK_ACCOUNT_ID,sr.ACTION,slm.ACTION
 	with ur;
 	export to $tmpFileT4D1 of del modified by nochardel coldelx09
 	SELECT     
 	     sr.BANK_ACCOUNT_ID,
-	     slm.ACTION as action_map,
+	     sr.ACTION as action_sr,
+	     slm.ACTION as action_lpar,
 	     sr.NAME as hostname
 	FROM      
 	     EAADMIN.SCAN_RECORD sr 
@@ -82,22 +83,22 @@
 	$count = 0;
 	$lastId = 0;
 	$bankText = "";
-	print OUTPUT "BANK ID\tAction\tHosts\n";
+	print OUTPUT "BANK ID\tAction\tAction_lpar\tHosts_count\n";
 	
 	while (<BANK>) {
 		chomp;
 		my @fields = split /,/;
-		$fields[3] =~ s/\"//g;
+		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
 			$bankText = "";
 		}
 		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[3];
+			$bankText = "$bankText," . $fields[4];
 		} else {
-			$bankText = $fields[3];
+			$bankText = $fields[4];
 		} 
-		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2] ."\n";
+		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2] . "\t" . $fields[3] ."\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
@@ -111,21 +112,22 @@
 	$lastId = 0;
 	$bankText = "";
 	$str = "";
-	print OUTPUT "Bank ID\tAction\tHostname\n";
+	print OUTPUT "Bank ID\tAction\tAction_lpar\tHostname\n";
 	while (<BANK>) {
 		chomp;
 		my @fields = split /,/;
-		$fields[3] =~ s/\"//g;
+		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
 			$bankText = "";
 		}
 		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[3];
+			$bankText = "$bankText," . $fields[4];
 		} else {
-			$bankText = $fields[3];
+			$bankText = $fields[4];
 		} 
-		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  ."\n";
+		# $str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  ."\n";
+		$str = $fields[1] . "\t" . $fields[2] . "\t" .  $fields[3] . "\t" . "\"" . $bankText . "\"\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
