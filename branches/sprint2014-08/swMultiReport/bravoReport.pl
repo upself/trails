@@ -468,6 +468,12 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
 				  ->{'osName'} }
 			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }->{'softwareManufacturer'} =
+			  $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+			  ->{$softwareCategory}->{'softwareManufacturer'};
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'softwareName'} }
 			  ->{'processorCount'} +=
 			  $bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'};
@@ -522,7 +528,8 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			    $software->write( $lineCount, 7,
 					$bravoSoftware->{$accountNumber}->{$hostname}
 					  ->{'chipCount'} );
-				$software->write( $lineCount, 8, $softwareManufacturer );					  
+				$software->write( $lineCount, 8, $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'} );					  
 				$software->write( $lineCount, 9, $softwareName );
 				$software->write( $lineCount, 10, $softwareVersions );
 				$software->write( $lineCount, 11,
@@ -584,6 +591,9 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 				$productCount->{$osNameKey}->{$softwareName}->{'license'} =
 				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
 				  ->{$softwareCategory}->{$softwareName}->{'level'};
+				$productCount->{$osNameKey}->{$softwareName}->{'softwareManufacturer'} =
+				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+				  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'};
 				$productCount->{$osNameKey}->{$softwareName}
 				  ->{'processorCount'} +=
 				  $bravoSoftware->{$accountNumber}->{$hostname}
@@ -616,7 +626,7 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
 			$prodCount->write( $pLineCount, 0, $accountNumber );
 			$prodCount->write( $pLineCount, 1, $osName );
-			$prodCount->write( $pLineCount, 2, $softwareManufacturer );
+			$prodCount->write( $pLineCount, 2, $productCount->{$osName}->{$softwareName}->{'softwareManufacturer'} );
 			$prodCount->write( $pLineCount, 3, $softwareName );
 			$prodCount->write( $pLineCount, 4,
 				$productCount->{$osName}->{$softwareName}->{'license'} );
@@ -797,6 +807,7 @@ from
                        as processor_count
                       ,b.scantime
                       ,c.name as software_name
+                      ,SwMan.name as manufacturer
                       ,case
                           when pi.licensable=1 then 'LICENSABLE'
                           else 'UN-LICENSABLE'
@@ -834,6 +845,8 @@ from
                       and b.bank_account_id = d.id
                       and pi.software_category_id = e.software_category_id
                       and b.discrepancy_type_id = f.id
+                      and instp.MANUFACTURER_ID = SwMan.id
+                      and pi.id = instp.id
                      ) as ol 
 	      		    left outer join eaadmin.hw_sw_composite h
                         on h.software_lpar_id = ol.software_lpar_id
@@ -913,6 +926,8 @@ from
 		elsif ( $softwareCategory eq 'UNKNOWN' ) {
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
 			  {$softwareName}{'softwareVersion'}{$softwareVersion} = 0;
+			 $data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
+			  {$softwareName}{'softwareManufacturer'} = $softwareManufacturer;
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
 			  {$softwareName}{'level'} = $level;
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
