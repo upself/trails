@@ -112,14 +112,18 @@ sub getData {
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
-        if ( $customerNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
-            dlog('Customer number is unique, assigning to hardware');
-            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{customerNumber} } } ) {
-                next if $countryCode eq 'count';
-                $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{$countryCode};
-            }
-        }
-        elsif ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) {
+        
+### We want skip HW with inactive customer number in cndb. 
+#        if ( $customerNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
+#            dlog('Customer number is unique, assigning to hardware');
+#            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{customerNumber} } } ) {
+#                next if $countryCode eq 'count';
+#                $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{$countryCode};
+#            }
+#        }
+#       elsif
+
+        if ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) {
             dlog("Matching country code found; assigning customer id");
             $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} };
         }
