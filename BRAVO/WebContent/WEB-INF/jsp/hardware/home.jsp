@@ -209,6 +209,7 @@
 											<th class="blue-med">Name</th>
 											<th class="blue-med">Server Type</th>
 											<th class="blue-med">Eff Proc</th>
+											<th class="blue-med">Eff Thr</th>
 											<th class="blue-med">Sysplex</th>
 											<th class="blue-med">SPLA</th>
 											<th class="blue-med">Internet Acc</th>
@@ -245,6 +246,8 @@
 													value="${hardware.serverType}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.processorCountEff}" /> </font></td>
+											<td><font class="orange-dark"><c:out
+							                    	value="${hardware.effectiveThreads}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.sysplex}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
