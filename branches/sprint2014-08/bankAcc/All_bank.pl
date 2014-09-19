@@ -91,17 +91,14 @@
 		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
-			$bankText = "";
+			
 		}
-		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[4];
-		} else {
-			$bankText = $fields[4];
-		} 
+		
 		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2] . "\t" . $fields[3] ."\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
+	print OUTPUT $str;
 	close (BANK);
 	close (OUTPUT);
 	
@@ -119,17 +116,13 @@
 		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
-			$bankText = "";
+			
 		}
-		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[4];
-		} else {
-			$bankText = $fields[4];
-		} 
-		# $str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  ."\n";
-		$str = $fields[1] . "\t" . $fields[2] . "\t" .  $fields[3] . "\t" . "\"" . $bankText . "\"\n";
+		
+		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  . "\t" .  $fields[3] ."\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
+	print OUTPUT $str;
 	close (BANK);
 	close (OUTPUT);
