@@ -597,7 +597,8 @@ sub validateServer {
         || $shost eq 'IBM-5AEEDFA3CF9'
         || $host  eq 'IBM-AFDBBE3079D'
         || $host  eq 'IBM-A867E5B5854'
-        || $host  eq 'CALIOTO-WXP' )
+        || $host  eq 'CALIOTO-WXP'
+        || $host  eq 'lexbz2250' ) 
     {
         return 1;
     }
