@@ -26,3 +26,6 @@ gsa.swmulti.report.server=bejgsa.ibm.com
 gsa.swmulti.report.user=trails
 gsa.swmulti.report.password=Bu1khead
 gsa.swmulti.report.target.folder=/gsa/bejgsa/projects/s/swtools/swMultiReport/
+ATPdb=ATP
+ATPuser=atbravo
+ATPpassword=AtpBrav0
