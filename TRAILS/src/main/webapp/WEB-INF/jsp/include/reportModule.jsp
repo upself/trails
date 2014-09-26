@@ -1,7 +1,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <script type="text/javascript">
-<!--
+
 	function setAction() {
 		var lfReportList = document.reportList;
 		var lbCustomerOwnedCustomerManagedSearchChecked = lfReportList.customerOwnedCustomerManagedSearch.checked;
@@ -13,7 +13,9 @@
 		var lbCustOibmMSWCOSearchChecked = lfReportList.custOibmMSWCOSearch.checked;
 		var lbTitlesNotSpecifiedInContractScopeSearchChecked = lfReportList.titlesNotSpecifiedInContractScopeSearch.checked;
 		var lbSelectAllChecked = lfReportList.selectAll.checked;
-
+		var lsReportFileName = lfReportList.reportFileName.value;
+		
+	  if(lsReportFileName == 'Full reconciliation' || lsReportFileName == 'Installed software baseline' ){
 		if (!lbCustomerOwnedCustomerManagedSearchChecked
 				&& !lbCustomerOwnedIBMManagedSearchChecked
 				&& !lbIBMOwnedIBMManagedSearchChecked
@@ -27,7 +29,6 @@
 
 			return false;
 		} else {
-			var lsReportFileName = lfReportList.reportFileName.value;
 
 			lfReportList.name.value = lsReportFileName;
 			lfReportList.customerOwnedCustomerManagedSearchChecked.value = lbCustomerOwnedCustomerManagedSearchChecked ? "true"
@@ -54,8 +55,30 @@
 
 			return true;
 		}
+	  } else {
+		  
+			lfReportList.name.value = lsReportFileName;
+			lfReportList.selectAllChecked.value = "true"
+					;
+			lfReportList.action = "/TRAILS/report/download/" + lsReportFileName
+					+ "<s:property value='%{#attr.account.account}' />"
+					+ ".tsv";
+
+			return true;
+	  }
 	}
-//-->
+
+function reportChange(id) {
+	var reportName = document.getElementById(id).options[document.getElementById(id).selectedIndex].text;
+	if(reportName == 'Full reconciliation' || reportName == 'Installed software baseline'){
+		document.getElementById('checkboxlist').style.display='none';
+		document.getElementById('comments').style.display='block';
+	} else {
+		document.getElementById('checkboxlist').style.display='block';
+		document.getElementById('comments').style.display='none';
+	}
+}
+
 </script>
 <s:form action="reportList" method="get" namespace="/report/download"
 	theme="simple">
@@ -76,10 +99,11 @@
 		<tr>
 			<td><s:select name="reportFileName" label="Report"
 					list="reportList" id="reportFileName" listKey="reportFileName"
-					listValue="reportDisplayName" />&nbsp;&nbsp; <span
+					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; <span
 				class="button-blue"><s:submit value="GO"
 						onclick="return setAction()" alt="Download report" /></span></td>
 		</tr>
+ 	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><s:checkbox
 					label="Customer owned/customer managed titles/vendors"
@@ -143,5 +167,13 @@
 					id="selectAll" /><label
 				for="selectAll">SelectALL</label></td>
 		</tr>
+		</table>
+		<table id="comments" class="basic-table" cellspacing="0" cellpadding="0">
+    	<tr><td>
+             Scope Selection was removed </br>
+             All reports here are return with "Full mode"
+          </td>
+        </tr>
+        </table>
 	</table>
 </s:form>
