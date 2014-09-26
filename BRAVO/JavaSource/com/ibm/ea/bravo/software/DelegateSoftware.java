@@ -956,13 +956,13 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		list.add(new InvalidCategory(""));
 		list.add(new InvalidCategory("Blocked in IFAPRD"));
-		list.add(new InvalidCategory("Customer managed"));
+//		list.add(new InvalidCategory("Customer managed"));
 		list.add(new InvalidCategory("Duplicate product - In Use"));
-		list.add(new InvalidCategory("Misidentification"));
-		list.add(new InvalidCategory("Part of Another Product"));
+//		list.add(new InvalidCategory("Misidentification"));
+//		list.add(new InvalidCategory("Part of Another Product"));
 		list.add(new InvalidCategory("Shared DASD (not used in this LPAR)"));
-		list.add(new InvalidCategory("Vendor Key Required but Not Present"));
-		list.add(new InvalidCategory("Restrictive vendor key"));
+//		list.add(new InvalidCategory("Vendor Key Required but Not Present"));
+//		list.add(new InvalidCategory("Restrictive vendor key"));
 
 		return list;
 	}
