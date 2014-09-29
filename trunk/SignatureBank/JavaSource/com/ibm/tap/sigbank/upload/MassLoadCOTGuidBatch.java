@@ -106,9 +106,9 @@ public class MassLoadCOTGuidBatch extends BatchBase implements IBatch,
 			// String filepath =
 			// request.getSession().getServletContext().getRealPath("")+"/reports/COTProductReport.tsv";
 			// System.out.printf(filepath);
-			// String filepath =
-			// "/var/sigbank/tomcat/webapps/SignatureBank/reports/COTProductReport.tsv";
-			String filepath = "/var/sigbank/work/COTProductReport.tsv";
+			 String filepath =
+			 "/var/sigbank/tomcat/webapps/SignatureBank/reports/COTProductReport.tsv";
+			//String filepath = "/var/sigbank/work/COTProductReport.tsv";
 			file = new File(filepath);
 			fop = new FileOutputStream(file);
 			String encoding = "UTF8";
