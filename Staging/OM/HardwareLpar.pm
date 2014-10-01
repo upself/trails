@@ -27,6 +27,7 @@ sub new {
         ,_vMobilRestrict => undef
         ,_cappedLpar => undef
         ,_virtualFlag => undef
+        ,_osType => undef
         ,_action => undef
         ,_updateDate => undef
         ,_hardwareKey => undef
@@ -175,6 +176,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->osType && defined $object->osType) {
+        $equal = 1 if $self->osType eq $object->osType;
+    }
+    $equal = 1 if (!defined $self->osType && !defined $object->osType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->hardwareKey && defined $object->hardwareKey) {
         $equal = 1 if $self->hardwareKey eq $object->hardwareKey;
     }
@@ -308,6 +316,12 @@ sub virtualFlag {
     my $self = shift;
     $self->{_virtualFlag} = shift if scalar @_ == 1;
     return $self->{_virtualFlag};
+}
+
+sub osType {
+    my $self = shift;
+    $self->{_osType} = shift if scalar @_ == 1;
+    return $self->{_osType};
 }
 
 sub action {
@@ -448,6 +462,11 @@ sub toString {
         $s .= $self->{_virtualFlag};
     }
     $s .= ",";
+    $s .= "osType=";
+    if (defined $self->{_osType}) {
+        $s .= $self->{_osType};
+    }
+    $s .= ",";
     $s .= "action=";
     if (defined $self->{_action}) {
         $s .= $self->{_action};
@@ -506,6 +525,7 @@ sub save {
             ,$self->vMobilRestrict
             ,$self->cappedLpar
             ,$self->virtualFlag
+            ,$self->osType
             ,$self->action
             ,$self->updateDate
         );
@@ -537,6 +557,7 @@ sub save {
             ,$self->vMobilRestrict
             ,$self->cappedLpar
             ,$self->virtualFlag
+            ,$self->osType
             ,$self->action
             ,$self->updateDate
             ,$self->id
@@ -572,10 +593,12 @@ sub queryInsert {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
+            ,os_type
             ,action
             ,update_date
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -626,6 +649,7 @@ sub queryUpdate {
             ,VIRTUAL_MOBILITY_RESTRICTION = ?
             ,CAPPED_LPAR = ?
             ,VIRTUAL_FLAG = ?
+            ,os_type = ?
             ,action = ?
             ,update_date = ?
         where
@@ -680,6 +704,7 @@ sub getById {
     my $vMobilRestrict;
     my $cappedLpar;
     my $virtualFlag;
+    my $osType;
     my $action;
     my $updateDate;
     $sth->bind_columns(
@@ -703,6 +728,7 @@ sub getById {
         ,\$vMobilRestrict
         ,\$cappedLpar
         ,\$virtualFlag
+        ,\$osType
         ,\$action
         ,\$updateDate
     );
@@ -731,6 +757,7 @@ sub getById {
     $self->vMobilRestrict($vMobilRestrict);
     $self->cappedLpar($cappedLpar);
     $self->virtualFlag($virtualFlag);
+    $self->osType($osType);
     $self->action($action);
     $self->updateDate($updateDate);
     return (defined $found) ? 1 : 0;
@@ -759,6 +786,7 @@ sub queryGetById {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
+            ,os_type
             ,action
             ,update_date
         from

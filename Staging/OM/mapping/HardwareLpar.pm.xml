@@ -27,6 +27,7 @@
 	<property name="vMobilRestrict" type="scalar" equals="true" sql-name="VIRTUAL_MOBILITY_RESTRICTION" />
 	<property name="cappedLpar" type="scalar" equals="true" sql-name="CAPPED_LPAR" />
 	<property name="virtualFlag" type="scalar" equals="true" sql-name="VIRTUAL_FLAG" />
+	<property name="osType" type="scalar" equals="true" sql-name="os_type"/>
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="updateDate" type="scalar" sql-name="update_date" />
 	<property name="hardwareKey" type="scalar" equals="true" />

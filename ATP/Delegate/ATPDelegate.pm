@@ -259,6 +259,7 @@ sub getData {
         $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
         $hardwareLpar->cappedLpar( $rec{cappedLpar} );
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
+        $hardwareLpar->osType( $rec{osType} );
            
         dlog( $hardwareLpar->toString );
 
@@ -361,7 +362,8 @@ sub queryATPData {
             vMobilRestrict
             cappedLpar
             virtualFlag
-            nbrFreeProcessorCores)
+            nbrFreeProcessorCores
+            osType)
     );
     my $query = '
         select
@@ -420,7 +422,8 @@ sub queryATPData {
 			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
-			,NBR_FREE_PROCESSOR_CORES		
+			,NBR_FREE_PROCESSOR_CORES
+			,ltrim(rtrim(ENVT)	
         from
             atpprod.bravo
     ';
@@ -486,7 +489,8 @@ sub queryATPDeltaData {
             vMobilRestrict
             cappedLpar
             virtualFlag
-            nbrFreeProcessorCores)
+            nbrFreeProcessorCores
+            osType)
     );
     my $query = '
         select
@@ -546,6 +550,7 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
+			,ltrim(rtrim(ENVT)
         from
             atpprod.bravo
         where  
