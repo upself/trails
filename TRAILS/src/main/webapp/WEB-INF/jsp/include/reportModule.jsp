@@ -1,6 +1,23 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
-
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<script src="${pageContext.request.contextPath}/js/jquery.js"
+	type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
+	type="text/javascript"></script>
 <script type="text/javascript">
+    
+       $(document).ready(function() 
+		 {
+    	   var reportName = document.getElementById("reportFileName").options[document.getElementById("reportFileName").selectedIndex].text;
+       	if(reportName == 'Full reconciliation' || reportName == 'Installed software baseline'){
+       		document.getElementById('checkboxlist').style.display='none';
+       		document.getElementById('comments').style.display='block';
+       	} else {
+       		document.getElementById('checkboxlist').style.display='block';
+       		document.getElementById('comments').style.display='none';
+       	} 
+		 });  
 
 	function setAction() {
 		var lfReportList = document.reportList;
