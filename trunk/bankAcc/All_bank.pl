@@ -6,6 +6,8 @@
 	# ========================================================
 	use lib "/opt/report/bin";
 	use File::Copy;
+	use Getopt::Std;
+	use Config::Properties::Simple;
 	use File::Basename;
 	use Conf::ReportProperty;
 	use DBI;
@@ -23,7 +25,7 @@
 	my $reportDatabasePassword = $cfg->stagingDatabasePassword();
 	my $db2profile = $cfg->db2profile();
 	my $tmpDir = $cfg->tmpDir();
-	my $reportDir = $cfg-> bankacc();
+	my $reportDir = $cfg->reportDeliveryFolder('bankacc');
 	
 	$tmpDir    = "$tmpDir/";
 	
@@ -36,11 +38,8 @@
 	my $tmpFileT4D2 = $tmpDir . "T4DBankTmp2.txt";
 	my $tmpSQL = $tmpDir . $fileName . ".sql";
 		
-	# for Testing
-	# my $dataFile = $testDir . "all_bank.tsv";
-	# my $dataFileT4D = $testDir . "tad4d_bank.tsv";
 	
-	# Production to be consider!!
+	# Production 
 	my $dataFile = $reportDir . "all_bank.tsv";
 	my $dataFileT4D = $reportDir . "tad4d_bank.tsv";
 	
@@ -50,18 +49,19 @@
 	export to $tmpFile1 of del modified by nochardel coldelx09
 	SELECT     
 	     sr.BANK_ACCOUNT_ID,
-	
-	     slm.ACTION as action_map,
+		 sr.ACTION as action_sr,
+	     slm.ACTION as action_lpar,
 	     count(*) as countHost
 	FROM      
 	    EAADMIN.SCAN_RECORD sr 
 	    left outer join EAADMIN.SOFTWARE_LPAR_MAP slm on sr.id=slm.scan_record_id
-	group by sr.BANK_ACCOUNT_ID,slm.ACTION
+	group by sr.BANK_ACCOUNT_ID,sr.ACTION,slm.ACTION
 	with ur;
 	export to $tmpFileT4D1 of del modified by nochardel coldelx09
 	SELECT     
 	     sr.BANK_ACCOUNT_ID,
-	     slm.ACTION as action_map,
+	     sr.ACTION as action_sr,
+	     slm.ACTION as action_lpar,
 	     sr.NAME as hostname
 	FROM      
 	     EAADMIN.SCAN_RECORD sr 
@@ -83,25 +83,22 @@
 	$count = 0;
 	$lastId = 0;
 	$bankText = "";
-	print OUTPUT "BANK ID\tAction\tHosts\n";
+	print OUTPUT "BANK ID\tAction\tAction_lpar\tHosts_count\n";
 	
 	while (<BANK>) {
 		chomp;
 		my @fields = split /,/;
-		$fields[3] =~ s/\"//g;
+		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
-			$bankText = "";
+			
 		}
-		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[3];
-		} else {
-			$bankText = $fields[3];
-		} 
-		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2] ."\n";
+		
+		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2] . "\t" . $fields[3] ."\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
+	print OUTPUT $str;
 	close (BANK);
 	close (OUTPUT);
 	
@@ -111,23 +108,21 @@
 	$count = 0;
 	$lastId = 0;
 	$bankText = "";
-	print OUTPUT "Bank ID\tAction\tHostname\n";
+	$str = "";
+	print OUTPUT "Bank ID\tAction\tAction_lpar\tHostname\n";
 	while (<BANK>) {
 		chomp;
 		my @fields = split /,/;
-		$fields[3] =~ s/\"//g;
+		$fields[4] =~ s/\"//g;
 		if ( ! ($fields[0] eq $lastId ) ) {
 			print OUTPUT $str;
-			$bankText = "";
+			
 		}
-		if ( ! $bankText eq "" ) {
-			$bankText = "$bankText," . $fields[3];
-		} else {
-			$bankText = $fields[3];
-		} 
-		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  ."\n";
+		
+		$str = $fields[0]. "\t" . $fields[1] . "\t" . $fields[2]  . "\t" .  $fields[3] ."\n";
 		$lastId = $fields[0];
 		$count = $count + 1;
 	}
+	print OUTPUT $str;
 	close (BANK);
 	close (OUTPUT);

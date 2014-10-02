@@ -38,6 +38,9 @@ sub new
         _reportDatabase => $cfg->getProperty('reportDatabase'),
         _reportDatabaseUser => $cfg->getProperty('reportDatabaseUser'),
         _reportDatabasePassword => $cfg->getProperty('reportDatabasePassword'),
+	_stagingDatabase => $cfg->getProperty('stagingDatabase'),
+        _stagingDatabaseUser => $cfg->getProperty('stagingDatabaseUser'),
+        _stagingDatabasePassword => $cfg->getProperty('stagingDatabasePassword'),
         _db2profile => $cfg->getProperty('db2profile'),
         _gsaUser => $cfg->getProperty("gsaUser"),
         _gsaPassword => $cfg->getProperty("gsaPassword"),
@@ -108,6 +111,24 @@ sub reportDatabasePassword {
     my $self = shift;
     $self->{_reportDatabasePassword} = shift if scalar @_ == 1;
     return $self->{_reportDatabasePassword};
+}
+
+sub stagingDatabase {
+    my $self = shift;
+    $self->{_stagingDatabase} = shift if scalar @_ == 1;
+    return $self->{_stagingDatabase};
+}
+
+sub stagingDatabaseUser {
+    my $self = shift;
+    $self->{_stagingDatabaseUser} = shift if scalar @_ == 1;
+    return $self->{_stagingDatabaseUser};
+}
+
+sub stagingDatabasePassword {
+    my $self = shift;
+    $self->{_stagingDatabasePassword} = shift if scalar @_ == 1;
+    return $self->{_stagingDatabasePassword};
 }
 
 sub db2profile {
