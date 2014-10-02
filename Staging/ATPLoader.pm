@@ -516,7 +516,7 @@ sub doDelta {
 			foreach my $key ( keys %{ $self->hardwareLpar } ) {
 				elog(   $self->hardwareLpar->{$key}->customerId . '|'
 					  . $self->hardwareLpar->{$key}->name )
-				  if ($self->hardwareLpar->{$key}->action eq 'DELETE' || substr($self->hardwareLpar->action,-1) eq '2' );
+				  if ($self->hardwareLpar->{$key}->action eq 'DELETE' || substr($self->hardwareLpar->{$key}->action,-1) eq '2' );
 			}
 		}
 
@@ -526,7 +526,7 @@ sub doDelta {
 			foreach my $key ( keys %{ $self->hardware } ) {
 				elog(   $self->hardware->{$key}->customerId . '|'
 					  . $self->hardware->{$key}->serial )
-				  if ($self->hardware->{$key}->action eq 'DELETE' || substr($self->hardware->action,-1) eq '2' );
+				  if ($self->hardware->{$key}->action eq 'DELETE' || substr($self->hardware->{$key}->action,-1) eq '2' );
 			}
 		}
 

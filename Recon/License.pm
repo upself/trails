@@ -362,7 +362,7 @@ sub getLicenseAllocationsData {
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
         
        	my ( $scopename_temp, undef ) = getScheduleFScope( 	$self,
-															$self->license->customerId, # customer ID
+															$rec{slCustomerId}, # customer ID from SW LPAR
 															$rec{swName}, # software name
 															$rec{hOwner}, # hardware owner ID
 															$rec{hSerial}, # hardware serial
@@ -411,7 +411,6 @@ sub queryScheduleFScope {
 	    sf.software_name = ?
 	  and
 	    sf.status_id = 2
-	  order by sf.level fetch first 1 rows only
 	';
 	return('ScheduleFScope', $query, \@fields );
 	

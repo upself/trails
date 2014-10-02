@@ -11,7 +11,7 @@ sub new {
         ,_customerId => undef
         ,_hardwareId => undef
         ,_status => undef
-        ,_action => undef
+        ,_action => 0
         ,_remoteUser => 'ATP'
         ,_recordTime => undef
         ,_extId => undef

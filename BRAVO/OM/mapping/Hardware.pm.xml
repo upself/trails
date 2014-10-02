@@ -13,7 +13,7 @@
 	<property name="hardwareStatus" type="scalar" equals="true"
 		sql-name="hardware_status" />
 	<property name="status" type="scalar" equals="true" sql-name="status" />
-	<property name="action" type="scalar" equals="true" />
+	<property name="action" type="scalar" equals="true" default="0" />
 	<property name="remoteUser" type="scalar" sql-name="remote_user"
 		default="ATP" />
 	<property name="recordTime" type="scalar" sql-name="record_time" />
