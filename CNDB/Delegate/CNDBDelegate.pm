@@ -1485,7 +1485,7 @@ sub queryCustomerNumberData {
         	a.customer_number_id
         	,a.customer_id
         	,a.customer_number
-        	,a.lpid_id
+        	, case when a.lpid_id is null then 999999 else a.lpid_id end
         	,a.country_code_id
         	,a.status
             ,a.creation_date_time
