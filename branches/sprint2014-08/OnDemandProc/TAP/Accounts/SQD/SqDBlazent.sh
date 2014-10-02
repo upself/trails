@@ -9,11 +9,9 @@
 #dbName="ATP"
 #dbUser="atbravo"
 #pw=`tail /gsa/pokgsa/projects/a/amsd/adp/OnDemandProc/TAP/kbin/atppw`
-reprop=$(uname -n |awk -F'.' '{print $1}').report.properties
-source /opt/report/bin/Conf/$reprop
 source /opt/staging/v2/config/connectionConfig.txt
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-. $db2profile;
+. /db2/tap/sqllib/db2profile;
 
 db2 connect to $ATPdb user $ATPuser using $ATPpassword;
 
