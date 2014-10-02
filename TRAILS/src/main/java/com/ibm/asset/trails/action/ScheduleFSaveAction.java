@@ -71,12 +71,29 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		List<ScheduleF> lsfExists = null;
 		ScheduleF sfoExists = null;
 		ScheduleF sfiExists = null;
-
-		if (lalProductInfo.size() == 0) {
+		Long statusId = getScheduleFForm().getStatusId();
+		
+		if (lalProductInfo.size() == 0 ) {
+			if(statusId != 1){
 			addFieldError(
 					"scheduleFForm.softwareName",
 					"Software does not exist in catalog. It may already been removed in SWKB Toolkit.");
 			return INPUT;
+			} else {
+				if (llScheduleFId != null) {			
+					sfiExists = getScheduleFService().getScheduleFDetails(llScheduleFId);
+				}
+				    sfiExists.setStatus(findStatusInList(getScheduleFForm().getStatusId(),
+						getStatusArrayList()));
+				try {
+					getScheduleFService().saveScheduleF(sfiExists,
+							getUserSession().getRemoteUser());
+					return SUCCESS;
+				} catch (Exception e) {
+					System.out.println(e.getCause());
+					return INPUT;
+				}
+			}
 		} else {
 			
 				lsfExists = getScheduleFService().findScheduleF(
