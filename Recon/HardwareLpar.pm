@@ -55,7 +55,8 @@ sub recon0101 {
 	my $allocMethodologyMap =
 	  Recon::Delegate::ReconDelegate->getAllocationMethodologyMap();
 	
-	my $sqlquery = "";
+	my $manquery = "";
+	my $autoquery= "";
 	
 	return unless $action =~ /^[01]+[0123]$/ ; # action is not composed of 0's and 1's (with 0123 at the end)
 	
@@ -67,21 +68,34 @@ sub recon0101 {
 	for (my $i=0; $i<5; $i++) # 10^0 to 10^4 ignored
 		{ catchRight(\$action); }
 	
-	$sqlquery.=$allocMethodologyMap->{'Per LPAR IBM LSPR MIPS'} if catchRight(\$action) == "1"; # 10^5
-	$sqlquery.=$allocMethodologyMap->{'Per LPAR MSU'} if catchRight(\$action) == "1"; # 10^6
-	$sqlquery.=$allocMethodologyMap->{'Per LPAR Gartner MIPS'} if catchRight(\$action) == "1"; # 10^7
+	if ( catchRight(\$action) == "1" ){ # 10^5
+		$manquery.=$allocMethodologyMap->{'Per LPAR IBM LSPR MIPS'};
+		$autoquery.="5, ";
+	}
+	if ( catchRight(\$action) == "1" ){ # 10^6
+		$manquery.=$allocMethodologyMap->{'Per LPAR MSU'};
+		$autoquery.="9, ";
+	}
+	if ( catchRight(\$action) == "1" ){ # 10^7
+		$manquery.=$allocMethodologyMap->{'Per LPAR Gartner MIPS'};
+		$autoquery.="70, ";
+	}
 	catchRight(\$action); # 10^8 ignored
-	$sqlquery.=$allocMethodologyMap->{'Per processor'} if catchRight(\$action) == "1"; # 10^9
+	if ( catchRight(\$action) == "1" ){ # 10^9
+		$manquery.=$allocMethodologyMap->{'Per processor'};
+		$autoquery.="2, ";
+	}
 		
-	return if ($sqlquery == "");
+	return if ($manquery == "");
 	
-	$sqlquery =~ s/, $//; # removing the closing ", " in the $sqlquery
+	$manquery =~ s/, $//; # removing the closing ", " in the $manquery
+	$autoquery =~ s/, $//; # the same for autoquery
 	
-	wlog("Breaking these allocation methodologies: $sqlquery");
+	wlog("Breaking these allocation methodologies: $manquery, captypes: $autoquery");
 	
 	my %rec;
 	
-    $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($sqlquery) );
+    $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($manquery, $autoquery) );
 
     ###access statement handle
     my $sth = $self->connection->sql->{getReconcilesByMethodology};
@@ -200,6 +214,7 @@ sub hardwareLpar {
 sub queryGetReconcilesByMethodology {
 	my $self=shift;
 	my $methodologies=shift;
+	my $captypes=shift;
 
     my @fields = qw(
       rId
@@ -212,10 +227,15 @@ sub queryGetReconcilesByMethodology {
 		  reconcile r
 		  join installed_software is on is.id = r.installed_software_id
 		  join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id
+		  join reconcile_used_license rul on rul.reconcile_id = r.id
+		  join used_license ul on rul.used_license_id = ul.id
       where
           hsc.hardware_lpar_id = ?
-          and r.reconcile_type_id = 1
-          and r.allocation_methodology_id in ( $methodologies )
+          and (
+				( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id in ( $methodologies ) ) )
+			or
+				( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id in ( $captypes ) ) )
+		  )
     };
 
     return ( 'getReconcilesByMethodology', $query, \@fields );
