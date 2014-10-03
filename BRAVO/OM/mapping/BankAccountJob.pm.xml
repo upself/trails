@@ -11,6 +11,8 @@
 		sql-name="start_time" />
 	<property name="endTime" type="scalar" equals="true" sql-name="end_time" />
 	<property name="status" type="scalar" equals="true" sql-name="status" />
+	<property name="firstErrorTime" type="scalar" equal="true"
+		sql-name="first_error_time" />
 	<method name="save" />
 	<method name="getByBizKey" />
 </class>

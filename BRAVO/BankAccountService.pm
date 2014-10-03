@@ -54,6 +54,7 @@ sub stopJob {
 	$bnkAccntJob->endTime( dbstamp() );
 	$bnkAccntJob->comments( "Finished " . $bnkAccntJob->name );
 	$bnkAccntJob->status('COMPLETE');
+	$bnkAccntJob->firstErrorTime(undef);
 	dlog( $bnkAccntJob->toString );
 
 	dlog("Saving to database");
@@ -82,6 +83,10 @@ sub error {
 	$bnkAccntJob->endTime( dbstamp() );
 	$bnkAccntJob->comments($error);
 	$bnkAccntJob->status('ERROR');
+	my $firstErr = $bnkAccntJob->firstErrorTime;
+	if(!defined $firstErr || $firstErr eq ''){
+	 $bnkAccntJob->firstErrorTime( dbstamp() );
+	}
 	dlog( $bnkAccntJob->toString );
 
 	dlog("Saving to database");
