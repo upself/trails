@@ -97,6 +97,7 @@ foreach my $accountNumber (@accountNumbers) {
 				,case when software_lpar_eff.status = 'ACTIVE' then software_lpar_eff.processor_count
 				 else software_lpar.processor_count end as processor_count
 				,hardware.processor_count as hw_processor_count
+				,hardware_lper.os_type as os_type
 				,hardware_lpar.ext_id as ext_id
 				,hardware_lpar.tech_image_id as tech_image_id
 			from
