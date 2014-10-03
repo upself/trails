@@ -251,7 +251,6 @@ public class FormSoftware extends FormBase {
 			readOnly.put(Constants.DISCREPANCY_TYPE, Constants.TRUE);
 			readOnly.put(Constants.INVALID_CATEGORY, Constants.TRUE);
 		}
-		//invalidCategoryList = DelegateSoftware.getInvalidCategoryList();
 
 		/**
 		 * // if id is null, its a create and only have missing if (id == null)

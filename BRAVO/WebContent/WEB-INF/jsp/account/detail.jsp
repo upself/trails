@@ -525,13 +525,6 @@ function popupTrailsReports(accountId) {
 									<li><a class="ibm-upload-link"
 										href="/BRAVO/upload/softAudit.do?id=${account.customer.accountNumber}">Upload
 											TLCMz Software</a></li>
-
-									<!-- Upload Dorana file -->
-									<!--
-									<li><a class="ibm-upload-link"
-										href="/BRAVO/upload/dorana.do?id=${account.customer.accountNumber}">Upload
-											Dorana Scan</a></li>
-                                     -->
                                      
 									<!-- Delete SWASSET data -->
 									<li><a class="ibm-delete-link"
