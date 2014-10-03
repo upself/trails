@@ -38,6 +38,7 @@ sub new {
         ,_swFinancialMgmt => undef
         ,_creationDateTime => undef
         ,_updateDateTime => undef
+        ,_tmeObjectId => undef
         ,_action => undef
         ,_table => 'customer'
         ,_idField => 'customer_id'
@@ -267,6 +268,13 @@ sub equals {
     $equal = 1 if (!defined $self->updateDateTime && !defined $object->updateDateTime);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->tmeObjectId && defined $object->tmeObjectId) {
+        $equal = 1 if $self->tmeObjectId eq $object->tmeObjectId;
+    }
+    $equal = 1 if (!defined $self->tmeObjectId && !defined $object->tmeObjectId);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -462,6 +470,12 @@ sub updateDateTime {
     return $self->{_updateDateTime};
 }
 
+sub tmeObjectId {
+    my $self = shift;
+    $self->{_tmeObjectId} = shift if scalar @_ == 1;
+    return $self->{_tmeObjectId};
+}
+
 sub action {
     my $self = shift;
     $self->{_action} = shift if scalar @_ == 1;
@@ -643,6 +657,11 @@ sub toString {
         $s .= $self->{_updateDateTime};
     }
     $s .= ",";
+    $s .= "tmeObjectId=";
+    if (defined $self->{_tmeObjectId}) {
+        $s .= $self->{_tmeObjectId};
+    }
+    $s .= ",";
     $s .= "action=";
     if (defined $self->{_action}) {
         $s .= $self->{_action};
@@ -702,6 +721,7 @@ sub save {
             ,$self->swFinancialMgmt
             ,$self->creationDateTime
             ,$self->updateDateTime
+            ,$self->tmeObjectId
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -742,6 +762,7 @@ sub save {
             ,$self->swFinancialMgmt
             ,$self->creationDateTime
             ,$self->updateDateTime
+            ,$self->tmeObjectId
             ,$self->id
         );
         $sth->finish;
@@ -786,8 +807,10 @@ sub queryInsert {
             ,sw_financial_mgmt
             ,creation_date_time
             ,update_date_time
+            ,tme_object_id
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -858,6 +881,7 @@ sub queryUpdate {
             ,sw_financial_mgmt = ?
             ,creation_date_time = ?
             ,update_date_time = ?
+            ,tme_object_id = ?
         where
             customer_id = ?
     ';
@@ -921,6 +945,7 @@ sub getByBizKey {
     my $swFinancialMgmt;
     my $creationDateTime;
     my $updateDateTime;
+    my $tmeObjectId;
     $sth->bind_columns(
         \$id
         ,\$customerTypeId
@@ -953,6 +978,7 @@ sub getByBizKey {
         ,\$swFinancialMgmt
         ,\$creationDateTime
         ,\$updateDateTime
+        ,\$tmeObjectId
     );
     $sth->execute(
         $self->customerId
@@ -990,6 +1016,7 @@ sub getByBizKey {
     $self->swFinancialMgmt($swFinancialMgmt);
     $self->creationDateTime($creationDateTime);
     $self->updateDateTime($updateDateTime);
+    $self->tmeObjectId($tmeObjectId);
 }
 
 sub queryGetByBizKey {
@@ -1026,6 +1053,7 @@ sub queryGetByBizKey {
             ,sw_financial_mgmt
             ,creation_date_time
             ,update_date_time
+            ,tme_object_id
         from
             customer
         where
@@ -1069,6 +1097,7 @@ sub getById {
     my $swFinancialMgmt;
     my $creationDateTime;
     my $updateDateTime;
+    my $tmeObjectId;
     $sth->bind_columns(
         \$customerId
         ,\$customerTypeId
@@ -1101,6 +1130,7 @@ sub getById {
         ,\$swFinancialMgmt
         ,\$creationDateTime
         ,\$updateDateTime
+        ,\$tmeObjectId
     );
     $sth->execute(
         $self->id
@@ -1138,6 +1168,7 @@ sub getById {
     $self->swFinancialMgmt($swFinancialMgmt);
     $self->creationDateTime($creationDateTime);
     $self->updateDateTime($updateDateTime);
+    $self->tmeObjectId($tmeObjectId);
     return (defined $found) ? 1 : 0;
 }
 
@@ -1175,6 +1206,7 @@ sub queryGetById {
             ,sw_financial_mgmt
             ,creation_date_time
             ,update_date_time
+            ,tme_object_id
         from
             customer
         where
