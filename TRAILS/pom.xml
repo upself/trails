@@ -223,11 +223,13 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.7</version>
 		</dependency>
-		<dependency>
+		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
+		<!--<dependency>
 			<groupId>displaytag</groupId>
 			<artifactId>displaytag-export-poi-trails</artifactId>
 			<version>1.2</version>
-		</dependency>
+		</dependency>-->
+		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
