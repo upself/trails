@@ -10,4 +10,9 @@ public class UnitTest {
 	public void testEqualsTrue() {
 	  assertEquals(5, 5);
 	}
+	
+	@Test
+	public void testEqualsFalse() {
+	  assertEquals(3, 5);
+	}
 }
