@@ -42,6 +42,41 @@
 	title="w3" type="text/css" />
 <script src="//1.w3.s81c.com/common/js/dojo/w3.js"
 	type="text/javascript"></script>
+	
+<script type="text/javascript" src="/BRAVO/common/project.js"></script>
+
+<script>
+	function checkAll(theForm) { // check all the checkboxes in the list
+		for (var i = 0; i < theForm.elements.length; i++) {
+			var e = theForm.elements[i];
+			var eName = e.name;
+
+			if (eName != 'allbox' && (e.type.indexOf("checkbox") == 0)) {
+				if (!e.disabled) {
+					e.checked = theForm.allbox.checked;
+				}
+			}
+		}
+	}
+</script>
+
+<script>
+function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
+	var lsName = null;
+
+	for (var i = 0; i < pForm.elements.length; i++) {
+		var leTemp = pForm.elements[i];
+		
+		if (leTemp.name != psAllCheckboxName &&
+				leTemp.name == psCheckboxName &&
+				leTemp.type.indexOf("checkbox") == 0 &&
+				!leTemp.disabled) {
+			leTemp.checked = pForm[psAllCheckboxName].checked;
+		}
+	} 
+}
+</script>
+		
 </head>
 <body id="ibm-com">
 	<div id="ibm-top" class="ibm-liquid">
