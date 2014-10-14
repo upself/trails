@@ -107,7 +107,8 @@
 
 								<div class="indent">
 									<h3>
-										Composites&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+										Composites
+										<a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="composites" requestURI=""
@@ -136,7 +137,7 @@
 
 								<div class="indent">
 									<h3>
-										Software lpars w/o Hardware&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+										Software lpars w/o Hardware <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""

@@ -161,8 +161,8 @@
 								<br></br>
 								<div class="indent">
 									<h3>
-										Software&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Software <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 

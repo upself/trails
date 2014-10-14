@@ -43,6 +43,25 @@
 	title="w3" type="text/css" />
 <script src="//1.w3.s81c.com/common/js/dojo/w3.js"
 	type="text/javascript"></script>
+	
+<script type="text/javascript" src="/BRAVO/common/project.js"></script>
+
+<script>
+	function checkAll(theForm) { // check all the checkboxes in the list
+		for (var i = 0; i < theForm.elements.length; i++) {
+			var e = theForm.elements[i];
+			var eName = e.name;
+
+			if (eName != 'allbox' && (e.type.indexOf("checkbox") == 0)) {
+				if (!e.disabled) {
+					e.checked = theForm.allbox.checked;
+				}
+			}
+		}
+	}
+</script>
+	
+	
 </head>
 <body id="ibm-com">
 	<div id="ibm-top" class="ibm-liquid">
@@ -168,7 +187,7 @@
 										<thead>
 											<tr>
 												<th>SW LPAR Name Search: <html:link
-														page="/help/help.do#H5">
+														page="/BRAVO/help/help.do">
 														<img
 															src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 															width="14" height="14" alt="contextual field help icon" />
@@ -205,7 +224,7 @@
 										class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 										id="small">
 										<tr>
-											<th>LPAR List <html:link page="/help/help.do#H6">
+											<th>LPAR List <html:link page="/BRAVO/help/help.do">
 													<img
 														src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 														width="14" height="14" alt="contextual field help icon" />

@@ -133,7 +133,7 @@ function popupTrailsReports(accountId) {
 								<div class="indent">
 									<h3>
 										Composites
-										<html:link page="/help/help.do#H2">
+										<html:link page="/BRAVO/help/help.do">
 											<img
 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 												width="14" height="14" alt="contextual field help icon" />
@@ -167,7 +167,7 @@ function popupTrailsReports(accountId) {
 								<div class="indent">
 									<h3>
 										Hardware lpars w/o Software
-										<html:link page="/help/help.do#H2">
+										<html:link page="/BRAVO/help/help.do">
 											<img
 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 												width="14" height="14" alt="contextual field help icon" />
@@ -199,7 +199,7 @@ function popupTrailsReports(accountId) {
 								<div class="indent">
 									<h3>
 										Hardware w/o hardware lpar
-										<html:link page="/help/help.do#H2">
+										<html:link page="/BRAVO/help/help.do">
 											<img
 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
 												width="14" height="14" alt="contextual field help icon" />
@@ -239,7 +239,7 @@ function popupTrailsReports(accountId) {
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
@@ -305,7 +305,7 @@ function popupTrailsReports(accountId) {
 
 
 								<h2 class="ibm-rule">
-									Reports&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+									Reports <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 								</h2>
 
 								<ul class="ibm-link-list">

@@ -123,7 +123,8 @@
 			</div>
 			<div class="indent">
 				<h3>
-					Authorized assets list&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+					Authorized assets list
+					<a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 				</h3>
 			</div>
 			<display:table id="row" name="assets" requestURI=""

@@ -50,6 +50,8 @@
 
 		<property name="serverType" column="SERVER_TYPE" length="15" />
 		
+		<property name="os_type" column="OS_TYPE" length="64" />
+		
 		<property name="spla" column="SPLA" length="3" />
 		
 		<property name="sysplex" column="SYSPLEX" length="8" />
@@ -64,7 +66,7 @@
             
         <property name="partMSU" column="PART_MSU"
             type="integer" />
-            
+                    
         <property name="effectiveThreads" column="EFFECTIVE_THREADS"
             type="java.math.BigDecimal" /> 
             

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="?Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -55,7 +55,7 @@
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM?/a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -104,7 +104,6 @@
 							<display:setProperty name="basic.empty.showtable" value="true" />
 							<display:column title="Status" property="statusImage"
 								headerClass="blue-med" sortable="true" />
-<!-- 								 style="background-color:#00649D;" -->
 							<%
 								boolean lbAdminRole = false;
 							%>
@@ -159,7 +158,7 @@
 						<div class="ibm-container">
 							<h2 class="ibm-first">
 								Actions <a class="ibm-question-link"
-									href="BRAVO/help/help.do#H9"></a>
+									href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body"></div>
 						</div>

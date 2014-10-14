@@ -154,7 +154,7 @@
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">

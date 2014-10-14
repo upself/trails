@@ -32,6 +32,8 @@ public class HardwareLpar {
 	private String techImageId;
 
 	private String serverType;
+	
+	private String os_type;
 
 	private Integer partMIPS;
 
@@ -40,7 +42,7 @@ public class HardwareLpar {
 	private Integer partMSU;
 	
 	private BigDecimal effectiveThreads;
-	
+		            
 	private String lparStatus;
 	
 	private String spla;
@@ -67,6 +69,14 @@ public class HardwareLpar {
 
 	public void setServerType(String serverType) {
 		this.serverType = serverType;
+	}
+	
+	public String getOs_type() {
+		return os_type;
+	}
+
+	public void setOs_type(String os_type) {
+		this.os_type = os_type;
 	}
 
 	public String getLparStatus() {

@@ -120,8 +120,8 @@
 
 								<div class="indent">
 									<h3>
-										Hardware&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Hardware <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -196,8 +196,8 @@
 								</table>
 								<div class="indent">
 									<h3>
-										Hardware LPAR&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Hardware LPAR <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -208,6 +208,7 @@
 											<th class="blue-med" width="1%"></th>
 											<th class="blue-med">Name</th>
 											<th class="blue-med">Server Type</th>
+											<th class="blue-med">OS Type</th>
 											<th class="blue-med">Eff Proc</th>
 											<th class="blue-med">Eff Thr</th>
 											<th class="blue-med">Sysplex</th>
@@ -246,6 +247,8 @@
 													value="${hardware.serverType}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.processorCountEff}" /> </font></td>
+											<td><font class="orange-dark"> <c:out
+															value="${lpar.hardwareLpar.os_type}" /> </font></td>
 											<td><font class="orange-dark"><c:out
 							                    	value="${hardware.effectiveThreads}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
@@ -274,8 +277,8 @@
 
 								<div class="indent">
 									<h3>
-										Comment History&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Comment History <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="commentList" requestURI=""
@@ -302,7 +305,7 @@
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="?Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -77,7 +77,7 @@ function popupTrailsReports(accountId) {
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM?/a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -146,7 +146,7 @@ function popupTrailsReports(accountId) {
 
 								<div class="indent">
 									<h3>
-										Account&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+										Account <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -196,8 +196,8 @@ function popupTrailsReports(accountId) {
 								<br />
 								<div class="indent">
 									<h3>
-										Account Statistics&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Account Statistics <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -238,16 +238,15 @@ function popupTrailsReports(accountId) {
 								<%
 									/*
 								%>
-								<br />
-								<br />
+
 								<table border="0" width="65%" cellspacing="10" cellpadding="0">
 									<thead>
 										<tr>
-											<th>LPAR Name/Serial Search:&nbsp;<a
-												class="ibm-question-link" href="help/help.do"></a></th>
-<!-- 											<th>Software Search: <img -->
-<!-- 												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif" -->
-<!-- 												width="14" height="14" alt="contextual field help icon" /></th> -->
+											<th>LPAR Name/Serial Search: <a
+												class="ibm-question-link" href="/BRAVO/help/help.do"></a></th>
+											<th>Software Search: <img
+												src="//w3.ibm.com/ui/v8/images/icon-help-contextual-dark.gif"
+												width="14" height="14" alt="contextual field help icon" /></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -260,14 +259,14 @@ function popupTrailsReports(accountId) {
 													<span class="button-blue" id="smallbutton"><html:submit
 															property="type" value="Search" /></span>
 												</html:form></td>
-<%-- 											<td><html:form action="/lpar/search"> --%>
-<%-- 													<html:hidden property="context" value="lpar" /> --%>
-<%-- 													<html:hidden property="accountId" --%>
-<%-- 														value="${account.customer.accountNumber}" /> --%>
-<%-- 													<html:text property="search" styleClass="inputshortish" /> --%>
-<%-- 													<span class="button-blue" id="smallbutton"><html:submit --%>
-<%-- 															property="type" value="Search" /></span> --%>
-<%-- 												</html:form></td> --%>
+											<td><html:form action="/lpar/search">
+													<html:hidden property="context" value="lpar" />
+													<html:hidden property="accountId"
+														value="${account.customer.accountNumber}" />
+													<html:text property="search" styleClass="inputshortish" />
+													<span class="button-blue" id="smallbutton"><html:submit
+															property="type" value="Search" /></span>
+												</html:form></td>
 										</tr>
 										<tr>
 											<td>
@@ -275,19 +274,17 @@ function popupTrailsReports(accountId) {
 													<html:errors property="search" />
 												</div>
 											</td>
-<!-- 											<td> -->
-<!-- 												<div class="invalid"> -->
-<%-- 													<html:errors property="search" /> --%>
-<!-- 												</div> -->
-<!-- 											</td> -->
+											<td>
+												<div class="invalid">
+													<html:errors property="search" />
+												</div>
+											</td>
 										</tr>
 									</tbody>
 								</table>
 								<%
 									*/
 								%>
-								<br />
-								<br />
 								<html:form action="/lpar/search">
 									<html:hidden property="context" value="lpar" />
 									<html:hidden property="type" value="Search" />
@@ -296,8 +293,8 @@ function popupTrailsReports(accountId) {
 									<table border="0" width="65%" cellspacing="10" cellpadding="0">
 										<thead>
 											<tr>
-												<th>LPAR Name/Serial Search:&nbsp;<a
-													class="ibm-question-link" href="help/help.do"></a></th>
+												<th>LPAR Name/Serial Search: <a
+													class="ibm-question-link" href="/BRAVO/help/help.do"></a></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -318,25 +315,18 @@ function popupTrailsReports(accountId) {
 								</html:form>
 
 								<br />
-								<br />
-
-								<h3>
-									Composite List <a class="ibm-question-link"
-										href="BRAVO/help/help.do"></a>
-								</h3>
-<!-- 								<table -->
-<!-- 									class="ibm-data-table ibm-sortable-table ibm-alternate-two" -->
-<!-- 									id="small"> -->
-<!-- 									<tr> -->
-<%-- 										<td width="1%" nowrap="nowrap"><html:link --%>
-<%-- 												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all"> --%>
-<!-- 													Show All -->
-<%-- 											</html:link></td> --%>
-<!-- 									</tr> -->
-<!-- 								</table> -->
-								<html:link page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
+								<table
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									id="small">
+									<tr>
+										<th>Composite List <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a></th>
+										<td width="1%" nowrap="nowrap"><html:link
+												page="/account/view.do?context=lpar&accountId=${account.customer.accountNumber}&status=all">
 													Show All
-											</html:link>
+											</html:link></td>
+									</tr>
+								</table>
 								<display:table name="composites" requestURI=""
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="tall" defaultsort="1" defaultorder="ascending">
@@ -376,14 +366,12 @@ function popupTrailsReports(accountId) {
 										%>
 									</display:column>
 								</display:table>
-								<br />
-								<br />
 								<font color="red">*IF the scan time reflected above is in
 								red, the scan is considered invalid.</font> <br />
 								<div class="indent">
 									<h3>
-										Software lpars w/o Hardware&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Software lpars w/o Hardware <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""
@@ -405,11 +393,10 @@ function popupTrailsReports(accountId) {
 								</display:table>
 
 								<br />
-								<br />
 								<div class="indent">
 									<h3>
-										Hardware lpars w/o Software&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Hardware lpars w/o Software <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="hardwareLpars" requestURI=""
@@ -439,8 +426,8 @@ function popupTrailsReports(accountId) {
 								<br />
 								<div class="indent">
 									<h3>
-										Hardware w/o Hardware Lpar&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Hardware w/o Hardware Lpar <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="hardwares" requestURI=""
@@ -482,7 +469,7 @@ function popupTrailsReports(accountId) {
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
@@ -525,7 +512,6 @@ function popupTrailsReports(accountId) {
 									<li><a class="ibm-upload-link"
 										href="/BRAVO/upload/softAudit.do?id=${account.customer.accountNumber}">Upload
 											TLCMz Software</a></li>
-                                     
 									<!-- Delete SWASSET data -->
 									<li><a class="ibm-delete-link"
 										href="/BRAVO/swasset/view.do?accountId=${account.customer.accountNumber}">Delete
@@ -543,7 +529,7 @@ function popupTrailsReports(accountId) {
 
 
 								<h2 class="ibm-rule">
-									Reports&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+									Reports <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 								</h2>
 
 								<ul class="ibm-link-list">

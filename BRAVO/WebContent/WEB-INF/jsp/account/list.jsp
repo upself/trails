@@ -112,8 +112,8 @@
 								</div>
 								<div class="indent">
 									<h3>
-										Account List&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+										Account List <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table id="row" name="list" requestURI=""
@@ -122,15 +122,6 @@
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title=""
 										headerClass="blue-med" class="status" />
-<%-- 									<c:choose> --%>
-<%-- 										<c:when test="${row.restricted}"> --%>
-<%-- 											<display:column value="${imageTag}" title="" --%>
-<%-- 												headerClass="blue-med" /> --%>
-<%-- 										</c:when> --%>
-<%-- 										<c:otherwise> --%>
-<%-- 											<display:column value="" title="" headerClass="blue-med" /> --%>
-<%-- 										</c:otherwise> --%>
-<%-- 									</c:choose> --%>
 									<display:column property="accountNumber" title="ID"
 										headerClass="blue-med" href="/BRAVO/account/view.do"
 										paramId="accountId" paramProperty="accountNumber" />
