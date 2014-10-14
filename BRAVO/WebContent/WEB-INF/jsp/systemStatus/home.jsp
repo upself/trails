@@ -253,7 +253,7 @@
 								<display:table cellspacing="2" cellpadding="0"
 									name="bankAccountJobList" id="table_bank_account_jobs_row"
 									requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-table-scroll"
 									defaultsort="1" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="bankAccount.name"
@@ -282,9 +282,13 @@
 										style="white-space:nowrap" />
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
+									<display:column property="firstErrorTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="First error time"
+										sortable="true" headerClass="blue-med" />										
 								</display:table>
 
 								<h1>System status</h1>
+<!-- 								export="true" -->
 								<display:table cellspacing="2" cellpadding="0"
 									name="systemScheduleStatusList" id="table_system status_row"
 									requestURI=""
@@ -306,6 +310,8 @@
 										style="white-space:nowrap" />
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
+<%-- 									<display:setProperty name="export.pdf" value="true" /> --%>
+<%-- 									<display:setProperty name="export.csv" value="true" /> --%>
 								</display:table>
 
 							</div>
