@@ -143,7 +143,7 @@ ELSE 'Green' END
 ,h.owner as hwOwner
 ,h.country as hwCountry
 ,mt.type as hwAssetType
-,hl.server_type as Server_Type	
+,hl.server_type as Server_Type
 ,hl.SPLA
 ,hl.VIRTUAL_FLAG
 ,hl.VIRTUAL_MOBILITY_RESTRICTION
