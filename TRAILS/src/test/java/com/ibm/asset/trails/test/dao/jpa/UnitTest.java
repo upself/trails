@@ -15,4 +15,9 @@ public class UnitTest {
 	public void testEqualsFalse() {
 	  assertEquals(3, 5);
 	}
+	
+	@Test
+	public void testEqualsTrue2() {
+	  assertEquals(5, 5);
+	}
 }
