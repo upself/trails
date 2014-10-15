@@ -182,7 +182,7 @@ sub doDelta {
     while ( $sth->fetchrow_arrayref ) {
 
         cleanValues( \%rec );
-
+      
         ###Get the key
         my $key = $rec{machineTypeId} . '|' . $rec{serial} . '|' . $rec{country};
         dlog("hardware key=$key");
@@ -252,7 +252,7 @@ sub doDelta {
                 	$action = 10**13 + $action if ( $hardware->processorManufacturer ne $self->hardware->{$key}->processorManufacturer );
                 	$action = 10**14 + $action if ( $hardware->processorModel ne $self->hardware->{$key}->processorModel );
                 	$action = 10**15 + $action if ( $hardware->nbrOfChipsMax ne $self->hardware->{$key}->nbrOfChipsMax );
-                  dlog('hardware action is ' . $action->bstr() );
+                dlog('hardware action is ' . $action->bstr() ); 
                 if ( $hardware->action eq '0' ) {
                 	###Set to update if the hardware is currently complete
                     $action = $action + 1 ;                	
@@ -617,7 +617,7 @@ sub applyHardwareLparDeltas {
     foreach my $key ( keys %{ $self->hardwareLpar } ) {
         dlog("Applying key=$key");
 
-        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(3)
+        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('3')
             if ( !defined $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
 
         if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq '0' ) {
@@ -627,7 +627,7 @@ sub applyHardwareLparDeltas {
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->save($connection);
             $self->addToCount( 'STAGING', 'HARDWARE', substr( 
                                   $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action,-1) );
-            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(0);
+            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('0');
         }
 
         $self->hardwareLpar->{$key}->action('3')
@@ -640,7 +640,7 @@ sub applyHardwareLparDeltas {
             $self->hardwareLpar->{$key}
                 ->hardwareId( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->id );
             $self->hardwareLpar->{$key}->save($connection);
-            $self->addToCount( 'STAGING', 'HARDWARE_LPAR', substr( $self->hardwareLpar->{$key}->action,-1) );
+            $self->addToCount( 'STAGING', 'HARDWARE_LPAR', substr( $self->hardwareLpar->{$key}->action,-1)  );
             $self->hardwareLpar->{$key}->action('0');
         }
     }
@@ -659,7 +659,7 @@ sub applyEffectiveProcessorDeltas {
     foreach my $key ( keys %{ $self->effProcessor } ) {
         dlog("Applying key=$key");
 
-        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(3)
+        $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('3')
             if ( !defined $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action );
 
         if ( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action eq '0' ) {
@@ -667,9 +667,9 @@ sub applyEffectiveProcessorDeltas {
         }
         else {
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->save($connection);
-            $self->addToCount( 'STAGING', 'HARDWARE',substr( 
+            $self->addToCount( 'STAGING', 'HARDWARE',substr(
                                   $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action,-1) );
-            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action(0);
+            $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('0');
         }
 
         $self->hardwareLpar->{$key}->action('3')
@@ -682,7 +682,7 @@ sub applyEffectiveProcessorDeltas {
             $self->hardwareLpar->{$key}
                 ->hardwareId( $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->id );
             $self->hardwareLpar->{$key}->save($connection);
-            $self->addToCount( 'STAGING', 'HARDWARE_LPAR',substr(  $self->hardwareLpar->{$key}->action,-1) );
+            $self->addToCount( 'STAGING', 'HARDWARE_LPAR', substr(  $self->hardwareLpar->{$key}->action,-1) );
             $self->hardwareLpar->{$key}->action('0');
         }
 
@@ -695,7 +695,7 @@ sub applyEffectiveProcessorDeltas {
         else {
             $self->effProcessor->{$key}->hardwareLparId( $self->hardwareLpar->{$key}->id );
             $self->effProcessor->{$key}->save($connection);
-            $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', substr(  $self->effProcessor->{$key}->action,-1) );
+            $self->addToCount( 'STAGING', 'EFFECTIVE_PROCESSOR', substr(  $self->effProcessor->{$key}->action,-1)  );
             $self->effProcessor->{$key}->action('0');
         }
     }
