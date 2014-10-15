@@ -37,7 +37,6 @@ sub new {
         ,_sharedProcessor => undef
         ,_cloudName => undef
         ,_chassisId => undef
-        ,_action => 0
         ,_table => 'hardware'
         ,_idField => 'id'
     };
@@ -434,12 +433,6 @@ sub chassisId {
     return $self->{_chassisId};
 }
 
-sub action {
-    my $self = shift;
-    $self->{_action} = shift if scalar @_ == 1;
-    return $self->{_action};
-}
-
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -608,11 +601,6 @@ sub toString {
     $s .= "chassisId=";
     if (defined $self->{_chassisId}) {
         $s .= $self->{_chassisId};
-    }
-    $s .= ",";
-    $s .= "action=";
-    if (defined $self->{_action}) {
-        $s .= $self->{_action};
     }
     $s .= ",";
     $s .= "table=";

@@ -48,7 +48,6 @@
 	<property name="sharedProcessor" type="scalar" equals="true" sql-name="SHARED_PROCESSOR" />
 	<property name="cloudName" type="scalar" equals="true" sql-name="CLOUD_NAME" />
 	<property name="chassisId" type="scalar" equals="true" sql-name="CHASSIS_ID" />
-	<property name="action" type="scalar" default="0" />
 	<property name="table" type="scalar" default="hardware" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

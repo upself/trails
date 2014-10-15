@@ -31,7 +31,6 @@ sub new {
         ,_cappedLpar => undef
         ,_virtualFlag => undef
         ,_osType => undef
-        ,_action => 0
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -350,12 +349,6 @@ sub osType {
     return $self->{_osType};
 }
 
-sub action {
-    my $self = shift;
-    $self->{_action} = shift if scalar @_ == 1;
-    return $self->{_action};
-}
-
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -494,11 +487,6 @@ sub toString {
     $s .= "osType=";
     if (defined $self->{_osType}) {
         $s .= $self->{_osType};
-    }
-    $s .= ",";
-    $s .= "action=";
-    if (defined $self->{_action}) {
-        $s .= $self->{_action};
     }
     $s .= ",";
     $s .= "table=";
