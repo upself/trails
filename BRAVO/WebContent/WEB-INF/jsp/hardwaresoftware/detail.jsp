@@ -41,6 +41,24 @@
 	title="w3" type="text/css" />
 <script src="//1.w3.s81c.com/common/js/dojo/w3.js"
 	type="text/javascript"></script>
+
+<script type="text/javascript" src="/BRAVO/common/project.js"></script>
+
+<script>
+	function checkAll(theForm) { // check all the checkboxes in the list
+		for (var i = 0; i < theForm.elements.length; i++) {
+			var e = theForm.elements[i];
+			var eName = e.name;
+
+			if (eName != 'allbox' && (e.type.indexOf("checkbox") == 0)) {
+				if (!e.disabled) {
+					e.checked = theForm.allbox.checked;
+				}
+			}
+		}
+	}
+</script>		
+	
 </head>
 <body id="ibm-com">
 	<div id="ibm-top" class="ibm-liquid">
@@ -119,7 +137,7 @@
 								<div class="indent">
 									<h3>
 										Hardware&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -198,7 +216,7 @@
 								<div class="indent">
 									<h3>
 										Hardware LPAR&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -296,7 +314,7 @@
 								<div class="indent">
 									<h3>
 										Software LPAR&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -384,7 +402,7 @@
 									<div class="indent">
 										<h3>
 											Software&nbsp;<a class="ibm-question-link"
-												href="help/help.do"></a>
+												href="/BRAVO/help/help.do"></a>
 										</h3>
 									</div>
 									<display:table name="list" requestURI=""
@@ -444,7 +462,7 @@
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions&nbsp;<a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
