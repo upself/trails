@@ -2510,6 +2510,7 @@ sub eventRuleCheck{
 			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+				 my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');
 				 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
 				 print LOG "Database Exception Status Check Monitoring - The Server Mode: {$serverMode}\n";
 			     my $monitoringDBsDefinitionList = $metaRuleParameter2;#var used to store monitoring databases definition list - for example: 'TRAILS~TRAILSPD~eaadmin~Gr77nday~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'STAGING~STAGING~eaadmin~apr03db2~dst20lp05.boulder.ibm.com~liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com|liuhaidl@cn.ibm.com'
