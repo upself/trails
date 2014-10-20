@@ -67,6 +67,34 @@ sub equals {
     my $equal;
 
     $equal = 0;
+    if (defined $self->customerId && defined $object->customerId) {
+        $equal = 1 if $self->customerId eq $object->customerId;
+    }
+    $equal = 1 if (!defined $self->customerId && !defined $object->customerId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->objectId && defined $object->objectId) {
+        $equal = 1 if $self->objectId eq $object->objectId;
+    }
+    $equal = 1 if (!defined $self->objectId && !defined $object->objectId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->computerId && defined $object->computerId) {
+        $equal = 1 if $self->computerId eq $object->computerId;
+    }
+    $equal = 1 if (!defined $self->computerId && !defined $object->computerId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->name && defined $object->name) {
+        $equal = 1 if $self->name eq $object->name;
+    }
+    $equal = 1 if (!defined $self->name && !defined $object->name);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->model && defined $object->model) {
         $equal = 1 if $self->model eq $object->model;
     }
@@ -81,6 +109,76 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->osName && defined $object->osName) {
+        $equal = 1 if $self->osName eq $object->osName;
+    }
+    $equal = 1 if (!defined $self->osName && !defined $object->osName);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->osType && defined $object->osType) {
+        $equal = 1 if $self->osType eq $object->osType;
+    }
+    $equal = 1 if (!defined $self->osType && !defined $object->osType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->osMajor && defined $object->osMajor) {
+        $equal = 1 if $self->osMajor eq $object->osMajor;
+    }
+    $equal = 1 if (!defined $self->osMajor && !defined $object->osMajor);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->osMinor && defined $object->osMinor) {
+        $equal = 1 if $self->osMinor eq $object->osMinor;
+    }
+    $equal = 1 if (!defined $self->osMinor && !defined $object->osMinor);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->osSub && defined $object->osSub) {
+        $equal = 1 if $self->osSub eq $object->osSub;
+    }
+    $equal = 1 if (!defined $self->osSub && !defined $object->osSub);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->osInstDate && defined $object->osInstDate) {
+        $equal = 1 if $self->osInstDate eq $object->osInstDate;
+    }
+    $equal = 1 if (!defined $self->osInstDate && !defined $object->osInstDate);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->userName && defined $object->userName) {
+        $equal = 1 if $self->userName eq $object->userName;
+    }
+    $equal = 1 if (!defined $self->userName && !defined $object->userName);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->biosManufacturer && defined $object->biosManufacturer) {
+        $equal = 1 if $self->biosManufacturer eq $object->biosManufacturer;
+    }
+    $equal = 1 if (!defined $self->biosManufacturer && !defined $object->biosManufacturer);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->biosModel && defined $object->biosModel) {
+        $equal = 1 if $self->biosModel eq $object->biosModel;
+    }
+    $equal = 1 if (!defined $self->biosModel && !defined $object->biosModel);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->serverType && defined $object->serverType) {
+        $equal = 1 if $self->serverType eq $object->serverType;
+    }
+    $equal = 1 if (!defined $self->serverType && !defined $object->serverType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->techImgId && defined $object->techImgId) {
         $equal = 1 if $self->techImgId eq $object->techImgId;
     }
@@ -92,6 +190,167 @@ sub equals {
         $equal = 1 if $self->extId eq $object->extId;
     }
     $equal = 1 if (!defined $self->extId && !defined $object->extId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->memory && defined $object->memory) {
+        $equal = 1 if $self->memory eq $object->memory;
+    }
+    $equal = 1 if (!defined $self->memory && !defined $object->memory);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->disk && defined $object->disk) {
+        $equal = 1 if $self->disk eq $object->disk;
+    }
+    $equal = 1 if (!defined $self->disk && !defined $object->disk);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->dedicatedProcessors && defined $object->dedicatedProcessors) {
+        $equal = 1 if $self->dedicatedProcessors eq $object->dedicatedProcessors;
+    }
+    $equal = 1 if (!defined $self->dedicatedProcessors && !defined $object->dedicatedProcessors);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->totalProcessors && defined $object->totalProcessors) {
+        $equal = 1 if $self->totalProcessors eq $object->totalProcessors;
+    }
+    $equal = 1 if (!defined $self->totalProcessors && !defined $object->totalProcessors);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->sharedProcessors && defined $object->sharedProcessors) {
+        $equal = 1 if $self->sharedProcessors eq $object->sharedProcessors;
+    }
+    $equal = 1 if (!defined $self->sharedProcessors && !defined $object->sharedProcessors);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->processorType && defined $object->processorType) {
+        $equal = 1 if $self->processorType eq $object->processorType;
+    }
+    $equal = 1 if (!defined $self->processorType && !defined $object->processorType);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->sharedProcByCores && defined $object->sharedProcByCores) {
+        $equal = 1 if $self->sharedProcByCores eq $object->sharedProcByCores;
+    }
+    $equal = 1 if (!defined $self->sharedProcByCores && !defined $object->sharedProcByCores);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->dedicatedProcByCores && defined $object->dedicatedProcByCores) {
+        $equal = 1 if $self->dedicatedProcByCores eq $object->dedicatedProcByCores;
+    }
+    $equal = 1 if (!defined $self->dedicatedProcByCores && !defined $object->dedicatedProcByCores);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->totalProcByCores && defined $object->totalProcByCores) {
+        $equal = 1 if $self->totalProcByCores eq $object->totalProcByCores;
+    }
+    $equal = 1 if (!defined $self->totalProcByCores && !defined $object->totalProcByCores);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->alias && defined $object->alias) {
+        $equal = 1 if $self->alias eq $object->alias;
+    }
+    $equal = 1 if (!defined $self->alias && !defined $object->alias);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->physicalTotalKb && defined $object->physicalTotalKb) {
+        $equal = 1 if $self->physicalTotalKb eq $object->physicalTotalKb;
+    }
+    $equal = 1 if (!defined $self->physicalTotalKb && !defined $object->physicalTotalKb);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->virtualMemory && defined $object->virtualMemory) {
+        $equal = 1 if $self->virtualMemory eq $object->virtualMemory;
+    }
+    $equal = 1 if (!defined $self->virtualMemory && !defined $object->virtualMemory);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->physicalFreeMemory && defined $object->physicalFreeMemory) {
+        $equal = 1 if $self->physicalFreeMemory eq $object->physicalFreeMemory;
+    }
+    $equal = 1 if (!defined $self->physicalFreeMemory && !defined $object->physicalFreeMemory);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->virtualFreeMemory && defined $object->virtualFreeMemory) {
+        $equal = 1 if $self->virtualFreeMemory eq $object->virtualFreeMemory;
+    }
+    $equal = 1 if (!defined $self->virtualFreeMemory && !defined $object->virtualFreeMemory);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->nodeCapacity && defined $object->nodeCapacity) {
+        $equal = 1 if $self->nodeCapacity eq $object->nodeCapacity;
+    }
+    $equal = 1 if (!defined $self->nodeCapacity && !defined $object->nodeCapacity);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->lparCapacity && defined $object->lparCapacity) {
+        $equal = 1 if $self->lparCapacity eq $object->lparCapacity;
+    }
+    $equal = 1 if (!defined $self->lparCapacity && !defined $object->lparCapacity);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->biosDate && defined $object->biosDate) {
+        $equal = 1 if $self->biosDate eq $object->biosDate;
+    }
+    $equal = 1 if (!defined $self->biosDate && !defined $object->biosDate);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->biosSerialNumber && defined $object->biosSerialNumber) {
+        $equal = 1 if $self->biosSerialNumber eq $object->biosSerialNumber;
+    }
+    $equal = 1 if (!defined $self->biosSerialNumber && !defined $object->biosSerialNumber);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->biosUniqueId && defined $object->biosUniqueId) {
+        $equal = 1 if $self->biosUniqueId eq $object->biosUniqueId;
+    }
+    $equal = 1 if (!defined $self->biosUniqueId && !defined $object->biosUniqueId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->boardSerial && defined $object->boardSerial) {
+        $equal = 1 if $self->boardSerial eq $object->boardSerial;
+    }
+    $equal = 1 if (!defined $self->boardSerial && !defined $object->boardSerial);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->caseSerial && defined $object->caseSerial) {
+        $equal = 1 if $self->caseSerial eq $object->caseSerial;
+    }
+    $equal = 1 if (!defined $self->caseSerial && !defined $object->caseSerial);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->caseAssetTag && defined $object->caseAssetTag) {
+        $equal = 1 if $self->caseAssetTag eq $object->caseAssetTag;
+    }
+    $equal = 1 if (!defined $self->caseAssetTag && !defined $object->caseAssetTag);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->powerOnPassword && defined $object->powerOnPassword) {
+        $equal = 1 if $self->powerOnPassword eq $object->powerOnPassword;
+    }
+    $equal = 1 if (!defined $self->powerOnPassword && !defined $object->powerOnPassword);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -113,6 +372,27 @@ sub equals {
         $equal = 1 if $self->status eq $object->status;
     }
     $equal = 1 if (!defined $self->status && !defined $object->status);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->action && defined $object->action) {
+        $equal = 1 if $self->action eq $object->action;
+    }
+    $equal = 1 if (!defined $self->action && !defined $object->action);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->table && defined $object->table) {
+        $equal = 1 if $self->table eq $object->table;
+    }
+    $equal = 1 if (!defined $self->table && !defined $object->table);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->idField && defined $object->idField) {
+        $equal = 1 if $self->idField eq $object->idField;
+    }
+    $equal = 1 if (!defined $self->idField && !defined $object->idField);
     return 0 if $equal == 0;
 
     return 1;
