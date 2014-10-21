@@ -24,7 +24,7 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 public class LicenseDAOJpaTests {
 
     @Autowired
-    private LicenseDAO dao;
+    private LicenseDAO licenseDAO;
     private final DisplayTagList data = new DisplayTagList();
     private final Long accountId = 506L;
     private final int objectsPerPage = 50;
@@ -35,7 +35,7 @@ public class LicenseDAOJpaTests {
         String sort = "id";
         String dir = "asc";
 
-        dao.freePoolWithoutParentPaginatedList(data, accountId, startIndex,
+        licenseDAO.freePoolWithoutParentPaginatedList(data, accountId, startIndex,
                 objectsPerPage, sort, dir);
 
         List list = data.getList();
@@ -53,7 +53,7 @@ public class LicenseDAOJpaTests {
         String sort = "quantity";
         String dir = "asc";
 
-        dao.freePoolWithParentPaginatedList(data, accountId, startIndex,
+        licenseDAO.freePoolWithParentPaginatedList(data, accountId, startIndex,
                 objectsPerPage, sort, dir,null);
 
         assertEquals(data.getFullListSize(), 1286);
@@ -66,7 +66,7 @@ public class LicenseDAOJpaTests {
         String sort = "id";
         String dir = "asc";
 
-        dao.paginatedList(data, accountId, startIndex, objectsPerPage, sort,
+        licenseDAO.paginatedList(data, accountId, startIndex, objectsPerPage, sort,
                 dir);
 
         assertEquals(data.getFullListSize(), 1286);
@@ -76,7 +76,7 @@ public class LicenseDAOJpaTests {
     @Test
     public void testGetLicenseIdsByReconcileId() {
         Long reconcileId = 15349300L;
-        List<Long> licenseIds = dao.getLicenseIdsByReconcileId(reconcileId);
+        List<Long> licenseIds = licenseDAO.getLicenseIdsByReconcileId(reconcileId);
 
         assertEquals(licenseIds.size(), 1);
     }
@@ -84,7 +84,7 @@ public class LicenseDAOJpaTests {
     @Test
     public void testGetLicenseDetails() {
         Long licenseId = 129105L;
-        License license = dao.getLicenseDetails(licenseId);
+        License license = licenseDAO.getLicenseDetails(licenseId);
 
         assertNotNull(license.getId());
     }
