@@ -29,9 +29,9 @@
 		</property>
 	</bean>
 	
-	<bean id="alertUnlicensedSoftwareDAO" class="com.ibm.asset.trails.dao.jpa.AlertUnlicensedSoftwareDAOJpa" />
+	<!--<bean id="alertUnlicensedSoftwareDAO" class="com.ibm.asset.trails.dao.jpa.AlertUnlicensedSoftwareDAOJpa" />
 	<bean id="licenseDAO" class="com.ibm.asset.trails.dao.jpa.LicenseDAOJpa" />
-	<bean id="reconcileDAO" class="com.ibm.asset.trails.dao.jpa.ReconcileDAOJpa" />
+	<bean id="reconcileDAO" class="com.ibm.asset.trails.dao.jpa.ReconcileDAOJpa" />-->
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
