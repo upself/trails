@@ -21,13 +21,13 @@ import com.ibm.asset.trails.dao.AlertUnlicensedSoftwareDAO;
 public class AlertUnlicensedSoftwareDAOJpaTests {
 
     @Autowired
-    private AlertUnlicensedSoftwareDAO dao;
+    private AlertUnlicensedSoftwareDAO alertUnlicensedSoftwareDAO;
 
     @Test
     public void testFindAffectedAlertList() {
         Long alertId = 11300170L;
         Long accountId = 9286L;
-        List<Long> alertIds = dao.findAffectedLicenseAlertList(accountId,
+        List<Long> alertIds = alertUnlicensedSoftwareDAO.findAffectedLicenseAlertList(accountId,
                 alertId);
         for (Long alert : alertIds) {
             System.out.println(alert);

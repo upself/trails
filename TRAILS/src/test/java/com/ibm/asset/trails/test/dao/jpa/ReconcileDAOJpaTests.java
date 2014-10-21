@@ -20,12 +20,12 @@ import com.ibm.asset.trails.domain.Reconcile;
 public class ReconcileDAOJpaTests {
 
     @Autowired
-    private ReconcileDAO dao;
+    private ReconcileDAO reconcileDAO;
     private final Long reconcileId = 21083987L;
 
     @Test
     public void testReconcileDetail() {
-        Reconcile reconcile = dao.reconcileDetail(reconcileId);
+        Reconcile reconcile = reconcileDAO.reconcileDetail(reconcileId);
         assertNotNull(reconcile);
     }
 }
