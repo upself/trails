@@ -27,6 +27,8 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="licenseDAO" class="com.ibm.asset.trails.dao.jpa.LicenseDAOJpa" />
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
