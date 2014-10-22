@@ -1,3 +1,0 @@
-server=tap
-debugLevel=debug
-testMode=1
