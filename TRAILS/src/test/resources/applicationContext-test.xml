@@ -16,7 +16,7 @@
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
-
+	
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -63,4 +63,17 @@
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 		<qualifier value="trailspd"/>
 	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager2" />
+	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory2" />
+		<qualifier value="trailsst"/>
+	</bean>
+	<bean id="entityManagerFactory2"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="persistenceUnitName" value="trailsst"/>
+	</bean>
+	
 </beans>
