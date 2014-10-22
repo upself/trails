@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.dao.AlertUnlicensedSoftwareDAO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
+@ContextConfiguration(locations = { "file:src/main/resources/applicationContext.xml" })
+//@ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class AlertUnlicensedSoftwareDAOJpaTests {
