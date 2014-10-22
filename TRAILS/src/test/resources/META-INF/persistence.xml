@@ -4,7 +4,7 @@
 	version="1.0">
 	<persistence-unit name="trailspd" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>com.ibm.asset.trails.domain.*</class> 
+		<class>com.ibm.asset.trails.domain.Reconcile</class> 
 		<properties>
 			<property name="hibernate.temp.use_jdbc_metadata_defaults"
 				value="false" />
