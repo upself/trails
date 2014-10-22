@@ -40,7 +40,7 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<property name="packagesToScan" value="com.ibm.asset.trails.domain"/>
+		<!--<property name="packagesToScan" value="com.ibm.asset.trails.domain"/>-->
 		<property name="persistenceUnitName" value="trailspd"/>
 	</bean>
 
