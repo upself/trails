@@ -9,7 +9,7 @@
 
     <context:annotation-config />
     <context:component-scan base-package="com.ibm.asset.trails.dao" />
-    <context:component-scan base-package="com.ibm.asset.trails.domain" />
+    <!--<context:component-scan base-package="com.ibm.asset.trails.domain" />-->
 	
 	<bean
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
@@ -33,11 +33,14 @@
 	<!--<bean id="alertUnlicensedSoftwareDAO" class="com.ibm.asset.trails.dao.jpa.AlertUnlicensedSoftwareDAOJpa" />
 	<bean id="licenseDAO" class="com.ibm.asset.trails.dao.jpa.LicenseDAOJpa" />
 	<bean id="reconcileDAO" class="com.ibm.asset.trails.dao.jpa.ReconcileDAOJpa" />-->
+	
+	
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="packagesToScan" value="com.ibm.asset.trails.domain"/>
 		<property name="persistenceUnitName" value="trailspd"/>
 	</bean>
 
