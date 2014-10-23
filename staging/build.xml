@@ -1,0 +1,31 @@
+<project name="staging_v2" default="export" basedir=".">
+
+	<!-- configuration properties -->
+	<property name="zip.file" value="c:/temp/${ant.project.name}.zip" />
+	<property name="file" value="${basedir}/util/mkobjs.pl" />
+
+	<target name="export">
+		<delete file="${zip.file}" />
+		<exec executable="perl">
+			<arg value="${file}" />
+		</exec>
+		<zip destfile="${zip.file}" basedir="${basedir}" />
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap2.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tap3.raleigh.ibm.com:/opt/staging" />
+		</exec>
+		<exec executable="pscp">
+			<arg value="${zip.file}" />
+			<arg value="tapmf.boulder.ibm.com:/opt/staging" />
+		</exec>
+	</target>
+
+</project>

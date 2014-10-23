@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Staging::OM" name="Hdisk" sql-name="hdisk">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="scanRecordId" type="scalar" equals="true"
+		sql-name="scan_record_id" biz-key="true" />
+	<property name="model" type="scalar" equals="true" biz-key="true"
+		sql-name="model" />
+	<property name="size" type="scalar" equals="true" biz-key="true"
+		sql-name="size" />
+	<property name="manufacturer" type="scalar" equals="true"
+		sql-name="manufacturer" />
+	<property name="serialNumber" type="scalar" equals="true"
+		biz-key="true" sql-name="serial_number" />
+	<property name="storageType" type="scalar" equals="true"
+		sql-name="storage_type" />
+	<property name="action" type="scalar" sql-name="action" />
+	<property name="table" type="scalar" default="hdisk" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+</class>

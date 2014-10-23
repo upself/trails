@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Recon::OM" name="LicenseAllocationView">
+	<property name="expireAge" type="scalar" equals="true" />
+	<property name="lrmId" type="scalar" equals="true" />
+	<property name="lrmCapType" type="scalar" equals="true" />
+	<property name="lrmUsedQuantity" type="scalar" equals="true" />
+	<property name="machineLevel" type="scalar" equals="true" />
+	<property name="rId" type="scalar" equals="true" />
+	<property name="rtName" type="scalar" equals="true" />
+	<property name="rtIsManual" type="scalar" equals="true" />
+	<property name="isId" type="scalar" equals="true" />
+	<property name="isSoftwareId" type="scalar" equals="true" />
+	<property name="slCustomerId" type="scalar" equals="true" />
+	<property name="slName" type="scalar" equals="true" />
+	<property name="hId" type="scalar" equals="true" />
+	<property name="hSerial" type="scalar" equals="true" />
+	<property name="hProcessorCount" type="scalar" equals="true" />
+	<property name="hCpuMIPS" type="scalar" equals="true" />
+	<property name="hCpuGartnerMIPS" type="scalar" equals="true" />
+	<property name="hCpuMSU" type="scalar" equals="true" />
+	<property name="hServerType" type="scalar" equals="true" />
+	<property name="hlName" type="scalar" equals="true" />
+	<property name="hlPartMIPS" type="scalar" equals="true" />
+	<property name="hlPartGartnerMIPS" type="scalar" equals="true" />
+	<property name="hlPartMSU" type="scalar" equals="true" />
+	<property name="mtType" type="scalar" equals="true" />
+	<property name="scopeName" type="scalar" equals="true" />
+	<property name="slComplianceMgmt" type="scalar" equals="true" />
+</class>

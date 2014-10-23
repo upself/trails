@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="AccountPool" sql-name="account_pool">
+	<property name="id" type="scalar" sql-name="account_pool_id"
+		sql-key="true" />
+	<property name="accountPoolId" type="scalar" sql-name="account_pool_id"
+		biz-key="true" />
+	<property name="logicalDeleteInd" type="scalar" equals="true"
+		sql-name="logical_delete_ind" />
+	<property name="masterAccountId" type="scalar" equals="true"
+		sql-name="master_account_id" />
+	<property name="memberAccountId" type="scalar" equals="true"
+		sql-name="member_account_id" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="account_pool" />
+	<property name="idField" type="scalar" default="account_pool_id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>
+
+
+

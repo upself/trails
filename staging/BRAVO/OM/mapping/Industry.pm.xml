@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Industry" sql-name="industry">
+	<property name="id" type="scalar" sql-name="industry_id"
+		sql-key="true" />
+	<property name="industryId" type="scalar" equals="true"
+		sql-name="industry_id" biz-key="true" />
+	<property name="sectorId" type="scalar" equals="true"
+		sql-name="sector_id" />
+	<property name="name" type="scalar" equals="true" sql-name="industry_name" />
+	<property name="creationDateTime" type="scalar" sql-name="creation_date_time"
+		equals="true" />
+	<property name="updateDateTime" type="scalar" sql-name="update_date_time"
+		equals="true" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="industry" />
+	<property name="idField" type="scalar" default="industry_id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

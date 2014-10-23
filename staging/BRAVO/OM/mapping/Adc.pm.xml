@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Adc" sql-name="software_lpar_adc">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="softwareLparId" type="scalar" sql-name="software_lpar_id"
+		biz-key="true" />
+	<property name="epName" type="scalar" equals="true" sql-name="ep_name"
+		biz-key="true" />
+	<property name="epOid" type="scalar" equals="true" sql-name="ep_oid" />
+	<property name="ipAddress" type="scalar" equals="true"
+		sql-name="ip_address" />
+	<property name="cust" type="scalar" equals="true" sql-name="cust" />
+	<property name="loc" type="scalar" equals="true" sql-name="loc" />
+	<property name="gu" type="scalar" equals="true" sql-name="gu" />
+	<property name="serverType" type="scalar" equals="true"
+		sql-name="server_type" />
+	<property name="sesdrLocation" type="scalar" equals="true"
+		sql-name="sesdr_location" />
+	<property name="sesdrBpUsing" type="scalar" equals="true"
+		sql-name="sesdr_bp_using" />
+	<property name="sesdrSystid" type="scalar" equals="true"
+		sql-name="sesdr_syst_id" />
+	<property name="table" type="scalar" default="software_lpar_adc" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>

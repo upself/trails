@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="MemMod" sql-name="software_lpar_mem_mod">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="softwareLparId" type="scalar" sql-name="software_lpar_id"
+		biz-key="true" />
+	<property name="instMemId" type="scalar" equals="true"
+		sql-name="inst_mem_id" biz-key="true" />
+	<property name="moduleSizeMb" type="scalar" equals="true"
+		sql-name="module_size_mb" />
+	<property name="maxModuleSizeMb" type="scalar" equals="true"
+		sql-name="max_module_size_mb" />
+	<property name="socketName" type="scalar" equals="true"
+		sql-name="socket_name" />
+	<property name="packaging" type="scalar" equals="true"
+		sql-name="packaging" />
+	<property name="memType" type="scalar" equals="true" sql-name="mem_type" />
+	<property name="table" type="scalar" default="software_lpar_mem_mod" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>
