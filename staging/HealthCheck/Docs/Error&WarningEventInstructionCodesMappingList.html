@@ -1,0 +1,234 @@
+<html>
+   <head>
+      <title>Error/Warning Event Instruction Codes Mapping List Page</title>
+   </head>
+   <body>
+      <font color='blue' size='4'><i>Please note that the <b>'Error/Warning Event Instruction Codes Mapping List'</b> is used for you to search <b>'Event Handling Instruction'</b> based on <b>'Event Handling InstructionCode'.</b></i></font><br><br>
+      <font color='red' size='4'><b>Event Instruction Code Definition Format:</b> E/W(Error/Warning)-Event Group Code(3 chars)-Event Type(3 chars)-Sequence Number(3 chars)</font><br>
+	  <font color='red' size='4'><b>For example:</b>  E-TBS-CRS-001</font>
+      <table width='90%' border='1'>
+		<tr bgcolor='lightgray'>
+		    <td colspan='3' align='center'><font size='4'><b>Error/Warning Event Instruction Codes Mapping List</b></td>
+		</tr>
+        <tr bgcolor='lightgray'>
+		    <td width='20%'><b>Error/Warning Event Instruction Code</b></td>
+            <td width='40%'><b>Handling Instruction</b></td>
+			<td width='40%'><b>Comments</b></td>
+		</tr>
+         <tr>
+		    <td>E-TBS-CRS-001</td>
+            <td>Review log of Loader, Re-Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              CRS = Continuous Run Scripts<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-ATS-001</td>
+            <td>Review log of Loader atpToStaging.pl, Check the Cron Configuration, Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              ATS = atpToStaging Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-ATS-002</td>
+            <td>Review log of Loader atpToStaging.pl, Fix error and then Restart the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              ATS = atpToStaging Start/Stop Script<br> 
+			</td>
+		 </tr>
+         <tr>
+		    <td>E-TBS-STS-001</td>
+            <td>Review log of Loader swcmToStaging.pl, Check the Cron Configuration, Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              STS = swcmToStaging Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-STS-002</td>
+            <td>Review log of Loader swcmToStaging.pl, Fix error and then Restart the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              STS = swcmToStaging Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-MMF-001</td>
+            <td>Review log of Loader moveMainframe.pl, Check the Cron Configuration, Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              MMF = moveMainframe Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-MMF-002</td>
+            <td>Review log of Loader moveMainframe.pl, Fix error and then Restart the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              MMF = moveMainframe Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-BRF-001</td>
+            <td>Review log of Loader bravoReportFork-old_script.pl, Check the Cron Configuration, Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              BRF = Bravo Report Folk Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-BRF-002</td>
+            <td>Review log of Loader bravoReportFork-old_script.pl, Fix error and then Restart the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              BRF = Bravo Report Folk Start/Stop Scrip<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-SMV-001</td>
+            <td>Review log of Loader staging-move, Check the Cron Configuration, Start the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              SMV = staging-move Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-TBS-SMV-002</td>
+            <td>Review log of Loader staging-move, Fix error and then Restart the loader</td>
+			<td>
+			  E = Error<br>
+			  TBS = Trails/Bravo Scripts<br>
+              SMV = staging-move Start/Stop Script<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-FSM-FST-001</td>
+            <td>Please refer the following wiki link to see how to do action:<br>
+			    https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Filesystem%20Monitoring
+			</td>
+			<td>
+			  E = Error<br>
+			  FSM = File System Monitoring<br>
+              FST = File System Threshold Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>W-DBM-TRP-001</td>
+            <td>Raise a ticket to the DBA team</td>
+			<td>
+			  W = Warning<br>
+			  DBM = Database Monitoring<br>
+              TRP = TrailsRP DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-DBM-TRP-001</td>
+            <td>Raise a ticket to the DBA team</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              TRP = TrailsRP DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-DBM-TRP-002</td>
+            <td>Please refer the following wiki link to see how to do action:<br>
+			    https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Handling%20Instruction%20for%20TrailsRP%20and%20TrailsST%20DBs
+			</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              TRP = TrailsRP DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>W-DBM-CCT-001</td>
+            <td>
+			  Raise a service request in Global Asset Problem and Requirements Database<br>
+					<li><font size= '2'>Tool = CNDB Changes for SW</font></li>
+					<li><font size= '2'>Type = Service Request</font></li>
+					<li><font size= '2'>Approver = Adam Trnka</font></li>
+					<li><font size= '2'>Priority = 3</font></li>
+					<li><font size= '2'>Summary = 'CNDB UPDATE FOR ACCOUNT-ID-HERE' where ACCOUNT-ID-HERE is the actual Account ID as reported by monitor.</font></li>
+					<li><font size= '2'>Supporting Details = Please correct the TME_OBJECT_ID for acconts and remove the "DEFAULT" values</font></li>
+            </td> 
+			<td>
+			  W = Warning<br>
+			  DBM = Database Monitoring<br>
+              CCT = CNDB Customer TME_OBJECT_ID Monitoring<br> 
+			</td>
+		 </tr>
+		  <tr>
+		    <td>W-DBM-TST-001</td>
+            <td>Raise a ticket to the DBA team</td>
+			<td>
+			  W = Warning<br>
+			  DBM = Database Monitoring<br>
+              TST = TrailsST DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-DBM-TST-001</td>
+            <td>Raise a ticket to the DBA team</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              TST = TrailsST DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		  <tr>
+		    <td>E-DBM-TST-002</td>
+            <td>Please refer the following wiki link to see how to do action:<br>
+			    https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Handling%20Instruction%20for%20TrailsRP%20and%20TrailsST%20DBs
+			</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              TST = TrailsST DB Apply Gap Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-APM-WAC-001</td>
+            <td>Please contact AM SW Development team to find the issue reason and fix it</td>
+			<td>
+			  E = Error<br>
+			  APM = Application Monitoring<br>
+              WAC = Web Application Running Status Check Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-DBM-DEC-001</td>
+            <td>Please contact AM SW Development team to find the database exception reason</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              DEC = Database Exception Status Check Monitoring<br> 
+			</td>
+		 </tr>
+		 <tr>
+		    <td>E-DBM-RDD-001</td>
+            <td>Please refer the following wiki link to check and cleanup Recon Queues Duplicate Data:<br>
+			    https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/How%20to%20check%20and%20cleanup%20Recon%20Queues%20Duplicate%20Data
+			</td>
+			<td>
+			  E = Error<br>
+			  DBM = Database Monitoring<br>
+              RDD = Recon Queues Duplicate Data Monitoring<br> 
+			</td>
+		 </tr>
+	  </table>
+   </body>
+</html>

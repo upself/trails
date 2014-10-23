@@ -1,0 +1,10 @@
+testMode=0
+server=tap2
+applyChanges=1
+loadDeltaOnly=1
+debugLevel=error
+fullLoadPeriodHours=12
+bravoFullLoadPeriodHours=36
+testBankAccounts=DOWLEG,SHAREDSE,SWASSTDB,TLCMZ,SWDISCRP,DORANA,EMEATLM
+testCustomerIds=2541,2979,6943,2301,8439,1303,7664,5302,7667,7672,7666,6812,6813,1670,9721,8438,9549,7410,7257,7501
+sleepPeriod=10

@@ -1,0 +1,10 @@
+testMode=0
+server=tap3
+applyChanges=1
+loadDeltaOnly=1
+debugLevel=debug
+fullLoadPeriodHours=12
+bravoFullLoadPeriodHours=36
+testBankAccounts=
+testCustomerIds=
+sleepPeriod=10800

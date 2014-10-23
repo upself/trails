@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="CapType" sql-name="capacity_type">
+	<property name="id" type="scalar" sql-name="code" sql-key="true" />
+	<property name="code" type="scalar" sql-name="code" biz-key="true" />
+	<property name="description" type="scalar" equals="true"
+		sql-name="description" />
+	<property name="recordTime" type="scalar" equals="true"
+		sql-name="record_time" />
+	<property name="action" type="scalar" equals="false" />
+	<property name="table" type="scalar" default="capacity_type" />
+	<property name="idField" type="scalar" default="code" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>
+
+
+

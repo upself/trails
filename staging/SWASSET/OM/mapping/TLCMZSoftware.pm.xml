@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="SWASSET::OM" name="TLCMZSoftware" sql-name="tlcmz_sware">
+	<property name="id" type="scalar" equals="true" />
+	<property name="tlcmzProductId" type="scalar" equals="true"
+		sql-name="tlcmz_prod_id" sql-key="true" biz-key="true" />
+	<property name="tlcmzProductName" type="scalar" equals="true"
+		sql-name="tlcmz_prod_name" />
+	<property name="vendorId" type="scalar" equals="true"
+		sql-name="vendor_id" />
+	<property name="vendorName" type="scalar" equals="true"
+		sql-name="vendor_name" />
+	<property name="versionGroupId" type="scalar" equals="true"
+		sql-name="version_group_id" />
+	<property name="productVersion" type="scalar" equals="true"
+		sql-name="prod_version" />
+	<property name="productRelease" type="scalar" equals="true"
+		sql-name="prod_release" />
+	<property name="productEblmtElgFlag" type="scalar" equals="true"
+		sql-name="prod_eblmt_elg_flag" />
+	<property name="ibmFeatureCode" type="scalar" equals="true"
+		sql-name="ibm_ftr_code" />
+	<property name="productDelIndicator" type="scalar" equals="true"
+		sql-name="prod_del_indctr" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+</class>

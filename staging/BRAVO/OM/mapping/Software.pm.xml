@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="BRAVO::OM" name="Software" sql-name="software">
+	<property name="id" type="scalar" sql-name="software_id"
+		sql-key="true" />
+	<property name="name" type="scalar" equals="true" sql-name="software_name"
+		biz-key="true" />
+	<property name="level" type="scalar" equals="true" sql-name="level" />
+	<property name="vendorManaged" type="scalar" equals="true"
+		sql-name="vendor_managed" />
+	<property name="status" type="scalar" equals="true" sql-name="status" />
+	<property name="remoteUser" type="scalar" sql-name="remote_user"
+		default="STAGING" />
+	<property name="recordTime" type="scalar" sql-name="record_time" />
+	<property name="table" type="scalar" default="software" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getById" />
+	<method name="getByBizKey" />
+</class>

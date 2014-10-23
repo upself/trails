@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="Staging::OM" name="IpAddress" sql-name="ip_address">
+	<property name="id" type="scalar" sql-name="id" sql-key="true" />
+	<property name="scanRecordId" type="scalar" equals="true"
+		sql-name="scan_record_id" biz-key="true" />
+	<property name="ipAddress" type="scalar" equals="true"
+		biz-key="true" sql-name="ip_address" />
+	<property name="hostname" type="scalar" equals="true"
+		sql-name="hostname" />
+	<property name="domain" type="scalar" equals="true" sql-name="domain" />
+	<property name="subnet" type="scalar" equals="true" sql-name="subnet" />
+	<property name="instanceId" type="scalar" equals="true"
+		sql-name="instance_id" />
+	<property name="gateway" type="scalar" equals="true" sql-name="gateway" />
+	<property name="primaryDns" type="scalar" equals="true"
+		sql-name="primary_dns" />
+	<property name="secondaryDns" type="scalar" equals="true"
+		sql-name="secondary_dns" />
+	<property name="isDhcp" type="scalar" equals="true" sql-name="is_dhcp" />
+	<property name="permMacAddress" type="scalar" equals="true"
+		sql-name="perm_mac_address" />
+	<property name="ipv6Address" type="scalar" equals="true"
+		sql-name="ipv6_address" />
+	<property name="action" type="scalar" sql-name="action" />
+	<property name="table" type="scalar" default="ip_address" />
+	<property name="idField" type="scalar" default="id" />
+	<method name="save" />
+	<method name="delete" />
+</class>
+
+
+

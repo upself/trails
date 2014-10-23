@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class package="SWASSET::OM" name="Computer" sql-name="computer">
+	<property name="id" type="scalar" />
+	<property name="computerSysId" type="scalar" equals="true"
+		sql-name="computer_sys_id" sql-key="true" biz-key="true" />
+	<property name="computerAlias" type="scalar" equals="true"
+		sql-name="computer_alias" />
+	<property name="computerBootTime" type="scalar" equals="true"
+		sql-name="computer_boot_time" />
+	<property name="computerModel" type="scalar" equals="true"
+		sql-name="computer_model" />
+	<property name="computerScantime" type="scalar" equals="true"
+		sql-name="computer_scantime" />
+	<property name="functionKeys" type="scalar" equals="true"
+		sql-name="function_keys" />
+	<property name="keyboardType" type="scalar" equals="true"
+		sql-name="keyboard_type" />
+	<property name="onSavingsTime" type="scalar" equals="true"
+		sql-name="on_savings_time" />
+	<property name="osInstDate" type="scalar" equals="true"
+		sql-name="os_inst_date" />
+	<property name="osMajorVersion" type="scalar" equals="true"
+		sql-name="os_major_vers" />
+	<property name="osMinorVersion" type="scalar" equals="true"
+		sql-name="os_minor_vers" />
+	<property name="osName" type="scalar" equals="true" sql-name="os_name" />
+	<property name="osSubVersion" type="scalar" equals="true"
+		sql-name="os_sub_vers" />
+	<property name="osType" type="scalar" equals="true" sql-name="os_type" />
+	<property name="recordTime" type="scalar" sql-name="record_time" />
+	<property name="registeredOrg" type="scalar" equals="true"
+		sql-name="registered_org" />
+	<property name="registeredOwner" type="scalar" equals="true"
+		sql-name="registered_owner" />
+	<property name="sysSerNum" type="scalar" equals="true"
+		sql-name="sys_ser_num" />
+	<property name="timeDirection" type="scalar" equals="true"
+		sql-name="time_direction" />
+	<property name="tmeObjectId" type="scalar" equals="true"
+		sql-name="tme_object_id" />
+	<property name="tmeObjectLabel" type="scalar" equals="true"
+		sql-name="tme_object_label" />
+	<property name="tzDaylightName" type="scalar" equals="true"
+		sql-name="tz_daylight_name" />
+	<property name="tzLocale" type="scalar" equals="true"
+		sql-name="tz_locale" />
+	<property name="tzName" type="scalar" equals="true" sql-name="tz_name" />
+	<property name="tzSeconds" type="scalar" equals="true"
+		sql-name="tz_seconds" />
+	<property name="table" type="scalar" default="computer"
+		equals="true" />
+	<property name="idField" type="scalar" default="computer_sys_id"
+		equals="true" />
+	<method name="save" />
+	<method name="delete" />
+	<method name="getByBizKey" />
+	<method name="getById" />
+</class>
