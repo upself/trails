@@ -1,0 +1,38 @@
+SELECT
+	Cust.Customer_Name "Account Name",
+	Cust.Account_Number "Account Number",
+	CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END "Status",
+	H.Serial "Serial",
+	MT.Name "Machine type",
+	MT.Type "Asset type",
+	VA.Creation_Time "Create date/time",
+	VA.Alert_Age "Age",
+	VA.Remote_User "Assignee",
+	VA.Comments "Assignee comments",
+	VA.Record_Time "Assigned date/time",
+	VA.ac_name "Cause Code (CC)",
+	VA.cc_target_date "CC target date",
+	VA.cc_owner "CC owner",
+	VA.cc_update_time "CC change date",
+	VA.cc_remote_user "CC change person",
+	CC.id "Internal ID"
+	
+	
+FROM EAADMIN.Customer Cust,EAADMIN.Geography Geog, EAADMIN.Region Reg, EAADMIN.Country_Code CountryCode,EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC
+	
+WHERE
+    Geog.Name = '::GEO::'
+    AND Geog.ID = Reg.Geography_ID
+ 	AND Reg.ID = CountryCode.Region_ID
+ 	AND CountryCode.ID = Cust.Country_Code_ID
+ 	AND Cust.Customer_ID = VA.Customer_ID
+	AND VA.Type = 'HARDWARE'
+	AND VA.Open = 1
+	AND H.Id = VA.FK_Id
+	AND MT.Id = H.Machine_Type_Id
+	and VA.id=CC.alert_id
+	and CC.alert_type_id=3
+		
+ORDER BY Cust.Customer_Name, H.Serial
+with ur
+
