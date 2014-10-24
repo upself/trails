@@ -156,25 +156,10 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
 
-<!-- <!-- Modify Effective Processor Count --> <img -->
-<!-- 	src="//w3.ibm.com/ui/v8/images/icon-link-add-dark.gif" width="13" -->
-<%-- 	height="13" /> <c:choose> --%>
-<%-- 	<c:when test="${software.softwareLpar.softwareLparEff == null}"> --%>
-<%-- 		<html:link --%>
-<%-- 			page="/software/lpar/eff/create.do?lparId=${software.softwareLpar.id}">Create Effective Processor Count</html:link> --%>
-<!-- 		<br /> -->
-<%-- 	</c:when> --%>
-<%-- 	<c:otherwise> --%>
-<%-- 		<html:link --%>
-<%-- 			page="/software/lpar/eff/update.do?lparId=${software.softwareLpar.id}&id=${software.softwareLpar.softwareLparEff.id}">Update Effective Processor Count</html:link> --%>
-<!-- 		<br /> -->
-<%-- 	</c:otherwise> --%>
-<%-- </c:choose></p> --%>
-
 								<div class="indent">
 									<h3>
 										Software&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 
@@ -226,7 +211,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 								<div class="indent">
 									<h3>
 										Software Statistics&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -249,7 +234,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 								<div class="indent">
 									<h3>
 										Software Source&nbsp;<a class="ibm-question-link"
-											href="help/help.do"></a>
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<display:table name="bankAccountList" requestURI=""
@@ -288,7 +273,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 									<div class="indent">
 										<h3>
 											Software&nbsp;<a class="ibm-question-link"
-												href="help/help.do"></a>
+												href="/BRAVO/help/help.do"></a>
 										</h3>
 									</div>
 									<display:table name="list" requestURI=""
@@ -350,7 +335,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 					<div id="ibm-content-sidebar">
 						<div class="ibm-container">
 							<h2 class="ibm-rule">
-								Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								Actions&nbsp;<a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
 							</h2>
 							<div class="ibm-container-body">
 								<ul class="ibm-link-list">
