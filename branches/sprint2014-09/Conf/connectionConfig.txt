@@ -1,3 +1,0 @@
-ATPdb=ATP
-ATPuser=atbravo
-ATPpassword=AtpBrav0
