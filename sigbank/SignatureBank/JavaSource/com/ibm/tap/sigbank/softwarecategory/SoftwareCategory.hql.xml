@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="softwareCategories">
+		<![CDATA[
+		from SoftwareCategory s
+
+		order by
+			upper(s.softwareCategoryName)
+
+		]]>
+	</query>
+
+	<query name="softwareCategoryById">
+		<![CDATA[
+		from SoftwareCategory s
+
+		where s.softwareCategoryId = :softwareCategoryId
+
+		]]>
+	</query>
+
+	<query name="softwareCategoryHistory">
+		<![CDATA[
+		from SoftwareCategoryH s
+
+		where s.softwareCategory = :softwareCategoryId
+
+		]]>
+	</query>
+
+	<query name="softwareCategoryByName">
+		<![CDATA[
+		from SoftwareCategory s
+
+		where s.softwareCategoryName = :name
+
+		]]>
+	</query>
+
+	<query name="softwareCategoryHistoryYears">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(year(m.recordTime))
+		from 
+			SoftwareCategoryH m
+		order by
+			year(m.recordTime)
+		]]>
+	</query>
+
+	<query name="softwareCategoryHistoryMonths">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(monthname(m.recordTime),month(m.recordTime))
+		from 
+			SoftwareCategoryH m
+		where
+			year(m.recordTime) = :year
+		order by
+			month(m.recordTime)
+		]]>
+	</query>
+
+	<query name="softwareCategoryHistoryByYearByMonth">
+		<![CDATA[
+		from 
+			SoftwareCategoryH s
+			join fetch s.softwareCategory
+		where
+			exists
+			(	
+				from 
+					SoftwareCategoryH h 
+				where 
+					h.softwareCategory = s.softwareCategory 
+					and year(h.recordTime) = :year
+					and monthname(h.recordTime) = :month
+			)
+		order by 
+			s.softwareCategory ASC
+			,s.recordTime DESC
+		]]>
+	</query>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<query name="softwareCategoryUnknown">
+		<![CDATA[
+		from SoftwareCategory s
+
+		where s.softwareCategoryName = :softwareCategoryName
+
+		]]>
+	</query>
+
+	<query name="softwaresBySoftwareCategory">
+		<![CDATA[
+		from Product p
+
+		join fetch p.manufacturer
+
+		where 
+		p.productInfo.softwareCategory = :softwareCategory and
+			p.deleted = 0
+
+		order by p.productInfo.priority
+
+		]]>
+	</query>
+
+
+
+
+
+
+</hibernate-mapping>

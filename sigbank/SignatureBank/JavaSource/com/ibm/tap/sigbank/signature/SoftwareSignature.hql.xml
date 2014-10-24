@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="softwareSignaturesByProduct">
+		<![CDATA[
+		from SoftwareSignature s 
+		
+		where	
+			s.product = :product
+
+		]]>
+	</query>
+
+	<query name="softwareSignatureById">
+		<![CDATA[
+		from SoftwareSignature s
+           join fetch s.product
+		where
+			s.softwareSignatureId = :softwareSignatureId
+
+		]]>
+	</query>
+
+	<query name="softwareSignaturesByFileNameFileSize">
+		<![CDATA[
+		from SoftwareSignature s
+
+		join fetch s.product
+
+		where
+			s.fileName = :fileName 
+			and s.fileSize = :fileSize
+            and s.status='ACTIVE'
+		]]>
+	</query>
+	
+	<query name="allSoftwareSignaturesByFileNameFileSize">
+		<![CDATA[
+		from SoftwareSignature s
+
+		join fetch s.product
+
+		where
+			s.fileName = :fileName 
+			and s.fileSize = :fileSize
+		]]>
+	</query>
+
+	<query name="softwareSignaturesHistory">
+		<![CDATA[
+		from SoftwareSignatureH s 
+		join fetch s.product
+		where	
+			s.softwareSignature = :softwareSignature
+
+		]]>
+	</query>
+
+	<query name="softwareSignaturesByIdList">
+		<![CDATA[
+		from SoftwareSignature s 
+
+		where	
+			s.softwareSignatureId in ( :ids )
+
+		]]>
+	</query>
+
+	<query name="softwareSignaturesByFileName">
+		<![CDATA[
+		from SoftwareSignature s
+
+		join fetch s.product
+
+		where
+			upper(s.fileName) like :fileName
+
+		]]>
+	</query>
+
+	<query name="softwareSignatureHistoryYears">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(year(m.recordTime))
+		from 
+			SoftwareSignatureH m
+		]]>
+	</query>
+
+	<query name="softwareSignatureHistoryMonths">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(monthname(m.recordTime),month(m.recordTime))
+		from 
+			SoftwareSignatureH m
+		where
+			year(m.recordTime) = :year
+		order by
+			month(m.recordTime)
+		]]>
+	</query>
+
+	<query name="softwareSignatureHistoryByYearByMonth">
+		<![CDATA[
+		from 
+			SoftwareSignatureH s
+			join fetch s.product
+			join fetch s.softwareSignature
+		where
+			exists
+			(
+				from 
+					SoftwareSignatureH h 
+				where 
+					h.softwareSignature = s.softwareSignature 
+					and year(h.recordTime) = :year
+					and monthname(h.recordTime) = :month
+			)
+		order by 
+			s.softwareSignature	ASC
+			,s.recordTime DESC
+		]]>
+	</query>
+
+</hibernate-mapping>

@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="searchSoftwareByName">
+		<![CDATA[
+		from 
+			Software s 
+			join fetch s.manufacturer
+			join fetch s.softwareCategory
+		where	
+			s.status = 'ACTIVE' 
+			and s.softwareName != 'UNKNOWN' 
+			and upper(s.softwareName) like :search
+		order by 
+			upper(s.softwareName)
+		]]>
+	</query>
+
+	<query name="searchSwByNameManfCat">
+		<![CDATA[
+		from 
+			Software s 
+			join fetch s.manufacturer
+			join fetch s.softwareCategory
+		where	
+			s.status = 'ACTIVE' 
+			and s.softwareName != 'UNKNOWN'
+			and s.manufacturer.manufacturerId = :manufacturerId
+			and s.softwareCategory.softwareCategoryId = :softwareCategoryId 
+			and upper(s.softwareName) like :search
+		order by 
+			upper(s.softwareName)
+		]]>
+	</query>
+
+	<query name="searchSwByNameAndManufacturer">
+		<![CDATA[
+		from 
+			Software s 
+			join fetch s.manufacturer
+			join fetch s.softwareCategory
+		where	
+			s.status = 'ACTIVE' 
+			and s.softwareName != 'UNKNOWN'
+			and s.manufacturer.manufacturerId = :manufacturerId
+			and upper(s.softwareName) like :search
+		order by 
+			upper(s.softwareName)
+		]]>
+	</query>
+
+	<query name="searchSwByNameAndCategory">
+		<![CDATA[
+		from 
+			Software s 
+			join fetch s.manufacturer
+			join fetch s.softwareCategory
+		where	
+			s.status = 'ACTIVE' 
+			and s.softwareName != 'UNKNOWN'
+			and s.softwareCategory.softwareCategoryId = :softwareCategoryId
+			and upper(s.softwareName) like :search
+		order by 
+			upper(s.softwareName)
+		]]>
+	</query>
+
+	<query name="softwareHistoryBySoftwareId">
+		<![CDATA[
+		from SoftwareH s
+				
+		where
+			s.software = :softwareId
+
+		]]>
+	</query>
+
+	<query name="softwareByManufacturer">
+		<![CDATA[
+		from Software s
+				
+		where
+			s.manufacturer = :manufacturer
+		]]>
+	</query>
+
+	<query name="softwareByIdList">
+		<![CDATA[
+		from Software s
+				
+		where
+			s.softwareId in ( :ids )
+		]]>
+	</query>
+
+	<query name="softwareBySoftwareCategory">
+		<![CDATA[
+		from Software s
+				
+		where
+			s.softwareCategory = :softwareCategory
+		]]>
+	</query>
+
+	<query name="getMaxCategoryPriority">
+		<![CDATA[
+		select
+		    max(s.priority) + 1
+		from  
+			Software s
+		where 
+			s.softwareCategory = :softwareCategory
+			and s.status = 'ACTIVE'
+		]]>
+	</query>
+
+	<query name="softwarePriorityOrder">
+		<![CDATA[
+			from
+				Software s
+			where
+				s.softwareCategory = :softwareCategory
+			order by
+				s.priority ASC
+				,s.recordTime DESC
+		]]>
+	</query>
+
+	<query name="softwares">
+		<![CDATA[
+		from Software s 
+		
+		where	
+			s.status = 'ACTIVE' and
+			s.softwareName != 'UNKNOWN'
+
+		order by 
+			upper(s.softwareName)
+
+		]]>
+	</query>
+
+	<query name="softwareHistoryYears">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(year(m.recordTime))
+		from 
+			SoftwareH m
+		order by
+			year(m.recordTime)
+		]]>
+	</query>
+
+	<query name="softwareHistoryMonths">
+		<![CDATA[
+		select 
+			distinct new com.ibm.tap.sigbank.reports.HistoryReport(monthname(m.recordTime),month(m.recordTime))
+		from 
+			SoftwareH m
+		where
+			year(m.recordTime) = :year
+		order by
+			month(m.recordTime)
+			
+		]]>
+	</query>
+
+	<query name="softwareHistoryByYearByMonth">
+		<![CDATA[
+		from 
+			SoftwareH s
+			join fetch s.software
+		where
+			exists
+			(
+				from 
+					SoftwareH h 
+				where 
+					h.software = s.software 
+					and year(h.recordTime) = :year
+					and monthname(h.recordTime) = :month
+			)
+		order by 
+			s.software ASC
+			,s.recordTime DESC
+		]]>
+	</query>
+	
+	<query name="softwareById">
+		<![CDATA[
+		from Software s
+		
+		join fetch s.manufacturer
+		join fetch s.softwareCategory
+		
+		where
+			s.softwareId = :softwareId
+
+		]]>
+	</query>
+
+
+
+	<query name="softwareByName">
+		<![CDATA[
+		from Software s
+
+		where
+			upper(s.softwareName) = :softwareName
+
+		]]>
+	</query>
+
+	<query name="softwareUnknown">
+		<![CDATA[
+		from Software s
+
+		where s.softwareName = :softwareName
+
+		]]>
+	</query>
+
+	<query name="softwaresByManufacturerBySoftwareCategory">
+		<![CDATA[
+		from Software s
+
+		join fetch s.manufacturer
+
+		where 
+			s.manufacturer = :manufacturer and
+			s.softwareCategory = :softwareCategory and
+			s.status = 'ACTIVE'
+
+		order by upper(s.softwareName)
+		
+
+
+		]]>
+	</query>
+
+
+
+	<query name="bankAccountSoftware">
+		<![CDATA[
+		from BankAccountSoftware bas 
+		
+		where	
+			bas.bankAccount = :bankAccount and
+			bas.software = :software
+
+		]]>
+	</query>
+</hibernate-mapping>
