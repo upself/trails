@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
+        http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml.xsd">
+
+	<bean id="swkbtJobLauncher" class="com.ibm.asset.trails.batch.swkbt.job.SwkbtJobLauncher">
+	</bean>
+
+	<batch:job id="swkbtLoadJob" job-repository="jobRepository">
+	 
+	    <batch:split id="splitsteps"  task-executor="taskExecutor" next="loadStep0">
+	        <batch:flow>
+				<batch:step id="splitStep0" parent="split0.master" />
+			</batch:flow>
+	        <batch:flow>
+				<batch:step id="splitStep1" parent="split1.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep2" parent="split2.master" />
+			</batch:flow>
+		    <batch:flow>
+				<batch:step id="splitStep3" parent="split3.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep4" parent="split4.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep5" parent="split5.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep6" parent="split6.master" />
+			</batch:flow>
+		    <batch:flow>
+				<batch:step id="splitStep7" parent="split7.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep8" parent="split8.master" />
+			</batch:flow>
+	    </batch:split>
+	    
+	    <batch:step id="loadStep0" parent="load0.master" next="loadStep1"/> 
+	    
+	    <batch:step id="loadStep1" parent="load1.master" next="loadStep2"/> 
+			
+		<batch:step id="loadStep2" parent="load2.master"  next="loadStep3"/> 
+	 		
+	    <batch:step id="loadStep3" parent="load3.master" next="loadStep4" /> 
+	 		
+	    <batch:step id="loadStep4" parent="load4.master" next="loadStep5" />
+			
+		<batch:step id="loadStep5" parent="load5.master" next="loadStep6" /> 
+			
+	    <batch:step id="loadStep6" parent="load6.master" next="loadStep7" />  
+		
+		<batch:step id="loadStep7" parent="load7.master" next="loadStep8" />
+			
+		<batch:step id="loadStep8" parent="load8.master" next="licensable"/>
+		   
+	    <batch:step id="licensable" next="inactivate" >
+			<batch:tasklet>
+				<batch:chunk reader="licensableReader" writer="licensableWriter"
+					commit-interval="100" />
+			</batch:tasklet>
+		</batch:step>
+	  
+		<batch:split id="inactivate" next="reports" task-executor="taskExecutor" >
+			<batch:flow>
+				<batch:step id="inactivateSignatures">
+					<batch:tasklet>
+						<batch:chunk reader="inactiveSignatureReader" writer="inactiveSignatureWriter"
+							commit-interval="100" />
+					</batch:tasklet>
+				</batch:step>
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="inactivateFilters">
+					<batch:tasklet>
+						<batch:chunk reader="inactiveFilterReader" writer="inactiveFilterWriter"
+							commit-interval="100" />
+					</batch:tasklet>
+				</batch:step>
+			</batch:flow>
+          </batch:split>
+
+		
+		<batch:split id="reports" task-executor="taskExecutor" next="moveFiles"> 
+			<batch:flow> 
+				<batch:step id="signatureHit" next="filterDelta"> 
+					<batch:tasklet> 
+ 						<batch:chunk reader="signatureHitReportReader"
+ 							processor="signatureHitReportProcessor" writer="signatureHitReportWriter" 
+							commit-interval="100" /> 
+					</batch:tasklet> 
+				</batch:step> 
+				<batch:step id="filterDelta"> 
+					<batch:tasklet>
+						<batch:chunk reader="filterDeltaReader" processor="FilterDeltaProcessor"
+							writer="filterDeltaWriter" commit-interval="100" />
+ 					</batch:tasklet>
+ 				</batch:step>
+ 			</batch:flow>
+ 			<batch:flow>
+				<batch:step id="signatureDelta" next="filterHit">
+					<batch:tasklet> 
+ 						<batch:chunk reader="signatureDeltaReader" processor="SignatureDeltaProcessor" 
+ 							writer="signatureDeltaWriter" commit-interval="100" />
+ 					</batch:tasklet>
+ 				</batch:step>
+ 				<batch:step id="filterHit"> 
+ 					<batch:tasklet> 
+ 						<batch:chunk reader="filterHitReportReader" processor="filterHitReportProcessor" 
+ 							writer="filterHitReportWriter" commit-interval="100" /> 
+ 					</batch:tasklet> 
+ 				</batch:step> 
+ 			</batch:flow> 
+ 		</batch:split>   
+ 		
+       <batch:split id="moveFiles" task-executor="taskExecutor" > 
+           <batch:flow>  	    
+ 		       <batch:step id="moveFiles1">
+			      <batch:tasklet ref="moveFilesTasklet1" transaction-manager="jobTransactionManager">
+			      </batch:tasklet>
+		       </batch:step>
+		   </batch:flow>
+		   <batch:flow> 
+		       <batch:step id="moveFiles2">
+			      <batch:tasklet ref="moveFilesTasklet2" transaction-manager="jobTransactionManager">
+			      </batch:tasklet>
+		       </batch:step>
+		    </batch:flow>
+	    </batch:split>
+	</batch:job>
+	
+	<bean id="moveFilesTasklet1" 
+            class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
+            <property name="fromDirectory" ref ="fromdirectory1" />		
+			<property name="toDirectory" ref = "todirectory1" />
+    </bean>
+    
+	<bean id="fromdirectory1" 
+                    class="org.springframework.core.io.FileSystemResource">
+            <constructor-arg value="${source1}" />
+    </bean>
+    
+    <bean id="todirectory1" 
+                    class="org.springframework.core.io.FileSystemResource">
+            <constructor-arg value="${target1}" />
+    </bean>
+    
+    <bean id="moveFilesTasklet2" 
+            class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
+            <property name="fromDirectory" ref ="fromdirectory2" />		
+			<property name="toDirectory" ref = "todirectory2" />
+    </bean>
+    
+	<bean id="fromdirectory2" 
+                    class="org.springframework.core.io.FileSystemResource">
+            <constructor-arg value="${source2}" />
+    </bean>
+    
+    <bean id="todirectory2" 
+                    class="org.springframework.core.io.FileSystemResource">
+            <constructor-arg value="${target2}" />
+    </bean>
+	
+	<bean id="canonicalReader" scope="step"
+		class="org.springframework.batch.item.xml.StaxEventItemReader">
+		<property name="fragmentRootElementName" value="#{stepExecutionContext[elementName]}" />
+		<property name="resource" value="file:#{jobParameters['input.file']}" />
+		<property name="unmarshaller" ref="swkbtMarshaller" />
+	</bean>
+
+	<bean id="canonicalWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.WstxStaxEventItemWriter"
+		scope="step">
+		<property name="resource" value="#{stepExecutionContext[outputFile]}" />
+		<property name="marshaller" ref="swkbtMarshaller" />
+		<property name="overwriteOutput" value="true" />
+	</bean>
+
+	<bean id="canonicalReader2" scope="step"
+		class="org.springframework.batch.item.xml.StaxEventItemReader">
+		<property name="fragmentRootElementName" value="#{stepExecutionContext[elementName]}" />
+		<property name="resource" value="#{stepExecutionContext[fileName]}" />
+		<property name="unmarshaller" ref="swkbtMarshaller" />
+	</bean>
+	
+	<bean id="domainWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.TrailsSwkbtWriter"
+		scope="step">
+	</bean>
+	
+
+	<bean id="licensableReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+                            newLicensable
+                            ,id
+                        from (
+                        select
+                            pi.id as id
+                            ,pi.licensable as current
+                            ,case when pi.licensable = 0 and sum(pn.id) > 0 then 1
+                            when pi.licensable = 1 and (sum(pn.id) = 0 or sum(pn.id) is null) then 0 end as newLicensable
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                            manufacturer m
+                            ,product_info pi
+                            ,product p
+                            left outer join version v on
+                                p.id = v.product_id
+                            left outer join release r on
+                                v.id = r.version_id
+                            left outer join software_item_pid sip on
+                                sip.software_item_id = p.id
+                                or sip.software_item_id = v.id
+                                or sip.software_item_id = r.id
+                            left outer join pid pid on
+                                sip.pid_id = pid.id
+                            left outer join part_number_pid pnp on
+                                pnp.pid_id = pid.id
+                            left outer join part_number pn on
+                                pnp.part_number_id = pn.id
+                        where
+                            m.name in ('IBM', 'IBM FileNet','IBM Tivoli', 'Informix', 'Rational Software Corporation','Ascential Software','IBM WebSphere','Digital CandleWebSphere','IBM Rational','Lotus','Candle','Tivoli','COGNOS')
+                            and m.id = p.manufacturer_id
+                            and p.id = pi.id
+                            and pi.remote_user!='TADZMainframe'
+                        group by
+                            pi.id
+                            ,pi.licensable
+                        ) as T                      
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                        where T.newLicensable is not null
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="licensableWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.LicensableWriter"
+		scope="step">
+	</bean>
+
+	<bean id="signatureHitReportReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[ 
+                            id
+                            ,softwareName
+                            ,fileName
+                            ,fileSize
+                            ,softwareVersion
+                            ,osType
+                            ,recordTime
+                            ,remoteUser
+                            from (
+                            select
+                                ss.software_signature_id as id
+                                ,s.name as softwareName
+                                ,ss.file_name as fileName
+                                ,ss.file_size as fileSize
+                                ,ss.software_version as softwareVersion
+                                ,ss.os_type as osType
+                                ,ss.record_time as recordTime
+                                ,ss.remote_user as remoteUser
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                                kb_definition kb
+                                ,software_item s
+                                ,software_signature ss
+                                where
+                                kb.deleted != 1
+                                and kb.id = s.id
+                                and s.id = ss.software_id
+                                and ss.status = 'ACTIVE'
+                                ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="signatureHitReportProcessor"
+		class="com.ibm.asset.trails.batch.swkbt.processor.SignatureProcessor" />
+
+	<bean id="signatureHitReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource"
+			value="${signatureHitWriterResource}" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<property name="fieldExtractor">
+					<bean
+						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="headerCallback">
+			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
+				<property name="csvHeader"
+					value="SIGBANK_ID,SOFTWARE_NAME,FILE_NAME,FILE_SIZE,VERSION,OS,MODIFICATION_TIME,EDITOR" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="filterHitReportReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[ 
+                            id
+                            ,softwareName
+                            ,filterName
+                            ,filterVersion
+                            ,filterMapVersion
+                            ,osType
+                            ,recordTime
+                            ,remoteUser
+                            from (
+                            select
+                                sf.software_filter_id as id
+                                ,s.name as softwareName
+                                ,sf.software_name as filterName
+                                ,sf.software_version as filterVersion
+                                ,sf.map_software_version as filterMapVersion
+                                ,sf.os_type as osType
+                                ,sf.record_time as recordTime
+                                ,sf.remote_user as remoteUser
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                            kb_definition kb
+                            ,software_item s
+                            ,software_filter sf
+                            where
+                            kb.deleted != 1
+                            and kb.id = s.id
+                            and s.id = sf.software_id
+                            and sf.status = 'ACTIVE'
+                        ) as T        
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="filterHitReportProcessor"
+		class="com.ibm.asset.trails.batch.swkbt.processor.FilterProcessor" />
+
+	<bean id="filterHitReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource"
+			value="${filterHitWriterResource}" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<property name="fieldExtractor">
+					<bean
+						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="headerCallback">
+			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
+				<property name="csvHeader"
+					value="SIGBANK_ID,SOFTWARE_NAME,FILTER_NAME,FILTER_VERSION,FILTER_MAP_VERSION,OS,MODIFICATION_TIME,EDITOR" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="signatureDeltaReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+                            id
+                            ,softwareName
+                            ,fileName
+                            ,fileSize
+                            ,softwareVersion
+                            ,osType
+                            ,recordTime
+                            ,remoteUser
+                        from (
+                            select
+                                ss.software_signature_id as id
+                                ,s.name as softwareName
+                                ,ss.file_name as fileName
+                                ,ss.file_size as fileSize
+                                ,ss.software_version as softwareVersion
+                                ,ss.os_type as osType
+                                ,ss.record_time as recordTime
+                                ,ss.remote_user as remoteUser
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                                kb_definition kb
+                                ,software_item s
+                                ,software_signature ss 
+                                where
+                                kb.deleted != 1
+                                and kb.id = s.id
+                                and s.id = ss.software_id
+                                and ss.status = 'ACTIVE'
+                                ) as T      
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="SignatureDeltaProcessor"
+		class="com.ibm.asset.trails.batch.swkbt.processor.SignatureDeltaProcessor" />
+
+	<bean id="signatureDeltaWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource"
+			value="${signatureWriterResource}" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<property name="fieldExtractor">
+					<bean
+						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="headerCallback">
+			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
+				<property name="csvHeader"
+					value="SIGBANK_ID,SOFTWARE_NAME,FILE_NAME,FILE_SIZE,VERSION,OS,MODIFICATION_TIME,EDITOR" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="filterDeltaReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+                            id
+                            ,softwareName
+                            ,filterName
+                            ,filterVersion
+                            ,filterMapVersion
+                            ,osType
+                            ,recordTime
+                            ,remoteUser
+                        from (
+                            select
+                                sf.software_filter_id as id
+                                ,s.name as softwareName
+                                ,sf.software_name as filterName
+                                ,sf.software_version as filterVersion
+                                ,sf.map_software_version as filterMapVersion
+                                ,sf.os_type as osType
+                                ,sf.record_time as recordTime
+                                ,sf.remote_user as remoteUser
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                                kb_definition kb
+                                ,software_item s
+                                ,software_filter sf
+                                where
+                                kb.deleted != 1
+                                and kb.id = s.id
+                                and s.id = sf.software_id
+                                and sf.status = 'ACTIVE'
+                                ) as T     
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="FilterDeltaProcessor"
+		class="com.ibm.asset.trails.batch.swkbt.processor.FilterDeltaProcessor" />
+
+	<bean id="filterDeltaWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource"
+			value="${filterWriterResource}" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<property name="fieldExtractor">
+					<bean
+						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="headerCallback">
+			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
+				<property name="csvHeader"
+					value="SIGBANK_ID,SOFTWARE_NAME,FILTER_NAME,FILTER_VERSION,FILTER_MAP_VERSION,OS,MODIFICATION_TIME,EDITOR" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="inactiveSignatureReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+                            software_signature_id
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                            kb_definition kb
+                            ,product_info pi
+                            ,software_signature ss                   
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                            kb.deleted = 1
+                            and kb.id = pi.id
+                            and pi.id = ss.software_id
+                            and ss.status = 'ACTIVE'
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="software_signature_id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="inactiveSignatureWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter"
+		scope="step">
+		<property name="itemPreparedStatementSetter">
+			<bean
+				class="org.springframework.batch.item.database.support.ColumnMapItemPreparedStatementSetter" />
+		</property>
+		<property name="sql"
+			value="UPDATE software_signature set status = 'INACTIVE' where software_signature_id = ?" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="inactiveFilterReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+                            software_filter_id
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                            kb_definition kb
+                            ,product_info pi
+                            ,software_filter sf                  
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                            kb.deleted = 1
+                            and kb.id = pi.id
+                            and pi.id = sf.software_id
+                            and sf.status = 'ACTIVE'
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="software_filter_id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+
+	<bean id="inactiveFilterWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter"
+		scope="step">
+		<property name="itemPreparedStatementSetter">
+			<bean
+				class="org.springframework.batch.item.database.support.ColumnMapItemPreparedStatementSetter" />
+		</property>
+		<property name="sql"
+			value="UPDATE software_filter set status = 'INACTIVE' where software_filter_id = ?" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="fileNameListener"
+		class="com.ibm.asset.trails.batch.swkbt.listener.OutputFileListener"
+		scope="step" />
+	<bean id="errorListener"
+		class="com.ibm.asset.trails.batch.swkbt.listener.ItemFailureLoggerListener"
+		scope="step" />
+	<bean id="resourcesListener"
+		class="com.ibm.asset.trails.batch.swkbt.listener.ResourcesListener"
+		scope="step">
+		<property name="resources" value="${resourceLinsener}" />
+	</bean>
+
+	<!-- Split steps -->
+	<batch:step id="split" abstract="true">
+		<batch:tasklet transaction-manager="jobTransactionManager">
+			<batch:chunk reader="canonicalReader" writer="canonicalWriter"
+				commit-interval="500" />
+			<batch:listeners>
+				<batch:listener ref="fileNameListener" />
+				<batch:listener ref="errorListener" />
+			</batch:listeners>
+		</batch:tasklet>
+	</batch:step>
+	<batch:step id="split0" parent="split" />
+	<batch:step id="split1" parent="split" />
+	<batch:step id="split2" parent="split" />
+	<batch:step id="split3" parent="split" />
+	<batch:step id="split4" parent="split" />
+	<batch:step id="split5" parent="split" />
+	<batch:step id="split6" parent="split" />
+	<batch:step id="split7" parent="split" />
+	<batch:step id="split8" parent="split" />
+
+	<!-- Load steps -->
+	<batch:step id="load" abstract="true">
+		<batch:tasklet transaction-manager="jobTransactionManager">
+			<batch:chunk reader="canonicalReader2" writer="domainWriter"
+				commit-interval="1000" />
+		</batch:tasklet>
+	</batch:step>
+	<batch:step id="load0" parent="load" />
+	<batch:step id="load1" parent="load" />
+	<batch:step id="load2" parent="load" />
+	<batch:step id="load3" parent="load" />
+	<batch:step id="load4" parent="load" />
+	<batch:step id="load5" parent="load" />
+	<batch:step id="load6" parent="load" />
+	<batch:step id="load7" parent="load" />
+	<batch:step id="load8" parent="load" />
+
+	<!-- Split Step masters -->
+	<batch:step id="split0.master">
+		<batch:partition step="split0" partitioner="partitioner0">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+	
+	<batch:step id="split1.master">
+		<batch:partition step="split1" partitioner="partitioner1">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split2.master">
+		<batch:partition step="split2" partitioner="partitioner2">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split3.master">
+		<batch:partition step="split3" partitioner="partitioner3">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split4.master">
+		<batch:partition step="split4" partitioner="partitioner4">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split5.master">
+		<batch:partition step="split5" partitioner="partitioner5">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split6.master">
+		<batch:partition step="split6" partitioner="partitioner6">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split7.master">
+		<batch:partition step="split7" partitioner="partitioner7">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split8.master">
+		<batch:partition step="split8" partitioner="partitioner8">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<!-- Load Step masters -->
+	<batch:step id="load0.master">
+		<batch:partition step="load0" partitioner="loadPartitioner0">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+	
+	<batch:step id="load1.master">
+		<batch:partition step="load1" partitioner="loadPartitioner1">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load2.master">
+		<batch:partition step="load2" partitioner="loadPartitioner2">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load3.master">
+		<batch:partition step="load3" partitioner="loadPartitioner3">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load4.master">
+		<batch:partition step="load4" partitioner="loadPartitioner4">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load5.master">
+		<batch:partition step="load5" partitioner="loadPartitioner5">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load6.master">
+		<batch:partition step="load6" partitioner="loadPartitioner6">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load7.master">
+		<batch:partition step="load7" partitioner="loadPartitioner7">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load8.master">
+		<batch:partition step="load8" partitioner="loadPartitioner8">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<!-- Split Partitioners -->
+	<bean id="partitioner0"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList0" />
+	</bean>
+	
+	<bean id="partitioner1"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList1" />
+	</bean>
+
+	<bean id="partitioner2"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList2" />
+	</bean>
+
+	<bean id="partitioner3"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList3" />
+	</bean>
+
+	<bean id="partitioner4"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList4" />
+	</bean>
+
+	<bean id="partitioner5"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList5" />
+	</bean>
+
+	<bean id="partitioner6"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList6" />
+	</bean>
+
+	<bean id="partitioner7"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList7" />
+	</bean>
+
+	<bean id="partitioner8"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList8" />
+	</bean>
+
+	<!-- Load step partitioners -->
+	<bean id="loadPartitioner0" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList0" />
+	</bean>
+	
+	<bean id="loadPartitioner1" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList1" />
+	</bean>
+
+	<bean id="loadPartitioner2" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList2" />
+	</bean>
+
+	<bean id="loadPartitioner3" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources" value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList3" />
+	</bean>
+
+	<bean id="loadPartitioner4" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList4" />
+	</bean>
+
+	<bean id="loadPartitioner5" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList5" />
+	</bean>
+
+	<bean id="loadPartitioner6" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList6" />
+	</bean>
+
+	<bean id="loadPartitioner7" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList7" />
+	</bean>
+
+	<bean id="loadPartitioner8" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}"  />
+		<property name="elementNames" ref="canonicalElementList8" />
+	</bean>
+
+</beans>

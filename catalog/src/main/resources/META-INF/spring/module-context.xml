@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
+		http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml.xsd">
+
+	<import resource="classpath:/META-INF/spring/integration-context.xml" />
+	<import resource="classpath:/META-INF/spring/job-context.xml" />
+	<context:annotation-config />
+	<context:component-scan base-package="com.ibm.asset" />
+
+	<bean id="simpleStep"
+		class="org.springframework.batch.core.step.item.SimpleStepFactoryBean"
+		abstract="true">
+		<property name="transactionManager" ref="jobTransactionManager" />
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="startLimit" value="100" />
+		<property name="commitInterval" value="1000" />
+	</bean>
+
+<!-- Changed the following from org.springframework.core.task.SimpleAsyncTaskExecutor to
+org.springframework.core.task.SyncTaskExecutor
+-->
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+	</bean>
+
+	<bean id="swkbtMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath" value="com.ibm.asset.swkbt.schema" />
+	</bean>
+
+	<bean id="canonicalElementList"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>alias</value>
+				<value>Platform</value>
+				<value>file</value>
+				<value>cVersionId</value>
+				<value>registry</value>
+				<value>Manufacturer</value>
+				<value>DistributedProduct</value>
+				<value>MainframeProduct</value>
+				<value>DistributedVersion</value>
+				<value>MainframeVersion</value>
+				<value>DistributedRelease</value>
+				<value>MainframeFeature</value>
+				<value>Variation</value>
+				<value>PartNumber</value>
+				<value>InstallRegistrySignature</value>
+				<value>RegistrySignature</value>
+				<value>FileSignature</value>
+				<value>ApplicationServerSignature</value>
+				<value>J2eeApplicationSignature</value>
+				<value>FilterSignature</value>
+				<value>XslmIdSignature</value>
+				<value>OtherSignature</value>
+				<value>Relationship</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList0"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>Platform</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="canonicalElementList1"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>alias</value>
+				<value>file</value>
+				<value>cVersionId</value>
+				<value>registry</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList2"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>Manufacturer</value>
+				<value>PartNumber</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList3"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>DistributedProduct</value>
+				<value>MainframeProduct</value> 
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList4"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>DistributedVersion</value>
+				<value>MainframeVersion</value> 
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList5"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>DistributedRelease</value>
+				<value>MainframeFeature</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList6"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>Variation</value>
+				<value>Relationship</value>
+
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList7"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>InstallRegistrySignature</value>
+				<value>RegistrySignature</value>
+				<value>FileSignature</value>
+				<value>ApplicationServerSignature</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="canonicalElementList8"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>J2eeApplicationSignature</value>
+				<value>FilterSignature</value>
+				<value>XslmIdSignature</value>
+				<value>OtherSignature</value>
+			</list>
+		</property>
+	</bean>
+</beans> 

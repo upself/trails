@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:http="http://www.springframework.org/schema/integration/http"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
+		http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml-2.0.xsd
+		http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http-2.0.xsd">
+
+	<int:channel id="daily" />
+	<int:channel id="weekly" />
+
+	<int:inbound-channel-adapter ref="canonicalRequest"
+		method="daily" channel="daily" auto-startup="true">
+		<int:poller cron="${dailyCron}" />
+	</int:inbound-channel-adapter>
+
+	<int:inbound-channel-adapter ref="canonicalRequest"
+		method="weekly" channel="weekly" auto-startup="true">
+		<int:poller cron="${weeklyCron}" /> 
+	</int:inbound-channel-adapter>
+
+	<bean id="canonicalRequest"
+		class="com.ibm.asset.trails.batch.swkbt.service.impl.SwkbtServiceImpl" />
+
+	<int-file:inbound-channel-adapter id="canonicalFileIn"
+		directory="${canonicalFileIn}" filename-pattern="*.xml"
+		prevent-duplicates="false">
+		<int:poller fixed-rate="5000" />
+	</int-file:inbound-channel-adapter>
+
+	<!-- Calls the job to split up the file -->
+	<int:service-activator input-channel="canonicalFileIn"
+		ref="swkbtJobLauncher" method="handleCanonicalFile" output-channel="canonicalFileOut" />
+
+	<int-file:outbound-channel-adapter
+		id="canonicalFileOut" directory="${canonicalFileOut}"
+		delete-source-files="true" />
+</beans>
