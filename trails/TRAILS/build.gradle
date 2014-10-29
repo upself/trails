@@ -1,0 +1,99 @@
+apply plugin: 'java' 
+apply plugin: 'war' 
+		
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  /********Compile**************************************************************/
+  //Struts 2
+  compile 'org.apache.struts:struts2-core:2.2.3'
+  compile 'org.apache.struts:struts2-spring-plugin:2.2.3'
+  compile 'org.apache.struts:struts2-convention-plugin:2.2.3'
+  compile 'org.apache.struts:struts2-tiles-plugin:2.2.3'
+  compile 'org.apache.struts:struts2-dojo-plugin:2.2.3'
+  
+  //tiles
+  compile 'org.apache.tiles:tiles-core:2.2.2'
+  compile 'org.apache.tiles:tiles-servlet:2.2.2'
+  compile 'org.apache.tiles:tiles-jsp:2.2.2'
+  
+  //Spring 3
+  compile 'org.springframework:spring-core:3.0.5.RELEASE'
+  compile('org.springframework:spring-beans:3.0.5.RELEASE'){
+    //exclude the following module
+    exclude group:'org.slf4j', module: 'slf4j-api'
+  }
+  compile('org.springframework:spring-context:3.0.5.RELEASE'){
+    //exclude the following module
+    exclude group:'commons-logging', module: 'commons-logging'
+  } 
+  compile 'org.springframework:spring-aspects:3.0.5.RELEASE'
+  compile 'org.springframework:spring-tx:3.0.5.RELEASE'
+  compile 'org.springframework:spring-webmvc:3.0.5.RELEASE'
+  compile 'org.springframework:spring-orm:3.0.5.RELEASE'
+  compile 'org.springframework:spring-web:3.0.5.RELEASE'
+  
+  //AspectJ
+  compile 'org.aspectj:aspectjrt:1.6.10'
+  compile 'org.aspectj:aspectjweaver:1.6.10'
+  
+  //Dwr
+  compile 'uk.ltd.getahead:dwr:1.1-beta-3'
+  
+  //Hibernate dependencies
+  compile 'org.hibernate:hibernate-entitymanager:3.6.2.Final'
+  compile 'org.hibernate:hibernate-c3p0:3.6.2.Final'
+  compile 'org.hibernate:hibernate-ehcache:3.6.2.Final'
+  
+  //Logging
+  compile 'org.slf4j:slf4j-api:1.6.1'
+  compile('log4j:log4j:1.2.16') {
+    //exclude the following modules
+    exclude group:'javax.mail', module: 'mail'
+    exclude group:'javax.jms', module: 'jms'
+    exclude group:'com.sun.jdmk', module: 'jmxtools'
+    exclude group:'com.sun.jmx', module: 'jmxri'
+  }
+  
+  //Apache POI
+  compile 'org.apache.poi:poi:3.7'
+  compile 'org.apache.poi:poi-ooxml:3.7'
+  compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+  
+  //Refer the WEB-INF/lib jar files
+  compile fileTree(dir: 'src/main/webapp/WEB-INF/lib', include: '*.jar')  
+  /********Compile**************************************************************/
+   
+  /********Provided Compile*****************************************************/
+  //Javax Servlet
+  providedCompile 'javax.servlet:servlet-api:2.4'
+  providedCompile 'javax.servlet.jsp:jsp-api:2.0'
+  /********Provided Compile*****************************************************/
+   
+  /********Test Compile*********************************************************/
+  //Junit
+  testCompile 'junit:junit:4.5'
+  /********Test Compile*********************************************************/
+   
+  /********Run Time*************************************************************/
+  //Javax Servlet
+  runtime 'javax.servlet:jstl:1.1.2'
+  //Logging
+  runtime('org.slf4j:jcl-over-slf4j:1.6.1'){
+    //exclude the following modules
+    exclude group:'javax.mail', module: 'mail'
+    exclude group:'javax.jms', module: 'jms'
+    exclude group:'com.sun.jdmk', module: 'jmxtools'
+    exclude group:'com.sun.jmx', module: 'jmxri'
+  }
+  runtime('org.slf4j:slf4j-log4j12:1.6.1'){
+    //exclude the following modules
+    exclude group:'javax.mail', module: 'mail'
+    exclude group:'javax.jms', module: 'jms'
+    exclude group:'com.sun.jdmk', module: 'jmxtools'
+    exclude group:'com.sun.jmx', module: 'jmxri'
+  }
+  /********Run Time*************************************************************/
+}
