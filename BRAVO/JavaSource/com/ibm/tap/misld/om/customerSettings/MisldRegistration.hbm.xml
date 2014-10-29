@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.customerSettings.MisldRegistration"
+		table="MISLD_REGISTRATION">
+
+		<id name="misldRegistrationId" column="MISLD_REGISTRATION_ID">
+			<generator class="foreign">
+				<param name="property">customer</param>
+			</generator>
+		</id>
+
+		<one-to-one name="customer"
+			class="com.ibm.tap.misld.om.cndb.Customer" constrained="true" />
+
+		<property name="inScope" type="boolean">
+			<column name="SCOPE" not-null="true" />
+		</property>
+
+		<property name="notInScopeJustification">
+			<column name="NOT_IN_SCOPE_JUSTIFICATION" length="64" />
+		</property>
+
+		<property name="justificationOther">
+			<column name="JUSTIFICATION_OTHER" length="64" />
+		</property>
+
+		<property name="remoteUser">
+			<column name="REMOTE_USER" length="32" not-null="true" />
+		</property>
+
+		<property name="recordTime" type="timestamp">
+			<column name="RECORD_TIME" not-null="true" />
+		</property>
+
+		<property name="status">
+			<column name="STATUS" length="32" not-null="true" />
+		</property>
+
+	</class>
+</hibernate-mapping>

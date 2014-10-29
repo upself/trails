@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.bravo.software.InstalledTadz" table="INSTALLED_TADZ"
+		mutable="false">
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+		<many-to-one name="installedSoftware" class="com.ibm.ea.bravo.software.InstalledSoftware">
+        	<column name="INSTALLED_SOFTWARE_ID" not-null="true" index="IDX_IVMPISW" unique-key="IDX_IVM"/>
+        </many-to-one>
+        <many-to-one name="bankAccount" class="com.ibm.ea.sigbank.BankAccount">
+        	<column name="BANK_ACCOUNT_ID" not-null="true" index="IDX_IVMPBA" unique-key="IDX_IVM"/>
+        </many-to-one>
+        <many-to-one name="softwareItem" class="com.ibm.ea.sigbank.SoftwareItem">
+        	<column name="MAINFRAME_FEATURE_ID" not-null="true" index="IDX_IFSWF" unique-key="IDX_IF"/>
+        </many-to-one>
+		<property name="useCount" column="USE_COUNT"
+			not-null="true" />
+		<property name="lastUsed" column="LAST_USED"
+			not-null="true" />
+		
+	</class>
+</hibernate-mapping>

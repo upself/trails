@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="getMicrosoftPriceList">
+		<![CDATA[
+
+		from MicrosoftPriceList m
+
+		]]>
+	</query>
+
+	<query name="getMicrosoftPriceListAll">
+		<![CDATA[
+
+		from MicrosoftPriceList m
+		
+		join fetch m.licenseAgreementType
+		join fetch m.licenseType
+		join fetch m.microsoftProduct
+		join fetch m.priceLevel
+		join fetch m.qualifiedDiscount
+		
+		order by
+		m.microsoftProduct.productDescription,
+		m.licenseAgreementType
+
+		]]>
+	</query>
+
+	<query name="getMicrosoftPriceListById">
+		<![CDATA[
+
+		from MicrosoftPriceList m
+		
+		join fetch m.licenseAgreementType
+		join fetch m.licenseType
+		join fetch m.microsoftProduct
+		join fetch m.priceLevel
+		join fetch m.qualifiedDiscount
+		
+		where
+		m.microsoftPriceListId = :microsoftPriceListId
+
+		]]>
+	</query>
+
+	<query name="getMicrosoftPriceListByFields">
+		<![CDATA[
+
+		from MicrosoftPriceList m
+		where
+		m.microsoftProduct = :microsoftProduct and
+		m.authenticated =:authenticated and
+		m.qualifiedDiscount = :qualifiedDiscount and
+		m.licenseType = :licenseType and
+		m.licenseAgreementType = :licenseAgreementType and
+		m.priceLevel = :priceLevel and
+		m.sku = :sku
+
+		]]>
+	</query>
+
+	<query name="getMicrosoftPriceListByProduct">
+		<![CDATA[
+
+		from MicrosoftPriceList m
+
+		join fetch m.licenseAgreementType
+		join fetch m.licenseType
+		join fetch m.microsoftProduct
+		join fetch m.priceLevel
+		join fetch m.qualifiedDiscount
+
+		where
+		m.microsoftProduct = :microsoftProduct
+
+		]]>
+	</query>
+
+</hibernate-mapping>
+

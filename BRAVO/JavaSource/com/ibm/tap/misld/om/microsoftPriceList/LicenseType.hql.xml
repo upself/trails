@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="getLicenseTypeByName">
+		<![CDATA[
+
+		from LicenseType l
+		where l.licenseTypeName = :licenseTypeName
+
+		]]>
+	</query>
+
+	<query name="getLicenseTypes">
+		<![CDATA[
+
+		from LicenseType l
+		
+		order by
+		
+		l.licenseTypeName
+
+		]]>
+	</query>
+
+	<query name="getLicenseTypeById">
+		<![CDATA[
+
+		from LicenseType l
+		
+		where l.licenseTypeId = :licenseTypeId
+
+		]]>
+	</query>
+
+</hibernate-mapping>
+

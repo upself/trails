@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="getPurchaseOrderReport">
+		<![CDATA[
+
+		from PurchaseOrderReport p
+
+		join fetch p.customer
+		join fetch p.customer.pod
+		join fetch p.customer.customerType
+		join fetch p.customer.misldAccountSettings.licenseAgreementType
+		join fetch p.licenseAgreementType
+
+   		where p.licenseAgreementType.licenseAgreementTypeName = :licenseAgreementTypeName
+
+		]]>
+	</query>
+
+</hibernate-mapping>
+

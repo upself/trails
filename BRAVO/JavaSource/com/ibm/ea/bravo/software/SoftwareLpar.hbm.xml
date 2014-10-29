@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.bravo.software.SoftwareLpar"
+		table="SOFTWARE_LPAR">
+
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+
+		<!-- fetching customer eagerly because its key to identifying unique lpar names -->
+		<many-to-one name="customer" class="com.ibm.ea.cndb.Customer"
+			lazy="false">
+			<column name="CUSTOMER_ID" not-null="true" index="IDX_SWLC"
+				unique-key="IDX_SWL" />
+		</many-to-one>
+
+		<property name="name">
+			<column name="NAME" length="255" not-null="true"
+				index="IDX_SWLH" unique-key="IDX_SWL" />
+		</property>
+
+		<one-to-one name="softwareLparEff"
+			class="com.ibm.ea.bravo.software.SoftwareLparEff"
+			property-ref="softwareLpar" cascade="delete" />
+
+		<property name="model" column="MODEL" length="128" />
+
+		<property name="biosSerial" column="BIOS_SERIAL" length="128" />
+		
+		<property name="sw_ti_id" column="TECH_IMG_ID" length="64" />
+
+		<property name="processorCount" column="PROCESSOR_COUNT"
+			type="integer" />
+
+		<property name="scantime" column="SCANTIME" type="timestamp" />
+
+		<property name="acquisitionTime" column="ACQUISITION_TIME"
+			type="timestamp" />
+
+		<property name="remoteUser" column="REMOTE_USER" length="64"
+			not-null="true" />
+
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" not-null="true" />
+
+		<property name="status" column="STATUS" length="32"
+			not-null="true" index="IDX_SWLSTS" />
+		<property name="extId" column="EXT_ID" length="8" />
+		<!--
+
+		<property name="objectId" column="OBJECT_ID" length="128" />
+
+		<property name="computerId" column="COMPUTER_ID" length="255" 
+			not-null="true" />
+
+		<property name="osName" column="OS_NAME" length="64" />
+
+		<property name="osType" column="OS_TYPE" length="32" />
+		
+		<property name="osMajorVersion" column="OS_MAJOR_VERS"
+			type="integer" />
+
+		<property name="osMinorVersion" column="OS_MINOR_VERS"
+			type="integer" />
+
+		<property name="osSubVersion" column="OS_SUB_VERS" length="32" />
+
+		<property name="osInstallDate" column="OS_INST_DATE" length="32" />
+
+		<property name="userName" column="USER_NAME" length="255" />
+
+		<property name="biosManufacturer" column="BIOS_MANUFACTURER" length="64" />
+		
+		<property name="biosModel" column="BIOS_MODEL" length="64" />
+
+		<property name="serverType" column="SERVER_TYPE" length="64" />
+
+		<property name="techImgId" column="TECH_IMG_ID" length="64" />
+
+		<property name="memory" column="MEMORY" type="integer" />
+
+		<property name="disk" column="DISK" type="integer" />
+
+		<property name="dedicatedProcessors" column="DEDICATED_PROCESSORS" 
+			type="integer" />
+
+		<property name="totalProcessors" column="TOTAL_PROCESSORS" 
+			type="integer" />
+
+		<property name="sharedProcessors" column="SHARED_PROCESSORS" 
+			type="integer" />
+
+		<property name="processorType" column="PROCESSOR_TYPE" 
+			type="integer" />
+
+		<property name="sharedProcByCores" column="SHARED_PROC_BY_CORES" 
+			type="integer" />
+
+		<property name="dedicatedProcByCores" column="DEDICATED_PROC_BY_CORES" 
+			type="integer" />
+
+		<property name="totalProcByCores" column="TOTAL_PROC_BY_CORES" 
+			type="integer" />
+
+		<property name="alias" column="ALIAS" length="120" />
+
+		<property name="physicalTotalKB" column="PHYSICAL_TOTAL_KB" 
+			type="integer" />
+
+		<property name="virtualMemory" column="VIRTUAL_MEMORY" 
+			type="integer" />
+
+		<property name="physicalFreeMemory" column="PHYSICAL_FREE_MEMORY" 
+			type="integer" />
+
+		<property name="virtualFreeMemory" column="VIRTUAL_FREE_MEMORY" 
+			type="integer" />
+
+		<property name="nodeCapacity" column="NODE_CAPACITY" 
+			type="integer" />
+
+		<property name="lparCapacity" column="LPAR_CAPACITY" 
+			type="integer" />
+
+		<property name="biosDate" column="BIOS_DATE" type="timestamp"  />
+
+		<property name="biosSerialNumber" column="BIOS_SERIAL_NUMBER" 
+			length="64" />
+
+		<property name="biosUniqueId" column="BIOS_UNIQUE_ID" 
+			length="36" />
+
+		<property name="boardSerial" column="BOARD_SERIAL" 
+			length="64" />
+
+		<property name="caseSerial" column="CASE_SERIAL" 
+			length="64" />
+
+		<property name="caseAssetTag" column="CASE_ASSET_TAG" 
+			length="64" />
+
+		<property name="powerOnPassword" column="POWER_ON_PASSWORD" 
+			length="64" />
+
+		--><join table="HW_SW_COMPOSITE" optional="true" inverse="true">
+			<key column="SOFTWARE_LPAR_ID" unique="true"/>
+			<many-to-one name="hardwareLpar" column="HARDWARE_LPAR_ID"
+				not-null="true" unique="true" lazy="false" />
+		</join>
+	</class>
+</hibernate-mapping>

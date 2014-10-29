@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="false">
+	<class name="com.ibm.ea.bravo.software.SoftwareLparEffH"
+		table="SOFTWARE_LPAR_EFF_H">
+
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+
+		<property name="processorCount" column="PROCESSOR_COUNT"
+			type="integer" />
+
+		<property name="action" column="ACTION" length="64"
+			not-null="true" />
+		<property name="status" column="STATUS" length="32"
+			not-null="true" />
+		<property name="remoteUser" column="REMOTE_USER" length="64"
+			not-null="true" />
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" not-null="true" />
+
+		<many-to-one name="softwareLparEff"
+			class="com.ibm.ea.bravo.software.SoftwareLparEff"
+			column="SOFTWARE_LPAR_EFF_ID" not-null="true" />
+
+	</class>
+</hibernate-mapping>

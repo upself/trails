@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.bravo.hardware.HardwareLpar" table="HARDWARE_LPAR"
+		mutable="false">
+
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+
+		<set name="authorizedProducts" mutable="false" lazy="true"
+			cascade="all" inverse="true">
+			<key column="HARDWARE_LPAR_ID" />
+			<one-to-many class="com.ibm.asset.bravo.domain.AuthorizedProduct" />
+		</set>
+
+		<!--
+			fetching customer eagerly because its key to identifying unique lpar
+			names
+		-->
+		<one-to-one name="hardwareLparEff"
+			class="com.ibm.ea.bravo.hardware.HardwareLparEff"
+			property-ref="hardwareLpar" cascade="delete" />
+			
+		<many-to-one name="customer" class="com.ibm.ea.cndb.Customer"
+			column="CUSTOMER_ID" not-null="true" index="IDX_HWLC" unique-key="IDX_HWL"
+			lazy="false" />
+
+		<property name="name">
+			<column name="NAME" length="255" not-null="true" index="IDX_HLWH"
+				unique-key="IDX_HWL" />
+		</property>
+
+		<many-to-one name="hardware" column="HARDWARE_ID"
+			class="com.ibm.ea.bravo.hardware.Hardware" index="IDX_HWLH" not-null="true" />
+
+		<property name="remoteUser" column="REMOTE_USER" length="64"
+			not-null="true" />
+
+		<property name="recordTime" column="RECORD_TIME" type="timestamp"
+			not-null="true" />
+
+		<property name="status" column="STATUS" length="32" not-null="true" />
+		
+		<property name="lparStatus" column="LPAR_STATUS" length="32" not-null="true" />
+
+		<property name="extId" column="EXT_ID" length="8" />
+
+		<property name="techImageId" column="TECH_IMAGE_ID" length="128" />
+
+		<property name="serverType" column="SERVER_TYPE" length="15" />
+		
+		<property name="os_type" column="OS_TYPE" length="64" />
+		
+		<property name="spla" column="SPLA" length="3" />
+		
+		<property name="sysplex" column="SYSPLEX" length="8" />
+		
+		<property name="internetIccFlag" column="INTERNET_ICC_FLAG" length="1" />
+        
+        <property name="partMIPS" column="PART_MIPS"
+            type="integer" />
+            
+		<property name="partGartnerMIPS" column="PART_GARTNER_MIPS"
+            type="java.math.BigDecimal" />            
+            
+        <property name="partMSU" column="PART_MSU"
+            type="integer" />
+                    
+        <property name="effectiveThreads" column="EFFECTIVE_THREADS"
+            type="java.math.BigDecimal" /> 
+            
+		<join table="HW_SW_COMPOSITE" optional="true">
+			<key column="HARDWARE_LPAR_ID" unique="true" />
+			<many-to-one name="softwareLpar" column="SOFTWARE_LPAR_ID"
+				not-null="true" unique="true" lazy="false" />
+		</join>
+
+	</class>
+</hibernate-mapping>

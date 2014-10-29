@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="listMachineTypes">
+		<![CDATA[
+			from MachineType m			
+		]]>
+	</query>
+
+	<query name="listRecentAddMachineTypes">
+		<![CDATA[
+			from MachineType m
+				WHERE day(current_timestamp() - m.recordTime) < 1
+			ORDER BY m.recordTime desc		
+		]]>
+	</query>
+
+
+	<query name="searchMachineTypeName">
+		<![CDATA[
+			from MachineType m
+				WHERE upper(name) like :name			
+		]]>
+	</query>
+
+	<query name="searchMachineTypeType">
+		<![CDATA[
+			from MachineType m
+				WHERE upper(type) like :type			
+		]]>
+	</query>
+
+	<query name="searchMachineTypeDefinition">
+		<![CDATA[
+			from MachineType m
+				WHERE definition like :definition			
+		]]>
+	</query>
+
+	<query name="getMachineType">
+		<![CDATA[
+			from MachineType m
+				WHERE id = :id			
+		]]>
+	</query>
+
+	<query name="getMachineTypeByName">
+		<![CDATA[
+			from MachineType m
+				WHERE name = :name		
+		]]>
+	</query>
+
+	<query name="listTypes">
+		<![CDATA[
+			select distinct m.type 
+				from MachineType m	
+			order by m.type desc	
+		]]>
+	</query>
+	<query name="listStatus">
+		<![CDATA[
+			select distinct m.status 
+				from MachineType m	
+			order by m.status desc
+		]]>
+	</query>
+
+
+</hibernate-mapping>

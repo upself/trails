@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.cndb.OutsourceProfile"
+		table="OUTSOURCE_PROFILE" lazy="true">
+
+		<id name="id" type="long" column="ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="customer" column="CUSTOMER_ID"
+			class="com.ibm.ea.cndb.Customer" not-null="true" />
+
+		<many-to-one name="assetProcess" column="ASSET_PROCESS_ID"
+			class="com.ibm.ea.cndb.AssetProcess" not-null="true" />
+
+		<many-to-one name="country" column="COUNTRY_ID"
+			class="com.ibm.ea.cndb.Country" not-null="false" />
+
+		<property name="outsourceable" column="OUTSOURCEABLE"
+			length="3" />
+		<property name="comment" column="COMMENT" length="128" />
+
+		<property name="approver" column="APPROVER" length="128" />
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" />
+		<property name="current" column="CURRENT" length="1" />
+
+	</class>
+</hibernate-mapping>
+

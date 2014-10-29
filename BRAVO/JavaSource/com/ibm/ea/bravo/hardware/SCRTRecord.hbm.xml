@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.hardware.SCRTRecord" table="SCRT_RECORD">
+        
+        <id name="id" type="long" column="ID">
+            <generator class="identity" />
+        </id>
+
+        <many-to-one name="hardware" class="com.ibm.ea.bravo.hardware.Hardware">
+        	<column name="HARDWARE_ID" not-null="true" unique-key="U_SR" index="IDX_SRHW"/>
+        </many-to-one>
+        
+        <property name="year" column="YEAR" type="integer" not-null="true" unique-key="U_SR"/>
+        <property name="month" column="MONTH" type="integer" not-null="true" unique-key="U_SR"/>
+        <property name="cpc" column="CPC" type="integer" not-null="true"/>
+        <property name="lpar" column="LPAR" length="64" not-null="true" unique-key="U_SR"/>
+        <property name="msu" column="MSU" type="integer" not-null="true"/>
+        <property name="scrtReportFile" column="SCRT_REPORT_FILE" length="64" not-null="true"/>
+        
+        <property name="remoteUser" column="REMOTE_USER" length="64" not-null="true"/>
+        <property name="recordTime" column="RECORD_TIME" type="timestamp" not-null="true"/>
+        <property name="status" column="STATUS" length="32" not-null="true" index="IDX_SRSTS"/>
+    </class>
+</hibernate-mapping>

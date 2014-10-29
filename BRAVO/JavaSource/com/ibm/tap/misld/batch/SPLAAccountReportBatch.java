@@ -1,0 +1,131 @@
+/*
+ * Created on Jun 3, 2004
+ *
+ * To change the template for this generated file go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+package com.ibm.tap.misld.batch;
+
+import java.io.FileOutputStream;
+import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import com.ibm.batch.IBatch;
+import com.ibm.tap.misld.framework.Constants;
+import com.ibm.tap.misld.framework.exceptions.EmailDeliveryException;
+import com.ibm.tap.misld.om.cndb.Customer;
+import com.ibm.tap.misld.report.PriceReportDelegate;
+
+/**
+ * @author kneikirk
+ * 
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+public class SPLAAccountReportBatch
+        extends BatchBase implements IBatch, Serializable {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private Customer customer = null;
+
+    private String   remoteUser = null;
+
+    public SPLAAccountReportBatch(String remoteUser) 
+    	throws EmailDeliveryException {
+
+        super();
+
+        this.remoteUser = remoteUser;
+		setStartTime(new Date());
+    }
+
+    public boolean validate() throws Exception {
+        return false;
+    }
+
+    public void execute() throws Exception {
+    }
+
+    public void sendNotify() {
+
+        String reportTemplateFilename = null;
+
+        reportTemplateFilename = "SPLA_Quarterly_Report_Template.xls";
+
+        try {
+            setFrom("SPLA-ACCOUNT-REPORT");
+            setSubject("SPLA Account Report");
+            setTo(remoteUser);
+        }
+        catch (Exception e) {
+            logMsg(e);
+        }
+        try {
+            XlsReport xlsReport = new XlsReport(reportTemplateFilename, null, null);
+
+            xlsReport.setXlsReport(PriceReportDelegate.getEmailSPLAAccountReport(
+                    remoteUser));
+
+            XlsReportGenerator xlsReportGenerator = new XlsReportGenerator();
+            HSSFWorkbook wb = xlsReportGenerator.buildXlsReport(xlsReport);
+
+            if (wb != null) {
+                FileOutputStream fileOut = null;
+                String fileOutName = "spla_quarterly_report.xls";
+
+                fileOut = new FileOutputStream(Constants.SPREAD_IN
+                        + fileOutName);
+                wb.write(fileOut);
+                fileOut.close();
+
+                addBody("The SPLA Account Report is attached below.");
+                addAttachment(Constants.SPREAD_IN + fileOutName);
+                sendMsg(remoteUser);
+                
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            logMsg(e);
+        }
+    }
+
+    public void sendNotifyException(Exception e) {
+        logger.debug(e, e);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ibm.batch.IBatch#getName()
+     */
+    public String getName() {
+        return "SPLA Account Report";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ibm.batch.IBatch#getRemoteUser()
+     */
+    public String getRemoteUser() {
+        return remoteUser;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ibm.batch.IBatch#getCustomer()
+     */
+    public Customer getCustomer() {
+        // TODO Auto-generated method stub
+        return this.customer;
+    }
+
+}

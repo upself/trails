@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.sigbank.MainframeVersion"
+		table="MAINFRAME_VERSION" mutable="false">
+
+		<id name="id" type="long" column="ID">
+			<generator class="increment"/>
+		</id>
+        <many-to-one  name="manufacturer" column="MANUFACTURER_ID" class="com.ibm.ea.sigbank.Manufacturer" not-null="true" index="IDX_SWM" />
+       	<set name="mainframeFeature" lazy="true" inverse="true">
+			<key column="VERSION_ID" />
+			<one-to-many class="com.ibm.ea.sigbank.MainframeFeature" />
+		</set>
+        <many-to-one name="mfProduct" class="com.ibm.ea.sigbank.Product">
+        	<column name="PRODUCT_ID" not-null="true" />
+        </many-to-one>
+		<property name="ibmCSAgreement" column="IBM_CUSTOMER_AGREEMENT"   type="integer"  />
+		<property name="idenfifier" column="IDENTIFIER" length="64" />
+		<property name="serviceSupportId" column="SERVICE_SUPPORT_ID" length="16" />
+		<property name="swPricingType" column="SOFTWARE_PRICING_TYPE" length="8" />
+		<property name="version" column="VERSION" type="integer" />	
+		<property name="vue" column="VUE" length="16" />	
+	</class>
+</hibernate-mapping>

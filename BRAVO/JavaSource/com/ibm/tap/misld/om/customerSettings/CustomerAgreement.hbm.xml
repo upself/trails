@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.customerSettings.CustomerAgreement"
+		table="CUSTOMER_AGREEMENT">
+
+		<id name="customerAgreementId" type="long"
+			column="CUSTOMER_AGREEMENT_ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="customer"
+			class="com.ibm.tap.misld.om.cndb.Customer">
+			<column name="CUSTOMER_ID" unique-key="true"
+				not-null="true" />
+		</many-to-one>
+
+		<many-to-one name="customerAgreementType"
+			class="com.ibm.tap.misld.om.customerSettings.CustomerAgreementType">
+			<column name="CUSTOMER_AGREEMENT_TYPE_ID" unique-key="true"
+				not-null="true" />
+		</many-to-one>
+
+		<property name="remoteUser">
+			<column name="REMOTE_USER" length="32" not-null="true" />
+		</property>
+
+		<property name="recordTime" type="timestamp">
+			<column name="RECORD_TIME" not-null="true" />
+		</property>
+
+		<property name="status">
+			<column name="STATUS" length="32" not-null="true" />
+		</property>
+
+	</class>
+</hibernate-mapping>

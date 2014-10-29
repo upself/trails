@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.software.SoftwareLparMemMod" table="SOFTWARE_LPAR_MEM_MOD">
+        
+        <id name="id" type="long" column="ID">
+            <generator class="identity" />
+        </id>
+        
+		<many-to-one name="softwareLpar" column="SOFTWARE_LPAR_ID" 
+			class="com.ibm.ea.bravo.software.SoftwareLpar" not-null="true" index="IDX_SWL"/> 
+
+        <property name="instMemId" column="INST_MEM_ID" type="integer" />
+        <property name="moduleSize" column="MODULE_SIZE_MB" type="integer" />
+        <property name="maxModuleSize" column="MAX_MODULE_SIZE_MB" type="integer" />
+        <property name="socketName" column="SOCKET_NAME" length="24" />
+        <property name="packaging" column="PACKAGING" length="16" />
+        <property name="memoryType" column="MEM_TYPE" length="48" />
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>BRAVO</display-name>
+
+	<context-param>
+		<param-name>config-file</param-name>
+		<param-value>/opt/bravo/conf/quartz.properties</param-value>
+	</context-param>
+	<context-param>
+		<param-name>shutdown-on-unload</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>start-scheduler-on-load</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+	</listener>
+
+	<listener>
+		<listener-class>
+			com.ibm.tap.misld.quartz.listeners.DailyPriceReportEscalationListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+		<init-param>
+			<param-name>config</param-name>
+			<param-value>/WEB-INF/struts-config.xml
+	      	</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config/MsWizard</param-name>
+			<param-value>/WEB-INF/struts-config-mswiz.xml
+	      	</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config/help</param-name>
+			<param-value>/WEB-INF/struts-help.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>logic</param-name>
+			<param-value>/WEB-INF/struts-logic.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log4j</param-name>
+			<param-value>WEB-INF/log4j.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>2</param-value>
+		</init-param>
+		<init-param>
+			<param-name>detail</param-name>
+			<param-value>2</param-value>
+		</init-param>
+		<init-param>
+			<param-name>validate</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<display-name>DownloadIt</display-name>
+		<servlet-name>DownloadIt</servlet-name>
+		<servlet-class>com.ibm.ea.bravo.framework.download.DownloadIt</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DownloadIt</servlet-name>
+		<url-pattern>/download/*</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>403</error-code>
+		<location>/access/error.do</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/invalid.do</location>
+	</error-page>
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://jakarta.apache.org/taglibs/request-1.0</taglib-uri>
+			<taglib-location>/WEB-INF/tld/request.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+	<security-constraint>
+		<display-name>Tool Home</display-name>
+		<web-resource-collection>
+			<web-resource-name>Home</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>IIP Users</description>
+			<role-name>person</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>Tool</display-name>
+		<web-resource-collection>
+			<web-resource-name>Tool</web-resource-name>
+			<url-pattern>/account/*</url-pattern>
+			<url-pattern>/hardware/*</url-pattern>
+			<url-pattern>/software/*</url-pattern>
+			<url-pattern>/lpar/*</url-pattern>
+			<url-pattern>/upload/*</url-pattern>
+			<url-pattern>/report/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>Tool Users</description>
+			<!--
+			<role-name>person</role-name>
+			-->
+			<role-name>com.ibm.tap.asset</role-name>
+			<role-name>com.ibm.tap.asset.emea</role-name>
+			<role-name>com.ibm.tap.asset.la</role-name>
+			<role-name>com.ibm.tap.asset.group</role-name>
+			<role-name>com.ibm.tap.sigbank.admin</role-name>
+			<role-name>com.ibm.tap.bravo.user</role-name>
+			<role-name>com.ibm.tap.bravo.user.division</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>Admin</display-name>
+		<web-resource-collection>
+			<web-resource-name>Admin</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>Tool Admins</description>
+			<role-name>com.ibm.tap.admin</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>	
+	</security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Default</realm-name>
+	</login-config>
+
+	<security-role>
+		<description>IIP User</description>
+		<role-name>person</role-name>
+	</security-role>
+
+	<security-role>
+		<description>AM Tool Admin</description>
+		<role-name>com.ibm.tap.admin</role-name>
+	</security-role>
+
+	<!-- BRAVO User Groups -->
+	<security-role>
+		<description>com.ibm.tap.bravo.user</description>
+		<role-name>com.ibm.tap.bravo.user</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.bravo.user.division</description>
+		<role-name>com.ibm.tap.bravo.user.division</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset</description>
+		<role-name>com.ibm.tap.asset</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.emea</description>
+		<role-name>com.ibm.tap.asset.emea</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.group</description>
+		<role-name>com.ibm.tap.asset.group</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.sigbank.admin</description>
+		<role-name>com.ibm.tap.sigbank.admin</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.la</description>
+		<role-name>com.ibm.tap.asset.la</role-name>
+	</security-role>
+</web-app>

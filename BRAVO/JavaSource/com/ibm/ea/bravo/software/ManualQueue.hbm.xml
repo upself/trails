@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.bravo.software.ManualQueue" table="MANUAL_QUEUE">
+
+		<id name="id" type="long" column="ID">
+			<generator class="identity" />
+		</id>
+
+		<many-to-one name="customer" class="com.ibm.ea.cndb.Customer">
+			<column name="CUSTOMER_ID" not-null="true" index="IDX_CAC"
+				unique-key="U_AC" />
+		</many-to-one>
+
+		<property name="softwareLparId" column="SOFTWARE_LPAR_ID"
+			type="long" not-null="true" />
+		<property name="hostName" column="HOSTNAME" length="255"
+			not-null="true" />
+		<property name="softwareId" column="SOFTWARE_ID" type="long"
+			not-null="true" unique="true" />
+		<property name="remoteUser" column="REMOTE_USER" length="64" />
+		<property name="recordTime" column="RECORD_TIME" type="timestamp" />
+		<property name="deleted" column="DELETED" type="integer" />
+		<property name="comments" column="COMMENTS" length="255" />
+	</class>
+</hibernate-mapping>

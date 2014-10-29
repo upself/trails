@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.cndb.Lpid" table="LPID"
+		mutable="false">
+
+		<id name="lpidId" type="long" column="LPID_ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="major" column="MAJOR_ID"
+			class="com.ibm.ea.cndb.Major" not-null="true" />
+
+		<property name="lpidName">
+			<column name="LPID_NAME" not-null="true" />
+		</property>
+
+	</class>
+</hibernate-mapping>
+

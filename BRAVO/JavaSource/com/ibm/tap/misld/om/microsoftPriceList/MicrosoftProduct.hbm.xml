@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftProduct"
+		table="MICROSOFT_PRODUCT">
+
+		<id name="microsoftProductId" type="long"
+			column="MICROSOFT_PRODUCT_ID">
+			<generator class="increment" />
+		</id>
+
+		<property name="productDescription">
+			<column name="PRODUCT_DESCRIPTION" length="64"
+				not-null="true" unique-key="true" />
+		</property>
+
+		<property name="remoteUser" column="REMOTE_USER" length="32"
+			not-null="true" />
+
+		<property name="recordTime" column="RECORD_TIME"
+			type="timestamp" not-null="true" />
+
+		<property name="status" column="STATUS" length="32"
+			not-null="true" />
+
+	</class>
+</hibernate-mapping>
+

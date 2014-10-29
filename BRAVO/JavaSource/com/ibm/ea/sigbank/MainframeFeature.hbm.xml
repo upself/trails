@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.sigbank.MainframeFeature"
+		table="MAINFRAME_FEATURE" mutable="false">
+
+		<id name="id" type="long" column="ID">
+			<generator class="increment"/>
+		</id>
+        <many-to-one  name="version" column="VERSION_ID" class="com.ibm.ea.sigbank.MainframeVersion" not-null="true" index="IDX_SWM" />
+		<property name="eid" column="EID" length="64" />
+		<property name="ibmCSAgreement" column="IBM_CUSTOMER_AGREEMENT"   type="integer"  />
+		<property name="sseNId" column="SSE_N_ID" length="16" />
+		<property name="swPricingType" column="SOFTWARE_PRICING_TYPE" length="8" />
+		<property name="vue" column="VUE" length="16" />	
+	</class>
+</hibernate-mapping>

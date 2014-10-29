@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<struts-config>
+
+	<!-- Data Sources -->
+	<data-sources></data-sources>
+
+	<!-- Form Beans -->
+	<form-beans>
+		<!-- BRAVO -->
+		<form-bean name="search" type="com.ibm.ea.bravo.FormSearch" />
+		<form-bean name="work" type="com.ibm.ea.bravo.FormSearch" />
+
+		<!-- SYSTEM STATUS -->
+		<form-bean name="submitForm" type="com.ibm.ea.bravo.systemstatus.FormSubmit" />
+		
+		<!-- ACCOUNT -->
+		<form-bean name="accountSearch" type="com.ibm.ea.bravo.account.FormAccountSearch" />
+
+		<!-- COMPOSITE -->
+		<form-bean name="compositeSearch"
+			type="com.ibm.ea.bravo.hardwaresoftware.FormCompositeSearch" />
+
+		<!-- HARDWARE -->
+		<form-bean name="hardware" type="com.ibm.ea.bravo.hardware.FormHardware" />
+		<form-bean name="hardwareSearch"
+			type="com.ibm.ea.bravo.hardware.FormHardwareSearch" />
+
+		<!-- SOFTWARE -->
+		<form-bean name="software" type="com.ibm.ea.bravo.software.FormSoftware" />
+		<form-bean name="softwareSearch"
+			type="com.ibm.ea.bravo.software.FormSoftwareSearch" />
+		<form-bean name="softwareCopy" type="com.ibm.ea.bravo.software.FormSoftwareCopy" />
+		<form-bean name="softwareLparEff"
+			type="com.ibm.ea.bravo.software.FormSoftwareLparEff" />
+
+		<!-- SWASSET -->
+		<form-bean name="swasset" type="com.ibm.ea.bravo.swasset.FormSwasset" />
+
+		<!-- MACHINE TYPE -->
+		<form-bean name="machineType"
+			type="com.ibm.ea.bravo.machinetype.FormMachineType" />
+		<form-bean name="machineTypeSearch"
+			type="com.ibm.ea.bravo.machinetype.FormMachineTypeSearch" />
+
+		<!-- CONTACT SUPPORT -->
+		<form-bean name="bluePagesSearch"
+			type="com.ibm.ea.bravo.contact.FormBluePagesSearch" />
+
+		<!-- BLUE PAGES -->
+
+
+		<!-- ADMIN -->
+		<form-bean name="loadScan" type="com.ibm.ea.bravo.parser.FormLoad" />
+		<form-bean name="upload" type="com.ibm.ea.bravo.upload.FormUpload" />
+		<form-bean name="access" type="com.ibm.ea.bravo.access.FormAccess" />
+		<form-bean name="customerBank" type="com.ibm.ea.bravo.admin.FormCustomerBank" />
+
+		<!-- Department select form -->
+		<form-bean name="DynaDepartmentForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="id" type="java.lang.String" />
+		</form-bean>
+
+		<!-- BANK ACCOUNT -->
+		<form-bean name="bankAccountForm"
+			type="com.ibm.ea.bravo.bankaccount.FormBankAccount" />
+
+	</form-beans>
+
+	<!-- Global Exceptions -->
+	<global-exceptions>
+		<exception type="com.ibm.ea.bravo.account.ExceptionAccountAccess"
+			key="account.access" path="/WEB-INF/jsp/home.jsp" />
+		<exception type="com.ibm.ea.bravo.bankaccount.bankAccountException"
+			scope="request" key="error.bankAccount.prohibition"
+			path="/WEB-INF/jsp/bankAccount/bankAccountException.jsp" />
+	</global-exceptions>
+
+	<!-- Global Forwards -->
+	<global-forwards>
+		<forward name="home" path="/home.do" redirect="true" />
+		<forward name="invalid" path="/invalid.do" redirect="true" />
+	</global-forwards>
+
+	<!-- Action Mappings -->
+	<action-mappings>
+
+		<!-- BRAVO -->
+		<!-- BRAVO home -->
+		<action path="/home" type="com.ibm.ea.bravo.ActionBravo"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/home.jsp" />
+		</action>
+		<!-- BRAVO search -->
+		<action path="/search" type="com.ibm.ea.bravo.ActionBravo"
+			parameter="search" name="search" validate="false" scope="request">
+			<forward name="account" path="/account/search.do" />
+			<forward name="hardware" path="/hardware/search.do" />
+			<forward name="machineType" path="/admin/machinetype/search.do" />
+			<forward name="error" path="/WEB-INF/jsp/home.jsp" />
+		</action>
+		<!-- BRAVO invalid -->
+		<action path="/invalid" type="com.ibm.ea.bravo.ActionBravo"
+			parameter="invalid">
+			<forward name="success" path="/WEB-INF/jsp/invalid.jsp" />
+		</action>
+
+		<!-- MS Wizard -->
+		<action path="/mswiz" type="org.apache.struts.actions.ForwardAction"
+			parameter="/MsWizard/Welcome.do" />
+
+
+		<!-- ACCOUNT -->
+		<!-- ACCOUNT home -->
+		<action path="/account/home" type="com.ibm.ea.bravo.account.ActionAccount"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/account/home.jsp" />
+		</action>
+		<!-- ACCOUNT view -->
+		<action path="/account/view" type="com.ibm.ea.bravo.account.ActionAccount"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/account/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/account/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/account/error.jsp" />
+		</action>
+		<action path="/account/banklist" type="com.ibm.ea.bravo.account.BankAccListAction"
+			name="customerBank" scope="request" parameter="bank">
+			<forward name="success" path="/WEB-INF/jsp/account/bankAcInclude.jsp" />
+			<forward name="admin" path="/WEB-INF/jsp/admin/bankInclude.jsp" />
+		</action>
+		<!-- ACCOUNT search -->
+		<action path="/account/search" type="com.ibm.ea.bravo.account.ActionAccount"
+			parameter="search" name="accountSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/account/list.jsp" />
+			<forward name="software" path="/WEB-INF/jsp/account/softwareList.jsp" />
+			<forward name="hardware" path="/WEB-INF/jsp/account/hardwareList.jsp" />
+			<forward name="home" path="/WEB-INF/jsp/home.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/account/error.jsp" />
+		</action>
+
+		<!-- CONTACT -->
+		<!-- CONTACT view -->
+		<action path="/contact/view" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/contact/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/contact/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+
+		<!-- CONTACT Blue Pages Refresh -->
+		<action path="/contact/refresh" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="refresh">
+			<forward name="success" path="/WEB-INF/jsp/contact/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/contact/refresh.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+
+		<!-- CONTACT CREATE -->
+		<action path="/contact/create" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="create" name="bluePagesSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/contact/forms.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+
+		<!-- CONTACT Blue Pages Search -->
+		<action path="/contact/bluepages/search" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="search" name="bluePagesSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/contact/forms.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+
+		<!-- CONTACT UPDATE -->
+		<action path="/contact/update" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="update">
+			<forward name="success" path="/WEB-INF/jsp/contact/refresh.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+		<!-- CONTACT EDIT -->
+		<action path="/contact/edit" type="com.ibm.ea.bravo.contact.ActionContact"
+			parameter="edit">
+			<forward name="success" path="/WEB-INF/jsp/contact/refresh.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/contact/error.jsp" />
+		</action>
+
+
+		<!-- COMPOSITE -->
+		<!-- COMPOSITE search -->
+		<action path="/lpar/search"
+			type="com.ibm.ea.bravo.hardwaresoftware.ActionComposite" parameter="search"
+			name="compositeSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/hardwaresoftware/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/account/detail.jsp" />
+		</action>
+		<action path="/lpar/view"
+			type="com.ibm.ea.bravo.hardwaresoftware.ActionComposite" parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/hardwaresoftware/detail.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/account/detail.jsp" />
+		</action>
+
+		<!-- HARDWARE -->
+		<!-- HARDWARE home -->
+		<action path="/hardware/home" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/hardware/home.jsp" />
+		</action>
+		<!-- HARDWARE view -->
+		<action path="/hardware/view" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/hardware/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/hardware/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/hardware/error.jsp" />
+		</action>
+		<!-- HARDWARE asset -->
+		<action path="/hardware/asset" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="asset">
+			<forward name="success" path="/WEB-INF/jsp/hardware/asset.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/hardware/error.jsp" />
+		</action>
+		<!-- HARDWARE search -->
+		<action path="/hardware/lpar/search" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="search" name="hardwareSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/hardware/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/hardware/error.jsp" />
+		</action>
+		<!-- HARDWARE create -->
+		<action path="/hardware/lpar/create" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="create">
+			<forward name="success" path="/WEB-INF/jsp/hardware/form.jsp" />
+		</action>
+		<!-- HARDWARE update -->
+		<action path="/hardware/lpar/update" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="update">
+			<forward name="success" path="/WEB-INF/jsp/hardware/form.jsp" />
+		</action>
+		<!-- HARDWARE delete -->
+		<action path="/hardware/lpar/delete" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="delete">
+			<forward name="success" path="/WEB-INF/jsp/hardware/form.jsp" />
+		</action>
+		<!-- HARDWARE edit -->
+		<action path="/hardware/lpar/edit" type="com.ibm.ea.bravo.hardware.ActionHardware"
+			parameter="edit" name="hardware" validate="false" scope="request">
+			<forward name="test" path="/WEB-INF/jsp/hardware/test.jsp" />
+			<forward name="account" path="/account/view.do" />
+			<forward name="success" path="/WEB-INF/jsp/hardware/home.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/hardware/form.jsp" />
+			<forward name="search" path="/hardware/lpar/search.do" />
+		</action>
+
+		<!-- SOFTWARE -->
+		<!-- SOFTWARE home -->
+		<action path="/software/home" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/software/home.jsp" />
+		</action>
+		<!-- SOFTWARE view -->
+		<action path="/software/view" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="view">
+			<forward name="home" path="/WEB-INF/jsp/software/home.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/software/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/software/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/software/error.jsp" />
+		</action>
+		<!-- SOFTWARE create -->
+		<action path="/software/create" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="create">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+			<forward name="update" path="/software/update.do" />
+		</action>
+		<!-- SOFTWARE selectInit -->
+		<action path="/software/selectInit" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="selectInit">
+			<forward name="success" path="/WEB-INF/jsp/software/select.jsp" />
+		</action>
+		<!-- SOFTWARE select -->
+		<action path="/software/select" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="select" name="softwareSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/software/select.jsp" />
+		</action>
+		<!-- SOFTWARE update -->
+		<action path="/software/update" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="update">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE delete -->
+		<action path="/software/delete" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="delete">
+			<forward name="error" path="/WEB-INF/jsp/software/home.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/software/home.jsp" />
+		</action>
+		<!-- SOFTWARE edit -->
+		<action path="/software/edit" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="edit" name="software" validate="false" scope="request">
+			<forward name="account" path="/account/view.do" />
+			<forward name="software" path="/software/view.do" />
+			<forward name="lpar" path="/lpar/view.do" />
+			<forward name="success" path="/software/view.do" />
+			<forward name="error" path="/WEB-INF/jsp/software/form.jsp" />
+			<forward name="search" path="/software/lpar/search.do" />
+		</action>
+		<!-- SOFTWARE determine button -->
+		<action path="/software/determineButton" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="determineButton" name="software" validate="false" scope="request">
+			<forward name="error" path="/WEB-INF/jsp/software/home.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/software/home.jsp" />
+			<forward name="software" path="/software/home.do" />
+		</action>
+		<!-- SOFTWARE validate -->
+		<action path="/software/validate" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="validate" name="software" validate="false" scope="request">
+			<forward name="lpar" path="/lpar/view.do" />
+			<forward name="software" path="/software/home.do" />
+		</action>
+		<!-- SOFTWARE search -->
+		<action path="/software/search" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="search" name="softwareSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/software/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/account/detail.jsp" />
+		</action>
+
+		<!-- SOFTWARE copy -->
+		<action path="/software/copy" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="copy">
+			<forward name="success" path="/WEB-INF/jsp/software/copy.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/software/copyerror.jsp" />
+		</action>
+
+		<!-- SOFTWARE applyCopy -->
+		<action path="/software/applyCopy" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="applyCopy" name="softwareCopy" validate="false" scope="request">
+			<forward name="success" path="/account/view.do" />
+		</action>
+
+		<!-- SOFTWARE LPAR -->
+		<!-- SOFTWARE LPAR view -->
+		<action path="/software/lpar/view" type="com.ibm.ea.bravo.software.ActionSoftwareLpar"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR create -->
+		<action path="/software/lpar/create" type="com.ibm.ea.bravo.software.ActionSoftwareLpar"
+			parameter="create">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR update -->
+		<action path="/software/lpar/update" type="com.ibm.ea.bravo.software.ActionSoftwareLpar"
+			parameter="update">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR delete -->
+		<action path="/software/lpar/delete" type="com.ibm.ea.bravo.software.ActionSoftwareLpar"
+			parameter="delete">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR edit -->
+		<action path="/software/lpar/edit" type="com.ibm.ea.bravo.software.ActionSoftwareLpar"
+			parameter="edit" name="software" validate="false" scope="request">
+			<forward name="test" path="/WEB-INF/jsp/software/test.jsp" />
+			<forward name="account" path="/account/view.do" />
+			<forward name="success" path="/WEB-INF/jsp/software/detail.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/software/form.jsp" />
+			<forward name="search" path="/software/lpar/search.do" />
+		</action>
+
+		<!-- SOFTWARE LPAR EFF -->
+		<!-- SOFTWARE LPAR EFF view -->
+		<action path="/software/lpar/eff/view" type="com.ibm.ea.bravo.software.ActionSoftwareLparEff"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR EFF create -->
+		<action path="/software/lpar/eff/create" type="com.ibm.ea.bravo.software.ActionSoftwareLparEff"
+			parameter="create">
+			<forward name="success" path="/WEB-INF/jsp/software/eff/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR EFF update -->
+		<action path="/software/lpar/eff/update" type="com.ibm.ea.bravo.software.ActionSoftwareLparEff"
+			parameter="update">
+			<forward name="success" path="/WEB-INF/jsp/software/eff/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR EFF delete -->
+		<action path="/software/lpar/eff/delete" type="com.ibm.ea.bravo.software.ActionSoftwareLparEff"
+			parameter="delete">
+			<forward name="success" path="/WEB-INF/jsp/software/form.jsp" />
+		</action>
+		<!-- SOFTWARE LPAR EFF edit -->
+		<action path="/software/lpar/eff/edit" type="com.ibm.ea.bravo.software.ActionSoftwareLparEff"
+			parameter="edit" name="softwareLparEff" validate="false" scope="request">
+			<forward name="test" path="/WEB-INF/jsp/software/test.jsp" />
+			<forward name="account" path="/account/view.do" />
+			<forward name="success" path="/software/home.do" />
+			<forward name="error" path="/WEB-INF/jsp/software/eff/form.jsp" />
+			<forward name="search" path="/software/lpar/search.do" />
+		</action>
+
+		<!-- ADMIN -->
+		<!-- ADMIN home -->
+		<action path="/admin/home" type="com.ibm.ea.bravo.admin.ActionAdmin"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/admin/home.jsp" />
+		</action>
+		<!-- ADMIN create -->
+		<action path="/admin/db/create" type="com.ibm.ea.bravo.framework.db.ActionDb"
+			parameter="create">
+			<forward name="success" path="/home.do" />
+		</action>
+		<action path="/admin/updateBank" type="com.ibm.ea.bravo.admin.ActionAdmin"
+			name="customerBank" parameter="updateBank">
+			<forward name="success" path="/home.do" />
+			<forward name="error" path="/WEB-INF/jsp/upload/error.jsp" />
+		</action>
+
+		<!-- ACCESS -->
+		<!-- ACCESS home -->
+		<action path="/access/home" type="com.ibm.ea.bravo.access.ActionAccess"
+			parameter="error">
+			<forward name="success" path="/WEB-INF/jsp/access/error.jsp" />
+		</action>
+		<!-- ACCESS edit -->
+		<action path="/access/edit" type="com.ibm.ea.bravo.access.ActionAccess"
+			parameter="init">
+			<forward name="success" path="/WEB-INF/jsp/access/register.jsp" />
+		</action>
+		<!-- ACCESS register -->
+		<action path="/access/register" type="com.ibm.ea.bravo.access.ActionAccess"
+			parameter="register" name="access" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/access/register.jsp" />
+		</action>
+		<!-- ACCESS error -->
+		<action path="/access/error" type="com.ibm.ea.bravo.access.ActionAccess"
+			parameter="error">
+			<forward name="success" path="/WEB-INF/jsp/access/error.jsp" />
+		</action>
+
+		<!-- MACHINE TYPE -->
+		<!-- MACHINE TYPE home -->
+		<action path="/admin/machinetype/home" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/home.jsp" />
+		</action>
+		<!-- MACHINE TYPE search -->
+		<action path="/admin/machinetype/search" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="search" name="machineTypeSearch" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/list.jsp" />
+			<forward name="error" path="/admin/machinetype/home.do" />
+		</action>
+		<!-- MACHINE TYPE view -->
+		<action path="/admin/machinetype/view" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="view" name="machineType" validate="false" scope="request">
+			<forward name="list" path="/WEB-INF/jsp/machinetype/list.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/machinetype/detail.jsp" />
+			<forward name="error" path="/admin/machinetype/home.do" />
+		</action>
+		<!-- MACHINE TYPE edit -->
+		<action path="/admin/machinetype/edit" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="edit" name="machineType" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/detail.jsp" />
+			<forward name="list" path="/WEB-INF/jsp/machinetype/list.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/machinetype/form.jsp" />
+		</action>
+		<!-- MACHINE TYPE create -->
+		<action path="/admin/machinetype/create" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="create">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/form.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/machinetype/detail.jsp" />
+		</action>
+		<!-- MACHINE TYPE update -->
+		<action path="/admin/machinetype/update" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="update" name="machineType" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/form.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/machinetype/detail.jsp" />
+		</action>
+		<!-- MACHINE TYPE delete -->
+		<action path="/admin/machinetype/delete" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="delete" name="machineType" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/form.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/machinetype/detail.jsp" />
+		</action>
+
+		<!-- MACHINE TYPE quick search -->
+		<action path="/admin/machinetype/quicksearch" type="com.ibm.ea.bravo.machinetype.ActionMachineType"
+			parameter="quicksearch" validate="false">
+			<forward name="success" path="/WEB-INF/jsp/machinetype/list.jsp" />
+			<forward name="error" path="/admin/machinetype/home.do" />
+		</action>
+
+		<!-- LOADER -->
+		<action path="/upload/upload" type="com.ibm.ea.bravo.upload.ActionUpload"
+			parameter="upload" name="upload" validate="false" scope="request">
+			<forward name="account" path="/account/view.do" />
+			<forward name="tivoli" path="/WEB-INF/jsp/upload/tivoli.jsp" />
+			<forward name="tivoliConfirm" path="/WEB-INF/jsp/upload/tivoliConfirm.jsp" />
+			<forward name="softwareDiscrepancy" path="/WEB-INF/jsp/upload/softwareDiscrepancy.jsp" />
+			<forward name="scrtReport" path="/WEB-INF/jsp/upload/scrtReport.jsp" />
+			<forward name="authorizedAssets" path="/WEB-INF/jsp/upload/authorizedAssets.jsp" />
+		</action>
+
+		<action path="/upload/tivoli" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="tivoli">
+			<forward name="success" path="/WEB-INF/jsp/upload/tivoli.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/tivoli.jsp" />
+		</action>
+
+		<action path="/upload/softAudit" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="softAudit">
+			<forward name="success" path="/WEB-INF/jsp/upload/softAudit.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/softAudit.jsp" />
+		</action>
+
+		<action path="/upload/dorana" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="dorana">
+			<forward name="success" path="/WEB-INF/jsp/upload/error.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/dorana.jsp" />
+		</action>
+
+		<action path="/upload/vm" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="vm">
+			<forward name="success" path="/WEB-INF/jsp/upload/vm.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/vm.jsp" />
+		</action>
+
+		<action path="/upload/softwareDiscrepancy" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="softwareDiscrepancy">
+			<forward name="success" path="/WEB-INF/jsp/upload/softwareDiscrepancy.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/softwareDiscrepancy.jsp" />
+		</action>
+
+		<action path="/upload/scrtReport" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="scrtReport">
+			<forward name="success" path="/WEB-INF/jsp/upload/scrtReport.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/scrtReport.jsp" />
+		</action>
+
+		<action path="/upload/authorizedAssets" type="com.ibm.ea.bravo.parser.ActionLoad"
+			parameter="authorizedAssets">
+			<forward name="success" path="/WEB-INF/jsp/upload/authorizedAssets.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/authorizedAssets.jsp" />
+		</action>
+
+		<action path="/upload/loadScan" forward="/WEB-INF/jsp/upload/loadScan.jsp" />
+		<!-- input="/upload/loadSoftAuditLoad.jsp" -->
+		<!-- scope="request" -->
+
+		<action path="/upload/loadScanLoad" type="com.ibm.ea.bravo.parser.ActionLoad"
+			name="loadScan" validate="false" parameter="load" scope="request">
+			<forward name="tivoli" path="/WEB-INF/jsp/upload/tivoli.jsp" />
+			<forward name="softaudit" path="/WEB-INF/jsp/upload/softAudit.jsp" />
+			<forward name="dorana" path="/WEB-INF/jsp/upload/dorana.jsp" />
+			<forward name="vm" path="/WEB-INF/jsp/upload/vm.jsp" />
+			<forward name="manual" path="/WEB-INF/jsp/upload/softwareDiscrepancy.jsp" />
+			<forward name="selectLpar" path="/WEB-INF/jsp/upload/selectLpar.jsp" />
+			<forward name="preview" path="/WEB-INF/jsp/upload/success.jsp" />
+			<forward name="success" path="/WEB-INF/jsp/upload/success.jsp" />
+			<forward name="account" path="/account/view.do" />
+			<forward name="hardware" path="/hardware/view.do" />
+			<forward name="error" path="/WEB-INF/jsp/upload/error.jsp" />
+		</action>
+
+
+		<action path="/upload/loadScanSubmit" type="com.ibm.ea.bravo.parser.ActionLoad"
+			name="loadScan" parameter="submit" scope="request"
+			input="/WEB-INF/jsp/upload/selectLpar.jsp" validate="false">
+			<forward name="success" path="/WEB-INF/jsp/upload/success.jsp" />
+			<forward name="error" path="/WEB-INF/jsp/upload/error.jsp" />
+		</action>
+
+		<!-- REPORT -->
+		<!-- REPORT home -->
+		<action path="/report/home" type="com.ibm.ea.bravo.report.ActionReport"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/report/home.jsp" />
+		</action>
+
+		<action path="/report/department" type="com.ibm.ea.bravo.report.ActionReport"
+			parameter="department" name="DynaDepartmentForm" scope="request"
+			input="/report/department.jsp">
+			<forward name="success" path="/WEB-INF/jsp/report/department.jsp" />
+		</action>
+
+		<action path="/report/georeport" type="com.ibm.ea.bravo.report.ActionReport"
+			parameter="geo">
+			<forward name="success" path="/WEB-INF/jsp/report/geo.jsp" />
+		</action>
+
+		<action path="/report/deptrollup" type="com.ibm.ea.bravo.report.ActionReport"
+			parameter="rollup">
+			<forward name="success" path="/WEB-INF/jsp/report/rollup.jsp" />
+		</action>
+
+		<action path="/report/discrepancySummary" type="com.ibm.ea.bravo.report.ActionReport"
+			parameter="discrepancySummary">
+			<forward name="success" path="/WEB-INF/jsp/report/discrepancySummary.jsp" />
+		</action>
+
+		<!-- TEST -->
+		<!-- TEST home -->
+		<action path="/test/home" type="com.ibm.ea.bravo.test.ActionTest"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/test/home.jsp" />
+		</action>
+
+		<action path="/test/download" type="com.ibm.ea.bravo.test.ActionTest"
+			parameter="download">
+			<forward name="success" path="/test/home.do" redirect="true" />
+		</action>
+
+		<!-- TEST upload -->
+		<action path="/test/upload" type="com.ibm.ea.bravo.test.ActionTest"
+			parameter="upload" name="upload" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/test/home.jsp" />
+		</action>
+		<action path="/swasset/view" type="com.ibm.ea.bravo.swasset.ActionSwasset"
+			parameter="view">
+			<forward name="success" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+		</action>
+		<action path="/swasset/search" type="com.ibm.ea.bravo.swasset.ActionSwasset"
+			parameter="search" name="swasset" scope="request" validate="false">
+			<forward name="success" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+		</action>
+		<action path="/swasset/delete" type="com.ibm.ea.bravo.swasset.ActionSwasset"
+			parameter="delete" name="swasset" scope="request" validate="false">
+			<forward name="success" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/swasset/form.jsp">
+			</forward>
+		</action>
+
+		<!-- SYSTEM STATUS -->
+		<!-- SYSTEM STATUS home -->
+		<action path="/systemStatus/home" type="com.ibm.ea.bravo.systemstatus.ActionSystemStatus"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/systemStatus/home.jsp" />
+		</action>
+
+		<!-- SYSTEM STATUS submit -->
+		<action path="/systemStatus/submit_form" type="com.ibm.ea.bravo.systemstatus.ActionSystemStatus" 
+			parameter="submit_form" name="submitForm" scope="session"
+			input="/systemstatus/home.jsp">
+				<forward name="success" path="/WEB-INF/jsp/systemStatus/home.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT -->
+		<!-- BANK ACCOUNT home -->
+		<action path="/bankAccount/home" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="home">
+			<forward name="success" path="/WEB-INF/jsp/home.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT connected -->
+		<action path="/bankAccount/connected" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="connected">
+			<forward name="success" path="/WEB-INF/jsp/bankAccount/connected.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT connected add/edit -->
+		<action path="/bankAccount/connectedAddEdit" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="connectedAddEdit">
+			<forward name="success"
+				path="/WEB-INF/jsp/bankAccount/bankAccountAddEdit.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT save -->
+		<action path="/bankAccount/bankAccountSave" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="save" name="bankAccountForm" validate="true" scope="request"
+			input="/WEB-INF/jsp/bankAccount/bankAccountAddEdit.jsp">
+			<forward name="connected" path="/bankAccount/connected.do" />
+			<forward name="disconnected" path="/bankAccount/disconnected.do" />
+			<forward name="error"
+				path="/WEB-INF/jsp/bankAccount/bankAccountAddEdit.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT disconnected -->
+		<action path="/bankAccount/disconnected" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="disconnected">
+			<forward name="success" path="/WEB-INF/jsp/bankAccount/disconnected.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT disconnected add/edit -->
+		<action path="/bankAccount/disconnectedAddEdit" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="disconnectedAddEdit">
+			<forward name="success"
+				path="/WEB-INF/jsp/bankAccount/bankAccountAddEdit.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT connection status -->
+		<action path="/bankAccount/connectionStatus" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="connectionStatus">
+			<forward name="success" path="/WEB-INF/jsp/bankAccount/connectionStatus.jsp" />
+		</action>
+
+		<!-- BANK ACCOUNT update connection type -->
+		<action path="/bankAccount/updateConnectionType" type="com.ibm.ea.bravo.bankaccount.ActionBankAccount"
+			parameter="updateConnectionType">
+			<forward name="success"
+				path="/WEB-INF/jsp/bankAccount/bankAccountAddEdit.jsp" />
+			<forward name="error" path="/bankAccount/home.do" />
+		</action>
+		<action path="/software/deleteManual" type="com.ibm.ea.bravo.software.ActionSoftware"
+			parameter="deleteManual" name="software" scope="request" validate="false">
+			<forward name="success" path="/WEB-INF/jsp/software/home.jsp">
+			</forward>
+		</action>
+		<!-- Authorized asset -->
+		<action path="/authorizedAsset/search"
+			type="com.ibm.asset.bravo.action.authorizedAssets.AuthorizedAssetsAction"
+			parameter="search" name="work" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/authorizedAssets/search.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/authorizedAssets/search.jsp">
+			</forward>
+		</action>
+		<action path="/authorizedAsset/searchLpars"
+			type="com.ibm.asset.bravo.action.authorizedAssets.AuthorizedAssetsAction"
+			parameter="searchLpars" name="work" validate="false" scope="request">
+			<forward name="success" path="/WEB-INF/jsp/authorizedAssets/search.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/authorizedAssets/search.jsp">
+			</forward>
+		</action>
+		<action path="/authorizedAsset/viewInstalledSoftwares"
+			type="com.ibm.asset.bravo.action.authorizedAssets.AuthorizedAssetsAction"
+			parameter="viewInstalledSoftwares">
+			<forward name="success"
+				path="/WEB-INF/jsp/authorizedAssets/installedSoftware.jsp">
+			</forward>
+			<forward name="error" path="/WEB-INF/jsp/authorizedAssets/search.jsp">
+			</forward>
+		</action>
+	</action-mappings>
+
+	<!-- Message Resources -->
+	<message-resources parameter="resources.ApplicationResources" />
+
+	<!-- Plugins -->
+	<plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+		<set-property property="pathnames"
+			value="/WEB-INF/validator-rules.xml, /WEB-INF/validation.xml" />
+	</plug-in>
+	<plug-in className="com.ibm.ea.bravo.framework.hibernate.HibernatePlugin" />
+	<plug-in className="com.ibm.ea.bravo.framework.properties.PropertiesPlugin" />
+
+	<plug-in className="com.ibm.ea.bravo.framework.batch.BatchProcessor" />
+	<plug-in className="com.ibm.ea.utils.email.BatchEmailProcessor" />
+
+</struts-config>

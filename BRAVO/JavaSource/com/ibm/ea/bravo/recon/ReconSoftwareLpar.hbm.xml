@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.recon.ReconSoftwareLpar" table="RECON_SW_LPAR">
+        
+        <id name="id" type="long" column="ID">
+            <generator class="identity" />
+        </id>
+        
+        <property name="softwareLparId" column="SOFTWARE_LPAR_ID" type="long"/>
+        <property name="customerId" column="CUSTOMER_ID" type="long"/>
+        <property name="action" column="ACTION" length="32"/>         
+        <property name="remoteUser" column="REMOTE_USER" length="64" not-null="true"/>
+        <property name="recordTime" column="RECORD_TIME" type="timestamp" not-null="true"/>
+    </class>
+</hibernate-mapping>

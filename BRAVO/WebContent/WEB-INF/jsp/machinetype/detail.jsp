@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
+<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
+<meta name="Keywords" content="REPLACE" />
+<meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
+<meta name="Source"
+	content="v17 template generator, template 17.02 delivery:IBM  authoring:IBM" />
+
+<meta name="Security" content="Public" />
+<meta name="Abstract" content="REPLACE" />
+<meta name="IBM.Effective" scheme="W3CDTF" content="2012-09-19" />
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="REPLACE" />
+<meta name="Owner" content="Replace" />
+<meta name="DC.Language" scheme="rfc1766" content="en" />
+<meta name="IBM.Country" content="ZZ" />
+<meta name="Robots" content="index,follow" />
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="REPLACE" />
+<meta name="Description" content="REPLACE" />
+
+<%@ page language="java"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-html"
+	prefix="html"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-bean"
+	prefix="bean"%>
+<%@ taglib uri="http://jakarta.apache.org/struts/tags-logic"
+	prefix="logic"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
+<%@ taglib prefix="req"
+	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
+<%@page
+	import="java.util.Calendar,java.util.Properties,java.io.FileInputStream,java.lang.String,com.ibm.tap.misld.framework.Constants"%>
+
+<title>View/Edit Machine Type Reference</title>
+
+<link href="//1.w3.s81c.com/common/v17/css/w3.css" rel="stylesheet"
+	title="w3" type="text/css" />
+<script src="//1.w3.s81c.com/common/js/dojo/w3.js"
+	type="text/javascript"></script>
+
+</head>
+
+
+
+
+
+<body id="ibm-com">
+	<div id="ibm-top" class="ibm-liquid">
+
+		<!-- v17 SSIs: version 1.1 -->
+		<!-- MASTHEAD_BEGIN -->
+		<div id="ibm-masthead">
+			<div id="ibm-mast-options">
+				<ul>
+					<li id="ibm-geo"><a
+						href="http://www.ibm.com/planetwide/select/selector.html"><span
+							class="ibm-access">Select a country/region: </span>Worldwide</a></li>
+				</ul>
+			</div>
+			<div id="ibm-universal-nav">
+				<ul id="ibm-unav-links">
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
+				</ul>
+				<ul id="ibm-menu-links">
+					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
+				</ul>
+				<div id="ibm-search-module">
+					<form id="ibm-search-form" action="http://www.ibm.com/Search/"
+						method="get">
+						<p>
+							<label for="q"><span class="ibm-access">Search</span></label> <input
+								type="text" maxlength="100" value="" name="q" id="q" /> <input
+								type="hidden" value="17" name="v" /> <input type="hidden"
+								value="utf" name="en" /> <input type="hidden" value="en"
+								name="lang" /> <input type="hidden" value="zz" name="cc" /> <input
+								type="submit" id="ibm-search" class="ibm-btn-search"
+								value="Submit" />
+						</p>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- MASTHEAD_END -->
+
+		<div id="ibm-pcon">
+			<!-- CONTENT_BEGIN -->
+			<div id="ibm-content">
+				<div id="ibm-leadspace-head" class="ibm-alternate">
+					<div id="ibm-leadspace-body">
+
+						<p id="breadcrumbs">
+							<html:link page="/">
+								BRAVO
+							</html:link>
+							&gt;
+							<html:link page="/admin/home.do">
+								Administration
+							</html:link>
+							&gt;
+							<html:link page="/admin/machinetype/home.do">
+								Machine Type
+							</html:link>
+							&gt;
+							<html:link
+								page="/admin/machinetype/quicksearch.do?search=${search}&searchtype=${searchtype}&action=List">
+								Search Results
+							</html:link>
+							&gt; <b><c:out value="${machineType.name}" /></b>
+						</p>
+
+						<h1>${action}
+							Machine Type: <font color="#FFD700"> <c:out
+								value="${machineType.name}" /></font>
+						</h1>
+						<p class="confidential">IBM Confidential</p>
+
+					</div>
+				</div>
+				<!-- CONTENT_BODY -->
+				<div id="ibm-content-body">
+					<div id="ibm-content-main">
+						<div class="ibm-columns">
+							<div class="ibm-col-1-1">
+
+
+								<table
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									id="small">
+									<thead>
+										<tr>
+											<th class="blue-med" width="1%"></th>
+											<th class="blue-med">ID</th>
+											<th class="blue-med">Name</th>
+											<th class="blue-med">Type</th>
+											<th class="blue-med">Definition</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><img
+												src="<c:out value="${machineType.statusIcon}"/>" width="12"
+												height="10" /></td>
+											<td><font class="orange-dark"> <c:out
+													value="${machineType.id}" /></font></td>
+											<td><font class="orange-dark"> <c:out
+													value="${machineType.name}" /></font></td>
+											<td><font class="orange-dark"> <c:out
+													value="${machineType.type}" /></font></td>
+											<td><font class="orange-dark"> <c:out
+													value="${machineType.definition}" /></font></td>
+										</tr>
+									</tbody>
+								</table>
+
+
+								<table border="0" cellpadding="2" cellspacing="0" width="100%">
+									<tr>
+										<td width="33%" font style="color: #7a3" class="caption">Quick
+											Search:</td>
+										<td width="33%" style="color: #7a3" class="caption">Help
+											Contacts:</td>
+									</tr>
+									<tr>
+										<td colspan=2>
+											<div class="hrule-dots"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><img alt="Action"
+											src="//w3.ibm.com/ui/v8/images/icon-link-action.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=all">All Active Types</html:link>
+										</td>
+										<td>Please direct all inquires to:<br />
+										</td>
+									</tr>
+									<tr>
+										<td><img alt="Action"
+											src="//w3.ibm.com/ui/v8/images/icon-link-action.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=all">All Records</html:link>
+										</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td><img alt="Action"
+											src="//w3.ibm.com/ui/v8/images/icon-link-action.gif"
+											width="13" height="13" /> <html:link
+												page="/admin/machinetype/quicksearch.do?action=LIST&search=&searchtype=recentadd">Recently Added Types</html:link>
+										</td>
+										<td></td>
+									</tr>
+								</table>
+
+							</div>
+						</div>
+						</div>
+
+						<!-- FEATURES_BEGIN -->
+						<div id="ibm-content-sidebar">
+							<div class="ibm-container">
+								<h2 class="ibm-rule">
+									Actions&nbsp;<a class="ibm-question-link" href="help/help.do"></a>
+								</h2>
+								<div class="ibm-container-body">
+									<ul class="ibm-link-list">
+
+										<!-- Edit Machine Type -->
+										<li><a class="ibm-forward-link"
+											href="/BRAVO/admin/machinetype/update.do?search=${search}&searchtype=${searchtype}&id=${machineType.id}">Edit
+												This Machine Type</a></li>
+
+										<!-- Delete Machine Type -->
+										<li><a class="ibm-delete-link"
+											href="/BRAVO/admin/machinetype/delete.do?context=${machineType.id}&search=${search}&searchtype=${searchtype}&id=${machineType.id}">Delete
+												This Machine Type</a></li>
+
+										<!-- Create Machine Type -->
+										<li><a class="ibm-add1-link"
+											href="/BRAVO/admin/machinetype/create.do?context=${machineType.id}&search=${search}&searchtype=${searchtype}&id=">Create
+												New Machine Type</a></li>
+									</ul>
+								</div>
+							</div>
+							<!-- stop partial-sidebar -->
+						</div>
+					</div>
+					<!-- FEATURES_END -->
+					<!-- CONTENT_BODY_END -->
+				</div>
+				<!-- CONTENT_END -->
+				</div>
+
+
+				<!-- NAVIGATION_BEGIN -->
+				<div id="ibm-navigation">
+					<h2 class="ibm-access">Content navigation</h2>
+					<ul id="ibm-primary-links">
+
+						<li id="ibm-parent-link"><a href="http://tap.raleigh.ibm.com">Asset
+								Tools Home</a></li>
+						<li id="ibm-overview"><a href="/BRAVO/home.do">BRAVO</a> <a
+							href="/BRAVO/mswiz.do">MS Wizard</a> <a
+							href="/BRAVO/help/help.do">Help</a> <a
+							href="/BRAVO/report/home.do">Reports</a> <a
+							href="/BRAVO/systemStatus/home.do">System status</a></li>
+
+
+						<%
+							boolean lbValidRole = false;
+							boolean lbAdminRole = false;
+						%>
+						<req:isUserInRole role="com.ibm.tap.admin">
+							<%
+								lbValidRole = true;
+									lbAdminRole = true;
+							%>
+						</req:isUserInRole>
+
+						<req:isUserInRole role="com.ibm.tap.sigbank.admin">
+							<%
+								lbValidRole = true;
+									lbAdminRole = true;
+							%>
+						</req:isUserInRole>
+
+						<req:isUserInRole role="com.ibm.tap.sigbank.user">
+							<%
+								lbValidRole = true;
+							%>
+						</req:isUserInRole>
+						<%
+							if (lbValidRole) {
+						%>
+						<li id="ibm-overview"><a href="/BRAVO/bankAccount/home.do">Bank
+								accounts</a> <logic:present scope="request"
+								name="bankAccountSection">
+								<ul>
+									<li><a href="/BRAVO/bankAccount/connected.do">Connected</a>
+										<logic:equal scope="request" name="bankAccountSection"
+											value="CONNECTED">
+											<%
+												if (lbAdminRole) {
+											%>
+											<ul>
+												<li><a href="/BRAVO/bankAccount/connectedAddEdit.do">Add</a>
+												</li>
+											</ul>
+											<%
+												}
+											%>
+										</logic:equal></li>
+
+									<li><a href="/BRAVO/bankAccount/disconnected.do">Disconnected</a>
+
+										<logic:equal scope="request" name="bankAccountSection"
+											value="DISCONNECTED">
+											<%
+												if (lbAdminRole) {
+											%>
+											<ul>
+												<li><a href="/BRAVO/bankAccount/disconnectedAddEdit.do">Add</a>
+												</li>
+											</ul>
+											<%
+												}
+											%>
+										</logic:equal></li>
+								</ul>
+							</logic:present></li>
+						<%
+							}
+						%>
+
+						<%
+							boolean validRole = false;
+						%>
+						<req:isUserInRole role="com.ibm.ea.bravo.admin">
+							<%
+								validRole = true;
+							%>
+						</req:isUserInRole>
+						<req:isUserInRole role="com.ibm.ea.asset.admin">
+							<%
+								validRole = true;
+							%>
+						</req:isUserInRole>
+						<req:isUserInRole role="com.ibm.ea.admin">
+							<%
+								validRole = true;
+							%>
+						</req:isUserInRole>
+						<req:isUserInRole role="com.ibm.tap.admin">
+							<%
+								validRole = true;
+							%>
+						</req:isUserInRole>
+						<%
+							if (validRole) {
+						%>
+						<li id="ibm-overview"><a href="/BRAVO/admin/home.do">Administration</a>
+						</li>
+						<%
+							}
+						%>
+					</ul>
+
+					<div id="ibm-secondary-navigation">
+						<!-- SECONDARY NAVIGATION SECTION -->
+						<br /> Legend:
+						<hr />
+						<span class="ibm-check-link">Active</span><br /> <span
+							class="ibm-incorrect-link">Inactive</span><br /> <span
+							class="ibm-caution-link">Alert</span>
+					</div>
+
+				</div>
+				<!-- NAVIGATION_END -->
+			</div>
+
+
+			<div id="ibm-related-content"></div>
+
+			<!-- v17 SSIs: version 1.1 -->
+			<!-- FOOTER_BEGIN -->
+			<div id="ibm-footer-module"></div>
+			<div id="ibm-footer">
+				<h2 class="ibm-access">Footer links</h2>
+				<ul>
+					<li><a href="http://www.ibm.com/contact/">Contact</a></li>
+					<li><a href="http://www.ibm.com/privacy/">Privacy</a></li>
+					<li><a href="http://www.ibm.com/legal/">Terms of use</a></li>
+				</ul>
+			</div>
+			<!-- FOOTER_END -->
+			<div id="ibm-metrics">
+				<script src="//www.ibm.com/common/stats/stats.js"
+					type="text/javascript">
+					//
+				</script>
+			</div>
+		</div>
+</body>
+</html>

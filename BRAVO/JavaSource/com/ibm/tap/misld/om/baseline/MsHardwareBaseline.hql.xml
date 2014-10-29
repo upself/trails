@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<query name="getSoftwareLpar">
+		<![CDATA[
+		from com.ibm.ea.sigbank.SoftwareLpar l
+
+		left join fetch l.softwareLparEff
+
+		where l.id = :id
+
+		order by l.name
+		
+		]]>
+	</query>
+
+	<query name="getMsHardwareBaselineByCustomer">
+		<![CDATA[
+		from com.ibm.ea.sigbank.SoftwareLpar l
+
+		where
+		l.customer = :customer
+
+		]]>
+	</query>
+
+	<query name="getMsHardwareBaselineByPod">
+		<![CDATA[
+		from MsHardwareBaseline m
+
+		join fetch m.customer
+		join fetch m.customer.pod
+		join fetch m.customer.industry
+		join fetch m.customer.industry.sector
+		join fetch m.customer.customerType
+		left join fetch m.customer.misldAccountSettings
+		left join fetch m.customer.misldAccountSettings.licenseAgreementType
+
+		where
+		m.customer.pod.podName = :podName
+	
+		]]>
+	</query>
+
+	<query name="getSoftwareLparByNodeName">
+		<![CDATA[
+		from com.ibm.ea.sigbank.SoftwareLpar l
+
+		where
+		l.customer = :customer and
+		l.name = :name
+
+		]]>
+	</query>
+
+	<query name="getDuplicateHostnames">
+		<![CDATA[
+		
+		select m.customer.pod.podName, m.customer.industry.industryName,
+		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
+		m.machineType, m.machineModel, m.country, m.status
+		
+		from MsHardwareBaseline as m, MsHardwareBaseline as mh
+		
+		where
+		m.nodeName = mh.nodeName
+		
+		group by 
+		m.customer.pod.podName, m.customer.industry.industryName,
+		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
+		m.machineType, m.machineModel, m.country, m.status
+		
+		having count(m.nodeName) > 1
+		
+		]]>
+	</query>
+
+	<query name="getDuplicatePrefixes">
+		<![CDATA[
+		
+		select m.customer.pod.podName, m.customer.industry.industryName,
+		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
+		m.machineType, m.machineModel, m.country, m.status
+		
+		from MsHardwareBaseline as m, MsHardwareBaseline as mh
+		
+		where
+     	LENGTH(mh.nodeName) >= LENGTH(m.nodeName)
+     	and m.nodeName = SUBSTR(mh.nodeName, 1, LENGTH(m.nodeName))
+     	and mh.nodeName like '%.%'
+     	and m.nodeName not like '%.%'
+		
+		]]>
+	</query>
+
+</hibernate-mapping>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-lazy="false">
+
+	<query name="getNotification">
+		<![CDATA[
+
+		from Notification n
+		
+		where
+		
+		n.customer = :customer 
+		and n.notificationType = :notificationType
+
+		]]>
+	</query>
+	<query name="getNotificationByCustomerTypeStatus">
+		<![CDATA[
+
+		from Notification n
+		
+		where
+		
+		n.customer = :customer 
+		and n.notificationType = :notificationType
+		and n.status = :status
+
+		]]>
+	</query>
+	<query name="getNotificationsByTypeStatus">
+		<![CDATA[
+
+		from Notification n
+		join fetch n.customer
+		join fetch n.customer.misldAccountSettings
+		join fetch n.customer.contactDPE
+		
+		where
+
+		n.notificationType = :notificationType
+		and n.status = :status
+
+		]]>
+	</query>
+	<query name="inactivateNotifications">
+		<![CDATA[
+
+		update Notification
+		set status = 'INACTIVE'
+		where 
+		customer in( :customers )
+		]]>
+	</query>
+
+</hibernate-mapping>
+

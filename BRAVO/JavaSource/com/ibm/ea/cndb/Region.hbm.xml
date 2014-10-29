@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.ibm.ea.cndb.Region" table="REGION" lazy="true">
+
+		<id name="id" type="long" column="ID">
+			<generator class="increment" />
+		</id>
+
+		<many-to-one name="geography" column="GEOGRAPHY_ID"
+			class="com.ibm.ea.cndb.Geography" not-null="true"
+			cascade="save-update" />
+
+		<property name="name">
+			<column name="NAME" length="64" not-null="true" />
+		</property>
+
+	</class>
+</hibernate-mapping>
+
