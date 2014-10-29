@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="admin" extends="trails-struts-default"
+		namespace="/admin">
+		<action name="home" class="adminAction">
+			<result type="tiles">tiles.admin.home</result>
+		</action>
+		<action name="liveSearch" method="liveSearch" class="ScheduleFAjaxAction"></action>
+	</package>
+
+	<package name="adminPvuMapping" extends="trails-struts-default"
+		namespace="/admin/pvuMapping">
+
+		<action name="listPvu" method="listPvu" class="pvuMappingAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.pvuMapping.listPvu
+			</result>
+		</action>
+
+		<action name="updatePvuMap" method="updatePvuMap" class="pvuMappingAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="init" type="tiles">
+				tiles.admin.pvuMapping.mappingPvu
+			</result>
+			<result name="success" type="tiles">
+				tiles.admin.pvuMapping.updateSuccess
+			</result>
+			<result name="error" type="redirect">listPvu.htm</result>
+		</action>
+
+		<action name="getAvailableProcessorModels" method="getAvailableProcessorModels"
+			class="pvuAjaxAction" />
+
+		<action name="getMachineTypes" method="getMachineTypes" class="pvuAjaxAction" />
+	</package>
+
+	<package name="adminAlertCause" extends="trails-struts-default"
+		namespace="/admin/alertCause">
+		<action name="list" method="list" class="alertCauseAction">
+			<result name="success" type="tiles">
+				tiles.admin.alertCause.list
+			</result>
+		</action>
+
+		<action name="edit" method="edit" class="alertCauseAction">
+			<result name="success" type="tiles">
+				tiles.admin.alertCause.manage
+			</result>
+		</action>
+
+		<action name="update" method="update" class="alertCauseAction">
+			<result name="success" type="redirect">list.htm</result>
+			<result name="input" type="tiles">
+				tiles.admin.alertCause.manage
+			</result>
+		</action>
+
+		<action name="add" method="add" class="alertCauseAction">
+			<result name="success" type="tiles">
+				tiles.admin.alertCause.add
+			</result>
+		</action>
+
+		<action name="save" method="save" class="alertCauseAction">
+			<result name="success" type="redirect">list.htm</result>
+			<result name="input" type="tiles">
+				tiles.admin.alertCause.add
+			</result>
+		</action>
+
+	</package>
+
+</struts>
