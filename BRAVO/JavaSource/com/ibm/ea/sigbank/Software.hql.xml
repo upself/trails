@@ -4,15 +4,16 @@
 
 	<query name="activeSoftware">
 		<![CDATA[
-		    select s.software_name
+		    select s.softwareItem.name
             from
-                 software s
-                     
+                 Product s
+            join s.softwareItem
+            join s.kbDefinition          
             where
-                s.software_name !='UNKNOWN'
-                and s.status !='INACTIVE'
-            group by s.software_name
-            order by s.software_name
+                s.softwareItem.name !='UNKNOWN'
+                and s.kbDefinition.deleted != 1
+            group by s.softwareItem.name
+            order by s.softwareItem.name
 		]]>
 	</query>
 	<query name="customerBankAccount">
