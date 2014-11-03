@@ -55,7 +55,7 @@ SELECT
                 ,h.processor_count Physical_HW_processor_count
                 ,h.chips Physical_chips
                 ,case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end Effective_processor_count
-                ,instSi.name Installed_SW_product_name
+                ,instS.software_name Installed_SW_product_name
                 ,aus.remote_user Alert_assignee
                 ,aus.comments Alert_assignee_comment
                 ,instSwMan.name Inst_SW_manufacturer
@@ -64,7 +64,7 @@ SELECT
                 ,r.remote_user Reconciliation_user
                 ,r.record_time Reconciliation_date_time
                 ,case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end Reconciliation_comments
-                ,parentSi.name Reconciliation_parent_product
+                ,parentS.software_name Reconciliation_parent_product
                 ,c.account_number License_account_number
                 ,l.full_desc Full_product_description
                 ,case when l.id is null then '' when lsm.id is null then 'No' else 'Yes' end Catalog_match
@@ -93,16 +93,9 @@ From
                 hl.hardware_id = h.id 
                 inner join eaadmin.machine_type mt on 
                 h.machine_type_id = mt.id 
-                inner join eaadmin.installed_software is on 
-                sl.id = is.software_lpar_id 
-                inner join eaadmin.product_info instPi on 
-                is.software_id = instPi.id 
-                inner join eaadmin.product instP on 
-                instPi.id = instP.id 
-                inner join eaadmin.software_item instSi on 
-                instP.id = instSi.id 
-                inner join eaadmin.manufacturer instSwMan on 
-                instP.manufacturer_id = instSwMan.id 
+                inner join eaadmin.installed_software is on sl.id = is.software_lpar_id 
+                inner join eaadmin.software instS on is.software_id = instS.software_id
+                inner join eaadmin.manufacturer instSwMan on instS.manufacturer_id = instSwMan.id 
                 inner join eaadmin.discrepancy_type dt on 
                 is.discrepancy_type_id = dt.id 
                 inner join eaadmin.alert_unlicensed_sw aus on 
@@ -113,12 +106,7 @@ From
                 r.reconcile_type_id = rt.id 
                 left outer join eaadmin.installed_software parent on 
                 r.parent_installed_software_id = parent.id 
-                left outer join eaadmin.product_info parentPi on 
-                parent.software_id = parentPi.id 
-                left outer join eaadmin.product parentP on 
-                parentPi.id = parentP.id 
-                left outer join eaadmin.software_item parentSi on 
-                parentSi.id = parentP.id 
+                left outer join eaadmin.software parentS on parent.software_id = parentS.software_id 
                 left outer join eaadmin.reconcile_used_license rul on 
                 r.id = rul.reconcile_id 
                 left outer join eaadmin.used_license ul on 
@@ -175,4 +163,6 @@ Where gsf.geo in ('NA','LA')
 
 for fetch only
 with ur
+;
+
 ;
