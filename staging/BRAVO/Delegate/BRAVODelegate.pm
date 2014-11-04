@@ -286,19 +286,14 @@ sub getSoftwareIdBySoftwareNameAndTypeFromHistory {
 sub querySoftwareIdBySoftwareName {
     my $query = '
         select
-            pi.id
+            software_id
         from
-            product_info pi
-            ,product p
-            ,software_item si
-            ,kb_definition kd
+            software
         where
-            upper(si.name) = ?
+            upper(software_name) = ?
             and product_role = ?
-            and kd.deleted != 1
-            and pi.id = p.id
-            and p.id = si.id
-            and si.id = kd.id
+            and status != \'INACTIVE\'
+        with ur
     ';
     return ( 'softwareIdBySoftwareName', $query );
 }
@@ -306,21 +301,18 @@ sub querySoftwareIdBySoftwareName {
 sub querySoftwareIdBySoftwareNameFromHistory {
     my $query = '
         select
-            pa.product_id
+            s.software_id
         from
             alias a
             ,product_alias pa
-            ,product p
-            ,software_item si
-            ,kb_definition kd
+            ,software s
         where
             upper(a.name) = ?
-            and si.product_role = ?
-            and kd.deleted != 1
+            and s.product_role = ?
+            and status != \'INACTIVE\'
             and a.id = pa.alias_id
-            and pa.product_id = p.id
-            and p.id = si.id
-            and si.id = kd.id
+            and pa.product_id = s.software_id
+        with ur
     ';
     return ( 'softwareIdBySoftwareNameFromHistory', $query );
 }
