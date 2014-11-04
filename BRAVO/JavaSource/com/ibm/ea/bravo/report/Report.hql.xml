@@ -192,7 +192,7 @@
 					,ct.customer_type_name as customerTypeName
 					,p.pod_name as podName
 					,l.name as lparName
-					,si.name as softwareName
+					,s.software_name as softwareName
 					,dt.name as discrepancyName
 					,i.invalid_category as invalidCategory
 					,i.remote_user as remoteUser
@@ -205,8 +205,9 @@
 					,customer_type ct
 					,pod p
 					,software_lpar l
-					,product s
-					,software_item si 
+					
+					,software s
+									
 					,discrepancy_type dt
 					,installed_software i
 					 left outer join software_discrepancy_h h
@@ -217,17 +218,16 @@
 					and c.pod_id = p.pod_id
 					and l.customer_id = c.customer_id
 					and i.software_lpar_id = l.id
-					and i.software_id = s.id
+					and i.software_id = s.software_id
 					and i.discrepancy_type_id = dt.id
 					and i.status = :status
-					and s.id = si.id
 				group by
 					c.account_number
 					,c.customer_name
 					,ct.customer_type_name
 					,p.pod_name
 					,l.name
-					,si.name
+					,s.software_name
 					,dt.name
 					,i.invalid_category
 					,i.remote_user
