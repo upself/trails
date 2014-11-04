@@ -737,9 +737,6 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    ,hardware_lpar hl
 			    ,hardware h
 			    ,installed_software is
-			    
-			    ,software s
-			    
 			    ,product s
 			    ,product_info pi
 			    ,software_item si
