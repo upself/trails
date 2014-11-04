@@ -1,5 +1,7 @@
 package com.ibm.asset.trails.batch.swkbt.service.impl;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,9 @@ public class MainframeVersionServiceImpl extends
 	@Autowired
 	private ProductInfoService productService;
 	private Long manufacturer;
-	
+
 	private static final Log logger = LogFactory.getLog(GenericService.class);
+
 	@Transactional(readOnly = false, propagation = Propagation.MANDATORY)
 	public void save(MainframeVersionType xmlEntity) {
 		MainframeVersion existing = findByNaturalKey(xmlEntity.getGuid());
@@ -56,17 +59,34 @@ public class MainframeVersionServiceImpl extends
 		Long productId = productService.findIdByNaturalKey(xmlEntity
 				.getProduct());
 		existing.setProductInfo(productId);
-		if (xmlEntity.getManufacturer() == null){
+		if (xmlEntity.getManufacturer() == null) {
 			ProductInfo productInfo = productService.findById(productId);
 			manufacturer = productInfo.getManufacturer();
 			logger.debug("Find manufacturer id by product_info " + manufacturer);
-		}else {
-		    manufacturer = manufacturerService.findIdByNaturalKey(xmlEntity
+		} else {
+			manufacturer = manufacturerService.findIdByNaturalKey(xmlEntity
 					.getManufacturer());
 			logger.debug("Find manufacturer id by guid " + manufacturer);
-		}		
-	    existing.setManufacturer(manufacturer);
+		}
+		existing.setManufacturer(manufacturer);
+
+		if (existing.getMainframeVersionProductInfo() == null) {
+			existing.setMainframeVersionProductInfo(this.buildProductInfo());
+		}
 		return existing;
+	}
+
+	private ProductInfo buildProductInfo() {
+
+		ProductInfo productInfo = new ProductInfo();
+		productInfo.setSoftwareCategoryId(1000L);
+		productInfo.setPriority(1);
+		productInfo.setLicensable(true);
+		productInfo.setChangeJustification("New add");
+		productInfo.setRemoteUser("TADZMainframe");
+		productInfo.setRecordTime(new Date());
+
+		return productInfo;
 	}
 
 	@Override

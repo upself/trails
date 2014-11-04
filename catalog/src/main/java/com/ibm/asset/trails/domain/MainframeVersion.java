@@ -1,9 +1,15 @@
 package com.ibm.asset.trails.domain;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "MAINFRAME_VERSION")
@@ -41,6 +47,11 @@ public class MainframeVersion extends SoftwareItem {
 	@Basic
 	@Column(name = "IBM_CUSTOMER_AGREEMENT")
 	protected boolean ibmCustomerAgreement;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
+	@NotFound(action = NotFoundAction.IGNORE)
+	protected ProductInfo mainframeVersionProductInfo;
 
 	public Integer getVersion() {
 		return version;
@@ -104,6 +115,22 @@ public class MainframeVersion extends SoftwareItem {
 
 	public void setIbmCustomerAgreement(boolean ibmCustomerAgreement) {
 		this.ibmCustomerAgreement = ibmCustomerAgreement;
+	}
+
+	/**
+	 * @return the mainframeVersionProductInfo
+	 */
+	public ProductInfo getMainframeVersionProductInfo() {
+		return mainframeVersionProductInfo;
+	}
+
+	/**
+	 * @param mainframeVersionProductInfo
+	 *            the mainframeVersionProductInfo to set
+	 */
+	public void setMainframeVersionProductInfo(
+			ProductInfo mainframeVersionProductInfo) {
+		this.mainframeVersionProductInfo = mainframeVersionProductInfo;
 	}
 
 }

@@ -1,9 +1,15 @@
 package com.ibm.asset.trails.domain;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "MAINFRAME_FEATURE")
@@ -34,6 +40,11 @@ public class MainframeFeature extends SoftwareItem {
 	@Basic
 	@Column(name = "SOFTWARE_PRICING_TYPE", length = 10)
 	protected String softwarePricingType;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
+	@NotFound(action = NotFoundAction.IGNORE)
+	protected ProductInfo mainframeFeatureProductInfo;
 
 	public String geteId() {
 		return eId;
@@ -81,6 +92,22 @@ public class MainframeFeature extends SoftwareItem {
 
 	public void setSoftwarePricingType(String softwarePricingType) {
 		this.softwarePricingType = softwarePricingType;
+	}
+
+	/**
+	 * @return the mainframeFeatureProductInfo
+	 */
+	public ProductInfo getMainframeFeatureProductInfo() {
+		return mainframeFeatureProductInfo;
+	}
+
+	/**
+	 * @param mainframeFeatureProductInfo
+	 *            the mainframeFeatureProductInfo to set
+	 */
+	public void setMainframeFeatureProductInfo(
+			ProductInfo mainframeFeatureProductInfo) {
+		this.mainframeFeatureProductInfo = mainframeFeatureProductInfo;
 	}
 
 }
