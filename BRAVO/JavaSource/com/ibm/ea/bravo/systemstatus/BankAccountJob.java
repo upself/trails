@@ -22,7 +22,7 @@ public class BankAccountJob implements Serializable {
 
 	private String status;
 	
-	private Timestamp firstErrorTime;
+//	private Timestamp firstErrorTime;
 
 	public String getElapsedTime() {
 		if (this.getEndTime() == null) {
@@ -58,13 +58,13 @@ public class BankAccountJob implements Serializable {
 		this.endTime = endTime;
 	}
 
-	public Timestamp getFirstErrorTime() {
-		return firstErrorTime;
-	}
+//	public Timestamp getFirstErrorTime() {
+//		return firstErrorTime;
+//	}
 
-	public void setFirstErrorTime(Timestamp firstErrorTime) {
-		this.firstErrorTime = firstErrorTime;
-	}
+//	public void setFirstErrorTime(Timestamp firstErrorTime) {
+//		this.firstErrorTime = firstErrorTime;
+//	}
 
 	public Long getId() {
 		return id;

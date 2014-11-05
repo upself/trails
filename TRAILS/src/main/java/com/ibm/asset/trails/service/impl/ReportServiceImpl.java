@@ -553,6 +553,7 @@ public class ReportServiceImpl implements ReportService {
 		
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from scope scop join schedule_f sf on sf.scope_id = scop.id "
                 + "where sf.customer_id = :customerId "
+                + "and sf.status_id=2 "
                 + "and sf.software_name = instSi.name "
                 + "and ( ( sf.level = 'PRODUCT' ) "
                 + "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
