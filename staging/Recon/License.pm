@@ -460,7 +460,7 @@ sub queryLicenseAllocationsData {
             ,is.software_id
             ,sl.customer_id
             ,sl.name
-            ,si.name
+            ,sw.software_name
             ,h.id
             ,h.serial
             ,h.processor_count
@@ -483,7 +483,7 @@ sub queryLicenseAllocationsData {
         	join reconcile r on r.id = rul.reconcile_id
             join reconcile_type rt on rt.id = r.reconcile_type_id
             join installed_software is on is.id = r.installed_software_id
-            join software_item si on si.id = is.software_id
+            join software sw on sw.software_id = is.software_id
             join software_lpar sl on sl.id = is.software_lpar_id
             join customer c on sl.customer_id = c.customer_id
             join hw_sw_composite hsc on hsc.software_lpar_id = sl.id
