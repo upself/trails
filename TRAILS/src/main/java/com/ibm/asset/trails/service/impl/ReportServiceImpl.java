@@ -71,7 +71,7 @@ public class ReportServiceImpl implements ReportService {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
 			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
-			"OS Type","SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
+			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
 			"NBR of Chips Max","Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
 			"CPU MSU", "Part IBM LSPR MIPS", "Part Gartner MIPS", "Part MSU",
@@ -520,7 +520,6 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.SPLA"
 				+ ",hl.virtual_flag"
 				+ ",hl.virtual_mobility_restriction"
-				+ ",hl.OS_TYPE"
 				+ ",cast(hl.SYSPLEX as VARCHAR(8))"
 				+ ",hl.cluster_type"
 				+ ",hl.backupmethod"
