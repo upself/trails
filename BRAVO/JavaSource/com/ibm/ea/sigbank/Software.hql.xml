@@ -4,14 +4,14 @@
 
 	<query name="activeSoftware">
 		<![CDATA[
-            select s.software_name
+            select s.softwareName
             from
                  Software s
             where
-                s.software_name !='UNKNOWN'
+                s.softwareName !='UNKNOWN'
                 and s.status !='INACTIVE'
-            group by s.software_name
-            order by s.software_name
+            group by s.softwareName
+            order by s.softwareName
 		]]>
 	</query>
 	<query name="customerBankAccount">
