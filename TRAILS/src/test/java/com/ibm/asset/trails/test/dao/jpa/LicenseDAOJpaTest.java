@@ -21,7 +21,7 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class LicenseDAOJpaTests {
+public class LicenseDAOJpaTest {
 
     @Autowired
     private LicenseDAO licenseDAO;
@@ -43,7 +43,7 @@ public class LicenseDAOJpaTests {
             System.out.println(o.getClass());
         }
 
-        assertEquals(data.getFullListSize(), 1286);
+        assertEquals(data.getFullListSize(), 3072);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
@@ -56,7 +56,7 @@ public class LicenseDAOJpaTests {
         licenseDAO.freePoolWithParentPaginatedList(data, accountId, startIndex,
                 objectsPerPage, sort, dir,null);
 
-        assertEquals(data.getFullListSize(), 1286);
+        assertEquals(data.getFullListSize(), 3072);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
@@ -69,13 +69,13 @@ public class LicenseDAOJpaTests {
         licenseDAO.paginatedList(data, accountId, startIndex, objectsPerPage, sort,
                 dir);
 
-        assertEquals(data.getFullListSize(), 1286);
+        assertEquals(data.getFullListSize(), 3456);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
     @Test
     public void testGetLicenseIdsByReconcileId() {
-        Long reconcileId = 15349300L;
+        Long reconcileId = 45514589L;
         List<Long> licenseIds = licenseDAO.getLicenseIdsByReconcileId(reconcileId);
 
         assertEquals(licenseIds.size(), 1);
