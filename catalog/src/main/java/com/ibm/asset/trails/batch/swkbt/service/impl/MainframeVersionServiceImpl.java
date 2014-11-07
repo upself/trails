@@ -15,8 +15,10 @@ import com.ibm.asset.trails.batch.swkbt.service.ManufacturerService;
 import com.ibm.asset.trails.batch.swkbt.service.ProductInfoService;
 import com.ibm.asset.trails.dao.MainframeVersionDao;
 import com.ibm.asset.trails.dao.SoftwareItemDao;
+import com.ibm.asset.trails.domain.MainframeProductInfo;
 import com.ibm.asset.trails.domain.MainframeVersion;
 import com.ibm.asset.trails.domain.ProductInfo;
+import com.ibm.asset.trails.domain.SoftwareItem;
 
 @Service
 public class MainframeVersionServiceImpl extends
@@ -39,6 +41,8 @@ public class MainframeVersionServiceImpl extends
 		if (existing == null) {
 			existing = new MainframeVersion();
 			existing = update(existing, xmlEntity);
+		} else if (existing.getMainframeProductInfo() == null) {
+			existing.setMainframeProductInfo(this.buildProductInfo(existing));
 		} else {
 			existing = super.update(existing, xmlEntity);
 		}
@@ -70,21 +74,22 @@ public class MainframeVersionServiceImpl extends
 		}
 		existing.setManufacturer(manufacturer);
 
-		if (existing.getMainframeVersionProductInfo() == null) {
-			existing.setMainframeVersionProductInfo(this.buildProductInfo());
+		if (existing.getMainframeProductInfo() == null) {
+			existing.setMainframeProductInfo(this.buildProductInfo(existing));
 		}
 		return existing;
 	}
 
-	private ProductInfo buildProductInfo() {
+	private MainframeProductInfo buildProductInfo(SoftwareItem softwareItem) {
 
-		ProductInfo productInfo = new ProductInfo();
+		MainframeProductInfo productInfo = new MainframeProductInfo();
 		productInfo.setSoftwareCategoryId(1000L);
 		productInfo.setPriority(1);
 		productInfo.setLicensable(true);
 		productInfo.setChangeJustification("New add");
 		productInfo.setRemoteUser("TADZMainframe");
 		productInfo.setRecordTime(new Date());
+		productInfo.setSoftwerItem(softwareItem);
 
 		return productInfo;
 	}

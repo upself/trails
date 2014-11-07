@@ -4,12 +4,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "MAINFRAME_VERSION")
@@ -48,10 +45,9 @@ public class MainframeVersion extends SoftwareItem {
 	@Column(name = "IBM_CUSTOMER_AGREEMENT")
 	protected boolean ibmCustomerAgreement;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
-	@NotFound(action = NotFoundAction.IGNORE)
-	protected ProductInfo mainframeVersionProductInfo;
+	@OneToOne(optional = true, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "ID", referencedColumnName = "ID")
+	protected MainframeProductInfo mainframeProductInfo;
 
 	public Integer getVersion() {
 		return version;
@@ -117,20 +113,13 @@ public class MainframeVersion extends SoftwareItem {
 		this.ibmCustomerAgreement = ibmCustomerAgreement;
 	}
 
-	/**
-	 * @return the mainframeVersionProductInfo
-	 */
-	public ProductInfo getMainframeVersionProductInfo() {
-		return mainframeVersionProductInfo;
+	public MainframeProductInfo getMainframeProductInfo() {
+		return mainframeProductInfo;
 	}
 
-	/**
-	 * @param mainframeVersionProductInfo
-	 *            the mainframeVersionProductInfo to set
-	 */
-	public void setMainframeVersionProductInfo(
-			ProductInfo mainframeVersionProductInfo) {
-		this.mainframeVersionProductInfo = mainframeVersionProductInfo;
+	public void setMainframeProductInfo(
+			MainframeProductInfo mainframeProductInfo) {
+		this.mainframeProductInfo = mainframeProductInfo;
 	}
 
 }
