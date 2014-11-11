@@ -192,7 +192,6 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		if (laSoftware.get(0).getStatus().equalsIgnoreCase("INACTIVE")){
 			getScheduleF().setStatus(findStatusInList((long) 1,getStatusArrayList()));
 		} else {
-			System.out.print(getScheduleFForm().getStatusId());
 		getScheduleF().setStatus(
 				findStatusInList(getScheduleFForm().getStatusId(),
 						getStatusArrayList()));
@@ -248,8 +247,6 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 				if(!getScheduleFService().findSoftwareBySoftwareName(getScheduleF().getSoftwareName().toString()).isEmpty()){
 				if (getScheduleFService().findSoftwareBySoftwareName(getScheduleF().getSoftwareName().toString()).get(0).getStatus().equalsIgnoreCase("ACTIVE")){
 				lsffManage.setSoftwareStatus(false);
-				System.out.print("i am here");
-				System.out.print(getScheduleF().getStatus().getId());
 				lsffManage.setStatusId(getScheduleF().getStatus().getId());
 				}else {
 				lsffManage.setSoftwareStatus(true);
