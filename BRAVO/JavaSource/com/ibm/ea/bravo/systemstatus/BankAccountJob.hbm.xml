@@ -23,7 +23,7 @@
 
 		<property name="status" column="STATUS" length="32" not-null="true" />
 
-<!--  		<property name="firstErrorTime" column="FIRST_ERROR_TIME" type="timestamp" /> -->
+		<property name="firstErrorTime" column="FIRST_ERROR_TIME" type="timestamp" />
 		
 	</class>
 </hibernate-mapping>

@@ -282,9 +282,9 @@
 										style="white-space:nowrap" />
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
-<%--									<display:column property="firstErrorTime" class="date" --%>
-<%--										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="First error time" --%>
-<%--										sortable="true" headerClass="blue-med" />		--%>								
+									<display:column property="firstErrorTime" class="date"
+										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="First error time"
+										sortable="true" headerClass="blue-med" />							
 								</display:table>
 
 								<h1>System status</h1>
