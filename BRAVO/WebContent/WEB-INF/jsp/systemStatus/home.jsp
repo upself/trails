@@ -288,11 +288,11 @@
 								</display:table>
 
 								<h1>System status</h1>
-<!-- 								export="true" -->
-								<display:table cellspacing="2" cellpadding="0"
+								
+								<display:table export="true" cellspacing="2" cellpadding="0"
 									name="systemScheduleStatusList" id="table_system status_row"
 									requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-vertical-dividers-color-labels"
 									defaultsort="1" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="name" title="Module" sortable="true"
@@ -311,7 +311,7 @@
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
 <%-- 									<display:setProperty name="export.pdf" value="true" /> --%>
-<%-- 									<display:setProperty name="export.csv" value="true" /> --%>
+									<display:setProperty name="export.csv" value="true" />
 								</display:table>
 
 							</div>
