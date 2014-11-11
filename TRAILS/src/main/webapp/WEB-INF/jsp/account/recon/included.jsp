@@ -21,7 +21,7 @@ confirmation page. Click on cancel to return to the workspace.</p>
 	<div class="float-left" style="width:75%;"><s:select
 		name="installedSoftwareId" label="Software"
 		list="recon.installedSoftwareList" listKey="id"
-		listValue="productInfo.name" /></div>
+		listValue="software.softwareName" /></div>
 
 	<div class="clear"></div>
 	<div class="button-bar">

@@ -14,7 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.ibm.asset.trails.domain.ProductInfo;
+import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.Scope;
@@ -64,8 +64,8 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 	@Validations(visitorFields = { @VisitorFieldValidator(fieldName = "scheduleFForm", appendPrefix = false) })
 	public String doSave() {	
         if (getAccount() == null){return ERROR;}
-		ArrayList<ProductInfo> lalProductInfo = getScheduleFService()
-				.findProductInfoBySoftwareName(
+		ArrayList<Software> laSoftware = getScheduleFService()
+				.findSoftwareBySoftwareName(
 						getScheduleFForm().getSoftwareName());
 		Long llScheduleFId = getScheduleF().getId();
 		List<ScheduleF> lsfExists = null;
@@ -73,7 +73,7 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		ScheduleF sfiExists = null;
 		Long statusId = getScheduleFForm().getStatusId();
 		
-		if (lalProductInfo.size() == 0 ) {
+		if (laSoftware.size() == 0 ) {
 			if(statusId != 1){
 			addFieldError(
 					"scheduleFForm.softwareName",
@@ -97,11 +97,11 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		} else {
 			
 				lsfExists = getScheduleFService().findScheduleF(
-						getUserSession().getAccount(), lalProductInfo.get(0), getScheduleFForm().getLevel());
+						getUserSession().getAccount(), laSoftware.get(0), getScheduleFForm().getLevel());
 			if (lsfExists != null) {sfoExists = findSfInExistsList(lsfExists);}
 			if (llScheduleFId != null) {			
 				sfiExists = getScheduleFService().findScheduleF(llScheduleFId,
-						getUserSession().getAccount(), lalProductInfo.get(0));
+						getUserSession().getAccount(), laSoftware.get(0));
 			}
 
 		}
@@ -157,7 +157,7 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		}
 
 		getScheduleF().setAccount(getUserSession().getAccount());
-		getScheduleF().setProductInfo(lalProductInfo.get(0));
+		getScheduleF().setSoftware(laSoftware.get(0));
 		getScheduleF().setSoftwareTitle(getScheduleFForm().getSoftwareTitle());
 		getScheduleF().setSoftwareName(getScheduleFForm().getSoftwareName());
 		getScheduleF().setManufacturer(getScheduleFForm().getManufacturer());
@@ -189,9 +189,10 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 						getSourceArrayList()));
 		getScheduleF()
 				.setSourceLocation(getScheduleFForm().getSourceLocation());
-		if (lalProductInfo.get(0).getDeleted()){
+		if (laSoftware.get(0).getStatus().equalsIgnoreCase("INACTIVE")){
 			getScheduleF().setStatus(findStatusInList((long) 1,getStatusArrayList()));
 		} else {
+			System.out.print(getScheduleFForm().getStatusId());
 		getScheduleF().setStatus(
 				findStatusInList(getScheduleFForm().getStatusId(),
 						getStatusArrayList()));
@@ -244,15 +245,19 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 				lsffManage.setSourceId(getScheduleF().getSource().getId());
 				lsffManage
 						.setSourceLocation(getScheduleF().getSourceLocation());
-				if(!getScheduleFService().findProductInfoBySoftwareName(getScheduleF().getSoftwareName().toString()).isEmpty()){
-				lsffManage.setSoftwareStatus(getScheduleFService().findProductInfoBySoftwareName(getScheduleF().getSoftwareName().toString()).get(0).getDeleted());
-				if(lsffManage.getSoftwareStatus()){
-					lsffManage.setStatusId((long) 1);
-				} else {
-					lsffManage.setStatusId(getScheduleF().getStatus().getId());
-				}
+				if(!getScheduleFService().findSoftwareBySoftwareName(getScheduleF().getSoftwareName().toString()).isEmpty()){
+				if (getScheduleFService().findSoftwareBySoftwareName(getScheduleF().getSoftwareName().toString()).get(0).getStatus().equalsIgnoreCase("ACTIVE")){
+				lsffManage.setSoftwareStatus(false);
+				System.out.print("i am here");
+				System.out.print(getScheduleF().getStatus().getId());
+				lsffManage.setStatusId(getScheduleF().getStatus().getId());
 				}else {
-					lsffManage.setSoftwareStatus(false);
+				lsffManage.setSoftwareStatus(true);
+				lsffManage.setStatusId((long) 1);
+				}
+
+				}else {
+					lsffManage.setSoftwareStatus(true);
 					lsffManage.setStatusId((long) 1);
 				}
 				lsffManage.setLevel(getScheduleF().getLevel());

@@ -15,8 +15,15 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name = "SOFTWARE")
-@NamedQuery(name="Software.findAll", query="SELECT s FROM Software s")
+@Table(name = "SOFTWARE_NEW")
+@org.hibernate.annotations.Entity
+@NamedQueries({
+@NamedQuery(name="Software.findAll", query="FROM Software s"),
+@NamedQuery(name="softwareDetail", query="FROM Software s where s.softwareId=:softwareId"),
+
+@NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
+@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"),
+})
 public class Software extends AbstractDomainEntity {
 	private static final long serialVersionUID = 1L;
 
@@ -25,13 +32,13 @@ public class Software extends AbstractDomainEntity {
 
 	private String comments;
 
-	@Column(name="\"LEVEL\"")
+	@Column(name="LEVEL")
 	private String level;
 
-	@Column(name="MANUFACTURER_ID")
-	private long manufacturerId;
-
-	@Column(name="\"PRIORITY\"")
+    @ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    private Manufacturer manufacturer;
+    
+	@Column(name="PRIORITY")
 	private int priority;
 
 	@Column(name="RECORD_TIME")
@@ -43,20 +50,27 @@ public class Software extends AbstractDomainEntity {
 	@Column(name="SOFTWARE_CATEGORY_ID")
 	private long softwareCategoryId;
 
+	@Id
 	@Column(name="SOFTWARE_ID")
 	private long softwareId;
 
 	@Column(name="SOFTWARE_NAME")
 	private String softwareName;
 
-	@Column(name="\"STATUS\"")
+	@Column(name="STATUS")
 	private String status;
 
-	@Column(name="\"TYPE\"")
+	@Column(name="TYPE")
 	private String type;
 
 	@Column(name="VENDOR_MANAGED")
 	private int vendorManaged;
+	
+	@Column(name="PRODUCT_ROLE")
+	private String productRole;
+	
+	@Column(name="VERSION")
+	private String version;
 
 	public Software() {
 	}
@@ -85,12 +99,12 @@ public class Software extends AbstractDomainEntity {
 		this.level = level;
 	}
 
-	public long getManufacturerId() {
-		return this.manufacturerId;
+	public Manufacturer getManufacturerId() {
+		return this.manufacturer;
 	}
 
-	public void setManufacturerId(long manufacturerId) {
-		this.manufacturerId = manufacturerId;
+	public void setManufacturerId(Manufacturer manufacturer) {
+		this.manufacturer = manufacturer;
 	}
 
 	public int getPriority() {
@@ -163,6 +177,22 @@ public class Software extends AbstractDomainEntity {
 
 	public void setVendorManaged(int vendorManaged) {
 		this.vendorManaged = vendorManaged;
+	}
+	
+	public String getProductRole() {
+		return productRole;
+	}
+
+	public void setProductRole(String productRole) {
+		this.productRole = productRole;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	
 	@Override

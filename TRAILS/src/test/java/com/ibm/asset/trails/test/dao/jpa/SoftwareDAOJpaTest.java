@@ -21,11 +21,12 @@ import com.ibm.asset.trails.domain.Software;
 public class SoftwareDAOJpaTest {
 	@Autowired
 	private SoftwareDAO softwareDAO;
-	private final Long softwareId = 44833496L;
+	private final Long softwareId = 218119L;
 
 	@Test
 	public void testReconcileDetail() {
-		Software software = softwareDAO.reconcileDetail(softwareId);
+		Software software = softwareDAO.getSoftwareDetails(softwareId);
 		assertNotNull(software);
+		System.out.println(software.getSoftwareName().toString());
 	}
 }
