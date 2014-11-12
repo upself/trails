@@ -21,7 +21,7 @@ public class ReconcileDAOJpaTest {
 
     @Autowired
     private ReconcileDAO reconcileDAO;
-    private final Long reconcileId = 44833496L;
+    private final Long reconcileId = 38477347L;
 
     @Test
     public void testReconcileDetail() {
