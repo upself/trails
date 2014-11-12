@@ -15,7 +15,7 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name = "SOFTWARE_NEW")
+@Table(name = "SOFTWARE")
 @org.hibernate.annotations.Entity
 @NamedQueries({
 @NamedQuery(name="Software.findAll", query="FROM Software s"),
@@ -38,7 +38,7 @@ public class Software extends AbstractDomainEntity {
     @ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     private Manufacturer manufacturer;
     
-	@Column(name="PRIORITY")
+	@Column(name="PRIORITY", nullable = true)
 	private int priority;
 
 	@Column(name="RECORD_TIME")
@@ -47,7 +47,7 @@ public class Software extends AbstractDomainEntity {
 	@Column(name="REMOTE_USER")
 	private String remoteUser;
 
-	@Column(name="SOFTWARE_CATEGORY_ID")
+	@Column(name="SOFTWARE_CATEGORY_ID", nullable = true)
 	private long softwareCategoryId;
 
 	@Id
