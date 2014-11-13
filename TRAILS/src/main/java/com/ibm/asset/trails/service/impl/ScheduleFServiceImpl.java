@@ -118,7 +118,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			return lalSoftware;
 		} else {
 			List resultList = getEntityManager()
-					.createNamedQuery("productInfoByAliasName")
+					.createNamedQuery("softwareByAliasName")
 					.setParameter("name", psSoftwareName.toUpperCase())
 					.getResultList();
 
@@ -150,7 +150,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					
 				} else {
 					List inacSWResultList = getEntityManager()
-							.createNamedQuery("inactiveProductInfoByAliasName")
+							.createNamedQuery("inactiveSoftwareByAliasName")
 							.setParameter("name", psSoftwareName.toUpperCase())
 							.getResultList();
 					if(!inacSWResultList.isEmpty()){
