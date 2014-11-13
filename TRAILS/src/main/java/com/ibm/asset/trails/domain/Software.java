@@ -23,6 +23,8 @@ import java.sql.Timestamp;
 
 @NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
 @NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"),
+@NamedQuery(name = "softwareByAliasName", query = "FROM Software sw JOIN sw.productInfo.alias AS A where UCASE(A.name) = :name and status = 'ACTIVE' order by sw.productRole desc"),
+@NamedQuery(name = "inactiveSoftwareByAliasName", query = "FROM Software sw JOIN sw.productInfo.alias AS A where UCASE(A.name) = :name order by sw.productRole desc")
 })
 public class Software extends AbstractDomainEntity {
 	private static final long serialVersionUID = 1L;
@@ -71,6 +73,10 @@ public class Software extends AbstractDomainEntity {
 	
 	@Column(name="VERSION")
 	private String version;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="ID")
+	private ProductInfo productInfo;
 
 	public Software() {
 	}
