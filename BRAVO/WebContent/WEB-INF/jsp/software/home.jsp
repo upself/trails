@@ -301,7 +301,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 										</display:column>
 										<display:column property="statusImage" title=""
 											headerClass="blue-med" />
-										<display:column property="software.softwareItem.name"
+										<display:column property="software.softwareName"
 											title="Name" sortable="true" headerClass="blue-med"
 											href="/BRAVO/software/view.do" paramId="id"
 											paramProperty="id" />

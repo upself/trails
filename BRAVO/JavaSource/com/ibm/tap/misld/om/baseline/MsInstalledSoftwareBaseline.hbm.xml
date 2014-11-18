@@ -17,11 +17,19 @@
 				unique-key="true" />
 		</many-to-one>
 
-		<many-to-one class="com.ibm.ea.sigbank.Product"
+        <!-- Change Bravo to use Software View instead of Product Object Start -->
+		<!-- <many-to-one class="com.ibm.ea.sigbank.Product"
+			name="software">
+			<column name="SOFTWARE_ID" not-null="true"
+				unique-key="true" />
+		</many-to-one> -->
+		
+		<many-to-one class="com.ibm.ea.sigbank.Software"
 			name="software">
 			<column name="SOFTWARE_ID" not-null="true"
 				unique-key="true" />
 		</many-to-one>
+		<!-- Change Bravo to use Software View instead of Product Object End -->
 
 		<property name="userCount" type="integer">
 			<column name="USER_COUNT" />

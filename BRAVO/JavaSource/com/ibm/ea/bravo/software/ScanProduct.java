@@ -8,9 +8,10 @@ package com.ibm.ea.bravo.software;
 
 import java.util.Date;
 
-import com.ibm.ea.sigbank.Product;
-
-
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 
 /**
  * @author Thomas
@@ -21,7 +22,10 @@ import com.ibm.ea.sigbank.Product;
 public class ScanProduct {
 
 	private Long id;
-	private Product software;
+	//Change Bravo to use Software View instead of Product Object Start
+	//private Product software;
+	private Software software;
+	//Change Bravo to use Software View instead of Product Object End
 	private String saProduct;
 	private String vmProduct;
 	private String doranaProduct;
@@ -108,18 +112,35 @@ public class ScanProduct {
 	public void setSaProduct(String saProduct) {
 		this.saProduct = saProduct;
 	}
+	
+	//Change Bravo to use Software View instead of Product Object Start
 	/**
 	 * @return Returns the software.
 	 */
-	public Product getSoftware() {
+	/*public Product getSoftware() {
+		return software;
+	}*/
+	/**
+	 * @param software The software to set.
+	 */
+	/*public void setSoftware(Product software) {
+		this.software = software;
+	}*/
+	
+	/**
+	 * @return Returns the software.
+	 */
+	public Software getSoftware() {
 		return software;
 	}
 	/**
 	 * @param software The software to set.
 	 */
-	public void setSoftware(Product software) {
+	public void setSoftware(Software software) {
 		this.software = software;
 	}
+	//Change Bravo to use Software View instead of Product Object End
+	
 	/**
 	 * @return Returns the status.
 	 */

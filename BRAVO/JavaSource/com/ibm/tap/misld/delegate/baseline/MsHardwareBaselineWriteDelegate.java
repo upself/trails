@@ -14,7 +14,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.sigbank.SoftwareLpar;
 import com.ibm.tap.misld.delegate.software.SoftwareReadDelegate;
 import com.ibm.tap.misld.framework.Constants;
@@ -164,8 +167,13 @@ public class MsHardwareBaselineWriteDelegate extends Delegate {
 			msInstalledSoftwareBaseline.setRemoteUser(remoteUser);
 			msInstalledSoftwareBaseline.setScanTime(new Date());
 
-			Product software = SoftwareReadDelegate
+			//Change Bravo to use Software View instead of Product Object Start
+			//Product software = SoftwareReadDelegate
+			//		.getSoftwareByName(Constants.NO_OPERATING_SYSTEM);
+			
+			Software software = SoftwareReadDelegate
 					.getSoftwareByName(Constants.NO_OPERATING_SYSTEM);
+			//Change Bravo to use Software View instead of Product Object End
 
 			msInstalledSoftwareBaseline.setSoftware(software);
 			msInstalledSoftwareBaseline.setStatus(Constants.ACTIVE);

@@ -12,8 +12,13 @@
 			</generator>
 		</id>
 
+        <!-- Change Bravo to use Software View instead of Product Object Start -->
+		<!-- <one-to-one name="software"
+			class="com.ibm.ea.sigbank.Product" constrained="true" /> -->
+			
 		<one-to-one name="software"
-			class="com.ibm.ea.sigbank.Product" constrained="true" />
+			class="com.ibm.ea.sigbank.Software" constrained="true" />
+		<!-- Change Bravo to use Software View instead of Product Object End -->
 
 		<many-to-one
 			class="com.ibm.tap.misld.om.microsoftPriceList.MicrosoftProduct"

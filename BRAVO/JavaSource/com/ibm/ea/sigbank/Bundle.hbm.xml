@@ -7,7 +7,10 @@
 			<generator class="increment"/>
 		</id>
 
-		<many-to-one name="software" column="ID" class="com.ibm.ea.sigbank.Product" not-null="true" unique="true"/>
+        <!-- Change Bravo to use Software View instead of Product Object Start -->
+		<!-- <many-to-one name="software" column="ID" class="com.ibm.ea.sigbank.Product" not-null="true" unique="true"/> -->
+		<many-to-one name="software" column="SOFTWARE_ID" class="com.ibm.ea.sigbank.Software" not-null="true" unique="true"/>
+		<!-- Change Bravo to use Software View instead of Product Object End -->
 
 		<property name="name" column="NAME" length="254" not-null="true" unique="true"/>
 		<property name="remoteUser" column="REMOTE_USER" length="64" not-null="true"/>

@@ -23,7 +23,11 @@
 <!--		<property name="status" column="STATUS" length="32" not-null="true"/>-->
 
 		<property name="comments" column="COMMENTS" length="255"/>
-
+		
+		<!-- Change Bravo to use Software View instead of Product Object Start -->
+		<property name="version" column="VERSION" length="64" not-null="false"/>
+		<property name="productRole" column="PRODUCT_ROLE" length="32" not-null="true"/>
+        <!-- Change Bravo to use Software View instead of Product Object End -->
 	</class>
 </hibernate-mapping>
 

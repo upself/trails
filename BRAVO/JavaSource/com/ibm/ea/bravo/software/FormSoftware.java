@@ -22,7 +22,10 @@ import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.common.FormBase;
 import com.ibm.ea.cndb.Customer;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.utils.EaUtils;
 
 /**
@@ -57,7 +60,10 @@ public class FormSoftware extends FormBase {
 	private String context;
 
 	private SoftwareLpar softwareLpar;
-	private Product software;
+	//Change Bravo to use Software View instead of Product Object Start
+	//private Product software;
+	private Software software;
+	//Change Bravo to use Software View instead of Product Object End
 	private Customer customer;
 	private DiscrepancyType discrepancyType;
 
@@ -148,7 +154,11 @@ public class FormSoftware extends FormBase {
 			lparId = softwareLpar.getId().toString();
 			lparName = softwareLpar.getName();
 			softwareId = software.getSoftwareId().toString();
-			softwareName = software.getSoftwareItem().getName();
+			
+			//Change Bravo to use Software View instead of Product Object Start
+			//softwareName = software.getSoftwareItem().getName();
+			softwareName = software.getSoftwareName();
+			//Change Bravo to use Software View instead of Product Object End
 			manufacturer = software.getManufacturer().getManufacturerName();
 			licenseLevel = software.getLevel();
 
@@ -190,7 +200,10 @@ public class FormSoftware extends FormBase {
 
 				// initialize other fields
 				softwareId = software.getSoftwareId().toString();
-				softwareName = software.getSoftwareItem().getName();
+				//Change Bravo to use Software View instead of Product Object Start
+				//softwareName = software.getSoftwareItem().getName();
+				softwareName = software.getSoftwareName();
+				//Change Bravo to use Software View instead of Product Object End
 				manufacturer = software.getManufacturer().getManufacturerName();
 				licenseLevel = software.getLevel();
 			}
@@ -214,7 +227,10 @@ public class FormSoftware extends FormBase {
 			}
 
 			softwareId = software.getSoftwareId().toString();
-			softwareName = software.getSoftwareItem().getName();
+			//Change Bravo to use Software View instead of Product Object Start
+			//softwareName = software.getSoftwareItem().getName();
+			softwareName = software.getSoftwareName();
+			//Change Bravo to use Software View instead of Product Object End
 			manufacturer = software.getManufacturer().getManufacturerName();
 			licenseLevel = software.getLevel();
 		}
@@ -566,14 +582,24 @@ public class FormSoftware extends FormBase {
 		this.validateSelected = validateSelected;
 	}
 
-	public Product getSoftware() {
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public Product getSoftware() {
 		return software;
 	}
 
 	public void setSoftware(Product software) {
 		this.software = software;
+	}*/
+	
+	public Software getSoftware() {
+		return software;
 	}
 
+	public void setSoftware(Software software) {
+		this.software = software;
+	}
+	//Change Bravo to use Software View instead of Product Object End
+	
 	public String getSoftwareId() {
 		return softwareId;
 	}

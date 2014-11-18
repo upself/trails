@@ -11,7 +11,10 @@ import org.apache.log4j.Logger;
 import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.common.OrmBase;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 
 /**
  * @author denglers
@@ -38,7 +41,11 @@ public class InstalledSoftware extends OrmBase {
 	private Long softwareLparId;
 
 //	private Software software;
-	private Product software;
+	
+	//Change Bravo to use Software View instead of Product Object Start
+	//private Product software;
+	private Software software;
+	//Change Bravo to use Software View instead of Product Object End
 
 	private DiscrepancyType discrepancyType;
 
@@ -210,14 +217,25 @@ public class InstalledSoftware extends OrmBase {
 		this.researchFlag = researchFlag;
 	}
 
-	public Product getSoftware() {
+	
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public Product getSoftware() {
 		return software;
 	}
 
 	public void setSoftware(Product software) {
 		this.software = software;
+	}*/
+	
+	public Software getSoftware() {
+		return software;
 	}
 
+	public void setSoftware(Software software) {
+		this.software = software;
+	}
+	//Change Bravo to use Software View instead of Product Object End
+	
 	public SoftwareLpar getSoftwareLpar() {
 		return softwareLpar;
 	}

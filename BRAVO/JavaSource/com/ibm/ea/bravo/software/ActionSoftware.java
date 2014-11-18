@@ -23,7 +23,10 @@ import com.ibm.ea.bravo.framework.common.ActionBase;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.hardware.FormHardware;
 import com.ibm.ea.sigbank.BankAccount;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.utils.EaUtils;
 
 public class ActionSoftware extends ActionBase {
@@ -401,7 +404,10 @@ public class ActionSoftware extends ActionBase {
 			return mapping.findForward(Constants.SUCCESS);
 		}
 
-		List<Product> list = DelegateSoftware.searchSoftware(searchForm.getSearch());
+		//Change Bravo to use Software View instead of Product Object Start
+		//List<Product> list = DelegateSoftware.searchSoftware(searchForm.getSearch());
+		List<Software> list = DelegateSoftware.searchSoftware(searchForm.getSearch());
+		//Change Bravo to use Software View instead of Product Object Start
 		request.setAttribute(Constants.LIST, list);
 		
 		logger.debug("Getting ready to return list");

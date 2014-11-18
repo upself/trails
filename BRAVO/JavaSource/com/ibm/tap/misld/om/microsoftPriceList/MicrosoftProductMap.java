@@ -4,7 +4,10 @@
  */
 package com.ibm.tap.misld.om.microsoftPriceList;
 
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 
 /**
  * @author alexmois
@@ -14,7 +17,10 @@ public class MicrosoftProductMap {
 
     private Long             microsoftProductMapId;
 
-    private Product         software;
+   //Change Bravo to use Software View instead of Product Object Start
+   //private Product         software;
+   private Software         software;
+   //Change Bravo to use Software View instead of Product Object End
 
     private MicrosoftProduct microsoftProduct;
 
@@ -48,10 +54,26 @@ public class MicrosoftProductMap {
         this.microsoftProductMapId = microsoftProductMapId;
     }
 
+    //Change Bravo to use Software View instead of Product Object Start
     /**
      * @return Returns the software.
      */
-    public Product getSoftware() {
+    /*public Product getSoftware() {
+        return software;
+    }*/
+
+    /**
+     * @param software
+     *            The software to set.
+     */
+    /*public void setSoftware(Product software) {
+        this.software = software;
+    }*/
+    
+    /**
+     * @return Returns the software.
+     */
+    public Software getSoftware() {
         return software;
     }
 
@@ -59,7 +81,8 @@ public class MicrosoftProductMap {
      * @param software
      *            The software to set.
      */
-    public void setSoftware(Product software) {
+    public void setSoftware(Software software) {
         this.software = software;
     }
+    //Change Bravo to use Software View instead of Product Object End
 }

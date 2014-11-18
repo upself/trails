@@ -30,7 +30,10 @@ public class InstalledSoftware 	extends ValidatorActionForm {
 	
 	private Long softwareLparId;
 
-	private Product software;
+	//Change Bravo to use Software View instead of Product Object Start
+	//private Product software;
+	private Software software;
+	//Change Bravo to use Software View instead of Product Object End
 
 	private DiscrepancyType discrepancyType;
 
@@ -168,13 +171,23 @@ public class InstalledSoftware 	extends ValidatorActionForm {
 		this.researchFlag = researchFlag;
 	}
 
-	public Product getSoftware() {
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public Product getSoftware() {
 		return software;
 	}
 
 	public void setSoftware(Product software) {
 		this.software = software;
+	}*/
+	
+	public Software getSoftware() {
+		return software;
 	}
+
+	public void setSoftware(Software software) {
+		this.software = software;
+	}
+	//Change Bravo to use Software View instead of Product Object End
 
 	public SoftwareLpar getSoftwareLpar() {
 		return softwareLpar;

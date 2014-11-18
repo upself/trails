@@ -17,7 +17,10 @@ import org.hibernate.Session;
 
 import com.ibm.ea.sigbank.InstalledSoftware;
 import com.ibm.ea.sigbank.InstalledSoftwareEff;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.sigbank.SoftwareCategory;
 import com.ibm.ea.sigbank.SoftwareLpar;
 import com.ibm.tap.misld.framework.Delegate;
@@ -255,7 +258,8 @@ public class MsInstalledSoftwareBaselineReadDelegate extends Delegate {
 	 * @throws NamingException
 	 * @throws HibernateException
 	 */
-	public static InstalledSoftware getInstalledSoftwareBySoftwareName(
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public static InstalledSoftware getInstalledSoftwareBySoftwareName(
 			SoftwareLpar softwareLpar,
 			Product software) throws HibernateException,
 			NamingException {
@@ -271,7 +275,26 @@ public class MsInstalledSoftwareBaselineReadDelegate extends Delegate {
 		session.close();
 
 		return installedSoftware;
+	}*/
+	
+	public static InstalledSoftware getInstalledSoftwareBySoftwareName(
+			SoftwareLpar softwareLpar,
+			Software software) throws HibernateException,
+			NamingException {
+
+		Session session = getHibernateSession();
+
+		InstalledSoftware installedSoftware = (InstalledSoftware) session
+				.getNamedQuery(
+						"getInstalledSoftwareBySoftwareName")
+				.setEntity("softwareLpar", softwareLpar).setEntity(
+						"software", software).uniqueResult();
+
+		session.close();
+
+		return installedSoftware;
 	}
+	//Change Bravo to use Software View instead of Product Object End
 
 	/**
 	 * @param podName
@@ -382,13 +405,27 @@ public class MsInstalledSoftwareBaselineReadDelegate extends Delegate {
 		return serverList;
 	}
 
+	//Change Bravo to use Software View instead of Product Object Start
 	/**
 	 * @param msHardwareBaseline
 	 * @return
 	 * @throws NamingException
 	 * @throws HibernateException
 	 */
-	public static InstalledSoftware getUnknownInstalledSoftware(SoftwareLpar softwareLpar, Product software)
+	/*public static InstalledSoftware getUnknownInstalledSoftware(SoftwareLpar softwareLpar, Product software)
+			throws HibernateException, NamingException {
+
+		InstalledSoftware installedSoftware = null;
+
+		Session session = getHibernateSession();
+		installedSoftware = (InstalledSoftware)session.getNamedQuery("getUnknowns").setEntity(
+				"softwareLpar", softwareLpar).setEntity("software", software).uniqueResult();
+		session.close();
+
+		return installedSoftware;
+	}*/
+	
+	public static InstalledSoftware getUnknownInstalledSoftware(SoftwareLpar softwareLpar, Software software)
 			throws HibernateException, NamingException {
 
 		InstalledSoftware installedSoftware = null;
@@ -400,6 +437,7 @@ public class MsInstalledSoftwareBaselineReadDelegate extends Delegate {
 
 		return installedSoftware;
 	}
+	//Change Bravo to use Software View instead of Product Object End
 	
 	public static List getHigherSoftwareVersion(Customer customer, 
 			SoftwareLpar softwareLpar, SoftwareCategory softwareCategory, int priority)
