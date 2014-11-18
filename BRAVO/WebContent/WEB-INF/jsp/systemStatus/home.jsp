@@ -284,11 +284,11 @@
 										sortable="true" headerClass="blue-med" />
 									<display:column property="firstErrorTime" class="date"
 										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="First error time"
-										sortable="true" headerClass="blue-med" />							
+										sortable="true" headerClass="blue-med" />
 								</display:table>
 
 								<h1>System status</h1>
-								
+
 								<display:table export="true" cellspacing="2" cellpadding="0"
 									name="systemScheduleStatusList" id="table_system status_row"
 									requestURI=""
@@ -310,8 +310,8 @@
 										style="white-space:nowrap" />
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
-<%-- 									<display:setProperty name="export.pdf" value="true" /> --%>
-									<display:setProperty name="export.csv" value="true" />
+									<display:setProperty name="export.excel.filename"
+										value="SystemStatus.xls" />
 								</display:table>
 
 							</div>
