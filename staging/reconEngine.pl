@@ -23,8 +23,6 @@ my $server       = $cfgMgr->server;
 my $testMode     = $cfgMgr->testMode;
 my $applyChanges = $cfgMgr->applyChanges;
 
-our $runningPVU = 0; # process ID of the running PVU job
-
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
     unless validateServer($server);
@@ -232,11 +230,6 @@ sub newSoftwareChild {
 }
 
 sub newPvuChild {
-	if ( $runningPVU != 0 ) {
-		wlog("Spawning PVU child skipped, process $runningPVU still running.");
-		return;
-	}
-	
     my $pid;
 
     wlog("$rNo spawning PVU child");
@@ -244,7 +237,6 @@ sub newPvuChild {
     sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
     if ($pid) {
-		$runningPVU=$pid;
         $children{$pid} = 1;
         $children++;
         ilog("forked new child, we now have $children children");
@@ -264,7 +256,6 @@ sub REAPER {
     while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
         warn("child $stiff terminated -- status $?");
         $children--;
-        $runningPVU = 0 if ( $stiff == $runningPVU );
         foreach my $customerId ( keys %runningCustomerIds ) {
             if ( $stiff == $runningCustomerIds{$customerId} ) {
                 delete $runningCustomerIds{$customerId};

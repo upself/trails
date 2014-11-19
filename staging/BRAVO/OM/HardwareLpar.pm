@@ -30,7 +30,7 @@ sub new {
         ,_vMobilRestrict => undef
         ,_cappedLpar => undef
         ,_virtualFlag => undef
-        ,_osType => undef
+        ,_action => 0
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -189,13 +189,6 @@ sub equals {
     $equal = 1 if (!defined $self->virtualFlag && !defined $object->virtualFlag);
     return 0 if $equal == 0;
 
-    $equal = 0;
-    if (defined $self->osType && defined $object->osType) {
-        $equal = 1 if $self->osType eq $object->osType;
-    }
-    $equal = 1 if (!defined $self->osType && !defined $object->osType);
-    return 0 if $equal == 0;
-
     return 1;
 }
 
@@ -343,10 +336,10 @@ sub virtualFlag {
     return $self->{_virtualFlag};
 }
 
-sub osType {
+sub action {
     my $self = shift;
-    $self->{_osType} = shift if scalar @_ == 1;
-    return $self->{_osType};
+    $self->{_action} = shift if scalar @_ == 1;
+    return $self->{_action};
 }
 
 sub table {
@@ -484,9 +477,9 @@ sub toString {
         $s .= $self->{_virtualFlag};
     }
     $s .= ",";
-    $s .= "osType=";
-    if (defined $self->{_osType}) {
-        $s .= $self->{_osType};
+    $s .= "action=";
+    if (defined $self->{_action}) {
+        $s .= $self->{_action};
     }
     $s .= ",";
     $s .= "table=";
@@ -532,7 +525,6 @@ sub save {
             ,$self->vMobilRestrict
             ,$self->cappedLpar
             ,$self->virtualFlag
-            ,$self->osType
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -562,7 +554,6 @@ sub save {
             ,$self->vMobilRestrict
             ,$self->cappedLpar
             ,$self->virtualFlag
-            ,$self->osType
             ,$self->id
         );
         $sth->finish;
@@ -598,7 +589,6 @@ sub queryInsert {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,os_type
         ) values (
             ?
             ,?
@@ -606,7 +596,6 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
-            ,?
             ,?
             ,?
             ,?
@@ -654,7 +643,6 @@ sub queryUpdate {
             ,VIRTUAL_MOBILITY_RESTRICTION = ?
             ,CAPPED_LPAR = ?
             ,VIRTUAL_FLAG = ?
-            ,os_type = ?
         where
             id = ?
     ';
@@ -708,7 +696,6 @@ sub getByBizKey {
     my $vMobilRestrict;
     my $cappedLpar;
     my $virtualFlag;
-    my $osType;
     $sth->bind_columns(
         \$id
         ,\$hardwareId
@@ -731,7 +718,6 @@ sub getByBizKey {
         ,\$vMobilRestrict
         ,\$cappedLpar
         ,\$virtualFlag
-        ,\$osType
     );
     $sth->execute(
         $self->name
@@ -760,7 +746,6 @@ sub getByBizKey {
     $self->vMobilRestrict($vMobilRestrict);
     $self->cappedLpar($cappedLpar);
     $self->virtualFlag($virtualFlag);
-    $self->osType($osType);
 }
 
 sub queryGetByBizKey {
@@ -787,7 +772,6 @@ sub queryGetByBizKey {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,os_type
         from
             hardware_lpar
         where
@@ -823,7 +807,6 @@ sub getById {
     my $vMobilRestrict;
     my $cappedLpar;
     my $virtualFlag;
-    my $osType;
     $sth->bind_columns(
         \$name
         ,\$customerId
@@ -847,7 +830,6 @@ sub getById {
         ,\$vMobilRestrict
         ,\$cappedLpar
         ,\$virtualFlag
-        ,\$osType
     );
     $sth->execute(
         $self->id
@@ -876,7 +858,6 @@ sub getById {
     $self->vMobilRestrict($vMobilRestrict);
     $self->cappedLpar($cappedLpar);
     $self->virtualFlag($virtualFlag);
-    $self->osType($osType);
     return (defined $found) ? 1 : 0;
 }
 
@@ -905,7 +886,6 @@ sub queryGetById {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,os_type
         from
             hardware_lpar
         where
