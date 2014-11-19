@@ -312,6 +312,8 @@
 										sortable="true" headerClass="blue-med" />
 									<display:setProperty name="export.excel.filename"
 										value="SystemStatus.xls" />
+									<display:setProperty name="export.csv.filename"
+										value="SystemStatus.xls" />
 								</display:table>
 
 							</div>
