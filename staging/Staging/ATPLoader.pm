@@ -182,12 +182,11 @@ sub doDelta {
     while ( $sth->fetchrow_arrayref ) {
 
         cleanValues( \%rec );
-      
+
         ###Get the key
         my $key = $rec{machineTypeId} . '|' . $rec{serial} . '|' . $rec{country};
         dlog("hardware key=$key");
         $action = 0;
-
         ###Create and populate a new hardware object
         my $hardware = new Staging::OM::Hardware();
         $hardware->id( $rec{id} );
@@ -343,7 +342,6 @@ sub doDelta {
         $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
         $hardwareLpar->cappedLpar( $rec{cappedLpar} );
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
-        $hardwareLpar->osType( $rec{osType} );
 
         dlog( $hardwareLpar->toString );
         $action = 0 ;
@@ -356,16 +354,15 @@ sub doDelta {
             if ( !$hardwareLpar->equals( $self->hardwareLpar->{$lparKey} ) ) {
                 dlog('Hardware lpars are not equal');
                 dlog( $self->hardwareLpar->{$lparKey}->toString );
-                    $action = 10 + $action if ( $hardwareLpar->status ne $self->hardwareLpar->{$lparKey}->status );
-                	$action = 10**2 + $action if ( $hardwareLpar->lparStatus ne $self->hardwareLpar->{$lparKey}->lparStatus );
-                	$action = 10**3 + $action if ( $hardwareLpar->extId ne $self->hardwareLpar->{$lparKey}->extId );
-                	$action = 10**4 + $action if ( $hardwareLpar->techImageId ne $self->hardwareLpar->{$lparKey}->techImageId );
-                	$action = 10**5 + $action if ( $hardwareLpar->partMIPS ne $self->hardwareLpar->{$lparKey}->partMIPS );
-                	$action = 10**6 + $action if ( $hardwareLpar->partMSU ne $self->hardwareLpar->{$lparKey}->partMSU );
-                	$action = 10**7 + $action if ( $hardwareLpar->partGartnerMIPS ne $self->hardwareLpar->{$lparKey}->partGartnerMIPS );
-                	$action = 10**8 + $action if ( $hardwareLpar->serverType ne $self->hardwareLpar->{$lparKey}->serverType );
-                	$action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads );
-                	$action = 10**11 + $action if ( $hardwareLpar->osType ne $self->hardwareLpar->{$lparKey}->osType );
+                     $action = 10 + $action if ( $hardwareLpar->status ne $self->hardwareLpar->{$lparKey}->status ); 
+                     $action = 10**2 + $action if ( $hardwareLpar->lparStatus ne $self->hardwareLpar->{$lparKey}->lparStatus ); 
+                     $action = 10**3 + $action if ( $hardwareLpar->extId ne $self->hardwareLpar->{$lparKey}->extId ); 
+                     $action = 10**4 + $action if ( $hardwareLpar->techImageId ne $self->hardwareLpar->{$lparKey}->techImageId ); 
+                     $action = 10**5 + $action if ( $hardwareLpar->partMIPS ne $self->hardwareLpar->{$lparKey}->partMIPS ); 
+                     $action = 10**6 + $action if ( $hardwareLpar->partMSU ne $self->hardwareLpar->{$lparKey}->partMSU ); 
+                     $action = 10**7 + $action if ( $hardwareLpar->partGartnerMIPS ne $self->hardwareLpar->{$lparKey}->partGartnerMIPS ); 
+                     $action = 10**8 + $action if ( $hardwareLpar->serverType ne $self->hardwareLpar->{$lparKey}->serverType );
+                     $action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads ); 
 
                 if ( $hardwareLpar->action eq '0' ) {                    	                	           	
                     ###Set lpar to update if it is complete              
@@ -594,7 +591,7 @@ sub applyHardwareDeltas {
         }
         else {
             $self->hardware->{$key}->save($connection);
-            $self->addToCount( 'STAGING', 'HARDWARE',substr( $self->hardware->{$key}->action ,-1));
+            $self->addToCount( 'STAGING', 'HARDWARE', substr( $self->hardware->{$key}->action ,-1));
             $self->hardware->{$key}->action('0');
         }
     }
@@ -625,7 +622,7 @@ sub applyHardwareLparDeltas {
         }
         else {
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->save($connection);
-            $self->addToCount( 'STAGING', 'HARDWARE', substr( 
+            $self->addToCount( 'STAGING', 'HARDWARE', substr(
                                   $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action,-1) );
             $self->hardware->{ $self->hardwareLpar->{$key}->hardwareKey }->action('0');
         }
