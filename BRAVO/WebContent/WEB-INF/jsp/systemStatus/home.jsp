@@ -292,7 +292,7 @@
 								<display:table export="true" cellspacing="2" cellpadding="0"
 									name="systemScheduleStatusList" id="table_system status_row"
 									requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-vertical-dividers-color-labels"
+									class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-table-scroll"
 									defaultsort="1" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="name" title="Module" sortable="true"
@@ -310,10 +310,10 @@
 										style="white-space:nowrap" />
 									<display:column property="status" title="Status"
 										sortable="true" headerClass="blue-med" />
-									<display:setProperty name="export.excel.filename"
-										value="SystemStatus.xls" />
+<%-- 									<display:setProperty name="export.excel.filename" --%>
+<%-- 										value="SystemStatus.xls" /> --%>
 									<display:setProperty name="export.csv.filename"
-										value="SystemStatus.xls" />
+										value="SystemStatus.csv" />
 								</display:table>
 
 							</div>
