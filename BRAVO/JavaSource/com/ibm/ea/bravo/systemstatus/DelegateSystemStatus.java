@@ -28,9 +28,8 @@ public class DelegateSystemStatus extends HibernateDelegate {
 			try {
 				Session lSession = getSession();
 
-				llSystemScheduleStatus = lSession
-						.getNamedQuery("selectSystemScheduleStatusList")
-						.setMaxResults(10).setFirstResult(0).list();
+				llSystemScheduleStatus = lSession.getNamedQuery(
+						"selectSystemScheduleStatusList").list();
 				closeSession(lSession);
 			} catch (Exception e) {
 				e.printStackTrace();
