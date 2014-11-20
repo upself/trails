@@ -198,9 +198,9 @@ public class ReconServiceImpl implements ReconService {
 				.setParameter("account", account)
 				.setParameter("swname", swname).getResultList();
 
-		ScheduleF result = null;
+
 		if (results == null || results.isEmpty()) {
-			return result;
+			return null;
 		}
 
 		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
@@ -246,7 +246,7 @@ public class ReconServiceImpl implements ReconService {
 			}
 		}
 
-		return result;
+		return null;
 	}
 
 	private void closeAlert(AlertUnlicensedSw alert) {
