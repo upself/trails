@@ -115,40 +115,48 @@ sub setDBInfo {
             $dbs{'swasset'}{'password'} = $cfg->getProperty('swasset.password');
             $dbs{'swasset'}{'user'}     = $cfg->getProperty('swasset.user');
             $dbs{'swasset'}{'name'}     = $cfg->getProperty('swasset.name');
+            $dbs{'swasset'}{'schema'}   = $cfg->getProperty('swasset.name');
 
             $dbs{'staging'}{'password'} = $cfg->getProperty('staging.password');
             $dbs{'staging'}{'user'}     = $cfg->getProperty('staging.user');
             $dbs{'staging'}{'name'}     = $cfg->getProperty('staging.name');
-
+            $dbs{'staging'}{'schema'}   = undef;
+            
             $dbs{'trails'}{'password'} = $cfg->getProperty('trails.password');
             $dbs{'trails'}{'user'}     = $cfg->getProperty('trails.user');
             $dbs{'trails'}{'name'}     = $cfg->getProperty('trails.name');
+            $dbs{'trails'}{'schema'}   = undef;
 
             $dbs{'cndb'}{'password'} = $cfg->getProperty('cndb.password');
             $dbs{'cndb'}{'user'}     = $cfg->getProperty('cndb.user');
             $dbs{'cndb'}{'name'}     = $cfg->getProperty('cndb.name');
+            $dbs{'cndb'}{'schema'}   = $cfg->getProperty('cndb.name');
 
             $dbs{'swcm'}{'password'} = $cfg->getProperty('swcm.password');
             $dbs{'swcm'}{'user'}     = $cfg->getProperty('swcm.user');
             $dbs{'swcm'}{'name'}     = $cfg->getProperty('swcm.name');
-
+            $dbs{'swcm'}{'schema'}   = undef;
+            
             $dbs{'sims'}{'password'} = $cfg->getProperty('sims.password');
             $dbs{'sims'}{'user'}     = $cfg->getProperty('sims.user');
             $dbs{'sims'}{'name'}     = $cfg->getProperty('sims.name');
+            $dbs{'sims'}{'schema'}   = undef;
             
             $dbs{'trailsrp'}{'password'} = $cfg->getProperty('trailsrp.password');
             $dbs{'trailsrp'}{'user'}     = $cfg->getProperty('trailsrp.user');
-            $dbs{'trailsrp'}{'name'}     = $cfg->getProperty('trailsrp.name');            
+            $dbs{'trailsrp'}{'name'}     = $cfg->getProperty('trailsrp.name');
+            $dbs{'trailsrp'}{'schema'}   = undef;                       
             
             $dbs{'trailsst'}{'password'} = $cfg->getProperty('trailsst.password');
             $dbs{'trailsst'}{'user'}     = $cfg->getProperty('trailsst.user');
             $dbs{'trailsst'}{'name'}     = $cfg->getProperty('trailsst.name');
-            
+            $dbs{'trailsst'}{'schema'}   = undef;            
 
         if ( defined $dbs{ $self->bankAccount }{'name'} ) {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
             $self->password( $dbs{ $self->bankAccount }{'password'} );
             $self->name( $dbs{ $self->bankAccount }{'name'} );
+        	$self->schema( $dbs{ $self->bankAccount }{'schema'} );
        }
     }
 }
