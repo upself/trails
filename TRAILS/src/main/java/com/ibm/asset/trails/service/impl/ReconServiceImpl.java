@@ -26,8 +26,6 @@ import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
 import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
-import com.ibm.asset.trails.domain.MachineType;
-import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconInstalledSoftware;
 import com.ibm.asset.trails.domain.ReconLicense;
@@ -200,8 +198,9 @@ public class ReconServiceImpl implements ReconService {
 				.setParameter("account", account)
 				.setParameter("swname", swname).getResultList();
 
+		ScheduleF result = null;
 		if (results == null || results.isEmpty()) {
-			return null;
+			return result;
 		}
 
 		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
@@ -247,7 +246,7 @@ public class ReconServiceImpl implements ReconService {
 			}
 		}
 
-		return null;
+		return result;
 	}
 
 	private void closeAlert(AlertUnlicensedSw alert) {
@@ -493,7 +492,7 @@ public class ReconServiceImpl implements ReconService {
 					|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
 					|| pRecon.getPer().equalsIgnoreCase("HWMSU")) {
 				llAlertUnlicensedSw.addAll(findAffectedAlertList(account, aus
-						.getInstalledSoftware().getProductInfo().getId(), aus
+						.getInstalledSoftware().getSoftware().getSoftwareId(), aus
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getId(),
 						pRecon.isAutomated(), pRecon.isManual()));
@@ -720,7 +719,7 @@ public class ReconServiceImpl implements ReconService {
 			// the
 			// manual and automated variables do not come into play
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.productInfo.id = :productInfoId");
+					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
 
 			llAlertUnlicensedSw = getEntityManager()
@@ -738,7 +737,7 @@ public class ReconServiceImpl implements ReconService {
 
 			// This query will get all alerts that were reconciled automatically
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.productInfo.id = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
 					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
 							: "");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
@@ -760,7 +759,7 @@ public class ReconServiceImpl implements ReconService {
 
 			// This query will get all alerts that were reconciled manually
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.productInfo.id = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
 					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
 							: "");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
