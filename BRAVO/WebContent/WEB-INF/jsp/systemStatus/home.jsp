@@ -250,7 +250,7 @@
 								</script>
 
 								<h1>Bank account jobs</h1>
-								<display:table cellspacing="2" cellpadding="0"
+								<display:table export="true" cellspacing="2" cellpadding="0"
 									name="bankAccountJobList" id="table_bank_account_jobs_row"
 									requestURI=""
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two ibm-table-scroll"
@@ -285,8 +285,11 @@
 									<display:column property="firstErrorTime" class="date"
 										format="{0,date,MM-dd-yyyy HH:mm:ss}" title="First error time"
 										sortable="true" headerClass="blue-med" />
+									<display:setProperty name="export.csv.filename"
+										value="BankAccountJobs.csv" />
 								</display:table>
 
+								<br/>
 								<h1>System status</h1>
 
 								<display:table export="true" cellspacing="2" cellpadding="0"
