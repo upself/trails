@@ -15,9 +15,6 @@
 		<hibernate.version>3.6.2.Final</hibernate.version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 		<org.apache.poi-version>3.7</org.apache.poi-version>
-
-
-
 	</properties>
 
 	<dependencies>
@@ -212,6 +209,7 @@
 					<artifactId>jmxri</artifactId>
 				</exclusion>
 			</exclusions>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -223,34 +221,16 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.7</version>
 		</dependency>
-
 		<dependency>
 			<groupId>displaytag</groupId>
 			<artifactId>displaytag-export-poi-trails</artifactId>
 			<version>1.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
-		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
-		<dependency> 
-			<groupId>com.ibm</groupId> 
-			<artifactId>bluepages</artifactId> 
-			<version>3.0.3</version> 
-			<scope>system</scope> 
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bpjtk-v3.0.3_b20090914.jar</systemPath> 
-		</dependency>
-		<dependency> 
-			<groupId>com.ibm</groupId> 
-			<artifactId>displaytag</artifactId> 
-			<version>1.0</version> 
-			<scope>system</scope> 
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath> 
-		</dependency>
-		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
 	</dependencies>
 
 	<build>
