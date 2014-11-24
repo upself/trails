@@ -27,7 +27,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 		@NamedQuery(name = "softwareDetail", query = "FROM Software s where s.softwareId=:softwareId"),
 
 		@NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
-		@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"), })
+		@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc") })
 public class Software extends AbstractDomainEntity {
 	private static final long serialVersionUID = 1L;
 

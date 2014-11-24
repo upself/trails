@@ -9,14 +9,6 @@
 	<url>http://trails.boulder.ibm.com/TRAILS</url>
 	<description>TRAILS web application</description>
 
-	<repositories>
-		<repository>
-			<id>nexus</id>
-			<name>Team Nexus Repository</name>
-			<url>http://lexbz181197.cloud.dst.ibm.com:8081/nexus/content/groups/public</url>
-		</repository>
-	</repositories>
-
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<struts.version>2.2.3</struts.version>
@@ -25,7 +17,24 @@
 		<org.apache.poi-version>3.7</org.apache.poi-version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://lexbz181197.cloud.dst.ibm.com:8081/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://localhost:8081/nexus/content/groups/public</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<dependencies>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -255,6 +264,16 @@
 	<build>
 		<finalName>TRAILS</finalName>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.4.2</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
