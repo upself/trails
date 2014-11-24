@@ -9,6 +9,14 @@
 	<url>http://trails.boulder.ibm.com/TRAILS</url>
 	<description>TRAILS web application</description>
 
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://lexbz181197.cloud.dst.ibm.com:8081/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<struts.version>2.2.3</struts.version>
@@ -231,10 +239,21 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>bluepage-jtk</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
+
 		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
 		<dependency> 
 			<groupId>com.ibm</groupId> 
@@ -251,6 +270,7 @@
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath> 
 		</dependency>
 		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
+
 	</dependencies>
 
 	<build>
@@ -268,6 +288,12 @@
 				<version>2.4</version>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
 		</plugins>
+		<defaultGoal>package</defaultGoal>
 	</build>
 </project>
