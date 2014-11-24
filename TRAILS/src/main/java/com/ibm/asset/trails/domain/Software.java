@@ -1,14 +1,19 @@
 package com.ibm.asset.trails.domain;
 
-import java.io.Serializable;
+import java.sql.Timestamp;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import java.sql.Timestamp;
-
 
 /**
  * The persistent class for the SOFTWARE database table.
@@ -18,58 +23,57 @@ import java.sql.Timestamp;
 @Table(name = "SOFTWARE")
 @org.hibernate.annotations.Entity
 @NamedQueries({
-@NamedQuery(name="Software.findAll", query="FROM Software s"),
-@NamedQuery(name="softwareDetail", query="FROM Software s where s.softwareId=:softwareId"),
+		@NamedQuery(name = "Software.findAll", query = "FROM Software s"),
+		@NamedQuery(name = "softwareDetail", query = "FROM Software s where s.softwareId=:softwareId"),
 
-@NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
-@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"),
-})
+		@NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
+		@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"), })
 public class Software extends AbstractDomainEntity {
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="CHANGE_JUSTIFICATION")
+	@Column(name = "CHANGE_JUSTIFICATION")
 	private String changeJustification;
 
 	private String comments;
 
-	@Column(name="LEVEL")
+	@Column(name = "LEVEL")
 	private String level;
 
-    @ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    private Manufacturer manufacturer;
-    
-	@Column(name="PRIORITY", nullable = true)
+	@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+	private Manufacturer manufacturer;
+
+	@Column(name = "PRIORITY", nullable = true)
 	private int priority;
 
-	@Column(name="RECORD_TIME")
+	@Column(name = "RECORD_TIME")
 	private Timestamp recordTime;
 
-	@Column(name="REMOTE_USER")
+	@Column(name = "REMOTE_USER")
 	private String remoteUser;
 
-	@Column(name="SOFTWARE_CATEGORY_ID", nullable = true)
+	@Column(name = "SOFTWARE_CATEGORY_ID", nullable = true)
 	private long softwareCategoryId;
 
 	@Id
-	@Column(name="SOFTWARE_ID")
+	@Column(name = "SOFTWARE_ID")
 	private long softwareId;
 
-	@Column(name="SOFTWARE_NAME")
+	@Column(name = "SOFTWARE_NAME")
 	private String softwareName;
 
-	@Column(name="STATUS")
+	@Column(name = "STATUS")
 	private String status;
 
-	@Column(name="TYPE")
+	@Column(name = "TYPE")
 	private String type;
 
-	@Column(name="VENDOR_MANAGED")
+	@Column(name = "VENDOR_MANAGED")
 	private int vendorManaged;
-	
-	@Column(name="PRODUCT_ROLE")
+
+	@Column(name = "PRODUCT_ROLE")
 	private String productRole;
-	
-	@Column(name="VERSION")
+
+	@Column(name = "VERSION")
 	private String version;
 
 	public Software() {
@@ -178,7 +182,7 @@ public class Software extends AbstractDomainEntity {
 	public void setVendorManaged(int vendorManaged) {
 		this.vendorManaged = vendorManaged;
 	}
-	
+
 	public String getProductRole() {
 		return productRole;
 	}
@@ -194,14 +198,14 @@ public class Software extends AbstractDomainEntity {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof Software))
 			return false;
 		Software castOther = (Software) other;
-		return new EqualsBuilder().append(softwareId,
-				castOther.softwareId).isEquals();
+		return new EqualsBuilder().append(softwareId, castOther.softwareId)
+				.isEquals();
 	}
 
 	@Override
