@@ -31,9 +31,10 @@ import com.ibm.asset.trails.domain.LicenseDisplay;
 import com.ibm.asset.trails.domain.License_;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.Manufacturer_;
-import com.ibm.asset.trails.domain.ProductInfo;
+import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.ProductInfo_;
 import com.ibm.asset.trails.domain.Product_;
+import com.ibm.asset.trails.domain.Software_;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicense_;
 import com.ibm.tap.trails.framework.DisplayTagList;
@@ -52,8 +53,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		CriteriaQuery<LicenseDisplay> q = cb.createQuery(LicenseDisplay.class);
 		Root<License> license = q.from(License.class);
 		Join<License, Account> account = license.join(License_.account);
-		Join<License, ProductInfo> productInfo = license.join(
-				License_.productInfo, JoinType.LEFT);
+		Join<License, Software> software = license.join(
+				License_.software, JoinType.LEFT);
 		Join<License, CapacityType> capacityType = license
 				.join(License_.capacityType);
 		Join<License, UsedLicense> usedLicense = license.join(
@@ -73,9 +74,9 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						.value("IBM").value("CUSTOMER").value("BOTH"))));
 		q.multiselect(
 				license.get(License_.id).alias("licenseId"),
-				cb.coalesce(productInfo.get(ProductInfo_.name),
+				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)).alias("productName"),
-				productInfo.get(ProductInfo_.name),
+						software.get(Software_.softwareName),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(
@@ -92,9 +93,9 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		q.groupBy(
 				license.get(License_.id),
-				cb.coalesce(productInfo.get(ProductInfo_.name),
+				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)),
-				productInfo.get(ProductInfo_.name),
+						software.get(Software_.softwareName),
 				capacityType.get(CapacityType_.code),
 				capacityType.get(CapacityType_.description),
 				license.get(License_.quantity),
@@ -171,10 +172,10 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		CriteriaQuery<LicenseDisplay> q = cb.createQuery(LicenseDisplay.class);
 		Root<License> license = q.from(License.class);
 		Join<License, Account> account = license.join(License_.account);
-		Join<License, ProductInfo> productInfo = license.join(
-				License_.productInfo, JoinType.LEFT);
-		Join<ProductInfo, Manufacturer> manufacturer = productInfo.join(
-				Product_.manufacturer, JoinType.LEFT);
+		Join<License, Software> software = license.join(
+				License_.software, JoinType.LEFT);
+		Join<Software, Manufacturer> manufacturer = software.join(
+				Software_.manufacturer, JoinType.LEFT);
 		Join<License, CapacityType> capacityType = license
 				.join(License_.capacityType);
 		Join<License, UsedLicense> usedLicense = license.join(
@@ -182,7 +183,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
-		convertFiltersToPredicates(filters, cb, license, productInfo,
+		convertFiltersToPredicates(filters, cb, license, software,
 				manufacturer, capacityType, predicates);
 
 		predicates.add(account.get(Account_.id).in(accountIds));
@@ -207,9 +208,9 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		q.where(predicates.toArray(new Predicate[predicates.size()]));
 		q.multiselect(
 				license.get(License_.id).alias("licenseId"),
-				cb.coalesce(productInfo.get(ProductInfo_.name),
+				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)).alias("productName"),
-				productInfo.get(ProductInfo_.name),
+						software.get(Software_.softwareName),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(
@@ -226,9 +227,9 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						.alias("accountName"));
 		q.groupBy(
 				license.get(License_.id),
-				cb.coalesce(productInfo.get(ProductInfo_.name),
+				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)),
-				productInfo.get(ProductInfo_.name),
+						software.get(Software_.softwareName),
 				capacityType.get(CapacityType_.code),
 				capacityType.get(CapacityType_.description),
 				license.get(License_.quantity),
@@ -262,12 +263,12 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			} else {
 				q.orderBy(cb.desc(account.get(orderBy)));
 			}
-		} else if (sort.startsWith("productInfo")) {
+		} else if (sort.startsWith("software")) {
 			if (dir.equals("asc")) {
-				q.orderBy(cb.asc(cb.coalesce(productInfo.get(orderBy),
+				q.orderBy(cb.asc(cb.coalesce(software.get(orderBy),
 						license.get("fullDesc"))));
 			} else {
-				q.orderBy(cb.desc(cb.coalesce(productInfo.get(orderBy),
+				q.orderBy(cb.desc(cb.coalesce(software.get(orderBy),
 						license.get("fullDesc"))));
 			}
 		} else if (sort.startsWith("capacityType")) {
@@ -301,8 +302,8 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 	private void convertFiltersToPredicates(List<LicenseFilter> filters,
 			CriteriaBuilder cb, Root<License> license,
-			Join<License, ProductInfo> productInfo,
-			Join<ProductInfo, Manufacturer> manufacturer,
+			Join<License, Software> software,
+			Join<Software, Manufacturer> manufacturer,
 			Join<License, CapacityType> capacityType, List<Predicate> predicates) {
 
 		if (filters != null && filters.size() > 0) {
@@ -327,7 +328,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				String fltrPrdctNm = fltr.getProductName();
 				if (fltrPrdctNm != null && !"".equals(fltrPrdctNm)) {
 					andConnected.add(cb.like(
-							cb.upper(productInfo.get(Product_.name)),
+							cb.upper(software.get(Software_.softwareName)),
 							fltrPrdctNm.toUpperCase()));
 				}
 
@@ -365,10 +366,10 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		Subquery<Long> sq = q.subquery(Long.class);
 		Root<License> license = sq.from(License.class);
 		Join<License, Account> account = license.join(License_.account);
-		Join<License, ProductInfo> productInfo = license.join(
-				License_.productInfo, JoinType.LEFT);
-		Join<ProductInfo, Manufacturer> manufacturer = productInfo.join(
-				Product_.manufacturer, JoinType.LEFT);
+		Join<License, Software> software = license.join(
+				License_.software, JoinType.LEFT);
+		Join<Software, Manufacturer> manufacturer = software.join(
+				Software_.manufacturer, JoinType.LEFT);
 		Join<License, CapacityType> capacityType = license
 				.join(License_.capacityType);
 		Join<License, UsedLicense> usedLicense = license.join(
@@ -378,7 +379,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
-		convertFiltersToPredicates(filters, cb, license, productInfo,
+		convertFiltersToPredicates(filters, cb, license, software,
 				manufacturer, capacityType, predicates);
 
 		predicates.add(account.get(Account_.id).in(accountIds));
@@ -446,7 +447,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 	private String decodeSort(String psSort) {
 		if (psSort.equalsIgnoreCase("productName")) {
-			return "COALESCE(P.name, L.fullDesc)";
+			return "COALESCE(sw.softwareName, L.fullDesc)";
 		} else if (psSort.equalsIgnoreCase("capTypeCode")) {
 			return "L.capacityType.code";
 		} else if (psSort.equalsIgnoreCase("availableQty")) {

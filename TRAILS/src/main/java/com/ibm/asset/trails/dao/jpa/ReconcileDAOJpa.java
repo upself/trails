@@ -12,7 +12,7 @@ public class ReconcileDAOJpa extends
     public Reconcile reconcileDetail(Long id) {
         return (Reconcile) entityManager
                 .createQuery(
-                        "from Reconcile a join fetch a.reconcileType join fetch a.installedSoftware join fetch a.installedSoftware.softwareLpar join fetch a.installedSoftware.softwareLpar.hardwareLpar join fetch a.installedSoftware.softwareLpar.hardwareLpar.hardware join fetch a.installedSoftware.softwareLpar.hardwareLpar.hardware.machineType join fetch a.installedSoftware.software join fetch a.parentInstalledSoftware join fetch a.parentInstalledSoftware.software left join fetch a.usedLicenses b left join fetch b.license left join fetch b.license.productInfo where a.id = :id")
+                        "from Reconcile a join fetch a.reconcileType join fetch a.installedSoftware join fetch a.installedSoftware.softwareLpar join fetch a.installedSoftware.softwareLpar.hardwareLpar join fetch a.installedSoftware.softwareLpar.hardwareLpar.hardware join fetch a.installedSoftware.softwareLpar.hardwareLpar.hardware.machineType join fetch a.installedSoftware.software join fetch a.parentInstalledSoftware join fetch a.parentInstalledSoftware.software left join fetch a.usedLicenses b left join fetch b.license left join fetch b.license.software where a.id = :id")
                 .setParameter("id", id).getSingleResult();
     }
 

@@ -153,7 +153,7 @@
 				class="catalogMatch" value="" />
 			<display:column property="account.account" title="Account number"
 				sortable="true" />
-			<display:column property="productInfo.name" title="Product name"
+			<display:column property="software.softwareName" title="Product name"
 				sortable="true" />
 			<display:column property="capacityType.description"
 				title="Capacity type" sortable="true" />
@@ -186,7 +186,7 @@
 				sortProperty="account.account" title="Account number"
 				sortable="true" />
 			<display:column property="productName"
-				sortProperty="productInfo.name" title="Product name" sortable="true" />
+				sortProperty="software.softwareName" title="Product name" sortable="true" />
 			<display:column property="capTypeDesc"
 				sortProperty="capacityType.description" title="Capacity type"
 				sortable="true" />

@@ -10,7 +10,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(License.class)
 public class License_ {
 	public static volatile SingularAttribute<License, Long> id;
-	public static volatile SingularAttribute<License, ProductInfo> productInfo;
+	public static volatile SingularAttribute<License, Software> software;
 	public static volatile SingularAttribute<License, String> poNumber;
 	public static volatile SingularAttribute<License, String> cpuSerial;
 	public static volatile SingularAttribute<License, Boolean> ibmOwned;
