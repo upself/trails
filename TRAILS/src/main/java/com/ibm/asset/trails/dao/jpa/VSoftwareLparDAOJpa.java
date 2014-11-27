@@ -40,7 +40,7 @@ public class VSoftwareLparDAOJpa extends
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
-				.createAlias("is.productInfo", "pi")
+				.createAlias("is.software", "sw")
 				.add(Restrictions.eq("account", account));
 
 		if (reconSetting.getReconcileType() != null) {
@@ -153,7 +153,7 @@ public class VSoftwareLparDAOJpa extends
 			}
 
 			if (list.size() > 0) {
-				criteria.add(Restrictions.in("pi.name", list));
+				criteria.add(Restrictions.in("sw.softwareName", list));
 			}
 		}
 
@@ -188,8 +188,8 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("hl.lparStatus").as("lparStatus"))
 				.add(Projections.property("processorCount")
 						.as("processorCount"))
-				.add(Projections.property("pi.name").as("productInfoName"))
-				.add(Projections.property("pi.id").as("productInfoId"))
+				.add(Projections.property("sw.softwareName").as("productInfoName"))
+				.add(Projections.property("sw.softwareId").as("productInfoId"))
 				.add(Projections.property("rt.name").as("reconcileTypeName"))
 				.add(Projections.property("rt.id").as("reconcileTypeId"))
 				.add(Projections.property("aus.remoteUser").as("assignee"))

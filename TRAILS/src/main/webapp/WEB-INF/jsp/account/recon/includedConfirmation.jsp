@@ -21,7 +21,7 @@ the request has completed.</p>
 	theme="simple">
 	<div class="float-left" style="width:25%;"><label for="runon">Product:</label></div>
 	<div class="float-left" style="width:75%;"><s:property
-		default="yo" value="recon.installedSoftware.productInfo.name" /></div>
+		default="yo" value="recon.installedSoftware.software.softwareName" /></div>
 
 	<div class="clear"></div>
 	<div class="button-bar">
