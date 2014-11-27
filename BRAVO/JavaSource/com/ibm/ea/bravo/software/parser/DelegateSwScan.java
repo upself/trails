@@ -30,7 +30,7 @@ import com.ibm.ea.bravo.software.SoftwareLpar;
 import com.ibm.ea.cndb.Customer;
 import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.sigbank.DoranaProduct;
-import com.ibm.ea.sigbank.Product;
+//import com.ibm.ea.sigbank.Product;//Change Bravo to use Software View instead of Product Object
 import com.ibm.ea.sigbank.SaProduct;
 import com.ibm.ea.sigbank.Software;
 import com.ibm.ea.sigbank.VmProduct;
@@ -231,7 +231,24 @@ public abstract class DelegateSwScan extends HibernateDelegate {
 	/*
 	 * Given productId , returns Software Calls parserSoftwareSa
 	 */
-	public static Product getSaSoftware(String productId) throws Exception {
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public static Product getSaSoftware(String productId) throws Exception {
+		Session session = getSession();
+
+		SaProduct saProduct = (SaProduct) session.getNamedQuery(
+				"parserSoftwareSa").setString("productId", productId)
+				.uniqueResult();
+
+		closeSession(session);
+		if (saProduct == null) {
+			return null;
+		}
+		else {
+			return saProduct.getSoftware();
+		}
+	}*/
+	
+	public static Software getSaSoftware(String productId) throws Exception {
 		Session session = getSession();
 
 		SaProduct saProduct = (SaProduct) session.getNamedQuery(
@@ -246,6 +263,7 @@ public abstract class DelegateSwScan extends HibernateDelegate {
 			return saProduct.getSoftware();
 		}
 	}
+	//Change Bravo to use Software View instead of Product Object End
 
 	/*
 	 * Given productId, returns SaProduct Calls parserSoftwareSa
@@ -297,10 +315,27 @@ public abstract class DelegateSwScan extends HibernateDelegate {
 
 	}
 
+	//Change Bravo to use Software View instead of Product Object Start
 	/*
 	 * Given productId , returns Software Calls parserSoftwareVm
 	 */
-	public static Product getVmSoftware(String productId) throws Exception {
+	/*public static Product getVmSoftware(String productId) throws Exception {
+		Session session = getSession();
+
+		VmProduct vmProduct = (VmProduct) session.getNamedQuery(
+				"parserSoftwareVm").setString("productId", productId)
+				.uniqueResult();
+
+		closeSession(session);
+		if (vmProduct == null) {
+			return null;
+		}
+		else {
+			return vmProduct.getSoftware();
+		}
+	}*/
+	
+	public static Software getVmSoftware(String productId) throws Exception {
 		Session session = getSession();
 
 		VmProduct vmProduct = (VmProduct) session.getNamedQuery(
@@ -315,6 +350,7 @@ public abstract class DelegateSwScan extends HibernateDelegate {
 			return vmProduct.getSoftware();
 		}
 	}
+	//Change Bravo to use Software View instead of Product Object End
 
 	/*
 	 * Given hostname and customerId, return SoftwareLpar Calls HQL
@@ -504,7 +540,10 @@ public abstract class DelegateSwScan extends HibernateDelegate {
 
 			/* Only deal with this as softaudit or vm IF Product is not NULL */
 			if (saProduct != null) {
-				Product software = saProduct.getSoftware();
+				//Change Bravo to use Software View instead of Product Object Start
+				//Product software = saProduct.getSoftware();
+				Software software = saProduct.getSoftware();
+				//Change Bravo to use Software View instead of Product Object End
 				s = DelegateSoftware.getInstalledSoftware(software
 						.getSoftwareId().toString(), swLpar.getId().toString());
 				if (s == null) {

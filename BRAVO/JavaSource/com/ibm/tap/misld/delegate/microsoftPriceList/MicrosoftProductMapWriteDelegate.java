@@ -12,7 +12,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.tap.misld.delegate.software.SoftwareReadDelegate;
 import com.ibm.tap.misld.framework.Delegate;
 import com.ibm.tap.misld.framework.Util;
@@ -49,9 +52,14 @@ public class MicrosoftProductMapWriteDelegate extends Delegate {
 		}
 
 		//Get the software object by name
-		Product software = SoftwareReadDelegate
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = SoftwareReadDelegate
+		//		.getSoftwareByName(softwareName);
+		
+		Software software = SoftwareReadDelegate
 				.getSoftwareByName(softwareName);
-
+		//Change Bravo to use Software View instead of Product Object End
+		
 		if (software == null) {
 			throw new LoadException("Invalid sigbank software name");
 		}
@@ -133,7 +141,10 @@ public class MicrosoftProductMapWriteDelegate extends Delegate {
 
 		MicrosoftProduct microsoftProduct = MicrosoftProductReadDelegate
 				.getFullMicrosoftProduct(microsoftProductId);
-		Product software = SoftwareReadDelegate.getSoftwareByLong(softwareId);
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = SoftwareReadDelegate.getSoftwareByLong(softwareId);
+		Software software = SoftwareReadDelegate.getSoftwareByLong(softwareId);
+		//Change Bravo to use Software View instead of Product Object End
 
 		MicrosoftProductMap microsoftProductMap = new MicrosoftProductMap();
 		microsoftProductMap.setMicrosoftProduct(microsoftProduct);

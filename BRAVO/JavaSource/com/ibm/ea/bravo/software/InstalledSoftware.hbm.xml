@@ -10,9 +10,16 @@
         <many-to-one name="softwareLpar" class="com.ibm.ea.bravo.software.SoftwareLpar">
         	<column name="SOFTWARE_LPAR_ID" not-null="true" unique-key="U_ISW" index="IDX_ISWSWL"/>
         </many-to-one>
-        <many-to-one name="software" class="com.ibm.ea.sigbank.Product">
+        
+        <!-- Change Bravo to use Software View instead of Product Object Start -->
+        <!-- <many-to-one name="software" class="com.ibm.ea.sigbank.Product">
+        	<column name="SOFTWARE_ID" not-null="true"/>
+        </many-to-one> -->
+        
+         <many-to-one name="software" class="com.ibm.ea.sigbank.Software">
         	<column name="SOFTWARE_ID" not-null="true"/>
         </many-to-one>
+        <!-- Change Bravo to use Software View instead of Product Object End -->
         
 		<many-to-one name="discrepancyType" class="com.ibm.ea.bravo.discrepancy.DiscrepancyType">
 			<column name="DISCREPANCY_TYPE_ID" not-null="true" index="IDX_ISWD" default="1"/>

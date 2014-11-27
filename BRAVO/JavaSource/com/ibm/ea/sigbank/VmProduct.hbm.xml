@@ -7,7 +7,10 @@
 			<generator class="increment"/>
 		</id>
 
-        <many-to-one name="software" column="SOFTWARE_ID" class="com.ibm.ea.sigbank.Product" not-null="true"/>
+        <!-- Change Bravo to use Software View instead of Product Object Start -->
+        <!-- <many-to-one name="software" column="SOFTWARE_ID" class="com.ibm.ea.sigbank.Product" not-null="true"/> -->
+        <many-to-one name="software" column="SOFTWARE_ID" class="com.ibm.ea.sigbank.Software" not-null="true"/>
+        <!-- Change Bravo to use Software View instead of Product Object End -->
 
 <!--		<property name="vmProduct" column="VM_PRODUCT" length="32" not-null="true" index="IDX_VMP"/>-->
 		<property name="vmProduct" column="VM_PRODUCT" length="32" not-null="true" unique="true"/>

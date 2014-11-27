@@ -266,7 +266,8 @@
 		]]>
 	</query>
 
-	<query name="reportDiscrepanciesBySoftware">
+    <!--Change Bravo to use Software View instead of Product Object Start -->
+	<!--<query name="reportDiscrepanciesBySoftware">
 		<![CDATA[
 			select 
 				i.softwareLpar.customer.countryCode.region.geography.name
@@ -303,9 +304,48 @@
 				,i.softwareLpar.customer.customerName
 				,i.softwareLpar.customer.customerType.customerTypeName
 		]]>
+	</query> -->
+	
+	<query name="reportDiscrepanciesBySoftware">
+		<![CDATA[
+			select 
+				i.softwareLpar.customer.countryCode.region.geography.name
+				,i.softwareLpar.customer.countryCode.region.name
+				,i.softwareLpar.customer.countryCode.name
+				,i.softwareLpar.customer.accountNumber
+				,i.softwareLpar.customer.customerName
+				,i.softwareLpar.customer.customerType.customerTypeName
+				,i.softwareLpar.customer.pod.podName
+				,i.softwareLpar.name
+				,i.software.softwareName
+				,i.discrepancyType.name
+				,i.invalidCategory
+				,i.remoteUser
+				,i.recordTime
+				,i.version
+				,i.researchFlag
+				,i.software.comments
+			from 
+				com.ibm.ea.bravo.software.InstalledSoftware i
+			where
+				i.software.id = :software
+				and i.status = :status
+				and (
+					upper(i.discrepancyType.name) = 'FALSE HIT'
+					or upper(i.discrepancyType.name) = 'INVALID'
+					or upper(i.discrepancyType.name) = 'MISSING'
+					or i.researchFlag = 1
+				)
+			order by
+				i.softwareLpar.customer.countryCode.region.geography.name
+				,i.softwareLpar.customer.countryCode.region.name
+				,i.softwareLpar.customer.countryCode.name
+				,i.softwareLpar.customer.customerName
+				,i.softwareLpar.customer.customerType.customerTypeName
+		]]>
 	</query>
 
-	<query name="discrepancySummaryReport">
+   <!-- <query name="discrepancySummaryReport">
 		<![CDATA[
 			select 
 				distinct new com.ibm.ea.bravo.report.DiscrepancySummary(
@@ -331,9 +371,37 @@
 				i.discrepancyType.name
 			
 		]]>
+	</query> -->
+	
+	<query name="discrepancySummaryReport">
+		<![CDATA[
+			select 
+				distinct new com.ibm.ea.bravo.report.DiscrepancySummary(
+				i.software.id,
+				i.software.softwareName,
+				i.discrepancyType.name,
+				count(*))
+			from 
+				com.ibm.ea.bravo.software.InstalledSoftware i
+			where 
+				i.status = 'ACTIVE' 
+				and (upper(i.discrepancyType.name) = 'FALSE HIT' 
+					or upper(i.discrepancyType.name) = 'INVALID' 
+					or upper(i.discrepancyType.name) = 'MISSING' 
+					or i.researchFlag = 1
+				)
+			group by 
+				i.software.id,
+				i.software.softwareName,
+				i.discrepancyType.name
+			order by 
+				i.software.softwareName,
+				i.discrepancyType.name
+			
+		]]>
 	</query>
-
-	<query name="reportLparsByAccountBySoftware">
+	    
+	<!--<query name="reportLparsByAccountBySoftware">
 		<![CDATA[
 			select
 				i.softwareLpar.customer.accountNumber
@@ -353,7 +421,30 @@
 				and i.software = :software
 				and i.status = :status
 		]]>
-	</query>
+	</query> -->
+	
+	<query name="reportLparsByAccountBySoftware">
+		<![CDATA[
+			select
+				i.softwareLpar.customer.accountNumber
+				,i.softwareLpar.customer.customerName
+				,i.softwareLpar.customer.customerType.customerTypeName
+				,i.softwareLpar.customer.pod.podName
+				,i.softwareLpar.name
+				,i.software.softwareName
+				,i.discrepancyType.name
+				,i.remoteUser
+				,i.recordTime
+				,i.researchFlag
+			from 
+				com.ibm.ea.bravo.software.InstalledSoftware i
+			where
+				i.softwareLpar.customer = :customer
+				and i.software = :software
+				and i.status = :status
+		]]>
+	 </query>
+	 <!--Change Bravo to use Software View instead of Product Object End -->
 
 	<sql-query name="reportAccountAsset">
 		<![CDATA[

@@ -30,7 +30,10 @@ import com.ibm.ea.bravo.recon.ReconSoftwareLpar;
 import com.ibm.ea.cndb.Customer;
 import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.sigbank.BankAccountInclusion;
+//Change Bravo to use Software View instead of Product Object Start
 import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.utils.EaUtils;
 
 public abstract class DelegateSoftware extends HibernateDelegate {
@@ -262,7 +265,8 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		return size;
 	}
 
-	public static Product getSoftware(String softwareName) {
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public static Product getSoftware(String softwareName) {
 		logger.debug("DelegateSoftware.getSoftware");
 		Product software = null;
 
@@ -282,9 +286,31 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		}
 
 		return software;
-	}
+	}*/
+	
+	public static Software getSoftware(String softwareName) {
+		logger.debug("DelegateSoftware.getSoftware");
+		Software software = null;
 
-	@SuppressWarnings("unchecked")
+		try {
+			Session session = getSession();
+
+			ArrayList<Software> products = (ArrayList<Software>) session
+					.getNamedQuery("softwareByName")
+					.setString("name", softwareName).list();
+			if (products.size() > 0)
+				software = products.get(0);
+
+			closeSession(session);
+
+		} catch (Exception e) {
+			logger.error(e, e);
+		}
+
+		return software;
+	}
+	
+	/*@SuppressWarnings("unchecked")
 	public static List<Product> searchSoftware(String search) throws Exception {
 		logger.debug("DelegateSoftware.searchSigBank search = " + search);
 		List<Product> list = null;
@@ -304,7 +330,30 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		logger.debug("About ready to return list of " + list.size());
 
 		return list;
+	}*/
+	
+	@SuppressWarnings("unchecked")
+	public static List<Software> searchSoftware(String search) throws Exception {
+		logger.debug("DelegateSoftware.searchSigBank search = " + search);
+		List<Software> list = null;
+
+		if (EaUtils.isBlank(search))
+			return list;
+
+		Session session = getSession();
+
+		list = session.getNamedQuery("softwaresSearch")
+				.setString("name", "%" + search.toUpperCase() + "%")
+				.setString("manufacturer", "%" + search.toUpperCase() + "%")
+				.list();
+
+		closeSession(session);
+
+		logger.debug("About ready to return list of " + list.size());
+
+		return list;
 	}
+	//Change Bravo to use Software View instead of Product Object End
 
 	public static void saveAccountBankInclusion(String customerId,
 			String bankAccountId) throws Exception {
@@ -398,7 +447,9 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		return list;
 	}
 
-	public static Product getSigBank(String id) {
+	
+	//Change Bravo to use Software View instead of Product Object Start
+	/*public static Product getSigBank(String id) {
 		logger.debug("DelegateSoftware.getSigBank(String) id = " + id);
 		if (EaUtils.isBlank(id))
 			return null;
@@ -422,8 +473,36 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		}
 
 		return software;
+	}*/
+	
+	public static Software getSigBank(String id) {
+		logger.debug("DelegateSoftware.getSigBank(String) id = " + id);
+		if (EaUtils.isBlank(id))
+			return null;
+
+		return getSigBank(Long.parseLong(id));
 	}
 
+	public static Software getSigBank(long id) {
+		logger.debug("DelegateSoftware.getSigBank(long) id = " + id);
+		Software software = null;
+
+		try {
+			Session session = getSession();
+
+			software = (Software) session.getNamedQuery("softwareById")
+					.setLong("id", id).uniqueResult();
+
+			closeSession(session);
+		} catch (Exception e) {
+			logger.error(e, e);
+		}
+
+		return software;
+	}
+	//Change Bravo to use Software View instead of Product Object End
+	 
+	
 	public static FormSoftware saveSoftwareForm(FormSoftware software,
 			HttpServletRequest request) throws Exception {
 		logger.debug("DelegateSoftware.save");
@@ -699,8 +778,11 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	public static InstalledSoftware getInstalledSoftware(String softwareId,
 			String lparId) throws Exception {
 		InstalledSoftware installedSoftware = null;
-
-		Product software = getSigBank(softwareId);
+ 
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = getSigBank(softwareId);
+		Software software = getSigBank(softwareId);
+		//Change Bravo to use Software View instead of Product Object End
 		SoftwareLpar softwareLpar = getSoftwareLpar(lparId);
 
 		if (software != null && softwareLpar != null) {

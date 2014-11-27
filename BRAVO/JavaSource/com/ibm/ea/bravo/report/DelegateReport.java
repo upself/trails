@@ -30,7 +30,10 @@ import com.ibm.ea.bravo.hardware.HardwareLpar;
 import com.ibm.ea.bravo.hardwaresoftware.DelegateComposite;
 import com.ibm.ea.bravo.software.DelegateSoftware;
 import com.ibm.ea.bravo.software.SoftwareLpar;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 
 /**
  * @author denglers
@@ -399,7 +402,10 @@ public class DelegateReport extends HibernateDelegate {
 			return list;
 
 		// validate the software exists
-		Product software = DelegateSoftware.getSigBank(report.getSoftwareId());
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = DelegateSoftware.getSigBank(report.getSoftwareId());
+		Software software = DelegateSoftware.getSigBank(report.getSoftwareId());
+		//Change Bravo to use Software View instead of Product Object End
 		if (software == null)
 			return list;
 

@@ -42,8 +42,12 @@ public class Software
     private String manufacturerId;
     private String owner;
     private MicrosoftProductMap microsoftProductMap;
-
     
+    //Change Bravo to use Software View instead of Product Object Start
+    private String version;
+    private String productRole;
+    //Change Bravo to use Software View instead of Product Object End
+
 	public Integer getVendorManaged() {
 		return vendorManaged;
 	}
@@ -255,4 +259,33 @@ public class Software
     public void setMicrosoftProductMap(MicrosoftProductMap microsoftProductMap) {
         this.microsoftProductMap = microsoftProductMap;
     }
+    
+    //Change Bravo to use Software View instead of Product Object Start
+    /**
+	 * @return Returns the version.
+	 */
+	public String getVersion() {
+		return version;
+	}
+	/**
+	 * @param version The version to set.
+	 */
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	
+	 /**
+	   * @return Returns the productRole.
+	   */
+	 public String getProductRole() {
+	   return productRole;
+	 }
+	 
+	 /**
+	   * @param productRole The productRole to set.
+	   */
+	 public void setProductRole(String productRole) {
+	   this.productRole = productRole;
+	 }	
+	//Change Bravo to use Software View instead of Product Object End
 }

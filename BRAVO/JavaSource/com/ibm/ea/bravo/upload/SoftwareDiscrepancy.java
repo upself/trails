@@ -23,7 +23,10 @@ import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.common.FTPUtil;
 import com.ibm.ea.bravo.framework.email.DelegateEmail;
 import com.ibm.ea.bravo.software.DelegateSoftware;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.utils.EaUtils;
 import com.ibm.ea.utils.PoiUtils;
 
@@ -45,7 +48,10 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 	private HttpServletRequest request;
 
 	// setup some caching
-    private Map<String, Product> softwares = new HashMap<String, Product>();
+	//Change Bravo to use Software View instead of Product Object Start
+    //private Map<String, Product> softwares = new HashMap<String, Product>();
+    private Map<String, Software> softwares = new HashMap<String, Software>();
+    //Change Bravo to use Software View instead of Product Object End
 
     private Map<String, Account> accounts = new HashMap<String, Account>();
 
@@ -150,7 +156,10 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 
 			// validate softwareName
 			logger.debug("softwareName=" + softwareName);
-			Product software = getSoftware(softwareName);
+			//Change Bravo to use Software View instead of Product Object Start
+			//Product software = getSoftware(softwareName);
+			Software software = getSoftware(softwareName);
+			//Change Bravo to use Software View instead of Product Object End
 			if (software == null) {
 				logger.error("row " + row + " invalid software: "
 						+ softwareName);
@@ -261,7 +270,8 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 		logger.debug("SoftwareDiscrepancy.execute - end");
 	}
 
-	private Product getSoftware(String softwareName) {
+	//Change Bravo to use Software View instead of Product Object Start
+	/*private Product getSoftware(String softwareName) {
 		Product software = null;
 
 		// check the cache first
@@ -277,8 +287,27 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 		}
 
 		return software;
-	}
+	}*/
+	
+	private Software getSoftware(String softwareName) {
+		Software software = null;
 
+		// check the cache first
+		software = (Software) softwares.get(softwareName);
+
+		// if not in the cache, try the database
+		if (software == null) {
+			software = DelegateSoftware.getSoftware(softwareName);
+
+			// if the account was in the database, save it in the cache
+			if (software != null)
+				softwares.put(softwareName, software);
+		}
+
+		return software;
+	}
+	//Change Bravo to use Software View instead of Product Object End
+	
 	private Account getAccount(String accountId, HttpServletRequest request)
 			throws ExceptionAccountAccess {
 		Account account = null;

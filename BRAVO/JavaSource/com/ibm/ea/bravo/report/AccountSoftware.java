@@ -22,7 +22,10 @@ import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.report.DownloadReport;
 import com.ibm.ea.bravo.framework.report.IReport;
 import com.ibm.ea.bravo.software.DelegateSoftware;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product; 
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 
 /**
  * @author denglers
@@ -79,7 +82,10 @@ public class AccountSoftware extends DownloadReport implements IReport {
 		}
 
 		// validate the software exists
-		Product software = DelegateSoftware.getSigBank(softwareId);
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = DelegateSoftware.getSigBank(softwareId);
+		Software software = DelegateSoftware.getSigBank(softwareId);
+		//Change Bravo to use Software View instead of Product Object End
 		if (software == null) {
 			return;
 		}
@@ -97,6 +103,8 @@ public class AccountSoftware extends DownloadReport implements IReport {
 			PrintWriter os = new PrintWriter(outputStream, true);
 			
 			os.println(Constants.CONFIDENTIAL);
+			
+			
 			// output the header
 			os.println(tsv(HEADER));
 			

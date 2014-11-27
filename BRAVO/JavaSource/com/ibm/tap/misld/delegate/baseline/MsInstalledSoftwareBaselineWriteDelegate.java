@@ -18,7 +18,10 @@ import org.hibernate.Transaction;
 
 import com.ibm.ea.sigbank.InstalledSoftware;
 import com.ibm.ea.sigbank.InstalledSoftwareEff;
-import com.ibm.ea.sigbank.Product;
+//Change Bravo to use Software View instead of Product Object Start
+//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.Software;
+//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.sigbank.SoftwareLpar;
 import com.ibm.tap.misld.delegate.software.SoftwareReadDelegate;
 import com.ibm.tap.misld.framework.Constants;
@@ -124,9 +127,15 @@ public class MsInstalledSoftwareBaselineWriteDelegate extends Delegate {
 			MsInstalledSoftwareBaseline msInstalledSoftwareBaseline,
 			String remoteUser) throws HibernateException, NamingException {
 
-		Product software = SoftwareReadDelegate
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = SoftwareReadDelegate
+		//		.getSoftwareByLong(msInstalledSoftwareBaseline
+		//				.getSoftwareLong());
+		
+		Software software = SoftwareReadDelegate
 				.getSoftwareByLong(msInstalledSoftwareBaseline
 						.getSoftwareLong());
+		//Change Bravo to use Software View instead of Product Object End
 
 		//MsHardwareBaseline msHardwareBaseline = MsHardwareBaselineReadDelegate
 		//		.getMsHardwareBaseline(msInstalledSoftwareBaseline
@@ -194,8 +203,13 @@ public class MsInstalledSoftwareBaselineWriteDelegate extends Delegate {
 		}
 
 		//Get the software object
-		Product software = SoftwareReadDelegate
+		//Change Bravo to use Software View instead of Product Object Start
+		//Product software = SoftwareReadDelegate
+		//		.getSoftwareByName(softwareName);
+		
+		Software software = SoftwareReadDelegate
 				.getSoftwareByName(softwareName);
+		//Change Bravo to use Software View instead of Product Object End
 		if (software == null) {
 			throw new LoadException("Invalid software name");
 		}

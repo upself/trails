@@ -92,7 +92,7 @@
 		<display:setProperty name="basic.empty.showtable" value="true"/>
 		
 		<display:column property="statusImage" title="" headerClass="blue-med"/>
-		<display:column property="software.softwareItem.name" title="Name" sortable="true" headerClass="blue-med"/>
+		<display:column property="software.softwareName" title="Name" sortable="true" headerClass="blue-med"/>
 	  	<display:column property="software.manufacturer.manufacturerName" title="Manufacturer" sortable="true" headerClass="blue-med"/>
 	  	<display:column property="software.level" title="License Level" sortable="true" headerClass="blue-med"/>
 	  	<display:column property="discrepancyType.name" title="Discrepancy" sortable="true" headerClass="blue-med"/>

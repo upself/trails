@@ -17,7 +17,10 @@ import java.util.Date;
  */
 public class SoftwareSignature {
     private Long softwareSignatureId;
-    private Product software;
+    //Change Bravo to use Software View instead of Product Object Start
+    //private Product software;
+    private Software software;
+    //Change Bravo to use Software View instead of Product Object End
     
     private String tcmId;
     private String fileName;
@@ -183,18 +186,35 @@ public class SoftwareSignature {
     public void setSignatureSource(String signatureSource) {
         this.signatureSource = signatureSource;
     }
+    
+    //Change Bravo to use Software View instead of Product Object Start
     /**
      * @return Returns the software.
      */
-    public Product getSoftware() {
+    /*public Product getSoftware() {
+        return software;
+    }*/
+    /**
+     * @param software The software to set.
+     */
+    /*public void setSoftware(Product software) {
+        this.software = software;
+    }*/
+    
+    /**
+     * @return Returns the software.
+     */
+    public Software getSoftware() {
         return software;
     }
     /**
      * @param software The software to set.
      */
-    public void setSoftware(Product software) {
+    public void setSoftware(Software software) {
         this.software = software;
     }
+    //Change Bravo to use Software View instead of Product Object End
+    
     /**
      * @return Returns the softwareSignatureId.
      */
