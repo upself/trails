@@ -7,6 +7,16 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath*:applicationContext*.xml</param-value>
 	</context-param>
+
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>${app.root.name}</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>com.ibm.tap.trails.framework.TrailsInitListener</listener-class>
+	</listener>
+
 	<filter>
 		<filter-name>ResponseOverrideFilter</filter-name>
 		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
