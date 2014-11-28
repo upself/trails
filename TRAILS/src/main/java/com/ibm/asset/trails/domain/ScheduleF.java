@@ -52,7 +52,7 @@ public class ScheduleF {
 	@JoinColumn(name = "CUSTOMER_ID")
 	private Account account;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID")
 	private Software software;
 
