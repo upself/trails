@@ -278,7 +278,6 @@
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath> 
 		</dependency>
 		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
-
 	</dependencies>
 
 	<build>
@@ -299,7 +298,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>

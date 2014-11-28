@@ -8,7 +8,7 @@ public interface InstalledSoftwareDAO extends
         BaseEntityDAO<InstalledSoftware, Long> {
 
     List<InstalledSoftware> installedSoftwareList(Long softwareLparId,
-            Long softwareId);
+            Long productInfoId);
 
     InstalledSoftware getInstalledSoftware(Long installedSoftwareId);
 

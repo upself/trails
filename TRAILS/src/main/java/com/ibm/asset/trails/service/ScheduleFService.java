@@ -8,22 +8,22 @@ import java.util.List;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.MachineType;
+import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.Scope;
-import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
 import com.ibm.asset.trails.domain.Status;
 import com.ibm.tap.trails.framework.DisplayTagList;
 
 public interface ScheduleFService {
 
-	ScheduleF findScheduleF(Account pAccount, Software pSoftware);
+	ScheduleF findScheduleF(Account pAccount, ProductInfo pProductInfo);
 
 	ScheduleF findScheduleF(Long plScheduleFId, Account pAccount,
-			Software pSoftware);
-	List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware, String level);
+			ProductInfo pProductInfo);
+	List<ScheduleF> findScheduleF(Account pAccount, ProductInfo pProductInfo, String level);
 
-	ArrayList<Software> findSoftwareBySoftwareName(String psSoftwareName);
+	ArrayList<ProductInfo> findProductInfoBySoftwareName(String psSoftwareName);
 
 	ScheduleF getScheduleFDetails(Long plScheduleFId);
 
