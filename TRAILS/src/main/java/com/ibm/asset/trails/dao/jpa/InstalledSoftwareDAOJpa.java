@@ -12,19 +12,19 @@ public class InstalledSoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Install
 		implements InstalledSoftwareDAO {
 
 	@SuppressWarnings("unchecked")
-	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId) {
+	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long productInfoId) {
 		return entityManager
 		.createQuery(
-				"from InstalledSoftware a join fetch a.software where a.softwareLpar.id = :softwareLparId and a.status = 'ACTIVE' and a.software.id != :softwareId and a.status = 'ACTIVE' and a.software.level = 'LICENSABLE' and a.discrepancyType.name != 'INVALID' and a.discrepancyType.name != 'FALSE HIT' ORDER BY a.software.name")
+				"from InstalledSoftware a join fetch a.productInfo where a.softwareLpar.id = :softwareLparId and a.status = 'ACTIVE' and a.productInfo.id != :productInfoId and a.status = 'ACTIVE' and a.productInfo.licensable = 1 and a.discrepancyType.name != 'INVALID' and a.discrepancyType.name != 'FALSE HIT' ORDER BY a.productInfo.name")
 		.setParameter("softwareLparId", softwareLparId)
-		.setParameter("softwareId", softwareId)
+		.setParameter("productInfoId", productInfoId)
 		.getResultList();
 	}
 
 	public InstalledSoftware getInstalledSoftware(Long installedSoftwareId) {
 		return (InstalledSoftware) entityManager
 		.createQuery(
-				"from InstalledSoftware a join fetch a.software where a.id = :installedSoftwareId")
+				"from InstalledSoftware a join fetch a.productInfo where a.id = :installedSoftwareId")
 		.setParameter("installedSoftwareId", installedSoftwareId)
 		.getSingleResult();
 	}

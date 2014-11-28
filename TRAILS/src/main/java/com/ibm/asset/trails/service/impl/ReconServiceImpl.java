@@ -166,14 +166,17 @@ public class ReconServiceImpl implements ReconService {
 		return false;
 	}
 
-	
-	public int validateScheduleFowner(AlertUnlicensedSw alert){
-		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
-				    alert.getInstalledSoftware().getSoftware().getSoftwareName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+	public int validateScheduleFowner(AlertUnlicensedSw alert) {
+		ScheduleF scheduleF = getScheduleFItem(alert.getInstalledSoftware()
+				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+				.getProductInfo().getName(), alert.getInstalledSoftware()
+				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
+				.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				alert.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getMachineType()
+						.getName(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getSerial());
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
@@ -490,7 +493,7 @@ public class ReconServiceImpl implements ReconService {
 					|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
 					|| pRecon.getPer().equalsIgnoreCase("HWMSU")) {
 				llAlertUnlicensedSw.addAll(findAffectedAlertList(account, aus
-						.getInstalledSoftware().getSoftware().getSoftwareId(), aus
+						.getInstalledSoftware().getProductInfo().getId(), aus
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getId(),
 						pRecon.isAutomated(), pRecon.isManual()));
@@ -717,7 +720,7 @@ public class ReconServiceImpl implements ReconService {
 			// the
 			// manual and automated variables do not come into play
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
+					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.productInfo.id = :productInfoId");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
 
 			llAlertUnlicensedSw = getEntityManager()
@@ -735,7 +738,7 @@ public class ReconServiceImpl implements ReconService {
 
 			// This query will get all alerts that were reconciled automatically
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.productInfo.id = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
 					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
 							: "");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
@@ -757,7 +760,7 @@ public class ReconServiceImpl implements ReconService {
 
 			// This query will get all alerts that were reconciled manually
 			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.productInfo.id = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
 					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
 							: "");
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));

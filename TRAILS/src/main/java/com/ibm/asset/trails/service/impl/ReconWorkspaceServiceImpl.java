@@ -113,7 +113,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			Long installedSoftwareId) {
 		InstalledSoftware is = instSwDAO.findById(installedSoftwareId);
 		return instSwDAO.installedSoftwareList(is.getSoftwareLpar().getId(), is
-				.getSoftware().getSoftwareId());
+				.getProductInfo().getId());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -466,7 +466,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			List<Long> alertIds = new ArrayList<Long>();
 			if (alert.getReconcile().getMachineLevel() == 1) {
 				alertIds.addAll(alertDAO.findMachineLevelAffected(alert
-						.getInstalledSoftware().getSoftware().getSoftwareId(), alert
+						.getInstalledSoftware().getProductInfo().getId(), alert
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getId()));
 			} else {
@@ -509,7 +509,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				List<Long> alertIds = new ArrayList<Long>();
 				if (alert.getReconcile().getMachineLevel() == 1) {
 					alertIds.addAll(alertDAO.findMachineLevelAffected(alert
-							.getInstalledSoftware().getSoftware().getSoftwareId(),
+							.getInstalledSoftware().getProductInfo().getId(),
 							alert.getInstalledSoftware().getSoftwareLpar()
 									.getHardwareLpar().getHardware().getId()));
 				} else {

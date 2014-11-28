@@ -11,7 +11,7 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.ibm.asset.trails.domain.MachineType;
-import com.ibm.asset.trails.domain.Software;
+import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.service.ScheduleFService;
 
 
@@ -51,22 +51,17 @@ public class ScheduleFAjaxAction implements ServletResponseAware, SessionAware {
 
 		StringBuffer result = new StringBuffer();
 		if (label.indexOf("softwareName") != -1) {
-			List<Software> pilist = null;
-			pilist = scheduleFService.findSoftwareBySoftwareName(
+			List<ProductInfo> pilist = null;
+			pilist = scheduleFService.findProductInfoBySoftwareName(
 					  key.toUpperCase() );
 			result.append("<ul>");
 			if (pilist == null || pilist.size() <= 0) {
 				return;
 			} else {
-			for (Software line : pilist) {
-				String status ;
-				if (line.getStatus().equalsIgnoreCase("ACTIVE")){
-					status = "IsACTIVE";
-				} else {
-					status = "INACTIVE";
-				}
+			for (ProductInfo line : pilist) {
+				String status = line.getDeleted()?"INACTIVE":"IsACTIVE";
 				String role = line.getProductRole().toString().equals("SOFTWARE_PRODUCT")?"SWPRODUCT":"COMPONENT";
-				result.append("<li class='prompt'>" + "("+role+")"+line.getSoftwareName().toString()+"(" +status+")"+ "</li>");
+				result.append("<li class='prompt'>" + "("+role+")"+line.getName().toString()+"(" +status+")"+ "</li>");
 			}
 			result.append("</ul>");
 			}

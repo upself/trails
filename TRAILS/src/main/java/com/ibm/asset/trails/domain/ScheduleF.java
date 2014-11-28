@@ -20,12 +20,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "SCHEDULE_F")
 @NamedQueries({
-		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software = :software"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software = :software AND id = :id"),
-		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
+		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND productInfo = :productInfo"),
+		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND productInfo = :productInfo AND id = :id"),
+		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.productInfo WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software = :software AND SF.level = :level") })
+		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.productInfo WHERE SF.account = :account AND SF.productInfo = :productInfo AND SF.level = :level") })
 public class ScheduleF {
 
 	@Id
@@ -53,8 +53,8 @@ public class ScheduleF {
 	private Account account;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID")
-	private Software software;
+	@JoinColumn(name = "SOFTWARE_ID")
+	private ProductInfo productInfo;
 
 	@Column(name = "SOFTWARE_TITLE")
 	private String softwareTitle;
@@ -148,12 +148,12 @@ public class ScheduleF {
 		this.scope = scope;
 	}
 
-	public Software getSoftware() {
-		return software;
+	public ProductInfo getProductInfo() {
+		return productInfo;
 	}
 
-	public void setSoftware(Software software) {
-		this.software = software;
+	public void setProductInfo(ProductInfo productInfo) {
+		this.productInfo = productInfo;
 	}
 
 	public String getSoftwareName() {

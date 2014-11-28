@@ -10,7 +10,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class InstalledSoftware_ {
 	public static volatile SingularAttribute<InstalledSoftware, Long> id;
 	public static volatile SingularAttribute<InstalledSoftware, VSoftwareLpar> softwareLpar;
-	public static volatile SingularAttribute<InstalledSoftware, Software> software;
+	public static volatile SingularAttribute<InstalledSoftware, ProductInfo> productInfo;
 	public static volatile SingularAttribute<InstalledSoftware, DiscrepancyType> discrepancyType;
 	public static volatile SingularAttribute<InstalledSoftware, Integer> users;
 	public static volatile SingularAttribute<InstalledSoftware, Integer> processorCount;
