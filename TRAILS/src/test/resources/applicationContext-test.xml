@@ -53,9 +53,5 @@
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
-	
-	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
-	
-	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
 
 </beans>
