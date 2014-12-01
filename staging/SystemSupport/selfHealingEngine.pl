@@ -2687,7 +2687,7 @@ sub getValidChildLoaderListOnTAPServer{
   push @vaildChildLoaderList,"softwareManualToStagingChild.pl";#7
   push @vaildChildLoaderList,"softwareSignatureToStagingChild.pl";#8
   push @vaildChildLoaderList,"softwareTlcmzToStagingChild.pl";#9
-  push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10
+  #push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10#Added by Larry to remove the softwareDoranaToStagingChild.pl loader from the valid list
   push @vaildChildLoaderList,"scanSoftwareItemToStagingChild.pl";#11
 
   return @vaildChildLoaderList;
