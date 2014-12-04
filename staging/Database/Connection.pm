@@ -115,7 +115,7 @@ sub setDBInfo {
             $dbs{'swasset'}{'password'} = $cfg->getProperty('swasset.password');
             $dbs{'swasset'}{'user'}     = $cfg->getProperty('swasset.user');
             $dbs{'swasset'}{'name'}     = $cfg->getProperty('swasset.name');
-            $dbs{'swasset'}{'schema'}   = 'SWASSET'
+            $dbs{'swasset'}{'schema'}   = 'SWASSET';
 
             $dbs{'staging'}{'password'} = $cfg->getProperty('staging.password');
             $dbs{'staging'}{'user'}     = $cfg->getProperty('staging.user');
