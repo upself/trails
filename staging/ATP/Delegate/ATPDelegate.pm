@@ -25,7 +25,7 @@ sub getData {
     dlog('In getData method of ATPDelegate');
 
     dlog('Acquiring customer number map');
-    my $customerNumberMap = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
+    my ($customerNumberMap, $accountNumberMap) = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
     dlog('Customer number map acquired');
 
     dlog('Acquiring machine type map');
@@ -113,12 +113,10 @@ sub getData {
         my $hwLparCustomerId;
         my $newProcessorCount;
 
-        if ( $customerNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
-            dlog('Customer number is unique, assigning to hardware');
-            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{customerNumber} } } ) {
-                next if $countryCode eq 'count';
-                $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{$countryCode};
-            }
+        if ( $accountNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
+            dlog('Matching account number');
+            
+                $hwCustomerId = $accountNumberMap->{ $rec{customerNumber}->{'customerId'} };
         }
         elsif ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) { 
             dlog("Matching country code found; assigning customer id");
