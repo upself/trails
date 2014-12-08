@@ -286,13 +286,13 @@ my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrail
 #Userids and Passwords used to logon the remote server using Telnet Mode
 #TAPMF Web Application Testing Server
 my $TAPMF_SERVER_USERID   = 'asket';
-my $TAPMF_SERVRE_PASSWORD = 'Zlivtom8';
+my $TAPMF_SERVRE_PASSWORD = 'Tomzliv6';
 #Bravo Web Application PROD Server
 my $BRAVO_SERVER_USERID   = 'asket';
-my $BRAVO_SERVRE_PASSWORD = 'Zlivtom8';
+my $BRAVO_SERVRE_PASSWORD = 'Tomzliv6';
 #Trails Web Application PROD Server
 my $TRAILS_SERVER_USERID   = 'asket';
-my $TRAILS_SERVRE_PASSWORD = 'Zlivtom8';
+my $TRAILS_SERVRE_PASSWORD = 'Tomzliv6';
 
 #Vars
 my $operationErrorFlag = $FALSE;#var used to store operation error flag(TRUE or FALSE)
@@ -2651,7 +2651,7 @@ sub getValidLoaderListOnTAP3Server{
   push @vaildLoaderList,"hardwareToBravo.pl";#5
   push @vaildLoaderList,"hdiskToBravo.pl";#6
   push @vaildLoaderList,"processorToBravo.pl";#7
-  push @vaildLoaderList,"swkbt";#8
+  #push @vaildLoaderList,"swkbt";#8
   #push @vaildLoaderList,"testingTAP.pl";#9 #For testing function purpose only
   
   return @vaildLoaderList;
