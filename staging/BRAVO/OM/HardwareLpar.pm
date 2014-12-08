@@ -30,7 +30,6 @@ sub new {
         ,_vMobilRestrict => undef
         ,_cappedLpar => undef
         ,_virtualFlag => undef
-        ,_action => 0
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -336,12 +335,6 @@ sub virtualFlag {
     return $self->{_virtualFlag};
 }
 
-sub action {
-    my $self = shift;
-    $self->{_action} = shift if scalar @_ == 1;
-    return $self->{_action};
-}
-
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -475,11 +468,6 @@ sub toString {
     $s .= "virtualFlag=";
     if (defined $self->{_virtualFlag}) {
         $s .= $self->{_virtualFlag};
-    }
-    $s .= ",";
-    $s .= "action=";
-    if (defined $self->{_action}) {
-        $s .= $self->{_action};
     }
     $s .= ",";
     $s .= "table=";

@@ -24,7 +24,6 @@
 			<url>http://lexbz181197.cloud.dst.ibm.com:8081/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>nexus</id>
@@ -32,6 +31,7 @@
 			<url>http://localhost:8081/nexus/content/groups/public</url>
 		</pluginRepository>
 	</pluginRepositories>
+
 
 	<dependencies>
 
@@ -253,11 +253,29 @@
 			<version>3.0.3</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>bluepage-jtk</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
 
+		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
+		<dependency> 
+			<groupId>com.ibm</groupId> 
+			<artifactId>bluepages</artifactId> 
+			<version>3.0.3</version> 
+			<scope>system</scope> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bpjtk-v3.0.3_b20090914.jar</systemPath> 
+		</dependency>
 
 	</dependencies>
 

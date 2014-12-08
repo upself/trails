@@ -1,8 +1,11 @@
 package com.ibm.asset.trails.domain;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -34,6 +37,10 @@ public class MainframeFeature extends SoftwareItem {
 	@Basic
 	@Column(name = "SOFTWARE_PRICING_TYPE", length = 10)
 	protected String softwarePricingType;
+
+	@OneToOne(optional = true, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "ID", referencedColumnName = "ID")
+	protected MainframeProductInfo mainframeProductInfo;
 
 	public String geteId() {
 		return eId;
@@ -81,6 +88,15 @@ public class MainframeFeature extends SoftwareItem {
 
 	public void setSoftwarePricingType(String softwarePricingType) {
 		this.softwarePricingType = softwarePricingType;
+	}
+
+	public MainframeProductInfo getMainframeProductInfo() {
+		return mainframeProductInfo;
+	}
+
+	public void setMainframeProductInfo(
+			MainframeProductInfo mainframeProductInfo) {
+		this.mainframeProductInfo = mainframeProductInfo;
 	}
 
 }

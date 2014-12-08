@@ -1,8 +1,11 @@
 package com.ibm.asset.trails.domain;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -41,6 +44,10 @@ public class MainframeVersion extends SoftwareItem {
 	@Basic
 	@Column(name = "IBM_CUSTOMER_AGREEMENT")
 	protected boolean ibmCustomerAgreement;
+
+	@OneToOne(optional = true, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "ID", referencedColumnName = "ID")
+	protected MainframeProductInfo mainframeProductInfo;
 
 	public Integer getVersion() {
 		return version;
@@ -104,6 +111,15 @@ public class MainframeVersion extends SoftwareItem {
 
 	public void setIbmCustomerAgreement(boolean ibmCustomerAgreement) {
 		this.ibmCustomerAgreement = ibmCustomerAgreement;
+	}
+
+	public MainframeProductInfo getMainframeProductInfo() {
+		return mainframeProductInfo;
+	}
+
+	public void setMainframeProductInfo(
+			MainframeProductInfo mainframeProductInfo) {
+		this.mainframeProductInfo = mainframeProductInfo;
 	}
 
 }

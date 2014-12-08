@@ -1,5 +1,4 @@
 package com.ibm.asset.trails.domain;
-
 import java.io.Serializable;
 
 import javax.persistence.*;

@@ -132,6 +132,7 @@ sub setDBInfo {
             $dbs{'cndb'}{'name'}     = $cfg->getProperty('cndb.name');
             $dbs{'cndb'}{'schema'}   = $cfg->getProperty('cndb.name');
 
+
             $dbs{'swcm'}{'password'} = $cfg->getProperty('swcm.password');
             $dbs{'swcm'}{'user'}     = $cfg->getProperty('swcm.user');
             $dbs{'swcm'}{'name'}     = $cfg->getProperty('swcm.name');
