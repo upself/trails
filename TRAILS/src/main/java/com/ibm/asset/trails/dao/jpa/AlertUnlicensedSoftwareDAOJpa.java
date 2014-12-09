@@ -165,30 +165,30 @@ public class AlertUnlicensedSoftwareDAOJpa extends
 
     @SuppressWarnings("unchecked")
     public List<Long> findAffectedAlertList(Account pAccount,
-            List<Long> llProductInfoId) {
+            List<Long> llSoftwareId) {
         return entityManager.createNamedQuery("alertUnlicensedSwListAll")
                 .setParameter("account", pAccount)
-                .setParameter("productInfoIdList", llProductInfoId)
+                .setParameter("softwareIdList", llSoftwareId)
                 .getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findAffectedAlertList(Account pAccount,
-            List<Long> llProductInfoId, String psRunOn) {
+            List<Long> llSoftwareId, String psRunOn) {
         return entityManager
                 .createNamedQuery("alertUnlicensedSwListByOwner")
                 .setParameter("account", pAccount)
-                .setParameter("productInfoIdList", llProductInfoId)
+                .setParameter("softwareIdList", llSoftwareId)
                 .setParameter("owner",
                         psRunOn.equalsIgnoreCase("IBMHW") ? "IBM" : "CUSTO")
                 .getResultList();
     }
 
     @SuppressWarnings("unchecked")
-    public List<Long> findMachineLevelAffected(Long productId, Long hardwareId) {
-        String query = "select alert.id from AlertUnlicensedSw alert join alert.installedSoftware instSw join alert.reconcile reconcile join instSw.softwareLpar swLpar join swLpar.hardwareLpar hwLpar join hwLpar.hardware hardware join instSw.productInfo product where reconcile.machineLevel = 1 and product.id = :productId and hardware.id = :hardwareId";
+    public List<Long> findMachineLevelAffected(Long softwareId, Long hardwareId) {
+        String query = "select alert.id from AlertUnlicensedSw alert join alert.installedSoftware instSw join alert.reconcile reconcile join instSw.softwareLpar swLpar join swLpar.hardwareLpar hwLpar join hwLpar.hardware hardware join instSw.software sw where reconcile.machineLevel = 1 and sw.softwareId = :softwareId and hardware.id = :hardwareId";
         return entityManager.createQuery(query)
-                .setParameter("productId", productId)
+                .setParameter("softwareId", softwareId)
                 .setParameter("hardwareId", hardwareId).getResultList();
     }
 

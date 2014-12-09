@@ -11,7 +11,7 @@ public class ScheduleFH_ {
 	public static volatile SingularAttribute<ScheduleFH, Long> id;
 	public static volatile SingularAttribute<ScheduleFH, ScheduleF> scheduleF;
 	public static volatile SingularAttribute<ScheduleFH, Account> account;
-	public static volatile SingularAttribute<ScheduleFH, ProductInfo> productInfo;
+	public static volatile SingularAttribute<ScheduleFH, Software> software;
 	public static volatile SingularAttribute<ScheduleFH, String> softwareTitle;
 	public static volatile SingularAttribute<ScheduleFH, String> softwareName;
 	public static volatile SingularAttribute<ScheduleFH, String> manufacturer;

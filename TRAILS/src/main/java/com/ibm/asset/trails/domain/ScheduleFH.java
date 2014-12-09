@@ -46,8 +46,8 @@ public class ScheduleFH {
 	private Account account;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID")
-	private ProductInfo productInfo;
+	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID")
+	private Software software;
 
 	@Column(name = "SOFTWARE_TITLE")
 	private String softwareTitle;
@@ -186,12 +186,12 @@ public class ScheduleFH {
   	this.scope = scope;
   }
 
-	public ProductInfo getProductInfo() {
-  	return productInfo;
+	public Software getSoftware() {
+  	return software;
   }
 
-	public void setProductInfo(ProductInfo productInfo) {
-  	this.productInfo = productInfo;
+	public void setSoftware(Software software) {
+  	this.software = software;
   }
 
 	public String getSoftwareName() {

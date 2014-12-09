@@ -31,7 +31,7 @@ public class InstalledSoftware extends AbstractDomainEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SOFTWARE_ID")
-	private ProductInfo productInfo;
+	private Software software;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DISCREPANCY_TYPE_ID")
@@ -71,8 +71,8 @@ public class InstalledSoftware extends AbstractDomainEntity {
 		return remoteUser;
 	}
 
-	public ProductInfo getProductInfo() {
-		return productInfo;
+	public Software getSoftware() {
+		return software;
 	}
 
 	public String getStatus() {
@@ -99,8 +99,8 @@ public class InstalledSoftware extends AbstractDomainEntity {
 		this.remoteUser = remoteUser;
 	}
 
-	public void setProductInfo(ProductInfo productInfo) {
-		this.productInfo = productInfo;
+	public void setSoftware(Software software) {
+		this.software = software;
 	}
 
 	public void setStatus(String status) {
@@ -141,12 +141,12 @@ public class InstalledSoftware extends AbstractDomainEntity {
 			return false;
 		InstalledSoftware castOther = (InstalledSoftware) other;
 		return new EqualsBuilder().append(softwareLpar, castOther.softwareLpar)
-				.append(productInfo, castOther.productInfo).isEquals();
+				.append(software, castOther.software).isEquals();
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(softwareLpar).append(productInfo)
+		return new HashCodeBuilder().append(softwareLpar).append(software)
 				.toHashCode();
 	}
 

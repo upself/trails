@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "RECON_CUSTOMER_SW")
-@NamedQuery(name = "reconCustomerSwExists", query = "FROM ReconCustomerSoftware WHERE productInfo = :productInfo AND account = :account")
+@NamedQuery(name = "reconCustomerSwExists", query = "FROM ReconCustomerSoftware WHERE software = :software AND account = :account")
 public class ReconCustomerSoftware implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -28,8 +28,8 @@ public class ReconCustomerSoftware implements Serializable {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID")
-	private ProductInfo productInfo;
+	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID")
+	private Software software;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
@@ -84,11 +84,11 @@ public class ReconCustomerSoftware implements Serializable {
 		this.remoteUser = remoteUser;
 	}
 
-	public ProductInfo getProductInfo() {
-		return productInfo;
+	public Software getSoftware() {
+		return software;
 	}
 
-	public void setProductInfo(ProductInfo productInfo) {
-		this.productInfo = productInfo;
+	public void setSoftware(Software software) {
+		this.software = software;
 	}
 }

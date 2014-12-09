@@ -43,7 +43,7 @@ public class LicenseDAOJpaTest {
             System.out.println(o.getClass());
         }
 
-        assertEquals(data.getFullListSize(), 3074);
+        assertEquals(data.getFullListSize(), 3072);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
@@ -56,7 +56,7 @@ public class LicenseDAOJpaTest {
         licenseDAO.freePoolWithParentPaginatedList(data, accountId, startIndex,
                 objectsPerPage, sort, dir,null);
 
-        assertEquals(data.getFullListSize(), 3074);
+        assertEquals(data.getFullListSize(), 3072);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
@@ -69,7 +69,7 @@ public class LicenseDAOJpaTest {
         licenseDAO.paginatedList(data, accountId, startIndex, objectsPerPage, sort,
                 dir);
 
-        assertEquals(data.getFullListSize(), 3458);
+        assertEquals(data.getFullListSize(), 3456);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 

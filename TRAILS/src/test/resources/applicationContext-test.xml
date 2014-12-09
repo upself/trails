@@ -8,15 +8,13 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config />
-    <context:component-scan base-package="com.ibm.asset.trails.*" />
-    <!--<context:component-scan base-package="com.ibm.asset.trails.domain" />-->
-	
+    <context:component-scan base-package="com.ibm.asset.trails.dao" />
 	<bean
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	
+
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -29,51 +27,35 @@
 			</list>
 		</property>
 	</bean>
-	
-	<!--<bean id="alertUnlicensedSoftwareDAO" class="com.ibm.asset.trails.dao.jpa.AlertUnlicensedSoftwareDAOJpa" />
-	<bean id="licenseDAO" class="com.ibm.asset.trails.dao.jpa.LicenseDAOJpa" />
-	<bean id="reconcileDAO" class="com.ibm.asset.trails.dao.jpa.ReconcileDAOJpa" />-->
-	
-	
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<!--<property name="packagesToScan" value="com.ibm.asset.trails.domain"/>-->
 		<property name="persistenceUnitName" value="trailspd"/>
 	</bean>
 
 	<bean id="hibernateJpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="database" value="${pd.database}" />
-		<property name="showSql" value="${pd.showSql}" />
+		<property name="database" value="${database}" />
+		<property name="showSql" value="${showSql}" />
 		<property name="databasePlatform" value="com.ibm.asset.trails.domain.DB2Dialect" />
 	</bean>
 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="${pd.driverClassName}" />
-		<property name="url" value="${pd.url}" />
-		<property name="username" value="${pd.username}" />
-		<property name="password" value="${pd.password}" />
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
-		<qualifier value="trailspd"/>
 	</bean>
 	
-	<tx:annotation-driven transaction-manager="transactionManager2" />
-	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory2" />
-		<qualifier value="trailsst"/>
-	</bean>
-	<bean id="entityManagerFactory2"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<property name="persistenceUnitName" value="trailsst"/>
-	</bean>
+	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
 	
+	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
+
 </beans>
