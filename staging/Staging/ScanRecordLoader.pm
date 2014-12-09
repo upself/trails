@@ -40,18 +40,18 @@ sub load {
 
     $self->SUPER::load( \%args, $job );
 
-    ilog('Get the staging connection');
-    my $stagingConnection = Database::Connection->new('staging');
-    ilog('Got Staging connection');
-    
-    if ( $self->SUPER::bankAccount->type eq 'TADZ' ) {
-    	ilog('TADz bank account -- loading techImgId');
-    	ScanTADzDelegate->loadTechImgId($stagingConnection);
-    }
-    
-
     my $connection;
     eval {
+
+    	ilog('Get the staging connection');
+    	my $stagingConnection = Database::Connection->new('staging');
+    	ilog('Got Staging connection');
+    
+    	if ( $self->SUPER::bankAccount->type eq 'TADZ' ) {
+    		ilog('TADz bank account -- loading techImgId');
+    		ScanTADzDelegate->loadTechImgId($stagingConnection);
+    	}
+    	
         if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' )
         {
             $connection = Database::Connection->new( $self->SUPER::bankAccount );

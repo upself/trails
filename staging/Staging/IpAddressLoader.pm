@@ -36,12 +36,14 @@ sub load {
 
     $self->SUPER::load( \%args, $job );
 
-    ilog('Acquiring the staging connection');
-    my $stagingConnection = Database::Connection->new('staging');
-    ilog('Staging connection acquired');
-
-    my $connection;
     eval {
+
+    	ilog('Acquiring the staging connection');
+    	my $stagingConnection = Database::Connection->new('staging');
+    	ilog('Staging connection acquired');
+
+    	my $connection;
+
         if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' )
         {
             $connection = Database::Connection->new( $self->SUPER::bankAccount );
