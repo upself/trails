@@ -371,7 +371,10 @@ my $queryReLic = "SELECT * FROM recon_license WHERE license_id = ?";
 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
 my $FAIL    = 0;
 my $SUCCESS = 1;
-my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^softwareDoranaToStaging.pl^scanSoftwareItemToStaging.pl/";
+#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list Start
+#my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^softwareDoranaToStaging.pl^scanSoftwareItemToStaging.pl/";
+my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^scanSoftwareItemToStaging.pl/";
+#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list End
 my $LOADER_REPLACE_STRING  = ".pl";
 my $LOADER_REPLACED_STRING = "Child.pl";
 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
@@ -1903,7 +1906,7 @@ sub coreOperationProcess{
 		 print LOG "The Staging Bravo Data SYNC - There is no account defined with account number: {$accountNumber}\n";
 	   }#end if($certainAccountNumberCountNumber == 0)
 	   elsif($certainAccountNumberCountNumber == 1){
-		 print LOG "The Staging Bravo Data SYNC - There is one account defined with account number: {$accountNumber}\n";
+		 print LOG "The Staging Bravo Data SYNC - There is one account defined with account number: {$accountNumber}\n";
 	   }#end elsif($certainAccountNumberCountNumber == 1)
 	   else{
 		 $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
@@ -2379,6 +2382,7 @@ sub coreOperationProcess{
         $operationStartedFlag = $TRUE;#Operation has been started to process
       }
 	  print LOG "Start of Clean up recon queues data operation. \n";
+
       print LOG "Starting query 1\n";
       $bravoConnection->prepareSqlQuery('Recon duplicate 1', $RECON_QUEUE_DUPLICATE_DELETE_1);
       my $sth = $bravoConnection->sql->{'Recon duplicate 1'};
@@ -2413,9 +2417,9 @@ sub coreOperationProcess{
       $bravoConnection->prepareSqlQuery('Recon duplicate 6', $RECON_QUEUE_DUPLICATE_DELETE_6);
       $sth = $bravoConnection->sql->{'Recon duplicate 6'};
       $sth->execute();
-      $sth->finish;
       print LOG "End of query 6\n";
-      print LOG "End of Clean up recon queues data operation. \n";
+      print LOG "Starting query 2\n";
+      $sth->finish;
 	  $operationResultFlag = $OPERATION_SUCCESS;
 	  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	  print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
@@ -2621,7 +2625,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"expiredMaintManager.pl";#15
   push @vaildLoaderList,"expiredScansManager.pl";#16
   push @vaildLoaderList,"scanRecordToLpar.pl";#17
-  push @vaildLoaderList,"softwareDoranaToStaging.pl";#18
+  #push @vaildLoaderList,"softwareDoranaToStaging.pl";#18#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list
   push @vaildLoaderList,"licenseToBravo.pl";#19
   push @vaildLoaderList,"licTypeToBravo.pl";#20
   push @vaildLoaderList,"scanSoftwareItemToStaging.pl";#21
@@ -2683,7 +2687,7 @@ sub getValidChildLoaderListOnTAPServer{
   push @vaildChildLoaderList,"softwareManualToStagingChild.pl";#7
   push @vaildChildLoaderList,"softwareSignatureToStagingChild.pl";#8
   push @vaildChildLoaderList,"softwareTlcmzToStagingChild.pl";#9
-  push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10
+  #push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10#Added by Larry to remove the softwareDoranaToStagingChild.pl loader from the valid list
   push @vaildChildLoaderList,"scanSoftwareItemToStagingChild.pl";#11
 
   return @vaildChildLoaderList;
