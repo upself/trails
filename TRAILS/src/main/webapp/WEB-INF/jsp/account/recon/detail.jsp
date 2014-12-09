@@ -31,7 +31,7 @@
 	<tr>
 		<td>Installed product name:</td>
 		<td><s:property
-			value="reconcile.installedSoftware.productInfo.name" /></td>
+			value="reconcile.installedSoftware.software.softwareName" /></td>
 	</tr>
 	<tr>
 		<td>Action performed:</td>
@@ -52,7 +52,7 @@
 	<tr>
 		<td>Covered by:</td>
 		<td><s:property
-			value="reconcile.parentInstalledSoftware.productInfo.name" /></td>
+			value="reconcile.parentInstalledSoftware.software.softwareName" /></td>
 	</tr>
 	<tr>
 		<td>Comment:</td>

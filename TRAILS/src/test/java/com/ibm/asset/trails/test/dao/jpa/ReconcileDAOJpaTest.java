@@ -17,11 +17,11 @@ import com.ibm.asset.trails.domain.Reconcile;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class ReconcileDAOJpaTests {
+public class ReconcileDAOJpaTest {
 
     @Autowired
     private ReconcileDAO reconcileDAO;
-    private final Long reconcileId = 21083987L;
+    private final Long reconcileId = 38477347L;
 
     @Test
     public void testReconcileDetail() {

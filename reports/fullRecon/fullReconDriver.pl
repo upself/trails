@@ -131,9 +131,9 @@ sl_customer.account_number
 ,CASE WHEN AUS.Open = 0 THEN 'Blue'
 WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 90 THEN 'Red'
 WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 45 THEN 'Yellow'
-ELSE 'Green' END
+ELSE 'Green' END as Alert_status
 ,aus.creation_time
-, case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) else days(aus.record_time) - days(aus.creation_time) end
+, case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) else days(aus.record_time) - days(aus.creation_time) end as Alert_duration
 ,sl.name as swLparName
 ,h.serial as hwSerial
 ,mt.name as hwMachType
@@ -147,7 +147,7 @@ ELSE 'Green' END
 ,hl.SPLA
 ,hl.VIRTUAL_FLAG
 ,hl.VIRTUAL_MOBILITY_RESTRICTION
-,hl.OS_TYPE
+,sl.OS_TYPE
 ,hl.SYSPLEX
 ,hl.CLUSTER_TYPE
 ,hl.BACKUPMETHOD
@@ -179,11 +179,11 @@ when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then 'DUAL-CORE'
 when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then 'QUAD-CORE'
 when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE'
 else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode
-,instSi.name as instSwName
+,s.software_name as instSwName
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 where sf.customer_id = $customerId
 and sf.status_id=2
-and sf.software_name = instSi.name
+and sf.software_name = s.software_name
 and ( ( sf.level = 'PRODUCT' )
 or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' ))
 or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' ))
@@ -199,22 +199,22 @@ when rt.is_manual = 1 then rt.name || '(MANUAL)' end
 ,r.remote_user as reconUser
 ,r.record_time as reconTime
 ,case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments
-,parentSi.name as parentName
+,parentS.software_name as parentName
 ,c.account_number as licAccount
 ,l.full_desc as licenseDesc
 ,case when l.id is null then '' when lsm.id is null then 'No' else 'Yes' end as catalogMatch
 ,l.prod_name as licProdName
 ,l.version as licVersion
-,CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description)
+,CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description) as Capacity_type
 ,l.environment as Environment
 ,ul.used_quantity
 ,case when r.id is null then ''
-when r.machine_level = 0 then 'No' else 'Yes' end
-,REPLACE(RTRIM(CHAR(DATE(L.Expire_Date), USA)), '/', '-')
+when r.machine_level = 0 then 'No' else 'Yes' end as Mach_level
+,REPLACE(RTRIM(CHAR(DATE(L.Expire_Date), USA)), '/', '-') as Maint_expir_date
 ,l.po_number
 ,l.cpu_serial
 ,case when l.ibm_owned = 0 then 'Customer'
-when l.ibm_owned = 1 then 'IBM' else '' end
+when l.ibm_owned = 1 then 'IBM' else '' end as License_owner
 ,l.ext_src_id
 ,l.record_time
 from
@@ -225,19 +225,17 @@ from
  inner join eaadmin.hardware h on hl.hardware_id = h.id
  inner join eaadmin.machine_type mt on h.machine_type_id = mt.id
  inner join eaadmin.installed_software is on sl.id = is.software_lpar_id
- inner join eaadmin.product_info instPi on is.software_id = instPi.id
- inner join eaadmin.product instP on instPi.id = instP.id
- inner join eaadmin.software_item instSi on instP.id = instSi.id
- inner join eaadmin.manufacturer instSwMan on instP.manufacturer_id = instSwMan.id
+ inner join eaadmin.software s on is.software_id = s.software_id
+
+ inner join eaadmin.manufacturer instSwMan on s.manufacturer_id = instSwMan.id
  inner join eaadmin.discrepancy_type dt on is.discrepancy_type_id = dt.id
  inner join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id
  left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id = am.id
  left outer join eaadmin.installed_software parent on r.parent_installed_software_id = parent.id
- left outer join eaadmin.product_info parentPi on parent.software_id = parentPi.id
- left outer join eaadmin.product parentP on parentPi.id = parentP.id
- left outer join eaadmin.software_item parentSi on parentSi.id = parentP.id
+ left outer join eaadmin.software parentS on parent.software_id = parentS.software_id
+
  left outer join eaadmin.reconcile_used_license rul on r.id = rul.reconcile_id
  left outer join eaadmin.used_license ul on rul.used_license_id = ul.id
  left outer join eaadmin.license l on ul.license_id = l.id
@@ -252,7 +250,7 @@ where
  sl.customer_id = $customerId and hl.customer_id = $customerId and sl.customer_id = sl_customer.customer_id
 and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id))
 
- ORDER BY 4 desc, parentSi.name
+ ORDER BY 4 desc, parentS.software_name
 
 with ur
 ;";

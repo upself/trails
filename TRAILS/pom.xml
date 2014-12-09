@@ -24,8 +24,6 @@
 			<url>http://lexbz181197.cloud.dst.ibm.com:8081/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
-
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>nexus</id>
@@ -239,13 +237,21 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.7</version>
 		</dependency>
-
 		<dependency>
 			<groupId>displaytag</groupId>
 			<artifactId>displaytag-export-poi-trails</artifactId>
 			<version>1.2</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>bluepage-jtk</artifactId>
+			<version>3.0.3</version>
+		</dependency>
 		<dependency>
 			<groupId>com.ibm</groupId>
 			<artifactId>displaytag</artifactId>
@@ -270,14 +276,7 @@
 			<scope>system</scope> 
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bpjtk-v3.0.3_b20090914.jar</systemPath> 
 		</dependency>
-		<dependency> 
-			<groupId>com.ibm</groupId> 
-			<artifactId>displaytag</artifactId> 
-			<version>1.0</version> 
-			<scope>system</scope> 
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath> 
-		</dependency>
-		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
+
 	</dependencies>
 
 	<build>
@@ -298,6 +297,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>

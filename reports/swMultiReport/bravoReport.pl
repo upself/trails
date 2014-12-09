@@ -821,14 +821,10 @@ from
                        end
                        as processor_count
                       ,b.scantime
-                      ,c.name as software_name
+                      ,s.software_name as software_name
                       ,SwMan.name as manufacturer
-                      ,case
-                          when pi.licensable=1 then 'LICENSABLE'
-                          else 'UN-LICENSABLE'
-                       end
-                       as level
-                      ,pi.priority
+                      ,s.level as level
+                      ,s.priority
                       ,b.version
                       ,d.name
                       ,e.software_category_name
@@ -840,9 +836,9 @@ from
                       ,eaadmin.v_installed_software b
                       left outer join eaadmin.software_lpar_eff g
                           on g.software_lpar_id = b.software_lpar_id
-                      ,eaadmin.software_item c
-                      ,eaadmin.product_info pi
-                      ,eaadmin.product instP
+                          
+                      ,eaadmin.software s
+                      
                       ,eaadmin.manufacturer SwMan
                       ,eaadmin.bank_account d
                       ,eaadmin.software_category e
@@ -856,13 +852,11 @@ from
                       and b.software_lpar_status = b.inst_status
                       and b.inst_status = e.status
                       and a.customer_id = b.customer_id
-                      and b.software_id = c.id
-                      and c.id = pi.id
+                      and b.software_id = s.software_id
                       and b.bank_account_id = d.id
-                      and pi.software_category_id = e.software_category_id
+                      and s.software_category_id = e.software_category_id
                       and b.discrepancy_type_id = f.id
-                      and instp.MANUFACTURER_ID = SwMan.id
-                      and pi.id = instp.id
+                      and s.MANUFACTURER_ID = SwMan.id
                      ) as ol 
 	      		    left outer join eaadmin.hw_sw_composite h
                         on h.software_lpar_id = ol.software_lpar_id
