@@ -39,10 +39,11 @@ sub load {
     dlog(' bankaccount id '. $bankAccount->id);
     
     my $dieMsg = undef;
+    my $stagingConnection;
 	eval {
     
 		ilog('Acquiring the staging connection');
-		my $stagingConnection = Database::Connection->new('staging');
+		$stagingConnection = Database::Connection->new('staging');
 		ilog('Staging connection acquired');
 
 		ilog('Preparing the source data');
