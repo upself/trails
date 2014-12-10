@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-
 /**
  * The persistent class for the SOFTWARE database table.
  * 
@@ -214,9 +213,9 @@ public class Software extends AbstractDomainEntity {
 		if (!(other instanceof Software))
 			return false;
 		Software castOther = (Software) other;
+
 		return new EqualsBuilder().append(softwareId, castOther.softwareId)
 				.isEquals();
-
 	}
 
 	@Override
