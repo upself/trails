@@ -6,6 +6,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
+	<name>BRAVO</name>
+	<url>http://bravo.boulder.ibm.com/BRAVO</url>
+	<description>BRAVO web application</description>
 
 
 	<!-- Source repositories configuration: private maven server -->
@@ -26,6 +29,7 @@
 	</pluginRepositories>
 
 	<build>
+		<finalName>BRAVO</finalName>
 		<sourceDirectory>JavaSource</sourceDirectory>
 		<resources>
 			<resource>
