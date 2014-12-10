@@ -163,18 +163,14 @@ public class ReconServiceImpl implements ReconService {
 		}
 		return false;
 	}
-
-	public int validateScheduleFowner(AlertUnlicensedSw alert) {
-		ScheduleF scheduleF = getScheduleFItem(alert.getInstalledSoftware()
-				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
-				.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				alert.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getHardware().getMachineType()
-						.getName(), alert.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+	
+	public int validateScheduleFowner(AlertUnlicensedSw alert){
+		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				    alert.getInstalledSoftware().getSoftware().getSoftwareName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()

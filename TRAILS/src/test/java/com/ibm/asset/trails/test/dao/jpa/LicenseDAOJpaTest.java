@@ -43,7 +43,7 @@ public class LicenseDAOJpaTest {
             System.out.println(o.getClass());
         }
 
-        assertEquals(data.getFullListSize(), 3074);
+        assertEquals(data.getFullListSize(), 3072);
         assertEquals(data.getList().size(), objectsPerPage);
     }
 

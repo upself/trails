@@ -34,7 +34,6 @@
 	</pluginRepositories>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -253,12 +252,37 @@
 			<version>3.0.3</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>bluepage-jtk</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
 
-
+		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->
+		<dependency> 
+			<groupId>com.ibm</groupId> 
+			<artifactId>bluepages</artifactId> 
+			<version>3.0.3</version> 
+			<scope>system</scope> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bpjtk-v3.0.3_b20090914.jar</systemPath> 
+		</dependency>
+		<dependency> 
+			<groupId>com.ibm</groupId> 
+			<artifactId>displaytag</artifactId> 
+			<version>1.0</version> 
+			<scope>system</scope> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath> 
+		</dependency>
+		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
 	</dependencies>
 
 	<build>
