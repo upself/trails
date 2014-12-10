@@ -28,6 +28,7 @@
 	</pluginRepositories>
 
 	<build>
+		<finalName>BRAVO</finalName>
 		<sourceDirectory>JavaSource</sourceDirectory>
 		<resources>
 			<resource>
