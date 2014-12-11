@@ -123,6 +123,9 @@
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
 	</security-constraint>
 
 	<security-constraint>
@@ -138,7 +141,7 @@
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
-		 
+
 		<auth-constraint>
 			<description>Tool Users</description>
 			<role-name>com.ibm.tap.asset</role-name>
@@ -149,10 +152,9 @@
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
-	<!-- 	<user-data-constraint>
+		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
-		-->
 	</security-constraint>
 
 	<security-constraint>
@@ -169,7 +171,7 @@
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-		</user-data-constraint>	
+		</user-data-constraint>
 	</security-constraint>
 
 	<login-config>
