@@ -21,6 +21,7 @@ sub offline_test_1 : Tests(6) {
 	is($class->processorCountLogic(1),1, "test offline 1 => undef");
 	is($class->processorCountLogic(12.1231),12, "test offline 12.1231 => 12");
 	is($class->processorCountLogic(0.1241),undef, "test offline 0.1241 => undef");
-
+	is($class->processorCountLogic(-1.1241),undef, "test offline -1.1241 => undef");
+	is($class->processorCountLogic(-6),undef, "test offline -6 => undef");
 }
 1;
