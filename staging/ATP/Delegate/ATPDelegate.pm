@@ -575,12 +575,15 @@ sub processorCountLogic {
 	    ###Continue if the processor count is not defined
         if ( ( !defined $effProc ) || ( $effProc eq '' ) ) {
             dlog('Effective processor is blank');
-            return undef
+            return undef;
         }
 
         my $processorCount = ( split( /\./, $effProc ) )[0];
         dlog("processorCount=$processorCount");
 
+		if($processorCount =~ m/^-/) {
+			return undef;
+		}
         ###Continue if the processor count is zero
         if ( $processorCount eq '0' ) {
             dlog('processor count is 0...skipping');
