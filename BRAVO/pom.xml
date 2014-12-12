@@ -317,9 +317,14 @@
 			<version>1.7</version>
 		</dependency>
 		<dependency>
-			<groupId>jstl</groupId>
+			<groupId>com.ibm.bravo.unknown-dependency</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<version>unknown</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.bravo.unknown-dependency</groupId>
+			<artifactId>jstl_el</artifactId>
+			<version>unknown</version>
 		</dependency>
 		<dependency>
 			<groupId>dwr</groupId>
