@@ -5,6 +5,9 @@
 	<artifactId>SignatureBank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
+	<name>SignatureBank</name>
+	<url>http://trails.boulder.ibm.com/SignatureBank</url>
+	<description>SignatureBank web application</description>
 
 	<!-- Source repositories configuration: private maven server -->
 	<repositories>
@@ -25,6 +28,7 @@
 	
 <!-- Maven BUILD TEST INSTALL configuration -->
 	<build>
+		<finalName>SignatureBank</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
