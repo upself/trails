@@ -11,7 +11,7 @@ sub startup : Tests(startup => 1) {
     use_ok $test->class;
 }
 
-sub offline_test_1 : Tests(6) {
+sub offline_test_1 : Tests(8) {
 	my $test  = shift;
 	my $class = $test->class;
 	
