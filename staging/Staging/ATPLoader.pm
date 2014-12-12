@@ -99,7 +99,7 @@ sub prepareSourceData {
     eval {
         $atpConnection = Database::Connection->new( $self->SUPER::bankAccount );
         $self->atpData(
-                        ATPDelegate->getData(
+                        ATP::Delegate::ATPDelegate->getData(
                                               $atpConnection,              $self->SUPER::testMode,
                                               $self->SUPER::loadDeltaOnly, $hwDate,
                                               $lparDate

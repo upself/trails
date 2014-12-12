@@ -1,4 +1,4 @@
-package ATPDelegate;
+package ATP::Delegate::ATPDelegate;
 
 use strict;
 use Base::Utils;
@@ -98,7 +98,7 @@ sub getData {
         }
 
         ###We don't want stuff thats not in our customer number map
-        if ( !exists $customerNumberMap->{ $rec{customerNumber} } ) {
+        if ( (!exists $customerNumberMap->{ $rec{customerNumber} }) && (!exists $accountNumberMap->{ $rec{customerNumber} })) {
             dlog('Customer number does not map to cndb customer');
             next;
         }
@@ -112,39 +112,17 @@ sub getData {
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
-
-        if ( $accountNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
-            dlog('Matching account number');
-            
-                $hwCustomerId = $accountNumberMap->{ $rec{customerNumber}->{'customerId'} };
+        
+        $hwCustomerId = $self->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec);
+        
+        if($hwCustomerId == undef) {
+        	next;
         }
-        elsif ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) { 
-            dlog("Matching country code found; assigning customer id");
-            $hwCustomerId = $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} };
-        }
-        else {
-            dlog("No unique customer number/country code defined, skipping");
-            next;
-        }
-
-        if ( !defined $customerNumberMap->{ $rec{lparCustomerNumber} } ) {
-            dlog( 'LPAR customer number is not defined in cndb, reverting to hardware customer number' );
-            $hwLparCustomerId = $hwCustomerId;
-        }
-        elsif ( $customerNumberMap->{ $rec{lparCustomerNumber} }->{'count'} == 1 ) {
-            dlog('Lpar Customer number is unique, assigning to hardware');
-            foreach my $countryCode ( keys %{ $customerNumberMap->{ $rec{lparCustomerNumber} } } ) {
-                next if $countryCode eq 'count';
-                $hwLparCustomerId = $customerNumberMap->{ $rec{lparCustomerNumber} }->{$countryCode};
-            }
-        }
-        elsif ( defined $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} } ) {
-            dlog("Matching country code found; assigning customer id");
-            $hwLparCustomerId = $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} };
-        }
-        else {
-            dlog( "No unique customer number/country code defined for lpar, assigining hw customer id" );
-            $hwLparCustomerId = $hwCustomerId;
+             
+        $hwLparCustomerId = $self->getHWLparCustomerId($customerNumberMap, $accountNumberMap,%rec);
+        
+        if($hwLparCustomerId == undef) {
+        	$hwLparCustomerId = $hwCustomerId;
         }
         
         if ($rec{processorCount} - $rec{nbrFreeProcessorCores} >= 0 ) {
@@ -266,20 +244,14 @@ sub getData {
             dlog( 'Found lpar twice ' . $hardwareLpar->toString );
         }
 
-        ###Continue if the processor count is not defined
-        if ( ( !defined $rec{effProc} ) || ( $rec{effProc} eq '' ) ) {
-            dlog('Effective processor is blank');
-            next;
-        }
+		my $processorCount = processorCountLogic($rec{effProc});
+			
+		if ($processorCount == undef) {
+			dlog("skipping");
+			next;
+		}
+		
 
-        my $processorCount = ( split( /\./, $rec{effProc} ) )[0];
-        dlog("processorCount=$processorCount");
-
-        ###Continue if the processor count is zero
-        if ( $processorCount eq '0' ) {
-            dlog('processor count is 0...skipping');
-            next;
-        }
 
         ###Build our effective processor count list
         my $effectiveProcessor = new Staging::OM::HardwareLparEff();
@@ -561,6 +533,61 @@ sub queryATPDeltaData {
     ';
     dlog("queryATPDeltaData=$query");
     return ( 'atpData', $query, \@fields );
+}
+
+sub getHWCustomerId {
+	    my ( $self, $customerNumberMap, $accountNumberMap, %rec ) = @_;
+	    
+	    if ( $accountNumberMap->{ $rec{customerNumber} }->{'count'} == 1 ) {
+            dlog('Matching account number');
+            return $accountNumberMap->{ $rec{customerNumber} }->{'customerId' };
+        }
+        elsif ( defined $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} } ) { 
+            dlog("Matching country code found; assigning customer id");
+            return $customerNumberMap->{ $rec{customerNumber} }->{ $rec{country} };
+        }
+        else {
+            dlog("No unique customer number/country code defined, skipping");
+            return undef
+        }
+}
+
+sub getHWLparCustomerId {
+	    my ( $self, $customerNumberMap, $accountNumberMap, %rec ) = @_;
+	    
+	    if ( $accountNumberMap->{ $rec{lparCustomerNumber} }->{'count'} == 1 ) {
+            dlog('Matching account number');
+            return $accountNumberMap->{ $rec{lparCustomerNumber} }->{'customerId' };
+        }
+        elsif ( defined $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} } ) { 
+            dlog("Matching country code found; assigning customer id");
+            return $customerNumberMap->{ $rec{lparCustomerNumber} }->{ $rec{country} };
+        }
+        else {
+            dlog("No unique customer number/country code defined, skipping");
+            return undef
+        }
+}
+
+sub processorCountLogic {
+		my ( $self, $effProc) = @_;
+		
+	    ###Continue if the processor count is not defined
+        if ( ( !defined $effProc ) || ( $effProc eq '' ) ) {
+            dlog('Effective processor is blank');
+            return undef
+        }
+
+        my $processorCount = ( split( /\./, $effProc ) )[0];
+        dlog("processorCount=$processorCount");
+
+        ###Continue if the processor count is zero
+        if ( $processorCount eq '0' ) {
+            dlog('processor count is 0...skipping');
+            return undef;
+        }
+	
+		return $processorCount;
 }
 
 1;
