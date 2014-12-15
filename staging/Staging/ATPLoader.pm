@@ -41,13 +41,13 @@ sub load {
     my $job = "ATP TO STAGING";
 
     $self->SUPER::load( \%args, $job );
-
-    ilog('Get the staging connection');
-    my $stagingConnection = Database::Connection->new('staging');
-    ilog('Got Staging connection');
-
+	my $stagingConnection;
     my $dieMsg = undef;
     eval {
+    	ilog('Get the staging connection');
+    	$stagingConnection = Database::Connection->new('staging');
+    	ilog('Got Staging connection');
+
         ilog('Preparing the source data');
         $self->prepareSourceData($stagingConnection);
         ilog('Source data prepared');

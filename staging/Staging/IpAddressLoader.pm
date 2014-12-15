@@ -35,13 +35,13 @@ sub load {
     my $job = $self->SUPER::bankAccountName . " IP ADDRESS PULL";
 
     $self->SUPER::load( \%args, $job );
-
-    ilog('Acquiring the staging connection');
-    my $stagingConnection = Database::Connection->new('staging');
-    ilog('Staging connection acquired');
-
-    my $connection;
+	my $connection;
+	my $stagingConnection;
     eval {
+    	ilog('Acquiring the staging connection');
+    	$stagingConnection = Database::Connection->new('staging');
+    	ilog('Staging connection acquired');
+
         if ( $self->SUPER::bankAccount->connectionType eq 'CONNECTED' )
         {
             $connection = Database::Connection->new( $self->SUPER::bankAccount );

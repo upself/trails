@@ -13,6 +13,7 @@ sub new {
         ,_startTime => undef
         ,_endTime => undef
         ,_status => undef
+        ,_firstErrorTime => undef 
     };
     bless $self, $class;
     return $self;
@@ -109,6 +110,12 @@ sub status {
     return $self->{_status};
 }
 
+sub firstErrorTime {
+	my $self = shift;
+	$self->{_firstErrorTime} = shift if scalar @_ == 1;
+	return $self->{_firstErrorTime};
+}
+
 sub toString {
     my ($self) = @_;
     my $s = "[BankAccountJob] ";
@@ -147,6 +154,11 @@ sub toString {
         $s .= $self->{_status};
     }
     $s .= ",";
+    $s .= "firstErrorTime=";
+    if (defined $self->{_firstErrorTime}) {
+        $s .= $self->{_firstErrorTime};
+    }
+    $s .= ",";
     chop $s;
     return $s;
 }
@@ -166,6 +178,7 @@ sub save {
             ,$self->startTime
             ,$self->endTime
             ,$self->status
+            ,$self->firstErrorTime
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -181,6 +194,7 @@ sub save {
             ,$self->startTime
             ,$self->endTime
             ,$self->status
+            ,$self->firstErrorTime
             ,$self->id
         );
         $sth->finish;
@@ -200,8 +214,10 @@ sub queryInsert {
             ,start_time
             ,end_time
             ,status
+            ,first_error_time
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -222,6 +238,7 @@ sub queryUpdate {
             ,start_time = ?
             ,end_time = ?
             ,status = ?
+            ,first_error_time = ?
         where
             id = ?
     ';
@@ -237,12 +254,14 @@ sub getByBizKey {
     my $startTime;
     my $endTime;
     my $status;
+    my $firstErrorTime;
     $sth->bind_columns(
         \$id
         ,\$comments
         ,\$startTime
         ,\$endTime
         ,\$status
+        ,\$firstErrorTime
     );
     $sth->execute(
         $self->bankAccountId
@@ -255,6 +274,7 @@ sub getByBizKey {
     $self->startTime($startTime);
     $self->endTime($endTime);
     $self->status($status);
+    $self->firstErrorTime($firstErrorTime);
 }
 
 sub queryGetByBizKey {
@@ -265,6 +285,7 @@ sub queryGetByBizKey {
             ,start_time
             ,end_time
             ,status
+            ,first_error_time
         from
             bank_account_job
         where
