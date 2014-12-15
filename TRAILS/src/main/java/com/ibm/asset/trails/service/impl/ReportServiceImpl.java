@@ -164,7 +164,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, COALESCE(SI.Name, L.Full_Desc), L.Quantity, L.Expire_Date, L.Ext_Src_Id, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSM ON LSM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.Software_Item SI ON SI.Id = LSM.Software_Id WHERE VA.Customer_Id = :customerId AND VA.Type = 'EXPIRED_MAINT' AND VA.Open = 1 AND L.Id = VA.Fk_Id ORDER BY COALESCE(SI.Name, L.Full_Desc) ASC")
+						"SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, COALESCE(S.software_name, L.Full_Desc), L.Quantity, L.Expire_Date, L.Ext_Src_Id, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time FROM EAADMIN.V_Alerts VA, EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSM ON LSM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSM.Software_Id WHERE VA.Customer_Id = :customerId AND VA.Type = 'EXPIRED_MAINT' AND VA.Open = 1 AND L.Id = VA.Fk_Id ORDER BY COALESCE(S.software_name, L.Full_Desc) ASC")
 				.setLong("customerId", pAccount.getId())
 				.setString("type", "EXPIRED_MAINT")
 				.scroll(ScrollMode.FORWARD_ONLY);
@@ -544,17 +544,17 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.chips as hwChips "
 				+ ",case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount "
 				+ ",hl.EFFECTIVE_THREADS "
-				+ ",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
+				+ ",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
 				+ "(case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then  'SINGLE-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then  'DUAL-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then  'QUAD-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE' else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
-				+ ",instSi.name as instSwName ";
+				+ ",instS.software_name as instSwName ";
 		
-		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from scope scop join schedule_f sf on sf.scope_id = scop.id "
+		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
                 + "where sf.customer_id = :customerId "
                 + "and sf.status_id=2 "
-                + "and sf.software_name = instSi.name "
+                + "and sf.software_name = instS.software_name "
                 + "and ( ( sf.level = 'PRODUCT' ) "
                 + "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
                 + "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
@@ -570,7 +570,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",r.remote_user as reconUser "
 				+ ",r.record_time as reconTime "
 				+ ",case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments "
-				+ ",parentSi.name as parentName "
+				+ ",parentS.software_name as parentName "
 				+ ",c.account_number as licAccount "
 				+ ",l.full_desc as licenseDesc "
 				+ ",case when l.id is null then '' "
@@ -603,14 +603,10 @@ public class ReportServiceImpl implements ReportService {
 				+ "h.machine_type_id = mt.id "
 				+ "inner join eaadmin.installed_software is on "
 				+ "sl.id = is.software_lpar_id "
-				+ "inner join eaadmin.product_info instPi on "
-				+ "is.software_id = instPi.id "
-				+ "inner join eaadmin.product instP on "
-				+ "instPi.id = instP.id "
-				+ "inner join eaadmin.software_item instSi on "
-				+ "instP.id = instSi.id "
+				+ "inner join eaadmin.software instS on "
+				+ "is.software_id = instS.software_id "				
 				+ "inner join eaadmin.manufacturer instSwMan on "
-				+ "instP.manufacturer_id = instSwMan.id "
+				+ "instS.manufacturer_id = instSwMan.id "
 				+ "inner join eaadmin.discrepancy_type dt on "
 				+ "is.discrepancy_type_id = dt.id "
 				+ "inner join eaadmin.alert_unlicensed_sw aus on "
@@ -621,12 +617,8 @@ public class ReportServiceImpl implements ReportService {
 				+ "r.reconcile_type_id = rt.id "
 				+ "left outer join eaadmin.installed_software parent on "
 				+ "r.parent_installed_software_id = parent.id "
-				+ "left outer join eaadmin.product_info parentPi on "
-				+ "parent.software_id = parentPi.id "
-				+ "left outer join eaadmin.product parentP on "
-				+ "parentPi.id = parentP.id "
-				+ "left outer join eaadmin.software_item parentSi on "
-				+ "parentSi.id = parentP.id "
+				+ "left outer join eaadmin.software parentS on "
+				+ "parent.software_id = parentS.software_id "
 				+ "left outer join eaadmin.reconcile_used_license rul on "
 				+ "r.id = rul.reconcile_id "
 				+ "left outer join eaadmin.used_license ul on "
@@ -647,7 +639,7 @@ public class ReportServiceImpl implements ReportService {
 				+ "and hl.customer_id = :customerId "
 				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) ";
 //				+ "and (sf.id in (select ssf.id  "
-//                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instSi.name = ssf.SOFTWARE_NAME  order by "
+//                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instS.software_name = ssf.SOFTWARE_NAME  order by "
 //                + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
 //                + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
 //                + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
@@ -679,7 +671,7 @@ public class ReportServiceImpl implements ReportService {
 			lsbSql.append(
 					lsBaseSelectClauseOne + lsBaseSelectClauseTwo
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
-					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instSi.name = sf.SOFTWARE_NAME inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
+					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instS.software_name = sf.SOFTWARE_NAME inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
 					.append(lsBaseWhereClausea);
 			if (pbSelectAllChecked) {				
 					lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
@@ -751,7 +743,7 @@ public class ReportServiceImpl implements ReportService {
 							+ lsBaseSelectClauseFour + lsBaseFromClause)
 					.append(" ")
 					.append(lsBaseWhereClauseb)
-					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instSi.name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
+					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instS.software_name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
 		}
 */
 		lsbSql.append("ORDER BY 4");
@@ -799,8 +791,8 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT SI.Name AS SI_Name, M.Name AS M_Name, CASE UCASE(KBD.Custom_2) WHEN 'TRUE' THEN 'Yes' ELSE 'No' END, SL.Name AS SL_Name, SL.Bios_Serial, VSLP.Processor_Count, H.Chips, SL.ScanTime, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END, H.Serial, MT.Name AS MT_Name, MT.Type FROM EAADMIN.Kb_Definition KBD, EAADMIN.Software_Item SI, EAADMIN.Product P, EAADMIN.Product_Info PI, EAADMIN.Manufacturer M, EAADMIN.Software_Lpar SL, EAADMIN.V_Software_Lpar_Processor VSLP, EAADMIN.Installed_Software IS LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id, (SELECT SL2.Customer_Id, SI2.Id, PI2.Software_Category_Id, MIN(PI2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2, EAADMIN.Software_Item SI2, EAADMIN.Product_Info PI2, EAADMIN.Installed_Software IS2 WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND SI2.Id = IS2.Software_Id AND PI2.Id = SI2.Id AND PI2.Licensable = 1 AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, SI2.Id, PI2.Software_Category_Id) AS TEMP";
-		String lsBaseWhereClause = "WHERE KBD.Id = IS.Software_Id AND SI.Id = KBD.Id AND P.Id = SI.Id AND PI.Id = P.Id AND PI.Licensable = 1 AND M.Id = P.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND VSLP.Id = SL.Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.Id = SI.Id AND TEMP.Software_Category_Id = PI.Software_Category_Id AND TEMP.Priority = PI.Priority";
+		String lsBaseSelectAndFromClause = "SELECT S.software_name AS SI_Name, M.Name AS M_Name, CASE S.VENDOR_MANAGED WHEN 1 THEN 'Yes' ELSE 'No' END, SL.Name AS SL_Name, SL.Bios_Serial, VSLP.Processor_Count, H.Chips, SL.ScanTime, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END, H.Serial, MT.Name AS MT_Name, MT.Type FROM EAADMIN.software S, EAADMIN.Manufacturer M, EAADMIN.Software_Lpar SL, EAADMIN.V_Software_Lpar_Processor VSLP, EAADMIN.Installed_Software IS LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id, (SELECT SL2.Customer_Id, S2.software_id, S2.Software_Category_Id, MIN(S2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2, EAADMIN.software S2, EAADMIN.Product_Info PI2, EAADMIN.Installed_Software IS2 WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND S2.software_id = IS2.Software_Id AND S2.level = 'LICENSABLE' AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, S2.software_id, S2.Software_Category_Id) AS TEMP";
+		String lsBaseWhereClause = "WHERE S.software_id = IS.Software_Id and S.level = 'LICENSABLE' AND M.Id = S.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND VSLP.Id = SL.Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.software_Id = S.software_id AND TEMP.Software_Category_Id = S.Software_Category_Id AND TEMP.Priority = S.Priority";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
@@ -870,9 +862,9 @@ public class ReportServiceImpl implements ReportService {
 					}
 			}
 				lsbSql.append(
-						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = SI.Id AND " 
+						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = S.software_id AND " 
 								+"(sf.id in (select ssf.id  "
-					                  + " from schedule_f ssf where  ol.customer_id =  ssf.customer_id and SI.software_id = ssf.software_id order by "
+					                  + " from schedule_f ssf where  ol.customer_id =  ssf.customer_id and S.software_id = ssf.software_id order by "
 					                  + "  CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = SL.name THEN 1 ELSE "
 					                  + "  CASE WHEN  ssf.level='HWBOX' and ssf.serial = H.serial and ssf.machine_type = mt.name THEN 2 ELSE"
 					                 +  "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = H.owner THEN 3 ELSE"
@@ -888,7 +880,7 @@ public class ReportServiceImpl implements ReportService {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(" ")
 						.append(lsBaseWhereClause)
-						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S WHERE SF.Customer_Id = :customerId AND SF.Software_Id = SI.Id AND S.Id = SF.Status_Id AND S.Description = 'ACTIVE'" +
+						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status ST WHERE SF.Customer_Id = :customerId AND SF.Software_Id = S.software_id AND ST.Id = SF.Status_Id AND ST.Description = 'ACTIVE'" +
 								" AND (\r\n" + 
 								"  sf.level = 'PRODUCT'\r\n" + 
 								" or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n" + 
@@ -929,7 +921,7 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT COALESCE(SI.Name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.Software_Item SI ON SI.Id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
+		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
@@ -1000,7 +992,7 @@ public class ReportServiceImpl implements ReportService {
 					}
 			}
 				lsbSql.append(
-						" AND SF.Customer_Id = L.Customer_Id AND SF.Software_Id = SI.Id AND SF.Scope_Id IN (")
+						" AND SF.Customer_Id = L.Customer_Id AND SF.Software_Id = S.software_id AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
 						.append(") ")
 						.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
@@ -1010,13 +1002,13 @@ public class ReportServiceImpl implements ReportService {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(" ")
 						.append(lsBaseWhereClause)
-						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S WHERE SF.Customer_Id = :customerId AND SF.Software_Id = SI.Id AND S.Id = SF.Status_Id AND S.Description = 'ACTIVE') ");
+						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status ST WHERE SF.Customer_Id = :customerId AND SF.Software_Id = S.software_id AND ST.Id = SF.Status_Id AND ST.Description = 'ACTIVE') ");
 			}
 		} else {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
 					.append(lsBaseWhereClause).append(" ");
 		}
-		lsbSql.append("group by COALESCE(SI.Name, L.Full_Desc), CASE LENGTH(COALESCE(SI.Name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
+		lsbSql.append("group by COALESCE(S.software_name, L.Full_Desc), CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
 		lsbSql.append("ORDER BY Product_Name ASC");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())
@@ -1054,7 +1046,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT SI.Name, SL.Name AS SL_Name, RT.Name AS RT_Name, AUS.Creation_Time, R.Record_Time, R.Remote_User FROM EAADMIN.Software_Item SI, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE SI.Id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id ORDER BY SI.Name, SL.Name, RT.Name")
+						"SELECT S.software_name, SL.Name AS SL_Name, RT.Name AS RT_Name, AUS.Creation_Time, R.Record_Time, R.Remote_User FROM EAADMIN.software S, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE S.software_id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id ORDER BY S.software_name, SL.Name, RT.Name")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
@@ -1073,7 +1065,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT SI.Name, RT.Name AS RT_Name, COUNT(AUS.Id), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) < 46 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 46 AND 90 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 91 AND 120 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 121 AND 180 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 181 AND 365 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 365 THEN 1 ELSE 0 END) FROM EAADMIN.Software_Item SI, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE SI.Id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id GROUP BY SI.Name, RT.Name ORDER BY SI.Name, RT.Name")
+						"SELECT S.software_name, RT.Name AS RT_Name, COUNT(AUS.Id), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) < 46 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 46 AND 90 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 91 AND 120 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 121 AND 180 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 181 AND 365 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 365 THEN 1 ELSE 0 END) FROM EAADMIN.software S, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE S.software_id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id GROUP BY S.software_name, RT.Name ORDER BY S.software_name, RT.Name")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
