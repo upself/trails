@@ -145,8 +145,8 @@ sub queryCustomerMaps {
 sub getCustomerNumberMap {
     my ($self) = @_;
 
-    my %data;
-    my %count;
+    my %data_customer_number;
+    my %data_account_number;
 
     ###Get a cndb connection
     my $connection = Database::Connection->new('cndb');
@@ -165,12 +165,12 @@ sub getCustomerNumberMap {
         $rec{accountNumber} = $rec{accountNumber} . 'X'
             while ( length( $rec{accountNumber} ) < 7 );
 
-        $data{ $rec{accountNumber} }{'count'} = 1;
-        $data{ $rec{accountNumber} }{'NONE'}  = $rec{customerId};
+        $data_account_number{ $rec{accountNumber} }{'count'} = 1;
+        $data_account_number{ $rec{accountNumber} }{'customerId'}  = $rec{customerId};
 
         if ( $rec{customerNumber} ) {
-            $data{ $rec{customerNumber} }{'count'}++;
-            $data{ $rec{customerNumber} }{ $rec{countryCode} }
+            $data_customer_number{ $rec{customerNumber} }{'count'}++;
+            $data_customer_number{ $rec{customerNumber} }{ $rec{countryCode} }
                 = $rec{customerId};
         }
     }
@@ -179,7 +179,7 @@ sub getCustomerNumberMap {
     ###Close our cndb connection
     $connection->disconnect;
 
-    return \%data;
+    return ( \%data_customer_number , \%data_account_number );
 }
 
 sub queryCustomerNumberMap {
