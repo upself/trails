@@ -10,7 +10,8 @@ use CNDB::Delegate::CNDBDelegate;
 logging_level("error");
 
 dlog('Acquiring customer number map');
-my $customerNumberMap = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
+# Edit sprint9 2014 - Ondrej
+my ($customerNumberMap, $accountNumberMap) = CNDB::Delegate::CNDBDelegate->getCustomerNumberMap;
 dlog('Customer number map acquired');
 
 dlog('Acquiring machine type map');
