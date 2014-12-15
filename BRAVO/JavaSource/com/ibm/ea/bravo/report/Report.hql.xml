@@ -192,7 +192,7 @@
 					,ct.customer_type_name as customerTypeName
 					,p.pod_name as podName
 					,l.name as lparName
-					,si.name as softwareName
+					,s.software_name as softwareName
 					,dt.name as discrepancyName
 					,i.invalid_category as invalidCategory
 					,i.remote_user as remoteUser
@@ -205,8 +205,7 @@
 					,customer_type ct
 					,pod p
 					,software_lpar l
-					,product s
-					,software_item si 
+					,software s
 					,discrepancy_type dt
 					,installed_software i
 					 left outer join software_discrepancy_h h
@@ -217,17 +216,16 @@
 					and c.pod_id = p.pod_id
 					and l.customer_id = c.customer_id
 					and i.software_lpar_id = l.id
-					and i.software_id = s.id
+					and i.software_id = s.software_id
 					and i.discrepancy_type_id = dt.id
 					and i.status = :status
-					and s.id = si.id
 				group by
 					c.account_number
 					,c.customer_name
 					,ct.customer_type_name
 					,p.pod_name
 					,l.name
-					,si.name
+					,s.software_name
 					,dt.name
 					,i.invalid_category
 					,i.remote_user
@@ -328,7 +326,7 @@
 			from 
 				com.ibm.ea.bravo.software.InstalledSoftware i
 			where
-				i.software.id = :software
+				i.software.softwareId = :software
 				and i.status = :status
 				and (
 					upper(i.discrepancyType.name) = 'FALSE HIT'
@@ -377,7 +375,7 @@
 		<![CDATA[
 			select 
 				distinct new com.ibm.ea.bravo.report.DiscrepancySummary(
-				i.software.id,
+				i.software.softwareId,
 				i.software.softwareName,
 				i.discrepancyType.name,
 				count(*))
@@ -391,7 +389,7 @@
 					or i.researchFlag = 1
 				)
 			group by 
-				i.software.id,
+				i.software.softwareId,
 				i.software.softwareName,
 				i.discrepancyType.name
 			order by 
@@ -666,7 +664,7 @@
 				,a.nodename 
 				,a.bios_serial 
 				,a.processor_count 
-				,f.softwareItem.name 
+				,f.software_name 
 				,case	when (a.discrepancy_type_id = 3
 								or a.discrepancy_type_id = 5
 								or a.software_lpar_status = 'INACTIVE'
@@ -685,14 +683,14 @@
 				,pod c 
 				,customer_type d 
 				,bank_account e 
-				,product f 
+				,software f 
 			where
 				a.customer_id = :customer_id
 				and a.customer_id = b.customer_id 
 				and b.pod_id = c.pod_id 
 				and b.customer_type_id = d.customer_type_id 
 				and a.bank_account_id = e.id 
-				and a.software_id = f.id 
+				and a.software_id = f.software_id 
 				and YEAR(a.scantime) > 2005 
 			group by  
 				c.pod_name
@@ -701,7 +699,7 @@
 				,a.nodename 
 				,a.bios_serial 
 				,a.processor_count 
-				,f.softwareItem.name 
+				,f.software_name 
 				,case	when (a.discrepancy_type_id = 3
 								or a.discrepancy_type_id = 5
 								or a.software_lpar_status = 'INACTIVE'
@@ -816,9 +814,9 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    , sl.bios_serial
 			    , h.serial
 			    , sl.scantime
-			    , si.name
+			    , s.software_name
 			    , m.name
-			    , pi.level
+			    , s.level
 			from
 			    customer c
 			    ,customer_type ct
@@ -828,24 +826,20 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    ,hardware_lpar hl
 			    ,hardware h
 			    ,installed_software is
-			    ,product s
-			    ,product_info pi
-			    ,software_item si
+			    ,software s
 			    ,manufacturer m
 			    ,installed_vm_product ivp
 			where
 			    c.status = 'ACTIVE'
 			    and c.SW_LICENSE_MGMT = 'YES'
-			    and cc.code = 'US
+			    and cc.code = 'US'
 			    and c.customer_type_id = ct.customer_type_id
 			    and cc.id = c.country_code_id
 			    and sl.customer_id = c.customer_id
 			    and hsc.software_lpar_id = sl.id
 			    and hsc.hardware_lpar_id = hl.id
 			    and h.id = hl.hardware_id
-			    and s.id = is.software_id
-			    and s.id = si.id
-			    and s.id = pi.product_id
+			    and s.software_id = is.software_id
 			    and is.software_lpar_id = sl.id
 			    and m.id = s.manufacturer_id
 			    and s.level = 'LICENSABLE'
@@ -861,9 +855,9 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    , sl.bios_serial
 			    , h.serial
 			    , sl.scantime
-			    , si.name
+			    , s.software_name
 			    , m.name
-			    , pi.level
+			    , s.level
 			from
 			    customer c
 			    ,customer_type ct
@@ -873,9 +867,7 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    ,hardware_lpar hl
 			    ,hardware h
 			    ,installed_software is
-			    ,product s
-			    ,product_info pi
-			    ,software_item si
+			    ,software s
 			    ,manufacturer m
 			    ,installed_sa_product isp
 			where
@@ -888,9 +880,7 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			        and hsc.software_lpar_id = sl.id
 			        and hsc.hardware_lpar_id = hl.id
 			        and h.id = hl.hardware_id
-			    	and s.id = is.software_id
-			    	and s.id = si.id
-			    	and s.id = pi.product_id
+			    	and s.software_id = is.software_id
 			        and is.software_lpar_id = sl.id
 			        and m.id = s.manufacturer_id
 			        and s.level = 'LICENSABLE'
@@ -906,9 +896,9 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			        , sl.bios_serial
 			        , h.serial
 			        , sl.scantime
-			        , si.name
+			        , s.software_name
 			        , m.name
-			        , pi.level
+			        , s.level
 			from
 			    customer c
 			    ,customer_type ct
@@ -918,9 +908,7 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    ,hardware_lpar hl
 			    ,hardware h
 			    ,installed_software is
-			    ,product s
-			    ,product_info pi
-			    ,software_item si
+			    ,software s
 			    ,manufacturer m
 			    ,installed_dorana_product idp
 			where
@@ -933,9 +921,7 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			        and hsc.software_lpar_id = sl.id
 			        and hsc.hardware_lpar_id = hl.id
 			        and h.id = hl.hardware_id
-			    	and s.id = is.software_id
-			    	and s.id = si.id
-			    	and s.id = pi.product_id
+			    	and s.software_id = is.software_id
 			        and is.software_lpar_id = sl.id
 			        and m.id = s.manufacturer_id
 			        and s.level = 'LICENSABLE'
