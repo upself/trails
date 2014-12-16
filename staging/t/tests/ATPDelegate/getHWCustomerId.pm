@@ -62,10 +62,10 @@ sub own_created_data_test : Tests(4) {
 		customerNumber => '1212XX'
 	);	
 			
-	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec1),undef, "customer number not found");
-	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec2),33, "customer number found");
-	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec3),22, "account number found");
-	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec4),undef, "account number not found");
+	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec1),undef, "getHWCustomerId (offline) : customer number not found");
+	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec2),33, "getHWCustomerId (offline) : customer number found");
+	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec3),22, "getHWCustomerId (offline) : account number found");
+	is($class->getHWCustomerId(\%data_customer_number,\%data_account_number,%rec4),undef, "getHWCustomerId (offline) : account number not found");
 }
 
 sub semi_online_test : Tests(10) {
@@ -87,13 +87,13 @@ sub semi_online_test : Tests(10) {
 	my %rec6 = ( country => 'XX', customerNumber => '175642X' );	
 	my %rec7 = ( country => 'XX', customerNumber => '111XXXX' );	
 	
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec1),25,"country_number 1402227, country US -> customer: 25");     
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec2),17908,"country_number CINCN06, country CH -> customer: 17908");
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec3),undef,"country_number 1111111, country US -> customer: undef"); 
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec4),17907,"account_number 175239X, country IN -> customer: 17907");
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec5),17906,"account_number 175234X, country XX -> customer: 17906");
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec6),18126,"account_number 175642X, country XX -> customer: 18126");
-    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec7),undef,"account_number 111XXXX, country XX -> customer: undef");
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec1),25,"getHWCustomerId : country_number 1402227, country US -> customer: 25");     
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec2),17908,"getHWCustomerId : country_number CINCN06, country CH -> customer: 17908");
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec3),undef,"getHWCustomerId : country_number 1111111, country US -> customer: undef"); 
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec4),17907,"getHWCustomerId : account_number 175239X, country IN -> customer: 17907");
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec5),17906,"getHWCustomerId : account_number 175234X, country XX -> customer: 17906");
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec6),18126,"getHWCustomerId : account_number 175642X, country XX -> customer: 18126");
+    is($class->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec7),undef,"getHWCustomerId : account_number 111XXXX, country XX -> customer: undef");
 }
 
 

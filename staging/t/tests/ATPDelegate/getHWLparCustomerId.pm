@@ -60,10 +60,10 @@ sub own_created_data_test : Tests(4) {
 		lparCustomerNumber => '1212XX'
 	);	
 			
-	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec1),undef, "test offline 1 passed");
-	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec2),33, "test offline 2 passed");
-	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec3),22, "test offline 3 passed");
-	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec4),undef, "test offline 4 passed");
+	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec1),undef, "getHWLparCustomerId (offline) : customer number not found");
+	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec2),33, "getHWLparCustomerId (offline) : customer number found");
+	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec3),22, "getHWLparCustomerId (offline) : account number found");
+	is($class->getHWLparCustomerId(\%data_customer_number,\%data_account_number,%rec4),undef, "getHWLparCustomerId (offline) : account number not found");
 }
 
 1;
