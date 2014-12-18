@@ -105,64 +105,62 @@ my $sqlAG = "   select
 # value which is held in the last 4 characters of the
 #  TLOGIQ.FVERSIONGKB field.
 #
-my $sqlAG81 =     "select 
-          		 node.node_key
- 		       ,node.lpar_name
- 		       ,'' as objectId
- 		       ,node.hw_model
- 		       ,node.hw_serial
- 		       ,audit_table.fiqdate as effective_scanTime
- 		       ,0 as users
- 		       ,2 as authenticated
- 		       ,0 as isManual
- 		       ,0 as authProc
- 		       ,0 as processor
- 		       ,system.sid as osName
- 		       ,node.hw_type as osType
- 		       ,audit_table.fosversion as osMajorVers
- 		       ,'' as osMinorVers
- 		       ,'' as osSubVers
- 		       ,node.last_update_time as osInstDate
- 		       ,'' as userName
- 		       ,'' as biosManufacturer
- 		       ,'' as biosModel
- 		       ,'' as computerAlias
- 		       ,'' as physicalTotalKb
- 		       ,'' as virtTotalKb
- 		       ,'' as physicalFreeKb
- 		       ,'' as virtFreeKb
- 		       ,'' as biosDate
- 		       ,'' as biosSerial
- 		       ,'' as sysUuid
- 		       ,system.sysplex as boardSerNum
- 		       ,'' as caseSerNum
- 		       ,system.smfid as caseAssetTag
- 		       ,'' as extId
- 		       ,audit_table.tsid as techImgId
- 		 from system 
- 
- join (
-  
- select system_key, max(last_update_time) as my_time from system_node
- group by system_key )
- 
- as m on m.system_key =  system.system_key  
- 
- join system_node sn 
- on sn.system_key=m.system_key AND m.my_time=sn.last_update_time 
- 
- join node 
- on node.node_key=sn.node_key      
- 
- left outer join ( select iq.fsid, iq.fostype, iq.fosversion,
-                          substr(iq.fversiongkb, 12, 4) as tsid 
-                          max(fiqdate) as fiqdate
-                   from tlogiq as iq
-                   where iq.fostype = 'z/OS'
-                   group by iq.fsid, iq.fostype, iq.fosversion
-                   order by iq.fsid, iq.fostype, iq.fosversion )
-                   as audit_table on audit_table.fsid = system.sid
- where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
+my $sqlAG81 =     "select node.node_key
+						,node.lpar_name
+						,'' as objectId
+						,node.hw_model
+						,node.hw_serial
+						,audit_table.foqdate as effective_scanTime
+						,0 as users
+						,2 as authenticated
+						,0 as isManual
+						,0 as authProc
+						,0 as processor
+						,system.sid as osName
+						,node.hw_type as osType
+						,audit_table.osVers as osMajorVers
+						,'' as osMinorVers
+						,'' as osSubVers
+						,node.last_update_time as osInstDate
+						,'' as userName
+						,'' as biosManufacturer
+						,'' as biosModel
+						,'' as computerAlias
+						,'' as physicalTotalKb
+						,'' as virtTotalKb
+						,'' as physicalFreeKb
+						,'' as virtFreeKb
+						,'' as biosDate
+						,'' as biosSerial
+						,'' as sysUuid
+						,system.sysplex as boardSerNum
+						,'' as caseSerNum
+						,system.smfid as caseAssetTag
+						,'' as extId
+						, audit_table.TSID as techImgId
+
+						from system
+
+						join (
+						select system_key, max(last_update_time) as my_time from
+						system_node
+						group by system_key )
+						as m on m.system_key = system.system_key
+
+						join system_node sn
+						on sn.system_key=m.system_key AND m.my_time=sn.last_update_time
+
+						join node
+						on node.node_key=sn.node_key
+
+						join ( select iq.fsid, iq.fostype, SUBSTR(iq.fversiongkb ,12 ,4) as TSID, 
+						max(fiqdate) as foqdate, MAX(iq.fosversion) as OsVers
+						from tlogiq as iq
+						where iq.fostype = 'z/OS'
+						and SUBSTR(iq.fversiongkb ,12 ,4) <> ''
+						group by iq.fsid, iq.fostype, iq.fversiongkb 
+						order by iq.fsid, iq.fostype, iq.fversiongkb  )
+						as audit_table on audit_table.fsid = system.sid";
 
 #sql updated by GAM #TI40620-50622 and TRAC #471
 #
