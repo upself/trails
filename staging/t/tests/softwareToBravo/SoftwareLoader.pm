@@ -13,7 +13,7 @@ sub startup : Tests(startup => 1) {
 }
 
 sub getMainframeFeatureIdByGUID : Tests(10) {
-	my $test-> shift;
+	my $test = shift;
 	my $class = $test->class;
 	
 	can_ok $class,'getMainframeFeatureIdByGUID';
