@@ -33,3 +33,4 @@ sub getMainframeFeatureIdByGUID : Tests(10) {
      is($class->getMainframeFeatureIdByGUID($connection,'5e627bd2fcd34bda85caaa7974bdc804'),undef,'getMainframeFeatureIdByGUID -> guid: 5e627bd2fcd34bda85caaa7974bdc804 - MF_Id: undef');
 	
 }
+1;
