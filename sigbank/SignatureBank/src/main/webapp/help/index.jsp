@@ -64,7 +64,7 @@
 			&gt;
 			<a href="/SignatureBank/help/help.do">Help</a>
 		</p>
-	<tiles:insert page="<%=((java.lang.String)((org.apache.struts.action.DynaActionForm)request.getAttribute("helpForm")).get("fileContext"))%>"/>
+	<tiles:insert page='<%=((java.lang.String)((org.apache.struts.action.DynaActionForm)request.getAttribute("helpForm")).get("fileContext"))%>'/>
 	<!-- END CONTENT HERE --></div>
 	</div>
 	<tiles:insert page="/WEB-INF/jsp/common/staticNav.jsp" />
