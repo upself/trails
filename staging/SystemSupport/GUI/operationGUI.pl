@@ -38,6 +38,7 @@
 # 2014-03-21  Liu Hai(Larry) 1.7.0           1. Add total input parameter values length check logic. Currently the total length cannot exceed 503 chars
 #                                            2. Improve Operation GUI experience to set the width of Operation Queue Table and Operation Queue Table Columns as fixed width   
 # 2014-12-04  Liu Hai(Larry) 1.7.1           Add 'liukaid@cn.ibm.com' user into the valid authorization user list
+# 2014-12-22  Liu Hai(Larry) 1.7.2           Add 'lianghy@cn.ibm.com' user into the valid authorization user list
 #
 
 #Load required modules
@@ -187,6 +188,7 @@ $authorizedUserList{'zengqh@cn.ibm.com'}++;
 $authorizedUserList{'y99xwu@cz.ibm.com'}++;
 $authorizedUserList{'marek.adamka@cz.ibm.com'}++;
 $authorizedUserList{'liukaid@cn.ibm.com'}++;
+$authorizedUserList{'lianghy@cn.ibm.com'}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 $authorizedUserList{'petra.povolna@cz.ibm.com'}++;
