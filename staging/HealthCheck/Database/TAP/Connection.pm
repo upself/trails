@@ -111,7 +111,7 @@ sub setDBInfo {
 
         my %dbs;
 
-            $dbs{'swasset'}{'password'} = 'Jan15nco';
+            $dbs{'swasset'}{'password'} = 'temp4now';
             $dbs{'swasset'}{'user'}     = 'swasset';
             $dbs{'swasset'}{'name'}     = 'SWASSTDB';
 
@@ -119,13 +119,14 @@ sub setDBInfo {
             $dbs{'staging'}{'user'}     = 'eaadmin';
             $dbs{'staging'}{'name'}     = 'STAGING';
 
-            $dbs{'trails'}{'password'} = 'P1lsn3rs';
+            $dbs{'trails'}{'password'} = 'Pal3Al3s';
             $dbs{'trails'}{'user'}     = 'eaadmin';
             $dbs{'trails'}{'name'}     = 'TRAILS';
 
             $dbs{'cndb'}{'password'} = 'apr03db2';
             $dbs{'cndb'}{'user'}     = 'eaadmin';
             $dbs{'cndb'}{'name'}     = 'CNDB';
+			$dbs{'cndb'}{'schema'}   = 'cndb';
 
             $dbs{'swcm'}{'password'} = 'Tru30dds';
             $dbs{'swcm'}{'user'}     = 'tap2swcm';
@@ -136,13 +137,13 @@ sub setDBInfo {
             $dbs{'sims'}{'name'}     = 'SIMS';
 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-            $dbs{'trailsrp'}{'password'} = 'P1lsn3rs';
+            $dbs{'trailsrp'}{'password'} = 'Pal3Al3s';
             $dbs{'trailsrp'}{'user'}     = 'eaadmin';
             $dbs{'trailsrp'}{'name'}     = 'TRAHERP'; 
             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
-            $dbs{'trailsst'}{'password'} = 'P1lsn3rs';
+            $dbs{'trailsst'}{'password'} = 'Pal3Al3s';
             $dbs{'trailsst'}{'user'}     = 'eaadmin';
             $dbs{'trailsst'}{'name'}     = 'TRAHEST'; 
 			#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
@@ -151,6 +152,7 @@ sub setDBInfo {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
             $self->password( $dbs{ $self->bankAccount }{'password'} );
             $self->name( $dbs{ $self->bankAccount }{'name'} );
+            $self->schema( $dbs{ $self->bankAccount }{'schema'} );
        }
     }
 }

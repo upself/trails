@@ -111,7 +111,7 @@ sub setDBInfo {
 
         my %dbs;
 
-            $dbs{'swasset'}{'password'} = 'Jan15nco';
+            $dbs{'swasset'}{'password'} = 'temp4now';
             $dbs{'swasset'}{'user'}     = 'swasset';
             $dbs{'swasset'}{'name'}     = 'SWASSETR';
 
@@ -126,6 +126,7 @@ sub setDBInfo {
             $dbs{'cndb'}{'password'} = 'apr03db2';
             $dbs{'cndb'}{'user'}     = 'eaadmin';
             $dbs{'cndb'}{'name'}     = 'CNDBR';
+			$dbs{'cndb'}{'schema'}   = 'cndb';
 
             $dbs{'swcm'}{'password'} = 'Tru30dds';
             $dbs{'swcm'}{'user'}     = 'tap2swcm';
@@ -140,6 +141,7 @@ sub setDBInfo {
             $self->user( $dbs{ $self->bankAccount }{'user'} );
             $self->password( $dbs{ $self->bankAccount }{'password'} );
             $self->name( $dbs{ $self->bankAccount }{'name'} );
+			$self->schema( $dbs{ $self->bankAccount }{'schema'} );
         }
     }
 }
