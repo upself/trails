@@ -1222,7 +1222,7 @@ sub load {
                     elsif($rec{installedSoftwareType} eq 'TAD4Z'){
                     	# only set TADz the first time
                     	if ( ! defined $bravoInstalledSoftware->discrepancyTypeId ) {
-                        	$bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'TADZ'} );
+                        	$bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'NONE'} );
                         }
                     }else{
                         if ( defined $bravoInstalledSoftware->discrepancyTypeId ) {
