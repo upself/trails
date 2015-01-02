@@ -13,7 +13,7 @@ sub new {
         ,_startTime => undef
         ,_endTime => undef
         ,_status => undef
-        ,_firstErrorTime => undef 
+        ,_firstErrorTime => undef
     };
     bless $self, $class;
     return $self;
@@ -111,9 +111,9 @@ sub status {
 }
 
 sub firstErrorTime {
-	my $self = shift;
-	$self->{_firstErrorTime} = shift if scalar @_ == 1;
-	return $self->{_firstErrorTime};
+    my $self = shift;
+    $self->{_firstErrorTime} = shift if scalar @_ == 1;
+    return $self->{_firstErrorTime};
 }
 
 sub toString {

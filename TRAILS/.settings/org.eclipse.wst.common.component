@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="TRAILS4_R">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/lib" source-path="/target/TRAILS/WEB-INF/lib"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp/WEB-INF/lib"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/.apt_generated"/>
         <property name="context-root" value="TRAILS"/>
         <property name="java-output-path" value="/TRAILS4_R/target/classes"/>
     </wb-module>

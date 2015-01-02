@@ -61,7 +61,7 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.maven.ide.eclipse.maven2Builder</name>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -82,5 +82,6 @@
 		<nature>com.ibm.etools.ctc.javaprojectnature</nature>
 		<nature>org.eclipse.jem.beaninfo.BeanInfoNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
+		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
 </projectDescription>
