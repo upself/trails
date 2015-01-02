@@ -156,8 +156,8 @@ my $sqlAG81 =     "select node.node_key
 						join ( select iq.fsid, iq.fostype, SUBSTR(iq.fversiongkb ,12 ,4) as TSID, 
 						max(fiqdate) as foqdate, MAX(iq.fosversion) as OsVers
 						from tlogiq as iq
-						where iq.fostype = 'z/OS'
-						and SUBSTR(iq.fversiongkb ,12 ,4) <> ''
+						where iq.fostype = \'z/OS\'
+						and SUBSTR(iq.fversiongkb ,12 ,4) <> \'\'
 						group by iq.fsid, iq.fostype, iq.fversiongkb 
 						order by iq.fsid, iq.fostype, iq.fversiongkb  )
 						as audit_table on audit_table.fsid = system.sid";
