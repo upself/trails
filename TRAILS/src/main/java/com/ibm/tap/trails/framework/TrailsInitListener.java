@@ -28,8 +28,6 @@ public class TrailsInitListener implements ServletContextListener {
 
 		String key = "app.root.name";
 		System.setProperty(key, propsFromFile.getProperty(key));
-
-		String p = System.getProperty(key);
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
