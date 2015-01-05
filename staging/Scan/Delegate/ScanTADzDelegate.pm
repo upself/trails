@@ -375,7 +375,7 @@ my $sqlANZ = "select
                    as audit_table on audit_table.fsid = system.sid
  where substr(YEAR(audit_table.fiqdate), 1, 2) = 20 ";
 
-my $sqlLastFull = "with ur";
+my $sqlLastFull = " with ur";
 my $sqlLastDelta = " and node.last_update_time > ?  with ur";
 my $sqlLastDeltaAG81 = " where node.last_update_time > ?  with ur";
 
