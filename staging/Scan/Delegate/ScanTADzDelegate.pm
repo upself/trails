@@ -377,6 +377,7 @@ my $sqlANZ = "select
 
 my $sqlLastFull = "with ur";
 my $sqlLastDelta = " and node.last_update_time > ?  with ur";
+my $sqlLastDeltaAG81 = " where node.last_update_time > ?  with ur";
 
 sub getTADzInfrastructure {
     my ($self, $bankAccount) = @_;
@@ -405,7 +406,7 @@ sub getTADzInfrastructure {
 sub getCorrectSQL {
 	my ($self, $infra, $delta, $bankAccount) = @_;
 	if ( ( $infra eq 'AG' ) && ( $bankAccount->version eq '8.1' )) {
-		return $sqlAG81 . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
+		return $sqlAG81 . (($delta == 1) ?  $sqlLastDeltaAG81 : $sqlLastFull );
        } elsif ( $infra eq 'AG' ) {
 		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
 	} elsif ( ( $infra eq 'EMEA' ) && ( $bankAccount->version eq '8.1' ) ) {
