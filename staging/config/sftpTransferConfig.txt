@@ -12,8 +12,8 @@ minage=20
 [ZPET-MYYYSHA]
 direction=loc2rem
 tgthostname=lexbz2250.cloud.dst.ibm.com
-target=/home/myyysha/SFTPto
 source=/home/michal.g/SFTPfrom
+target=/home/myyysha/SFTPto
 filemask=.*
 tgtftpuser=myyysha # for logging
 tgtftppwd=567uJHGt

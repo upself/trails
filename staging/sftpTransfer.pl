@@ -167,10 +167,11 @@ sub filetomove { # determines whether given file is elligible to be copied
 	
 	if (( defined $flag ) && ( $flag eq $filename)) { # the flagfile itself
 		$flagispresent = 1;
+		dlog("Flagfile $flag defined and present, the files are ready to transfer (job $name)!");
 		return 0;
 	}
 	
-	return 0 if ($filename =~ /^\./ ); # UNIX hidden file
+	return 0 if ($filename =~ /^\./ ); # UNIX hidden file or a directory link
 	
 	if ($filename !~ /$filemask/ ) {
 		dlog("$filename skipped, not in the defined mask! (job $name)");
