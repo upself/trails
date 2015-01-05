@@ -405,7 +405,7 @@ sub getTADzInfrastructure {
 sub getCorrectSQL {
 	my ($self, $infra, $delta, $bankAccount) = @_;
 	if ( ( $infra eq 'AG' ) && ( $bankAccount->version eq '8.1' )) {
-		return $sqlAG81 ;
+		return $sqlAG81 . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
        } elsif ( $infra eq 'AG' ) {
 		return $sqlAG . (($delta == 1) ?  $sqlLastDelta : $sqlLastFull );
 	} elsif ( ( $infra eq 'EMEA' ) && ( $bankAccount->version eq '8.1' ) ) {
