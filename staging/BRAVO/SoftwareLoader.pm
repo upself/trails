@@ -680,7 +680,7 @@ sub load {
               next if(!defined $scanSwItem->id);
                        
               #get the kb_def id (software_id) through guid, it may be mainframe_feature
-              $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guId);
+              $kbDefId  = $self->getKbDefinitionIdByGUID($self->bravoConnection, $scanSwItem->guId);
               $softwareId = $kbDefId;
               if(!defined $kbDefId){
                 my $gudi = $scanSwItem->guId;
@@ -2161,11 +2161,11 @@ sub getTad4zQuery {
                 ';
 }
 
-sub getMainframeFeatureIdByGUID{
+sub getKbDefinitionIdByGUID{
    my ($self, $connection, $guid)  = @_;
    
-    $connection->prepareSqlQuery($self->queryMainframeFeatureIdByGUID());
-    my $sth = $connection->sql->{getMainframeFeatureId};
+    $connection->prepareSqlQuery($self->queryKbDefinitionIdByGUID());
+    my $sth = $connection->sql->{getKbDefinitionId};
     my $featureId=undef;
     my $lowerGuid=lc($guid);
   
@@ -2182,11 +2182,11 @@ sub getMainframeFeatureIdByGUID{
 }
 
 
-sub queryMainframeFeatureIdByGUID {
+sub queryKbDefinitionIdByGUID {
     my $query = '
-        select id from kb_definition kb where exists (select 1 from mainframe_feature mf where mf.id=kb.id ) and (kb.guid =  ? or kb.guid = ?) with ur
+        select id from kb_definition kb where kb.guid =  ? or kb.guid = ? with ur
     ';
-    return ('getMainframeFeatureId', $query);
+    return ('getKbDefinitionId', $query);
 }
 
 sub getCustomerDataByID{
