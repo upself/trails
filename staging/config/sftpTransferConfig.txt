@@ -1,21 +1,21 @@
 [POKUS-MYYYSHA]
 direction=rem2loc # rem2loc - remote to local, or loc2rem - in the future we shall implement also some zipping
-srchostname=lexbz2250.cloud.dst.ibm.com
-source=/home/myyysha/SFTPfrom
-target=/home/michal.g/SFTPto
+srchostname=tap2.raleigh.ibm.com
+source=/home/michal.g/SFTPfrom
+target=/home/myyysha/SFTPto
 filemask=^w.*
-srcftpuser=myyysha # for logging
-srcftppwd=567uJHGt
+tgtftpuser=myyysha # for logging
+tgtftppwd=567uJHGt
 delsource=false
-minage=20
+minage=60
 
 [ZPET-MYYYSHA]
 direction=loc2rem
-tgthostname=lexbz2250.cloud.dst.ibm.com
-source=/home/michal.g/SFTPfrom
-target=/home/myyysha/SFTPto
+tgthostname=tap2.raleigh.ibm.com
+source=/home/myyysha/SFTPfrom
+target=/home/michal.g/SFTPto
 filemask=.*
-tgtftpuser=myyysha # for logging
-tgtftppwd=567uJHGt
+srcftpuser=myyysha # for logging
+srcftppwd=567uJHGt
 delsource=true
 flag=READY
