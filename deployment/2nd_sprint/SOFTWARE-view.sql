@@ -47,7 +47,7 @@ select
 	mv.manufacturer_id
 	,cast(NULL as bigint)
 	,mv.id
-	,siP.name || ' - ' || siMV.name
+	,siP.name || ' - ' || siMV.name || ' - V'|| RTRIM(CAST(mv.version AS CHAR(64) ))
 	,RTRIM(CAST(mv.version AS CHAR(64) ))
 	,cast(NULL as integer)
 	,cast(NULL as varchar(64))
@@ -70,7 +70,7 @@ select
 	mv.manufacturer_id
 	,cast(NULL as bigint) as software_category
 	,mf.id
-	,siP.name || ' - ' || siMV.name || ' - ' || siMF.name
+	,siP.name || ' - ' || siMF.name || ' - V' || RTRIM(CAST(mv.version AS CHAR(64) ))
 	,RTRIM(CAST(mv.version AS CHAR(64) ))
 	,cast(NULL as integer)
 	,cast(NULL as varchar(64))
