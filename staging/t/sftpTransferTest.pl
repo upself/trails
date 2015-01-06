@@ -16,7 +16,7 @@ use strict;
 use File::Basename;
 use File::stat;
 use Net::SFTP;
-use Base::Utils;
+use lib '/opt/staging/v2';
 use Cwd;
 
 # global variables
