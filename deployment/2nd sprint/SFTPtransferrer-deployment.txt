@@ -1,0 +1,10 @@
+Run these commands as root:
+
+cpan App::cpanminus
+yum install gmp-devel
+cpanm Math::GMP
+cpanm Net::SFTP
+
+cd /var/staging/logs/
+mkdir sftpTransfer
+chmod 777 sftpTransfer
