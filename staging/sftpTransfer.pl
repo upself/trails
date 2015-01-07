@@ -1,11 +1,13 @@
 #!/usr/bin/perl
 
 #-------------------------------------------------------------------------------
-# Program: ftpTransfer.pl
+# Program: sftpTransfer.pl
 # Author: Michal Starek (michal.starek@cz.ibm.com)
 # ----------------------------------------------
 # Performs SFTP file transfering by pre-configured parameters
 #-------------------------------------------------------------------------------
+
+use lib '/opt/staging/v2';
 
 # constants
 use strict;
@@ -21,7 +23,7 @@ our $srchostname; # remote hostname of source
 our $tgthostname; # remote hostname of target
 our $source; # source directory
 our $target; # target directory
-our $filemask; # regular expression to match the filename
+our @filemasks; # regular expressions to match the filename
 our $delsource; # true false whether to keep the original files after successful copy
 our $minage; # minimum age of file, in minutes
 our $flag; # a special file marking the files are ready (is by itself never transferred
@@ -34,11 +36,40 @@ our $flagispresent; # flag is present
 
 our %processednames; # hash of all the processed FTP sessions
 
-our $logfile    = "/var/staging/logs/ftpTransfer/ftpTransfer.log";
+our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
+our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt";
+our %connConfigParams; # hash of all the lines in connection config file, to keep passwords in one place
 
 ####################################
 ##       SUBS
 ####################################
+sub readConnectionConfig {
+	my $param=shift;
+	
+	return $param unless ( $param =~ /^\[.*\]$/ );
+	
+	$param =~ s/^\[//;
+	$param =~ s/\]$//;
+	
+	if (scalar(keys %connConfigParams) == 0 ) {
+		open(CONNCONF, "<$connectionConfig") or die "Can't open the connectionConfig file $connectionConfig !";
+		while (my $line=<CONNCONF>) {
+			chomp($line);
+			$line =~ s/\r//g;
+			my ($str1, $str2) = split(/=/, $line);
+			$connConfigParams{$str1}=$str2;
+		}
+		close(CONNCONF);
+	}
+	
+	unless (exists $connConfigParams{$param} ) {
+		wlog("Warning! Parameter $param not found in $connectionConfig file!");
+		return undef;
+	}
+	
+	return $connConfigParams{$param};
+}
+
 sub Usage {
 	print <<EOL;
 A tool for FTP transfer of files from or to a target server
@@ -68,6 +99,12 @@ direction=...
 The order of the parameters doesn't matter, however all of them except the last seven are mandatory.
 Of course only remote hostname of source / target is mandatory where applicable, depending on the copying direction.
 (When user and password not given, assuming login via SSH keys.)
+
+NOTE: Instead of specifying a solid value, like password, you can specify to use certain attribute from $connectionConfig .
+Like this:
+srcftpuser=[gsa.swmulti.report.user]
+
+NOTE: You can also define more filemasks, as filemask, filemask2 and filemask3...
 EOL
 	exit;
 }
@@ -88,40 +125,40 @@ sub readcfgfile { # reads from config file
 			$srcftppwd="";
 			$tgtftpuser="";
 			$tgtftppwd="";
-			$filemask="";
+			@filemasks=();
 			$delsource="true";
 			$flag="";
 			$minage=0;
 			$flagispresent=0; # bool whether the flagfile has been present
 		}
 		$direction=lc(retparam($line)) if ( $line =~ /^direction/i );
-		$srchostname=retparam($line) if ( $line =~ /^srchostname/i );
-		$tgthostname=retparam($line) if ( $line =~ /^tgthostname/i );
-		$source=retparam($line) if ( $line =~ /^source/i );
-		$target=retparam($line) if ( $line =~ /^target/i );
-		$srcftpuser=retparam($line) if ( $line =~ /^srcftpuser/i );
-		$srcftppwd=retparam($line) if ( $line =~ /^srcftppwd/i );
-		$tgtftpuser=retparam($line) if ( $line =~ /^tgtftpuser/i );
-		$tgtftppwd=retparam($line) if ( $line =~ /^tgtftppwd/i );
-		$filemask=retparam($line) if ( $line =~ /^filemask/i );
+		$srchostname=readConnectionConfig(retparam($line)) if ( $line =~ /^srchostname/i );
+		$tgthostname=readConnectionConfig(retparam($line)) if ( $line =~ /^tgthostname/i );
+		$source=readConnectionConfig(retparam($line)) if ( $line =~ /^source/i );
+		$target=readConnectionConfig(retparam($line)) if ( $line =~ /^target/i );
+		$srcftpuser=readConnectionConfig(retparam($line)) if ( $line =~ /^srcftpuser/i );
+		$srcftppwd=readConnectionConfig(retparam($line)) if ( $line =~ /^srcftppwd/i );
+		$tgtftpuser=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtftpuser/i );
+		$tgtftppwd=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtftppwd/i );
+		push (@filemasks, retparam($line) ) if ( $line =~ /^filemask/i );
 		$delsource=lc(retparam($line)) if ( $line =~ /^delsource/i );
 		$flag=retparam($line) if ( $line =~ /^flag/i );
 		$minage=retparam($line) if ( $line =~ /^minage/i );
 		
 		if ( $line =~ /^\s*$/ ) { # blank line, this is our point of complete reading of one session
-			if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemask ne "" )) {
+			if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemasks[0] ne "" )) {
 				next if exists ($processednames{$name});
 				$processednames{$name}=1;
-				dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask=$filemask");
+				dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask1=".$filemasks[0]);
 				return 1;
 			}
 		}
 	}
 	
-	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemask ne "" )) {
+	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemasks[0] ne "" )) {
 		return 0 if exists ($processednames{$name});
 		$processednames{$name}=1;
-		dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask=$filemask");
+		dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask1=".$filemasks[0]);
 		return 1;
 	}
 		
@@ -165,6 +202,8 @@ sub filetomove { # determines whether given file is elligible to be copied
 	my $stamp=shift;
 	my $curstamp=time;
 	
+	my $okay=0; # temporary value to see if the file is matching one of the given regexps
+	
 	if (( defined $flag ) && ( $flag eq $filename)) { # the flagfile itself
 		$flagispresent = 1;
 		dlog("Flagfile $flag defined and present, the files are ready to transfer (job $name)!");
@@ -173,10 +212,15 @@ sub filetomove { # determines whether given file is elligible to be copied
 	
 	return 0 if ($filename =~ /^\./ ); # UNIX hidden file or a directory link
 	
-	if ($filename !~ /$filemask/ ) {
-		dlog("$filename skipped, not in the defined mask! (job $name)");
+	foreach my $filemask ( @filemasks ) {
+		$okay=1 if ( $filename =~ /$filemask/ ); # file belonging to the defined mask
+	}
+	
+	if ( $okay == 0 ) {
+		ilog("$filename skipped, not in the defined mask(s)! (job $name)");
 		return 0;
-	} # file not belonging to the defined mask
+	}
+
 	
 	return 1 if ( (( $curstamp - $stamp ) / 60 ) > $minage );	# file older than minimum age
 	
@@ -188,7 +232,7 @@ sub filetomove { # determines whether given file is elligible to be copied
 ##        MAIN
 ##################################
 
-logging_level( "debug" );
+logging_level( "info" );
 logfile($logfile);
 
 Usage() unless ( defined $ARGV[0] );

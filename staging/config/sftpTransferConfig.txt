@@ -1,21 +1,22 @@
-[POKUS-MYYYSHA]
-direction=rem2loc # rem2loc - remote to local, or loc2rem - in the future we shall implement also some zipping
-srchostname=lexbz2250.cloud.dst.ibm.com
-source=/home/myyysha/SFTPfrom
-target=/home/michal.g/SFTPto
-filemask=^w.*
-srcftpuser=myyysha # for logging
-srcftppwd=567uJHGt
-delsource=false
-minage=20
-
-[ZPET-MYYYSHA]
-direction=loc2rem
-tgthostname=lexbz2250.cloud.dst.ibm.com
-source=/home/michal.g/SFTPfrom
-target=/home/myyysha/SFTPto
-filemask=.*
-tgtftpuser=myyysha # for logging
-tgtftppwd=567uJHGt
+[BEJGSA]
+direction=rem2loc # rem2loc - remote to local, or loc2rem
+srchostname=bldgsa.ibm.com
+source=/projects/s/swdata/ftp/disconnected
+target=/var/ftp/staging
+filemask=^[A-Z0-9_-]+_(TAD4D_Versions|computer|processor|socket|software_filter|software_signature|computer_memory|endpoint|hdisk|ip_address)\.tsv(\.gz|)$
+filemask2=^[A-Z0-9_-]+\.(Z|gz|gzip|zip|tsv|tsv\.gz)$
+srcftpuser=[gsa.swmulti.report.user] # for logging
+srcftppwd=[gsa.swmulti.report.password]
 delsource=true
-flag=READY
+minage=10
+
+# [TEMPLATE]
+# direction=loc2rem
+# tgthostname=lexbz2250.cloud.dst.ibm.com
+# source=/home/z12345/SFTPfrom
+# target=/home/z12345/SFTPto
+# filemask=.*
+# tgtftpuser=z12345 # for logging
+# tgtftppwd=
+# delsource=true
+# flag=READY
