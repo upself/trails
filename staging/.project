@@ -2,11 +2,23 @@
 <projectDescription>
 	<name>Staging</name>
 	<comment></comment>
-	<projects></projects>
+	<projects>
+	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.epic.perleditor.perlbuilder</name>
-			<arguments></arguments>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/Ant_Builder.launch</value>
+				</dictionary>
+			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>

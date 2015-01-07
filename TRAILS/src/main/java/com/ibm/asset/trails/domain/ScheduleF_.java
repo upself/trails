@@ -11,7 +11,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class ScheduleF_ {
 	public static volatile SingularAttribute<ScheduleF, Long> id;
 	public static volatile SingularAttribute<ScheduleF, Account> account;
-	public static volatile SingularAttribute<ScheduleF, ProductInfo> productInfo;
+	public static volatile SingularAttribute<ScheduleF, Software> software;
 	public static volatile SingularAttribute<ScheduleF, String> softwareTitle;
 	public static volatile SingularAttribute<ScheduleF, String> softwareName;
 	public static volatile SingularAttribute<ScheduleF, String> manufacturer;

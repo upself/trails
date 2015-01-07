@@ -80,9 +80,9 @@ public class Software extends AbstractDomainEntity {
 
 	@Column(name = "VERSION")
 	private String version;
-
+	
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName = "ID")
+	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="ID")
 	private ProductInfo productInfo;
 
 	public Software() {
@@ -213,6 +213,7 @@ public class Software extends AbstractDomainEntity {
 		if (!(other instanceof Software))
 			return false;
 		Software castOther = (Software) other;
+
 		return new EqualsBuilder().append(softwareId, castOther.softwareId)
 				.isEquals();
 	}
@@ -221,4 +222,6 @@ public class Software extends AbstractDomainEntity {
 	public int hashCode() {
 		return new HashCodeBuilder().append(softwareId).toHashCode();
 	}
+
 }
+

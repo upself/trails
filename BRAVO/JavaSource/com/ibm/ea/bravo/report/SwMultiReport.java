@@ -9,7 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.IOUtils;
 
-import sun.net.ftp.FtpClient;
+//Do refactor to use the Apache Common FTP API Start 
+//import sun.net.ftp.FtpClient;
+import org.apache.commons.net.ftp.FTPClient;
+//Do refactor to use the Apache Common FTP API End 
 
 import com.ibm.ea.bravo.account.Account;
 import com.ibm.ea.bravo.account.DelegateAccount;
@@ -36,7 +39,10 @@ public class SwMultiReport extends DownloadReport implements IReport {
 			throws ExceptionAccountAccess {
 		logger.debug("SwMulti - start");
 
-		FtpClient fc = new FtpClient();
+		//Do refactor to use the Apache Common FTP API Start 
+		//FtpClient fc = new FtpClient();
+		FTPClient fc = new FTPClient();
+		//Do refactor to use the Apache Common FTP API End 
 		try {
 			accountId = args[0];
 			Account account = DelegateAccount.getAccount(accountId, request);
@@ -53,11 +59,17 @@ public class SwMultiReport extends DownloadReport implements IReport {
 			String directory = DelegateProperties.getProperty(
 					Constants.APP_PROPERTIES, "gsa.ftp.directory");
 
-			fc.openServer(server);
+			//Do refactor to use the Apache Common FTP API Start 
+			//fc.openServer(server);
+			fc.connect(server);
 			fc.login(user, password);
-			fc.binary();
-			fc.cd(directory);
-			InputStream inputStream = fc.get(fileName);
+			//fc.binary();
+			fc.setFileType(fc.BINARY_FILE_TYPE);
+			//fc.cd(directory);
+			fc.cwd(directory);
+			//InputStream inputStream = fc.get(fileName);
+			InputStream inputStream = fc.retrieveFileStream(fileName);
+			//Do refactor to use the Apache Common FTP API End 
 			IOUtils.copy(inputStream, outputStream);
 
 			outputStream.close();
@@ -68,7 +80,10 @@ public class SwMultiReport extends DownloadReport implements IReport {
 		} finally {
 			if (fc != null) {
 				try {
-					fc.closeServer();
+					//Do refactor to use the Apache Common FTP API Start 
+					//fc.closeServer();
+					fc.disconnect();
+					//Do refactor to use the Apache Common FTP API End 
 				} catch (IOException e) {
 					logger.error(e.getMessage(), e);
 				}

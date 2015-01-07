@@ -21,7 +21,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.MachineType;
-import com.ibm.asset.trails.domain.ProductInfo;
+import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.ReconCustomerSoftware;
 import com.ibm.asset.trails.domain.ReconInstalledSoftware;
-import com.ibm.asset.trails.domain.ReconcileH;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFH;
 import com.ibm.asset.trails.domain.Scope;
@@ -56,12 +54,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public ScheduleF findScheduleF(Long plScheduleFId, Account pAccount,
-			ProductInfo pProductInfo) {
+			Software pSoftware) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwNotId")
 				.setParameter("account", pAccount)
-				.setParameter("productInfo", pProductInfo)
+				.setParameter("software", pSoftware)
 				.setParameter("id", plScheduleFId).getResultList();
 		ScheduleF result;
 		if (results == null || results.isEmpty()) {
@@ -74,12 +72,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public ScheduleF findScheduleF(Account pAccount, ProductInfo pProductInfo) {
+	public ScheduleF findScheduleF(Account pAccount, Software pSoftware) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSw")
 				.setParameter("account", pAccount)
-				.setParameter("productInfo", pProductInfo).getResultList();
+				.setParameter("software", pSoftware).getResultList();
 		ScheduleF result;
 		if (results == null || results.isEmpty()) {
 			result = null;
@@ -91,12 +89,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<ScheduleF> findScheduleF(Account pAccount, ProductInfo pProductInfo, String level) {
+	public List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware, String level) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwAndLevel")
 				.setParameter("account", pAccount)
-				.setParameter("productInfo", pProductInfo)
+				.setParameter("software", pSoftware)
 				.setParameter("level", level).getResultList();
 
 		if (results == null || results.isEmpty()) {
@@ -108,23 +106,23 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public ArrayList<ProductInfo> findProductInfoBySoftwareName(
+	public ArrayList<Software> findSoftwareBySoftwareName(
 			String psSoftwareName) {
 		@SuppressWarnings("unchecked")
-		ArrayList<ProductInfo> lalProductInfo = (ArrayList<ProductInfo>) getEntityManager()
-				.createNamedQuery("productInfoBySoftwareName")
+		ArrayList<Software> lalSoftware = (ArrayList<Software>) getEntityManager()
+				.createNamedQuery("softwareBySoftwareName")
 				.setParameter("name", psSoftwareName.toUpperCase())
 				.getResultList();
 
-		if (lalProductInfo.size() > 0) {
-			return lalProductInfo;
+		if (lalSoftware.size() > 0) {
+			return lalSoftware;
 		} else {
 			List resultList = getEntityManager()
-					.createNamedQuery("productInfoByAliasName")
+					.createNamedQuery("softwareByAliasName")
 					.setParameter("name", psSoftwareName.toUpperCase())
 					.getResultList();
 
-			ArrayList<ProductInfo> productInforList = new ArrayList<ProductInfo>();
+			ArrayList<Software> softwareforList = new ArrayList<Software>();
           if(!resultList.isEmpty()){
 			// loop the result list to get the product information aggregation.
 			for (Object resultElement : resultList) {
@@ -133,44 +131,44 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				}
 
 				for (Object object : (Object[]) resultElement) {
-					if (object instanceof ProductInfo) {
-						productInforList.add((ProductInfo) object);
+					if (object instanceof Software) {
+						softwareforList.add((Software) object);
 					}
 				}
 			}
           }
-			if (productInforList.isEmpty()){
+			if (softwareforList.isEmpty()){
 				@SuppressWarnings("unchecked")
-				ArrayList<ProductInfo> linalProductInfo = (ArrayList<ProductInfo>) getEntityManager()
-						.createNamedQuery("inactiveProductInfoBySoftwareName")
+				ArrayList<Software> linalSoftware = (ArrayList<Software>) getEntityManager()
+						.createNamedQuery("inactiveSoftwareBySoftwareName")
 						.setParameter("name", psSoftwareName.toUpperCase())
 						.getResultList();
-				if (linalProductInfo.size() > 0) {
-						for (ProductInfo object :  linalProductInfo) {						
-								productInforList.add((ProductInfo) object);						
+				if (linalSoftware.size() > 0) {
+						for (Software object :  linalSoftware) {						
+							softwareforList.add((Software) object);						
 						}
 					
 				} else {
-					List inacPiResultList = getEntityManager()
-							.createNamedQuery("inactiveProductInfoByAliasName")
+					List inacSWResultList = getEntityManager()
+							.createNamedQuery("inactiveSoftwareByAliasName")
 							.setParameter("name", psSoftwareName.toUpperCase())
 							.getResultList();
-					if(!inacPiResultList.isEmpty()){
-					for (Object resultElement : inacPiResultList) {
+					if(!inacSWResultList.isEmpty()){
+					for (Object resultElement : inacSWResultList) {
 						if (!(resultElement instanceof Object[])) {
 							continue;
 						}
 
 						for (Object object : (Object[]) resultElement) {
-							if (object instanceof ProductInfo) {
-								productInforList.add((ProductInfo) object);
+							if (object instanceof Software) {
+								softwareforList.add((Software) object);
 							}
 						}
 					}
 				}
 				}
 			}
-			return productInforList;
+			return softwareforList;
 		}
 	}
 
@@ -342,9 +340,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	public void saveScheduleF(ScheduleF psfSave, String psRemoteUser) {
 		boolean lbSaveReconRow = false;
 		boolean lbSaveExistReconRow = false;
-		if (psfSave.getAccount() != null && psfSave.getProductInfo() != null && psfSave.getLevel() != null ) {
+		if (psfSave.getAccount() != null && psfSave.getSoftware() != null && psfSave.getLevel() != null ) {
 			List<ScheduleF> lsfExists = findScheduleF(psfSave.getAccount(),
-					psfSave.getProductInfo(),psfSave.getLevel());
+					psfSave.getSoftware(),psfSave.getLevel());
             if (lsfExists != null){
 				for (ScheduleF existsSF : lsfExists) {
 					if (existsSF instanceof ScheduleF) {
@@ -421,7 +419,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			// Insert a ScheduleFH record
 			lsfhSave.setScheduleF(lsfExists);
 			lsfhSave.setAccount(lsfExists.getAccount());
-			lsfhSave.setProductInfo(lsfExists.getProductInfo());
+			lsfhSave.setSoftware(lsfExists.getSoftware());
 			lsfhSave.setSoftwareTitle(lsfExists.getSoftwareTitle());
 			lsfhSave.setSoftwareName(lsfExists.getSoftwareName());
 			lsfhSave.setManufacturer(lsfExists.getManufacturer());
@@ -447,7 +445,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setSerial(psfSave.getSerial());
 			lsfExists.setHostname(psfSave.getHostname());
 			lsfExists.setAccount(psfSave.getAccount());
-			lsfExists.setProductInfo(psfSave.getProductInfo());
+			lsfExists.setSoftware(psfSave.getSoftware());
 			lsfExists.setSoftwareTitle(psfSave.getSoftwareTitle());
 			lsfExists.setSoftwareName(psfSave.getSoftwareName());
 			lsfExists.setManufacturer(psfSave.getManufacturer());
@@ -465,14 +463,14 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			
 			if (lbSaveExistReconRow){
 				if (lsfhSave.getLevel().equals(ScheduleFLevelEnumeration.PRODUCT.toString()) ){
-					ArrayList<ProductInfo> llProductInfo = null;
-					llProductInfo = findProductInfoBySoftwareName(lsfhSave.getSoftwareName());
+					ArrayList<Software> llProductInfo = null;
+					llProductInfo = findSoftwareBySoftwareName(lsfhSave.getSoftwareName());
 					if (llProductInfo != null && !llProductInfo.isEmpty()) {
-						for (ProductInfo productInfotemp : llProductInfo){
+						for (Software productInfotemp : llProductInfo){
 					@SuppressWarnings("unchecked")
 					List<ReconCustomerSoftware> results = getEntityManager()
 							.createNamedQuery("reconCustomerSwExists")
-							.setParameter("productInfo", productInfotemp)
+							.setParameter("software", productInfotemp)
 							.setParameter("account", lsfhSave.getAccount())
 							.getResultList();
 					
@@ -480,7 +478,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
 
 						lrcsSave.setAccount(lsfhSave.getAccount());
-						lrcsSave.setProductInfo(productInfotemp);
+						lrcsSave.setSoftware(productInfotemp);
 						lrcsSave.setAction("UPDATE");
 						lrcsSave.setRecordTime(new Date());
 						lrcsSave.setRemoteUser(psRemoteUser);
@@ -494,8 +492,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.productInfo.name = :productName AND b.account = :account AND d.owner = :owner")
-							.setParameter("productName",lsfhSave.getProductInfo().getName())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.software.softwareName = :softwareName AND b.account = :account AND d.owner = :owner")
+							.setParameter("softwareName",lsfhSave.getSoftware().getSoftwareName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("owner", lsfhSave.getHwOwner()).getResultList();
 					insertInswRecon(installedswlist,psRemoteUser);
@@ -505,8 +503,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.productInfo.name = :productName and b.account = :account and d.serial = :serail and e.name = :name")
-							.setParameter("productName",lsfhSave.getProductInfo().getName())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.software.softwareName = :softwareName and b.account = :account and d.serial = :serail and e.name = :name")
+							.setParameter("softwareName",lsfhSave.getSoftware().getSoftwareName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("serail", lsfhSave.getSerial())
 							.setParameter("name", lsfhSave.getMachineType()).getResultList();
@@ -517,8 +515,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					@SuppressWarnings("unchecked")
 					List<InstalledSoftware> installedswlist = getEntityManager()
 							.createQuery(
-									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.productInfo.name = :productName and b.account = :account and b.name = :hostname")
-							.setParameter("productName",lsfhSave.getProductInfo().getName())
+									"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.software.softwareName = :softwareName and b.account = :account and b.name = :hostname")
+							.setParameter("softwareName",lsfhSave.getSoftware().getSoftwareName())
 							.setParameter("account",lsfhSave.getAccount())
 							.setParameter("hostname", lsfhSave.getHostname()).getResultList();
 					insertInswRecon(installedswlist,psRemoteUser);
@@ -540,7 +538,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				@SuppressWarnings("unchecked")
 				List<ReconCustomerSoftware> results = getEntityManager()
 						.createNamedQuery("reconCustomerSwExists")
-						.setParameter("productInfo", psfSave.getProductInfo())
+						.setParameter("software", psfSave.getSoftware())
 						.setParameter("account", psfSave.getAccount())
 						.getResultList();
 				
@@ -548,7 +546,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
 
 					lrcsSave.setAccount(psfSave.getAccount());
-					lrcsSave.setProductInfo(psfSave.getProductInfo());
+					lrcsSave.setSoftware(psfSave.getSoftware());
 					lrcsSave.setAction("UPDATE");
 					lrcsSave.setRecordTime(new Date());
 					lrcsSave.setRemoteUser(psRemoteUser);
@@ -560,8 +558,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				@SuppressWarnings("unchecked")
 				List<InstalledSoftware> installedswlist = getEntityManager()
 						.createQuery(
-								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.productInfo = :productInfo AND b.account = :account AND d.owner = :owner")
-						.setParameter("productInfo",psfSave.getProductInfo())
+								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH a.softwareLpar.hardwareLpar c JOIN FETCH a.softwareLpar.hardwareLpar.hardware d WHERE a.status='ACTIVE'  AND c.status='ACTIVE' AND  a.software = :software AND b.account = :account AND d.owner = :owner")
+						.setParameter("software",psfSave.getSoftware())
 						.setParameter("account",psfSave.getAccount())
 						.setParameter("owner", psfSave.getHwOwner()).getResultList();
 				insertInswRecon(installedswlist,psRemoteUser);
@@ -571,8 +569,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				@SuppressWarnings("unchecked")
 				List<InstalledSoftware> installedswlist = getEntityManager()
 						.createQuery(
-								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and d.serial = :serail and e.name = :name")
-						.setParameter("productInfo",psfSave.getProductInfo())
+								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b JOIN FETCH b.hardwareLpar c JOIN FETCH c.hardware d JOIN FETCH d.machineType e  Where a.status='ACTIVE'  and d.status='ACTIVE' and a.software = :software and b.account = :account and d.serial = :serail and e.name = :name")
+						.setParameter("software",psfSave.getSoftware())
 						.setParameter("account",psfSave.getAccount())
 						.setParameter("serail", psfSave.getSerial())
 						.setParameter("name", psfSave.getMachineType()).getResultList();
@@ -583,8 +581,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				@SuppressWarnings("unchecked")
 				List<InstalledSoftware> installedswlist = getEntityManager()
 						.createQuery(
-								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.productInfo = :productInfo and b.account = :account and b.name = :hostname")
-						.setParameter("productInfo",psfSave.getProductInfo())
+								"FROM InstalledSoftware a JOIN FETCH a.softwareLpar b Where a.status='ACTIVE' and a.software = :software and b.account = :account and b.name = :hostname")
+						.setParameter("software",psfSave.getSoftware())
 						.setParameter("account",psfSave.getAccount())
 						.setParameter("hostname", psfSave.getHostname()).getResultList();
 				insertInswRecon(installedswlist,psRemoteUser);
@@ -792,7 +790,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 		case 7: { // Software name
-			ArrayList<ProductInfo> lalProductInfo = null;
+			ArrayList<Software> lalProductInfo = null;
 
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 				sf.setSoftwareName(cell.getRichStringCellValue().getString());
@@ -800,10 +798,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				throw new Exception("Software name is not a string.");
 			}
 
-			lalProductInfo = findProductInfoBySoftwareName(sf.getSoftwareName());
+			lalProductInfo = findSoftwareBySoftwareName(sf.getSoftwareName());
 			if (lalProductInfo.size() > 0) {
-				sf.setProductInfo(lalProductInfo.get(0));
-				if (lalProductInfo.get(0).getDeleted().equals(1)){
+				sf.setSoftware(lalProductInfo.get(0));
+				if (lalProductInfo.get(0).getStatus().equalsIgnoreCase("INACTIVE")){
 					@SuppressWarnings("unchecked")
 					List<Status> results = getEntityManager()
 							.createNamedQuery("statusDetails")

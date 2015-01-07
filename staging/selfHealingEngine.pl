@@ -286,13 +286,13 @@ my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrail
 #Userids and Passwords used to logon the remote server using Telnet Mode
 #TAPMF Web Application Testing Server
 my $TAPMF_SERVER_USERID   = 'asket';
-my $TAPMF_SERVRE_PASSWORD = 'Zlivtom8';
+my $TAPMF_SERVRE_PASSWORD = 'Tomzliv6';
 #Bravo Web Application PROD Server
 my $BRAVO_SERVER_USERID   = 'asket';
-my $BRAVO_SERVRE_PASSWORD = 'Zlivtom8';
+my $BRAVO_SERVRE_PASSWORD = 'Tomzliv6';
 #Trails Web Application PROD Server
 my $TRAILS_SERVER_USERID   = 'asket';
-my $TRAILS_SERVRE_PASSWORD = 'Zlivtom8';
+my $TRAILS_SERVRE_PASSWORD = 'Tomzliv6';
 
 #Vars
 my $operationErrorFlag = $FALSE;#var used to store operation error flag(TRUE or FALSE)
@@ -371,7 +371,10 @@ my $queryReLic = "SELECT * FROM recon_license WHERE license_id = ?";
 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
 my $FAIL    = 0;
 my $SUCCESS = 1;
-my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^softwareDoranaToStaging.pl^scanSoftwareItemToStaging.pl/";
+#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list Start
+#my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^softwareDoranaToStaging.pl^scanSoftwareItemToStaging.pl/";
+my $HAS_CHILD_LOADER_LIST_ON_TAP_SERVER = "/hdiskToStaging.pl^ipAddressToStaging.pl^memModToStaging.pl^processorToStaging.pl^scanRecordToStaging.pl^softwareFilterToStaging.pl^softwareManualToStaging.pl^softwareSignatureToStaging.pl^softwareTlcmzToStaging.pl^scanSoftwareItemToStaging.pl/";
+#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list End
 my $LOADER_REPLACE_STRING  = ".pl";
 my $LOADER_REPLACED_STRING = "Child.pl";
 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
@@ -2622,7 +2625,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"expiredMaintManager.pl";#15
   push @vaildLoaderList,"expiredScansManager.pl";#16
   push @vaildLoaderList,"scanRecordToLpar.pl";#17
-  push @vaildLoaderList,"softwareDoranaToStaging.pl";#18
+  #push @vaildLoaderList,"softwareDoranaToStaging.pl";#18#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list
   push @vaildLoaderList,"licenseToBravo.pl";#19
   push @vaildLoaderList,"licTypeToBravo.pl";#20
   push @vaildLoaderList,"scanSoftwareItemToStaging.pl";#21
@@ -2651,7 +2654,7 @@ sub getValidLoaderListOnTAP3Server{
   push @vaildLoaderList,"hardwareToBravo.pl";#5
   push @vaildLoaderList,"hdiskToBravo.pl";#6
   push @vaildLoaderList,"processorToBravo.pl";#7
-  push @vaildLoaderList,"swkbt";#8
+  #push @vaildLoaderList,"swkbt";#8
   #push @vaildLoaderList,"testingTAP.pl";#9 #For testing function purpose only
   
   return @vaildLoaderList;
@@ -2684,7 +2687,7 @@ sub getValidChildLoaderListOnTAPServer{
   push @vaildChildLoaderList,"softwareManualToStagingChild.pl";#7
   push @vaildChildLoaderList,"softwareSignatureToStagingChild.pl";#8
   push @vaildChildLoaderList,"softwareTlcmzToStagingChild.pl";#9
-  push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10
+  #push @vaildChildLoaderList,"softwareDoranaToStagingChild.pl";#10#Added by Larry to remove the softwareDoranaToStagingChild.pl loader from the valid list
   push @vaildChildLoaderList,"scanSoftwareItemToStagingChild.pl";#11
 
   return @vaildChildLoaderList;

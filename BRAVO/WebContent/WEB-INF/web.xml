@@ -17,6 +17,20 @@
 		<param-value>true</param-value>
 	</context-param>
 
+	<filter>
+		<filter-name>ResponseOverrideFilter</filter-name>
+		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>ResponseOverrideFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>ResponseOverrideFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+
 	<listener>
 		<listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
 	</listener>
@@ -123,6 +137,9 @@
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
 	</security-constraint>
 
 	<security-constraint>
@@ -138,7 +155,7 @@
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
-		 
+
 		<auth-constraint>
 			<description>Tool Users</description>
 			<role-name>com.ibm.tap.asset</role-name>
@@ -149,17 +166,17 @@
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
-	<!-- 	<user-data-constraint>
+		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
-		-->
-	</security-constraint>
+	</security-constraint> 
 
 	<security-constraint>
 		<display-name>Admin</display-name>
 		<web-resource-collection>
 			<web-resource-name>Admin</web-resource-name>
 			<url-pattern>/admin/*</url-pattern>
+			<url-pattern>/bankAccount/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -169,7 +186,7 @@
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-		</user-data-constraint>	
+		</user-data-constraint>
 	</security-constraint>
 
 	<login-config>

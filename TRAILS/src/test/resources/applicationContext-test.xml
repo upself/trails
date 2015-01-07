@@ -1,47 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:annotation-config />
-    <context:component-scan base-package="com.ibm.asset.trails.*" />
-    <!--<context:component-scan base-package="com.ibm.asset.trails.domain" />-->
-	
+	<context:annotation-config />
+	<context:component-scan base-package="com.ibm.asset.trails.dao" />
 	<bean
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	
+
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
 				<value>
 					file:/opt/trails/conf/hibernate.properties
-                </value>
+				</value>
 				<value>file:/opt/trails/conf/trails.properties
-                </value>
+				</value>
 			</list>
 		</property>
 	</bean>
-	
-	<!--<bean id="alertUnlicensedSoftwareDAO" class="com.ibm.asset.trails.dao.jpa.AlertUnlicensedSoftwareDAOJpa" />
-	<bean id="licenseDAO" class="com.ibm.asset.trails.dao.jpa.LicenseDAOJpa" />
-	<bean id="reconcileDAO" class="com.ibm.asset.trails.dao.jpa.ReconcileDAOJpa" />-->
-	
-	
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<!--<property name="packagesToScan" value="com.ibm.asset.trails.domain"/>-->
-		<property name="persistenceUnitName" value="trailspd"/>
+		<property name="persistenceUnitName" value="trailspd" />
 	</bean>
 
 	<bean id="hibernateJpaVendorAdapter"
@@ -59,21 +49,23 @@
 		<property name="password" value="${pd.password}" />
 	</bean>
 
+
+	<bean id="namedParamJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource"/>
+	</bean>
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
-		<qualifier value="trailspd"/>
 	</bean>
-	
-	<tx:annotation-driven transaction-manager="transactionManager2" />
-	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory2" />
-		<qualifier value="trailsst"/>
-	</bean>
-	<bean id="entityManagerFactory2"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<property name="persistenceUnitName" value="trailsst"/>
-	</bean>
-	
+
+	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
+	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
+	<bean id="reconWorkspaceService"
+		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl" />
+	<bean id="reconService" class="com.ibm.asset.trails.service.impl.ReconServiceImpl" />
+	<bean id="allocationMethodologyService"
+		class="com.ibm.asset.trails.service.impl.AllocationMethodologyServiceImpl" />
+	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
+
 </beans>

@@ -2,7 +2,7 @@ package com.ibm.ea.bravo.account;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+//import java.io.InputStream;//Do refactor to use the Apache Common FTP API
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,7 +16,11 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import sun.net.ftp.FtpClient;
+//Do refactor to use the Apache Common FTP API Start 
+//import sun.net.ftp.FtpClient;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+//Do refactor to use the Apache Common FTP API End
 
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
@@ -223,8 +227,11 @@ public abstract class DelegateAccount extends HibernateDelegate {
 	}
 
 	public static boolean getMultiReport(Account account) {
-		FtpClient fc = new FtpClient();
-		InputStream is = null; 
+		//Do refactor to use the Apache Common FTP API Start 
+		//FtpClient fc = new FtpClient();
+		FTPClient fc = new FTPClient();
+		//InputStream is = null; 
+		//Do refactor to use the Apache Common FTP API End 
 		try {
 			
 			String fileName = "MULTI."
@@ -239,15 +246,25 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			String directory = DelegateProperties.getProperty(
 					Constants.APP_PROPERTIES, "gsa.ftp.directory");
 
-			fc.openServer(server);
-			fc.login(user, password);
+			//Do refactor to use the Apache Common FTP API Start 
+			/*fc.openServer(server);
 			fc.binary();
 			fc.cd(directory);
-			is = fc.get(fileName);
-
+		    is = fc.get(fileName);
+			
 			if (is != null) {
 				return true;
+			}*/
+			
+			fc.connect(server);
+			fc.login(user, password);
+			fc.cwd(directory);
+			//Check if the remote file exists or not
+			FTPFile[] files = fc.listFiles(fileName);
+			if(files.length==1){
+			  return true;  	
 			}
+			//Do refactor to use the Apache Common FTP API End 
 		} catch (IOException e) {
 
 			if (e instanceof FileNotFoundException) {
@@ -256,17 +273,22 @@ public abstract class DelegateAccount extends HibernateDelegate {
 			logger.error(e.getMessage(), e);
 		} finally {
 			
-			if(is!=null){
+			//Do refactor to use the Apache Common FTP API Start
+			/*if(is!=null){
 				try {
 					is.close();
 				} catch (IOException e) {
 					logger.error(e.getMessage(), e);
 				}
-			}
+			}*/
+			//Do refactor to use the Apache Common FTP API End
 
 			if (fc != null) {
 				try {
-					fc.closeServer();
+					//Do refactor to use the Apache Common FTP API Start
+					//fc.closeServer();
+					fc.disconnect();
+					//Do refactor to use the Apache Common FTP API End
 				} catch (IOException e) {
 					logger.error(e.getMessage(), e);
 				}

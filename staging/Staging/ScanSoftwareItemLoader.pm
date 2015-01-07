@@ -37,12 +37,15 @@ sub load {
 	$self->SUPER::load( \%args, $job );
 	my $bankAccount =$self->SUPER::bankAccount;
     dlog(' bankaccount id '. $bankAccount->id);
-	ilog('Acquiring the staging connection');
-	my $stagingConnection = Database::Connection->new('staging');
-	ilog('Staging connection acquired');
-
-	my $dieMsg = undef;
+    
+    my $dieMsg = undef;
+    my $stagingConnection;
 	eval {
+    
+		ilog('Acquiring the staging connection');
+		$stagingConnection = Database::Connection->new('staging');
+		ilog('Staging connection acquired');
+
 		ilog('Preparing the source data');
 		$self->prepareSourceData;
 		ilog('Source data prepared');
