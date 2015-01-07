@@ -49,6 +49,12 @@
 		<property name="password" value="${pd.password}" />
 	</bean>
 
+
+	<bean id="namedParamJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource"/>
+	</bean>
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
@@ -61,5 +67,5 @@
 	<bean id="allocationMethodologyService"
 		class="com.ibm.asset.trails.service.impl.AllocationMethodologyServiceImpl" />
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
-	
+
 </beans>

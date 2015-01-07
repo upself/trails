@@ -500,6 +500,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			log.debug("alertList: " + alertList.size());
 			for (Long alertId : alertList) {
 				AlertUnlicensedSw alert = alertDAO.findById(alertId);
+				alertDAO.refresh(alert);
 				// bug fix for #166. alert may null under multi-threads.
 				if (alert == null || alert.getReconcile() == null) {
 					continue;
