@@ -244,7 +244,7 @@ sub getData {
             dlog( 'Found lpar twice ' . $hardwareLpar->toString );
         }
 
-		my $processorCount = processorCountLogic($rec{effProc});
+		my $processorCount = $self->processorCountLogic($rec{effProc});
 			
 		if ($processorCount == undef) {
 			dlog("skipping");
