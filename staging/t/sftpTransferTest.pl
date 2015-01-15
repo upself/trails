@@ -11,12 +11,12 @@
 # 4) Check for existence of target files
 # 5) Delete the target files,so it's possible to retest again
 #-------------------------------------------------------------------------------
+use lib '/opt/staging/v2';
 
 use strict;
 use File::Basename;
 use File::stat;
 use Net::SFTP;
-use Base::Utils;
 use Cwd;
 
 # global variables
