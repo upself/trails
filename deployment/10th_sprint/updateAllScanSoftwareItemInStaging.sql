@@ -1,0 +1,1 @@
+update SCAN_SOFTWARE_ITEM set action=1 where action!=2 and action!=1 with ur
