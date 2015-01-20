@@ -112,6 +112,7 @@
 			<display:column property="country" title="Country" />
 			<display:column property="owner" title="HW Owner" />
 			<display:column property="assetType" title="Asset type" />
+			<display:column property="pid" title="PID" />
 			<display:column property="lparServerType" title="Server type" />
 			<display:column property="productInfoName" title="SW Name" />
 			<display:column property="processorManufacturer" title="Proc mfg" />

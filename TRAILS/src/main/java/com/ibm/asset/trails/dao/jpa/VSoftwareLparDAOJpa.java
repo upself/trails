@@ -190,6 +190,7 @@ public class VSoftwareLparDAOJpa extends
 						.as("processorCount"))
 				.add(Projections.property("sw.softwareName").as("productInfoName"))
 				.add(Projections.property("sw.softwareId").as("productInfoId"))
+				.add(Projections.property("sw.pid").as("pid"))
 				.add(Projections.property("rt.name").as("reconcileTypeName"))
 				.add(Projections.property("rt.id").as("reconcileTypeId"))
 				.add(Projections.property("aus.remoteUser").as("assignee"))
