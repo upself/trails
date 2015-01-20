@@ -22,5 +22,6 @@ public class Software_ {
 	public static volatile SingularAttribute<Software, Integer> vendorManaged;
 	public static volatile SingularAttribute<Software, String> productRole;
 	public static volatile SingularAttribute<Software, String> version;
+	public static volatile SingularAttribute<Software, String> pid;
 	public static volatile SingularAttribute<Software, ProductInfo> productInfo;
 }

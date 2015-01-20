@@ -1,6 +1,6 @@
 package com.ibm.asset.trails.test.dao.jpa;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ public class SoftwareDAOJpaTest {
 	@Autowired
 	private SoftwareDAO softwareDAO;
 	private final Long softwareId = 218119L;
+	private final String softwarePid = "5655-W50";
 	private final String softwareName ="IBM AIX";
 	private final String inactiveSoftwareName ="Artemis - Artemis - BASE";
 
@@ -47,5 +48,11 @@ public class SoftwareDAOJpaTest {
 		List<Software> softwareList = softwareDAO.findInactiveSoftwareBySoftwareName(inactiveSoftwareName);
 		assertNotNull(softwareList);
 		System.out.println(softwareList.get(0).getSoftwareName().toString());
+	}
+	
+	@Test
+	public void testSoftwarePid(){
+		Software software = softwareDAO.getSoftwareDetails(471817L);
+		assertEquals(software.getPid(),"5655-W50");
 	}
 }
