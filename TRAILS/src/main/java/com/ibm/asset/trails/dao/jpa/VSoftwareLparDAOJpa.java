@@ -176,6 +176,7 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("h.nbrCoresPerChip").as("nbrCoresPerChip"))
 				.add(Projections.property("h.nbrOfChipsMax").as("nbrOfChipsMax"))
 				.add(Projections.property("h.cpuLsprMips").as("cpuLsprMips"))
+				.add(Projections.property("hl.cpuIFL").as("cpuIFL"))
 				.add(Projections.property("hl.partLsprMips").as("partLsprMips"))
 				.add(Projections.property("h.cpuGartnerMips").as("cpuGartnerMips"))
 				.add(Projections.property("hl.partGartnerMips").as("partGartnerMips"))

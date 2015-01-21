@@ -121,6 +121,7 @@
 			<display:column property="chips" title=" HW chip" />
 			<display:column property="hardwareProcessorCount" title="HW proc" />
 			<display:column property="nbrOfChipsMax" title=" # chips max" />
+			<display:column property="cpuIFL" title="HW IFL" />
 			<display:column property="cpuLsprMips" title="CPU IBM LSPR MIPS" />
 			<display:column property="partLsprMips" title="PART IBM LSPR MIPS" />
 			<display:column property="cpuGartnerMips" title="CPU Gartner MIPS" />

@@ -51,6 +51,9 @@ public class HardwareLpar {
 	
 	@Column(name = "SERVER_TYPE")
 	private String serverType;
+	
+	@Column(name = "CPU_IFL")
+	private Integer cpuIFL;
 
 	public String getServerType() {
 		return serverType;
@@ -212,4 +215,13 @@ public class HardwareLpar {
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
 	}
+
+	public Integer getCpuIFL() {
+		return cpuIFL;
+	}
+
+	public void setCpuIFL(Integer cpuIFL) {
+		this.cpuIFL = cpuIFL;
+	}
+	
 }

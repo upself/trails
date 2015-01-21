@@ -167,6 +167,8 @@ public class ReconWorkspace implements Serializable {
 	private String shared;
 	
 	private String lparServerType;
+	
+	private Integer cpuIFL;
 
 	public String getLparServerType() {
 		return lparServerType;
@@ -425,5 +427,13 @@ public class ReconWorkspace implements Serializable {
 
 	public void setShared(String shared) {
 		this.shared = shared;
+	}
+
+	public Integer getCpuIFL() {
+		return cpuIFL;
+	}
+
+	public void setCpuIFL(Integer cpuIFL) {
+		this.cpuIFL = cpuIFL;
 	}
 }
