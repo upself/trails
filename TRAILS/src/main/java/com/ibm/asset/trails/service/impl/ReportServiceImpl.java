@@ -80,7 +80,7 @@ public class ReportServiceImpl implements ReportService {
 			"Effective processor count","Effective threads","PVU/core",
 			"Installed SW product name", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
-			"Inst SW validation status", "Reconciliation action", "Allocation methodology", 
+			"Inst SW validation status","PID", "Reconciliation action", "Allocation methodology", 
 			"Reconciliation user", "Reconciliation date/time",
 			"Reconciliation comments", "Reconciliation parent product",
 			"License account number", "Full product description",
@@ -549,7 +549,8 @@ public class ReportServiceImpl implements ReportService {
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then  'DUAL-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then  'QUAD-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE' else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
-				+ ",instS.software_name as instSwName ";
+				+ ",instS.software_name as instSwName "
+				+ ",instS.PID as pid";
 		
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
                 + "where sf.customer_id = :customerId "
