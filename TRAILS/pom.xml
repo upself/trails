@@ -46,24 +46,6 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>db2java</artifactId>
-			<version>1.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>1.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>db2jcc_license_cu</artifactId>
-			<version>1.0</version>
-		</dependency>
 
 		<!-- Junit -->
 		<dependency>
