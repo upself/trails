@@ -12,6 +12,7 @@
 	<property name="hCpuMIPS" type="scalar" equals="true" />
 	<property name="hCpuGartnerMIPS" type="scalar" equals="true" />
 	<property name="hCpuMSU" type="scalar" equals="true" />
+	<property name="hCpuIFL" type="scalar" equals="true" />
 	<property name="hOwner" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
 	<property name="hlId" type="scalar" equals="true" />
