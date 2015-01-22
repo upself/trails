@@ -349,11 +349,12 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 	$software->write( $lineCount, 7,  "CHIP COUNT" );
 	$software->write( $lineCount, 8,  "MANUFACTURER" );	
 	$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-	$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
-	$software->write( $lineCount, 11, "DISCREPANCY TYPE");
-	$software->write( $lineCount, 12,  "LICENSE" );
-	$software->write( $lineCount, 13, "BANK ACCOUNT" );
-	$software->write( $lineCount, 14, "SCOPE" );
+	$software->write( $lineCount, 10,  "PID" );
+	$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+	$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+	$software->write( $lineCount, 13, "LICENSE" );
+	$software->write( $lineCount, 14, "BANK ACCOUNT" );
+	$software->write( $lineCount, 15, "SCOPE" );
 
 	$lineCount++;
 
@@ -416,15 +417,18 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 			$software->write( $lineCount, 9,
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'softwareName'} );
-			$software->write( $lineCount, 10, $softwareVersions );
-			$software->write( $lineCount, 11,
+			$software->write( $lineCount, 10,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'pid'} );
+			$software->write( $lineCount, 11, $softwareVersions );
+			$software->write( $lineCount, 12,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'discrepancyType'} );
-			$software->write( $lineCount, 12,
+			$software->write( $lineCount, 13,
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
 				  ->{$softwareCategory}->{'level'} );
-			$software->write( $lineCount, 13, $bankAccounts );
-			$software->write( $lineCount, 14,
+			$software->write( $lineCount, 14, $bankAccounts );
+			$software->write( $lineCount, 15,
                 $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
                   ->{$softwareCategory}->{'scopeDescription'} );
 
@@ -458,11 +462,12 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 				$software->write( $lineCount, 7,  "CHIP COUNT" );
 				$software->write( $lineCount, 8,  "MANUFACTURER" );	
 				$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-				$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
-				$software->write( $lineCount, 11, "DISCREPANCY TYPE");
-				$software->write( $lineCount, 12,  "LICENSE" );
-				$software->write( $lineCount, 13, "BANK ACCOUNT" );
-				$software->write( $lineCount, 14, "SCOPE" );
+				$software->write( $lineCount, 10,  "PID" );
+				$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+				$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+				$software->write( $lineCount, 13, "LICENSE" );
+				$software->write( $lineCount, 14, "BANK ACCOUNT" );
+				$software->write( $lineCount, 15, "SCOPE" );
 			$lineCount++;
 			}
 
@@ -541,17 +546,20 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 				$software->write( $lineCount, 8, $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
 					  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'} );					  
 				$software->write( $lineCount, 9, $softwareName );
-				$software->write( $lineCount, 10, $softwareVersions );
-				$software->write( $lineCount, 11,
+				$software->write( $lineCount, 10, 
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
+					->{$softwareCategory}->{'pid'} );
+				$software->write( $lineCount, 11, $softwareVersions );
 				$software->write( $lineCount, 12,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}->{$softwareName}->{'level'} );
+					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
 				$software->write( $lineCount, 13,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'level'} );
+				$software->write( $lineCount, 14,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
 					  ->{$softwareCategory}->{$softwareName}->{'bankAccount'} );
-			   $software->write( $lineCount, 14,
+			   $software->write( $lineCount, 15,
                     $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
                       ->{$softwareCategory}->{$softwareName}->{'scopeDescription'} );
 
@@ -586,11 +594,12 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 					$software->write( $lineCount, 7,  "CHIP COUNT" );
 					$software->write( $lineCount, 8,  "MANUFACTURER" );					
 					$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-					$software->write( $lineCount, 10,  "SOFTWARE VERSION" );
-					$software->write( $lineCount, 11, "DISCREPANCY TYPE");
-					$software->write( $lineCount, 12, "LICENSE" );
-					$software->write( $lineCount, 13, "BANK ACCOUNT" );
-					$software->write( $lineCount, 14, "SCOPE" );
+					$software->write( $lineCount, 10,  "PID" );
+					$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+					$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+					$software->write( $lineCount, 13, "LICENSE" );
+					$software->write( $lineCount, 14, "BANK ACCOUNT" );
+					$software->write( $lineCount, 15, "SCOPE" );
 					$lineCount++;
 				}
 
@@ -757,6 +766,7 @@ sub getBravoSoftwareReport {
 	my $chipCount;
 	my $scantime;
 	my $softwareName;
+	my $pid;
 	my $softwareManufacturer;
 	my $level;
 	my $priority;
@@ -787,6 +797,7 @@ select 				   ol.account_number
                       ,COALESCE(j.chips, 0)
                       ,ol.scantime
                       ,ol.software_name
+                      ,ol.pid
                       ,ol.manufacturer
                       ,ol.level
                       ,ol.priority
@@ -822,6 +833,7 @@ from
                        as processor_count
                       ,b.scantime
                       ,s.software_name as software_name
+                      ,s.pid as pid
                       ,SwMan.name as manufacturer
                       ,s.level as level
                       ,s.priority
@@ -890,8 +902,8 @@ from
 	$sth->bind_columns(
 		\$accountNumber,   	\$name,           	\$model,
 		\$biosSerial,      	\$processorCount, 	\$chipCount,
-		\$scantime,        	\$softwareName,   	\$softwareManufacturer,
-		\$level,          
+		\$scantime,        	\$softwareName,		\$pid,	
+		\$softwareManufacturer,					\$level,
 		\$priority, 	   	\$softwareVersion, 	\$bankAccount,    
 		\$softwareCategory,	\$osMinorVers,     	\$osSubVers, 
 		\$discrepancyType,     
@@ -925,7 +937,6 @@ from
 		$data{$accountNumber}{$name}{'partMSU'}   = $partMSU;
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
-		
         
 		if ( $softwareCategory eq 'Operating Systems' ) {
 			if (
@@ -982,6 +993,8 @@ from
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareName'} = $softwareName;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
+			  {'pid'} = $pid;
+			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareManufacturer'} = $softwareManufacturer;  
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'level'} = $level;
@@ -1021,8 +1034,11 @@ from
 		$data{$accountNumber}{$name}{'partMSU'}   = $partMSU;
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
+		
 		$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareName'} = $softwareName;
+		$data{$accountNumber}{$name}{'software'}{$softwareCategory}
+			  {'pid'} = $pid;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
 			  {'softwareManufacturer'} = $softwareManufacturer;
 			$data{$accountNumber}{$name}{'software'}{$softwareCategory}
