@@ -78,6 +78,13 @@
 
 	<bean id="reconWorkspaceService"
 		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl">
+		<property name="reconRules">
+			<list>
+				<bean class="com.ibm.ea.common.reconcile.MipMsuReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.HardwareIflReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.PvuReconRule" />
+			</list>
+		</property>
 	</bean>
 
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
