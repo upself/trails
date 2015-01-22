@@ -80,7 +80,7 @@ public class ReconWorkspaceServiceImplTest {
 		// This query extract from
 		// AlertUnlicensedSoftwareDAO.findAffectedAlertList(testAccount.getId(),
 		// productId, false, false, "ALL", true)
-		String queryOpenAlertsId = "SELECT AUS.Id, AUS.CREATION_TIME FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software_Item SI, EAADMIN.Hw_Sw_Composite HSC WHERE AUS.Open = 1 AND SL.Customer_Id = :customerId AND SI.Id = :productId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SI.Id = IS.Software_Id AND HSC.Software_Lpar_Id = SL.Id ORDER BY AUS.CREATION_TIME DESC";
+		String queryOpenAlertsId = "SELECT AUS.Id, AUS.CREATION_TIME FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software SW, EAADMIN.Hw_Sw_Composite HSC WHERE AUS.Open = 1 AND SL.Customer_Id = :customerId AND SW.Software_Id = :productId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SW.Software_Id = IS.Software_Id AND HSC.Software_Lpar_Id = SL.Id ORDER BY AUS.CREATION_TIME DESC";
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("customerId", this.testAccount.getId());
