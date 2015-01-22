@@ -547,8 +547,8 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 					  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'} );					  
 				$software->write( $lineCount, 9, $softwareName );
 				$software->write( $lineCount, 10, 
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					->{$softwareCategory}->{'pid'} );
+			  		$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					->{$softwareCategory}->{$softwareName}->{'pid'} );
 				$software->write( $lineCount, 11, $softwareVersions );
 				$software->write( $lineCount, 12,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
@@ -959,8 +959,10 @@ from
 		elsif ( $softwareCategory eq 'UNKNOWN' ) {
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
 			  {$softwareName}{'softwareVersion'}{$softwareVersion} = 0;
-			 $data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
+			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
 			  {$softwareName}{'softwareManufacturer'} = $softwareManufacturer;
+			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
+			  {$softwareName}{'pid'} = $pid;
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
 			  {$softwareName}{'level'} = $level;
 			$data{$accountNumber}{$name}{'unknown'}{$softwareCategory}
