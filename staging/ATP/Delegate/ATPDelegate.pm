@@ -604,7 +604,7 @@ sub cpuIflLogic {
 		my ( $self, $cpuIfl) = @_;	
 	
         if( defined $cpuIfl){
-         my $reg1 = qr/^-?\d+(\.\d+)?$/;
+         my $reg1 = qr/^\d+(\.\d+)?$/;
          my $reg2 = qr/^-?0(\d+)?$/;
          if ( $cpuIfl =~ $reg1 && $cpuIfl !~ $reg2 ){
              return int($cpuIfl);
