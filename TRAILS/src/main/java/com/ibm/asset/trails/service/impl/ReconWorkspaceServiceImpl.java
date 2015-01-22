@@ -756,7 +756,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			AlertUnlicensedSw pAlertUnlicensedSw) {
 		if (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
 				|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
-				|| pRecon.getPer().equalsIgnoreCase("PVU")) {
+				|| pRecon.getPer().equalsIgnoreCase("PVU")
+				|| pRecon.getPer().equalsIgnoreCase("CHIP")) {
 			return !pmHardwareId.containsKey(pAlertUnlicensedSw
 					.getInstalledSoftware().getSoftwareLpar().getHardwareLpar()
 					.getHardware().getId());
