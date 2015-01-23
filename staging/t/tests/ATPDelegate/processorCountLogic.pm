@@ -45,7 +45,7 @@ sub offline_test_1 : Tests(8) {
 	is($class->processorCountLogic(undef),undef, "processorCountLogic effProc undef => undef");
 	is($class->processorCountLogic(''),undef, "processorCountLogic effProc '' => undef");	
 	is($class->processorCountLogic(0),undef, "processorCountLogic effProc 0 => undef");
-	is($class->processorCountLogic(1),1, "processorCountLogic effProc 1 => undef");
+	is($class->processorCountLogic(1),1, "processorCountLogic effProc 1 => 1");
 	is($class->processorCountLogic(12.1231),12, "processorCountLogic effProc 12.1231 => 12");
 	is($class->processorCountLogic(0.1241),undef, "processorCountLogic effProc 0.1241 => undef");
 	is($class->processorCountLogic(-1.1241),undef, "processorCountLogic effProc -1.1241 => undef");

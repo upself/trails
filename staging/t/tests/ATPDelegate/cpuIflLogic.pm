@@ -15,13 +15,13 @@ sub offline_test_1 : Tests(8) {
 	my $test  = shift;
 	my $class = $test->class;
 	
-	is($class->cpuIflLogic(undef),0, "test offline undef => 0");
-	is($class->cpuIflLogic(''),0, "test offline '' => 0");	
-	is($class->cpuIflLogic(0),0, "test offline 0 => 0");
-	is($class->cpuIflLogic(1),1, "test offline 1 => 1");
-	is($class->cpuIflLogic(12.1231),12, "test offline 12.1231 => 12");
-	is($class->cpuIflLogic(0.1241),0, "test offline 0.1241 => 0");
-	is($class->cpuIflLogic(-1.1241),0, "test offline -1.1241 => 0");
-	is($class->cpuIflLogic(-6),0, "test offline -6 => 0");
+	is($class->cpuIflLogic(undef),0, "test offline cpuIflLogic undef => 0");
+	is($class->cpuIflLogic(''),0, "test offline cpuIflLogic '' => 0");	
+	is($class->cpuIflLogic(0),0, "test offline cpuIflLogic 0 => 0");
+	is($class->cpuIflLogic(1),1, "test offline cpuIflLogic 1 => 1");
+	is($class->cpuIflLogic(12.1231),12, "test offline cpuIflLogic 12.1231 => 12");
+	is($class->cpuIflLogic(0.1241),0, "test offline cpuIflLogic 0.1241 => 0");
+	is($class->cpuIflLogic(-1.1241),0, "test offline cpuIflLogic -1.1241 => 0");
+	is($class->cpuIflLogic(-6),0, "test offline cpuIflLogic -6 => 0");
 }
 1;
