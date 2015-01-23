@@ -164,15 +164,9 @@ sub getData {
         $hardware->sharedProcessor( $rec{sharedProcessor} );
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
+        $hardware->cpuIFL( $self->cpuIflLogic($rec{cpuIFL}) );
         
-        if( defined $rec{cpuIFL}){
-         my $cpuIfl = $rec{cpuIFL};
-         my $reg1 = qr/^-?\d+(\.\d+)?$/;
-         my $reg2 = qr/^-?0(\d+)?$/;
-         if ( $cpuIfl =~ $reg1 && $cpuIfl !~ $reg2 ){
-             $hardware->cpuIFL( int($cpuIfl) );
-         }
-        }
+
         
         dlog( $hardware->toString );
             
@@ -605,6 +599,18 @@ sub processorCountLogic {
         }
 	
 		return $processorCount;
+}
+sub cpuIflLogic {
+		my ( $self, $cpuIfl) = @_;	
+	
+        if( defined $cpuIfl){
+         my $reg1 = qr/^\d+(\.\d+)?$/;
+         my $reg2 = qr/^-?0(\d+)?$/;
+         if ( $cpuIfl =~ $reg1 && $cpuIfl !~ $reg2 ){
+             return int($cpuIfl);
+         }
+        }
+        return 0;
 }
 
 1;
