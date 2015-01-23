@@ -164,6 +164,16 @@ sub getData {
         $hardware->sharedProcessor( $rec{sharedProcessor} );
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
+        
+        if( defined $rec{cpuIFL}){
+         my $cpuIfl = $rec{cpuIFL};
+         my $reg1 = qr/^-?\d+(\.\d+)?$/;
+         my $reg2 = qr/^-?0(\d+)?$/;
+         if ( $cpuIfl =~ $reg1 && $cpuIfl !~ $reg2 ){
+             $hardware->cpuIFL( int($cpuIfl) );
+         }
+        }
+        
         dlog( $hardware->toString );
             
         ###Add substr to cut down processorType
@@ -328,7 +338,8 @@ sub queryATPData {
             vMobilRestrict
             cappedLpar
             virtualFlag
-            nbrFreeProcessorCores)
+            nbrFreeProcessorCores
+            cpuIFL)
     );
     my $query = '
         select
@@ -387,7 +398,8 @@ sub queryATPData {
 			,ltrim(rtrim(VIRTUAL_MOBILITY_RESTRICTION))
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
-			,NBR_FREE_PROCESSOR_CORES		
+			,NBR_FREE_PROCESSOR_CORES
+			,CPU_IFL		
         from
             atpprod.bravo
     ';
@@ -453,7 +465,8 @@ sub queryATPDeltaData {
             vMobilRestrict
             cappedLpar
             virtualFlag
-            nbrFreeProcessorCores)
+            nbrFreeProcessorCores
+            cpuIFL)
     );
     my $query = '
         select
@@ -513,6 +526,7 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
+			,CPU_IFL
         from
             atpprod.bravo
         where  
