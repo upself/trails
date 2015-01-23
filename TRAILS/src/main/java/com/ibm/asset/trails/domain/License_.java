@@ -6,7 +6,6 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-
 @StaticMetamodel(License.class)
 public class License_ {
 	public static volatile SingularAttribute<License, Long> id;
@@ -30,4 +29,5 @@ public class License_ {
 	public static volatile SingularAttribute<License, Integer> pool;
 	public static volatile SingularAttribute<License, String> environment;
 	public static volatile SingularAttribute<License, String> licenseType;
+	public static volatile SingularAttribute<License, Boolean> tryAndBuy;
 }
