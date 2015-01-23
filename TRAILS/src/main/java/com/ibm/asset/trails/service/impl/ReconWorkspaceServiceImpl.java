@@ -580,8 +580,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				|| lsPer.equalsIgnoreCase("LPARGARTMIPS")
 				|| lsPer.equalsIgnoreCase("HWLSPRMIPS")
 				|| lsPer.equalsIgnoreCase("LPARLSPRMIPS")
-				|| lsPer.equalsIgnoreCase("HWMSU") || lsPer
-				.equalsIgnoreCase("LPARMSU")) ? 0 : pRecon.getMaxLicenses()
+				|| lsPer.equalsIgnoreCase("HWMSU")
+				|| lsPer.equalsIgnoreCase("LPARMSU") || lsPer
+				.equalsIgnoreCase("HWIFL")) ? 0 : pRecon.getMaxLicenses()
 				.intValue();
 
 		if (lsPer.equalsIgnoreCase("LPAR")
