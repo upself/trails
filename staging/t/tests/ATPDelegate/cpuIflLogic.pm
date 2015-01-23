@@ -23,8 +23,8 @@ sub offline_test_1 : Tests(8) {
 	is($class->cpuIflLogic(12.1231),12, "test offline 12.1231 => 12");
 	is($class->cpuIflLogic(0.1241),0, "test offline 0.1241 => 0");
 	is($class->cpuIflLogic(-1.1241),0, "test offline -1.1241 => 0");
-	is($class->cpuIflLogic(-0),0, "test offline -6 => 0");
-	is($class->cpuIflLogic(+0),0, "test offline -6 => 0");
+	is($class->cpuIflLogic(-0),0, "test offline -0 => 0");
+	is($class->cpuIflLogic(+0),0, "test offline +0 => 0");
 	is($class->cpuIflLogic('string'),0, "test offline string => 0");
     is($class->cpuIflLogic('12,35'),0, "test offline '12,35' => 0");
     is($class->cpuIflLogic('1.text'),0, "test offline 1.text => 0");
