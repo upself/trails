@@ -530,7 +530,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.PROCESSOR_MODEL"
 				+ ",h.NBR_CORES_PER_CHIP"
 				+ ",h.NBR_OF_CHIPS_MAX"
-				+ ",hl.CPU_IFL"
+				+ ",h.CPU_IFL"
 				+ ",h.shared_processor"
 				+ ",h.CPU_MIPS"
 				+ ",h.CPU_GARTNER_MIPS"
