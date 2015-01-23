@@ -62,10 +62,19 @@
 	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
 	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
 	<bean id="reconWorkspaceService"
-		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl" />
+		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl" >
+		<property name="reconRules">
+			<list>
+				<bean class="com.ibm.ea.common.reconcile.MipMsuReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.HardwareIflReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.PvuReconRule" />
+			</list>
+		</property>	
+	</bean>
 	<bean id="reconService" class="com.ibm.asset.trails.service.impl.ReconServiceImpl" />
 	<bean id="allocationMethodologyService"
 		class="com.ibm.asset.trails.service.impl.AllocationMethodologyServiceImpl" />
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
+
 
 </beans>
