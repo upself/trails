@@ -354,7 +354,7 @@
 			sortProperty="sl.processorCount" sortable="true" />
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
-		<display:column sortProperty="pi.name" title="Software"
+		<display:column sortProperty="sw.softwareName" title="Software"
 			sortable="true">
 			<a
 				href="javascript:popupBravoSl(<s:property value="%{#attr.row.installedSoftwareId}"/>)">${row.productInfoName}</a>

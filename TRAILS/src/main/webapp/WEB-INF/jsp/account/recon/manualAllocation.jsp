@@ -12,6 +12,7 @@
 				|| pfoAllocation.value == 'LPARLSPRMIPS'
 				|| pfoAllocation.value == 'HWMSU'
 				|| pfoAllocation.value == 'LPARMSU'
+				|| pfoAllocation.value == 'HWIFL'
 			) {
 			document.showManualConfirmation.maxLicenses.value="";
 			document.showManualConfirmation.maxLicenses.disabled = true;
