@@ -584,15 +584,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				|| lsPer.equalsIgnoreCase("LPARMSU") || lsPer
 				.equalsIgnoreCase("HWIFL")) ? 0 : pRecon.getMaxLicenses()
 				.intValue();
-
+		boolean cacualted = false;
 		if (lsPer.equalsIgnoreCase("LPAR")
 				|| lsPer.equalsIgnoreCase("HWDEVICE")) {
 			liLicensesNeeded = liMaxLicenses;
+			cacualted = true;
 		} else if (lsPer.equalsIgnoreCase("CHIP")) {
 			liLicensesNeeded = pAlertUnlicensedSw.getInstalledSoftware()
 					.getSoftwareLpar().getHardwareLpar().getHardware()
 					.getChips().intValue()
 					* liMaxLicenses;
+			cacualted = true;
 		}
 
 		// If $licenseQty can't be assigned during the scope of the rules chain
@@ -612,7 +614,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		}
 
 		// current allocation methodology have not rules, apply default qty.
-		if (!coveredByRules) {
+		if (!coveredByRules && !cacualted) {
 			VSoftwareLpar lVSoftwareLpar = vSwLparDAO
 					.findById(pAlertUnlicensedSw.getInstalledSoftware()
 							.getSoftwareLpar().getId());
