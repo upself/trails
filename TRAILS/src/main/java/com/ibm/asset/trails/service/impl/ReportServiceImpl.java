@@ -73,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
-			"NBR of Chips Max","Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
+			"NBR of Chips Max", "Hardware IFL", "Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
 			"CPU MSU", "Part IBM LSPR MIPS", "Part Gartner MIPS", "Part MSU",
 			"SHARED", "Hardware Status", "Lpar Status",
 			"Physical HW processor count", "Physical chips",
@@ -530,6 +530,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.PROCESSOR_MODEL"
 				+ ",h.NBR_CORES_PER_CHIP"
 				+ ",h.NBR_OF_CHIPS_MAX"
+				+ ",h.CPU_IFL"
 				+ ",h.shared_processor"
 				+ ",h.CPU_MIPS"
 				+ ",h.CPU_GARTNER_MIPS"
