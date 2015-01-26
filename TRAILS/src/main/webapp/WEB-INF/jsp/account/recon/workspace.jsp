@@ -274,6 +274,8 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
+				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
 				value="%{#attr.row.lparServerType}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareStatus"
@@ -346,6 +348,8 @@
 			sortable="true" />
 		<display:column property="assetType" title="Asset type"
 			sortProperty="mt.type" sortable="true" />
+		<display:column property="pid" title="PID"
+			sortProperty="sw.pid" sortable="true" />
 		<display:column property="hardwareStatus" title="Hardware Status"
 			sortProperty="h.hardwareStatus" sortable="true" />
 		<display:column property="lparStatus" title="Lpar Status"

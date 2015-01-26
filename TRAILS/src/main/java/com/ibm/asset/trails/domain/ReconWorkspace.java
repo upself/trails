@@ -56,6 +56,16 @@ public class ReconWorkspace implements Serializable {
 	
 	private BigDecimal partGartnerMips;
 	
+	private String pid;
+	
+	public String getPid() {
+		return pid;
+	}
+
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+
 	/**
 	 * @return the cpuLsprMips
 	 */
