@@ -126,16 +126,15 @@ public class ReconWorkspaceServiceImplTest {
 		this.expectedClosedAlertId = oldestAlertId;
 
 	}
-	
+
 	/*
 	 * Author: vndwbwan@cn.ibm.com
 	 * 
-	 * Testing manual recon close by per HWIFL
-	 * 17231 in Jazz Hub.
+	 * Testing manual recon close by per HWIFL 17231 in Jazz Hub.
 	 */
 	@Test
 	@Transactional
-	public void testManualReconGroupForStory17231(){
+	public void testManualReconGroupForStory17231() throws Throwable {
 
 		// Preparing testing data.
 		List<ReconWorkspace> reconWorkspaceList = new ArrayList<ReconWorkspace>();
@@ -193,53 +192,38 @@ public class ReconWorkspaceServiceImplTest {
 
 			AlertUnlicensedSw alert = alertDAO.findById(alertList.get(0));
 			alertDAO.refresh(alert);
-			
-			String code = alert.getReconcile().getAllocationMethodology().getCode();
-			Set<UsedLicense> usedLicenseSet = alert.getReconcile().getUsedLicenses();
+
+			String code = alert.getReconcile().getAllocationMethodology()
+					.getCode();
+			Set<UsedLicense> usedLicenseSet = alert.getReconcile()
+					.getUsedLicenses();
 			int usedQuantity = 0;
-			
-			for (UsedLicense usedLicense : usedLicenseSet){
-				if(null != usedLicense.getUsedQuantity()){
+
+			for (UsedLicense usedLicense : usedLicenseSet) {
+				if (null != usedLicense.getUsedQuantity()) {
 					usedQuantity += usedLicense.getUsedQuantity();
 				}
 			}
-			
-			
+
 			Assert.assertEquals("HWIFL", code);
 			Assert.assertEquals(10, usedQuantity);
 			// End of checking result.
 
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			if (e instanceof AssertionFailedError) {
-				throw (AssertionFailedError) e;
-			}
-			e.printStackTrace();
 		} finally {
 			// Clean the testing data.
-			try {
-				@SuppressWarnings("rawtypes")
-				Class[] argsBreakManualGroup = new Class[] { Account.class,
-						String.class, List.class, ReconcileType.class,
-						String.class };
-				Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
-						"breakManualReconGroup", argsBreakManualGroup);
-				methodBreakManualReconGroup.setAccessible(true);
+			@SuppressWarnings("rawtypes")
+			Class[] argsBreakManualGroup = new Class[] { Account.class,
+					String.class, List.class, ReconcileType.class, String.class };
+			Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
+					"breakManualReconGroup", argsBreakManualGroup);
+			methodBreakManualReconGroup.setAccessible(true);
 
-				InvocationHandler handlerBreakManualReconGroup = Proxy
-						.getInvocationHandler(reconWorkspaceService);
-				handlerBreakManualReconGroup.invoke(reconWorkspaceService,
-						methodBreakManualReconGroup, new Object[] {
-								testAccount, remoteUser, reconWorkspaceList,
-								manualReconcileType, "ALL" });
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			InvocationHandler handlerBreakManualReconGroup = Proxy
+					.getInvocationHandler(reconWorkspaceService);
+			handlerBreakManualReconGroup.invoke(reconWorkspaceService,
+					methodBreakManualReconGroup, new Object[] { testAccount,
+							remoteUser, reconWorkspaceList,
+							manualReconcileType, "ALL" });
 
 		}
 	}
@@ -252,7 +236,7 @@ public class ReconWorkspaceServiceImplTest {
 	 */
 	@Test
 	@Transactional
-	public void testManualReconGroupForStory16837() {
+	public void testManualReconGroupForStory16837() throws Throwable {
 
 		// Preparing testing data.
 
@@ -308,7 +292,7 @@ public class ReconWorkspaceServiceImplTest {
 			// Checking result.
 			List<Long> alertList = alertDAO.findAffectedAlertList(
 					testAccount.getId(), productId, false, true, "ALL", false);
-			
+
 			Assert.assertNotNull(alertList);
 			Assert.assertTrue(alertList.size() > 0);
 
@@ -324,37 +308,21 @@ public class ReconWorkspaceServiceImplTest {
 
 			// End of checking result.
 
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			if (e instanceof AssertionFailedError) {
-				throw (AssertionFailedError) e;
-			}
-			e.printStackTrace();
 		} finally {
 			// Clean the testing data.
-			try {
-				@SuppressWarnings("rawtypes")
-				Class[] argsBreakManualGroup = new Class[] { Account.class,
-						String.class, List.class, ReconcileType.class,
-						String.class };
-				Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
-						"breakManualReconGroup", argsBreakManualGroup);
-				methodBreakManualReconGroup.setAccessible(true);
+			@SuppressWarnings("rawtypes")
+			Class[] argsBreakManualGroup = new Class[] { Account.class,
+					String.class, List.class, ReconcileType.class, String.class };
+			Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
+					"breakManualReconGroup", argsBreakManualGroup);
+			methodBreakManualReconGroup.setAccessible(true);
 
-				InvocationHandler handlerBreakManualReconGroup = Proxy
-						.getInvocationHandler(reconWorkspaceService);
-				handlerBreakManualReconGroup.invoke(reconWorkspaceService,
-						methodBreakManualReconGroup, new Object[] {
-								testAccount, remoteUser, reconWorkspaceList,
-								manualReconcileType, "ALL" });
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			InvocationHandler handlerBreakManualReconGroup = Proxy
+					.getInvocationHandler(reconWorkspaceService);
+			handlerBreakManualReconGroup.invoke(reconWorkspaceService,
+					methodBreakManualReconGroup, new Object[] { testAccount,
+							remoteUser, reconWorkspaceList,
+							manualReconcileType, "ALL" });
 
 		}
 
