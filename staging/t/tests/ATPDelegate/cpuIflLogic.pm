@@ -30,5 +30,6 @@ sub offline_test_1 : Tests(8) {
     is($class->cpuIflLogic('1.text'),0, "test offline 1.text => 0");
 
 
+
 }
 1;
