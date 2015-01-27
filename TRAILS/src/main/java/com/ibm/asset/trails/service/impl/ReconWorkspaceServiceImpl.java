@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.AlertUnlicensedSoftwareDAO;
 import com.ibm.asset.trails.dao.InstalledSoftwareDAO;
-import com.ibm.asset.trails.dao.PVUInfoDAO;
-import com.ibm.asset.trails.dao.PVUMapDAO;
 import com.ibm.asset.trails.dao.ReconcileDAO;
 import com.ibm.asset.trails.dao.ReconcileTypeDAO;
 import com.ibm.asset.trails.dao.VSoftwareLparDAO;
@@ -28,9 +26,6 @@ import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
-import com.ibm.asset.trails.domain.MachineType;
-import com.ibm.asset.trails.domain.PvuInfo;
-import com.ibm.asset.trails.domain.PvuMap;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconSetting;
 import com.ibm.asset.trails.domain.ReconWorkspace;
@@ -39,15 +34,15 @@ import com.ibm.asset.trails.domain.ReconcileType;
 import com.ibm.asset.trails.domain.VSoftwareLpar;
 import com.ibm.asset.trails.service.ReconService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
+import com.ibm.ea.common.reconcile.IReconcileRule;
 import com.ibm.tap.trails.framework.DisplayTagList;
 
 @Service
 public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
+
 	// TODO need to make sure I update alert history
 	private static final Log log = LogFactory
 			.getLog(ReconWorkspaceServiceImpl.class);
-
-	private final int DEFAULT_PVU_VALUE = 0;
 
 	@Autowired
 	private ReconService reconService;
@@ -65,13 +60,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	private ReconcileDAO reconDAO;
 
 	@Autowired
-	private PVUMapDAO pvuMapDAO;
-
-	@Autowired
-	private PVUInfoDAO pvuInfoDAO;
-
-	@Autowired
 	private VSoftwareLparDAO vSwLparDAO;
+
+	private List<IReconcileRule> reconRules;
 
 	private int alertsProcessed;
 
@@ -83,6 +74,10 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	public void setAlertsProcessed(int alertsProcessed) {
 		this.alertsProcessed = alertsProcessed;
+	}
+
+	public void setReconRules(List<IReconcileRule> reconRules) {
+		this.reconRules = reconRules;
 	}
 
 	public int getAlertsTotal() {
@@ -255,6 +250,22 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					continue;
 				}
 
+				// start of reconcile rules check.
+				boolean skip = false;
+				for (IReconcileRule rule : reconRules) {
+					if (!rule.inMyScope(pRecon.getPer()))
+						continue;
+
+					if (!rule.allocate(pRecon, llTemp, lausTemp)) {
+						skip = true;
+						break;
+					}
+				}
+
+				if (skip)
+					continue;
+				// end of reconcile rules check
+
 				if (!lmLicenseAvailableQty.containsKey(llTemp.getId())) {
 					lmLicenseAvailableQty.put(llTemp.getId(),
 							llTemp.getAvailableQty());
@@ -307,8 +318,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		Map<Long, Integer> lmLicenseAvailableQty = new HashMap<Long, Integer>();
 		int liLicensesApplied = 0;
 		Map<License, Integer> lmLicenseApplied = null;
-		Long llHardwareId = null;
-		Map<Long, Long> lmHardwareId = new HashMap<Long, Long>();
+		Set<Long> processedHwIds = new HashSet<Long>();
 		boolean lbProcessAlert = false;
 
 		setAlertsProcessed(0);
@@ -318,36 +328,43 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			AlertUnlicensedSw lausTemp = alertDAO.findById(alertId);
 			int scheduleFOwner = reconService.validateScheduleFowner(lausTemp);
 			liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
-			lbProcessAlert = processAlert(pRecon, lmHardwareId, lausTemp);
+			lbProcessAlert = processAlert(pRecon, processedHwIds, lausTemp);
 
-			if (liLicensesNeeded > 0 && lbProcessAlert && scheduleFOwner!=2) {
+			if (liLicensesNeeded > 0 && lbProcessAlert && scheduleFOwner != 2) {
 				lmTempLicenseAvailableQty = new HashMap<Long, Integer>();
 				copyMap(lmLicenseAvailableQty, lmTempLicenseAvailableQty);
 				lmLicenseApplied = new HashMap<License, Integer>();
 
 				for (License llTemp : pRecon.getLicenseList()) {
-					
-					//scheduleFOwner: the owner defined in schedule f. 
-					// 0 - Customer owned, 1 - IBM owned, 2 - none correspond schedule f item defined. 
-					boolean isScheduleFIBMOwner  = scheduleFOwner == 1?true:false;
-					
-					//check if license and schedule f item owner same, skip when not same.
-					if(llTemp.getIbmOwned() != isScheduleFIBMOwner){
+
+					// scheduleFOwner: the owner defined in schedule f.
+					// 0 - Customer owned, 1 - IBM owned, 2 - none correspond
+					// schedule f item defined.
+					boolean isScheduleFIBMOwner = scheduleFOwner == 1 ? true
+							: false;
+
+					// check if license and schedule f item owner same, skip
+					// when not same.
+					if (llTemp.getIbmOwned() != isScheduleFIBMOwner) {
 						continue;
 					}
-					if(pRecon.getPer().equalsIgnoreCase("HWGARTMIPS") && llTemp.getCapacityType().getCode()!=70){
-						continue;    }
-					if(pRecon.getPer().equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=70){
-						continue; 	}
-					if(pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
-						continue; 	}
-					if(pRecon.getPer().equalsIgnoreCase("LPARLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
-						continue; 	}
-					if(pRecon.getPer().equalsIgnoreCase("HWMSU")  && llTemp.getCapacityType().getCode()!=9){
-						continue; 	}
-					if(pRecon.getPer().equalsIgnoreCase("LPARMSU")  && llTemp.getCapacityType().getCode()!=9){
-						continue; 	}
-					
+
+					// start of reconcile rules check.
+					boolean skip = false;
+					for (IReconcileRule rule : reconRules) {
+						if (!rule.inMyScope(pRecon.getPer()))
+							continue;
+
+						if (!rule.allocate(pRecon, llTemp, lausTemp)) {
+							skip = true;
+							break;
+						}
+					}
+
+					if (skip)
+						continue;
+					// end of reconcile rules check
+
 					if (!lmTempLicenseAvailableQty.containsKey(llTemp.getId())) {
 						lmTempLicenseAvailableQty.put(llTemp.getId(),
 								llTemp.getAvailableQty());
@@ -387,11 +404,12 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				}
 
 				if (liLicensesNeeded == 0) {
-					llHardwareId = reconService.manualReconcileByAlert(alertId,
-							null, pRecon, psRemoteUser, null, pAccount,
-							lmLicenseApplied, "group", scheduleFOwner);
+					Long llHardwareId = reconService
+							.manualReconcileByAlert(alertId, null, pRecon,
+									psRemoteUser, null, pAccount,
+									lmLicenseApplied, "group", scheduleFOwner);
 					if (llHardwareId != null) {
-						lmHardwareId.put(llHardwareId, llHardwareId);
+						processedHwIds.add(llHardwareId);
 					}
 					copyMap(lmTempLicenseAvailableQty, lmLicenseAvailableQty);
 				}
@@ -562,167 +580,41 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				|| lsPer.equalsIgnoreCase("LPARGARTMIPS")
 				|| lsPer.equalsIgnoreCase("HWLSPRMIPS")
 				|| lsPer.equalsIgnoreCase("LPARLSPRMIPS")
-				|| lsPer.equalsIgnoreCase("HWMSU") || lsPer
-				.equalsIgnoreCase("LPARMSU")) ? 0 : pRecon.getMaxLicenses()
+				|| lsPer.equalsIgnoreCase("HWMSU")
+				|| lsPer.equalsIgnoreCase("LPARMSU") || lsPer
+				.equalsIgnoreCase("HWIFL")) ? 0 : pRecon.getMaxLicenses()
 				.intValue();
-
+		boolean cacualted = false;
 		if (lsPer.equalsIgnoreCase("LPAR")
 				|| lsPer.equalsIgnoreCase("HWDEVICE")) {
 			liLicensesNeeded = liMaxLicenses;
+			cacualted = true;
 		} else if (lsPer.equalsIgnoreCase("CHIP")) {
 			liLicensesNeeded = pAlertUnlicensedSw.getInstalledSoftware()
 					.getSoftwareLpar().getHardwareLpar().getHardware()
 					.getChips().intValue()
 					* liMaxLicenses;
-		} else if (lsPer.equalsIgnoreCase("PVU")) {
-			int hwChips = pAlertUnlicensedSw.getInstalledSoftware()
-					.getSoftwareLpar().getHardwareLpar().getHardware()
-					.getChips();
-			int hwProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
-					.getSoftwareLpar().getHardwareLpar().getHardware()
-					.getProcessorCount();
+			cacualted = true;
+		}
 
-			if (hwProcessorCount < 1) {
-				hwProcessorCount = pAlertUnlicensedSw.getInstalledSoftware()
-						.getSoftwareLpar().getProcessorCount();
-			}
+		// If $licenseQty can't be assigned during the scope of the rules chain
+		// then perform the default quantity calculation.
+		int licenseQty = 0;
+		boolean coveredByRules = false;
+		for (IReconcileRule rule : reconRules) {
+			if (!rule.inMyScope(pRecon.getPer()))
+				continue;
 
-			if (hwProcessorCount > 0) {
-				if (hwChips == 0) {
-					liLicensesNeeded = DEFAULT_PVU_VALUE * hwProcessorCount;
-				} else {
-					String lsProcessorBrand = pAlertUnlicensedSw
-							.getInstalledSoftware().getSoftwareLpar()
-							.getHardwareLpar().getHardware()
-							.getMastProcessorType();
-					String lsProcessorModel = pAlertUnlicensedSw
-							.getInstalledSoftware().getSoftwareLpar()
-							.getHardwareLpar().getHardware()
-							.getProcessorModel();
-					MachineType lmtAlert = pAlertUnlicensedSw
-							.getInstalledSoftware().getSoftwareLpar()
-							.getHardwareLpar().getHardware().getMachineType();
-					PvuMap pvuMap = null;
-					int liNumberOfCores = 0;
+			coveredByRules = true;
+			licenseQty = rule.requiredLicenseQty(pRecon, pAlertUnlicensedSw);
+			if (licenseQty != 0) {
+				liLicensesNeeded = licenseQty;
+				break;
+			}
+		}
 
-					pvuMap = pvuMapDAO
-							.getPvuMapByBrandAndModelAndMachineTypeId(
-									lsProcessorBrand, lsProcessorModel,
-									lmtAlert);
-
-					if (pvuMap == null) {
-						liLicensesNeeded = DEFAULT_PVU_VALUE * hwProcessorCount;
-					} else {
-						liNumberOfCores = hwProcessorCount / hwChips;
-
-						if (liNumberOfCores == 0) {
-							liLicensesNeeded = DEFAULT_PVU_VALUE
-									* hwProcessorCount;
-						} else {
-							List<PvuInfo> llPvuInfo = null;
-							PvuInfo lpvuiAlert = null;
-							if (liNumberOfCores == 1 || liNumberOfCores == 2
-									|| liNumberOfCores == 4) {
-								llPvuInfo = pvuInfoDAO.find(pvuMap
-										.getProcessorValueUnit().getId(),
-										liNumberOfCores);
-								if (llPvuInfo != null && llPvuInfo.size() > 0) {
-									lpvuiAlert = llPvuInfo.get(0);
-								}
-							}
-
-							if (lpvuiAlert != null
-									&& lpvuiAlert.getValueUnitsPerCore()
-											.intValue() > 0) {
-								liLicensesNeeded = lpvuiAlert
-										.getValueUnitsPerCore().intValue()
-										* hwProcessorCount;
-							} else {
-								llPvuInfo = pvuInfoDAO.find(pvuMap
-										.getProcessorValueUnit().getId());
-								if (llPvuInfo != null && llPvuInfo.size() > 0) {
-									lpvuiAlert = llPvuInfo.get(0);
-								}
-
-								if (lpvuiAlert == null
-										|| lpvuiAlert.getValueUnitsPerCore()
-												.intValue() == 0) {
-									liLicensesNeeded = DEFAULT_PVU_VALUE
-											* hwProcessorCount;
-								} else {
-									liLicensesNeeded = lpvuiAlert
-											.getValueUnitsPerCore().intValue()
-											* hwProcessorCount;
-								}
-							}
-						}
-					}
-				}
-			} else {
-				liLicensesNeeded = 0;
-			}
-		} else if (lsPer.equalsIgnoreCase("HWGARTMIPS")
-				|| lsPer.equalsIgnoreCase("LPARGARTMIPS")
-				|| lsPer.equalsIgnoreCase("HWLSPRMIPS")
-				|| lsPer.equalsIgnoreCase("LPARLSPRMIPS")
-				|| lsPer.equalsIgnoreCase("HWMSU")
-				|| lsPer.equalsIgnoreCase("LPARMSU")) {
-
-			if (lsPer.equalsIgnoreCase("HWGARTMIPS")) {
-				liLicensesNeeded = Integer
-						.valueOf(pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getHardware().getCpuGartnerMips() == null ? 0
-								: pAlertUnlicensedSw.getInstalledSoftware()
-										.getSoftwareLpar().getHardwareLpar()
-										.getHardware().getCpuGartnerMips()
-										.intValue());
-			}
-			if (lsPer.equalsIgnoreCase("LPARGARTMIPS")) {
-				liLicensesNeeded = Integer.valueOf(pAlertUnlicensedSw
-						.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getPartGartnerMips() == null ? 0
-						: pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getPartGartnerMips().intValue());
-			}
-			if (lsPer.equalsIgnoreCase("HWLSPRMIPS")) {
-				liLicensesNeeded = Integer
-						.valueOf(pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getHardware().getCpuLsprMips() == null ? 0
-								: pAlertUnlicensedSw.getInstalledSoftware()
-										.getSoftwareLpar().getHardwareLpar()
-										.getHardware().getCpuLsprMips()
-										.intValue());
-			}
-			if (lsPer.equalsIgnoreCase("LPARLSPRMIPS")) {
-				liLicensesNeeded = Integer.valueOf(pAlertUnlicensedSw
-						.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getPartLsprMips() == null ? 0
-						: pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getPartLsprMips().intValue());
-			}
-			if (lsPer.equalsIgnoreCase("HWMSU")) {
-				liLicensesNeeded = Integer
-						.valueOf(pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getHardware().getCpuMsu() == null ? 0
-								: pAlertUnlicensedSw.getInstalledSoftware()
-										.getSoftwareLpar().getHardwareLpar()
-										.getHardware().getCpuMsu().intValue());
-			}
-			if (lsPer.equalsIgnoreCase("LPARMSU")) {
-				liLicensesNeeded = Integer.valueOf(pAlertUnlicensedSw
-						.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getPartMsu() == null ? 0
-						: pAlertUnlicensedSw.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getPartMsu().intValue());
-			}
-		} else { // lsPer.equalsIgnoreCase("PROCESSOR") || //
-					// lsPer.equalsIgnoreCase("HWPROCESSOR")
+		// current allocation methodology have not rules, apply default qty.
+		if (!coveredByRules && !cacualted) {
 			VSoftwareLpar lVSoftwareLpar = vSwLparDAO
 					.findById(pAlertUnlicensedSw.getInstalledSoftware()
 							.getSoftwareLpar().getId());
@@ -752,12 +644,13 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		}
 	}
 
-	private boolean processAlert(Recon pRecon, Map<Long, Long> pmHardwareId,
+	private boolean processAlert(Recon pRecon, Set<Long> pmHardwareId,
 			AlertUnlicensedSw pAlertUnlicensedSw) {
 		if (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
 				|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
 				|| pRecon.getPer().equalsIgnoreCase("PVU")
 				|| pRecon.getPer().equalsIgnoreCase("CHIP")) {
+
 			return !pmHardwareId.contains(pAlertUnlicensedSw
 					.getInstalledSoftware().getSoftwareLpar().getHardwareLpar()
 					.getHardware().getId());
