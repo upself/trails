@@ -18,6 +18,7 @@ sub new {
         ,_hCpuMIPS => undef
         ,_hCpuGartnerMIPS => undef
         ,_hCpuMSU => undef
+        ,_hCpuIFL => undef
         ,_hOwner => undef
         ,_mtType => undef
         ,_hlId => undef
@@ -144,6 +145,13 @@ sub equals {
         $equal = 1 if $self->hCpuMSU eq $object->hCpuMSU;
     }
     $equal = 1 if (!defined $self->hCpuMSU && !defined $object->hCpuMSU);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hCpuIFL && defined $object->hCpuIFL) {
+        $equal = 1 if $self->hCpuIFL eq $object->hCpuIFL;
+    }
+    $equal = 1 if (!defined $self->hCpuIFL && !defined $object->hCpuIFL);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -459,6 +467,12 @@ sub hCpuMSU {
     return $self->{_hCpuMSU};
 }
 
+sub hCpuIFL {
+    my $self = shift;
+    $self->{_hCpuIFL} = shift if scalar @_ == 1;
+    return $self->{_hCpuIFL};
+}
+
 sub hOwner {
     my $self = shift;
     $self->{_hOwner} = shift if scalar @_ == 1;
@@ -730,6 +744,11 @@ sub toString {
     $s .= "hCpuMSU=";
     if (defined $self->{_hCpuMSU}) {
         $s .= $self->{_hCpuMSU};
+    }
+    $s .= ",";
+    $s .= "hCpuIFL=";
+    if (defined $self->{_hCpuIFL}) {
+        $s .= $self->{_hCpuIFL};
     }
     $s .= ",";
     $s .= "hOwner=";

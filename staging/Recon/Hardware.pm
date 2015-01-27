@@ -92,6 +92,13 @@ sub recon0101 {
 		$manquery.=$allocMethodologyMap->{'Per hardware MSU'};
 		$autoquery.="9, ";
 	}
+	catchRight(\$action); # 10^13 ignored
+	catchRight(\$action); # 10^14 ignored
+	catchRight(\$action); # 10^15 ignored
+	if ( catchRight(\$action) == "1" ){ # 10^16
+		$manquery.=$allocMethodologyMap->{'Per hardware IFL'};
+		$autoquery.="49, ";
+	}
 		
 	return if ($manquery == "");
 	

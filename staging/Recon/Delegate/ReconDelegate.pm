@@ -63,6 +63,7 @@ sub getAllocationMethodologyMap {
 	$data{'Per LPAR IBM LSPR MIPS'} = "24, ";
 	$data{'Per hardware MSU'} = "25, ";
 	$data{'Per LPAR MSU'} = "26, ";
+	$data{'Per hardware IFL'} = "41, ";
 
 	return \%data;
 }

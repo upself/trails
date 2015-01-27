@@ -721,6 +721,12 @@ sub validateLicenseAllocation {
     return 0;
    }
   }
+  elsif ( $licCapType eq '49' ) {
+	  if ( $self->installedSoftwareReconData->hCpuIFL != $usedQuantity ) {
+		  dlog("IFL needed different than current used");
+		  return 0;
+	  }
+  }
   elsif($licCapType eq '5' || $licCapType eq '9'){
   	if($self->installedSoftwareReconData->mtType ne 'MAINFRAME')
   	{

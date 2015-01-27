@@ -218,6 +218,7 @@ sub validate {
             ($self->license->capType eq '34'
             ||$self->license->capType eq '2'
             ||$self->license->capType eq '48'
+            ||$self->license->capType eq '49'
             ||$self->license->capType eq '5'
             ||$self->license->capType eq '9'
             )) {
@@ -533,8 +534,8 @@ sub validateTryAndBuy {
 
     ###Validate try and buy
     if ( $tryAndBuy == 1 ) {
-    	if($capType == 5 || $capType == 9){    
-             dlog("License is try and buy, capType is 5 or 9");
+    	if($capType == 5 || $capType == 9 || $capType == 70){    
+             dlog("License is try and buy, capType is 5 or 9 or 70");
              return 1;    		
     	}
         if ( defined $reconcileId ) {
