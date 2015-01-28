@@ -27,7 +27,7 @@ public class SoftwareDAOJpaTest {
 	private final Long softwareId = 218119L;
 	private final String softwarePid = "5655-W50";
 	private final String softwareName ="IBM AIX";
-	private final String inactiveSoftwareName ="Artemis - Artemis - BASE";
+	private final String inactiveSoftwareName ="COREL CORPORATION WINZIP PRO";
 
 	@Test
 	public void testSoftwareDetail() {

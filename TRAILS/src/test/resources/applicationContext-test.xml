@@ -67,5 +67,6 @@
 	<bean id="allocationMethodologyService"
 		class="com.ibm.asset.trails.service.impl.AllocationMethodologyServiceImpl" />
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
+	<bean id="fixtures" class="com.ibm.asset.trails.test.fixtures.AccountFixtures" />
 
 </beans>

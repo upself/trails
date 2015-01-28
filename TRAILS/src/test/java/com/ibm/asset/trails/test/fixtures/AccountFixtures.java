@@ -38,7 +38,7 @@ public class AccountFixtures {
 	  @Before
 	  public void setUp() {
 		  setTestLicense(licenseService.findById(Long.valueOf(337239)));
-		  setTestAccount(accountService.getAccount(Long.valueOf(2541)));	
+		  setTestAccount(accountService.getAccount(Long.valueOf(2676)));	
 	  }
 	  
 	  private void println(String string) {
