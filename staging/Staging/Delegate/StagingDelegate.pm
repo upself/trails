@@ -755,7 +755,7 @@ sub queryHardwareData {
             ,b.sysplex
             ,b.internet_icc_flag
             ,b.effective_threads
-            ,b.os_type
+            ,b.envt
             ,b.backupmethod
             ,b.cluster_type
             ,b.virtual_mobility_restriction

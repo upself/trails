@@ -598,7 +598,7 @@ sub queryInsert {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,OS_TYPE
+            ,ENVT
         ) values (
             ?
             ,?
@@ -654,7 +654,7 @@ sub queryUpdate {
             ,VIRTUAL_MOBILITY_RESTRICTION = ?
             ,CAPPED_LPAR = ?
             ,VIRTUAL_FLAG = ?
-            ,OS_TYPE = ?
+            ,ENVT = ?
         where
             id = ?
     ';
@@ -787,7 +787,7 @@ sub queryGetByBizKey {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,OS_TYPE
+            ,ENVT
         from
             hardware_lpar
         where
@@ -905,7 +905,7 @@ sub queryGetById {
             ,VIRTUAL_MOBILITY_RESTRICTION
             ,CAPPED_LPAR
             ,VIRTUAL_FLAG
-            ,OS_TYPE
+            ,ENVT
         from
             hardware_lpar
         where
