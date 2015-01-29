@@ -549,6 +549,7 @@
 				,'' as sw_ti_id
 				,hardware.chips as chips
 				,hardware.server_type as server_type
+				,hardware_lpar.os_type as os_type
 				,hardware_lpar.spla as SPLA
 				,hardware_lpar.virtual_flag as virtualFlag
 				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
@@ -617,6 +618,7 @@
 				,'' as sw_ti_id
 				,0 as chips
 				,'' as server_type
+				,'' as os_type
 				,'' as SPLA
 				,'' as virtualFlag
 				,'' as vMobilRestrict
