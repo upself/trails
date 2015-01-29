@@ -30,6 +30,7 @@
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="updateDate" type="scalar" sql-name="update_date" />
 	<property name="hardwareKey" type="scalar" equals="true" />
+	<property name="osType" type="scalar" equals="true" sql-name="OS_TYPE" />
 	<property name="table" type="scalar" default="hardware_lpar" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

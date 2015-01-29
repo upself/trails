@@ -30,6 +30,7 @@ sub new {
         ,_action => undef
         ,_updateDate => undef
         ,_hardwareKey => undef
+        ,_osType => undef
         ,_table => 'hardware_lpar'
         ,_idField => 'id'
     };
@@ -179,6 +180,13 @@ sub equals {
         $equal = 1 if $self->hardwareKey eq $object->hardwareKey;
     }
     $equal = 1 if (!defined $self->hardwareKey && !defined $object->hardwareKey);
+    return 0 if $equal == 0;
+    
+    $equal = 0;
+    if (defined $self->osType && defined $object->osType) {
+        $equal = 1 if $self->osType eq $object->osType;
+    }
+    $equal = 1 if (!defined $self->osType && !defined $object->osType);
     return 0 if $equal == 0;
 
     return 1;
@@ -340,6 +348,12 @@ sub idField {
     return $self->{_idField};
 }
 
+sub osType {
+    my $self = shift;
+    $self->{_osType} = shift if scalar @_ == 1;
+    return $self->{_osType};
+}
+
 sub toString {
     my ($self) = @_;
     my $s = "[HardwareLpar] ";
@@ -463,6 +477,11 @@ sub toString {
         $s .= $self->{_hardwareKey};
     }
     $s .= ",";
+    $s .= "osType=";
+    if (defined $self->{_osType}) {
+        $s .= $self->{_osType};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -508,6 +527,7 @@ sub save {
             ,$self->virtualFlag
             ,$self->action
             ,$self->updateDate
+            ,$self->osType
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -539,6 +559,7 @@ sub save {
             ,$self->virtualFlag
             ,$self->action
             ,$self->updateDate
+            ,$self->osType
             ,$self->id
         );
         $sth->finish;
@@ -574,8 +595,10 @@ sub queryInsert {
             ,VIRTUAL_FLAG
             ,action
             ,update_date
+            ,os_type
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -628,6 +651,7 @@ sub queryUpdate {
             ,VIRTUAL_FLAG = ?
             ,action = ?
             ,update_date = ?
+            ,os_type = ?
         where
             id = ?
     ';
@@ -682,6 +706,7 @@ sub getById {
     my $virtualFlag;
     my $action;
     my $updateDate;
+    my $osType;
     $sth->bind_columns(
         \$name
         ,\$customerId
@@ -705,6 +730,7 @@ sub getById {
         ,\$virtualFlag
         ,\$action
         ,\$updateDate
+        ,\$osType
     );
     $sth->execute(
         $self->id
@@ -733,6 +759,7 @@ sub getById {
     $self->virtualFlag($virtualFlag);
     $self->action($action);
     $self->updateDate($updateDate);
+    $self->osType($osType);
     return (defined $found) ? 1 : 0;
 }
 
@@ -761,6 +788,7 @@ sub queryGetById {
             ,VIRTUAL_FLAG
             ,action
             ,update_date
+            ,os_type
         from
             hardware_lpar
         where
