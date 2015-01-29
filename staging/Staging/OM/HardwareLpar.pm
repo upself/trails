@@ -595,7 +595,7 @@ sub queryInsert {
             ,VIRTUAL_FLAG
             ,action
             ,update_date
-            ,envt
+            ,os_type
         ) values (
             ?
             ,?
@@ -651,7 +651,7 @@ sub queryUpdate {
             ,VIRTUAL_FLAG = ?
             ,action = ?
             ,update_date = ?
-            ,envt = ?
+            ,os_type = ?
         where
             id = ?
     ';
@@ -788,7 +788,7 @@ sub queryGetById {
             ,VIRTUAL_FLAG
             ,action
             ,update_date
-            ,envt
+            ,os_type
         from
             hardware_lpar
         where
