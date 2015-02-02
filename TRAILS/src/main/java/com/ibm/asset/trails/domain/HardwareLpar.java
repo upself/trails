@@ -51,6 +51,9 @@ public class HardwareLpar {
 	
 	@Column(name = "SERVER_TYPE")
 	private String serverType;
+	
+	@Column(name = "OS_TYPE")
+	private String osType;
 
 	public String getServerType() {
 		return serverType;
@@ -211,5 +214,13 @@ public class HardwareLpar {
 
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
+	}
+
+	public String getOsType() {
+		return osType;
+	}
+
+	public void setOsType(String osType) {
+		this.osType = osType;
 	}
 }
