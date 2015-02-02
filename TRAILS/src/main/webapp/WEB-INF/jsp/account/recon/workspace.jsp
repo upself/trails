@@ -294,6 +294,8 @@
 				value="%{#attr.row.mastProcessorModel}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].nbrOfChipsMax"
 				value="%{#attr.row.nbrOfChipsMax}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].effectiveThreads"
+				value="%{#attr.row.effectiveThreads}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuLsprMips"
 				value="%{#attr.row.cpuLsprMips}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].partLsprMips"

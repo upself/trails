@@ -1,7 +1,7 @@
 package com.ibm.asset.trails.domain;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,9 +48,12 @@ public class HardwareLpar {
 
 	@Column(name = "PART_MIPS")
 	private Integer partLsprMips;
-	
+
 	@Column(name = "SERVER_TYPE")
 	private String serverType;
+
+	@Column(name = "EFFECTIVE_THREADS")
+	private BigDecimal effectiveThreads;
 
 	public String getServerType() {
 		return serverType;
@@ -68,7 +71,8 @@ public class HardwareLpar {
 	}
 
 	/**
-	 * @param partLsprMips the partLsprMips to set
+	 * @param partLsprMips
+	 *            the partLsprMips to set
 	 */
 	public void setPartLsprMips(Integer partLsprMips) {
 		this.partLsprMips = partLsprMips;
@@ -82,7 +86,8 @@ public class HardwareLpar {
 	}
 
 	/**
-	 * @param partMsu the partMsu to set
+	 * @param partMsu
+	 *            the partMsu to set
 	 */
 	public void setPartMsu(Integer partMsu) {
 		this.partMsu = partMsu;
@@ -96,7 +101,8 @@ public class HardwareLpar {
 	}
 
 	/**
-	 * @param partGartnerMips the partGartnerMips to set
+	 * @param partGartnerMips
+	 *            the partGartnerMips to set
 	 */
 	public void setPartGartnerMips(BigDecimal partGartnerMips) {
 		this.partGartnerMips = partGartnerMips;
@@ -212,4 +218,13 @@ public class HardwareLpar {
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
 	}
+
+	public BigDecimal getEffectiveThreads() {
+		return effectiveThreads;
+	}
+
+	public void setEffectiveThreads(BigDecimal effectiveThreads) {
+		this.effectiveThreads = effectiveThreads;
+	}
+
 }
