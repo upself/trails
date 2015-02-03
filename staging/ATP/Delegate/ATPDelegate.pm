@@ -165,7 +165,7 @@ sub getData {
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
         $hardware->cpuIFL( $self->cpuIflLogic($rec{cpuIFL}) );
-        $hardware->osType( $rec{osType} );
+        
 
         
         dlog( $hardware->toString );
@@ -236,6 +236,7 @@ sub getData {
         $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
         $hardwareLpar->cappedLpar( $rec{cappedLpar} );
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
+        $hardwareLpar->osType( $rec{osType} );
            
         dlog( $hardwareLpar->toString );
 
