@@ -112,6 +112,17 @@ public class FormHardware extends FormBase {
 	
 	private String internetIccFlag;
 	
+	private Integer cpuIfl;
+	
+	
+	public Integer getCpuIfl() {
+		return cpuIfl;
+	}
+
+	public void setCpuIfl(Integer cpuIfl) {
+		this.cpuIfl = cpuIfl;
+	}
+
 	public String getServerType() {
 		return serverType;
 	}
@@ -314,6 +325,7 @@ public class FormHardware extends FormBase {
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
 				this.effectiveThreads = hardwareLpar.getEffectiveThreads();
 				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
+
 			}
 
 		} else {
