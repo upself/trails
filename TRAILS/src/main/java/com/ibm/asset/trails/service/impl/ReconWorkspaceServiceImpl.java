@@ -545,8 +545,19 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	public void breakLicenseRecon(Account account, String remoteUser,
 			List<ReconWorkspace> reconWorkspaces, ReconcileType reconcileType) {
 		for (ReconWorkspace reconWorkspace : reconWorkspaces) {
-			List<Long> alertIds = alertDAO.findAffectedLicenseAlertList(
-					account.getId(), reconWorkspace.getAlertId());
+			AlertUnlicensedSw alert = alertDAO.findById(reconWorkspace.getAlertId());
+			alertDAO.refresh(alert);
+
+			List<Long> alertIds = new ArrayList<Long>();
+			if (alert.getReconcile().getMachineLevel() == 1) {
+				alertIds.addAll(alertDAO.findMachineLevelAffected(alert
+						.getInstalledSoftware().getSoftware()
+						.getSoftwareId(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getId()));
+			} else {
+				alertIds.add(alert.getId());
+			}		
 			setAlertsProcessed(0);
 			setAlertsTotal(alertIds.size());
 			for (Long alertId : alertIds) {
