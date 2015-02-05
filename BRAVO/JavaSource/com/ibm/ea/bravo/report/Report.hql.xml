@@ -489,6 +489,7 @@
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
@@ -563,6 +564,7 @@
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
@@ -632,6 +634,7 @@
 				,hardware.processor_Model as processorModel
 				,hardware.nbr_Cores_Per_Chip as nbrCoresPerChip
 				,hardware.nbr_Of_Chips_Max as nbrOfChipsMax
+				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
 				,hardware.cpu_mips 
