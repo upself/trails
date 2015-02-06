@@ -7,15 +7,22 @@
 # Performs SFTP file transfering by pre-configured parameters
 #-------------------------------------------------------------------------------
 
-use lib '/opt/staging/v2';
-
-# constants
 use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 use File::stat;
-use if ( hostname ne "tap.raleigh.ibm.com" ), Net::SFTP; # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
+
+#### CONSTANTS TO CHANGE FOR USING IN A NEW TEAM
+use lib '/opt/staging/v2';
 use Base::Utils;
+our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? 0 : 1;
+our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
+our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
+
+logging_level( "info" ); # detailed level of the logfile
+###################################################
+
+use if ( $useftp ), Net::SFTP; # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
 
 # global variables
 our $name; # name of this FTP session processed
@@ -37,8 +44,6 @@ our $flagispresent; # flag is present
 
 our %processednames; # hash of all the processed FTP sessions
 
-our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
-our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt";
 our %connConfigParams; # hash of all the lines in connection config file, to keep passwords in one place
 
 ####################################
@@ -188,6 +193,8 @@ sub loginToFTP {
 	
 	my $sftp;
 	
+	return undef unless ( $useftp );
+	
 	$ftplogin="" unless (defined $ftplogin);
 	$ftppwd="" unless (defined $ftppwd);
 
@@ -289,7 +296,6 @@ sub putfile { # moves file from /tmp to target
 ##        MAIN
 ##################################
 
-logging_level( "info" );
 logfile($logfile);
 
 Usage() unless ( defined $ARGV[0] );
@@ -318,8 +324,8 @@ while (readcfgfile(\*CFGFILE)) {
 		next;
 	}
 	
-	if (( $direction =~ /ftp/ ) && ( hostname eq "tap.raleigh.ibm.com" )) {
-		elog("ERROR: Job $name, sadly SFTP can't be ran on TAP!");
+	if (( $direction =~ /ftp/ ) && ( $useftp == 0 )) {
+		elog("ERROR: Job $name, sadly SFTP can't be used on this server!");
 		next;
 	}
 	
