@@ -43,7 +43,8 @@ public class BankAccountJob implements Serializable {
 	}
 
 	public String getComments() {
-		return comments;
+//		return comments.replaceAll("\'","").replaceAll("\"", "").replaceAll("\n","");
+		return comments.replaceAll("[\'|\"|\n]","");
 	}
 
 	public void setComments(String comments) {
