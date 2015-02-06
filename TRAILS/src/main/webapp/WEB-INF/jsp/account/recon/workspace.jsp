@@ -300,6 +300,8 @@
 				value="%{#attr.row.nbrOfChipsMax}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuIFL"
 				value="%{#attr.row.cpuIFL}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].effectiveThreads"
+				value="%{#attr.row.effectiveThreads}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuLsprMips"
 				value="%{#attr.row.cpuLsprMips}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].partLsprMips"

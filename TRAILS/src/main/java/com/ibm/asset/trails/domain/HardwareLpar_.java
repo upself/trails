@@ -26,4 +26,5 @@ public class HardwareLpar_ {
 	public static volatile SingularAttribute<HardwareLpar, String> internetIccFlag;
 	public static volatile SingularAttribute<HardwareLpar, String> serverType;
 	public static volatile SingularAttribute<HardwareLpar, String> osType;
+	public static volatile SingularAttribute<HardwareLpar, BigDecimal> effectiveThreads;
 }
