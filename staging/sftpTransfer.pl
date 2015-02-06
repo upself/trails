@@ -4,7 +4,7 @@
 # Program: sftpTransfer.pl
 # Author: Michal Starek (michal.starek@cz.ibm.com)
 # ----------------------------------------------
-# Performs SFTP file transfering by pre-configured parameters
+# Performs SFTP or GSA file transferring by pre-configured parameters
 #-------------------------------------------------------------------------------
 
 use Sys::Hostname;
@@ -451,8 +451,8 @@ while (readcfgfile(\*CFGFILE)) {
 		}
 	}
 	
-	logToGSA("out",$srchostname,$srcusr,$srcpwd ) if ( $direction =~ /^gsa/ );
-	logToGSA("out",$tgthostname,$tgtusr,$tgtpwd ) if ( $direction =~ /gsa$/ );
+#	logToGSA("out",$srchostname,$srcusr,$srcpwd ) if ( $direction =~ /^gsa/ ); # Petr Soufek agreed he's happy not to logout from GSA
+#	logToGSA("out",$tgthostname,$tgtusr,$tgtpwd ) if ( $direction =~ /gsa$/ );
 	
 }
 
