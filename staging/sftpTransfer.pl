@@ -15,14 +15,17 @@ use File::stat;
 #### CONSTANTS TO CHANGE FOR USING IN A NEW TEAM
 use lib '/opt/staging/v2';
 use Base::Utils;
-our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? 0 : 1;
+our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? "0" : "1"; # whether we can use the SFTP module
 our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
 our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
 
 logging_level( "info" ); # detailed level of the logfile
 ###################################################
 
-use if ( $useftp ), Net::SFTP; # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
+if ($useftp eq "1") { # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
+    require Net::SFTP;
+    Net::SFTP -> import if Net::SFTP -> can ("import");
+}
 
 # global variables
 our $name; # name of this FTP session processed
@@ -269,8 +272,8 @@ sub getfile { # transfers the file from source to /tmp, returns 0 on success
 	my $ftphandle=shift;
 	
 	if ( defined $ftphandle ) {
-		$ftphandle->get($source."/".$file, "/tmp/".$file);
-		return ( $srcftp->status != 0 );
+		$ftphandle->get($srcdir."/".$srcfile, "/tmp/".$srcfile);
+		return ( $ftphandle->status != 0 );
 	}
 	
 	copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
@@ -285,7 +288,7 @@ sub putfile { # moves file from /tmp to target
 	if ( defined $ftphandle ) {
 		$ftphandle->put("/tmp/".$srcfile, $tgtdir."/".$srcfile);
 		unlink("/tmp/".$srcfile);
-		return ( $tgtftp->status == 0 );
+		return ( $ftphandle->status != 0 );
 	}
 	
 	move("/tmp/".$srcfile, $tgtdir."/".$srcfile);
@@ -337,7 +340,7 @@ while (readcfgfile(\*CFGFILE)) {
 	# logging to source determining files to copy
 	
 	if ( $direction =~ /^ftp/ ) {
-		my $srcftp=loginToFTP($srchostname, $srcusr, $srcpwd );
+		$srcftp=loginToFTP($srchostname, $srcusr, $srcpwd );
 		next unless defined $srcftp;
 
 		foreach my $entry ( $srcftp->ls($source) ) { # puts each file of the remote ls into hash of files to be copied, if it passes filetomove func
