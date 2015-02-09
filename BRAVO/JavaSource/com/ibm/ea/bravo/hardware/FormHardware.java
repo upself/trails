@@ -112,6 +112,27 @@ public class FormHardware extends FormBase {
 	
 	private String internetIccFlag;
 	
+	private Integer cpuIfl;
+	
+	private String os_type;
+	
+	
+	public String getOs_type() {
+		return os_type;
+	}
+
+	public void setOs_type(String os_type) {
+		this.os_type = os_type;
+	}
+
+	public Integer getCpuIfl() {
+		return cpuIfl;
+	}
+
+	public void setCpuIfl(Integer cpuIfl) {
+		this.cpuIfl = cpuIfl;
+	}
+
 	public String getServerType() {
 		return serverType;
 	}
@@ -289,6 +310,8 @@ public class FormHardware extends FormBase {
 			this.sysplex = hardwareLpar.getSysplex();
 			this.spla = hardwareLpar.getSpla();
 			this.internetIccFlag = hardwareLpar.getInternetIccFlag();
+			this.os_type = hardwareLpar.getOs_type();
+			
 			if (hardwareLpar.getHardware() != null) {
 				this.hardware = hardwareLpar.getHardware();
 				this.machineType = hardwareLpar.getHardware().getMachineType()
@@ -314,6 +337,7 @@ public class FormHardware extends FormBase {
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
 				this.effectiveThreads = hardwareLpar.getEffectiveThreads();
 				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
+				this.cpuIfl = hardwareLpar.getHardware().getCpuIfl();
 			}
 
 		} else {

@@ -157,6 +157,7 @@
 											<th class="blue-med">HW chip</th>
 											<th class="blue-med">HW proc</th>
 											<th class="blue-med"># chips max</th>
+											<th class="blue-med">HW IFL</th>
 											<th class="blue-med">Shared</th>
 											<th class="blue-med">HW Owner</th>
 											<th class="blue-med">ATP Status</th>
@@ -196,6 +197,8 @@
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.nbrOfChipsMax}" /></font></td>
 											<td><font class="orange-dark"> <c:out
+													value="${lpar.hardwareLpar.hardware.cpuIfl}" /></font></td>
+											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.shared}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.owner}" /></font></td>
@@ -227,7 +230,7 @@
 											<th class="blue-med" width="1%"></th>
 											<th class="blue-med">Name</th>
 											<th class="blue-med">Server Type</th>
-<!--											<th class="blue-med">OS Type</th> -->
+											<th class="blue-med">OS Type</th>
 											<th class="blue-med">Eff Proc</th>
 											<th class="blue-med">Eff Thr</th>
 											<th class="blue-med">Sysplex</th>
@@ -274,8 +277,8 @@
 
 													<td><font class="orange-dark"> <c:out
 															value="${lpar.hardwareLpar.hardware.serverType}" /> </font></td>
-<%--													<td><font class="orange-dark"> <c:out --%>
-<%--															value="${lpar.hardwareLpar.os_type}" /> </font></td> --%>															
+													<td><font class="orange-dark"> <c:out
+															value="${lpar.hardwareLpar.os_type}" /> </font></td>															
 													<td><font class="orange-dark"> <c:out
 															value="${lpar.hardwareLpar.hardwareLparEff.processorCount}" />
 													</font></td>
