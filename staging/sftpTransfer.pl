@@ -271,6 +271,8 @@ sub getfile { # transfers the file from source to /tmp, returns 0 on success
 	my $srcfile=shift;
 	my $ftphandle=shift;
 	
+	dlog "getting $srcdir/$srcfile";
+	
 	if ( defined $ftphandle ) {
 		$ftphandle->get($srcdir."/".$srcfile, "/tmp/".$srcfile);
 		return ( $ftphandle->status != 0 );
@@ -285,6 +287,8 @@ sub putfile { # moves file from /tmp to target
 	my $srcfile=shift;
 	my $tgtdir=shift;
 	my $ftphandle=shift;
+	
+	dlog "putting $tgtdir/$srcfile";
 	
 	if ( defined $ftphandle ) {
 		$ftphandle->put("/tmp/".$srcfile, $tgtdir."/".$srcfile);
@@ -395,7 +399,7 @@ while (readcfgfile(\*CFGFILE)) {
 	if ( $direction =~ /gsa$/ ) {
 		next unless ( logToGSA("in",$tgthostname,$tgtusr,$tgtpwd ) );
 		$tgthostname =~ /^([^.]+)/;
-		$tgtgsadir = "/gsa/".$1.$source;
+		$tgtgsadir = "/gsa/".$1.$target;
 	}
 	
 	if ( $direction =~ /loc$/ ) {
