@@ -276,8 +276,9 @@ sub getfile { # transfers the file from source to /tmp, returns 0 on success
 		return ( $ftphandle->status != 0 );
 	}
 	
-	copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
-	return $?;	
+	my $ret=copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
+	return 0 if ( $ret == 1 );
+	return 1;
 }
 
 sub putfile { # moves file from /tmp to target
@@ -291,8 +292,12 @@ sub putfile { # moves file from /tmp to target
 		return ( $ftphandle->status != 0 );
 	}
 	
-	move("/tmp/".$srcfile, $tgtdir."/".$srcfile);
-	return $?;
+	my $ret=move("/tmp/".$srcfile, $tgtdir."/".$srcfile);
+	
+	`chmod 664 /$tgtdir/$srcfile` if ( $ret == 1 );
+	
+	return 0 if ( $ret == 1 );
+	return 1;
 }
 
 ##################################
@@ -443,7 +448,7 @@ while (readcfgfile(\*CFGFILE)) {
 		unlink($source."/".$flag) if ( $direction =~ /^loc/ );
 	}
 	
-	if (( lc($delsource) eq "true" ) > ( $successfulfiles == 0 )) {
+	if (( lc($delsource) eq "true" ) && ( $successfulfiles > 0 )) {
 		ilog("Job $name, removing successfully copied source files...");
 	
 		foreach my $file (keys %filestocopy) {
