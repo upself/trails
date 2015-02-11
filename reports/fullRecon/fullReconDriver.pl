@@ -144,7 +144,6 @@ ELSE 'Green' END as Alert_status
 ,h.country as hwCountry
 ,mt.type as hwAssetType
 ,hl.server_type as Server_Type
-,hl.OS_TYPE
 ,hl.SPLA
 ,hl.VIRTUAL_FLAG
 ,hl.VIRTUAL_MOBILITY_RESTRICTION
