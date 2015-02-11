@@ -78,6 +78,9 @@
             
         <property name="cpuMSU" column="CPU_MSU"
             type="integer" />
+            
+        <property name="cpuIfl" column="CPU_IFL"
+            type="integer" />
 
 	</class>
 </hibernate-mapping>
