@@ -78,6 +78,17 @@ public class Hardware implements Serializable {
 	
 	private Integer cpuMSU;
 	
+	private Integer cpuIfl;
+	
+	
+	public Integer getCpuIfl() {
+		return cpuIfl;
+	}
+
+	public void setCpuIfl(Integer cpuIfl) {
+		this.cpuIfl = cpuIfl;
+	}
+	
 	public String getServerType() {
 		return serverType;
 	}
