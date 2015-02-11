@@ -65,7 +65,6 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"SW_TI_ID"
 		,"HW Chips"
 		,"Server Type"
-		,"OS Type"
 		,"SPLA"
 		,"Virtual Flag"
 		,"Virtual Mobility Restriction"
