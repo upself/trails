@@ -70,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
 			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
-			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction","OS type",
+			"Owner", "Country", "Asset type","Server type","OS type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
 			"NBR of Chips Max", "Hardware IFL", "Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
@@ -517,10 +517,10 @@ public class ReportServiceImpl implements ReportService {
 				+ ",h.country as hwCountry "
 				+ ",mt.type as hwAssetType "
 				+ ",hl.server_type as serverType "
+				+ ",hl.os_type "
 				+ ",hl.SPLA"
 				+ ",hl.virtual_flag"
 				+ ",hl.virtual_mobility_restriction"
-				+ ",hl.os_type "
 				+ ",cast(hl.SYSPLEX as VARCHAR(8))"
 				+ ",hl.cluster_type"
 				+ ",hl.backupmethod"
