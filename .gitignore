@@ -1,5 +1,10 @@
 target
-.classpath
-.project
-.settings
+*/.project
 bin
+*/.classpath
+*/.springBeans
+*/build.gradle
+*/.settings/*
+*.
+*/.*
+.*

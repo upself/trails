@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
@@ -33,6 +34,7 @@ import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
@@ -80,7 +82,7 @@ public class ReconWorkspaceServiceImplTest {
 		// This query extract from
 		// AlertUnlicensedSoftwareDAO.findAffectedAlertList(testAccount.getId(),
 		// productId, false, false, "ALL", true)
-		String queryOpenAlertsId = "SELECT AUS.Id, AUS.CREATION_TIME FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software_Item SI, EAADMIN.Hw_Sw_Composite HSC WHERE AUS.Open = 1 AND SL.Customer_Id = :customerId AND SI.Id = :productId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SI.Id = IS.Software_Id AND HSC.Software_Lpar_Id = SL.Id ORDER BY AUS.CREATION_TIME DESC";
+		String queryOpenAlertsId = "SELECT AUS.Id, AUS.CREATION_TIME FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software SW, EAADMIN.Hw_Sw_Composite HSC WHERE AUS.Open = 1 AND SL.Customer_Id = :customerId AND SW.Software_Id = :productId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SW.Software_Id = IS.Software_Id AND HSC.Software_Lpar_Id = SL.Id ORDER BY AUS.CREATION_TIME DESC";
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("customerId", this.testAccount.getId());
@@ -126,6 +128,107 @@ public class ReconWorkspaceServiceImplTest {
 	}
 
 	/*
+	 * Author: vndwbwan@cn.ibm.com
+	 * 
+	 * Testing manual recon close by per HWIFL 17231 in Jazz Hub.
+	 */
+	@Test
+	@Transactional
+	public void testManualReconGroupForStory17231() throws Throwable {
+
+		// Preparing testing data.
+		List<ReconWorkspace> reconWorkspaceList = new ArrayList<ReconWorkspace>();
+		ReconWorkspace workspace = new ReconWorkspace();
+
+		workspace.setProductInfoId(productId);
+		reconWorkspaceList.add(workspace);
+
+		License license = licenseService.findById(Long.valueOf(294658));
+		// force to get the cap type, since it's lazy loading. avoid hibernate
+		// session exception thrown.
+		System.out.println(license.getCapacityType().getDescription());
+
+		List<License> licenseList = new ArrayList<License>();
+		licenseList.add(license);
+
+		ReconcileType manualReconcileType = reconWorkspaceService
+				.findReconcileType(Long.valueOf(1));
+
+		Recon testRecon = new Recon();
+		testRecon.setLicenseList(licenseList);
+		testRecon.setList(reconWorkspaceList);
+		testRecon.setAutomated(false);
+		testRecon.setManual(false);
+		testRecon.setPer("HWIFL");
+		// Set max licenses equal to available qty , then only one alert will be
+		// closed.
+		testRecon.setMaxLicenses(license.getAvailableQty());
+		testRecon.setReconcileType(manualReconcileType);
+
+		String remoteUser = "JUnit-TRAILS";
+		Class<? extends ReconWorkspaceServiceImpl> clazz = ReconWorkspaceServiceImpl.class;
+
+		// End of preparing testing data.
+
+		try {
+			// Perform the unit execution.
+			@SuppressWarnings("rawtypes")
+			Class[] argsManualReconGroup = new Class[] { Account.class,
+					String.class, Recon.class, String.class };
+			Method methodManualReconGroup = clazz.getDeclaredMethod(
+					"manualReconGroup", argsManualReconGroup);
+			methodManualReconGroup.setAccessible(true);
+
+			InvocationHandler handlerManualReconGroup = Proxy
+					.getInvocationHandler(reconWorkspaceService);
+			handlerManualReconGroup.invoke(reconWorkspaceService,
+					methodManualReconGroup, new Object[] { testAccount,
+							remoteUser, testRecon, "ALL" });
+			// End of unit execution.
+
+			// Checking result.
+			List<Long> alertList = alertDAO.findAffectedAlertList(
+					testAccount.getId(), productId, false, true, "ALL", false);
+
+			AlertUnlicensedSw alert = alertDAO.findById(alertList.get(0));
+			alertDAO.refresh(alert);
+
+			String code = alert.getReconcile().getAllocationMethodology()
+					.getCode();
+			Set<UsedLicense> usedLicenseSet = alert.getReconcile()
+					.getUsedLicenses();
+			int usedQuantity = 0;
+
+			for (UsedLicense usedLicense : usedLicenseSet) {
+				if (null != usedLicense.getUsedQuantity()) {
+					usedQuantity += usedLicense.getUsedQuantity();
+				}
+			}
+
+			Assert.assertEquals("HWIFL", code);
+			Assert.assertEquals(10, usedQuantity);
+			// End of checking result.
+
+		} finally {
+			// Clean the testing data.
+			@SuppressWarnings("rawtypes")
+			Class[] argsBreakManualGroup = new Class[] { Account.class,
+					String.class, List.class, ReconcileType.class, String.class };
+			Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
+					"breakManualReconGroup", argsBreakManualGroup);
+			methodBreakManualReconGroup.setAccessible(true);
+
+			InvocationHandler handlerBreakManualReconGroup = Proxy
+					.getInvocationHandler(reconWorkspaceService);
+			handlerBreakManualReconGroup.invoke(reconWorkspaceService,
+					methodBreakManualReconGroup, new Object[] { testAccount,
+							remoteUser, reconWorkspaceList,
+							manualReconcileType, "ALL" });
+
+		}
+	}
+
+	/*
 	 * Author: Yi R Zhang/China/IBM
 	 * 
 	 * Testing manual recon close the oldest alerts first. Details check story
@@ -133,7 +236,7 @@ public class ReconWorkspaceServiceImplTest {
 	 */
 	@Test
 	@Transactional
-	public void testManualReconGroupForStory16837() {
+	public void testManualReconGroupForStory16837() throws Throwable {
 
 		// Preparing testing data.
 
@@ -190,6 +293,9 @@ public class ReconWorkspaceServiceImplTest {
 			List<Long> alertList = alertDAO.findAffectedAlertList(
 					testAccount.getId(), productId, false, true, "ALL", false);
 
+			Assert.assertNotNull(alertList);
+			Assert.assertTrue(alertList.size() > 0);
+
 			AlertUnlicensedSw alert = alertDAO.findById(alertList.get(0));
 			alertDAO.refresh(alert);
 
@@ -202,37 +308,21 @@ public class ReconWorkspaceServiceImplTest {
 
 			// End of checking result.
 
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			if (e instanceof AssertionFailedError) {
-				throw (AssertionFailedError) e;
-			}
-			e.printStackTrace();
 		} finally {
 			// Clean the testing data.
-			try {
-				@SuppressWarnings("rawtypes")
-				Class[] argsBreakManualGroup = new Class[] { Account.class,
-						String.class, List.class, ReconcileType.class,
-						String.class };
-				Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
-						"breakManualReconGroup", argsBreakManualGroup);
-				methodBreakManualReconGroup.setAccessible(true);
+			@SuppressWarnings("rawtypes")
+			Class[] argsBreakManualGroup = new Class[] { Account.class,
+					String.class, List.class, ReconcileType.class, String.class };
+			Method methodBreakManualReconGroup = clazz.getDeclaredMethod(
+					"breakManualReconGroup", argsBreakManualGroup);
+			methodBreakManualReconGroup.setAccessible(true);
 
-				InvocationHandler handlerBreakManualReconGroup = Proxy
-						.getInvocationHandler(reconWorkspaceService);
-				handlerBreakManualReconGroup.invoke(reconWorkspaceService,
-						methodBreakManualReconGroup, new Object[] {
-								testAccount, remoteUser, reconWorkspaceList,
-								manualReconcileType, "ALL" });
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+			InvocationHandler handlerBreakManualReconGroup = Proxy
+					.getInvocationHandler(reconWorkspaceService);
+			handlerBreakManualReconGroup.invoke(reconWorkspaceService,
+					methodBreakManualReconGroup, new Object[] { testAccount,
+							remoteUser, reconWorkspaceList,
+							manualReconcileType, "ALL" });
 
 		}
 

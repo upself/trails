@@ -33,6 +33,7 @@ sub new {
         ,_sharedProcessor => undef
         ,_cloudName => undef
         ,_chassisId => undef
+        ,_cpuIFL => undef
         ,_action => undef
         ,_updateDate => undef
         ,_table => 'hardware'
@@ -228,6 +229,13 @@ sub equals {
     $equal = 1 if (!defined $self->chassisId && !defined $object->chassisId);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->cpuIFL && defined $object->cpuIFL) {
+        $equal = 1 if $self->cpuIFL eq $object->cpuIFL;
+    }
+    $equal = 1 if (!defined $self->cpuIFL && !defined $object->cpuIFL);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -393,6 +401,12 @@ sub chassisId {
     return $self->{_chassisId};
 }
 
+sub cpuIFL {
+    my $self = shift;
+    $self->{_cpuIFL} = shift if scalar @_ == 1;
+    return $self->{_cpuIFL};
+}
+
 sub action {
     my $self = shift;
     $self->{_action} = shift if scalar @_ == 1;
@@ -555,6 +569,11 @@ sub toString {
         $s .= $self->{_chassisId};
     }
     $s .= ",";
+    $s .= "cpuIFL=";
+    if (defined $self->{_cpuIFL}) {
+        $s .= $self->{_cpuIFL};
+    }
+    $s .= ",";
     $s .= "action=";
     if (defined $self->{_action}) {
         $s .= $self->{_action};
@@ -614,6 +633,7 @@ sub save {
             ,$self->sharedProcessor
             ,$self->cloudName
             ,$self->chassisId
+            ,$self->cpuIFL
             ,$self->action
             ,$self->updateDate
         );
@@ -651,6 +671,7 @@ sub save {
             ,$self->sharedProcessor
             ,$self->cloudName
             ,$self->chassisId
+            ,$self->cpuIFL
             ,$self->action
             ,$self->updateDate
             ,$self->id
@@ -692,10 +713,12 @@ sub queryInsert {
             ,SHARED_PROCESSOR
             ,CLOUD_NAME
             ,CHASSIS_ID
+            ,CPU_IFL
             ,action
             ,update_date
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -758,6 +781,7 @@ sub queryUpdate {
             ,SHARED_PROCESSOR = ?
             ,CLOUD_NAME = ?
             ,CHASSIS_ID = ?
+            ,CPU_IFL = ?
             ,action = ?
             ,update_date = ?
         where
@@ -818,6 +842,7 @@ sub getById {
     my $sharedProcessor;
     my $cloudName;
     my $chassisId;
+    my $cpuIFL;
     my $action;
     my $updateDate;
     $sth->bind_columns(
@@ -847,6 +872,7 @@ sub getById {
         ,\$sharedProcessor
         ,\$cloudName
         ,\$chassisId
+        ,\$cpuIFL
         ,\$action
         ,\$updateDate
     );
@@ -881,6 +907,7 @@ sub getById {
     $self->sharedProcessor($sharedProcessor);
     $self->cloudName($cloudName);
     $self->chassisId($chassisId);
+    $self->cpuIFL($cpuIFL);
     $self->action($action);
     $self->updateDate($updateDate);
     return (defined $found) ? 1 : 0;
@@ -915,6 +942,7 @@ sub queryGetById {
             ,SHARED_PROCESSOR
             ,CLOUD_NAME
             ,CHASSIS_ID
+            ,CPU_IFL
             ,action
             ,update_date
         from

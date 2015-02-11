@@ -47,15 +47,25 @@ public class ReconWorkspace implements Serializable {
 	private Integer hardwareProcessorCount;
 
 	private Integer chips;
-	
+
 	private Integer cpuLsprMips;
-	
+
 	private Integer partLsprMips;
-	
+
 	private BigDecimal cpuGartnerMips;
-	
+
 	private BigDecimal partGartnerMips;
 	
+	private String pid;
+	
+	public String getPid() {
+		return pid;
+	}
+
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+
 	/**
 	 * @return the cpuLsprMips
 	 */
@@ -64,7 +74,8 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param cpuLsprMips the cpuLsprMips to set
+	 * @param cpuLsprMips
+	 *            the cpuLsprMips to set
 	 */
 	public void setCpuLsprMips(Integer cpuLsprMips) {
 		this.cpuLsprMips = cpuLsprMips;
@@ -78,7 +89,8 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param partLsprMips the partLsprMips to set
+	 * @param partLsprMips
+	 *            the partLsprMips to set
 	 */
 	public void setPartLsprMips(Integer partLsprMips) {
 		this.partLsprMips = partLsprMips;
@@ -92,7 +104,8 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param cpuGartnerMips the cpuGartnerMips to set
+	 * @param cpuGartnerMips
+	 *            the cpuGartnerMips to set
 	 */
 	public void setCpuGartnerMips(BigDecimal cpuGartnerMips) {
 		this.cpuGartnerMips = cpuGartnerMips;
@@ -106,7 +119,8 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param partGartnerMips the partGartnerMips to set
+	 * @param partGartnerMips
+	 *            the partGartnerMips to set
 	 */
 	public void setPartGartnerMips(BigDecimal partGartnerMips) {
 		this.partGartnerMips = partGartnerMips;
@@ -120,7 +134,8 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param cpuMsu the cpuMsu to set
+	 * @param cpuMsu
+	 *            the cpuMsu to set
 	 */
 	public void setCpuMsu(Integer cpuMsu) {
 		this.cpuMsu = cpuMsu;
@@ -134,14 +149,15 @@ public class ReconWorkspace implements Serializable {
 	}
 
 	/**
-	 * @param partMsu the partMsu to set
+	 * @param partMsu
+	 *            the partMsu to set
 	 */
 	public void setPartMsu(Integer partMsu) {
 		this.partMsu = partMsu;
 	}
 
 	private Integer cpuMsu;
-	
+
 	private Integer partMsu;
 
 	private String hardwareStatus;
@@ -165,8 +181,12 @@ public class ReconWorkspace implements Serializable {
 	private BigDecimal nbrOfChipsMax;
 
 	private String shared;
-	
+
 	private String lparServerType;
+	
+	private Integer cpuIFL;
+
+	private BigDecimal effectiveThreads;
 
 	public String getLparServerType() {
 		return lparServerType;
@@ -354,7 +374,7 @@ public class ReconWorkspace implements Serializable {
 	public void setLparStatus(String lparStatus) {
 		this.lparStatus = lparStatus;
 	}
-	
+
 	public String getSpla() {
 		return this.spla;
 	}
@@ -362,7 +382,7 @@ public class ReconWorkspace implements Serializable {
 	public void setSpla(String spla) {
 		this.spla = spla;
 	}
-	
+
 	public String getSysplex() {
 		return this.sysplex;
 	}
@@ -370,7 +390,7 @@ public class ReconWorkspace implements Serializable {
 	public void setSysplex(String sysplex) {
 		this.sysplex = sysplex;
 	}
-	
+
 	public String getInternetIccFlag() {
 		return this.internetIccFlag;
 	}
@@ -378,7 +398,7 @@ public class ReconWorkspace implements Serializable {
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
 	}
-	
+
 	public String getMastProcessorType() {
 		return mastProcessorType;
 	}
@@ -386,7 +406,7 @@ public class ReconWorkspace implements Serializable {
 	public void setMastProcessorType(String mastProcessorType) {
 		this.mastProcessorType = mastProcessorType;
 	}
-	
+
 	public String getProcessorManufacturer() {
 		return processorManufacturer;
 	}
@@ -394,7 +414,7 @@ public class ReconWorkspace implements Serializable {
 	public void setProcessorManufacturer(String processorManufacturer) {
 		this.processorManufacturer = processorManufacturer;
 	}
-	
+
 	public String getMastProcessorModel() {
 		return mastProcessorModel;
 	}
@@ -402,7 +422,7 @@ public class ReconWorkspace implements Serializable {
 	public void setMastProcessorModel(String mastProcessorModel) {
 		this.mastProcessorModel = mastProcessorModel;
 	}
-	
+
 	public BigDecimal getNbrCoresPerChip() {
 		return nbrCoresPerChip;
 	}
@@ -410,7 +430,7 @@ public class ReconWorkspace implements Serializable {
 	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
 		this.nbrCoresPerChip = nbrCoresPerChip;
 	}
-	
+
 	public BigDecimal getNbrOfChipsMax() {
 		return nbrOfChipsMax;
 	}
@@ -418,12 +438,28 @@ public class ReconWorkspace implements Serializable {
 	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
 		this.nbrOfChipsMax = nbrOfChipsMax;
 	}
-	
+
 	public String getShared() {
 		return shared;
 	}
 
 	public void setShared(String shared) {
 		this.shared = shared;
+	}
+
+	public Integer getCpuIFL() {
+		return cpuIFL;
+	}
+
+	public void setCpuIFL(Integer cpuIFL) {
+		this.cpuIFL = cpuIFL;
+	}
+	
+	public BigDecimal getEffectiveThreads() {
+		return effectiveThreads;
+	}
+
+	public void setEffectiveThreads(BigDecimal effectiveThreads) {
+		this.effectiveThreads = effectiveThreads;
 	}
 }

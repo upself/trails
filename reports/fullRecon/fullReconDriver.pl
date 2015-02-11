@@ -158,6 +158,7 @@ ELSE 'Green' END as Alert_status
 ,h.PROCESSOR_MODEL
 ,h.NBR_CORES_PER_CHIP
 ,h.NBR_OF_CHIPS_MAX
+,h.CPU_IFL
 ,h.SHARED_PROCESSOR
 ,h.CPU_MIPS
 ,h.CPU_GARTNER_MIPS
@@ -180,6 +181,7 @@ when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then 'QUAD-CORE'
 when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE'
 else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode
 ,s.software_name as instSwName
+,s.pid as pid
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 where sf.customer_id = $customerId
 and sf.status_id=2

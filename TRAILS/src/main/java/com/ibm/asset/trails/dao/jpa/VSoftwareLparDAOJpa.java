@@ -176,9 +176,11 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("h.nbrCoresPerChip").as("nbrCoresPerChip"))
 				.add(Projections.property("h.nbrOfChipsMax").as("nbrOfChipsMax"))
 				.add(Projections.property("h.cpuLsprMips").as("cpuLsprMips"))
+				.add(Projections.property("h.cpuIfl").as("cpuIFL"))
 				.add(Projections.property("hl.partLsprMips").as("partLsprMips"))
 				.add(Projections.property("h.cpuGartnerMips").as("cpuGartnerMips"))
 				.add(Projections.property("hl.partGartnerMips").as("partGartnerMips"))
+				.add(Projections.property("hl.effectiveThreads").as("effectiveThreads"))
 				.add(Projections.property("h.cpuMsu").as("cpuMsu"))
 				.add(Projections.property("hl.partMsu").as("partMsu"))
 				.add(Projections.property("hl.serverType").as("lparServerType"))
@@ -190,6 +192,7 @@ public class VSoftwareLparDAOJpa extends
 						.as("processorCount"))
 				.add(Projections.property("sw.softwareName").as("productInfoName"))
 				.add(Projections.property("sw.softwareId").as("productInfoId"))
+				.add(Projections.property("sw.pid").as("pid"))
 				.add(Projections.property("rt.name").as("reconcileTypeName"))
 				.add(Projections.property("rt.id").as("reconcileTypeId"))
 				.add(Projections.property("aus.remoteUser").as("assignee"))
@@ -231,5 +234,4 @@ public class VSoftwareLparDAOJpa extends
 			itemCursor.close();
 		}
 	}
-
 }

@@ -677,7 +677,15 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###License type: hw specific processor
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessor( $freePoolData, 1 );
+			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 1 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
+
+		###License type: hw specific IFL (zLinux)
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
 			$machineLevel )
@@ -711,12 +719,19 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###License type: processor
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessor( $freePoolData, 0 );
+			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 0 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
 			$machineLevel )
 		if defined $licsToAllocate;
 		
+		###License type: IFL processor (zLinux)
+		( $licsToAllocate, $machineLevel ) =
+			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 0 );
+		return ( $licsToAllocate,
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel )
+		if defined $licsToAllocate;
 
 		###License type: pvu
 		( $licsToAllocate, $machineLevel ) =
@@ -1076,9 +1091,9 @@ sub attemptLicenseAllocationLpar {
 	dlog("end attemptLicenseAllocationLpar");
 }
 
-sub attemptLicenseAllocationProcessor {
-	my ( $self, $freePoolData, $hwSpecificOnly ) = @_;
-	dlog("begin attemptLicenseAllocationProcessor");
+sub attemptLicenseAllocationProcessorOrIFL {
+	my ( $self, $freePoolData, $myCapType, $hwSpecificOnly ) = @_;
+	dlog("begin attemptLicenseAllocationProcessorOrIFL");
 	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
 
 	###Hash to return.
@@ -1086,14 +1101,15 @@ sub attemptLicenseAllocationProcessor {
 	my $machineLevel;
 	my $processorCount = 0;
 
-	if ( $self->installedSoftwareReconData->hProcCount > 0 ) {
+	if (( $self->installedSoftwareReconData->hProcCount > 0 ) && ( $myCapType eq '2' )) {
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-#	else {
-#		$machineLevel   = 0;
-#		$processorCount = $self->installedSoftwareReconData->processorCount;
-#	}
+	
+	if (( $self->installedSoftwareReconData->hCpuIFL > 0 ) && ( $myCapType eq '49' )) {
+		$machineLevel   = 1;
+		$processorCount = $self->installedSoftwareReconData->hCpuIFL;
+	}
 
 	return undef if $processorCount == 0;
 
@@ -1110,7 +1126,7 @@ sub attemptLicenseAllocationProcessor {
 		my $licView = $freePoolData->{$lId};
 		next
 		  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-		next unless $licView->capType eq '2';
+		next unless $licView->capType eq $myCapType;
 		next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
 		next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
 		dlog("found matching license - hw specific");
@@ -1136,7 +1152,7 @@ sub attemptLicenseAllocationProcessor {
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType eq '2';
+			next unless $licView->capType eq $myCapType;
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
 			next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
@@ -1169,7 +1185,7 @@ sub attemptLicenseAllocationProcessor {
 			my $licView = $freePoolData->{$lId};
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			next unless $licView->capType eq '2';
+			next unless $licView->capType eq $myCapType;
 			next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
 				# the licenses with DEFINED and different CPU than the one recon'ed are skipped
 			dlog("found matching license - non hw specific");
@@ -1199,7 +1215,7 @@ sub attemptLicenseAllocationProcessor {
 				next
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
-				next unless $licView->capType eq '2';
+				next unless $licView->capType eq $myCapType;
 				next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
 				
 				dlog("found matching license - non hw specific");
@@ -1966,7 +1982,7 @@ from
            on h. id = hl. hardware_id 
       where
            ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where member_account_id = ? ))
-            and ((l.cap_type in( 2, 13, 14, 17, 34, 48 ) and l.try_and_buy = 0) or l.cap_type =5 or l.cap_type =9 or l.cap_type=70)
+            and ((l.cap_type in( 2, 13, 14, 17, 34, 48, 49 ) and l.try_and_buy = 0) or ( l.cap_type in ( 5, 9, 70 ) ) )
             and l.lic_type != \'SC\'   
             and s.software_id = ?
             and l.status = \'ACTIVE\'
@@ -2014,6 +2030,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
 		$installedSoftwareReconData->hCpuGartnerMIPS ( $rec{hCpuGartnerMIPS} );
 		$installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
+		$installedSoftwareReconData->hCpuIFL( $rec{hCpuIFL} );
 		$installedSoftwareReconData->hOwner( $rec{hOwner} );
 		$installedSoftwareReconData->mtType( $rec{mtType} );
 		$installedSoftwareReconData->hlId( $rec{hlId} );
@@ -2324,6 +2341,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  hCpuMIPS
 	  hCpuGartnerMIPS
 	  hCpuMSU
+	  hCpuIFL
 	  hOwner
 	  mtType
 	  hlId
@@ -2368,6 +2386,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.cpu_mips
             ,h.cpu_gartner_mips
             ,h.cpu_msu
+            ,h.cpu_ifl
             ,h.owner
             ,mt.type
             ,hl.id

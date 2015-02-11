@@ -81,6 +81,9 @@ public class Software extends AbstractDomainEntity {
 	@Column(name = "VERSION")
 	private String version;
 	
+	@Column(name = "PID")
+	private String pid;
+	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="ID")
 	private ProductInfo productInfo;
@@ -206,6 +209,14 @@ public class Software extends AbstractDomainEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getPid() {
+		return pid;
+	}
+
+	public void setPid(String pid) {
+		this.pid = pid;
 	}
 
 	@Override

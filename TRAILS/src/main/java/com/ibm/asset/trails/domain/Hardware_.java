@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-
 @StaticMetamodel(Hardware.class)
 public class Hardware_ {
 	public static volatile SingularAttribute<Hardware, Long> id;
@@ -33,4 +32,5 @@ public class Hardware_ {
 	public static volatile SingularAttribute<Hardware, BigDecimal> nbrCoresPerChip;
 	public static volatile SingularAttribute<Hardware, BigDecimal> nbrOfChipsMax;
 	public static volatile SingularAttribute<Hardware, String> shared;
+	public static volatile SingularAttribute<Hardware, Integer> cpuIfl;
 }
