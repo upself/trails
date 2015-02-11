@@ -198,8 +198,6 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("aus.remoteUser").as("assignee"))
 				.add(Projections.property("h.processorCount").as(
 						"hardwareProcessorCount"))
-				.add(Projections.property("hl.osType").as(
-						"osType"))
 				.add(Projections.property("h.chips").as("chips")));
 		criteria.setResultTransformer(new AliasToBeanResultTransformer(
 				ReconWorkspace.class));

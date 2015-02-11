@@ -58,8 +58,6 @@ public class ReconWorkspace implements Serializable {
 	
 	private String pid;
 	
-	private String osType;
-	
 	public String getPid() {
 		return pid;
 	}
@@ -455,14 +453,6 @@ public class ReconWorkspace implements Serializable {
 
 	public void setCpuIFL(Integer cpuIFL) {
 		this.cpuIFL = cpuIFL;
-	}
-
-	public String getOsType() {
-		return osType;
-	}
-
-	public void setOsType(String osType) {
-		this.osType = osType;
 	}
 	
 	public BigDecimal getEffectiveThreads() {

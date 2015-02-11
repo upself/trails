@@ -51,9 +51,6 @@ public class HardwareLpar {
 
 	@Column(name = "SERVER_TYPE")
 	private String serverType;
-	
-	@Column(name = "OS_TYPE")
-	private String osType;
 
 	@Column(name = "EFFECTIVE_THREADS")
 	private BigDecimal effectiveThreads;
@@ -222,13 +219,6 @@ public class HardwareLpar {
 		this.internetIccFlag = internetIccFlag;
 	}
 
-	public String getOsType() {
-		return osType;
-	}
-
-	public void setOsType(String osType) {
-		this.osType = osType;
-	}
 	public BigDecimal getEffectiveThreads() {
 		return effectiveThreads;
 	}
@@ -236,5 +226,4 @@ public class HardwareLpar {
 	public void setEffectiveThreads(BigDecimal effectiveThreads) {
 		this.effectiveThreads = effectiveThreads;
 	}
-
 }
