@@ -288,7 +288,7 @@
 			<artifactId>db2</artifactId> 
 			<version>1.7</version> 
 			<scope>system</scope> 
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2java.jar</systemPath> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc4.jar</systemPath> 
 		</dependency>
 		<!--Add the external jar files dependency by Larry for temp Jenkins Maven build testing-->  
 	</dependencies>
