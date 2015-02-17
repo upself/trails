@@ -218,6 +218,7 @@ sub doDelta {
         $hardware->sharedProcessor( $rec{sharedProcessor} );
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
+        $hardware->cpuIFL($rec{cpuIFL});
         dlog( $hardware->toString );
 
         if ( defined $self->hardware->{$key} ) {
