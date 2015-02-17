@@ -215,10 +215,9 @@ sub querySCNameBySoftwareId {
         select 
                      sc.SOFTWARE_CATEGORY_NAME 
                 from 
-                     software sw 
-                     ,software_category sc  
-                where sw.SOFTWARE_ID=?
-                      and  sw.SOFTWARE_CATEGORY_ID = sc.SOFTWARE_CATEGORY_ID 
+                     ( product_info pi join software_category sc on pi.software_category_id = sc.software_category_id ) 
+                where pi.id = ?
+        with ur
     ';
 	dlog("querySCNameBySoftwareId=$query");
 	return ( 'scNameBySoftwareId', $query );
@@ -2471,21 +2470,21 @@ sub queryReconInstalledSoftwareExtendedData {
         select
             is.id
             ,is.software_id
-            ,s.priority
+            ,pi.priority
             ,sc.software_category_name
             ,bc.software_id
         from
             installed_software is
-            join software s on s.software_id = is.software_id
-            join software_category sc on sc.software_category_id = s.software_category_id
-            left outer join bundle_software bs on bs.software_id = s.software_id
+            join product_info pi on pi.id = is.software_id
+            join software_category sc on sc.software_category_id = pi.software_category_id
+            left outer join bundle_software bs on bs.software_id = pi.id
             left outer join bundle bc on bc.id = bs.bundle_id
         where
             is.software_lpar_id = ?
             and is.software_id != ?
             and is.status = \'ACTIVE\'
-            and is.discrepancy_type_id != 3
-            and is.discrepancy_type_id != 5
+            and is.discrepancy_type_id not in ( 3, 5 )
+        with ur
     ';
 	return ( 'reconInstalledSoftwareExtendedData', $query, \@fields );
 }
