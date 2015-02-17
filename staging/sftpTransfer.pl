@@ -4,17 +4,28 @@
 # Program: sftpTransfer.pl
 # Author: Michal Starek (michal.starek@cz.ibm.com)
 # ----------------------------------------------
-# Performs SFTP file transfering by pre-configured parameters
+# Performs SFTP or GSA file transferring by pre-configured parameters
 #-------------------------------------------------------------------------------
 
-use lib '/opt/staging/v2';
-
-# constants
-use strict;
+use Sys::Hostname;
 use File::Basename;
+use File::Copy;
 use File::stat;
-use Net::SFTP;
+
+#### CONSTANTS TO CHANGE FOR USING IN A NEW TEAM
+use lib '/opt/staging/v2';
 use Base::Utils;
+our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? "0" : "1"; # whether we can use the SFTP module
+our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
+our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
+
+logging_level( "info" ); # detailed level of the logfile
+###################################################
+
+if ($useftp eq "1") { # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
+    require Net::SFTP;
+    Net::SFTP -> import if Net::SFTP -> can ("import");
+}
 
 # global variables
 our $name; # name of this FTP session processed
@@ -27,17 +38,15 @@ our @filemasks; # regular expressions to match the filename
 our $delsource; # true false whether to keep the original files after successful copy
 our $minage; # minimum age of file, in minutes
 our $flag; # a special file marking the files are ready (is by itself never transferred
-our $srcftpuser; # source FTP user
-our $srcftppwd; # source FTP password
-our $tgtftpuser; # target FTP user
-our $tgtftppwd; # target FTP password
+our $srcusr; # source FTP user
+our $srcpwd; # source FTP password
+our $tgtusr; # target FTP user
+our $tgtpwd; # target FTP password
 
 our $flagispresent; # flag is present
 
 our %processednames; # hash of all the processed FTP sessions
 
-our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
-our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt";
 our %connConfigParams; # hash of all the lines in connection config file, to keep passwords in one place
 
 ####################################
@@ -79,16 +88,16 @@ The logfile is $logfile
 The config file should look like (comments can be written after # and are optional ):
 
 [TARGET-NAME] # name of the copying job
-direction=rem2loc # rem2loc - remote to local, loc2rem or rem2rem - in the future we shall implement also some zipping
-srchostname=REMOTE HOSTNAME
-tgthostname=REMOTE HOSTNAME OF TARGET
+direction=ftp2loc # ftp2loc - FTP to local, gsa2loc - GSA to local, loc2gsa or any other combination
+srchostname=REMOTE HOSTNAME / GSA CELL NAME OF SOURCE
+tgthostname=REMOTE HOSTNAME / GSA CELL NAME OF TARGET
 source=SOURCE DIRECTORY # to copy from
-target=TARGET DIRECTORY
+target=TARGET DIRECTORY # to copy into
 filemask=regular expression to match the filename
-srcftpuser=username # for logging onto FTP source
-srcftppwd=password
-tgtftpuser=username # for logging onto FTP target
-tgtftppwd=password
+srcusr=username # for logging onto FTP/GSA source
+srcpwd=password
+tgtusr=username # for logging onto FTP/GSA target
+tgtpwd=password
 delsource=true # true/false, whether delete the original files after successful copying - default yes
 minage=minimum of age of the file to be copied, in minutes - optional, default 0
 flag=FILENAME # if given, then the files will only be transferred when the "flag" filename exists in the source dir
@@ -96,9 +105,9 @@ flag=FILENAME # if given, then the files will only be transferred when the "flag
 [ANOTHER-TARGET-NAME] # name of another copying job - MUST BE DIFFERENT!
 direction=...
 
-The order of the parameters doesn't matter, however all of them except the last seven are mandatory.
+The order of the parameters doesn't matter, however the first five are mandatory.
 Of course only remote hostname of source / target is mandatory where applicable, depending on the copying direction.
-(When user and password not given, assuming login via SSH keys.)
+(When user and password not given for FTP, assuming login via SSH keys. User and password are mandatory for GSA.)
 
 NOTE: Instead of specifying a solid value, like password, you can specify to use certain attribute from $connectionConfig .
 Like this:
@@ -121,10 +130,10 @@ sub readcfgfile { # reads from config file
 			$tgthostname="";
 			$source="";
 			$target="";
-			$srcftpuser="";
-			$srcftppwd="";
-			$tgtftpuser="";
-			$tgtftppwd="";
+			$srcuser="";
+			$srcpwd="";
+			$tgtuser="";
+			$tgtpwd="";
 			@filemasks=();
 			$delsource="true";
 			$flag="";
@@ -136,10 +145,10 @@ sub readcfgfile { # reads from config file
 		$tgthostname=readConnectionConfig(retparam($line)) if ( $line =~ /^tgthostname/i );
 		$source=readConnectionConfig(retparam($line)) if ( $line =~ /^source/i );
 		$target=readConnectionConfig(retparam($line)) if ( $line =~ /^target/i );
-		$srcftpuser=readConnectionConfig(retparam($line)) if ( $line =~ /^srcftpuser/i );
-		$srcftppwd=readConnectionConfig(retparam($line)) if ( $line =~ /^srcftppwd/i );
-		$tgtftpuser=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtftpuser/i );
-		$tgtftppwd=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtftppwd/i );
+		$srcusr=readConnectionConfig(retparam($line)) if ( $line =~ /^srcusr/i );
+		$srcpwd=readConnectionConfig(retparam($line)) if ( $line =~ /^srcpwd/i );
+		$tgtusr=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtusr/i );
+		$tgtpwd=readConnectionConfig(retparam($line)) if ( $line =~ /^tgtpwd/i );
 		push (@filemasks, retparam($line) ) if ( $line =~ /^filemask/i );
 		$delsource=lc(retparam($line)) if ( $line =~ /^delsource/i );
 		$flag=retparam($line) if ( $line =~ /^flag/i );
@@ -169,6 +178,8 @@ sub retparam { # returs the parameter    motaba=12 #comment ----> returns 12
 	my $string=shift;
 	my $toret;
 	
+	chomp($string);
+	
 	$string =~ /^[^=]*=([^#]+)/;
 	$toret=$1;
 	
@@ -185,6 +196,8 @@ sub loginToFTP {
 	
 	my $sftp;
 	
+	return undef unless ( $useftp );
+	
 	$ftplogin="" unless (defined $ftplogin);
 	$ftppwd="" unless (defined $ftppwd);
 
@@ -195,6 +208,31 @@ sub loginToFTP {
 	}
 	
 	return $sftp;
+}
+
+sub logToGSA {
+	my $loginout=shift;
+	my $hostname=shift;
+	my $gsalogin=shift;
+	my $gsapwd=shift;
+	
+	if (( not defined $gsalogin ) || ( not defined $gsapwd )) {
+		elog ("GSA login or password not defined!");
+		return 1;
+	}
+	
+	my $parameter="";
+	$parameter="-c $hostname" if ( $loginout eq "in" );
+	$parameter="-r" if ( $loginout eq "out" );
+	
+	system "echo $gsapwd | gsa_login -p $parameter $gsalogin";
+	
+	unless ( $? == 0 ) {
+		print "Error on logging to GSA cell $hostname, user $gsalogin (job $name)!";
+		return 0;
+	}
+	
+    return 1;
 }
 
 sub filetomove { # determines whether given file is elligible to be copied
@@ -228,11 +266,48 @@ sub filetomove { # determines whether given file is elligible to be copied
 	return 0;
 }
 
+sub getfile { # transfers the file from source to /tmp, returns 0 on success
+	my $srcdir=shift;
+	my $srcfile=shift;
+	my $ftphandle=shift;
+	
+	dlog "getting $srcdir/$srcfile";
+	
+	if ( defined $ftphandle ) {
+		$ftphandle->get($srcdir."/".$srcfile, "/tmp/".$srcfile);
+		return ( $ftphandle->status != 0 );
+	}
+	
+	my $ret=copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
+	return 0 if ( $ret == 1 );
+	return 1;
+}
+
+sub putfile { # moves file from /tmp to target
+	my $srcfile=shift;
+	my $tgtdir=shift;
+	my $ftphandle=shift;
+	
+	dlog "putting $tgtdir/$srcfile";
+	
+	if ( defined $ftphandle ) {
+		$ftphandle->put("/tmp/".$srcfile, $tgtdir."/".$srcfile);
+		unlink("/tmp/".$srcfile);
+		return ( $ftphandle->status != 0 );
+	}
+	
+	my $ret=move("/tmp/".$srcfile, $tgtdir."/".$srcfile);
+	
+	`chmod 664 /$tgtdir/$srcfile` if ( $ret == 1 );
+	
+	return 0 if ( $ret == 1 );
+	return 1;
+}
+
 ##################################
 ##        MAIN
 ##################################
 
-logging_level( "info" );
 logfile($logfile);
 
 Usage() unless ( defined $ARGV[0] );
@@ -244,72 +319,61 @@ open (CFGFILE,"<",$ARGV[0]) or die ("The config file can't be opened!\n");
 while (readcfgfile(\*CFGFILE)) {
 	ilog("============== Working on $name SFTP job ================");
 	
-	# if there are more valid directions in future, this needs to change
-	if (( $direction ne "rem2loc" ) && ( $direction ne "loc2rem" ) && ( $direction ne "rem2rem")) {
-		elog("ERROR: Invalid value of direction, not rem2loc, loc2rem or rem2rem, skipping $name!");
+	if ( $direction !~ /^(ftp|gsa|loc)2(ftp|gsa|loc)$/ ) {
+		elog("ERROR: Unknown characters in direction $direction, skipping job $name!");
 		next;
 	}
 	
-    if ( $direction eq "rem2loc" ) { ##################### REMOTE TO LOCAL
-		my %filestocopy;
-		
-		if ( $srchostname eq "" ) {
-			elog("ERROR: Job $name, no source hostname with rem2loc direction, invalid!");
-			next; 
-		}
-		
-		my $srcftp=loginToFTP($srchostname, $srcftpuser, $srcftppwd );
-		next unless defined $srcftp; # login failed
-		
+	my %filestocopy;
+	
+	if (( $direction =~ /^(ftp|gsa)2/ ) && ( $srchostname eq "" )) {
+		elog("ERROR: Job $name, no source hostname with this direction, invalid!");
+		next;
+	}
+	
+	if (( $direction =~ /2(ftp|gsa)$/ ) && ( $tgthostname eq "" )) {
+		elog("ERROR: Job $name, no target hostname with this direction, invalid!");
+		next;
+	}
+	
+	if (( $direction =~ /ftp/ ) && ( $useftp == 0 )) {
+		elog("ERROR: Job $name, sadly SFTP can't be used on this server!");
+		next;
+	}
+	
+	my $srcftp=undef;
+	my $tgtftp=undef;
+	my $srcgsadir=undef;
+	my $tgtgsadir=undef;
+	
+	# logging to source determining files to copy
+	
+	if ( $direction =~ /^ftp/ ) {
+		$srcftp=loginToFTP($srchostname, $srcusr, $srcpwd );
+		next unless defined $srcftp;
+
 		foreach my $entry ( $srcftp->ls($source) ) { # puts each file of the remote ls into hash of files to be copied, if it passes filetomove func
 			my $soubor=$entry->{filename};
 			$filestocopy{$soubor} = 1 if (filetomove($soubor, $entry->{a}->{mtime}) );
 		}
-			
-		if (( $flag ne "" ) && ( $flagispresent == 0 )) {
-			wlog("Flagfile $flag is defined and not present in the source directory, skipping job $name!");
-			next;
-		}
-			
-		my $successfulfiles=0;
-		ilog("Job $name, copying files...");
-		foreach my $file (keys %filestocopy) {
-			$successfulfiles++;
-			dlog("Job $name, copying $file...");
-			$srcftp->get($source."/".$file, $target."/".$file);
-			if ( $srcftp->status != 0 ) {
-				elog("Job $name, error copying file $file!");
-				$filestocopy{$file}=0;
-				$successfulfiles--;
-			}
-		}
-		ilog("Job $name, successfully copied $successfulfiles of ".scalar (keys %filestocopy).".");
-		if (( $flag ne "" ) && ( $successfulfiles > 0 ) && ( $successfulfiles eq (scalar keys %filestocopy) ) ) {
-			ilog("Job $name, removing flag from source directory...");
-			$srcftp->do_remove($source."/".$flag);
-		}
-		if ( lc($delsource) eq "true" ) {
-			ilog("Job $name, deleting successfully copied source files...");
-			foreach my $file (keys %filestocopy) {
-				next unless ( $filestocopy{$file} == 1 );
-				$srcftp->do_remove($source."/".$file);
-			}
-		}
-
-	} elsif ( $direction eq "loc2rem" ) { ################################# LOCAL TO REMOTE
-		my %filestocopy;
+	}
+	if ( $direction =~ /^gsa/ ) {
+		next unless ( logToGSA("in",$srchostname,$srcusr,$srcpwd ) );
+		$srchostname =~ /^([^.]+)/;
+		$srcgsadir = "/gsa/".$1.$source;
 		
-		my $dirhandle;
+		opendir($dirhandle, $srcgsadir) || elog("Can't open the directory $source on GSA $srchostname, skipping job $name!");
+		closedir($dirhandle);
+		opendir($dirhandle, $srcgsadir) || next;
 		
-		if ( $tgthostname eq "" ) {
-			elog("Job $name, ERROR: No target hostname with loc2rem direction, invalid!");
-			next; 
+		while (my $file=readdir($dirhandle)) {
+			my $stats=stat($srcgsadir."/".$file);
+			$filestocopy{$file} = 1 if (filetomove($file, $stats->mtime));
 		}
-		
-		my $tgtftp=loginToFTP($tgthostname, $tgtftpuser, $tgtftppwd );
-		next unless defined $tgtftp; # login failed
-		
-		opendir($dirhandle, $source) || elog("Can't open the directory $source, skipping job $name!");
+		closedir($dirhandle);
+	}
+	if ( $direction =~ /^loc/ ) {
+		opendir($dirhandle, $source) || elog("Can't open the directory $source on local, skipping job $name!");
 		closedir($dirhandle);
 		opendir($dirhandle, $source) || next;
 		
@@ -317,43 +381,91 @@ while (readcfgfile(\*CFGFILE)) {
 			my $stats=stat($source."/".$file);
 			$filestocopy{$file} = 1 if (filetomove($file, $stats->mtime));
 		}
-		
 		closedir($dirhandle);
-		
-		if (( $flag ne "" ) && ( $flagispresent == 0 )) {
+	}	
+	
+	if (( $flag ne "" ) && ( $flagispresent == 0 )) {
 			wlog("Flagfile $flag is defined and not present in the source directory, skipping job $name!");
 			next;
-		}
-			
-		my $successfulfiles=0;
-		ilog("Job $name, copying files...");
-		foreach my $file (keys %filestocopy) {
-			$successfulfiles++;
-			dlog("Job $name, copying $file...");
-			$tgtftp->put($source."/".$file, $target."/".$file);
-			if ( $tgtftp->status != 0 ) {
-				elog("Job $name, error copying file $file!");
-				$filestocopy{$file}=0;
-				$successfulfiles--;
-			}
-		}
-		ilog("Job $name, successfully copied $successfulfiles of ".scalar (keys %filestocopy).".");
-		if (( $flag ne "" ) && ( $successfulfiles > 0 ) && ( $successfulfiles eq (scalar keys %filestocopy) ) ) {
-			ilog("Job $name, removing flag from source directory...");
-			unlink($source."/".$flag);
-		}
-		if ( lc($delsource) eq "true" ) {
-			ilog("Job $name, deleting successfully copied source files...");
-			foreach my $file (keys %filestocopy) {
-				next unless ( $filestocopy{$file} == 1 );
-				unlink($source."/".$file);
-			}
-		}
-
-
 	}
+	
+	###### logging to target
+	
+	if ( $direction =~ /ftp$/ ) {
+		$tgtftp=loginToFTP($tgthostname, $tgtftpuser, $tgtftppwd );
+		next unless defined $tgtftp; # login failed
+	}
+	
+	if ( $direction =~ /gsa$/ ) {
+		next unless ( logToGSA("in",$tgthostname,$tgtusr,$tgtpwd ) );
+		$tgthostname =~ /^([^.]+)/;
+		$tgtgsadir = "/gsa/".$1.$target;
+	}
+	
+	if ( $direction =~ /loc$/ ) {
+		opendir($dirhandle, $target) || elog("Can't open the directory $target on local, skipping job $name!");
+		closedir($dirhandle);
+		opendir($dirhandle, $target) || next;
+	}
+	
+	###### copying files
+	
+	my $successfulfiles=0;
+	ilog("Job $name, copying files...");
+	
+	foreach my $file (keys %filestocopy) {
+		my $ret; # return value
+		
+		$successfulfiles++;
+		dlog("Job $name, copying $file...");
+		
+		$ret=getfile($source, $file, $srcftp) if ( $direction =~ /^ftp/ );
+		$ret=getfile($srcgsadir, $file, undef) if ( $direction =~ /^gsa/ );
+		$ret=getfile($source, $file, undef) if ( $direction =~ /^loc/ );
+		
+		if ( $ret != 0 ) {
+			elog("Job $name, error getting file $file!");
+			$filestocopy{$file}=0;
+			$successfulfiles--;
+			next;
+		}
+		
+		$ret=putfile($file, $target, $tgtftp) if ( $direction =~ /ftp$/ );
+		$ret=putfile($file, $tgtgsadir, undef) if ( $direction =~ /gsa$/ );
+		$ret=putfile($file, $target, undef) if ( $direction =~ /loc$/ );
 
+		if ( $ret != 0 ) {
+			elog("Job $name, error putting file $file!");
+			$filestocopy{$file}=0;
+			$successfulfiles--;
+		}
+	}
+	
+	ilog("Job $name, successfully copied $successfulfiles of ".scalar (keys %filestocopy).".");
+	
+	###### deletting source files
 
+	if (( $flag ne "" ) && ( $successfulfiles > 0 ) && ( $successfulfiles eq (scalar keys %filestocopy) ) ) {
+		ilog("Job $name, removing flag from source directory...");
+		$srcftp->do_remove($source."/".$flag) if ( $direction =~ /^ftp/ );
+		unlink($srcgsadir."/".$flag) if ( $direction =~ /^gsa/ );
+		unlink($source."/".$flag) if ( $direction =~ /^loc/ );
+	}
+	
+	if (( lc($delsource) eq "true" ) && ( $successfulfiles > 0 )) {
+		ilog("Job $name, removing successfully copied source files...");
+	
+		foreach my $file (keys %filestocopy) {
+			next unless ( $filestocopy{$file} == 1 );
+			$srcftp->do_remove($source."/".$file) if ( $direction =~ /^ftp/ );
+			unlink($srcgsadir."/".$file) if ( $direction =~ /^gsa/ );
+			unlink($source."/".$file) if ( $direction =~ /^loc/ );
+		}
+	}
+	
+#	logToGSA("out",$srchostname,$srcusr,$srcpwd ) if ( $direction =~ /^gsa/ ); # Petr Soufek agreed he's happy not to logout from GSA
+#	logToGSA("out",$tgthostname,$tgtusr,$tgtpwd ) if ( $direction =~ /gsa$/ );
+	
 }
 
 close (CFGFILE);

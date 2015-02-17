@@ -218,6 +218,7 @@ sub doDelta {
         $hardware->sharedProcessor( $rec{sharedProcessor} );
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
+        $hardware->cpuIFL($rec{cpuIFL});
         dlog( $hardware->toString );
 
         if ( defined $self->hardware->{$key} ) {
@@ -251,6 +252,7 @@ sub doDelta {
                 	$action = 10**13 + $action if ( $hardware->processorManufacturer ne $self->hardware->{$key}->processorManufacturer );
                 	$action = 10**14 + $action if ( $hardware->processorModel ne $self->hardware->{$key}->processorModel );
                 	$action = 10**15 + $action if ( $hardware->nbrOfChipsMax ne $self->hardware->{$key}->nbrOfChipsMax );
+                	$action = 10**16 + $action if ( $hardware->cpuIFL ne $self->hardware->{$key}->cpuIFL );
                 dlog('hardware action is ' . $action->bstr() ); 
                 if ( $hardware->action eq '0' ) {
                 	###Set to update if the hardware is currently complete

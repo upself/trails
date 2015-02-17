@@ -60,7 +60,7 @@ settings. All fields are optional.</p>
 	<div class="float-left" style="width: 70%;"><s:select
 		name="reconSetting.owner" label="Owner" id="ownerSelect"
 		list="#{'IBM':'IBM','Customer':'Customer'}" headerKey=""
-		headerValue="All" id="ownerSelect"/></div>
+		headerValue="All"/></div>
 	<br />
 	<br />
 	<div class="float-left" style="width: 30%;">Country(s):</div>

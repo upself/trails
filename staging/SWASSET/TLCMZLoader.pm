@@ -9,7 +9,6 @@ use Sigbank::Delegate::SystemScheduleStatusDelegate;
 use Staging::Delegate::StagingDelegate;
 use TLCMZ::Delegate::TLCMZDelegate;
 use SWASSET::Delegate::SWASSETDelegate;
-use Sigbank::Delegate::BankAccountDelegate;
 
 ###Object constructor.
 sub new {
@@ -134,18 +133,9 @@ sub load {
 
 	###Get a connection to swasset and reuse it for each
 	###input file we are processing.
-	ilog("getting swasset bank account");
-	my $swassetBankAccount =
-	  Sigbank::Delegate::BankAccountDelegate->getBankAccountByName('SWASSTDB');
-	if ( !defined $swassetBankAccount ) {
-		elog("SWASSTDB Bank Account does not exist!!");
-		die;
-	}
-	ilog( "got swasset bank account: " . $swassetBankAccount->toString() );
-
 	ilog("getting swasset db connection");
 	my $swassetConnection =
-	  Database::Connection->new($swassetBankAccount);
+	  Database::Connection->new('swasset');
 	if ( !defined $swassetConnection ) {
 		elog("Unable to get swasset db connection!!");
 		die;

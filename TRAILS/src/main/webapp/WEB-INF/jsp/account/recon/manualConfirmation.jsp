@@ -85,6 +85,7 @@
 			<display:column property="country" title="Country" />
 			<display:column property="owner" title="HW Owner" />
 			<display:column property="assetType" title="Asset type" />
+			<display:column property="pid" title="PID" />
 			<display:column property="lparServerType" title="Server type" />
 			<display:column property="productInfoName" title="SW Name" />
 			<display:column property="processorManufacturer" title="Proc mfg" />
@@ -94,6 +95,8 @@
 			<display:column property="chips" title=" HW chip" />
 			<display:column property="hardwareProcessorCount" title="HW proc" />
 			<display:column property="nbrOfChipsMax" title=" # chips max" />
+			<display:column property="cpuIFL" title="HW IFL" />
+			<display:column property="effectiveThreads" title="Eff Thr" />
 			<display:column property="cpuLsprMips" title="CPU IBM LSPR MIPS" />
 			<display:column property="partLsprMips" title="PART IBM LSPR MIPS" />
 			<display:column property="cpuGartnerMips" title="CPU Gartner MIPS" />

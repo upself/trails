@@ -7,7 +7,7 @@
 <h1>Reconciliation workspace settings</h1>
 <h2>Confirm reconciliation workspace settings</h2>
 <br />
-<p>Reconciliation workspace settings sucessfully updated. Use the
+<p>Reconciliation workspace settings successfully updated. Use the
 navigation on the left to proceed to the workspace or click <s:a
 	href="%{workspaceLink}">here</s:a>.</p>
 <br />
