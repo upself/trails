@@ -570,23 +570,20 @@ sub queryInstalledSoftwareIds {
         select
             is.id
         from
-            installed_software is
-            ,software s
-            ,alert_unlicensed_Sw asw
+            ( ( installed_software is join product_info pi on pi.id = is.software_id )
+				join alert_unlicensed_sw asw on asw.installed_software_id = is.id )
         where
             is.software_lpar_id = ?
-            and date(asw.record_time) >=? 
-            and date(asw.record_time) <=?
-            and asw.installed_software_id=is.id
-            and is.software_id = s.software_id
-            and s.level = 'LICENSABLE'
-            and is.discrepancy_type_id != 3
-            and is.discrepancy_type_id != 5 
+            and date(asw.record_time) >= ? 
+            and date(asw.record_time) <= ?
+            and pi.licensable = 1
+            and is.discrepancy_type_id not in ( 3, 5 )
             and is.status = 'ACTIVE'  
             and asw.open=1           
             and not exists(select 1 from reconcile r, reconcile_type rt where r.installed_software_id = is.id and r.reconcile_type_id = rt.id and rt.is_manual = 1) 
             and not exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id and rh.manual_break = 1) 
-            and exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id) 
+            and exists(select 1 from reconcile_h rh where rh.installed_software_id = is.id)
+        with ur
     };
 
 	dlog("installedSoftwareIds=$query");
