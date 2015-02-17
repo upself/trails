@@ -20,7 +20,8 @@
 	Training Complete (Demo to BAU, Support Team Training)
 	Announcements Sent
 	QMX Approval Complete
-	Deployed to Production
+	QMX Recon Engine Document Updated
+	Production Deployment Completed
 	Final Verification Test on Production
 	Evaluate Long Running Queries after Deployment
 	Update Affected GAM Tickets
