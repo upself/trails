@@ -81,21 +81,18 @@ sub hasOS {
 
 sub queryhasOS {
 	my $query = qq(
-		select 
+			select 
 		        count(*) 
 		    from  
-		       installed_software is 
-		       ,software sw
-		       ,software_category sc
+		       ( ( ( installed_software is join kb_definition kb on kb.id = is.software_id )
+		       	join product_info pi on pi.id = is.software_id )
+		       	join software_category sc on sc.software_category_id = pi.software_category_id )
 		    where 
-		        is.SOFTWARE_LPAR_ID=?
-		        and is.software_id = sw.software_id
-		        and sw.software_category_id = sc.software_category_id
+		        is.SOFTWARE_LPAR_ID = ?
 		        and is.status='ACTIVE' 
-		        and sw.status='ACTIVE' 
-		        and sc.SOFTWARE_CATEGORY_NAME='Operating Systems' 
-		        and sc.status='ACTIVE'
-	         );
+		        and ( ( kb.deleted is null ) or ( kb.deleted <> 1 ) )
+		        and sc.SOFTWARE_CATEGORY_NAME='Operating Systems'
+		        and sc.status='ACTIVE'	         );
 	return ( 'hsOS', $query );
 }
 
