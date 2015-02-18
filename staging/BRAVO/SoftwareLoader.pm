@@ -418,10 +418,6 @@ sub load {
                     if (
                             stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model )
                          && stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial )
-                         && numericEqualOrBothUndef(
-                                                     $bravoSoftwareLpar->processorCount,
-                                                     $stagingSoftwareLpar->processorCount
-                         )
                          && stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime )
                          && $bravoSoftwareLpar->status eq $stagingSoftwareLpar->status
                         )
