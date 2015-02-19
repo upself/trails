@@ -18,8 +18,11 @@
 	Deployed to UAT Server and Pass Release UAT
 	UAT Regression Testing Passed
 	Training Complete (Demo to BAU, Support Team Training)
-	Announcement Sent
-	Deployed to Production
+	Announcements Sent
+	QMX Approval Complete
+	QMX Recon Engine Document Updated
+	Production Deployment Completed
 	Final Verification Test on Production
-	
-# demo 
+	Evaluate Long Running Queries after Deployment
+	Update Affected GAM Tickets
+	Regenerate Reports

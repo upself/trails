@@ -27,8 +27,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 		@NamedQuery(name = "freePoolReport", query = "SELECT COALESCE(sw.softwareName, L.fullDesc), CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.fullDesc, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, coalesce(L.quantity - sum(LUQV.usedQuantity),L.quantity), L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime FROM License L LEFT OUTER JOIN L.usedLicenses LUQV LEFT OUTER JOIN L.software sw WHERE L.account.account = :account AND L.status = 'ACTIVE' group by sw.softwareName, L.fullDesc, CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime having coalesce(l.quantity - sum(LUQV.usedQuantity),l.quantity) > 0 ORDER BY sw.softwareName ASC"),
 		@NamedQuery(name = "licenseDetails", query = "FROM License L JOIN fetch l.account join fetch l.capacityType LEFT OUTER JOIN FETCH L.software LEFT OUTER JOIN FETCH L.usedLicenses WHERE L.id = :id"),
 		@NamedQuery(name = "productNameByAccount", query = "SELECT DISTINCT(l.prodName) From License l WHERE l.account.id=:accountId and UPPER(l.prodName) like :key and ((l.account.softwareFinancialResponsibility='IBM' and l.ibmOwned=true) or (l.account.softwareFinancialResponsibility='CUSTOMER' and l.ibmOwned=false) or l.account.softwareFinancialResponsibility='BOTH' or l.account.softwareFinancialResponsibility in ('IBM','CUSTOMER','BOTH') ) and l.status='ACTIVE' ORDER BY l.prodName ASC"),
-		@NamedQuery(name = "manufacturerNameByAccount", query = "SELECT DISTINCT(l.software.manufacturer.manufacturerName) From License l WHERE l.account.id=:accountId and UPPER(l.software.manufacturer.manufacturerName) like :key and ((l.account.softwareFinancialResponsibility='IBM' and l.ibmOwned=true) or (l.account.softwareFinancialResponsibility='CUSTOMER' and l.ibmOwned=false) or l.account.softwareFinancialResponsibility='BOTH' or l.account.softwareFinancialResponsibility in ('IBM','CUSTOMER','BOTH') ) and l.status='ACTIVE' ORDER BY l.software.manufacturer.manufacturerName ASC")
-})
+		@NamedQuery(name = "manufacturerNameByAccount", query = "SELECT DISTINCT(l.software.manufacturer.manufacturerName) From License l WHERE l.account.id=:accountId and UPPER(l.software.manufacturer.manufacturerName) like :key and ((l.account.softwareFinancialResponsibility='IBM' and l.ibmOwned=true) or (l.account.softwareFinancialResponsibility='CUSTOMER' and l.ibmOwned=false) or l.account.softwareFinancialResponsibility='BOTH' or l.account.softwareFinancialResponsibility in ('IBM','CUSTOMER','BOTH') ) and l.status='ACTIVE' ORDER BY l.software.manufacturer.manufacturerName ASC") })
 public class License extends AbstractDomainEntity {
 	private static final long serialVersionUID = 6487639250238014719L;
 
@@ -37,7 +36,7 @@ public class License extends AbstractDomainEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinTable(name = "LICENSE_SW_MAP", joinColumns = { @JoinColumn(name = "LICENSE_ID") }, inverseJoinColumns = { @JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID") })
+	@JoinTable(name = "LICENSE_SW_MAP", joinColumns = { @JoinColumn(name = "LICENSE_ID") }, inverseJoinColumns = { @JoinColumn(name = "SOFTWARE_ID", referencedColumnName = "SOFTWARE_ID") })
 	private Software software;
 
 	@Column(name = "PO_NUMBER")
@@ -65,6 +64,9 @@ public class License extends AbstractDomainEntity {
 	@JoinColumn(name = "CAP_TYPE")
 	private CapacityType capacityType;
 
+	@Column(name = "LIC_TYPE")
+	private String licenseType;
+
 	@Column(name = "VERSION")
 	private String version;
 
@@ -84,6 +86,9 @@ public class License extends AbstractDomainEntity {
 	@Column(name = "STATUS")
 	private String status;
 
+	@Column(name = "TRY_AND_BUY")
+	private boolean tryAndBuy;
+
 	@OneToMany(mappedBy = "license", fetch = FetchType.LAZY)
 	private Set<UsedLicense> usedLicenses;
 
@@ -92,7 +97,7 @@ public class License extends AbstractDomainEntity {
 
 	@Column(name = "POOL")
 	private Integer pool;
-	
+
 	@Column(name = "ENVIRONMENT")
 	private String environment;
 
@@ -307,6 +312,22 @@ public class License extends AbstractDomainEntity {
 
 	public Software getSoftware() {
 		return software;
+	}
+
+	public String getLicenseType() {
+		return licenseType;
+	}
+
+	public void setLicenseType(String licenseType) {
+		this.licenseType = licenseType;
+	}
+
+	public boolean isTryAndBuy() {
+		return tryAndBuy;
+	}
+
+	public void setTryAndBuy(boolean tryAndBuy) {
+		this.tryAndBuy = tryAndBuy;
 	}
 
 }

@@ -668,6 +668,7 @@ sub queryHardwareData {
             cloudName
             chassisId
             serverType
+            cpuIFL
             lparId
             name
             lparCustomerId
@@ -732,6 +733,7 @@ sub queryHardwareData {
             ,a.cloud_name
             ,a.chassis_id
             ,a.server_type
+            ,a.cpu_ifl
             ,b.id
             ,b.name
             ,b.customer_id

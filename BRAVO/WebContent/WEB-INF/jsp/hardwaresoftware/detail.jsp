@@ -157,6 +157,7 @@
 											<th class="blue-med">HW chip</th>
 											<th class="blue-med">HW proc</th>
 											<th class="blue-med"># chips max</th>
+											<th class="blue-med">HW IFL</th>
 											<th class="blue-med">Shared</th>
 											<th class="blue-med">HW Owner</th>
 											<th class="blue-med">ATP Status</th>
@@ -195,6 +196,8 @@
 													value="${lpar.hardwareLpar.hardware.processorCount}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.nbrOfChipsMax}" /></font></td>
+											<td><font class="orange-dark"> <c:out
+													value="${lpar.hardwareLpar.hardware.cpuIfl}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.shared}" /></font></td>
 											<td><font class="orange-dark"> <c:out

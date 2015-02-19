@@ -794,6 +794,9 @@ sub validateLicenseAllocation {
    
    $validation->validateScheduleF( $rec{ibmOwned}, $self->customer->swComplianceMgmt,
 					$self->installedSoftwareReconData->scopeName, undef, 1 );
+					
+   ###Validate license status
+   $validation->validateLicense( $rec{licenseStatus}, undef );
 	}
    return 0 if ( $validation->validationCode == 0 );
  }

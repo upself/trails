@@ -78,6 +78,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Processor Model"
 		,"NBR Cores Per Chip"
 		,"NBR Of Chips Max"
+		,"Hardware IFL"
 		,"Shared processor"
 		,"Shared"
 		,"CPU IBM LSPR MIPS"

@@ -81,18 +81,16 @@ sub hasLP {
 
 sub queryhasLP {
 	my $query = '
-        select 
+			select 
                 count(*) 
             from  
-                installed_software is
-                , software sw 
+                ( ( installed_software is join product_info pi on pi.id = is.software_id )
+                join kb_definition kbd on kbd.id = is.software_id )
             where 
-                is.SOFTWARE_LPAR_ID=?
-                and is.software_id=sw.software_id 
-                and is.status=\'ACTIVE\' 
-                and sw.status=\'ACTIVE\' 
-                and sw.level=\'LICENSABLE\'
-             ';
+                is.SOFTWARE_LPAR_ID = ?
+                and is.status=\'ACTIVE\'
+                and ( ( kbd.deleted is null ) or ( kbd.deleted <> 1 ) )
+                and pi.licensable = 1;             ';
 	return ( 'hasLP', $query );
 }
 

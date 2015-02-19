@@ -484,6 +484,7 @@ public class ReconServiceImpl implements ReconService {
 			if (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
 					|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
 					|| pRecon.getPer().equalsIgnoreCase("PVU")
+					|| pRecon.getPer().equalsIgnoreCase("CHIP")
 					|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
 					|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
 					|| pRecon.getPer().equalsIgnoreCase("HWMSU")) {
@@ -560,6 +561,9 @@ public class ReconServiceImpl implements ReconService {
 													|| pRecon.getPer()
 															.equalsIgnoreCase(
 																	"PVU")
+												    || pRecon.getPer()
+															.equalsIgnoreCase(
+																	"CHIP")
 													|| pRecon
 															.getPer()
 															.equalsIgnoreCase(
@@ -625,6 +629,7 @@ public class ReconServiceImpl implements ReconService {
 								|| pRecon.getPer().equalsIgnoreCase(
 										"HWPROCESSOR")
 								|| pRecon.getPer().equalsIgnoreCase("PVU")
+								|| pRecon.getPer().equalsIgnoreCase("CHIP")
 								|| pRecon.getPer().equalsIgnoreCase(
 										"HWGARTMIPS")
 								|| pRecon.getPer().equalsIgnoreCase(

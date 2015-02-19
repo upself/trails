@@ -282,6 +282,7 @@ sub buildBravoHardware {
 	$accountNumber =~ s/X//g;
 	$bravoHardware->accountNumber($accountNumber);
 	$bravoHardware->action($self->stagingHardware->action);
+	$bravoHardware->cpuIFL($self->stagingHardware->cpuIFL);
 
 	$self->bravoHardware($bravoHardware);
 }

@@ -78,8 +78,19 @@ public class Hardware {
     
     @Column(name = "CPU_GARTNER_MIPS")
     private BigDecimal cpuGartnerMips;
+    
+    @Column(name="CPU_IFL")
+	private Integer cpuIfl;
 
-    /**
+    public Integer getCpuIfl() {
+		return cpuIfl;
+	}
+
+	public void setCpuIfl(Integer cpuIfl) {
+		this.cpuIfl = cpuIfl;
+	}
+
+	/**
 	 * @return the cpuLsprMips
 	 */
 	public Integer getCpuLsprMips() {

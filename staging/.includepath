@@ -2,5 +2,6 @@
 <includepath>
   <includepathentry path="C:\springWorkspace\Staging" />
   <includepathentry path="C:\springWorkspace\amdev\ActivePerl-5.10.0.1005-MSWin32-x86-290470\ActivePerl-5.10.0.1005-MSWin32-x86-290470\perl\bin" />
+  <includepathentry path="${project_loc}" />
 </includepath>
 

@@ -274,6 +274,8 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
+				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
 				value="%{#attr.row.lparServerType}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareStatus"
@@ -294,6 +296,10 @@
 				value="%{#attr.row.mastProcessorModel}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].nbrOfChipsMax"
 				value="%{#attr.row.nbrOfChipsMax}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuIFL"
+				value="%{#attr.row.cpuIFL}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].effectiveThreads"
+				value="%{#attr.row.effectiveThreads}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuLsprMips"
 				value="%{#attr.row.cpuLsprMips}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].partLsprMips"
@@ -344,6 +350,8 @@
 			sortable="true" />
 		<display:column property="assetType" title="Asset type"
 			sortProperty="mt.type" sortable="true" />
+		<display:column property="pid" title="PID"
+			sortProperty="sw.pid" sortable="true" />
 		<display:column property="hardwareStatus" title="Hardware Status"
 			sortProperty="h.hardwareStatus" sortable="true" />
 		<display:column property="lparStatus" title="Lpar Status"
@@ -352,7 +360,7 @@
 			sortProperty="sl.processorCount" sortable="true" />
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
-		<display:column sortProperty="pi.name" title="Software"
+		<display:column sortProperty="sw.softwareName" title="Software"
 			sortable="true">
 			<a
 				href="javascript:popupBravoSl(<s:property value="%{#attr.row.installedSoftwareId}"/>)">${row.productInfoName}</a>

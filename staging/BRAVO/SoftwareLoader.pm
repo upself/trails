@@ -672,37 +672,22 @@ sub load {
               
               if(!defined $scanSwItem->guId){
                 die "Invalid tadz scan item: " . $scanSwItem->toString . "\n";
-              }
-              
+              }              
+
               dlog($scanSwItem->toString);
-              
-              
+           
               ###next item if we didn't find the scanSoftwareItem under this id.
-              next
-                 if(!defined $scanSwItem->id);
-                 
-              
-              ###1. get the kb_def id through guid, it may be mainframe_feature/mainframe_version.
-              ###2. check if it's mainframe_feature, if yes. go step3, if not go step4.
-              ###3. it's mainframe_feature get the version id from it.
-              ###4. it's mainframe_version get the product_id from it as the software_id.
-              
-              $kbDefId  = $self->getMainframeFeatureIdByGUID($self->bravoConnection, $scanSwItem->guId);
+              next if(!defined $scanSwItem->id);
+                       
+              #get the kb_def id (software_id) through guid, it may be mainframe_feature
+              $kbDefId  = $self->getKbDefinitionIdByGUID($self->bravoConnection, $scanSwItem->guId);
+              $softwareId = $kbDefId;
               if(!defined $kbDefId){
                 my $gudi = $scanSwItem->guId;
                 dlog("mainframe items not loaded by catalog loader under guid id $gudi");
                 $self->updateStagingInstalledType($scanSwItem, 'CATALOG MISSING');
                 next;
               }
-                            
-              my $versionId = undef;
-              $versionId = $self->getMainframeVersionIdByFeatureId($self->bravoConnection, $kbDefId);
-              ###check if it's mainframe_feature.
-              if(!defined $versionId){
-              ### mainframe feature not exsits, it is mainframe version.
-                $versionId = $kbDefId;
-              }                            
-              $softwareId = $self->getProductIdByVersionId($self->bravoConnection, $versionId);
               
             }else{
               $softwareId = $rec{softwareId};
@@ -1237,7 +1222,7 @@ sub load {
                     elsif($rec{installedSoftwareType} eq 'TAD4Z'){
                     	# only set TADz the first time
                     	if ( ! defined $bravoInstalledSoftware->discrepancyTypeId ) {
-                        	$bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'TADZ'} );
+                        	$bravoInstalledSoftware->discrepancyTypeId( $self->discrepancyTypeMap->{'NONE'} );
                         }
                     }else{
                         if ( defined $bravoInstalledSoftware->discrepancyTypeId ) {
@@ -2176,11 +2161,11 @@ sub getTad4zQuery {
                 ';
 }
 
-sub getMainframeFeatureIdByGUID{
+sub getKbDefinitionIdByGUID{
    my ($self, $connection, $guid)  = @_;
    
-    $connection->prepareSqlQuery($self->queryMainframeFeatureIdByGUID());
-    my $sth = $connection->sql->{getMainframeFeatureId};
+    $connection->prepareSqlQuery($self->queryKbDefinitionIdByGUID());
+    my $sth = $connection->sql->{getKbDefinitionId};
     my $featureId=undef;
     my $lowerGuid=lc($guid);
   
@@ -2197,65 +2182,11 @@ sub getMainframeFeatureIdByGUID{
 }
 
 
-sub queryMainframeFeatureIdByGUID {
+sub queryKbDefinitionIdByGUID {
     my $query = '
-        select id from kb_definition where guid =  ? or guid = ?
+        select id from kb_definition kb where kb.guid =  ? or kb.guid = ? with ur
     ';
-    return ('getMainframeFeatureId', $query);
-}
-
-
-sub getMainframeVersionIdByFeatureId{
-   my ($self,$connection, $featureId)  = @_;
-   
-    $connection->prepareSqlQuery($self->queryGetMainframeVersionIdByFeatureId());
-    my $sth = $connection->sql->{getMainframeVersionId};
-    my $id=undef;
-  
-    $sth->bind_columns(
-        \$id
-    );
-    $sth->execute(
-        $featureId
-    );
-    my $found = $sth->fetchrow_arrayref;
-    $sth->finish;
-    
-    return $id;
-}
-
-
-sub queryGetMainframeVersionIdByFeatureId {
-    my $query = '
-        select version_id from mainframe_feature where id =  ?
-    ';
-    return ('getMainframeVersionId', $query);
-}
-
-sub getProductIdByVersionId{
-   my ($self, $connection, $versionId)  = @_;
-   
-    $connection->prepareSqlQuery($self->queryGetProductIdByVersionId());
-    my $sth = $connection->sql->{getProductId};
-    my $id=undef;
-  
-    $sth->bind_columns(
-        \$id
-    );
-    $sth->execute(
-        $versionId
-    );
-    my $found = $sth->fetchrow_arrayref;
-    $sth->finish;
-    
-    return $id;
-}
-
-sub queryGetProductIdByVersionId {
-    my $query = '
-        select product_id from mainframe_version where id =  ?
-    ';
-    return ('getProductId', $query);
+    return ('getKbDefinitionId', $query);
 }
 
 sub getCustomerDataByID{

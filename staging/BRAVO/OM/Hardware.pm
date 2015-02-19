@@ -37,6 +37,7 @@ sub new {
         ,_sharedProcessor => undef
         ,_cloudName => undef
         ,_chassisId => undef
+        ,_cpuIFL => undef
         ,_table => 'hardware'
         ,_idField => 'id'
     };
@@ -244,6 +245,13 @@ sub equals {
     $equal = 1 if (!defined $self->chassisId && !defined $object->chassisId);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->cpuIFL && defined $object->cpuIFL) {
+        $equal = 1 if $self->cpuIFL eq $object->cpuIFL;
+    }
+    $equal = 1 if (!defined $self->cpuIFL && !defined $object->cpuIFL);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -433,6 +441,12 @@ sub chassisId {
     return $self->{_chassisId};
 }
 
+sub cpuIFL {
+    my $self = shift;
+    $self->{_cpuIFL} = shift if scalar @_ == 1;
+    return $self->{_cpuIFL};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -603,6 +617,11 @@ sub toString {
         $s .= $self->{_chassisId};
     }
     $s .= ",";
+    $s .= "cpuIFL=";
+    if (defined $self->{_cpuIFL}) {
+        $s .= $self->{_cpuIFL};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -653,6 +672,7 @@ sub save {
             ,$self->sharedProcessor
             ,$self->cloudName
             ,$self->chassisId
+            ,$self->cpuIFL
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -689,6 +709,7 @@ sub save {
             ,$self->sharedProcessor
             ,$self->cloudName
             ,$self->chassisId
+            ,$self->cpuIFL
             ,$self->id
         );
         $sth->finish;
@@ -731,6 +752,7 @@ sub queryInsert {
             ,SHARED_PROCESSOR
             ,CLOUD_NAME
             ,CHASSIS_ID
+            ,CPU_IFL
         ) values (
             ?
             ,?
@@ -741,6 +763,7 @@ sub queryInsert {
             ,?
             ,\'ATP\'
             ,CURRENT TIMESTAMP
+            ,?
             ,?
             ,?
             ,?
@@ -799,6 +822,7 @@ sub queryUpdate {
             ,SHARED_PROCESSOR = ?
             ,CLOUD_NAME = ?
             ,CHASSIS_ID = ?
+            ,CPU_IFL = ?
         where
             id = ?
     ';
@@ -858,6 +882,7 @@ sub getByBizKey {
     my $sharedProcessor;
     my $cloudName;
     my $chassisId;
+    my $cpuIFL;
     $sth->bind_columns(
         \$id
         ,\$owner
@@ -886,6 +911,7 @@ sub getByBizKey {
         ,\$sharedProcessor
         ,\$cloudName
         ,\$chassisId
+        ,\$cpuIFL
     );
     $sth->execute(
         $self->machineTypeId
@@ -921,6 +947,7 @@ sub getByBizKey {
     $self->sharedProcessor($sharedProcessor);
     $self->cloudName($cloudName);
     $self->chassisId($chassisId);
+    $self->cpuIFL($cpuIFL);
 }
 
 sub queryGetByBizKey {
@@ -953,6 +980,7 @@ sub queryGetByBizKey {
             ,SHARED_PROCESSOR
             ,CLOUD_NAME
             ,CHASSIS_ID
+            ,CPU_IFL
         from
             hardware
         where
@@ -996,6 +1024,7 @@ sub getById {
     my $sharedProcessor;
     my $cloudName;
     my $chassisId;
+    my $cpuIFL;
     $sth->bind_columns(
         \$machineTypeId
         ,\$serial
@@ -1026,6 +1055,7 @@ sub getById {
         ,\$sharedProcessor
         ,\$cloudName
         ,\$chassisId
+        ,\$cpuIFL
     );
     $sth->execute(
         $self->id
@@ -1061,6 +1091,7 @@ sub getById {
     $self->sharedProcessor($sharedProcessor);
     $self->cloudName($cloudName);
     $self->chassisId($chassisId);
+    $self->cpuIFL($cpuIFL);
     return (defined $found) ? 1 : 0;
 }
 
@@ -1096,6 +1127,7 @@ sub queryGetById {
             ,SHARED_PROCESSOR
             ,CLOUD_NAME
             ,CHASSIS_ID
+            ,CPU_IFL
         from
             hardware
         where

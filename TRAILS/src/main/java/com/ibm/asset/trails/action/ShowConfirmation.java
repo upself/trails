@@ -67,9 +67,13 @@ public class ShowConfirmation extends AccountBaseAction {
 	public void prepare() {
 		super.prepare();
 
-		if (getPer() == null || getPer().equalsIgnoreCase("PVU")|| getPer().equalsIgnoreCase("HWGARTMIPS")||getPer().equalsIgnoreCase("LPARGARTMIPS")
-				||getPer().equalsIgnoreCase("HWLSPRMIPS")||getPer().equalsIgnoreCase("LPARLSPRMIPS")
-				||getPer().equalsIgnoreCase("HWMSU")||getPer().equalsIgnoreCase("LPARMSU")) {
+		if (getPer() == null || getPer().equalsIgnoreCase("PVU")
+				|| getPer().equalsIgnoreCase("HWGARTMIPS")
+				|| getPer().equalsIgnoreCase("LPARGARTMIPS")
+				|| getPer().equalsIgnoreCase("HWLSPRMIPS")
+				|| getPer().equalsIgnoreCase("LPARLSPRMIPS")
+				|| getPer().equalsIgnoreCase("HWMSU")
+				|| getPer().equalsIgnoreCase("LPARMSU")) {
 			disabled = true;
 		}
 		setAllocationMethodologies(allocationMethodologyService.findAll());
@@ -318,23 +322,35 @@ public class ShowConfirmation extends AccountBaseAction {
 				} else if (per.equalsIgnoreCase("PVU") && !isAllPvuLicenses()) {
 					addFieldError("licenseId",
 							"You must select license(s) with a Capacity type of PROCESSOR VALUE UNIT");
-				} else if ((per.equalsIgnoreCase("HWGARTMIPS")||per.equalsIgnoreCase("LPARGARTMIPS")
-						||per.equalsIgnoreCase("HWLSPRMIPS")||per.equalsIgnoreCase("LPARLSPRMIPS")
-						||per.equalsIgnoreCase("HWMSU")||per.equalsIgnoreCase("LPARMSU")) && !isAllGSLMLicenses(per)){
+				} else if ((per.equalsIgnoreCase("HWGARTMIPS")
+						|| per.equalsIgnoreCase("LPARGARTMIPS")
+						|| per.equalsIgnoreCase("HWLSPRMIPS")
+						|| per.equalsIgnoreCase("LPARLSPRMIPS")
+						|| per.equalsIgnoreCase("HWMSU") || per
+							.equalsIgnoreCase("LPARMSU"))
+						&& !isAllGSLMLicenses(per)) {
 					addFieldError("licenseId",
 							"You must select license(s) with a Capacity type of Mainframes");
 				}
 				if (StringUtils.isBlank(maxLicenses)
 						&& !(per.equalsIgnoreCase("PVU")
-								||per.equalsIgnoreCase("HWGARTMIPS")||per.equalsIgnoreCase("LPARGARTMIPS")
-								||per.equalsIgnoreCase("HWLSPRMIPS")||per.equalsIgnoreCase("LPARLSPRMIPS")
-								||per.equalsIgnoreCase("HWMSU")||per.equalsIgnoreCase("LPARMSU"))) {
+								|| per.equalsIgnoreCase("HWGARTMIPS")
+								|| per.equalsIgnoreCase("LPARGARTMIPS")
+								|| per.equalsIgnoreCase("HWLSPRMIPS")
+								|| per.equalsIgnoreCase("LPARLSPRMIPS")
+								|| per.equalsIgnoreCase("HWMSU")
+								|| per.equalsIgnoreCase("LPARMSU") || per
+									.equalsIgnoreCase("HWIFL"))) {
 					addFieldError("maxLicenses",
 							"You must enter the number of license to apply for each LPAR or processor");
 				} else if (!(per.equalsIgnoreCase("PVU")
-						||per.equalsIgnoreCase("HWGARTMIPS")||per.equalsIgnoreCase("LPARGARTMIPS")
-						||per.equalsIgnoreCase("HWLSPRMIPS")||per.equalsIgnoreCase("LPARLSPRMIPS")
-						||per.equalsIgnoreCase("HWMSU")||per.equalsIgnoreCase("LPARMSU"))
+						|| per.equalsIgnoreCase("HWGARTMIPS")
+						|| per.equalsIgnoreCase("LPARGARTMIPS")
+						|| per.equalsIgnoreCase("HWLSPRMIPS")
+						|| per.equalsIgnoreCase("LPARLSPRMIPS")
+						|| per.equalsIgnoreCase("HWMSU")
+						|| per.equalsIgnoreCase("LPARMSU") || per
+							.equalsIgnoreCase("HWIFL"))
 						&& (!StringUtils.isNumeric(maxLicenses) || Integer
 								.valueOf(maxLicenses).intValue() < 1)) {
 					addFieldError("maxLicenses",
@@ -406,31 +422,42 @@ public class ShowConfirmation extends AccountBaseAction {
 
 		return lbAllPvuLicenses;
 	}
-	
+
 	private boolean isAllGSLMLicenses(String per) {
 		boolean lbAllGSLMLicenses = true;
 
 		for (License llTemp : getRecon().getLicenseList()) {
 
-			if(per.equalsIgnoreCase("HWGARTMIPS") && llTemp.getCapacityType().getCode()!=70){
+			if (per.equalsIgnoreCase("HWGARTMIPS")
+					&& llTemp.getCapacityType().getCode() != 70) {
 				lbAllGSLMLicenses = false;
 				break;
-			  }
-			if(per.equalsIgnoreCase("LPARGARTMIPS")  && llTemp.getCapacityType().getCode()!=70){
+			}
+			if (per.equalsIgnoreCase("LPARGARTMIPS")
+					&& llTemp.getCapacityType().getCode() != 70) {
 				lbAllGSLMLicenses = false;
-				break; 	}
-			if(per.equalsIgnoreCase("HWLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
+				break;
+			}
+			if (per.equalsIgnoreCase("HWLSPRMIPS")
+					&& llTemp.getCapacityType().getCode() != 5) {
 				lbAllGSLMLicenses = false;
-				break; 	}
-			if(per.equalsIgnoreCase("LPARLSPRMIPS")  && llTemp.getCapacityType().getCode()!=5){
+				break;
+			}
+			if (per.equalsIgnoreCase("LPARLSPRMIPS")
+					&& llTemp.getCapacityType().getCode() != 5) {
 				lbAllGSLMLicenses = false;
-				break; 	}
-			if(per.equalsIgnoreCase("HWMSU")  && llTemp.getCapacityType().getCode()!=9){
+				break;
+			}
+			if (per.equalsIgnoreCase("HWMSU")
+					&& llTemp.getCapacityType().getCode() != 9) {
 				lbAllGSLMLicenses = false;
-				break;	}
-			if(per.equalsIgnoreCase("LPARMSU")  && llTemp.getCapacityType().getCode()!=9){
+				break;
+			}
+			if (per.equalsIgnoreCase("LPARMSU")
+					&& llTemp.getCapacityType().getCode() != 9) {
 				lbAllGSLMLicenses = false;
-				break; 	}
+				break;
+			}
 		}
 
 		return lbAllGSLMLicenses;
