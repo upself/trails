@@ -10,12 +10,12 @@
        $(document).ready(function() 
 		 {
     	   var reportName = document.getElementById("reportFileName").options[document.getElementById("reportFileName").selectedIndex].text;
-       	if(reportName == 'Full reconciliation' || reportName == 'Installed software baseline'){
-       		document.getElementById('checkboxlist').style.display='none';
-       		document.getElementById('comments').style.display='block';
-       	} else {
+       	if(reportName == 'Software compliance summary'){
        		document.getElementById('checkboxlist').style.display='block';
        		document.getElementById('comments').style.display='none';
+       	} else {
+       		document.getElementById('checkboxlist').style.display='none';
+       		document.getElementById('comments').style.display='block';
        	} 
 		 });  
 
@@ -32,7 +32,7 @@
 		var lbSelectAllChecked = lfReportList.selectAll.checked;
 		var lsReportFileName = lfReportList.reportFileName.value;
 		
-	  if(lsReportFileName == 'Full reconciliation' || lsReportFileName == 'Installed software baseline' ){
+	  if(lsReportFileName == 'softwareComplianceSummary' ){
 		if (!lbCustomerOwnedCustomerManagedSearchChecked
 				&& !lbCustomerOwnedIBMManagedSearchChecked
 				&& !lbIBMOwnedIBMManagedSearchChecked
@@ -87,12 +87,12 @@
 
 function reportChange(id) {
 	var reportName = document.getElementById(id).options[document.getElementById(id).selectedIndex].text;
-	if(reportName == 'Full reconciliation' || reportName == 'Installed software baseline'){
-		document.getElementById('checkboxlist').style.display='none';
-		document.getElementById('comments').style.display='block';
-	} else {
+	if(reportName == 'Software compliance summary'){
 		document.getElementById('checkboxlist').style.display='block';
 		document.getElementById('comments').style.display='none';
+	} else {
+		document.getElementById('checkboxlist').style.display='none';
+		document.getElementById('comments').style.display='block';
 	}
 }
 
