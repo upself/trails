@@ -30,7 +30,7 @@ public class ScheduleFServiceImplTest {
 	private AccountService accountService;
 	@Autowired
 	private SoftwareDAO softwareDAO;
-	private String psSoftwareName = "Artemis - Artemis - BASE" ;
+	private String psSoftwareName = "IBM AIX" ;
 	
 	@Test
 	public void testScheduleFfindSoftwareBySoftwareName() {

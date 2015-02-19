@@ -21,7 +21,7 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class LicenseDAOJpaTest {
+public class LicenseDAOJpaTests {
 
     @Autowired
     private LicenseDAO licenseDAO;
