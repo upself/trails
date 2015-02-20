@@ -310,7 +310,7 @@ sub queryGetById {
             alert_hw_lpar_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertHardwareLparHistory', $query);
 }
 

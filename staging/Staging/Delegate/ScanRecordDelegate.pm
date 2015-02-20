@@ -69,6 +69,7 @@ sub queryScanRecordMap {
         where
             a.bank_account_id = ?
             and a.action != \'DELETE\'
+        with ur
     ';
 
     return ('scanRecordMap',$query);
@@ -82,6 +83,7 @@ sub queryMaxScanTimeByBankAccount {
             scan_record a
         where
             a.bank_account_id = ?
+        with ur
         ';
 
     return ('maxScanTimeByBankAccount',$query);
@@ -120,6 +122,7 @@ sub queryMapList {
         order by
             a.is_manual ASC
             ,a.scan_time DESC
+        with ur
     ';
     return ('mapList',$query,\@fields);
 }

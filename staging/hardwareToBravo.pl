@@ -258,6 +258,7 @@ sub queryHardwareCustomers {
                 h.id = hl.hardware_id
             left outer join effective_processor ep on
                 ep.hardware_lpar_id = hl.id
+        with ur
     ';
 
     my $clause = 'where';

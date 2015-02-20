@@ -316,7 +316,7 @@ sub queryGetByBizKey {
             system_schedule_status
         where
             name = ?
-    ';
+     with ur';
     return ('getByBizKeySystemScheduleStatus', $query);
 }
 

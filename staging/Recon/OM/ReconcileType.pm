@@ -128,7 +128,7 @@ sub queryGetByBizKey {
             reconcile_type
         where
             name = ?
-    ';
+     with ur';
     return ('getByBizKeyReconcileType', $query);
 }
 
@@ -161,7 +161,7 @@ sub queryGetById {
             reconcile_type
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconcileType', $query);
 }
 

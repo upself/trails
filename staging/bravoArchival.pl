@@ -170,6 +170,7 @@ sub queryCustomerIds {
             a.customer_id
         from
             customer a
+        with ur
     ';
 
     return ( 'customerIds', $query, \@fields );

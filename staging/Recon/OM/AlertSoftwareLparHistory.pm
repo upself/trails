@@ -310,7 +310,7 @@ sub queryGetById {
             alert_sw_lpar_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertSoftwareLparHistory', $query);
 }
 

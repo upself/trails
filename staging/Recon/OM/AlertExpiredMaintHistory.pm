@@ -310,7 +310,7 @@ sub queryGetById {
             alert_exp_maint_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertExpiredMaintHistory', $query);
 }
 

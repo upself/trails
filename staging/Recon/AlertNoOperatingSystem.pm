@@ -92,7 +92,8 @@ sub queryhasOS {
 		        and is.status='ACTIVE' 
 		        and ( ( kb.deleted is null ) or ( kb.deleted <> 1 ) )
 		        and sc.SOFTWARE_CATEGORY_NAME='Operating Systems'
-		        and sc.status='ACTIVE'	         );
+		        and sc.status='ACTIVE'
+		    with ur	         );
 	return ( 'hsOS', $query );
 }
 
@@ -122,6 +123,7 @@ sub queryAlertId {
             and at.code = ?
             and asl.id = a.id
             and a.alert_type_id = at.id
+        with ur
     ';
 	return ( 'alertId', $query );
 }

@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             installed_software_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconInstalledSoftware', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_installed_sw
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconInstalledSoftware', $query);
 }
 

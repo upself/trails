@@ -186,7 +186,7 @@ sub queryGetById {
             software_signature
         where
             software_signature_id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareSignature', $query);
 }
 

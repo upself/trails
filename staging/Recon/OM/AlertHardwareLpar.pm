@@ -306,7 +306,7 @@ sub queryGetByBizKey {
             alert_hw_lpar
         where
             hardware_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertHardwareLpar', $query);
 }
 
@@ -355,7 +355,7 @@ sub queryGetById {
             alert_hw_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertHardwareLpar', $query);
 }
 

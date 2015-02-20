@@ -485,7 +485,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and software_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledSoftware', $query);
 }
 
@@ -558,7 +558,7 @@ sub queryGetById {
             installed_software
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledSoftware', $query);
 }
 

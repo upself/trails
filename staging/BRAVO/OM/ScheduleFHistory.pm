@@ -665,7 +665,7 @@ sub queryGetById {
             schedule_f_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyScheduleFHistory', $query);
 }
 

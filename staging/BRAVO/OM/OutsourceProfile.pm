@@ -468,7 +468,7 @@ sub queryGetByBizKey {
             outsource_profile
         where
             id = ?
-    ';
+     with ur';
     return ('getByBizKeyOutsourceProfile', $query);
 }
 
@@ -537,7 +537,7 @@ sub queryGetById {
             outsource_profile
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyOutsourceProfile', $query);
 }
 

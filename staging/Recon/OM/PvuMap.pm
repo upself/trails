@@ -234,7 +234,7 @@ sub queryGetByBizKey {
             processor_brand = ?
             and processor_model = ?
             and machine_type_id = ?
-    ';
+     with ur';
     return ('getByBizKeyPvuMap', $query);
 }
 
@@ -275,7 +275,7 @@ sub queryGetById {
             pvu_map
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyPvuMap', $query);
 }
 

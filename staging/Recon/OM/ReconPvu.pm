@@ -274,7 +274,7 @@ sub queryGetByBizKey {
         where
             processor_brand = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconPvu', $query);
 }
 
@@ -323,7 +323,7 @@ sub queryGetById {
             recon_pvu
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconPvu', $query);
 }
 

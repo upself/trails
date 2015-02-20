@@ -384,7 +384,7 @@ sub queryGetByBizKey {
         where
             customer_number = ?
             and country_code_id = ?
-    ';
+     with ur';
     return ('getByBizKeyCustomerNumber', $query);
 }
 
@@ -441,7 +441,7 @@ sub queryGetById {
             customer_number
         where
             customer_number_id = ?
-    ';
+     with ur';
     return ('getByIdKeyCustomerNumber', $query);
 }
 

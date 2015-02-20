@@ -1460,7 +1460,7 @@ sub queryGetById {
             scan_record
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyScanRecord', $query);
 }
 

@@ -306,7 +306,7 @@ sub queryGetByBizKey {
             alert_expired_scan
         where
             software_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertExpiredScan', $query);
 }
 
@@ -355,7 +355,7 @@ sub queryGetById {
             alert_expired_scan
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertExpiredScan', $query);
 }
 

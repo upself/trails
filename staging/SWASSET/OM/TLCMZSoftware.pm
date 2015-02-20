@@ -411,7 +411,7 @@ sub queryGetByBizKey {
             tlcmz_sware
         where
             tlcmz_prod_id = ?
-    ';
+     with ur';
     return ('getByBizKeyTLCMZSoftware', $query);
 }
 

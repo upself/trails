@@ -334,7 +334,7 @@ sub queryGetByBizKey {
             alert_unlicensed_sw
         where
             installed_software_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertUnlicensedSoftware', $query);
 }
 
@@ -387,7 +387,7 @@ sub queryGetById {
             alert_unlicensed_sw
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertUnlicensedSoftware', $query);
 }
 

@@ -267,7 +267,7 @@ sub queryGetByBizKey {
             effective_processor
         where
             hardware_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyHardwareLparEff', $query);
 }
 
@@ -308,7 +308,7 @@ sub queryGetById {
             effective_processor
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardwareLparEff', $query);
 }
 

@@ -348,7 +348,7 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and mainframe_Feature_id = ?
             and bank_account_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledTADZ', $query);
 }
 
@@ -393,7 +393,7 @@ sub queryGetById {
             installed_tadz
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledTADZ', $query);
 }
 

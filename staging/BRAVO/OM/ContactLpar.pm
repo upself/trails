@@ -207,7 +207,7 @@ sub queryGetById {
             contact_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyContactLpar', $query);
 }
 

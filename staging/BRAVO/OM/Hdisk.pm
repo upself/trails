@@ -312,7 +312,7 @@ sub queryGetByBizKey {
             and model = ?
             and hdisk_size_mb = ?
             and serial_number = ?
-    ';
+     with ur';
     return ('getByBizKeyHdisk', $query);
 }
 
@@ -361,7 +361,7 @@ sub queryGetById {
             software_lpar_hdisk
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHdisk', $query);
 }
 

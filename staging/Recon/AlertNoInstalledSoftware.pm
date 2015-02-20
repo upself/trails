@@ -88,6 +88,7 @@ sub queryhasSW {
             where 
                 is.SOFTWARE_LPAR_ID=?
                 and is.status='ACTIVE' 
+            with ur
              );
 	return ( 'hsSW', $query );
 }
@@ -118,6 +119,7 @@ sub queryAlertId {
             and at.code = ?
             and asl.id = a.id
             and a.alert_type_id = at.id
+        with ur
     ';
 	return ( 'alertId', $query );
 }

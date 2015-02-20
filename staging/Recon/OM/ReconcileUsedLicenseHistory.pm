@@ -162,7 +162,7 @@ sub queryGetByBizKey {
         where
             h_reconcile_id = ?
             and h_used_license_id = ?
-    ';
+     with ur';
     return ('getByBizKeyReconcileUsedLicenseHistory', $query);
 }
 
@@ -191,7 +191,7 @@ sub queryGetById {
             h_reconcile_used_license
         where
             h_reconcile_id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconcileUsedLicenseHistory', $query);
 }
 

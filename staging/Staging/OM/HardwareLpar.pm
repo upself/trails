@@ -765,7 +765,7 @@ sub queryGetById {
             hardware_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardwareLpar', $query);
 }
 

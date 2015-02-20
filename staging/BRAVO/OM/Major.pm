@@ -216,7 +216,7 @@ sub queryGetByBizKey {
         where
             major_id = ?
             and major_name = ?
-    ';
+     with ur';
     return ('getByBizKeyMajor', $query);
 }
 
@@ -249,7 +249,7 @@ sub queryGetById {
             major
         where
             major_id = ?
-    ';
+     with ur';
     return ('getByIdKeyMajor', $query);
 }
 

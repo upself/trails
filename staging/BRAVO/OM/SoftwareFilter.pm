@@ -186,7 +186,7 @@ sub queryGetById {
             software_filter
         where
             software_filter_id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareFilter', $query);
 }
 

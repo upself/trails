@@ -291,7 +291,7 @@ sub queryGetByBizKey {
         where
             bank_account_id = ?
             and name = ?
-    ';
+     with ur';
     return ('getByBizKeyBankAccountJob', $query);
 }
 

@@ -330,7 +330,7 @@ sub queryGetByBizKey {
             country_code
         where
             id = ?
-    ';
+     with ur';
     return ('getByBizKeyCountryCode', $query);
 }
 
@@ -379,7 +379,7 @@ sub queryGetById {
             country_code
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyCountryCode', $query);
 }
 

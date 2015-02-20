@@ -257,7 +257,7 @@ sub queryGetByBizKey {
         where
             scan_record_id = ?
             and guid = ?
-    ';
+     with ur';
     return ('getByBizKeyScanSoftwareItem', $query);
 }
 
@@ -302,7 +302,7 @@ sub queryGetById {
             scan_software_item
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyScanSoftwareItem', $query);
 }
 

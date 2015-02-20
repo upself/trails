@@ -143,7 +143,7 @@ sub getInsSwList {
  
  my $conn = $self->connection;
  $conn->prepareSqlQuery( 'getMinValue',
-  'select min(value_units_per_core) from pvu_info' );
+  'select min(value_units_per_core) from pvu_info with ur' );
  my $sth = $conn->sql->{getMinValue};
  $sth->execute;
  my ($result) = $sth->fetchrow_array;
@@ -208,7 +208,7 @@ $query.='      ( aus.open = 1 )
 $query.='					( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id = 17 ) )
 					or
 							( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id = 6 ) )
-			)';
+			) with ur';
 			
  dlog($query);
 

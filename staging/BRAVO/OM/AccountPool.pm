@@ -267,7 +267,7 @@ sub queryGetByBizKey {
             account_pool
         where
             account_pool_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAccountPool', $query);
 }
 
@@ -308,7 +308,7 @@ sub queryGetById {
             account_pool
         where
             account_pool_id = ?
-    ';
+     with ur';
     return ('getByIdKeyAccountPool', $query);
 }
 

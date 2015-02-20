@@ -174,7 +174,7 @@ sub queryGetByBizKey {
             discrepancy_type
         where
             name = ?
-    ';
+     with ur';
     return ('getByBizKeyDiscrepancyType', $query);
 }
 
@@ -215,7 +215,7 @@ sub queryGetById {
             discrepancy_type
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyDiscrepancyType', $query);
 }
 

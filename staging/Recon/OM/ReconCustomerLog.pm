@@ -483,7 +483,7 @@ sub queryGetById {
             recon_customer_log
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconCustomerLog', $query);
 }
 

@@ -105,7 +105,7 @@ sub queryGetByBizKey {
             allocation_Methodology
         where
             name = ?
-    ';
+     with ur';
     return ('getByBizKeyallocationMethodology', $query);
 }
 
@@ -134,7 +134,7 @@ sub queryGetById {
             allocation_Methodology
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyallocationMethodology', $query);
 }
 

@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             hw_sw_composite_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconHwSwComposite', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_hs_composite
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconHwSwComposite', $query);
 }
 

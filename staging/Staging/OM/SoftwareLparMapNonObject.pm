@@ -228,7 +228,7 @@ sub queryGetById {
             software_lpar_map
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareLparMapNonObject', $query);
 }
 

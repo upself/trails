@@ -637,7 +637,7 @@ sub queryGetById {
             schedule_f
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyScheduleF', $query);
 }
 

@@ -330,7 +330,7 @@ sub queryGetByBizKey {
             tlcmz_computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByBizKeyTLCMZComputer', $query);
 }
 
@@ -375,7 +375,7 @@ sub queryGetById {
             tlcmz_computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByIdKeyTLCMZComputer', $query);
 }
 

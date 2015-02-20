@@ -813,7 +813,7 @@ sub queryGetByBizKey {
             bank_account
         where
             name = ?
-    ';
+     with ur';
     return ('getByBizKeyBankAccount', $query);
 }
 

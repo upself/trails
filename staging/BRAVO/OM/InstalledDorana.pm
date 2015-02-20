@@ -292,7 +292,7 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and dorana_product_id = ?
             and bank_account_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledDorana', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             installed_dorana_product
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledDorana', $query);
 }
 

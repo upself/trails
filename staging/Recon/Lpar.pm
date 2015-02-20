@@ -849,6 +849,7 @@ sub querySoftwareLparByTechImgId {
             sl.customer_id = ?
             and sl.tech_img_id = ?
             and sl.status = 'ACTIVE'
+        with ur
     };
 
     return ( 'softwareLparByTechImgId', $query, \@fields );
@@ -906,6 +907,7 @@ sub queryHardwareLparByTechImgId {
             hl.customer_id = ?
             and hl.tech_image_id = ?
             and hl.status = 'ACTIVE'
+        with ur
     };
 
     return ( 'hardwareLparByTechImgId', $query, \@fields );
@@ -966,6 +968,7 @@ sub querySoftwareLparByExtId {
             sl.customer_id = ?
             and sl.ext_id = ?
             and sl.status = 'ACTIVE'
+        with ur
     };
 
     return ( 'softwareLparByExtId', $query, \@fields );
@@ -1023,6 +1026,7 @@ sub queryHardwareLparByExtId {
             hl.customer_id = ?
             and hl.ext_id = ?
             and hl.status = 'ACTIVE'
+        with ur
     };
 
     return ( 'hardwareLparByExtId', $query, \@fields );
@@ -1071,6 +1075,7 @@ sub querySwLparByCustomerIdAndShortName {
             a.customer_id = ?
             and (a.name = ? or a.name like ? escape \'\\\')
             and a.status = \'ACTIVE\'
+        with ur
     ';
 
     return ( 'swLparsByCustomerIdAndShortName', $query, \@fields );
@@ -1122,6 +1127,7 @@ sub queryHwLparByCustomerIdAndShortName {
             a.customer_id = ?
             and (a.name = ? or a.name like ? escape \'\\\')
             and a.status = \'ACTIVE\'
+        with ur
     ';
     return ( 'hwLparsByCustomerIdAndShortName', $query, \@fields );
 }
@@ -1310,6 +1316,7 @@ sub queryGetBySoftwareLpar {
           hw_sw_composite a
       where
           a.software_lpar_id = ?
+      with ur
     };
 
     return ( 'getBySoftwareLpar', $query, \@fields );
@@ -1369,6 +1376,7 @@ sub queryGetByHardwareLpar {
           hw_sw_composite a
       where
           a.hardware_lpar_id = ?
+      with ur
     };
 
     return ( 'getByHardwareLpar', $query, \@fields );

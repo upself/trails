@@ -949,7 +949,7 @@ sub queryGetById {
             hardware
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardware', $query);
 }
 

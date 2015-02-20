@@ -56,6 +56,7 @@ sub queryGetByAlert {
 			alert_type_id = ?
 			and
 			alert_id = ?
+		with ur
 		';
 	return ( 'GetCCbyAlert', $query );
 }

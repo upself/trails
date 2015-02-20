@@ -404,7 +404,7 @@ sub queryGetByBizKey {
         where
             pvu_id = ?
             and processor_type = ?
-    ';
+     with ur';
     return ('getByBizKeyPvuInfo', $query);
 }
 
@@ -469,7 +469,7 @@ sub queryGetById {
             pvu_info
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyPvuInfo', $query);
 }
 

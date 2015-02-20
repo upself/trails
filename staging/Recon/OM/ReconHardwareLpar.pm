@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             hardware_lpar_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconHardwareLpar', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_hw_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconHardwareLpar', $query);
 }
 

@@ -274,7 +274,7 @@ sub queryGetByBizKey {
             pod
         where
             pod_id = ?
-    ';
+     with ur';
     return ('getByBizKeyPod', $query);
 }
 
@@ -315,7 +315,7 @@ sub queryGetById {
             pod
         where
             pod_id = ?
-    ';
+     with ur';
     return ('getByIdKeyPod', $query);
 }
 

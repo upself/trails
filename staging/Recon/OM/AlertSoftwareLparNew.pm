@@ -193,7 +193,7 @@ sub queryGetById {
             alert_software_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertSoftwareLparNew', $query);
 }
 

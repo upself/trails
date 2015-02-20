@@ -18,6 +18,7 @@ hardware h, hardware_lpar hl
 where 
 h.id  = hl.hardware_id 
 and hl.id  = ?
+with ur
    ";
    
     my $procCount=undef;

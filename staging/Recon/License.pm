@@ -212,6 +212,7 @@ sub queryPotentialInstalledSoftwaresHwSpecific {
             and not exists (select 1 from reconcile r where r.installed_software_id = is.id)
         order by
             aus.creation_time
+        with ur
     ';
     return ( 'potentialInstalledSoftwaresHwSpecific', $query, \@fields );
 }
@@ -265,6 +266,7 @@ sub queryPotentialInstalledSoftwares {
             and not exists (select 1 from reconcile r where r.installed_software_id = is.id)
         order by
             aus.creation_time
+        with ur
     ';
     return ( 'potentialInstalledSoftwares', $query, \@fields );
 }
@@ -411,6 +413,7 @@ sub queryScheduleFScope {
 	    sf.software_name = ?
 	  and
 	    sf.status_id = 2
+	  with ur
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
@@ -491,6 +494,7 @@ sub queryLicenseAllocationsData {
             join machine_type mt on mt.id = h.machine_type_id
         where
             ul.license_id = ?
+        with ur
     ';
     return ( 'licenseAllocationsData', $query, \@fields );
 }
@@ -624,6 +628,7 @@ sub queryIsMaintExpired {
             license l
         where
             l.id = ?
+        with ur
     ';
     return ( 'isMaintExpired', $query );
 }

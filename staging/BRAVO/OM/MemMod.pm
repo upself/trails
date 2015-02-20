@@ -337,7 +337,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and inst_mem_id = ?
-    ';
+     with ur';
     return ('getByBizKeyMemMod', $query);
 }
 
@@ -390,7 +390,7 @@ sub queryGetById {
             software_lpar_mem_mod
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyMemMod', $query);
 }
 

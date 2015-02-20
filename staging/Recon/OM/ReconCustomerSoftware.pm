@@ -282,7 +282,7 @@ sub queryGetByBizKey {
             software_id = ?
             and customer_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconCustomerSoftware', $query);
 }
 
@@ -327,7 +327,7 @@ sub queryGetById {
             recon_customer_sw
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconCustomerSoftware', $query);
 }
 

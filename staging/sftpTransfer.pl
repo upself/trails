@@ -19,7 +19,7 @@ our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? "0" : "1"; # whether we ca
 our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
 our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
 
-logging_level( "info" ); # detailed level of the logfile
+logging_level( "error" ); # detailed level of the logfile
 ###################################################
 
 if ($useftp eq "1") { # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them

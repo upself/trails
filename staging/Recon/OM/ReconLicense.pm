@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             license_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconLicense', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_license
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconLicense', $query);
 }
 
