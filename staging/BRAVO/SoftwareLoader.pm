@@ -492,7 +492,7 @@ sub load {
                             $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'UPDATE'}++;
                             dlog("saved bravo software lpar object");
                            
-                           if ( $addToRecon == 1 ) && ( $bravoSoftwareLpar->customerId ne '999999')){
+                           if ( ( $addToRecon == 1 ) && ( $bravoSoftwareLpar->customerId ne '999999') ){
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo software lpar object");
                             my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
