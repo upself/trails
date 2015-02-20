@@ -216,7 +216,7 @@ sub load {
             my $stagingSoftwareLpar;
             my $bravoSoftwareLpar;
             my $deleteInstalledType;
-            my $addToRecon;
+            my $addToRecon = 0;
             if ( $prevMapKey ne $mapKey ) {
 
                 ###This is the first row of data for this software lpar key.
