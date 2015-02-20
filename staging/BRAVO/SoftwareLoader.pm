@@ -216,6 +216,7 @@ sub load {
             my $stagingSoftwareLpar;
             my $bravoSoftwareLpar;
             my $deleteInstalledType;
+            my $addToRecon;
             if ( $prevMapKey ne $mapKey ) {
 
                 ###This is the first row of data for this software lpar key.
@@ -414,7 +415,7 @@ sub load {
                 dlog( "save software lpar flag=" . $saveSoftwareLpar );
                 if ( $saveSoftwareLpar == 1 ) {
 
-                    ###Check if bravo software lpar is already identical.
+                    ###Check if software_lpar should be added to recon
                     if (
                             stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model )
                          && stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial )
@@ -422,21 +423,8 @@ sub load {
                          && $bravoSoftwareLpar->status eq $stagingSoftwareLpar->status
                         )
                     {
-
-                        dlog("bravo software lpar identical to staging software lpar, not saving");
-
-                        if ( $self->loadDeltaOnly == 0 && $bravoSoftwareLpar->customerId ne '999999' ) {
-
-                            ###Call the recon engine if this is a full load even if
-                            ###there were no changes to save.
-                            dlog("calling recon engine for bravo software lpar object");
-                            my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
-                            $queue->add;
-                            $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
-                            dlog("called recon engine for bravo software lpar object");
-                        }
+						$addToRecon = 1;
                     }
-                    else {
                         ###Set acquisition time if insert.
                         if ( !defined $bravoSoftwareLpar->id ) {
 
@@ -504,7 +492,7 @@ sub load {
                             $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'UPDATE'}++;
                             dlog("saved bravo software lpar object");
                            
-                           if ( $bravoSoftwareLpar->customerId ne '999999'){
+                           if ( $addToRecon == 1 ) && ( $bravoSoftwareLpar->customerId ne '999999')){
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo software lpar object");
                             my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
@@ -522,7 +510,7 @@ sub load {
                                                                             $bravoSoftwareLpar->id, \%statistics );
                             }
                         }
-                    }
+                    
                 }
                 else {
                     dlog("not saving bravo software lpar object per flag");
