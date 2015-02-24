@@ -42,7 +42,7 @@ import com.ibm.asset.trails.service.ReconWorkspaceService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-public class ReconWorkspaceServiceImplTest {
+public class ReconWorkspaceServiceImplTests {
 
 	@Autowired
 	private ReconWorkspaceService reconWorkspaceService;

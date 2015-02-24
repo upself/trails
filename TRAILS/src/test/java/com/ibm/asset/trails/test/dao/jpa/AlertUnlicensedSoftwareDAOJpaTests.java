@@ -19,15 +19,15 @@ import com.ibm.asset.trails.dao.AlertUnlicensedSoftwareDAO;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class AlertUnlicensedSoftwareDAOJpaTest {
+public class AlertUnlicensedSoftwareDAOJpaTests {
 
     @Autowired
     private AlertUnlicensedSoftwareDAO alertUnlicensedSoftwareDAO;
 
     @Test
     public void testFindAffectedAlertList() {
-        Long alertId = 29862846L;
-        Long accountId = 5163L;
+        Long alertId = 4416L;
+        Long accountId = 2541L;
         List<Long> alertIds = alertUnlicensedSoftwareDAO.findAffectedLicenseAlertList(accountId,
                 alertId);
         for (Long alert : alertIds) {
