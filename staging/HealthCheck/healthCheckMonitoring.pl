@@ -87,6 +87,7 @@ else{
 }
 
 #Load required modules
+require "/opt/staging/v2/Database/Connection.pm";
 use strict;
 use POSIX;
 use DBI;
@@ -94,7 +95,7 @@ use DBD::DB2;
 use DBD::DB2::Constants;
 use File::Basename;
 use Base::ConfigManager;#Require the Staging Project Package
-use Database::Connection;
+#use Database::Connection;
 use HealthCheck::OM::Event;
 use HealthCheck::Delegate::EventLoaderDelegate;
 use Config::Properties::Simple;

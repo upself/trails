@@ -5,10 +5,10 @@
 # 2013-05-08  Liu Hai(Larry) 1.0.0           This is the initial version for EventLoaderDelegate object script
 
 package EventLoaderDelegate;
-
+require "/opt/staging/v2/Database/Connection.pm";
 use strict;
 use Base::Utils;
-use Database::Connection;
+#use Database::Connection;
 use HealthCheck::OM::Event;
 
 #TIMESTAMP STYLE

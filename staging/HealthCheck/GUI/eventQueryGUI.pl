@@ -12,6 +12,7 @@
 use strict;
 use DBI;
 use CGI;
+use Config::Properties::Simple;
 
 BEGIN{
         #fatal handler setting.
@@ -28,16 +29,13 @@ sub handler_fatal {
 #
 my $DB_SCHEMA = "eaadmin";
 #For Tap DB_ENV
+my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt'); 
 my $DB_ENV = '/db2/tap/sqllib/db2profile';
 my $DB_STAGING_URL = "dbi:DB2:DATABASE=staging;HOSTNAME=tap.raleigh.ibm.com;PORT=5104;PROTOCOL=TCPIP;";
-my $DB_STAGING_USERID = "eaadmin";
-my $DB_STAGING_PASSWORD = "apr03db2";
+my $DB_STAGING_USERID = $cfg->getProperty('staging.user');
+my $DB_STAGING_PASSWORD = $cfg->getProperty('staging.password');
 #For Tap2 DB_ENV
 #my $DB_ENV = '/home/tap/sqllib/db2profile';
-#Staging Testing DB
-#my $DB_STAGING_URL = "dbi:DB2:DATABASE=STAGING;HOSTNAME=tap2.raleigh.ibm.com;PORT=50000;PROTOCOL=TCPIP;";
-#my $DB_STAGING_USERID = "eaadmin";
-#my $DB_STAGING_PASSWORD = "apr03db2";
 
 #Vars Definition
 my $cgi;

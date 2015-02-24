@@ -78,6 +78,7 @@ use Database::Connection;
 use Base::ConfigManager;
 use Net::Telnet;#Added by Larry for System Support And Self Healing Service Components - Phase 5
 use Net::SCP::Expect;#Added by Larry for System Support And Self Healing Service Components - Phase 6A
+use Config::Properties::Simple;
 
 #Globals
 my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEngine.log";
@@ -256,9 +257,6 @@ my $TRAILS_HOST_SERVER = "trails.boulder.ibm.com";
 my $PORT = 23;
 
 #Target Web Application Dump File Folder
-my $TAPMF_DUMP_FILE_FOLDER = "/tmp";
-my $BRAVO_DUMP_FILE_FOLDER = "/var/bravo/tmp";
-my $TRAILS_DUMP_FILE_FOLDER = "/var/trails/tmp";
 
 #Return Error Mode
 my $RETURN_ERROR_MODE = "return";
@@ -284,15 +282,20 @@ my $TELNET_INPUT_FILE  = "/var/staging/logs/systemSupport/telnetRemoteBravoTrail
 my $TELNET_OPTION_FILE = "/var/staging/logs/systemSupport/telnetRemoteBravoTrailsWebServerOption.log";
 
 #Userids and Passwords used to logon the remote server using Telnet Mode
-#TAPMF Web Application Testing Server
-my $TAPMF_SERVER_USERID   = 'asket';
-my $TAPMF_SERVRE_PASSWORD = 'Tomzliv6';
-#Bravo Web Application PROD Server
-my $BRAVO_SERVER_USERID   = 'asket';
-my $BRAVO_SERVRE_PASSWORD = 'Tomzliv6';
-#Trails Web Application PROD Server
-my $TRAILS_SERVER_USERID   = 'asket';
-my $TRAILS_SERVRE_PASSWORD = 'Tomzliv6';
+my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
+my $TAPMF_DUMP_FILE_FOLDER = "/tmp";
+
+#Bravo Web Application Server
+my $BRAVO_SERVER_HOSTNAME = $cfg->getProperty('gui.bravo.server.hostname');
+my $BRAVO_SERVER_USERID   = $cfg->getProperty('gui.bravo.server.user');
+my $BRAVO_SERVER_PASSWORD = $cfg->getProperty('gui.bravo.server.password');
+my $BRAVO_DUMP_FILE_FOLDER = "/var/bravo/tmp";
+
+#Trails Web Application Server
+my $TRAILS_SERVER_HOSTNAME = $cfg->getProperty('gui.trails.server.hostname');
+my $TRAILS_SERVER_USERID   = $cfg->getProperty('gui.trails.server.user');
+my $TRAILS_SERVER_PASSWORD = $cfg->getProperty('gui.trails.server.password');
+my $TRAILS_DUMP_FILE_FOLDER = "/var/trails/tmp";
 
 #Vars
 my $operationErrorFlag = $FALSE;#var used to store operation error flag(TRUE or FALSE)
@@ -328,11 +331,11 @@ my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT
 #Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 
 #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
-my $GSA_SERVER                           = "jpngsa.ibm.com";
-my $GSA_LOG_SHARED_FOLDER_PATH           = "/gsa/jpngsa/projects/a/amsw/sse/logs";
-my $GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH = "https://jpngsa.ibm.com/projects/a/amsw/sse/logs";
-my $GSA_USERID                           = "liuhaidl";
-my $GSA_PASSWORD                         = "abcd1234";
+my $GSA_SERVER                           = $cfg->getProperty('SHE.log.gsa.server');
+my $GSA_LOG_SHARED_FOLDER_PATH           = $cfg->getProperty('SHE.log.gsa.folder');
+my $GSA_WEB_HTTPS_LOG_SHARED_FOLDER_PATH = $cfg->getProperty('SHE.log.GSA.folderpath');
+my $GSA_USERID                           = $cfg->getProperty('SHE.log.GSA.userid');
+my $GSA_PASSWORD                         = $cfg->getProperty('SHE.log.GSA.password');
 #Added by Larry for System Support And Self Healing Service Components - Phase 6A End
 
 #Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
@@ -1654,26 +1657,18 @@ sub coreOperationProcess{
 	   my $dumpFileFolder;#var used to store dump file folder
 
        #Business Logic Code started from here
-	   if($SERVER_MODE eq $TAP2){#TAP2 Testing Server
-		  $targetHostServer = $TAPMF_HOST_SERVER;
-          $telnetUserId = $TAPMF_SERVER_USERID;
-          $telnetPassword = $TAPMF_SERVRE_PASSWORD;
-          $dumpFileFolder = $TAPMF_DUMP_FILE_FOLDER;
-		}#end if($SERVER_MODE eq $TAP2)
-		elsif($SERVER_MODE eq $TAP){#TAP PROD Server
-		  if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
-			$targetHostServer = $BRAVO_HOST_SERVER;
+		if($operationNameCode eq $RESTART_BRAVO_WEB_APPLICATION){#Restart Bravo Web Application Operation
+			$targetHostServer = $BRAVO_SERVER_HOSTNAME;
 			$telnetUserId = $BRAVO_SERVER_USERID;
-            $telnetPassword = $BRAVO_SERVRE_PASSWORD;
+            $telnetPassword = $BRAVO_SERVER_PASSWORD;
             $dumpFileFolder = $BRAVO_DUMP_FILE_FOLDER;
-		  }
-		  elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
-			$targetHostServer = $TRAILS_HOST_SERVER;
+		}
+		elsif($operationNameCode eq $RESTART_TRAILS_WEB_APPLICATION){#Restart Trails Web Application Operation
+			$targetHostServer = $TRAILS_SERVER_HOSTNAME;
 			$telnetUserId = $TRAILS_SERVER_USERID;
-            $telnetPassword = $TRAILS_SERVRE_PASSWORD;
+            $telnetPassword = $TRAILS_SERVER_PASSWORD;
             $dumpFileFolder = $TRAILS_DUMP_FILE_FOLDER;
-		  }
-		}#end elsif($SERVER_MODE eq $TAP)
+		}
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - The Target Host Server: {$targetHostServer}.");
 		printMessageWithTimeStamp("The Restart Remote Bravo/Tails Web Application - Telnet the Remote {$targetHostServer} Server started.");
 		my $executeClearLoggingSpace = ""; 

@@ -44,6 +44,7 @@
 use strict;
 use DBI;
 use CGI;
+use Config::Properties::Simple;
 
 BEGIN{
         #fatal handler setting.
@@ -58,6 +59,7 @@ sub handler_fatal {
 #Globals
 my $OPERATION_DEFINITION_FILE = "./operationDefinition.properties";#File 'operationDefinition.properties' Related Path './'
 my $OPERATION_GUI_CONFIG_FILE = "./operationGUI.properties";
+my $DATABASE_CONFIG_FILE = "/opt/staging/v2/config/connectionConfig.txt";
 
 #SERVER MODE
 my $TAP  = "TAP";#TAP Server
@@ -1352,14 +1354,9 @@ sub setDB2ENVPath{
 
 #This method is used to set DB Connection Information
 sub setDBConnInfo{
-    if($SERVER_MODE eq $TAP){#TAP Server
-      $db_url = "dbi:DB2:STAGING";
-      $db_userid = "eaadmin";
-      $db_password = "apr03db2";
-    }
-	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $db_url = "dbi:DB2:STAGING";
-      $db_userid = "eaadmin";
-      $db_password = "apr03db2";
-	}
+	my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
+      $db_url = "dbi:DB2:";
+      $db_url .= $cfg->getProperty('staging.name');
+      $db_userid = $cfg->getProperty('staging.user');;
+      $db_password = $cfg->getProperty('staging.password');
 }
