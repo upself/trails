@@ -135,6 +135,11 @@ ELSE 'Green' END as Alert_status
 ,aus.creation_time
 , case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) else days(aus.record_time) - days(aus.creation_time) end as Alert_duration
 ,sl.name as swLparName
+,hl.name as hwLparName
+,sl.ext_id as SW_EXT_ID
+,hl.ext_id as HW_EXT_ID
+,sl.tech_img_id as SW_TI_ID
+,hl.tech_image_id as HW_TI_ID
 ,h.serial as hwSerial
 ,mt.name as hwMachType
 ,h.MODEL
