@@ -29,6 +29,9 @@ public class HardwareLpar {
 
 	@Column(name = "EXT_ID")
 	private String extId;
+	
+	@Column(name = "TECH_IMAGE_ID")
+	private String techImgId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "HARDWARE_ID")
@@ -161,6 +164,14 @@ public class HardwareLpar {
 
 	public void setExtId(String extId) {
 		this.extId = extId;
+	}
+
+	public String getTechImgId() {
+		return techImgId;
+	}
+
+	public void setTechImgId(String techImgId) {
+		this.techImgId = techImgId;
 	}
 
 	public Date getRecordTime() {

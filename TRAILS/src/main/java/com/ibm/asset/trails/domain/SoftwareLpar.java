@@ -52,13 +52,11 @@ public class SoftwareLpar {
     @Column(name = "OS_NAME")
     private String osName;
 
-    public String getOsName() {
-        return osName;
-    }
-
-    public void setOsName(String osName) {
-        this.osName = osName;
-    }
+    @Column(name = "EXT_ID")
+    private String extId;
+    
+    @Column(name = "TECH_IMG_ID")
+    private String techImgId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     @JoinTable(name = "HW_SW_COMPOSITE", joinColumns = @JoinColumn(name = "SOFTWARE_LPAR_ID"), inverseJoinColumns = @JoinColumn(name = "HARDWARE_LPAR_ID"))
@@ -173,4 +171,27 @@ public class SoftwareLpar {
         this.softwareLparEff = softwareLparEff;
     }
 
+    public String getOsName() {
+        return osName;
+    }
+
+    public void setOsName(String osName) {
+        this.osName = osName;
+    }
+
+	public String getExtId() {
+		return extId;
+	}
+
+	public void setExtId(String extId) {
+		this.extId = extId;
+	}
+
+	public String getTechImgId() {
+		return techImgId;
+	}
+
+	public void setTechImgId(String techImgId) {
+		this.techImgId = techImgId;
+	}
 }
