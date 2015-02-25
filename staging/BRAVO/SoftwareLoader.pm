@@ -417,10 +417,10 @@ sub load {
 
                     ###Check if software_lpar should be added to recon
                     if (
-                            stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model )
-                         && stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial )
-                         && stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime )
-                         && $bravoSoftwareLpar->status eq $stagingSoftwareLpar->status
+                            !(stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model ))
+                         || !(stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial ))
+                         || !(stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime ))
+                         || !($bravoSoftwareLpar->status eq $stagingSoftwareLpar->status)
                         )
                     {
 						$addToRecon = 1;
