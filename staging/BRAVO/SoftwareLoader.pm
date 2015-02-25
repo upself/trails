@@ -835,7 +835,7 @@ sub load {
             ###and swasset databases.
             my $deleteManual = 0;
 
-			my $$addIswToRecon = 0;
+			my $addIswToRecon = 0;
 
             ###Bravo installed software object logic.
 
