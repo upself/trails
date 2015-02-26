@@ -895,12 +895,12 @@ sub load {
                                         ###BIT
                                         if ( defined $bravoInstalledType->id ) {
                                             ###BIS=SIT
-                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual(%rec,$bravoInstalledSoftware);
+                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
                                         }
                                         ###!BIT
                                         else {
                                             ###BIS=SIT
-                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual(%rec,$bravoInstalledSoftware);
+                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
                                             $saveInstalledType = 1;
                                         }
                                     }
@@ -910,7 +910,7 @@ sub load {
                                     ###SIT=M
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
                                         ###BIS=SIT
-                                        ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual(%rec,$bravoInstalledSoftware);
+                                        ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
                                         if( $saveInstalledType == 1) {
                                         	$saveInstalledSoftware = 1;
                                         }
@@ -2128,7 +2128,7 @@ sub updateStagingInstalledType{
 
 
 sub installSoftwareEqual {
-	my($self,%rec ,$bravoInstalledSoftware) = @_;
+	my($self,$bravoInstalledSoftware, %rec) = @_;
 	my $saveISW = 0;
 	my $addToRecon = 0;
 	my $auth = 0;
