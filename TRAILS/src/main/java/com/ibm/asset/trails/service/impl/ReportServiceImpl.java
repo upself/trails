@@ -1141,14 +1141,12 @@ public class ReportServiceImpl implements ReportService {
 						+"with ur ")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
-		Object[] loaData = null;
 
 		printHeader(RECONCILIATION_SUMMARY_REPORT_NAME, pAccount.getAccount(),
 				RECONCILIATION_SUMMARY_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputReconciliationSummaryData(
-					lsrReport.get(), loaData));
-			loaData = lsrReport.get();
+					lsrReport.get()));
 		}
 		lsrReport.close();
 	}
@@ -1306,21 +1304,12 @@ public class ReportServiceImpl implements ReportService {
 		return lsbData.toString();
 	}
 
-	private String outputReconciliationSummaryData(Object[] poaData,
-			Object[] poaPreviousData) {
+	private String outputReconciliationSummaryData(Object[] poaData) {
 		StringBuffer lsbData = new StringBuffer();
 		String lsData = null;
 
 		for (int i = 0; poaData != null && i < poaData.length; i++) {
-			if (poaPreviousData != null
-					&& (i == 1 || i == 2 || i == 3)
-					&& poaData[0].toString().equalsIgnoreCase(
-							poaPreviousData[0].toString())) {
-				lsData = "-";
-			} else {
-				lsData = poaData[i] == null ? "" : poaData[i].toString();
-			}
-
+			lsData = poaData[i] == null ? "" : poaData[i].toString();
 			lsbData.append(i == 0 ? "" : "\t").append(lsData);
 		}
 
