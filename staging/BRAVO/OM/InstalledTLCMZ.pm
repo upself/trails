@@ -292,7 +292,7 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and sa_product_id = ?
             and bank_account_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledTLCMZ', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             installed_sa_product
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledTLCMZ', $query);
 }
 

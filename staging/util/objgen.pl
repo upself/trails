@@ -681,7 +681,7 @@ EOL
 EOL
     }
     print <<EOL;
-    ';
+     with ur';
     return ('$getByBizKeyString', \$query);
 }
 EOL
@@ -811,7 +811,7 @@ EOL
 EOL
     }
     print <<EOL;
-    ';
+     with ur';
     return ('$getByIdString', \$query);
 }
 EOL

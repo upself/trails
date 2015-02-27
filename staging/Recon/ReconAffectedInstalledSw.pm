@@ -103,6 +103,7 @@ sub getMappedInstalledSwQuery {
    and pvuMap.processor_brand = hw.mast_processor_type
    and pvuMap.processor_model = hw.model
    and hsc.software_lpar_id =  is.software_lpar_id
+  with ur
    ';
 
  return ( 'pvuMappedInstalledSw', $query, \@fileds );
@@ -133,6 +134,7 @@ sub getMappedInstalledSwlpar {
    and pvuMap.processor_brand = hw.mast_processor_type
    and pvuMap.processor_model = hw.model
    and hsc.software_lpar_id =  is.software_lpar_id
+  with ur
    ';
 
  return ( 'pvuMappedInstalledSwlpar', $query, \@fileds );

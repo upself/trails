@@ -310,7 +310,7 @@ sub queryGetById {
             alert_hardware_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertHardwareHistory', $query);
 }
 

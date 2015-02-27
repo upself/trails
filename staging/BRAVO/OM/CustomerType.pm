@@ -274,7 +274,7 @@ sub queryGetByBizKey {
             customer_type
         where
             customer_type_id = ?
-    ';
+     with ur';
     return ('getByBizKeyCustomerType', $query);
 }
 
@@ -315,7 +315,7 @@ sub queryGetById {
             customer_type
         where
             customer_type_id = ?
-    ';
+     with ur';
     return ('getByIdKeyCustomerType', $query);
 }
 

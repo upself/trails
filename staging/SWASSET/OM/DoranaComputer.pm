@@ -330,7 +330,7 @@ sub queryGetByBizKey {
             dorana_computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByBizKeyDoranaComputer', $query);
 }
 
@@ -375,7 +375,7 @@ sub queryGetById {
             dorana_computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByIdKeyDoranaComputer', $query);
 }
 

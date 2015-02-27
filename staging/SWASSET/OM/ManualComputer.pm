@@ -321,7 +321,7 @@ sub queryGetByBizKey {
             manual_computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByBizKeyManualComputer', $query);
 }
 

@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconSoftwareLpar', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_sw_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconSoftwareLpar', $query);
 }
 

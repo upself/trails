@@ -859,6 +859,7 @@ sub queryValidateLicenseAllocation {
                 lsm.license_id = l.id
         where
             r.installed_software_id = ?
+        with ur
     ';
  return ( 'validateLicenseAllocation', $query, \@fields );
 }

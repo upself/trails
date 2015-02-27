@@ -284,7 +284,7 @@ sub queryGetByBizKey {
         where
             hardware_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconHardware', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             recon_hardware
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconHardware', $query);
 }
 

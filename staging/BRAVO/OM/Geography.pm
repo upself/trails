@@ -274,7 +274,7 @@ sub queryGetByBizKey {
             geography
         where
             id = ?
-    ';
+     with ur';
     return ('getByBizKeyGeography', $query);
 }
 
@@ -315,7 +315,7 @@ sub queryGetById {
             geography
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyGeography', $query);
 }
 

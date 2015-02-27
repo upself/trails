@@ -253,7 +253,7 @@ sub queryGetByBizKey {
             hardware_lpar_eff
         where
             hardware_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyHardwareLparEff', $query);
 }
 
@@ -290,7 +290,7 @@ sub queryGetById {
             hardware_lpar_eff
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardwareLparEff', $query);
 }
 

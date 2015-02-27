@@ -198,6 +198,7 @@ sub queryUsedLicenseIdByReconcileId {
             reconcile_used_license rul
         where
             rul.reconcile_id = ?
+        with ur
     ';
 	return ( 'usedLicenseByReconcileId', $query, \@fields );
 }
@@ -210,6 +211,7 @@ sub queryCountReconcileUsedLicense {
             reconcile_used_license
         where
             used_license_id = ?
+        with ur
     ';
 	return ( 'countReconcileUsedLicense', $query );
 }

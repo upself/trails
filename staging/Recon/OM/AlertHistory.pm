@@ -416,7 +416,7 @@ sub queryGetByBizKey {
         from
             h_alert
         where
-    ';
+     with ur';
     return ('getByBizKeyAlertHistory', $query);
 }
 
@@ -481,7 +481,7 @@ sub queryGetById {
             h_alert
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertHistory', $query);
 }
 

@@ -197,6 +197,7 @@ sub queryGetReconcilesByMethodology {
 			 or
 				( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id in ( $captypes ) ) )
 			)
+	  with ur
     };
 
     return ( 'getReconcilesByMethodology', $query, \@fields );

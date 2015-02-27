@@ -320,7 +320,7 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and software_signature_id = ?
             and bank_account_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledSignature', $query);
 }
 
@@ -361,7 +361,7 @@ sub queryGetById {
             installed_signature
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledSignature', $query);
 }
 

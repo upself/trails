@@ -411,6 +411,7 @@ sub queryUsedLicense {
             license_id= ?
             and used_quantity= ?
             and CAPACITY_TYPE_ID= ?
+        with ur
     ';
 	return ( 'usedLicense', $query );
 }
@@ -431,6 +432,7 @@ sub queryLicenseIdsByReconcileH {
             on hrul.h_used_license_id =  hul.id
         where
             hrul.h_reconcile_id = ?
+        with ur
     ';
 	return ( 'licenseIdsByReconcileH', $query, \@fields );
 }
@@ -490,6 +492,7 @@ sub queryReferenceCount {
                 reconcile_used_license rul
             where 
                 rul.used_license_id=?
+            with ur
              );
 	return ( 'referenceCount', $query );
 }
@@ -509,6 +512,7 @@ sub queryUsedLicenseIdByReconcileId {
         where
             rul.used_license_id = ul.id
             and rul.reconcile_id = ?
+        with ur
     ';
 	return ( 'usedLicenseByReconcileId', $query, \@fields );
 }
@@ -623,6 +627,7 @@ sub querySoftwareLparNames {
         where
             customer_id = ?
             and status = 'ACTIVE'
+        with ur
     };
 
 	dlog("querySoftwareLparNames=$query");
@@ -695,6 +700,7 @@ sub queryHwSwComposite {
             hw_sw_composite
         where
             software_lpar_id = ?      
+        with ur
     };
 
 	dlog("queryHwSwComposite=$query");

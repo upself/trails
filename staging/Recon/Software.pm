@@ -89,7 +89,8 @@ sub queryInstalledSoftwareRecordsBySoftwareId {
             and sl.id = is.software_lpar_id
             and sl.status = 'ACTIVE'
         	and is.software_id = ?
-        	and is.status = 'ACTIVE'        	
+        	and is.status = 'ACTIVE'
+        with ur        	
     };
     return ( 'installedSoftwareRecordsBySoftwareId', $query, \@fields );
 }

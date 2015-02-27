@@ -300,7 +300,7 @@ sub queryGetByBizKey {
             software
         where
             software_name = ?
-    ';
+     with ur';
     return ('getByBizKeySoftware', $query);
 }
 
@@ -349,7 +349,7 @@ sub queryGetById {
             software
         where
             software_id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftware', $query);
 }
 

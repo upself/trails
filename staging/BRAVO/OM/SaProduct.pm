@@ -186,7 +186,7 @@ sub queryGetById {
             sa_product
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySaProduct', $query);
 }
 

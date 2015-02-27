@@ -186,7 +186,7 @@ sub queryGetById {
             bundle_software
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyBundleSoftware', $query);
 }
 

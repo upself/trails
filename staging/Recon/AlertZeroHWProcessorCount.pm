@@ -17,7 +17,8 @@ from
 hardware h, hardware_lpar hl 
 where 
 h.id  = hl.hardware_id 
-and hl.id  = ?
+and hl.id  = ?  
+with ur
    ";
     dlog("query=$query");
     my $procCount=undef;

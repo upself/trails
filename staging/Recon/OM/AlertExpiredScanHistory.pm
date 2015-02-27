@@ -310,7 +310,7 @@ sub queryGetById {
             alert_exp_scan_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertExpiredScanHistory', $query);
 }
 

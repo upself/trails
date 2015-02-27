@@ -245,7 +245,7 @@ sub queryGetByBizKey {
         where
             computer_sys_id = ?
             and software_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledManualSoftware', $query);
 }
 

@@ -384,7 +384,7 @@ sub queryGetByBizKey {
             reconcile_h
         where
             installed_software_id = ?
-    ';
+     with ur';
     return ('getByBizKeyReconcileH', $query);
 }
 
@@ -445,7 +445,7 @@ sub queryGetById {
             reconcile_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconcileH', $query);
 }
 

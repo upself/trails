@@ -186,7 +186,7 @@ sub queryGetById {
             dorana_product
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyDoranaProduct', $query);
 }
 

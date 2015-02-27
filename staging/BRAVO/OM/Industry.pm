@@ -302,7 +302,7 @@ sub queryGetByBizKey {
             industry
         where
             industry_id = ?
-    ';
+     with ur';
     return ('getByBizKeyIndustry', $query);
 }
 
@@ -347,7 +347,7 @@ sub queryGetById {
             industry
         where
             industry_id = ?
-    ';
+     with ur';
     return ('getByIdKeyIndustry', $query);
 }
 

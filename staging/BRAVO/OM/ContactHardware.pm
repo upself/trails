@@ -207,7 +207,7 @@ sub queryGetById {
             contact_hardware
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyContactHardware', $query);
 }
 

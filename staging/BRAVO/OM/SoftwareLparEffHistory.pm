@@ -308,7 +308,7 @@ sub queryGetById {
             software_lpar_eff_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareLparEffHistory', $query);
 }
 

@@ -333,7 +333,7 @@ sub queryGetByBizKey {
         where
             customer_id = ?
             and hostname = ?
-    ';
+     with ur';
     return ('getByBizKeySwassetQueue', $query);
 }
 
@@ -390,7 +390,7 @@ sub queryGetById {
             swasset_queue
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySwassetQueue', $query);
 }
 

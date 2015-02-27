@@ -237,7 +237,7 @@ sub queryGetByBizKey {
             capacity_type
         where
             code = ?
-    ';
+     with ur';
     return ('getByBizKeyCapType', $query);
 }
 
@@ -274,7 +274,7 @@ sub queryGetById {
             capacity_type
         where
             code = ?
-    ';
+     with ur';
     return ('getByIdKeyCapType', $query);
 }
 

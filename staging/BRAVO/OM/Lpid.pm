@@ -242,7 +242,7 @@ sub queryGetByBizKey {
             lpid_id = ?
             and major_id = ?
             and lpid_name = ?
-    ';
+     with ur';
     return ('getByBizKeyLpid', $query);
 }
 
@@ -279,7 +279,7 @@ sub queryGetById {
             lpid
         where
             lpid_id = ?
-    ';
+     with ur';
     return ('getByIdKeyLpid', $query);
 }
 

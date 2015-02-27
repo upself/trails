@@ -306,7 +306,7 @@ sub queryGetByBizKey {
             alert_hardware
         where
             hardware_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertHardware', $query);
 }
 
@@ -355,7 +355,7 @@ sub queryGetById {
             alert_hardware
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertHardware', $query);
 }
 

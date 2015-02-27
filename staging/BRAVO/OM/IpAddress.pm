@@ -484,7 +484,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and ip_address = ?
-    ';
+     with ur';
     return ('getByBizKeyIpAddress', $query);
 }
 
@@ -557,7 +557,7 @@ sub queryGetById {
             software_lpar_ip_address
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyIpAddress', $query);
 }
 

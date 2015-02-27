@@ -99,6 +99,7 @@ sub queryAlertId {
             and at.code = ?
             and asl.id = a.id
             and a.alert_type_id = at.id
+        with ur
     ';
     return ( 'alertId', $query );
 }

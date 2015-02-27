@@ -1472,7 +1472,7 @@ sub queryGetByBizKey {
         where
             customer_id = ?
             and name = ?
-    ';
+     with ur';
     return ('getByBizKeySoftwareLpar', $query);
 }
 
@@ -1685,7 +1685,7 @@ sub queryGetById {
             software_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareLpar', $query);
 }
 

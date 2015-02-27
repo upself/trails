@@ -292,7 +292,7 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and software_filter_id = ?
             and bank_account_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledFilter', $query);
 }
 
@@ -329,7 +329,7 @@ sub queryGetById {
             installed_filter
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyInstalledFilter', $query);
 }
 

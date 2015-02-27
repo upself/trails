@@ -162,7 +162,7 @@ sub queryGetByBizKey {
         where
             computer_sys_id = ?
             and dorana_prod_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledDoranaSoftware', $query);
 }
 
