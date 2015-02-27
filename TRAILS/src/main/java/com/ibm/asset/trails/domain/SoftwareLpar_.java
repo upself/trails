@@ -19,6 +19,8 @@ public class SoftwareLpar_ {
 	public static volatile SingularAttribute<SoftwareLpar, Date> recordTime;
 	public static volatile SingularAttribute<SoftwareLpar, String> status;
 	public static volatile SingularAttribute<SoftwareLpar, String> osName;
+	public static volatile SingularAttribute<SoftwareLpar, String> extId;
+	public static volatile SingularAttribute<SoftwareLpar, String> techImgId;
 	public static volatile SingularAttribute<SoftwareLpar, HardwareLpar> hardwareLpar;
 	public static volatile SingularAttribute<SoftwareLpar, SoftwareLparEff> softwareLparEff;
 }

@@ -69,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
+			"HW LPAR name", "SW_EXT_ID", "HW_EXT_ID","SW_TI_ID", "HW_TI_ID",
 			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
@@ -508,6 +509,11 @@ public class ReportServiceImpl implements ReportService {
 				+ "else days(aus.record_time) - days(aus.creation_time) "
 				+ "end "
 				+ ",sl.name as swLparName "
+				+ ",hl.name as hwLparName"
+				+ ",cast(sl.ext_id as varchar(8)) as SW_EXT_ID"
+				+ ",cast(hl.ext_id as varchar(8)) as HW_EXT_ID"
+				+ ",sl.tech_img_id as SW_TI_ID"
+				+ ",hl.tech_image_id as HW_TI_ID"
 				+ ",h.serial as hwSerial "
 				+ ",mt.name as hwMachType "
 				+ ",h.model as cpuModel"
