@@ -109,8 +109,10 @@ our $REVISION = '$Id: bravoReport.pl,v 1.20 2010/11/19 08:06:54 szshiw Exp $';
 # the script may be tested on tap2 and is setup to be loaded into 
 # /opt/bravo/scripts/report
 use lib '/opt/bravo/scripts/report/lib';                                         
+use lib '/opt/staging/v2';                                         
 use Tap::NewPerl;                                                                        
-                                                                                         
+require "/opt/staging/v2/Database/Connection.pm";                                                                                         
+
 use strict;                                                                              
                                                                                          
 use DBI;                                                                                 
@@ -127,8 +129,6 @@ use Net::FTP;
                                                                       
                                                                                          
 # db access                                                                              
-use IBM::Schema::BRAVO;
-use IBM::Schema::SWMULTI;
 use Config::Properties::Simple;                                                             
                                                                                          
 ###############################################################################          
@@ -197,10 +197,71 @@ else {
                                                                                          
 sub logit { 
 }                                                                            
+
+#-----------------------------------------------------------------------------
+
+# AMT-TI80422-76416
+
+#
+#       Toralf Foerster
+#       Hamburg
+#       Germany
+#
+
+#-----------------------------------------------------------------------------
+#
+#   input: a list of version strings ('version.release.modification.fixpack')
+#   output:a string clobbered the strings into a readable format
+#
+sub max_sw_version (@) {
+    my @aStrings = @_;
+#      print "I am Here position 1 \n";
+    return "" unless ( scalar @aStrings );
+#     print "I am Here position 2 \n";
+    my %hString = ();
+    foreach my $String (@aStrings) {
+        my ( $Version, $Release ) = split( /\./, $String . "." );
+        #return "*" if ( $Version eq "*" );    # rule 1
+#       print "I am Here position 3 \n";
+        $hString{$Version}->{$Release}->{$String} = 1;
+    }
+#     print "I am Here position 4 \n";
+    my @aResult = ();
+    foreach my $Version ( keys %hString ) {
+#   	print  "versionA : $Version \n";
+        my @aRelease = keys %{ $hString{$Version} };
+        my  $myrelease = scalar @aRelease;
+#        print  "releaseA : $myrelease \n";
+        next unless ( scalar @aRelease == 1 );
+        my $Release = $aRelease[0];
+#        print  "releaseB : $Release \n";
+        if ( scalar keys %{ $hString{$Version}->{$Release} } == 1 ) {   # rule 2
+            push( @aResult, keys %{ $hString{$Version}->{$Release} } );
+            delete( $hString{$Version} );
+        }
+    }
+
+    foreach my $Version ( sort { $a <=> $b } keys %hString ) {          # rule 3
+#        print  "versionB : $Version \n";
+        my @aRelease = keys %{ $hString{$Version} };
+         my  $myrelease = scalar @aRelease;
+#        print  "releaseC : $myrelease \n";
+        push( @aResult,
+            ( scalar @aRelease > 1 )
+            ? "$Version.*"
+            : "$Version.$aRelease[0].*" );
+    }
+
+    return join( ",", sort @aResult );
+}
+
+
+#-----------------------------------------------------------------------------
+
                                                                                          
 logit( "Acquiring bravo database handle", $logFile );                                    
-my $bravo = IBM::Schema::SWMULTI->easy_connect;                                            
-my $dbh   = $bravo->storage->dbh;                                                        
+                                                      
+my $dbh = Database::Connection->new('trails');
 logit( "Bravo Database handle acquired", $logFile );                                     
 
 ###############################################################################
@@ -213,7 +274,6 @@ if ($opt_c) {
 	eval { $bravoSoftware = &getBravoSoftwareReport( $dbh, $opt_c ); };
 	if ($@) {
 		logit( $@, $logFile );
-		pageit($@);
 		die;
 	}
 	logit( "Bravo software acquired", $logFile );
@@ -222,16 +282,13 @@ else {
 	eval { $bravoSoftware = getBravoSoftwareReport($dbh); };
 	if ($@) {
 		logit( $@, $logFile );
-		pageit($@);
 		die;
 	}
 	logit( "Bravo software acquired", $logFile );
 }
 
-undef $bravo;
 $dbh->disconnect;
 undef $dbh;
-
 my $workbook;
 
 foreach my $accountNumber ( keys %{$bravoSoftware} ) {
@@ -695,65 +752,6 @@ foreach my $accountNumber ( keys %{$bravoSoftware} ) {
 }
 
 
-#-----------------------------------------------------------------------------
-
-# AMT-TI80422-76416
-
-#
-#       Toralf Foerster
-#       Hamburg
-#       Germany
-#
-
-#-----------------------------------------------------------------------------
-#
-#   input: a list of version strings ('version.release.modification.fixpack')
-#   output:a string clobbered the strings into a readable format
-#
-sub max_sw_version (@) {
-    my @aStrings = @_;
-#      print "I am Here position 1 \n";
-    return "" unless ( scalar @aStrings );
-#     print "I am Here position 2 \n";
-    my %hString = ();
-    foreach my $String (@aStrings) {
-        my ( $Version, $Release ) = split( /\./, $String . "." );
-        #return "*" if ( $Version eq "*" );    # rule 1
-#       print "I am Here position 3 \n";
-        $hString{$Version}->{$Release}->{$String} = 1;
-    }
-#     print "I am Here position 4 \n";
-    my @aResult = ();
-    foreach my $Version ( keys %hString ) {
-#   	print  "versionA : $Version \n";
-        my @aRelease = keys %{ $hString{$Version} };
-        my  $myrelease = scalar @aRelease;
-#        print  "releaseA : $myrelease \n";
-        next unless ( scalar @aRelease == 1 );
-        my $Release = $aRelease[0];
-#        print  "releaseB : $Release \n";
-        if ( scalar keys %{ $hString{$Version}->{$Release} } == 1 ) {   # rule 2
-            push( @aResult, keys %{ $hString{$Version}->{$Release} } );
-            delete( $hString{$Version} );
-        }
-    }
-
-    foreach my $Version ( sort { $a <=> $b } keys %hString ) {          # rule 3
-#        print  "versionB : $Version \n";
-        my @aRelease = keys %{ $hString{$Version} };
-         my  $myrelease = scalar @aRelease;
-#        print  "releaseC : $myrelease \n";
-        push( @aResult,
-            ( scalar @aRelease > 1 )
-            ? "$Version.*"
-            : "$Version.$aRelease[0].*" );
-    }
-
-    return join( ",", sort @aResult );
-}
-
-
-#-----------------------------------------------------------------------------
 
 sub getBravoSoftwareReport {
 	my ( $dbh, $customerId ) = @_;
@@ -894,9 +892,12 @@ from
  fetch first 1 row only ) ) or (sf.id is null)
                     order by priority ASC with ur";
 
-	my $sth = $dbh->prepare($query);
-	my $accNumber;
-	my $accsth = $dbh->prepare("SELECT account_number from eaadmin.customer where customer_id=$customerId and status='ACTIVE' with ur");
+    $dbh->prepareSqlQuery( 'bravoreport', $query);
+    $dbh->prepareSqlQuery('simplereport',"SELECT account_number from eaadmin.customer where customer_id=$customerId and status='ACTIVE' with ur");
+    ###Get the statement handle
+    my $sth = $dbh->sql->{bravoreport};
+	my $accsth = $dbh->sql->{simplereport};
+    my $accNumber;
 	$accsth->bind_columns(\$accNumber);
 
 	$sth->bind_columns(
@@ -1062,4 +1063,5 @@ from
 	return \%data;
 	
 }
+
 
