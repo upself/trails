@@ -152,7 +152,7 @@ sub validate {
         $rValid *= $self->validateTryAndBuy( $self->license->tryAndBuy, $licenseAllocationView->lrmCapType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
         $rValid *= $self->validateSubCapacity( $self->license->licType, $licenseAllocationView->rId, $licenseAllocationView->rtIsManual );
         $rValid *= $self->validateLicenseAllocationCustomer($licenseAllocationView);
-        $rValid *= $self->validateCapacityType( $licenseAllocationView->lrmCapType, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
+        $rValid *= $self->validateCapacityType( $licenseAllocationView->lrmCapType, $self->license->capType, $licenseAllocationView->rId, $self->license->id, $licenseAllocationView->rtIsManual );
         $rValid *= $self->validateProcCount ( $licenseAllocationView->hProcessorCount, $self->license->capType, $licenseAllocationView->rId, $self->license->id );
         $rValid *= $self->validatePhysicalCpuSerialMatch(
             $self->license->capType,  $self->license->licType,   $licenseAllocationView->hSerial, $self->license->cpuSerial,
@@ -351,10 +351,10 @@ sub validateLicenseAllocationCustomer {
 }
 
 sub validateCapacityType {
-    my ( $self, $lrmCapType, $licenseCapType, $reconcileId, $licenseId ) = @_;
+    my ( $self, $lrmCapType, $licenseCapType, $reconcileId, $licenseId, $isManual ) = @_;
 
     ###Validate capType change
-    if ( $lrmCapType != $licenseCapType ) {
+    if (( $lrmCapType != $licenseCapType ) && ( $isManual == 0 )) {
         dlog("cap type does not match lic, adding to list to break");
         $self->addToReconcilesToBreak($reconcileId)   if defined $reconcileId;
         $self->addToDeleteQueue( $self->license->id ) if defined $licenseId;

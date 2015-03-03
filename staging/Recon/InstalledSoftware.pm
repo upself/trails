@@ -1980,7 +1980,7 @@ from
       left outer join hardware h 
            on h. id = hl. hardware_id 
       where
-           ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where member_account_id = ? ))
+           ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where logical_delete_ind = 0 and member_account_id = ? ))
             and ((l.cap_type in( 2, 13, 14, 17, 34, 48, 49 ) and l.try_and_buy = 0) or ( l.cap_type in ( 5, 9, 70 ) ) )
             and l.lic_type != \'SC\'   
             and s.software_id = ?
