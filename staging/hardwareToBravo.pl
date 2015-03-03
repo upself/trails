@@ -258,7 +258,6 @@ sub queryHardwareCustomers {
                 h.id = hl.hardware_id
             left outer join effective_processor ep on
                 ep.hardware_lpar_id = hl.id
-        with ur
     ';
 
     my $clause = 'where';
@@ -278,7 +277,7 @@ sub queryHardwareCustomers {
             . Base::ConfigManager->instance()->testCustomerIdsAsString() . '))';
     }
     
-    $query .= ' group by h.customer_id order by count(*) desc';
+    $query .= ' group by h.customer_id order by count(*) desc with ur';
 
     dlog("queryHardwareCustomers=$query");
     return ( 'hardwareCustomers', $query, \@fields );
