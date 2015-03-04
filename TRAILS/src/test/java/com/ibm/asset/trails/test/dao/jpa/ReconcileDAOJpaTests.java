@@ -17,7 +17,7 @@ import com.ibm.asset.trails.domain.Reconcile;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class ReconcileDAOJpaTest {
+public class ReconcileDAOJpaTests {
 
     @Autowired
     private ReconcileDAO reconcileDAO;
