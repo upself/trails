@@ -171,6 +171,7 @@ sub queryGetByBizKey {
             software_id = ?
             and scan_record_id = ?
             and software_signature_id = ?
+        with ur
     ';
  return ( 'getByBizKeyTEMP_SIGNATURE', $query );
 }

@@ -212,7 +212,7 @@ sub queryGetByBizKey {
         from
             h_used_license
         where
-    ';
+     with ur';
     return ('getByBizKeyUsedLicenseHistory', $query);
 }
 
@@ -249,7 +249,7 @@ sub queryGetById {
             h_used_license
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyUsedLicenseHistory', $query);
 }
 

@@ -69,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
+			"HW LPAR name", "SW_EXT_ID", "HW_EXT_ID","SW_TI_ID", "HW_TI_ID",
 			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
@@ -124,7 +125,7 @@ public class ReportServiceImpl implements ReportService {
 			"Product name", "Installed instances",
 			"Installed instances covered by entitlement",
 			"Installed instances not covered by entitlement",
-			"Unassigned license pool count", "Unassigned license pool type" };
+			"Unassigned license pool count", "Unassigned license pool type", "Schedule F scope" };
 	private final String RECONCILIATION_SUMMARY_REPORT_NAME = "Reconciliation summary report";
 	private final String[] SOFTWARE_COMPLIANCE_SUMMARY_COLUMN_HEADERS = {
 			"Product name", "Installed instances",
@@ -508,6 +509,11 @@ public class ReportServiceImpl implements ReportService {
 				+ "else days(aus.record_time) - days(aus.creation_time) "
 				+ "end "
 				+ ",sl.name as swLparName "
+				+ ",hl.name as hwLparName"
+				+ ",cast(sl.ext_id as varchar(8)) as SW_EXT_ID"
+				+ ",cast(hl.ext_id as varchar(8)) as HW_EXT_ID"
+				+ ",sl.tech_img_id as SW_TI_ID"
+				+ ",hl.tech_image_id as HW_TI_ID"
 				+ ",h.serial as hwSerial "
 				+ ",mt.name as hwMachType "
 				+ ",h.model as cpuModel"
@@ -1085,17 +1091,68 @@ public class ReportServiceImpl implements ReportService {
 			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
-				.createSQLQuery("CALL EAADMIN.ReconSummaryReport(:customerId)")
+				.createSQLQuery("select  "
+						+"	COALESCE (det.software_name,lic.software_name) "
+						+"	,count(det.isw_id) "
+						+"	,COALESCE ((count(det.isw_id) - sum(det.open)),0) "
+						+"	,COALESCE (sum(det.open),0) "
+						+"	,case when sum(lic.used) is null then 0 else sum(lic.quantity) - sum(lic.used) end "
+						+"	,lic.pool_type "
+						+"	,det.swOwner "
+						+"from  "
+						+" "
+						+"	(select "
+						+"		sw.software_name as software_name "
+						+"		,sw.software_id as software_id "
+						+"		,isw.id as isw_id "
+						+"		,AUS.Open as open "
+						+"		,COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id where sf.customer_id = :customerId and sf.status_id=2 and sf.software_name = sw.software_name and ( ( sf.level = 'PRODUCT' ) or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner "
+						+"	from "
+						+"		eaadmin.software_lpar sl "
+						+"		join eaadmin.installed_software isw on (sl.id = isw.software_lpar_id) "
+						+"		join eaadmin.alert_unlicensed_sw aus on (isw.id = aus.installed_software_id) "
+						+"		join eaadmin.hw_sw_composite hwsw on (sl.id = hwsw.software_lpar_id) "
+						+"		join eaadmin.hardware_lpar hl on (hwsw.hardware_lpar_id = hl.id and sl.customer_id = hl.customer_id) "
+						+"		join eaadmin.hardware h on (hl.hardware_id = h.id) "
+						+"		join eaadmin.machine_type mt on (h.machine_type_id = mt.id) "
+						+"		join eaadmin.software sw on (sw.software_id = isw.software_id) "
+						+" "
+						+"	where "
+						+"		(exists (select 1 from eaadmin.reconcile r where isw.id = r.installed_software_id) or (aus.open  = 1)) "
+						+"				and sl.customer_id = :customerId "
+						+"	) det "
+						+" "
+						+"	full outer join "
+						+"	(select "
+						+"		l.quantity as quantity "
+						+"		,lsm.software_id as software_id "
+						+"		,(RTRIM(CAST(ct.code AS CHAR(8) )) || ' - ' || ct.description ) as pool_type "
+						+"		,case when ul.used_quantity is null then 0 else ul.used_quantity end  as used "
+						+"		,sw.software_name as software_name "
+						+"	from "
+						+"		eaadmin.license l "
+						+"		join eaadmin.license_sw_map lsm on (l.id = lsm.license_id and l.status = 'ACTIVE') "
+						+"		left outer join eaadmin.used_license ul on (l.id = ul.license_id) "
+						+"		left outer join eaadmin.capacity_type ct on (l.cap_type = ct.code) "
+						+"		join eaadmin.software sw on ( sw.software_id = lsm.software_id ) "
+						+"	where l.customer_id= :customerId "
+						+" "
+						+"	) lic on ( det.software_id = lic.software_id ) "
+						+"group by "
+						+"det.software_name "
+						+",lic.software_name "
+						+",det.swOwner  "
+						+",lic.pool_type "
+						+"order by 1 "
+						+"with ur ")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
-		Object[] loaData = null;
 
 		printHeader(RECONCILIATION_SUMMARY_REPORT_NAME, pAccount.getAccount(),
 				RECONCILIATION_SUMMARY_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputReconciliationSummaryData(
-					lsrReport.get(), loaData));
-			loaData = lsrReport.get();
+					lsrReport.get()));
 		}
 		lsrReport.close();
 	}
@@ -1253,21 +1310,12 @@ public class ReportServiceImpl implements ReportService {
 		return lsbData.toString();
 	}
 
-	private String outputReconciliationSummaryData(Object[] poaData,
-			Object[] poaPreviousData) {
+	private String outputReconciliationSummaryData(Object[] poaData) {
 		StringBuffer lsbData = new StringBuffer();
 		String lsData = null;
 
 		for (int i = 0; poaData != null && i < poaData.length; i++) {
-			if (poaPreviousData != null
-					&& (i == 1 || i == 2 || i == 3)
-					&& poaData[0].toString().equalsIgnoreCase(
-							poaPreviousData[0].toString())) {
-				lsData = "-";
-			} else {
-				lsData = poaData[i] == null ? "" : poaData[i].toString();
-			}
-
+			lsData = poaData[i] == null ? "" : poaData[i].toString();
 			lsbData.append(i == 0 ? "" : "\t").append(lsData);
 		}
 

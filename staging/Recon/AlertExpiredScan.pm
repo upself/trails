@@ -106,6 +106,7 @@ sub queryIsScanExpired {
             join customer c on c.customer_id = sl.customer_id
         where
             sl.id = ?
+        with ur
     ';
 	return ( 'isScanExpired', $query );
 }

@@ -180,7 +180,7 @@ sub queryGetByBizKey {
         where
             processor_brand = ?
             and processor_model = ?
-    ';
+     with ur';
     return ('getByBizKeyPvu', $query);
 }
 
@@ -213,7 +213,7 @@ sub queryGetById {
             pvu
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyPvu', $query);
 }
 

@@ -26,7 +26,7 @@ public class SoftwareDAOJpaTest {
 	private SoftwareDAO softwareDAO;
 	private final Long softwareId = 218119L;
 	private final String softwareName ="IBM AIX";
-	private final String inactiveSoftwareName ="Artemis - Artemis - BASE";
+	private final String inactiveSoftwareName ="MICROSOFT SQL SERVER 2000 CAL";
 
 	@Test
 	public void testSoftwareDetail() {

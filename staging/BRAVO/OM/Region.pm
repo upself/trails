@@ -302,7 +302,7 @@ sub queryGetByBizKey {
             region
         where
             id = ?
-    ';
+     with ur';
     return ('getByBizKeyRegion', $query);
 }
 
@@ -347,7 +347,7 @@ sub queryGetById {
             region
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyRegion', $query);
 }
 

@@ -306,7 +306,7 @@ sub queryGetByBizKey {
             alert_expired_maint
         where
             license_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertExpiredMaint', $query);
 }
 
@@ -355,7 +355,7 @@ sub queryGetById {
             alert_expired_maint
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertExpiredMaint', $query);
 }
 

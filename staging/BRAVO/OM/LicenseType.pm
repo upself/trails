@@ -237,7 +237,7 @@ sub queryGetByBizKey {
             license_type
         where
             code = ?
-    ';
+     with ur';
     return ('getByBizKeyLicenseType', $query);
 }
 
@@ -274,7 +274,7 @@ sub queryGetById {
             license_type
         where
             code = ?
-    ';
+     with ur';
     return ('getByIdKeyLicenseType', $query);
 }
 

@@ -274,7 +274,7 @@ sub queryGetByBizKey {
             sector
         where
             sector_id = ?
-    ';
+     with ur';
     return ('getByBizKeySector', $query);
 }
 
@@ -315,7 +315,7 @@ sub queryGetById {
             sector
         where
             sector_id = ?
-    ';
+     with ur';
     return ('getByIdKeySector', $query);
 }
 

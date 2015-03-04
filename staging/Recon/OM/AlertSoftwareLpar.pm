@@ -306,7 +306,7 @@ sub queryGetByBizKey {
             alert_sw_lpar
         where
             software_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyAlertSoftwareLpar', $query);
 }
 
@@ -355,7 +355,7 @@ sub queryGetById {
             alert_sw_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertSoftwareLpar', $query);
 }
 

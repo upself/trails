@@ -60,6 +60,7 @@ sub queryHardwareLparCustomerMap {
         where
             a.status = \'ACTIVE\'
             and a.hardware_id = b.id
+        with ur
     ';
 
     return( 'hardwareLparCustomerMap',$query,\@fields );

@@ -584,7 +584,7 @@ sub validateLicenseAllocation {
 
    ###Validate capType change
    $validation->validateCapacityType( $rec{lrmCapType}, $rec{capType}, undef,
-    undef );
+    undef, 0 );
 
    ###Validate cap_type 34, 5, 9, 70 serial match
    $validation->validatePhysicalCpuSerialMatch( $rec{capType}, $rec{licenseType},
@@ -859,6 +859,7 @@ sub queryValidateLicenseAllocation {
                 lsm.license_id = l.id
         where
             r.installed_software_id = ?
+        with ur
     ';
  return ( 'validateLicenseAllocation', $query, \@fields );
 }

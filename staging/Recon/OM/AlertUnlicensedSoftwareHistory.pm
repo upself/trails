@@ -310,7 +310,7 @@ sub queryGetById {
             alert_unlicensed_sw_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlertUnlicensedSoftwareHistory', $query);
 }
 

@@ -90,7 +90,8 @@ sub queryhasLP {
                 is.SOFTWARE_LPAR_ID = ?
                 and is.status=\'ACTIVE\'
                 and ( ( kbd.deleted is null ) or ( kbd.deleted <> 1 ) )
-                and pi.licensable = 1;             ';
+                and pi.licensable = 1
+            with ur;             ';
 	return ( 'hasLP', $query );
 }
 
@@ -120,6 +121,7 @@ sub queryAlertId {
             and at.code = ?
             and asl.id = a.id
             and a.alert_type_id = at.id
+        with ur
     ';
 	return ( 'alertId', $query );
 }

@@ -291,7 +291,7 @@ sub queryGetByBizKey {
             software_lpar_eff
         where
             software_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeySoftwareLparEff', $query);
 }
 
@@ -336,7 +336,7 @@ sub queryGetById {
             software_lpar_eff
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareLparEff', $query);
 }
 

@@ -385,7 +385,7 @@ sub queryGetByBizKey {
         from
             alert
         where
-    ';
+     with ur';
     return ('getByBizKeyAlert', $query);
 }
 
@@ -446,7 +446,7 @@ sub queryGetById {
             alert
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAlert', $query);
 }
 

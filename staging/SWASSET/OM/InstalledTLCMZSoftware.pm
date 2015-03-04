@@ -162,7 +162,7 @@ sub queryGetByBizKey {
         where
             computer_sys_id = ?
             and tlcmz_prod_id = ?
-    ';
+     with ur';
     return ('getByBizKeyInstalledTLCMZSoftware', $query);
 }
 

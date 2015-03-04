@@ -186,7 +186,7 @@ sub queryGetById {
             vm_product
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyVmProduct', $query);
 }
 

@@ -277,7 +277,7 @@ sub queryHardwareCustomers {
             . Base::ConfigManager->instance()->testCustomerIdsAsString() . '))';
     }
     
-    $query .= ' group by h.customer_id order by count(*) desc';
+    $query .= ' group by h.customer_id order by count(*) desc with ur';
 
     dlog("queryHardwareCustomers=$query");
     return ( 'hardwareCustomers', $query, \@fields );

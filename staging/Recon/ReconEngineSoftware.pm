@@ -150,6 +150,7 @@ sub queryReconQueueBySoftwareId {
             recon_software a
         where
             a.software_id = ?
+        with ur
     ';
 	dlog("queryReconQueueBySoftwareId=$query");
 	return ( 'reconQueueBySoftwareId', $query, \@fields );
@@ -186,6 +187,7 @@ sub querySwLparRecordsBySoftwareId {
             and is.software_lpar_id= sl.id   
             and sl.status='ACTIVE'  
             and is.status='ACTIVE'           
+        with ur
     };
 	dlog("querySwLparRecordsBySoftwareId=$query");
 	return ( 'swLparRecordsBySoftwareId', $query, \@fields );

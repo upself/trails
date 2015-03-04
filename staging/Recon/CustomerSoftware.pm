@@ -103,6 +103,7 @@ sub queryInstalledSoftwareRecordsBySoftwareIdAndCustomerId {
             and sl.status = 'ACTIVE'
         	and is.software_id = ?
         	and is.status = 'ACTIVE'        	
+        with ur
     };
     return ( 'installedSoftwareRecordsBySoftwareIdAndCustomerId',
              $query, \@fields );

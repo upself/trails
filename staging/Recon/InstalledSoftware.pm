@@ -1980,7 +1980,7 @@ from
       left outer join hardware h 
            on h. id = hl. hardware_id 
       where
-           ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where member_account_id = ? ))
+           ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where logical_delete_ind = 0 and member_account_id = ? ))
             and ((l.cap_type in( 2, 13, 14, 17, 34, 48, 49 ) and l.try_and_buy = 0) or ( l.cap_type in ( 5, 9, 70 ) ) )
             and l.lic_type != \'SC\'   
             and s.software_id = ?
@@ -1993,6 +1993,7 @@ from
     $query.='
         order by
         	l.id
+        with ur
     ';
     
     dlog("Reading licenses query: $query"); # debug
@@ -2318,6 +2319,7 @@ sub queryScheduleFScope {
 	    sf.software_name = ?
 	  and
 	    sf.status_id = 2
+	  with ur
 	';
 	return('ScheduleFScope', $query, \@fields );
 	
@@ -2446,6 +2448,7 @@ sub queryReconInstalledSoftwareBaseData {
                 r.installed_software_id = is.id
         where
             is.id = ?
+        with ur
 	';
 	return ( 'reconInstalledSoftwareBaseData', $query, \@fields );
 	
@@ -2736,6 +2739,7 @@ sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (s
       r.reconcile_type_id in ( 4, 7, 8 )
          and
       r.parent_installed_software_id = ?
+    with ur
     ';
 
 	return ( 'queryInsSwByParentProduct', $query, \@fields );
@@ -2756,6 +2760,7 @@ sub queryProductionHwlparCount {
      and hardware_id = ?
      and hl.server_type = \'PRODUCTION\'
      and hl.status = \'ACTIVE\'
+    with ur
     ';
 
 	return ( 'productionHwlparCount', $query, \@fields );
@@ -2803,6 +2808,7 @@ sub queryExistingMachineLevelRecon {
             and r.machine_level = 1
             and ul.license_id = l.id
             and rul.used_license_id = ul.id
+        with ur
     ';
 
 	return ( 'existingMachineLevelRecon', $query, \@fields );
@@ -2894,6 +2900,7 @@ sub queryUsedLicenseId {
 	    rul.reconcile_id = ?
 	    and ul.license_id = ?
 	    and rul.used_license_id = ul.id
+	with ur
 	';
 
 	return ( 'getUsedLicenseId', $query );

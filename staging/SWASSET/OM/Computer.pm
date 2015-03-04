@@ -853,7 +853,7 @@ sub queryGetByBizKey {
             computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByBizKeyComputer', $query);
 }
 
@@ -974,7 +974,7 @@ sub queryGetById {
             computer
         where
             computer_sys_id = ?
-    ';
+     with ur';
     return ('getByIdKeyComputer', $query);
 }
 

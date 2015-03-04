@@ -186,7 +186,7 @@ sub queryGetById {
             software_filter_h
         where
             software_filter_h_id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareFilterHistory', $query);
 }
 

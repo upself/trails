@@ -449,7 +449,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and ep_name = ?
-    ';
+     with ur';
     return ('getByBizKeyAdc', $query);
 }
 
@@ -518,7 +518,7 @@ sub queryGetById {
             software_lpar_adc
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyAdc', $query);
 }
 

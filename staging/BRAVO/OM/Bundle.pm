@@ -186,7 +186,7 @@ sub queryGetById {
             bundle
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyBundle', $query);
 }
 

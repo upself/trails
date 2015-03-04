@@ -216,6 +216,7 @@ sub load {
             my $stagingSoftwareLpar;
             my $bravoSoftwareLpar;
             my $deleteInstalledType;
+            my $addToRecon = 0;
             if ( $prevMapKey ne $mapKey ) {
 
                 ###This is the first row of data for this software lpar key.
@@ -414,33 +415,16 @@ sub load {
                 dlog( "save software lpar flag=" . $saveSoftwareLpar );
                 if ( $saveSoftwareLpar == 1 ) {
 
-                    ###Check if bravo software lpar is already identical.
+                    ###Check if software_lpar should be added to recon
                     if (
-                            stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model )
-                         && stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial )
-                         && numericEqualOrBothUndef(
-                                                     $bravoSoftwareLpar->processorCount,
-                                                     $stagingSoftwareLpar->processorCount
-                         )
-                         && stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime )
-                         && $bravoSoftwareLpar->status eq $stagingSoftwareLpar->status
+                            !(stringEqual( $bravoSoftwareLpar->model, $stagingSoftwareLpar->model ))
+                         || !(stringEqual( $bravoSoftwareLpar->biosSerial, $stagingSoftwareLpar->biosSerial ))
+                         || !(stringEqual( $bravoSoftwareLpar->scanTime, $stagingSoftwareLpar->scanTime ))
+                         || !($bravoSoftwareLpar->status eq $stagingSoftwareLpar->status)
                         )
                     {
-
-                        dlog("bravo software lpar identical to staging software lpar, not saving");
-
-                        if ( $self->loadDeltaOnly == 0 && $bravoSoftwareLpar->customerId ne '999999' ) {
-
-                            ###Call the recon engine if this is a full load even if
-                            ###there were no changes to save.
-                            dlog("calling recon engine for bravo software lpar object");
-                            my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
-                            $queue->add;
-                            $statistics{'TRAILS'}{'RECON_SW_LPAR'}{'UPDATE'}++;
-                            dlog("called recon engine for bravo software lpar object");
-                        }
+						$addToRecon = 1;
                     }
-                    else {
                         ###Set acquisition time if insert.
                         if ( !defined $bravoSoftwareLpar->id ) {
 
@@ -508,7 +492,7 @@ sub load {
                             $statistics{'TRAILS'}{'SOFTWARE_LPAR'}{'UPDATE'}++;
                             dlog("saved bravo software lpar object");
                            
-                           if ( $bravoSoftwareLpar->customerId ne '999999'){
+                           if ( ( $addToRecon == 1 ) && ( $bravoSoftwareLpar->customerId ne '999999') ){
                             ###Call the recon engine for the object.
                             dlog("calling recon engine for bravo software lpar object");
                             my $queue = Recon::Queue->new( $self->bravoConnection, $bravoSoftwareLpar );
@@ -526,7 +510,7 @@ sub load {
                                                                             $bravoSoftwareLpar->id, \%statistics );
                             }
                         }
-                    }
+                    
                 }
                 else {
                     dlog("not saving bravo software lpar object per flag");
@@ -835,6 +819,8 @@ sub load {
             ###and swasset databases.
             my $deleteManual = 0;
 
+			my $addIswToRecon = 0;
+
             ###Bravo installed software object logic.
 
             ###For installed software have to take into account the
@@ -893,105 +879,13 @@ sub load {
                                         ###BIT
                                         if ( defined $bravoInstalledType->id ) {
                                             ###BIS=SIT
-                                            if (
-                                                 numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
-                                                                          $rec{processorCount} )
-                                                 && numericEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->users,
-                                                                            $rec{installedSoftwareTypeUsers}
-                                                 )
-                                                 &&( ($rec{installedSoftwareType} ne 'MANUAL')
-                                                     ||
-                                                           stringEqualOrBothUndef(
-                                                                 $bravoInstalledSoftware->version,
-                                                                 $rec{installedSoftwareTypeVersion}
-                                                           )
-                                                 )
-                                                 &&( ($rec{installedSoftwareType} ne 'TAD4Z')
-                                                      || ($bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'TADZ'}) 
-                                                 )
-                                               )
-                                            {
-                                                ###AUTH=AUTH|1
-                                                if (
-                                                     numericEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->authenticated,
-                                                                            $rec{scanRecordAuthenticated}
-                                                     )
-                                                     || ( defined $bravoInstalledSoftware->authenticated
-                                                          && $bravoInstalledSoftware->authenticated == 1 )
-                                                    )
-                                                {
-                                                    dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH=AUTH|1"
-                                                    );
-                                                }
-                                                ###AUTH!=AUTH|1
-                                                else {
-                                                    dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS=SIT,AUTH!=AUTH|1"
-                                                    );
-                                                    $saveInstalledSoftware = 1;
-                                                }
-                                            }
-                                            ###BIS!=SIT
-                                            else {
-                                                dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIS!=SIT");
-                                                $saveInstalledSoftware = 1;
-                                            }
+                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
                                         }
                                         ###!BIT
                                         else {
                                             ###BIS=SIT
-                                            if (
-                                                 numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
-                                                                          $rec{processorCount} )
-                                                 && numericEqualOrBothUndef(
-                                                                             $bravoInstalledSoftware->users,
-                                                                             $rec{installedSoftwareTypeUsers}
-                                                 )  
-                                                 &&( ($rec{installedSoftwareType} ne 'MANUAL') 
-                                                     ||
-                                                     stringEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->version,
-                                                                            $rec{installedSoftwareTypeVersion}
-                                                     )
-                                                 )
-                                                 &&( ($rec{installedSoftwareType} ne 'TAD4Z')
-                                                      || ($bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'TADZ'}) 
-                                                  ) 
-                                               )
-                                            {
-                                                ###AUTH=AUTH|1
-                                                if (
-                                                     numericEqualOrBothUndef(
-                                                                            $bravoInstalledSoftware->authenticated,
-                                                                            $rec{scanRecordAuthenticated}
-                                                     )
-                                                     || ( defined $bravoInstalledSoftware->authenticated
-                                                          && $bravoInstalledSoftware->authenticated == 1 )
-                                                    )
-                                                {
-                                                    dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH=AUTH|1"
-                                                    );
-                                                    $saveInstalledType = 1;
-                                                }
-                                                ###AUTH!=AUTH|1
-                                                else {
-                                                    dlog(
-                                                        "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS=SIT,AUTH!=AUTH|1"
-                                                    );
-                                                    $saveInstalledSoftware = 1;
-                                                    $saveInstalledType     = 1;
-                                                }
-                                            }
-                                            ###BIS!=SIT
-                                            else {
-                                                dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,!BIT,BIS!=SIT");
-                                                $saveInstalledSoftware = 1;
-                                                $saveInstalledType     = 1;
-                                            }
+                                            ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
+                                            $saveInstalledType = 1;
                                         }
                                     }
                                 }
@@ -1000,40 +894,9 @@ sub load {
                                     ###SIT=M
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
                                         ###BIS=SIT
-                                        if (
-                                             numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount,
-                                                                      $rec{processorCount} )
-                                             && numericEqualOrBothUndef( $bravoInstalledSoftware->users,
-                                                                         $rec{installedSoftwareTypeUsers} )
-                                             && stringEqual(
-                                                             $bravoInstalledSoftware->version,
-                                                             $rec{installedSoftwareTypeVersion}
-                                             )
-                                            )
-                                        {
-                                            ###AUTH=AUTH|1
-                                            if (
-                                                 numericEqualOrBothUndef(
-                                                                          $bravoInstalledSoftware->authenticated,
-                                                                          $rec{scanRecordAuthenticated}
-                                                 )
-                                                 || ( defined $bravoInstalledSoftware->authenticated
-                                                      && $bravoInstalledSoftware->authenticated == 1 )
-                                                )
-                                            {
-                                                dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT=M,BIS=SIT,AUTH=AUTH|1");
-                                            }
-                                            ###AUTH!=AUTH|1
-                                            else {
-                                                dlog(
-                                                    "SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT=M,SIT=M,BIS=SIT,AUTH!=AUTH|1");
-                                                $saveInstalledSoftware = 1;
-                                            }
-                                        }
-                                        ###BIS!=SIT
-                                        else {
-                                            dlog("SIT=U|C,BIS,BSL,BSL=A,BIS=A,DT=M,SIT=M,BIS!=SIT");
-                                            $saveInstalledSoftware = 1;
+                                        ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
+                                        if( $saveInstalledType == 1) {
+                                        	$saveInstalledSoftware = 1;
                                         }
                                     }
                                     ###SIT!=M
@@ -1247,18 +1110,21 @@ sub load {
                         $bravoInstalledSoftware->save($self->bravoConnection);
                         $statistics{'TRAILS'}{'INSTALLED_SOFTWARE'}{'UPDATE'}++;
                         dlog("saved bravo installed software object");
-						dlog("checking if bravo installed software is in scope of recon engine");
-                        my ($sw_license_mgmt, $status) = $self->getCustomerDataByID ($self->bravoConnection, $bravoSoftwareLpar->customerId);
-                        if ( $bravoSoftwareLpar->customerId ne '999999' && $sw_license_mgmt eq 'YES' && $status eq 'ACTIVE'){
-                        	###Call the recon engine for the object.
-                        	dlog("calling recon engine for bravo installed software object");
-                        	my $queue =
-                        	    Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
-                        	$queue->add;
-                        	$statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
-                        	dlog("called recon engine for bravo installed software object");
-                        }else{
-                        	dlog("customer is not in scope of recon engine");
+                        
+                        if ($addIswToRecon == 1) {                       
+							dlog("checking if bravo installed software is in scope of recon engine");
+	                        my ($sw_license_mgmt, $status) = $self->getCustomerDataByID ($self->bravoConnection, $bravoSoftwareLpar->customerId);
+		                        if ( $bravoSoftwareLpar->customerId ne '999999' && $sw_license_mgmt eq 'YES' && $status eq 'ACTIVE'){
+	                        	###Call the recon engine for the object.
+	                        	dlog("calling recon engine for bravo installed software object");
+	                        	my $queue =
+	                        	    Recon::Queue->new( $self->bravoConnection, $bravoInstalledSoftware, $bravoSoftwareLpar );
+	                        	$queue->add;
+	                        	$statistics{'TRAILS'}{'RECON_INST_SW'}{'UPDATE'}++;
+	                        	dlog("called recon engine for bravo installed software object");
+	                        }else{
+                        		dlog("customer is not in scope of recon engine");
+                        	}
                         }
                     }
                 }
@@ -2243,5 +2109,51 @@ sub updateStagingInstalledType{
   dlog("saved staging installed type object");
  
 }
+
+
+sub installSoftwareEqual {
+	my($self,$bravoInstalledSoftware, %rec) = @_;
+	my $saveISW = 0;
+	my $addToRecon = 0;
+	my $auth = 0;
+	dlog("installSoftwareEqual" );
+	
+	if ( !(numericEqualOrBothUndef( $bravoInstalledSoftware->processorCount, $rec{processorCount} ))) {
+		$saveISW = 1;
+		dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIT!=SIT(procCount)" );
+	}
+	if ( !(numericEqualOrBothUndef($bravoInstalledSoftware->users,$rec{installedSoftwareTypeUsers}) )) {
+		$saveISW = 1;
+		$addToRecon = 1;
+		dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,BIT!=SIT(users)" );
+	}
+	if ( $rec{installedSoftwareType} eq 'MANUAL') {
+		if ( !(stringEqualOrBothUndef($bravoInstalledSoftware->version,$rec{installedSoftwareTypeVersion}) )) {
+			$saveISW = 1;
+			$addToRecon = 1;
+		}
+	}
+	if ( $rec{installedSoftwareType} eq 'TAD4Z' ) {
+		if ( !($bravoInstalledSoftware->discrepancyTypeId == $self->discrepancyTypeMap->{'TADZ'} )){
+			$saveISW = 1;
+			$addToRecon = 1;
+		}	
+	}
+	
+    if ( !( numericEqualOrBothUndef( $bravoInstalledSoftware->authenticated, $rec{scanRecordAuthenticated}
+                                 )
+         || ( defined $bravoInstalledSoftware->authenticated && $bravoInstalledSoftware->authenticated == 1 )
+       ))
+       {
+              $saveISW = 1;
+              $auth = 1;
+              dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=A,DT!=M,SIT!=M,BIT,AUTH!=AUTH|1" );
+       }
+	dlog("saveISW = $saveISW , addToRecon= $addToRecon , auth= $auth ");
+	return ($saveISW,$addToRecon,$auth);
+	
+	
+}
+
 1;
 

@@ -338,7 +338,7 @@ sub queryGetByBizKey {
             customer_id = ?
             and hostname = ?
             and software_id = ?
-    ';
+     with ur';
     return ('getByBizKeyManualQueue', $query);
 }
 
@@ -395,7 +395,7 @@ sub queryGetById {
             manual_queue
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyManualQueue', $query);
 }
 

@@ -158,7 +158,7 @@ sub queryGetByBizKey {
         where
             reconcile_id = ?
             and used_license_id = ?
-    ';
+     with ur';
     return ('getByBizKeyReconcileUsedLicense', $query);
 }
 

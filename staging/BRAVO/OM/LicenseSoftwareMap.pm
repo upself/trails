@@ -206,7 +206,7 @@ sub queryGetByBizKey {
             license_sw_map
         where
             license_id = ?
-    ';
+     with ur';
     return ('getByBizKeyLicenseSoftwareMap', $query);
 }
 
@@ -239,7 +239,7 @@ sub queryGetById {
             license_sw_map
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyLicenseSoftwareMap', $query);
 }
 

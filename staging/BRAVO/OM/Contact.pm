@@ -386,7 +386,7 @@ sub queryGetByBizKey {
             contact
         where
             contact_id = ?
-    ';
+     with ur';
     return ('getByBizKeyContact', $query);
 }
 
@@ -443,7 +443,7 @@ sub queryGetById {
             contact
         where
             contact_id = ?
-    ';
+     with ur';
     return ('getByIdKeyContact', $query);
 }
 

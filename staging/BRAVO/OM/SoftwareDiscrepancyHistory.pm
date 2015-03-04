@@ -273,7 +273,7 @@ sub queryGetById {
             software_discrepancy_h
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeySoftwareDiscrepancyHistory', $query);
 }
 

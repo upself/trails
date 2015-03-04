@@ -512,7 +512,7 @@ sub queryGetByBizKey {
         where
             software_lpar_id = ?
             and processor_num = ?
-    ';
+     with ur';
     return ('getByBizKeyProcessor', $query);
 }
 
@@ -589,7 +589,7 @@ sub queryGetById {
             software_lpar_processor
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyProcessor', $query);
 }
 

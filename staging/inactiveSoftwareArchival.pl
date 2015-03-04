@@ -224,6 +224,7 @@ sub queryCustomerIds {
             a.customer_id
         from
             customer a
+        with ur
     ';
 
     return ( 'customerIds', $query, \@fields );
@@ -263,6 +264,7 @@ sub querySoftwareIds {
             software a
         where
             a.status = \'INACTIVE\'
+        with ur
     ';
 
     return ( 'softwareIds', $query, \@fields );

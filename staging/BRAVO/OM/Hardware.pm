@@ -987,7 +987,7 @@ sub queryGetByBizKey {
             machine_type_id = ?
             and serial = ?
             and country = ?
-    ';
+     with ur';
     return ('getByBizKeyHardware', $query);
 }
 
@@ -1132,7 +1132,7 @@ sub queryGetById {
             hardware
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardware', $query);
 }
 

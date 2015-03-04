@@ -121,7 +121,7 @@ sub queryReconPvuQueue {
             recon_pvu a
         order by 
             a.record_time asc
-        fetch first 1 rows only
+        fetch first 1 rows only with ur
     ';
  dlog("queryReconPvuQueue=$query");
  return ( 'reconPvuQueue', $query, \@fields );

@@ -765,7 +765,7 @@ sub queryGetByBizKey {
         where
             name = ?
             and customer_id = ?
-    ';
+     with ur';
     return ('getByBizKeyHardwareLpar', $query);
 }
 
@@ -878,7 +878,7 @@ sub queryGetById {
             hardware_lpar
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardwareLpar', $query);
 }
 

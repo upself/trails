@@ -287,7 +287,7 @@ sub queryGetByBizKey {
         where
             hardware_lpar_id = ?
             and software_lpar_id = ?
-    ';
+     with ur';
     return ('getByBizKeyHardwareSoftwareComposite', $query);
 }
 
@@ -324,7 +324,7 @@ sub queryGetById {
             hw_sw_composite
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyHardwareSoftwareComposite', $query);
 }
 

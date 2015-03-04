@@ -256,7 +256,7 @@ sub queryGetByBizKey {
         where
             customer_id = ?
             and action = ?
-    ';
+     with ur';
     return ('getByBizKeyReconCustomer', $query);
 }
 
@@ -297,7 +297,7 @@ sub queryGetById {
             recon_customer
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyReconCustomer', $query);
 }
 

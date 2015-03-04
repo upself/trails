@@ -18,8 +18,8 @@ my $configFile = "/opt/staging/v2/config/softwareToBravoConfig.txt";
 my $cfgMgr       = Base::ConfigManager->instance($configFile);
 my $sleepPeriod  = $cfgMgr->sleepPeriod;
 my $server       = $cfgMgr->server;
-my $testMode     = $cfgMgr->testMode;
-my $applyChanges = $cfgMgr->applyChanges;
+#my $testMode     = $cfgMgr->testMode;
+#my $applyChanges = $cfgMgr->applyChanges;
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"

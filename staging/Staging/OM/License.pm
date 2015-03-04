@@ -801,7 +801,7 @@ sub queryGetByBizKey {
             license
         where
             ext_src_id = ?
-    ';
+     with ur';
     return ('getByBizKeyLicense', $query);
 }
 
@@ -922,7 +922,7 @@ sub queryGetById {
             license
         where
             id = ?
-    ';
+     with ur';
     return ('getByIdKeyLicense', $query);
 }
 
