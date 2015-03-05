@@ -3,7 +3,7 @@
 . /home/eaadmin/sqllib/db2profile
 
 # num children
-MAX=3
+MAX=50
 
 echo "`date` Running reports for those not in staging" >> /opt/bravo/scripts/report/logs/lifeCycle.log 2>&1
 #Added by Larry for HealthCheck And Monitor Module to switch to /opt/bravo/scripts/report home folder
