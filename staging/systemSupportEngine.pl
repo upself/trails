@@ -39,7 +39,9 @@
 ###################################################################################################################################################################################################
 #                                            Phase 8 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 8'
 # 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
-#
+###################################################################################################################################################################################################
+#                                            Phase 9 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 9'
+# 2014-07-07  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
 
 #Load required modules
 use strict;
@@ -71,6 +73,7 @@ my $RESTART_TRAILS_WEB_APPLICATION       = "RESTART_TRAILS_WEB_APPLICATION";#Add
 my $STAGING_BRAVO_DATA_SYNC              = "STAGING_BRAVO_DATA_SYNC";#Added by Larry for System Support And Self Healing Service Components - Phase 6
 my $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE = "ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE";#Added by Larry for System Support And Self Healing Service Components - Phase 7
 my $REMOVE_CERTAIN_BANK_ACCOUNT			 = "REMOVE_CERTAIN_BANK_ACCOUNT"; #Added by Tomas for System Support And Self Healing Service Components - Phase 8
+my $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS = "CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS"; #Added by Tomas for System Support And Self Healing Service Components - Phase 9
 #Only can be processed on TAP3 Server
 my $RESTART_LOADER_ON_TAP3_SERVER        = "RESTART_LOADER_ON_TAP3_SERVER";
 
@@ -559,6 +562,7 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
       && $operationNameCode ne $STAGING_BRAVO_DATA_SYNC#Added by Larry for System Support And Self Healing Service Components - Phase 6
       && $operationNameCode ne $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE#Added by Larry for System Support And Self Healing Service Components - Phase 7
       && $operationNameCode ne $REMOVE_CERTAIN_BANK_ACCOUNT#Added by Tom for System Support And Self Healing Service Components - Phase 8
+      && $operationNameCode ne $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS#Added by Tomas for System Support And Self Healing Service Components - Phase 9
 	  ){
 	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
 		print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be kept for {$serverMode} Server to process.\n";    
