@@ -2,7 +2,7 @@
 
 use lib '/opt/staging/v2/';
 use lib '/home/michal.g/';
-use t::tests::sftpTransfer::sftpTransfer;
+use t::unit_test::sftpTransfer::sftpTransfer;
 
 # global variables
 our $name; # name of this FTP session processed

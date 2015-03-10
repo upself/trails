@@ -1,4 +1,4 @@
-package softwareToBravo::SoftwareLoader;
+package t::unit_tests::softwareToBravo::SoftwareLoader;
 
 use Test::More;
 use base 'Test::Class';

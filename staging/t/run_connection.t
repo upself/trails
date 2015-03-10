@@ -2,6 +2,6 @@
 
 use lib '/opt/staging/v2/';
 
-use t::tests::Test::Connection;
+use t::environment_test::Database::Connection;
 
 Test::Class->runtests;
