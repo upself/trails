@@ -1,4 +1,4 @@
-package t::tests::Test::BRAVO::Delegate::BRAVODelegate;
+package t::unit_test::BRAVODelegate::BRAVODelegate;
 
 use Test::More;
 use base 'Test::Class';

@@ -1,4 +1,4 @@
-package ATPDelegate::getHWCustomerId;
+package t::unit_test::ATPDelegate::getHWCustomerId;
 
 use Test::More;
 use base 'Test::Class';

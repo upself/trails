@@ -1,4 +1,4 @@
-package sftpTransfer::sftpTransfer;
+package t::unit_test::sftpTransfer::sftpTransfer;
 
 require '../../sftpTransfer.pl';
 

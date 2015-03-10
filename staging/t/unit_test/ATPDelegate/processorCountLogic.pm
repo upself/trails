@@ -1,4 +1,4 @@
-package ATPDelegate::processorCountLogic;
+package t::unit_test::ATPDelegate::processorCountLogic;
 
 use Test::More;
 use base 'Test::Class';

@@ -1,4 +1,4 @@
-package ATPDelegate::cpuIflLogic;
+package t::unit_test::ATPDelegate::cpuIflLogic;
 
 use Test::More;
 use base 'Test::Class';

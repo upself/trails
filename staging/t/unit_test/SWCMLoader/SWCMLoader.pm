@@ -1,4 +1,4 @@
-package t::tests::Test::Staging::SWCMLoader;
+package t::unit_tests::SWCMLoader::SWCMLoader;
 
 use Test::More;
 use base 'Test::Class';

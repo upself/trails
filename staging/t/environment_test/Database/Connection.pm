@@ -1,4 +1,4 @@
-package t::tests::Test::Database::Connection;
+package t::environment_test::Database::Connection;
 
 use Test::More;
 use base 'Test::Class';
