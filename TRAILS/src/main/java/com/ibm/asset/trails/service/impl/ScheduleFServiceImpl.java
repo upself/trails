@@ -293,13 +293,13 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			if (!lbHeaderRow) {
 				if (error) {
-					cell = row.createCell(15);
+					cell = row.createCell(16);
 					cell.setCellStyle(lcsError);
 					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
 							.toString()));
 				} else {
 					saveScheduleF(sf, psRemoteUser);
-					cell = row.createCell(15);
+					cell = row.createCell(16);
 					cell.setCellStyle(lcsMessage);
 					cell.setCellValue( new StringBuffer("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
 				}
@@ -429,6 +429,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfhSave.setSerial(lsfExists.getSerial());
 			lsfhSave.setHostname(lsfExists.getHostname());
 			lsfhSave.setScope(lsfExists.getScope());
+			lsfhSave.setSWFinanceResp(lsfExists.getSWFinanceResp());
 			lsfhSave.setSource(lsfExists.getSource());
 			lsfhSave.setSourceLocation(lsfExists.getSourceLocation());
 			lsfhSave.setStatus(lsfExists.getStatus());
@@ -450,6 +451,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setSoftwareName(psfSave.getSoftwareName());
 			lsfExists.setManufacturer(psfSave.getManufacturer());
 			lsfExists.setScope(psfSave.getScope());
+			lsfExists.setSWFinanceResp(lsfExists.getSWFinanceResp());
 			lsfExists.setSource(psfSave.getSource());
 			lsfExists.setSourceLocation(psfSave.getSourceLocation());
 			lsfExists.setStatus(psfSave.getStatus());

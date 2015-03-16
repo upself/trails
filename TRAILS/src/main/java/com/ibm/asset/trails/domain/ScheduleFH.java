@@ -233,4 +233,15 @@ public class ScheduleFH {
 	public void setStatus(Status status) {
   	this.status = status;
   }
+	
+	@Column(name="SW_FINANCIAL_RESP")
+	private String SWFinanceResp;
+
+	public String getSWFinanceResp() {
+		return SWFinanceResp;
+	}
+
+	public void setSWFinanceResp(String sWFinanceResp) {
+		SWFinanceResp = sWFinanceResp;
+	}
 }
