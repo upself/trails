@@ -322,6 +322,8 @@ public class ShowConfirmation extends AccountBaseAction {
 				} else if (per.equalsIgnoreCase("PVU") && !isAllPvuLicenses()) {
 					addFieldError("licenseId",
 							"You must select license(s) with a Capacity type of PROCESSOR VALUE UNIT");
+				} else if (per.equalsIgnoreCase("PROCESSOR") && !isValidProcessor()){
+					addFieldError("per", "LPAR proc must be active and greater than zero");
 				} else if ((per.equalsIgnoreCase("HWGARTMIPS")
 						|| per.equalsIgnoreCase("LPARGARTMIPS")
 						|| per.equalsIgnoreCase("HWLSPRMIPS")
@@ -421,6 +423,21 @@ public class ShowConfirmation extends AccountBaseAction {
 		}
 
 		return lbAllPvuLicenses;
+	}
+	
+	private boolean isValidProcessor(){
+		boolean isValidProcessor = true;
+		for(ReconWorkspace reconWorkspace : recon.getList()){
+			if(!reconWorkspace.getHwLparEffProcessorStatus().equalsIgnoreCase("ACTIVE")){
+				isValidProcessor = false;
+				break;
+			}else if(null == reconWorkspace.getHwLparEffProcessorCount() || reconWorkspace.getHwLparEffProcessorCount() <=0){
+				isValidProcessor = false;
+				break;
+			}
+		}
+		
+		return isValidProcessor;
 	}
 
 	private boolean isAllGSLMLicenses(String per) {

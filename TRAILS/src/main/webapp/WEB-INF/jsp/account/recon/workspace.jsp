@@ -286,6 +286,10 @@
 				value="%{#attr.row.processorCount}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareProcessorCount"
 				value="%{#attr.row.hardwareProcessorCount}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].hwLparEffProcessorCount"
+				value="%{#attr.row.hwLparEffProcessorCount}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].hwLparEffProcessorStatus"
+				value="%{#attr.row.hwLparEffProcessorStatus}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].processorManufacturer"
 				value="%{#attr.row.processorManufacturer}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].mastProcessorType"
@@ -356,8 +360,8 @@
 			sortProperty="h.hardwareStatus" sortable="true" />
 		<display:column property="lparStatus" title="Lpar Status"
 			sortProperty="hl.lparStatus" sortable="true" />
-		<display:column property="processorCount" title="# Proc."
-			sortProperty="sl.processorCount" sortable="true" />
+		<display:column property="hwLparEffProcessorCount" title="# Proc."
+			sortProperty="hle.processorCount" sortable="true" />
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
 		<display:column sortProperty="sw.softwareName" title="Software"

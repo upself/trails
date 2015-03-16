@@ -31,6 +31,7 @@ public class VSoftwareLparDAOJpa extends
 		Criteria criteria = getHibernateSessionCriteria();
 
 		criteria.createAlias("hardwareLpar", "hl")
+				.createAlias("hl.hardwareLparEff", "hle")
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
@@ -188,16 +189,16 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("mt.type").as("assetType"))
 				.add(Projections.property("h.hardwareStatus").as("hardwareStatus"))
 				.add(Projections.property("hl.lparStatus").as("lparStatus"))
-				.add(Projections.property("processorCount")
-						.as("processorCount"))
+				.add(Projections.property("processorCount").as("processorCount"))
 				.add(Projections.property("sw.softwareName").as("productInfoName"))
 				.add(Projections.property("sw.softwareId").as("productInfoId"))
 				.add(Projections.property("sw.pid").as("pid"))
 				.add(Projections.property("rt.name").as("reconcileTypeName"))
 				.add(Projections.property("rt.id").as("reconcileTypeId"))
 				.add(Projections.property("aus.remoteUser").as("assignee"))
-				.add(Projections.property("h.processorCount").as(
-						"hardwareProcessorCount"))
+				.add(Projections.property("h.processorCount").as("hardwareProcessorCount"))
+				.add(Projections.property("hle.processorCount").as("hwLparEffProcessorCount"))
+				.add(Projections.property("hle.status").as("hwLparEffProcessorStatus"))
 				.add(Projections.property("h.chips").as("chips")));
 		criteria.setResultTransformer(new AliasToBeanResultTransformer(
 				ReconWorkspace.class));
