@@ -765,7 +765,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				}
 			} catch (Exception e) {
 				throw new Exception("Invalid account number");
-			}
+			}	
 
 			account = getAccountService().getAccountByAccountNumber(
 					accountNumber);
@@ -865,8 +865,34 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			break;
 		}
+		
+		case 10: { // SW Financial Resp
+			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				String[] scDesParts = cell.getRow().getCell(9)
+						.getRichStringCellValue().getString().split(",");
+				String swFinancialResp = cell.getRichStringCellValue()
+						.getString();
+				if (!swFinancialResp.equals("CUSTO")
+						&& !swFinancialResp.equals("IBM")) {
+					throw new Exception(
+							"The value of SW Financial Resp should only be CUSTO or IBM.");
+				} else if (scDesParts[0].contains("IBM owned")
+						&& swFinancialResp.equals("CUSTO")) {
+					throw new Exception(
+							"The value of SW Financial Resp should only be IBM when the software is IBM owned.");
+				} else {
+					sf.setSWFinanceResp(swFinancialResp);
+				}
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("SW Financial Resp is required.");
+			} else {
+				throw new Exception("SW Financial Resp is not a string.");
+			}
+			break;
+		}
 
-		case 10: { // Source
+		case 11: { // Source
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 				@SuppressWarnings("unchecked")
 				List<Source> results = getEntityManager()
@@ -887,7 +913,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			break;
 		}
 
-		case 11: { // Source location
+		case 12: { // Source location
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 				throw new Exception("Source location is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
@@ -900,7 +926,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			break;
 		}
 
-		case 12: { // Status
+		case 13: { // Status
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 				@SuppressWarnings("unchecked")
 				List<Status> results = getEntityManager()
@@ -921,7 +947,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			break;
 		}
 
-		case 13: { // Business justification
+		case 14: { // Business justification
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 				throw new Exception("Business justification is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
@@ -996,26 +1022,32 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			break;
 		}
+		
+		case 10: { // SW Financial Resp
+			lsErrorMessage = "SW Financial Resp is required.";
 
-		case 10: { // Source
+			break;
+		}
+
+		case 11: { // Source
 			lsErrorMessage = "Source is required.";
 
 			break;
 		}
 
-		case 11: { // Source location
+		case 12: { // Source location
 			lsErrorMessage = "Source location is required.";
 
 			break;
 		}
 
-		case 12: { // Status
+		case 13: { // Status
 			lsErrorMessage = "Status is required.";
 
 			break;
 		}
 
-		case 13: { // Business justification
+		case 14: { // Business justification
 			lsErrorMessage = "Business justification is required.";
 
 			break;
