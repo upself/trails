@@ -429,6 +429,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfhSave.setSerial(lsfExists.getSerial());
 			lsfhSave.setHostname(lsfExists.getHostname());
 			lsfhSave.setScope(lsfExists.getScope());
+			
+			//AB added
+			lsfhSave.setSWFinanceResp(lsfExists.getSWFinanceResp());
+			
 			lsfhSave.setSource(lsfExists.getSource());
 			lsfhSave.setSourceLocation(lsfExists.getSourceLocation());
 			lsfhSave.setStatus(lsfExists.getStatus());
@@ -458,6 +462,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setRemoteUser(psRemoteUser);
 			lsfExists.setRecordTime(new Date());
 
+			//AB added
+			lsfExists.setSWFinanceResp(psfSave.getSWFinanceResp());
+			
 			getEntityManager().merge(lsfExists);
 			getEntityManager().flush();
 			

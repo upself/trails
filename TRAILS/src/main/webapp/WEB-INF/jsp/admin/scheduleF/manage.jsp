@@ -9,6 +9,14 @@
 <script type="text/javascript">
     $( document ).ready(function() {
     	
+    	//AB added begin
+    	var scopeSelectedVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    	if(scopeSelectedVal== 'IBM owned'){
+    		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
+    		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+    	};
+    	//AB added end
+    	
     	if ($('#softwareStatus').val() == 'true'){ 		
     		$('select[id="statusArrayList"]').find('option[value="2"]').attr("disabled","disabled");
 		} else {
@@ -340,6 +348,17 @@ var lastValue = '';
 	</div>
 	<br />
 	<br />
+	
+	<!-- AB added -->
+	<div class="float-left" style="width:30%;">
+		<label for="swFinanResp">SW Financial Resp:</label>
+	</div>
+	<div class="float-left" style="width:70%;">
+		<s:select id="swFinanceArrayList" list="#{'IBM':'IBM', 'CUSTO':'CUSTO'}" name="scheduleFForm.swFinanResp"/>
+	</div>
+	<br />
+	<br />				
+	
 	<div class="float-left" style="width:30%;">
 		<label for="complianceReporting">Compliance reporting:</label>
 	</div>
@@ -403,6 +422,9 @@ var lastValue = '';
 	<display:column property="softwareTitle" title="Software title" />
 	<display:column property="manufacturer" title="Manufacturer" />
 	<display:column property="scope.description"  title="Scope" />
+		<!-- AB added -->
+	<display:column property="SWFinanceResp"  title="SW Financial Resp" />
+	
 	<display:column property="source.description"  title="Source" />
 	<display:column property="sourceLocation" title="Source location" />
 	<display:column property="status.description" title="Status" />
