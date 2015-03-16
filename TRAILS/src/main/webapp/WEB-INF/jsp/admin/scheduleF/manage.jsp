@@ -15,6 +15,17 @@
     		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
     		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
     	};
+    	
+    	$("#scopeArrayList").change(function(){
+        	var scopeVal = $('#scopeArrayList option:selected').text().split(",")[0];
+        	if(scopeVal== 'IBM owned'){
+        		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
+        		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+        	}  else{
+        		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:""});
+        	}  		
+    		
+    	});
     	//AB added end
     	
     	if ($('#softwareStatus').val() == 'true'){ 		
