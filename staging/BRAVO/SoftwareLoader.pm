@@ -895,9 +895,7 @@ sub load {
                                     if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
                                         ###BIS=SIT
                                         ($saveInstalledSoftware,$addIswToRecon,$saveInstalledType) = $self->installSoftwareEqual($bravoInstalledSoftware,%rec);
-                                        if( $saveInstalledType == 1) {
-                                        	$saveInstalledSoftware = 1;
-                                        }
+                                         $saveInstalledType = 0;
                                     }
                                     ###SIT!=M
                                     else {
