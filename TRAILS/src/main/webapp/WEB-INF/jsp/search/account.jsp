@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 function popupCNDB(accountId) {
-newWin=window.open('//${cndbServerName}/OSCAR/ViewDetail.do?method=customer&customerId=' + accountId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+newWin=window.open('//${cndbServerName}/cndbLegacy/faces/account/viewAccountDetail.jsp?accountNbr=' + accountId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 newWin.focus(); 
 void(0);
 }
