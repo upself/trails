@@ -72,7 +72,20 @@ public class ScheduleF {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SOURCE_ID")
 	private Source source;
+	
+	//AB added begin
+	@Column(name="SW_FINANCIAL_RESP")
+	private String SWFinanceResp;
+	
+	public String getSWFinanceResp() {
+		return SWFinanceResp;
+	}
 
+	public void setSWFinanceResp(String sWFinanceResp) {
+		SWFinanceResp = sWFinanceResp;
+	}
+	//AB added end
+	
 	@Column(name = "SOURCE_LOCATION")
 	private String sourceLocation;
 
@@ -281,7 +294,15 @@ public class ScheduleF {
 			if (!this.getLevel().equals(other.getLevel())) {
 				return false;
 			}
-
+			//AB added
+			if (this.getSWFinanceResp() != null && other.getSWFinanceResp() != null) {
+				if (!this.getSWFinanceResp().equals(other.getSWFinanceResp())) {
+					return false;
+				}
+			} else if (!((this.getSWFinanceResp() == null ||this.getSWFinanceResp() == "") && (other.getSWFinanceResp() == null || other.getSWFinanceResp() == ""))) {
+				return false;
+			}
+			
 			if (this.getHwOwner() != null && other.getHwOwner() != null) {
 				if (!this.getHwOwner().equals(other.getHwOwner())) {
 					return false;

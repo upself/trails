@@ -24,7 +24,18 @@ public class ScheduleFForm {
 	private String hostname;
 
 	private Long scopeId;
+	
+	//AB added
+	private String swFinanResp;
 
+	public String getSwFinanResp() {
+		return swFinanResp;
+	}
+
+	public void setSwFinanResp(String swFinanResp) {
+		this.swFinanResp = swFinanResp;
+	}			
+	
 	private String complianceReporting;
 
 	private Long sourceId;
