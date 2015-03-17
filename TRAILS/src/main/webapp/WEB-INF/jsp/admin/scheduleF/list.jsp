@@ -69,7 +69,7 @@
 		sortProperty="SF.source.description" title="Source" sortable="true" />
 	<!-- AB added -->	
 	<display:column property="SWFinanceResp"
-		sortProperty="SF.SWFinanceResp" title="SW_FINANCIAL_RESP" sortable="true" />
+		sortProperty="SF.SWFinanceResp" title="SW Financial Resp" sortable="true" />
 	
 	<display:column property="sourceLocation"
 		sortProperty="SF.sourceLocation" title="Source location"
