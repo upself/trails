@@ -429,7 +429,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfhSave.setSerial(lsfExists.getSerial());
 			lsfhSave.setHostname(lsfExists.getHostname());
 			lsfhSave.setScope(lsfExists.getScope());
+			
+			//AB added
 			lsfhSave.setSWFinanceResp(lsfExists.getSWFinanceResp());
+			
 			lsfhSave.setSource(lsfExists.getSource());
 			lsfhSave.setSourceLocation(lsfExists.getSourceLocation());
 			lsfhSave.setStatus(lsfExists.getStatus());
@@ -451,7 +454,6 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setSoftwareName(psfSave.getSoftwareName());
 			lsfExists.setManufacturer(psfSave.getManufacturer());
 			lsfExists.setScope(psfSave.getScope());
-			lsfExists.setSWFinanceResp(lsfExists.getSWFinanceResp());
 			lsfExists.setSource(psfSave.getSource());
 			lsfExists.setSourceLocation(psfSave.getSourceLocation());
 			lsfExists.setStatus(psfSave.getStatus());
@@ -460,6 +462,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setRemoteUser(psRemoteUser);
 			lsfExists.setRecordTime(new Date());
 
+			//AB added
+			lsfExists.setSWFinanceResp(psfSave.getSWFinanceResp());
+			
 			getEntityManager().merge(lsfExists);
 			getEntityManager().flush();
 			
@@ -592,6 +597,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 	}
+
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public void paginatedList(DisplayTagList pdtlData, Account pAccount,
