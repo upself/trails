@@ -261,7 +261,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsbErrorMessage = new StringBuffer();
 			lbHeaderRow = false;
 
-			for (int i = 0; i <= 13; i++) {
+			for (int i = 0; i <= 14; i++) {
 				cell = row.getCell(i);
 				if (cell == null) {
 					cell = row.createCell(i);
