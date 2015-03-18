@@ -81,7 +81,19 @@ public class ScheduleFH {
 
 	@Column(name = "RECORD_TIME")
 	private Date recordTime;
+	
+	//AB added begin
+	@Column(name="SW_FINANCIAL_RESP")
+	private String SWFinanceResp;
+	
+	public void setSWFinanceResp(String sWFinanceResp) {
+		SWFinanceResp = sWFinanceResp;
+	}
 
+	public String getSWFinanceResp() {
+		return SWFinanceResp;
+	}	
+	
 	public String getLevel() {
 		return level;
 	}
