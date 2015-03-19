@@ -56,7 +56,7 @@ my $date = $mday;
 $year = 1900 + $year;                                                                    
 my $month = $months[$mon];                                                               
 
-my $emptyFlag;
+my $emptyFlag = undef;
 my $customer = undef;
 
 GetOptions(
@@ -74,7 +74,8 @@ my $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt';
 my $zipfile;
 our $accountNumber;
 my $productCount;
-open(my $logFile, '>', $logFilePath);
+my $logFile;
+open($logFile, '>', $logFilePath);
                                                                                          
 
 ###############################################################################          
@@ -83,15 +84,25 @@ open(my $logFile, '>', $logFilePath);
 ###############################################################################          
 #-----------------------------------------------------------------------------
 logit( "Acquiring bravo database handle", $logFile );                                    
-our $dbh = Database::Connection->new('trails');
-logit( "Bravo Database handle acquired", $logFile );     
-logit( "Acquiring data from trails DB", $logFile );
-our $bravoSoftware = getBravoSoftwareReport($dbh,$customer); 
-logit( "Data axquired", $logFile );
-logit( "Started generating xls file", $logFile );
+my $dbh = Database::Connection->new('trails');
+logit( "Bravo Database handle acquired", $logFile ); 
+my $bravoSoftware;
 
+if(defined $emptyFlag){
+	logit( "generating empty swMultiReport (just headers)", $logFile ); 
+	logit( "searching for account number", $logFile ); 
+	getAccNumber();
+	logit( "account number found", $logFile ); 
+}else{
+	logit( "Acquiring data from trails DB", $logFile );
+	$bravoSoftware = getBravoSoftwareReport($dbh,$customer); 
+	logit( "Data axquired", $logFile );
+}
+
+logit( "Started generating xls file", $logFile );
 our $workbook = Spreadsheet::WriteExcel::Big->new("$reportDir/$accountNumber.xls");
 logit( "Created xls file object", $logFile );
+
 logit( "Creating HeartBeatSheet", $logFile );
 createHeartbeatSheet();
 logit( "Created HeartBeatSheet", $logFile );
@@ -103,16 +114,30 @@ createProductCountSheet();
 logit( "Created product count sheet", $logFile );
 logit( "xls file generation finished", $logFile );
 $workbook->close();
-logit( "Zipping the report and sending to GSA", $logFile );
+logit( "Zipping the report ", $logFile );
+zipFile();
+logit( "Report is zipped", $logFile );
+logit( "Sending report to GSA", $logFile );
 sendReportToGSA();
 logit( "Report sent", $logFile );
-close($logFile)
+close($logFile);
 
 
 ###############################################################################          
 ### Function definitions
 ###                                                                                      
 ###############################################################################          
+sub getAccNumber{
+	$dbh->prepareSqlQuery('simplereport',"SELECT account_number from eaadmin.customer where customer_id=$customer and status='ACTIVE' with ur");
+    ###Get the statement handle
+	my $sth = $dbh->sql->{simplereport};
+	my $accNumber;
+	$sth->bind_columns(\$accNumber);
+	$sth->execute();
+	while ( $sth->fetchrow_arrayref ) {
+    	$accountNumber = $accNumber;
+    }
+}
 
 sub getBravoSoftwareReport {
 	my ( $dbh, $customerId ) = @_;
@@ -425,6 +450,7 @@ from
 }
 
 sub createHeartbeatSheet{
+
 	my $heartbeat = $workbook->add_worksheet("Heartbeat");
 my $lineCount = 2;
 
@@ -451,6 +477,10 @@ my $lineCount = 2;
 	$heartbeat->write( $lineCount, 17, "PART MSU" );
 	$heartbeat->write( $lineCount, 18, "LPAR STATUS" );
 	$heartbeat->write( $lineCount, 19, "HARDWARE STATUS" );
+
+	if(defined $emptyFlag){
+		return;
+	}
 
 	$lineCount++;
 
@@ -516,48 +546,6 @@ my $lineCount = 2;
 	}                                                                                         
 }
 
-sub createProductCountSheet {
-
-	my $prodCount = $workbook->add_worksheet("Product Count");
-	my $pLineCount = 2;
-    $prodCount->write( 0, 0,"IBM Confidential" );
-	$prodCount->write( 1, 0,
-		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
-	$prodCount->write( $pLineCount, 0, "CUSTOMER" );
-	$prodCount->write( $pLineCount, 1, "OS" );
-	$prodCount->write( $pLineCount, 2, "MANUFACTURER" );	
-	$prodCount->write( $pLineCount, 3, "SOFTWARE NAME" );
-	$prodCount->write( $pLineCount, 4, "LICENSE TYPE" );
-	$prodCount->write( $pLineCount, 5, "PRODUCT COUNT" );
-	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
-    $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
-
-	$pLineCount++;
-
-	foreach my $osName ( sort keys %{$productCount} ) {
-		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
-			$prodCount->write( $pLineCount, 0, $accountNumber );
-			$prodCount->write( $pLineCount, 1, $osName );
-			$prodCount->write( $pLineCount, 2, $productCount->{$osName}->{$softwareName}->{'softwareManufacturer'} );
-			$prodCount->write( $pLineCount, 3, $softwareName );
-			$prodCount->write( $pLineCount, 4,
-				$productCount->{$osName}->{$softwareName}->{'license'} );
-			$prodCount->write( $pLineCount, 5,
-				$productCount->{$osName}->{$softwareName}->{'productCount'} );
-			$prodCount->write( $pLineCount, 6,
-				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
-			$prodCount->write( $pLineCount, 7,
-				$productCount->{$osName}->{$softwareName}->{'chipCount'} );
-			$pLineCount++;
-		}
-	}
-}
-
-sub logit { 
-	my ($string, $logfile) = @_ ;
-	print ($logfile,"$string". " ( customer = '$customer')"."\n");
-}                                                                            
-
 sub createSoftwareSheet {
 
 	my $lineCount  = 2;
@@ -584,6 +572,10 @@ sub createSoftwareSheet {
 	$software->write( $lineCount, 13, "LICENSE" );
 	$software->write( $lineCount, 14, "BANK ACCOUNT" );
 	$software->write( $lineCount, 15, "SCOPE" );
+	
+	if(defined $emptyFlag){
+		return;
+	}
 
 	$lineCount++;
 	  foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
@@ -853,6 +845,54 @@ sub createSoftwareSheet {
 		}
 		}
 	}
+
+sub createProductCountSheet {
+
+	my $prodCount = $workbook->add_worksheet("Product Count");
+	my $pLineCount = 2;
+    $prodCount->write( 0, 0,"IBM Confidential" );
+	$prodCount->write( 1, 0,
+		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
+	$prodCount->write( $pLineCount, 0, "CUSTOMER" );
+	$prodCount->write( $pLineCount, 1, "OS" );
+	$prodCount->write( $pLineCount, 2, "MANUFACTURER" );	
+	$prodCount->write( $pLineCount, 3, "SOFTWARE NAME" );
+	$prodCount->write( $pLineCount, 4, "LICENSE TYPE" );
+	$prodCount->write( $pLineCount, 5, "PRODUCT COUNT" );
+	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
+    $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
+    
+    if(defined $emptyFlag){
+    	return;
+    }
+
+	$pLineCount++;
+
+	foreach my $osName ( sort keys %{$productCount} ) {
+		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
+			$prodCount->write( $pLineCount, 0, $accountNumber );
+			$prodCount->write( $pLineCount, 1, $osName );
+			$prodCount->write( $pLineCount, 2, $productCount->{$osName}->{$softwareName}->{'softwareManufacturer'} );
+			$prodCount->write( $pLineCount, 3, $softwareName );
+			$prodCount->write( $pLineCount, 4,
+				$productCount->{$osName}->{$softwareName}->{'license'} );
+			$prodCount->write( $pLineCount, 5,
+				$productCount->{$osName}->{$softwareName}->{'productCount'} );
+			$prodCount->write( $pLineCount, 6,
+				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
+			$prodCount->write( $pLineCount, 7,
+				$productCount->{$osName}->{$softwareName}->{'chipCount'} );
+			$pLineCount++;
+		}
+	}
+}
+
+sub logit { 
+	my ($string, $logfile) = @_ ;
+	print $logfile "$string". " ( customer = '$customer')"."\n";
+}                                                                            
+
+
 
 sub zipFile{
 	if ( -e "$reportDir/$accountNumber.xls" ) {

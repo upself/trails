@@ -14,7 +14,7 @@
 use lib '/opt/bravo/scripts/report/lib'; 
 use lib '/opt/staging/v2'; 
 use strict;
-use Getopt::Std;
+use Getopt::Long qw(GetOptions);
 use POSIX ":sys_wait_h";
 require "/opt/staging/v2/Database/Connection.pm";   
 use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
@@ -29,7 +29,8 @@ my $maxChildren   = undef;
 GetOptions(
 'c=i' => \$maxChildren,
 ) or die "Usage: $0 -c max_children\n";
-die "Usage: $0 -c max_children\n";
+
+die "Usage: $0 -c max_children\n"
   unless defined $maxChildren;
 
 ###############################################################################
@@ -47,7 +48,8 @@ my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-open(my $logFile, '>', $logFilePath);
+my $logFile;
+open($logFile, '>', $logFilePath);
 $SIG{CHLD} = \&REAPER;
 
 ###############################################################################
@@ -88,7 +90,6 @@ foreach my $customerId (sort @{$customerIds}) {
 while ($children != 0) {
     sleep 5;
 }
-close $logFile;
 
 };
 
@@ -110,6 +111,7 @@ else {
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 # End of Program
+close $logFile;
 exit 0;
 
 ###############################################################################
@@ -187,8 +189,8 @@ sub getIds {
 
 sub logit { 
 	my ($string, $logfile) = @_ ;
-	print($logfile,"$string"."\n");
-}      
+	print $logfile "$string"."\n";
+}       
 
 sub REAPER {
 
