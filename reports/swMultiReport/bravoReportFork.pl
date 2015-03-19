@@ -49,7 +49,7 @@ my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $logFile;
-open($logFile, '>', $logFilePath);
+open($logFile, '>>', $logFilePath);
 $SIG{CHLD} = \&REAPER;
 
 ###############################################################################

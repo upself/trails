@@ -75,7 +75,7 @@ my $zipfile;
 our $accountNumber;
 my $productCount;
 my $logFile;
-open($logFile, '>', $logFilePath);
+open($logFile, '>>', $logFilePath);
                                                                                          
 
 ###############################################################################          
