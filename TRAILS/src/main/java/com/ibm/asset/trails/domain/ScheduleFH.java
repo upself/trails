@@ -245,4 +245,5 @@ public class ScheduleFH {
 	public void setStatus(Status status) {
   	this.status = status;
   }
+	
 }
