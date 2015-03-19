@@ -65,11 +65,11 @@
 		title="Manufacturer" sortable="true" />
 	<display:column property="scope.description"
 		sortProperty="SF.scope.description" title="Scope" sortable="true" />
-	<display:column property="source.description"
-		sortProperty="SF.source.description" title="Source" sortable="true" />
 	<!-- AB added -->	
 	<display:column property="SWFinanceResp"
 		sortProperty="SF.SWFinanceResp" title="SW Financial Resp" sortable="true" />
+	<display:column property="source.description"
+		sortProperty="SF.source.description" title="Source" sortable="true" />
 	
 	<display:column property="sourceLocation"
 		sortProperty="SF.sourceLocation" title="Source location"
