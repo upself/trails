@@ -489,7 +489,11 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				alertIds.add(alertId);
 			}
 			for (Long id : alertIds) {
-				reconService.breakReconcileByAlert(id, account, remoteUser);
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+				//reconService.breakReconcileByAlert(id, account, remoteUser);
+				AlertUnlicensedSw alertObj = alertDAO.findById(id);
+				reconService.breakReconcileByAlert(id, alertObj.getInstalledSoftware().getSoftwareLpar().getAccount(), remoteUser);
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 			}
 		}
 		setAlertsProcessed(getAlertsProcessed() + 1);
@@ -534,7 +538,12 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					alertIds.add(alertId);
 				}
 				for (Long id : alertIds) {
-					reconService.breakReconcileByAlert(id, account, remoteUser);
+					
+					//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+					//reconService.breakReconcileByAlert(id, account, remoteUser);
+					AlertUnlicensedSw alertObj = alertDAO.findById(id);
+					reconService.breakReconcileByAlert(id, alertObj.getInstalledSoftware().getSoftwareLpar().getAccount(), remoteUser);
+					//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 				}
 			}
 			setAlertsProcessed(getAlertsProcessed() + 1);
@@ -561,8 +570,12 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			setAlertsProcessed(0);
 			setAlertsTotal(alertIds.size());
 			for (Long alertId : alertIds) {
-				reconService
-						.breakReconcileByAlert(alertId, account, remoteUser);
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+				//reconService.breakReconcileByAlert(alertId, account, remoteUser);
+				AlertUnlicensedSw alertObj = alertDAO.findById(alertId);
+				reconService.breakReconcileByAlert(alertId,alertObj.getInstalledSoftware().getSoftwareLpar().getAccount(), remoteUser);
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
+				
 				setAlertsProcessed(getAlertsProcessed() + 1);
 			}
 		}
