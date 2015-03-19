@@ -15,21 +15,25 @@ use Tap::NewPerl;
 use BRAVO::OM::SoftwareDiscrepancyHistory;
 use BRAVO::OM::InstalledSoftware;
 use BRAVO::OM::SoftwareLpar;
+use Base::ConfigManager;
 use Recon::Queue;
 
 ###############################
 # Global variables
 ###############################
 
-our $logfile    = "/var/staging/logs/falseHitExpire/falseHitExpire.log";
-our $server       = "tap3";
+our $configfile = "/opt/staging/v2/config/falseHitExpireConfig.txt";
+our %cfgparams; # hash of all found CFG params, so we don't need to open and close the CFG file multiple times
 
-our $falsehitage = 365; # number of days for FALSE HIT expiration
+our $logfile    = readCfg($configfile, "logfile");
+our $server       = readCfg($configfile, "server");
 
-our $complexstring = "Complex discovery"; # this string in the field INSTALLED_SOFTWARE.INVALID_CATEGORY will prevent FALSE HIT from expiry
+our $falsehitage = readCfg($configfile, "falsehitage"); # number of days for FALSE HIT expiration
+
+our $complexstring = readCfg($configfile, "complexstring"); # this string in the field INSTALLED_SOFTWARE.INVALID_CATEGORY will prevent FALSE HIT from expiry
 										  # mind the letter case
 
-our $maxperonerun = $ARGV[0] if defined ( $ARGV[0] );
+our $maxperonerun = readCfg($configfile, "maxperonerun");
 							  # maximum number of FALSE HITs to expire in one run of the script - this is to prevent system overload
                               # during the debugging, I'd recommend 2 or 3, my recommendation for run in production would be 100
 
@@ -39,6 +43,35 @@ logfile($logfile);
 ###############################
 # SUBS
 ###############################
+
+sub readCfg {
+	my $cfgfile=shift;
+	my $param=shift;
+	
+	if ( scalar ( keys %cfgparams ) == 0 ) {
+		open (CFGFILE,"<",$cfgfile) or die ("The config file $cfgfile can't be opened!\n");
+		
+		while (my $line=<CFGFILE>) {
+			next if ( $line =~ /^\s*#/ );
+			next if ( $line =~ /^\s*$/ );
+			
+			chomp($line);
+			$line =~ /^([^=]+)=(.*)$/;
+			my $value=$2;
+			
+			$value =~ s/^\s+//;
+			$value =~ s/\s+$//;
+			
+			$cfgparams{$1}=$value;
+		}
+	}
+	
+	return $cfgparams{$param} if exists $cfgparams{$param};
+	
+	warn("Parameter $param not found in $cfgfile!\n");
+	
+	return undef;
+}
 
 sub getISWids {
 	my $connection=shift;
@@ -90,20 +123,9 @@ sub queryGetISWids {
 
 }
 
-sub Usage {
-	print "Tool for automatic expiration of FALSE HITs discrepancy types, older than $falsehitage days.\n";
-	print "Usage:\n\n";
-	print "$0 NUMBER\n\n";
-	print "NUMBER is the maximum of expirations in one script run. I'd recommmend 2 or 3 for debug, around 100 in production.\n\n";
-	exit;
-
-}
-
 #################################
 #  MAIN
 #################################
-
-Usage() unless (defined $ARGV[0]);
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"

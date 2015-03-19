@@ -1,0 +1,8 @@
+# config file for automatic expiration of FALSE HITs
+# please read the header of /opt/staging/v2/falseHitExpire.pl for explanations of the following parameters
+
+logfile=/var/staging/logs/falseHitExpire/falseHitExpire.log
+server=tap3
+falsehitage=365
+complexstring=Complex discovery
+maxperonerun=2
