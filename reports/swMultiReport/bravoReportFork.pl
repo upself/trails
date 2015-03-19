@@ -1,34 +1,10 @@
 #!/usr/bin/perl -w
 
 ###############################################################################
-# (C) COPYRIGHT IBM Corp. 2004
-# All Rights Reserved
-# Licensed Material - Property of IBM
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-###############################################################################
-
-###############################################################################
-# Name          : stagingImport.pl
+# Name          : bravoReportFork.pl
 # Component		: Staging
-# Description	: Creates db2 import files for load into staging
-# Author        : Alex Moise
-# Date          : January 25, 2006
-#
-#                      ATTENTION: I live in CVS now! 
-#  $Source: /cvs/AdHocReports/sw_multi_report/bravoReportFork.pl,v $
-#                      
-# $Id: bravoReportFork.pl,v 1.2 2008/10/27 17:23:33 cweyl Exp $
-#
-# $Log: bravoReportFork.pl,v $
-# Revision 1.2  2008/10/27 17:23:33  cweyl
-# - perltidy'ed; no other changes
-#
-# Revision 1.1  2008/10/27 17:18:24  cweyl
-# initial import
-#
-###############################################################################
-$VERSION = 'Version 1.0';
+# Description	: spawns multiple bravoReport.pl scripts for generating
+#                 software multireport for each customer
 ###############################################################################
 
 ###############################################################################
@@ -38,64 +14,42 @@ $VERSION = 'Version 1.0';
 use lib '/opt/bravo/scripts/report/lib'; 
 use lib '/opt/staging/v2'; 
 use strict;
-use Getopt::Std;
+use Getopt::Long qw(GetOptions);
 use POSIX ":sys_wait_h";
-use Tap::DBConnection;
+require "/opt/staging/v2/Database/Connection.pm";   
 use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
-require '/opt/common/utils/loggingUtils.pl';
 
 ###############################################################################
-### Define Script Variables
+### Get parameters
 ###
 ###############################################################################
-getopts("c:");
-use vars qw (
-    $opt_c
-);
+
+my $maxChildren   = undef;
+GetOptions(
+'c=i' => \$maxChildren,
+) or die "Usage: $0 -c max_children\n";
+
+die "Usage: $0 -c max_children\n"
+  unless defined $maxChildren;
 
 ###############################################################################
 ### Set Script Variables
 ###
 ###############################################################################
-my $maxChildren   = $opt_c;
 my %children      = ();
 my $children      = 0;
 my $sleepTime     = 5;
 my @logArray      = qw(1 2 3 4 5 6);
 my $scriptDir     = '/opt/bravo/scripts/report';
 my $trailsSqlFile = $scriptDir . '/trails_sql.xml';
-my $logFile       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
+my $logFilePath       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
 my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $bravoConnection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $customerIds;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-
-###############################################################################
-### Basic Checks
-###
-###############################################################################
-
-# Signal handler for dead children
-sub REAPER {
-
-    $SIG{CHLD} = \&REAPER;
-
-    while ((my $pid = waitpid(-1, &WNOHANG)) > 0) {
-
-        if (exists($children{$pid})) {
-            $children--;
-            push @logArray, $children{$pid}{'log'};
-            delete $children{$pid};
-        }
-        else {
-            logit("I shouldn't hit this in the reaper sub", $logFile);
-        }
-    }
-}
-
+my $logFile;
+open($logFile, '>>', $logFilePath);
 $SIG{CHLD} = \&REAPER;
 
 ###############################################################################
@@ -112,13 +66,14 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
     logit("started $eventTypeName event status", $logFile);
 
 	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
-	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
 
-   $bravoConnection = getConnection('trails', $trailsSqlFile);#Define $bravoConnection var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
-   $customerIds = getDistinctBravoCustomerIds();#Define $customerIds var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
-   $bravoConnection->disconnect;
+    logit("Selecting customerIDs form database", $logFile);
+    my $customerIds = getIds();
+    logit("CustomerIDs selected, stasrting child spawning loop", $logFile);
+    logit("CustomerIDs selected num @$customerIds[1]", $logFile);
 
 foreach my $customerId (sort @{$customerIds}) {
+    logit("In spawning loop", $logFile);
 
     # spawn child unless maxed out
     while ($children >= $maxChildren) {
@@ -126,6 +81,7 @@ foreach my $customerId (sort @{$customerIds}) {
         sleep $sleepTime;
     }
 
+    logit("Spawning child for customer: $customerId", $logFile);
     spawnScript($customerId, shift @logArray);
 }
 
@@ -135,7 +91,7 @@ while ($children != 0) {
     sleep 5;
 }
 
-};#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+};
 
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 if ($@) {
@@ -154,8 +110,8 @@ else {
 	logit("stopped $eventTypeName event status", $logFile);
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-
 # End of Program
+close $logFile;
 exit 0;
 
 ###############################################################################
@@ -190,43 +146,33 @@ sub spawnScript {
     }
 }
 
-sub getDistinctBravoCustomerIds {
-    my ($sql) = @_;
+sub getIds {
 
-    my @data;
+    my $dbh;
     my $customerId;
-
-    $bravoConnection->getSql->{getDistinctBravoCustomerIds}->{sth}
-        ->bind_columns(\$customerId);
-
-    $bravoConnection->getSql->{getDistinctBravoCustomerIds}->{sth}->execute();
-    while ($bravoConnection->getSql->{getDistinctBravoCustomerIds}->{sth}
-        ->fetchrow_arrayref)
-    {
-        push @data, $customerId;
-    }
-    $bravoConnection->getSql->{getDistinctBravoCustomerIds}->{sth}->finish();
-
-    return \@data;
-}
-
-sub getConnection {
-    my $database = shift;
-    my $sqlFile  = shift;
-
-    my $connection;
-    logit("Preparing $database connection", $logFile);
+    my @data;
     eval {
-        $connection = new Tap::DBConnection();
-        $connection->setDatabase($database);
-        $connection->connect;
-        $connection->prepareSql($sqlFile);
+        $dbh = Database::Connection->new("trails");
+        my $query = "select
+                      distinct customer_id
+                  from
+                      software_lpar
+                  where
+                      status = 'ACTIVE'
+                  and customer_id not in (999999)  
+                  with ur";
+        $dbh->prepareSqlQuery( 'CustomersIDs', $query);
+        my $sth = $dbh->sql->{CustomersIDs};
+		$sth->bind_columns(\$customerId);
+		$sth->execute();
+		while ( $sth->fetchrow_arrayref ) {
+			push @data, $customerId;
+		}
+		$sth->finish();
     };
     if ($@) {
         logit($@, $logFile);
-        pageit('stagingImport.pl' . $@);
-        $connection->disconnect;
-        $bravoConnection->disconnect if (defined $bravoConnection);
+        $dbh->disconnect;
 
         #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start 
         ###Notify the Event Engine that we had an error
@@ -237,14 +183,30 @@ sub getConnection {
 
         die;
     }
-    logit("$database connection acquired", $logFile);
 
-    return $connection;
+    return \@data;
 }
 
-sub usage {
-    print
-        "bravoImportFork.pl -c <children> -m <med children> -b <big children> \n";
-    exit 0;
+sub logit { 
+	my ($string, $logfile) = @_ ;
+	print $logfile "$string"."\n";
+}       
+
+sub REAPER {
+
+    $SIG{CHLD} = \&REAPER;
+
+    while ((my $pid = waitpid(-1, &WNOHANG)) > 0) {
+
+        if (exists($children{$pid})) {
+            $children--;
+            push @logArray, $children{$pid}{'log'};
+            delete $children{$pid};
+        }
+        else {
+            logit("I shouldn't hit this in the reaper sub", $logFile);
+        }
+    }
 }
+
 
