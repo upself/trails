@@ -211,7 +211,7 @@
 														property="discrepancyType" /></td>
 											</tr>
 											<tr>
-												<td nowrap="nowrap">Invalid Software Category:</td>
+												<td nowrap="nowrap">Software Category:</td>
 												<td><html:select property="invalidCategory"
 														styleClass="inputlong"
 														disabled="${software.readOnly['invalidCategory']}">
@@ -277,19 +277,23 @@
 										<td></td>
 									</tr>
 									<tr>
-										<th>TADZ</th>
-										<td>It is kind of TADZ data</td>
+										<th>FH RESET</th>
+										<td>Software component was marked as FALSE HIT for longer then the allowed period and therefore returned back to the scope</td>
 									</tr>
 									<tr>
 										<td></td>
 									</tr>
 									<tr>
-										<td width="40%"><font style="color:#7a3" class="caption">Invalid
+										<td width="40%"><font style="color:#7a3" class="caption">
 											Software Categories:</font></td>
 										<td><font style="color:#7a3" class="caption">&nbsp;</font></td>
 									</tr>
 									<tr>
 										<td colspan=2><div class="hrule-dots"></div></td>
+									</tr>
+									<tr>
+										<th>Complex discovery</th>
+										<td>Used for managing complex discovery when components are discovered by advanced discovery method</td>
 									</tr>
 									<tr>
 										<th>Blocked in IFAPRD</th>
