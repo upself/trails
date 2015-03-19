@@ -1,20 +1,9 @@
 #!/usr/bin/perl -w                                                                       
                                                                                          
 ###############################################################################          
-# (C) COPYRIGHT IBM Corp. 2004                                                           
-# All Rights Reserved                                                                    
-# Licensed Material - Property of IBM                                                    
-# US Government Users Restricted Rights - Use, duplication or                            
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.                      
-###############################################################################          
-                                                                                         
-###############################################################################          
 # Name          : bravoReport.pl                                                 
 # Component     : bravo                                                                  
-# Description   : Creates swMultiReports                                       
-# Author        : Alex Moise                                                             
-# Date          : January 25, 2006
-#
+# Description   : Creates swMultiReport for given customer
 ###############################################################################
                                                                                          
 ###############################################################################          
@@ -80,11 +69,12 @@ die "Usage: $0 -c CUSTOMER_NUMBER (-e for empty bank account)\n"
                                                                                          
 my $reportDir = '/opt/bravo/scripts/report/target/bin';
 my $JAR       = '/opt/bravo/scripts/report/target';
-my $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log.'."$customer";
+my $logFilePath   = '/opt/bravo/scripts/report/logs/bravoReport.log.'."$customer";
 my $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt';                                
 my $zipfile;
 our $accountNumber;
 my $productCount;
+open(my $logFile, '>', $logFilePath);
                                                                                          
 
 ###############################################################################          
@@ -116,7 +106,7 @@ $workbook->close();
 logit( "Zipping the report and sending to GSA", $logFile );
 sendReportToGSA();
 logit( "Report sent", $logFile );
-
+close($logFile)
 
 
 ###############################################################################          
@@ -565,7 +555,7 @@ sub createProductCountSheet {
 
 sub logit { 
 	my ($string, $logfile) = @_ ;
-	print "$string". " ( customer = '$customer')"."\n";;
+	print ($logfile,"$string". " ( customer = '$customer')"."\n");
 }                                                                            
 
 sub createSoftwareSheet {

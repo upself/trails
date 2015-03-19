@@ -1,34 +1,10 @@
 #!/usr/bin/perl -w
 
 ###############################################################################
-# (C) COPYRIGHT IBM Corp. 2004
-# All Rights Reserved
-# Licensed Material - Property of IBM
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-###############################################################################
-
-###############################################################################
-# Name          : stagingImport.pl
+# Name          : bravoReportFork.pl
 # Component		: Staging
-# Description	: Creates db2 import files for load into staging
-# Author        : Alex Moise
-# Date          : January 25, 2006
-#
-#                      ATTENTION: I live in CVS now! 
-#  $Source: /cvs/AdHocReports/sw_multi_report/bravoReportFork.pl,v $
-#                      
-# $Id: bravoReportFork.pl,v 1.2 2008/10/27 17:23:33 cweyl Exp $
-#
-# $Log: bravoReportFork.pl,v $
-# Revision 1.2  2008/10/27 17:23:33  cweyl
-# - perltidy'ed; no other changes
-#
-# Revision 1.1  2008/10/27 17:18:24  cweyl
-# initial import
-#
-###############################################################################
-$VERSION = 'Version 1.0';
+# Description	: spawns multiple bravoReport.pl scripts for generating
+#                 software multireport for each customer
 ###############################################################################
 
 ###############################################################################
@@ -45,59 +21,33 @@ use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck A
 
 
 ###############################################################################
-### Define Script Variables
+### Get parameters
 ###
 ###############################################################################
-getopts("c:");
-use vars qw (
-    $opt_c
-);
+
+my $maxChildren   = undef;
+GetOptions(
+'c=i' => \$maxChildren,
+) or die "Usage: $0 -c max_children\n";
+die "Usage: $0 -c max_children\n";
+  unless defined $maxChildren;
 
 ###############################################################################
 ### Set Script Variables
 ###
 ###############################################################################
-my $maxChildren   = $opt_c;
 my %children      = ();
 my $children      = 0;
 my $sleepTime     = 5;
 my @logArray      = qw(1 2 3 4 5 6);
 my $scriptDir     = '/opt/bravo/scripts/report';
 my $trailsSqlFile = $scriptDir . '/trails_sql.xml';
-my $logFile       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
+my $logFilePath       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
 my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $bravoConnection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-
-###############################################################################
-### Basic Checks
-###
-###############################################################################
-
-sub logit { 
-	my ($string, $logfile) = @_ ;
-	print "$string"."\n";;
-}      
-# Signal handler for dead children
-sub REAPER {
-
-    $SIG{CHLD} = \&REAPER;
-
-    while ((my $pid = waitpid(-1, &WNOHANG)) > 0) {
-
-        if (exists($children{$pid})) {
-            $children--;
-            push @logArray, $children{$pid}{'log'};
-            delete $children{$pid};
-        }
-        else {
-            logit("I shouldn't hit this in the reaper sub", $logFile);
-        }
-    }
-}
-
+open(my $logFile, '>', $logFilePath);
 $SIG{CHLD} = \&REAPER;
 
 ###############################################################################
@@ -138,6 +88,7 @@ foreach my $customerId (sort @{$customerIds}) {
 while ($children != 0) {
     sleep 5;
 }
+close $logFile;
 
 };
 
@@ -158,7 +109,6 @@ else {
 	logit("stopped $eventTypeName event status", $logFile);
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-
 # End of Program
 exit 0;
 
@@ -220,9 +170,7 @@ sub getIds {
     };
     if ($@) {
         logit($@, $logFile);
-        pageit('stagingImport.pl' . $@);
         $dbh->disconnect;
-        $bravoConnection->disconnect if (defined $bravoConnection);
 
         #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start 
         ###Notify the Event Engine that we had an error
@@ -237,10 +185,26 @@ sub getIds {
     return \@data;
 }
 
-sub usage {
-    print
-        "bravoImportFork.pl -c <children> -m <med children> -b <big children> \n";
-    exit 0;
+sub logit { 
+	my ($string, $logfile) = @_ ;
+	print($logfile,"$string"."\n");
+}      
+
+sub REAPER {
+
+    $SIG{CHLD} = \&REAPER;
+
+    while ((my $pid = waitpid(-1, &WNOHANG)) > 0) {
+
+        if (exists($children{$pid})) {
+            $children--;
+            push @logArray, $children{$pid}{'log'};
+            delete $children{$pid};
+        }
+        else {
+            logit("I shouldn't hit this in the reaper sub", $logFile);
+        }
+    }
 }
 
 
