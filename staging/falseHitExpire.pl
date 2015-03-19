@@ -29,8 +29,9 @@ our $falsehitage = 365; # number of days for FALSE HIT expiration
 our $complexstring = "Complex discovery"; # this string in the field INSTALLED_SOFTWARE.INVALID_CATEGORY will prevent FALSE HIT from expiry
 										  # mind the letter case
 
-our $maxperonerun = 2; # maximum number of FALSE HITs to expire in one run of the script - this is to prevent system overload
-                       # during the debugging, it's set to 2, my recommendation for run in production would be 100
+our $maxperonerun = $ARGV[0] if defined ( $ARGV[0] );
+							  # maximum number of FALSE HITs to expire in one run of the script - this is to prevent system overload
+                              # during the debugging, I'd recommend 2 or 3, my recommendation for run in production would be 100
 
 logging_level( "debug" );
 logfile($logfile);
@@ -89,9 +90,20 @@ sub queryGetISWids {
 
 }
 
+sub Usage {
+	print "Tool for automatic expiration of FALSE HITs discrepancy types, older than $falsehitage days.\n";
+	print "Usage:\n\n";
+	print "$0 NUMBER\n\n";
+	print "NUMBER is the maximum of expirations in one script run. I'd recommmend 2 or 3 for debug, around 100 in production.\n\n";
+	exit;
+
+}
+
 #################################
 #  MAIN
 #################################
+
+Usage() unless (defined $ARGV[0]);
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
