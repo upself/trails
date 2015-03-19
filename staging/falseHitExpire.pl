@@ -37,7 +37,7 @@ our $maxperonerun = readCfg($configfile, "maxperonerun");
 							  # maximum number of FALSE HITs to expire in one run of the script - this is to prevent system overload
                               # during the debugging, I'd recommend 2 or 3, my recommendation for run in production would be 100
 
-logging_level( "debug" );
+logging_level( readCfg($configfile, "debugLevel" ) );
 logfile($logfile);
 
 ###############################
