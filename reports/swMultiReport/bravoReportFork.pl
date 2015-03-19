@@ -40,7 +40,7 @@ use lib '/opt/staging/v2';
 use strict;
 use Getopt::Std;
 use POSIX ":sys_wait_h";
-use Tap::DBConnection;
+require "/opt/staging/v2/Database/Connection.pm";   
 use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 require '/opt/common/utils/loggingUtils.pl';

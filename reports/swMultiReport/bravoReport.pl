@@ -9,114 +9,28 @@
 ###############################################################################          
                                                                                          
 ###############################################################################          
-# Name          : bravoDownloadReport.pl                                                 
+# Name          : bravoReport.pl                                                 
 # Component     : bravo                                                                  
-# Description   : Creates download reports                                               
+# Description   : Creates swMultiReports                                       
 # Author        : Alex Moise                                                             
 # Date          : January 25, 2006
 #
-# # Revision 1.30  2014/03/21 21:40:29  zhysz
-# *** empty log message ***
-#                                                 
-# $Id: bravoReport.pl,v 1.20 2010/11/19 08:06:54 szshiw Exp $                            
-#                                                                                        
-# $Log: bravoReport.pl,v $
-# Revision 1.20  2010/11/19 08:06:54  szshiw
-# add mips, msu to bravo report
-#
-# Revision 1.19  2010/08/03 08:48:16  szshiw
-# convert 0/1 to unlicensable/licensable
-#
-# Revision 1.18  2010/07/02 20:16:42  dbryson
-# SWKBT update
-#
-# Revision 1.17  2010/06/14 21:27:29  dbryson
-# *** empty log message ***
-#
-# Revision 1.16  2010/01/26 18:52:17  dbryson
-# Added serverType
-#
-# Revision 1.15  2010/01/05 20:31:53  zyizhang
-# add 'ibm confidential' at the head of the report.
-#
-# Revision 1.14  2009/12/10 13:50:41  szshiw
-# add hardware chips to the sw multi report
-#                                                               
-# Revision 1.14  2009/12/09 21:39:22  szshiw                                             
-# add hardware chips to the sw multi report                                              
-#                                                                                        
-# Revision 1.13  2009/12/07 18:24:26  zyizhang                                           
-# add scope filed in the spread sheet.                                                   
-#                                                                                        
-# Revision 1.12  2009/03/10 19:22:17  alexmois                                           
-# took out software_lpar_os_info as it has been deprecated                               
-#                                                                                        
-# Revision 1.11  2008/10/28 22:24:22  cweyl                                              
-# - also PUT the resulting zipfile out on am.boulder.ibm.com                             
-#                                                                                        
-# Revision 1.10  2008/10/24 15:41:34  alexmois                                           
-# Change to software_lpar_eff of the bravo multi report query..only want active effective
-#                                                                                        
-# Revision 1.9  2008/10/16 16:02:49  cweyl                                               
-# - includes Toralf Foerster's max_sw_version() for AMT-TI80422-76416.                   
-#                                                                                        
-# Revision 1.8  2008/10/15 00:23:15  cweyl                                               
-# - remove some commented-out cruft                                                      
-# - correct how we recurse                                                               
-#                                                                                        
-# Revision 1.7  2008/10/08 04:38:34  cweyl                                               
-# - Now it's really 0664 :-)                                                             
-#                                                                                        
-# Revision 1.6  2008/10/08 04:36:13  cweyl                                               
-# - chmod 0664 the .zip's, not 0775                                                      
-#                                                                                        
-# Revision 1.5  2008/10/08 04:33:05  cweyl                                               
-# - make output destination a test location if the environment variable                  
-#   SWMULTI_TEST is set                                                                  
-# - strip whitespace from the beginning and end of individual versions *sigh*            
-#                                                                                        
-# Revision 1.4  2008/10/08 03:53:20  cweyl                                               
-# - rework to fit AMT-TI80422-76416 (again)                                              
-# - drop all that $bravoConnection stuff.  We didn't need it, and we can now run         
-#   from other boxes than tap.raleigh.ibm.com now                                        
-# - misc other cleanups (not too many)                                                   
-#                                                                                        
-# Revision 1.3  2008/10/07 21:44:17  cweyl                                               
-# - perltidy to the rescue!  No other changes since the last revision.                   
-#                                                                                        
-# Revision 1.2  2008/09/29 18:17:38  cweyl                                               
-# - alter version field according to AMT-TI80422-76416                                   
-# - drop 2 external program calls for compressing/chmod'ing the perms of the             
-#   output .zip file                                                                     
-# - $VERSION, $REVISION cleanups                                                         
-# - add cvs Log and Id tags where they'd be useful                                       
-# - update #! line to use /usr/bin/perl, not /usr/local/bin/perl                         
-# - add a 'use Tap::NewPerl', so we behave appropriately on tap and other boxes          
-#   (not strictly needed right now, but will be useful if we're going to do any          
-#   large-scale work redoing this, e.g. with DBIC and Template::Toolkit)                 
-#                                                                                        
-#                                                                                        
-###############################################################################          
-our $VERSION  = ( split( / /, q$Revision: 1.20 $ ) )[1];                                 
-our $REVISION = '$Id: bravoReport.pl,v 1.20 2010/11/19 08:06:54 szshiw Exp $';           
-###############################################################################          
+###############################################################################
                                                                                          
 ###############################################################################          
 ### Use/Require Statements                                                               
-###                                                                                      
 ###############################################################################          
          
 # the script may be tested on tap2 and is setup to be loaded into 
 # /opt/bravo/scripts/report
-use lib '/opt/bravo/scripts/report/lib';                                         
+
 use lib '/opt/staging/v2';                                         
-use Tap::NewPerl;                                                                        
 require "/opt/staging/v2/Database/Connection.pm";                                                                                         
 
 use strict;                                                                              
                                                                                          
 use DBI;                                                                                 
-use Getopt::Std;                                                                         
+use Getopt::Long qw(GetOptions);
 use Readonly;                                                                            
 use Sort::Versions;                                                                      
 use Spreadsheet::WriteExcel::Big;                                                        
@@ -129,21 +43,14 @@ use Net::FTP;
                                                                       
                                                                                          
 # db access                                                                              
-use Config::Properties::Simple;                                                             
+use Config::Properties::Simple;
+               
                                                                                          
 ###############################################################################          
 ### Define Script Variables                                                              
 ###                                                                                      
 ###############################################################################          
                                                                                          
-use vars qw (                                                                            
-  $opt_c                                                                                 
-  $logFile                                                                               
-  $bravoSoftware                                                                         
-  $reportDir                                                                             
-  $JAR
-  $connConfigFile                                                                                  
-);                                                                                       
                                                                                          
 my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =                     
   localtime(time);                                                                       
@@ -156,607 +63,70 @@ my @months = (
 	"July",    "August",   "September", "October", "November", "December"                  
 );                                                                                       
 my $day  = $days[$wday];                                                                 
-my $date = $mday + 0;                                                                    
+my $date = $mday;                                                                    
 $year = 1900 + $year;                                                                    
 my $month = $months[$mon];                                                               
+
+my $emptyFlag;
+my $customer = undef;
+
+GetOptions(
+'c=i' => \$customer,
+'empty' => \$emptyFlag,
+) or die "Usage: $0 -c CUSTOMER_NUMBER (-e for empty bank account)\n";
+die "Usage: $0 -c CUSTOMER_NUMBER (-e for empty bank account)\n"
+  unless defined $customer;
+
                                                                                          
-getopts("c:");                                                                           
+my $reportDir = '/opt/bravo/scripts/report/target/bin';
+my $JAR       = '/opt/bravo/scripts/report/target';
+my $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log.'."$customer";
+my $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt';                                
+my $zipfile;
+our $accountNumber;
+my $productCount;
                                                                                          
-Readonly my $PUT_URI => '/var/bravo/reports/';         
-                                                                                         
+
 ###############################################################################          
-### Set Script Variables                                                                 
+### MAIN
 ###                                                                                      
 ###############################################################################          
-                                                                                         
-exit if ( !$opt_c );                                                                     
-                                                                                         
-# FIXME -- to gsa only for testing                                                       
-if ( exists $ENV{SWMULTI_TEST} ) {                                                       
-	#run test on tap2.                                                                     
-	$reportDir = '/var/bravo/web/sw_vers_test';                                           
-	$JAR       = '/var/bravo/web/sw_vers_test';                                           
-	$logFile   = '/var/bravo/web/sw_vers_test/log/bravoReport-test.log';
-	$connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'              
-	                                                                                       
-#	$reportDir = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                            
-#    $JAR       = '/gsa/pokgsa/home/c/w/cweyl/web/sw_vers_test';                          
-#    $logFile   = '/tmp/bravoReport-test.log';                                            
-}                                                                                        
-else {                                                                                   
-        $reportDir = '/opt/bravo/scripts/report/target/bin';
-        $JAR       = '/opt/bravo/scripts/report/target';
-        $logFile   = '/opt/bravo/scripts/report/logs/bravoReport.log';
-        $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt'                                
-}                                                                                        
-                                                                                         
-###############################################################################          
-### Basic Checks                                                                         
-###                                                                                      
-###############################################################################          
-                                                                                         
-sub logit { 
-}                                                                            
-
 #-----------------------------------------------------------------------------
-
-# AMT-TI80422-76416
-
-#
-#       Toralf Foerster
-#       Hamburg
-#       Germany
-#
-
-#-----------------------------------------------------------------------------
-#
-#   input: a list of version strings ('version.release.modification.fixpack')
-#   output:a string clobbered the strings into a readable format
-#
-sub max_sw_version (@) {
-    my @aStrings = @_;
-#      print "I am Here position 1 \n";
-    return "" unless ( scalar @aStrings );
-#     print "I am Here position 2 \n";
-    my %hString = ();
-    foreach my $String (@aStrings) {
-        my ( $Version, $Release ) = split( /\./, $String . "." );
-        #return "*" if ( $Version eq "*" );    # rule 1
-#       print "I am Here position 3 \n";
-        $hString{$Version}->{$Release}->{$String} = 1;
-    }
-#     print "I am Here position 4 \n";
-    my @aResult = ();
-    foreach my $Version ( keys %hString ) {
-#   	print  "versionA : $Version \n";
-        my @aRelease = keys %{ $hString{$Version} };
-        my  $myrelease = scalar @aRelease;
-#        print  "releaseA : $myrelease \n";
-        next unless ( scalar @aRelease == 1 );
-        my $Release = $aRelease[0];
-#        print  "releaseB : $Release \n";
-        if ( scalar keys %{ $hString{$Version}->{$Release} } == 1 ) {   # rule 2
-            push( @aResult, keys %{ $hString{$Version}->{$Release} } );
-            delete( $hString{$Version} );
-        }
-    }
-
-    foreach my $Version ( sort { $a <=> $b } keys %hString ) {          # rule 3
-#        print  "versionB : $Version \n";
-        my @aRelease = keys %{ $hString{$Version} };
-         my  $myrelease = scalar @aRelease;
-#        print  "releaseC : $myrelease \n";
-        push( @aResult,
-            ( scalar @aRelease > 1 )
-            ? "$Version.*"
-            : "$Version.$aRelease[0].*" );
-    }
-
-    return join( ",", sort @aResult );
-}
-
-
-#-----------------------------------------------------------------------------
-
-                                                                                         
 logit( "Acquiring bravo database handle", $logFile );                                    
-                                                      
-my $dbh = Database::Connection->new('trails');
-logit( "Bravo Database handle acquired", $logFile );                                     
+our $dbh = Database::Connection->new('trails');
+logit( "Bravo Database handle acquired", $logFile );     
+logit( "Acquiring data from trails DB", $logFile );
+our $bravoSoftware = getBravoSoftwareReport($dbh,$customer); 
+logit( "Data axquired", $logFile );
+logit( "Started generating xls file", $logFile );
 
-###############################################################################
-### Main
-###
-###############################################################################
-
-logit( "Acquiring bravo software", $logFile );
-if ($opt_c) {
-	eval { $bravoSoftware = &getBravoSoftwareReport( $dbh, $opt_c ); };
-	if ($@) {
-		logit( $@, $logFile );
-		die;
-	}
-	logit( "Bravo software acquired", $logFile );
-}
-else {
-	eval { $bravoSoftware = getBravoSoftwareReport($dbh); };
-	if ($@) {
-		logit( $@, $logFile );
-		die;
-	}
-	logit( "Bravo software acquired", $logFile );
-}
-
-$dbh->disconnect;
-undef $dbh;
-my $workbook;
-
-foreach my $accountNumber ( keys %{$bravoSoftware} ) {
-	my $lineCount = 2;
-	$workbook =
-	  Spreadsheet::WriteExcel::Big->new("$reportDir/$accountNumber.xls");
-	my $heartbeat = $workbook->add_worksheet("Heartbeat");
-
-    $heartbeat->write( 0, 0,"IBM Confidential" );
-	$heartbeat->write( 1, 0,
-		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
-	$heartbeat->write( $lineCount, 0, "HOSTNAME" );
-	$heartbeat->write( $lineCount, 1, "MODEL" );
-	$heartbeat->write( $lineCount, 2, "SERIAL NUMBER" );
-	$heartbeat->write( $lineCount, 3, "PROCESSOR COUNT" );
-	$heartbeat->write( $lineCount, 4, "CHIP COUNT" );	
-	$heartbeat->write( $lineCount, 5, "OS" );
-	$heartbeat->write( $lineCount, 6, "OS VERSION" );
-	$heartbeat->write( $lineCount, 7, "OS MINOR VERSION" );
-	$heartbeat->write( $lineCount, 8, "OS SUB VERSION" );
-	$heartbeat->write( $lineCount, 9, "SCANTIME" );
-	$heartbeat->write( $lineCount, 10, "BANK ACCOUNT" );
-	$heartbeat->write( $lineCount, 11, "SERVER TYPE" );
-	$heartbeat->write( $lineCount, 12, "CPU IBM LSPR MIPS" );
-	$heartbeat->write( $lineCount, 13, "CPU Gartner MIPS" );
-	$heartbeat->write( $lineCount, 14, "CPU MSU" );
-	$heartbeat->write( $lineCount, 15, "PART IBM LSPR MIPS" );
-	$heartbeat->write( $lineCount, 16, "PART Gartner MIPS" );
-	$heartbeat->write( $lineCount, 17, "PART MSU" );
-	$heartbeat->write( $lineCount, 18, "LPAR STATUS" );
-	$heartbeat->write( $lineCount, 19, "HARDWARE STATUS" );
-
-	$lineCount++;
-
-	foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
-		my $hBankAccounts;
-
-		foreach my $bankAccount (
-			sort keys
-			%{ $bravoSoftware->{$accountNumber}->{$hostname}->{'bankAccount'} }
-		  )
-		{
-			$hBankAccounts .= $bankAccount . ",";
-		}
-		
-		my $osVersion = max_sw_version(
-					keys %{
-						$bravoSoftware->{$accountNumber}->{$hostname}->{'osVersion'}
-					  }
-				);
-
-		chop $hBankAccounts;
-
-		$heartbeat->write_string( $lineCount, 0, $hostname );
-		$heartbeat->write( $lineCount, 1,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
-		$heartbeat->write( $lineCount, 2,
-			    "\""
-			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'biosSerial'}
-			  . "\"" );
-		$heartbeat->write( $lineCount, 3,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'} );
-		$heartbeat->write( $lineCount, 4,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'} );
-		$heartbeat->write( $lineCount, 5,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-		$heartbeat->write( $lineCount, 6, $osVersion );
-		$heartbeat->write( $lineCount, 7,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osMinorVers'} );
-		$heartbeat->write( $lineCount, 8,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osSubVers'} );
-		$heartbeat->write( $lineCount, 9,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
-		$heartbeat->write( $lineCount, 10, $hBankAccounts );
-		$heartbeat->write( $lineCount, 11,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'serverType'} );
-        $heartbeat->write( $lineCount, 12,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
-        $heartbeat->write( $lineCount, 13,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
-        $heartbeat->write( $lineCount, 14,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
-        $heartbeat->write( $lineCount, 15,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
-        $heartbeat->write( $lineCount, 16,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
-        $heartbeat->write( $lineCount, 17,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
-        $heartbeat->write( $lineCount, 18,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
-        $heartbeat->write( $lineCount, 19,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'hardwareStatus'} );
-		$lineCount++;
-	}
-}
-
-foreach my $accountNumber ( keys %{$bravoSoftware} ) {
-	my $lineCount  = 2;
-	my $pLineCount = 2;
-	my $page       = ( int( $lineCount / 60000 ) ) + 1;
-	my $software   = $workbook->add_worksheet("Software $page");
-	my $productCount;
-	my $workbookCount = 0;
-
-    $software->write( 0, 0,"IBM Confidential" );
-	$software->write( 1, 0,
-		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
-	$software->write( $lineCount, 0,  "HOSTNAME" );
-	$software->write( $lineCount, 1,  "MODEL" );
-	$software->write( $lineCount, 2,  "SERIAL NUMBER" );
-	$software->write( $lineCount, 3,  "SCANTIME" );
-	$software->write( $lineCount, 4,  "OS" );
-	$software->write( $lineCount, 5,  "OS VERSION" );
-	$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
-	$software->write( $lineCount, 7,  "CHIP COUNT" );
-	$software->write( $lineCount, 8,  "MANUFACTURER" );	
-	$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-	$software->write( $lineCount, 10,  "PID" );
-	$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
-	$software->write( $lineCount, 12, "DISCREPANCY TYPE");
-	$software->write( $lineCount, 13, "LICENSE" );
-	$software->write( $lineCount, 14, "BANK ACCOUNT" );
-	$software->write( $lineCount, 15, "SCOPE" );
-
-	$lineCount++;
-
-	foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
-		
-		my $osVersion = max_sw_version(
-					keys %{
-						$bravoSoftware->{$accountNumber}->{$hostname}->{'osVersion'}
-					  }
-				);
-
-		foreach my $softwareCategory (
-			sort keys
-			%{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'} } )
-		{
-			my $softwareVersions;
-			my $bankAccounts;
-
-			$softwareVersions = max_sw_version(
-				keys %{
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-					  ->{$softwareCategory}->{'softwareVersion'}
-				  }
-			);
-
-			foreach my $bankAccount (
-				sort keys %{
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-					  ->{$softwareCategory}->{'bankAccount'}
-				}
-			  )
-			{
-				$bankAccounts .= $bankAccount . ",";
-			}
-
-			chop $bankAccounts;
-
-			$software->write_string( $lineCount, 0, $hostname );
-			$software->write( $lineCount, 1,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
-			$software->write( $lineCount, 2,
-				"\""
-				  . $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'biosSerial'} . "\"" );
-			$software->write( $lineCount, 3,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
-			$software->write( $lineCount, 4,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-			$software->write( $lineCount, 5,
-				$osVersion );
-			$software->write( $lineCount, 6,
-				$bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'processorCount'} );
-			$software->write( $lineCount, 7,
-				$bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'chipCount'} );
-			$software->write( $lineCount, 8,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareManufacturer'} );
-			$software->write( $lineCount, 9,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} );
-			$software->write( $lineCount, 10,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'pid'} );
-			$software->write( $lineCount, 11, $softwareVersions );
-			$software->write( $lineCount, 12,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'discrepancyType'} );
-			$software->write( $lineCount, 13,
-				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'level'} );
-			$software->write( $lineCount, 14, $bankAccounts );
-			$software->write( $lineCount, 15,
-                $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-                  ->{$softwareCategory}->{'scopeDescription'} );
-
-			$lineCount++;
-
-			my $endPage = ( int( $lineCount / 60000 ) ) + 1;
-
-			if ( $endPage > 1 ) {
-
-				if ( $page > 1 ) {
-					$workbookCount++;
-					$page = 0;
-					$workbook->close();
-					$workbook =
-					  Spreadsheet::WriteExcel::Big->new(
-						    "$reportDir/$accountNumber" . '_'
-						  . "$workbookCount.xls" );
-				}
-
-				$page++;
-				$lineCount = 0;
-				$software  = $workbook->add_worksheet("Software $page");
-
-				$software->write( $lineCount, 0,  "HOSTNAME" );
-				$software->write( $lineCount, 1,  "MODEL" );
-				$software->write( $lineCount, 2,  "SERIAL NUMBER" );
-				$software->write( $lineCount, 3,  "SCANTIME" );
-				$software->write( $lineCount, 4,  "OS" );
-				$software->write( $lineCount, 5,  "OS VERSION" );
-				$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
-				$software->write( $lineCount, 7,  "CHIP COUNT" );
-				$software->write( $lineCount, 8,  "MANUFACTURER" );	
-				$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-				$software->write( $lineCount, 10,  "PID" );
-				$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
-				$software->write( $lineCount, 12, "DISCREPANCY TYPE");
-				$software->write( $lineCount, 13, "LICENSE" );
-				$software->write( $lineCount, 14, "BANK ACCOUNT" );
-				$software->write( $lineCount, 15, "SCOPE" );
-			$lineCount++;
-			}
-
-			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'osName'} }
-			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} }->{'productCount'}++;
-			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'osName'} }
-			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} }->{'license'} =
-			  $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-			  ->{$softwareCategory}->{'level'};
-			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'osName'} }
-			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} }->{'softwareManufacturer'} =
-			  $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-			  ->{$softwareCategory}->{'softwareManufacturer'};
-			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'osName'} }
-			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} }
-			  ->{'processorCount'} +=
-			  $bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'};
-			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'osName'} }
-			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
-				  ->{$softwareCategory}->{'softwareName'} }
-			  ->{'chipCount'} +=
-			  $bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'};
-		}
-
-		foreach my $softwareCategory (
-			sort
-			keys %{ $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'} }
-		  )
-		{
-			foreach my $softwareName (
-				sort keys %{
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}
-				}
-			  )
-			{
-				my $softwareVersions;
-
-				$softwareVersions = max_sw_version(
-					keys %{
-						$bravoSoftware->{$accountNumber}->{$hostname}
-						  ->{'unknown'}->{$softwareCategory}->{$softwareName}
-						  ->{'softwareVersion'}
-					  }
-				);
-
-				$software->write_string( $lineCount, 0, $hostname );
-				$software->write( $lineCount, 1,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
-				$software->write( $lineCount, 2,
-					"\""
-					  . $bravoSoftware->{$accountNumber}->{$hostname}
-					  ->{'biosSerial'} . "\"" );
-				$software->write( $lineCount, 3,
-					$bravoSoftware->{$accountNumber}->{$hostname}
-					  ->{'scantime'} );
-				$software->write( $lineCount, 4,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-				$software->write( $lineCount, 5,
-					$osVersion);
-				$software->write( $lineCount, 6,
-					$bravoSoftware->{$accountNumber}->{$hostname}
-					  ->{'processorCount'} );
-			    $software->write( $lineCount, 7,
-					$bravoSoftware->{$accountNumber}->{$hostname}
-					  ->{'chipCount'} );
-				$software->write( $lineCount, 8, $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'} );					  
-				$software->write( $lineCount, 9, $softwareName );
-				$software->write( $lineCount, 10, 
-			  		$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					->{$softwareCategory}->{$softwareName}->{'pid'} );
-				$software->write( $lineCount, 11, $softwareVersions );
-				$software->write( $lineCount, 12,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
-				$software->write( $lineCount, 13,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}->{$softwareName}->{'level'} );
-				$software->write( $lineCount, 14,
-					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-					  ->{$softwareCategory}->{$softwareName}->{'bankAccount'} );
-			   $software->write( $lineCount, 15,
-                    $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-                      ->{$softwareCategory}->{$softwareName}->{'scopeDescription'} );
-
-				$lineCount++;
-
-				my $endPage = ( int( $lineCount / 60000 ) ) + 1;
-
-				if ( $endPage > 1 ) {
-
-					if ( $page > 1 ) {
-						$workbookCount++;
-						$page = 0;
-						$workbook->close();
-						$workbook =
-						  Spreadsheet::WriteExcel::Big->new(
-							    "$reportDir/$accountNumber" . '_'
-							  . "$workbookCount.xls" );
-					}
-
-					$page++;
-					$lineCount = 0;
-					$software  = $workbook->add_worksheet("Software $page");
-
-					$software->activate();
-					$software->write( $lineCount, 0,  "HOSTNAME" );
-					$software->write( $lineCount, 1,  "MODEL" );
-					$software->write( $lineCount, 2,  "SERIAL NUMBER" );
-					$software->write( $lineCount, 3,  "SCANTIME" );
-					$software->write( $lineCount, 4,  "OS" );
-					$software->write( $lineCount, 5,  "OS VERSION" );
-					$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
-					$software->write( $lineCount, 7,  "CHIP COUNT" );
-					$software->write( $lineCount, 8,  "MANUFACTURER" );					
-					$software->write( $lineCount, 9,  "SOFTWARE NAME" );
-					$software->write( $lineCount, 10,  "PID" );
-					$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
-					$software->write( $lineCount, 12, "DISCREPANCY TYPE");
-					$software->write( $lineCount, 13, "LICENSE" );
-					$software->write( $lineCount, 14, "BANK ACCOUNT" );
-					$software->write( $lineCount, 15, "SCOPE" );
-					$lineCount++;
-				}
-
-				my $osNameKey =
-				  $bravoSoftware->{$accountNumber}->{$hostname}->{'osName'};
-				$productCount->{$osNameKey}->{$softwareName}->{'productCount'}
-				  ++;
-				$productCount->{$osNameKey}->{$softwareName}->{'license'} =
-				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-				  ->{$softwareCategory}->{$softwareName}->{'level'};
-				$productCount->{$osNameKey}->{$softwareName}->{'softwareManufacturer'} =
-				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
-				  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'};
-				$productCount->{$osNameKey}->{$softwareName}
-				  ->{'processorCount'} +=
-				  $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'processorCount'};
-				$productCount->{$osNameKey}->{$softwareName}
-				  ->{'chipCount'} +=
-				  $bravoSoftware->{$accountNumber}->{$hostname}
-				  ->{'chipCount'};
-			}
-		}
-	}
-
-	my $prodCount = $workbook->add_worksheet("Product Count");
-     
-    $prodCount->write( 0, 0,"IBM Confidential" );
-	$prodCount->write( 1, 0,
-		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
-	$prodCount->write( $pLineCount, 0, "CUSTOMER" );
-	$prodCount->write( $pLineCount, 1, "OS" );
-	$prodCount->write( $pLineCount, 2, "MANUFACTURER" );	
-	$prodCount->write( $pLineCount, 3, "SOFTWARE NAME" );
-	$prodCount->write( $pLineCount, 4, "LICENSE TYPE" );
-	$prodCount->write( $pLineCount, 5, "PRODUCT COUNT" );
-	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
-    $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
-
-	$pLineCount++;
-
-	foreach my $osName ( sort keys %{$productCount} ) {
-		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
-			$prodCount->write( $pLineCount, 0, $accountNumber );
-			$prodCount->write( $pLineCount, 1, $osName );
-			$prodCount->write( $pLineCount, 2, $productCount->{$osName}->{$softwareName}->{'softwareManufacturer'} );
-			$prodCount->write( $pLineCount, 3, $softwareName );
-			$prodCount->write( $pLineCount, 4,
-				$productCount->{$osName}->{$softwareName}->{'license'} );
-			$prodCount->write( $pLineCount, 5,
-				$productCount->{$osName}->{$softwareName}->{'productCount'} );
-			$prodCount->write( $pLineCount, 6,
-				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
-			$prodCount->write( $pLineCount, 7,
-				$productCount->{$osName}->{$softwareName}->{'chipCount'} );
-			$pLineCount++;
-		}
-	}
-
-	$workbook->close();
-
-	my $zipfile;
-	if ( -e "$reportDir/$accountNumber.xls" ) {
-		$zipfile = "$JAR/MULTI.$accountNumber.zip";
-		unlink("$zipfile") if ( -e $zipfile );
-		my $cmd = "zip -j $zipfile $reportDir/$accountNumber*.xls";
-		logit( $cmd, $logFile );
-		`$cmd`;
-		chmod 0664, $zipfile;
-	    unlink <$reportDir/$accountNumber*.xls>;
+our $workbook = Spreadsheet::WriteExcel::Big->new("$reportDir/$accountNumber.xls");
+logit( "Created xls file object", $logFile );
+logit( "Creating HeartBeatSheet", $logFile );
+createHeartbeatSheet();
+logit( "Created HeartBeatSheet", $logFile );
+logit( "Creating software sheet", $logFile );
+createSoftwareSheet();
+logit( "Created software sheet", $logFile );
+logit( "Creating product count sheet", $logFile );
+createProductCountSheet();
+logit( "Created product count sheet", $logFile );
+logit( "xls file generation finished", $logFile );
+$workbook->close();
+logit( "Zipping the report and sending to GSA", $logFile );
+#sendReportToGSA();
+logit( "Report sent", $logFile );
 
 
-       my $cfg=Config::Properties::Simple->new(file=>$connConfigFile);
-       my $server=$cfg->getProperty('gsa.swmulti.report.server');
-       my $user=$cfg->getProperty('gsa.swmulti.report.user');
-       my $pw=$cfg->getProperty('gsa.swmulti.report.password');
-       my $targetFolder = $cfg->getProperty('gsa.swmulti.report.target.folder');
-       
-       my $ftp = Net::FTP->new($server, Debug => 0, Timeout => 600) or die "Cannot connect.\n";
-       $ftp->login($user, $pw) or die "Could not login.\n";
-      
-       $ftp->cwd($targetFolder) or die "Cannot change working directory.\n";
-       my $bin=$ftp->binary or die "Can not change the Type to Binary\n"; 
-            
-       $ftp->put($zipfile, "MULTI.$accountNumber.zip") or die "Could not upload.\n";
-       $ftp->quit;       
-       
-       unlink("$zipfile");
-	}
-	else {
-		unlink("$zipfile");
-	}
-}
 
-
+###############################################################################          
+### Function definitions
+###                                                                                      
+###############################################################################          
 
 sub getBravoSoftwareReport {
 	my ( $dbh, $customerId ) = @_;
 
-	my $accountNumber;
 	my $name;
 	my $model;
 	my $biosSerial;
@@ -1064,4 +434,495 @@ from
 	
 }
 
+sub createHeartbeatSheet{
+	my $heartbeat = $workbook->add_worksheet("Heartbeat");
+my $lineCount = 2;
+
+  $heartbeat->write( 0, 0,"IBM Confidential" );
+	$heartbeat->write( 1, 0,
+		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
+	$heartbeat->write( $lineCount, 0, "HOSTNAME" );
+	$heartbeat->write( $lineCount, 1, "MODEL" );
+	$heartbeat->write( $lineCount, 2, "SERIAL NUMBER" );
+	$heartbeat->write( $lineCount, 3, "PROCESSOR COUNT" );
+	$heartbeat->write( $lineCount, 4, "CHIP COUNT" );	
+	$heartbeat->write( $lineCount, 5, "OS" );
+	$heartbeat->write( $lineCount, 6, "OS VERSION" );
+	$heartbeat->write( $lineCount, 7, "OS MINOR VERSION" );
+	$heartbeat->write( $lineCount, 8, "OS SUB VERSION" );
+	$heartbeat->write( $lineCount, 9, "SCANTIME" );
+	$heartbeat->write( $lineCount, 10, "BANK ACCOUNT" );
+	$heartbeat->write( $lineCount, 11, "SERVER TYPE" );
+	$heartbeat->write( $lineCount, 12, "CPU IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 13, "CPU Gartner MIPS" );
+	$heartbeat->write( $lineCount, 14, "CPU MSU" );
+	$heartbeat->write( $lineCount, 15, "PART IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 16, "PART Gartner MIPS" );
+	$heartbeat->write( $lineCount, 17, "PART MSU" );
+	$heartbeat->write( $lineCount, 18, "LPAR STATUS" );
+	$heartbeat->write( $lineCount, 19, "HARDWARE STATUS" );
+
+	$lineCount++;
+
+	foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
+		my $hBankAccounts;
+
+		foreach my $bankAccount (
+			sort keys
+			%{ $bravoSoftware->{$accountNumber}->{$hostname}->{'bankAccount'} }
+		  )
+		{
+			$hBankAccounts .= $bankAccount . ",";
+		}
+		
+		my $osVersion = max_sw_version(
+					keys %{
+						$bravoSoftware->{$accountNumber}->{$hostname}->{'osVersion'}
+					  }
+				);
+
+		chop $hBankAccounts;
+
+		$heartbeat->write_string( $lineCount, 0, $hostname );
+		$heartbeat->write( $lineCount, 1,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
+		$heartbeat->write( $lineCount, 2,
+			    "\""
+			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'biosSerial'}
+			  . "\"" );
+		$heartbeat->write( $lineCount, 3,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'} );
+		$heartbeat->write( $lineCount, 4,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'} );
+		$heartbeat->write( $lineCount, 5,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
+		$heartbeat->write( $lineCount, 6, $osVersion );
+		$heartbeat->write( $lineCount, 7,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osMinorVers'} );
+		$heartbeat->write( $lineCount, 8,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osSubVers'} );
+		$heartbeat->write( $lineCount, 9,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
+		$heartbeat->write( $lineCount, 10, $hBankAccounts );
+		$heartbeat->write( $lineCount, 11,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'serverType'} );
+        $heartbeat->write( $lineCount, 12,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
+        $heartbeat->write( $lineCount, 13,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
+        $heartbeat->write( $lineCount, 14,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
+        $heartbeat->write( $lineCount, 15,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
+        $heartbeat->write( $lineCount, 16,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
+        $heartbeat->write( $lineCount, 17,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
+        $heartbeat->write( $lineCount, 18,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
+        $heartbeat->write( $lineCount, 19,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'hardwareStatus'} );
+		$lineCount++;
+	}                                                                                         
+}
+
+sub createProductCountSheet {
+
+	my $prodCount = $workbook->add_worksheet("Product Count");
+	my $pLineCount = 2;
+    $prodCount->write( 0, 0,"IBM Confidential" );
+	$prodCount->write( 1, 0,
+		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
+	$prodCount->write( $pLineCount, 0, "CUSTOMER" );
+	$prodCount->write( $pLineCount, 1, "OS" );
+	$prodCount->write( $pLineCount, 2, "MANUFACTURER" );	
+	$prodCount->write( $pLineCount, 3, "SOFTWARE NAME" );
+	$prodCount->write( $pLineCount, 4, "LICENSE TYPE" );
+	$prodCount->write( $pLineCount, 5, "PRODUCT COUNT" );
+	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
+    $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
+
+	$pLineCount++;
+
+	foreach my $osName ( sort keys %{$productCount} ) {
+		foreach my $softwareName ( sort keys %{ $productCount->{$osName} } ) {
+			$prodCount->write( $pLineCount, 0, $accountNumber );
+			$prodCount->write( $pLineCount, 1, $osName );
+			$prodCount->write( $pLineCount, 2, $productCount->{$osName}->{$softwareName}->{'softwareManufacturer'} );
+			$prodCount->write( $pLineCount, 3, $softwareName );
+			$prodCount->write( $pLineCount, 4,
+				$productCount->{$osName}->{$softwareName}->{'license'} );
+			$prodCount->write( $pLineCount, 5,
+				$productCount->{$osName}->{$softwareName}->{'productCount'} );
+			$prodCount->write( $pLineCount, 6,
+				$productCount->{$osName}->{$softwareName}->{'processorCount'} );
+			$prodCount->write( $pLineCount, 7,
+				$productCount->{$osName}->{$softwareName}->{'chipCount'} );
+			$pLineCount++;
+		}
+	}
+}
+
+sub logit { 
+	my ($string, $logfile) = @_ ;
+	print "$string". " ( customer = '$customer')"."\n";;
+}                                                                            
+
+sub createSoftwareSheet {
+
+	my $lineCount  = 2;
+	my $page       = ( int( $lineCount / 60000 ) ) + 1;
+	my $software   = $workbook->add_worksheet("Software $page");
+	my $workbookCount = 0;
+
+    $software->write( 0, 0,"IBM Confidential" );
+	$software->write( 1, 0,
+		"REPORT DATE: $month $date, $year $hour:$min:$sec" );
+	$software->write( $lineCount, 0,  "HOSTNAME" );
+	$software->write( $lineCount, 1,  "MODEL" );
+	$software->write( $lineCount, 2,  "SERIAL NUMBER" );
+	$software->write( $lineCount, 3,  "SCANTIME" );
+	$software->write( $lineCount, 4,  "OS" );
+	$software->write( $lineCount, 5,  "OS VERSION" );
+	$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
+	$software->write( $lineCount, 7,  "CHIP COUNT" );
+	$software->write( $lineCount, 8,  "MANUFACTURER" );	
+	$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+	$software->write( $lineCount, 10,  "PID" );
+	$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+	$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+	$software->write( $lineCount, 13, "LICENSE" );
+	$software->write( $lineCount, 14, "BANK ACCOUNT" );
+	$software->write( $lineCount, 15, "SCOPE" );
+
+	$lineCount++;
+	  foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
+		
+		my $osVersion = max_sw_version(
+					keys %{
+						$bravoSoftware->{$accountNumber}->{$hostname}->{'osVersion'}
+					  }
+				);
+
+		foreach my $softwareCategory (
+			sort keys
+			%{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'} } )
+		{
+			my $softwareVersions;
+			my $bankAccounts;
+
+			$softwareVersions = max_sw_version(
+				keys %{
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+					  ->{$softwareCategory}->{'softwareVersion'}
+				  }
+			);
+
+			foreach my $bankAccount (
+				sort keys %{
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+					  ->{$softwareCategory}->{'bankAccount'}
+				}
+			  )
+			{
+				$bankAccounts .= $bankAccount . ",";
+			}
+
+			chop $bankAccounts;
+
+			$software->write_string( $lineCount, 0, $hostname );
+			$software->write( $lineCount, 1,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
+			$software->write( $lineCount, 2,
+				"\""
+				  . $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'biosSerial'} . "\"" );
+			$software->write( $lineCount, 3,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
+			$software->write( $lineCount, 4,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
+			$software->write( $lineCount, 5,
+				$osVersion );
+			$software->write( $lineCount, 6,
+				$bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'processorCount'} );
+			$software->write( $lineCount, 7,
+				$bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'chipCount'} );
+			$software->write( $lineCount, 8,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareManufacturer'} );
+			$software->write( $lineCount, 9,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} );
+			$software->write( $lineCount, 10,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'pid'} );
+			$software->write( $lineCount, 11, $softwareVersions );
+			$software->write( $lineCount, 12,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'discrepancyType'} );
+			$software->write( $lineCount, 13,
+				$bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'level'} );
+			$software->write( $lineCount, 14, $bankAccounts );
+			$software->write( $lineCount, 15,
+                $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+                  ->{$softwareCategory}->{'scopeDescription'} );
+
+			$lineCount++;
+
+			my $endPage = ( int( $lineCount / 60000 ) ) + 1;
+
+			if ( $endPage > 1 ) {
+
+				if ( $page > 1 ) {
+					$workbookCount++;
+					$page = 0;
+					$workbook->close();
+					$workbook =
+					  Spreadsheet::WriteExcel::Big->new(
+						    "$reportDir/$accountNumber" . '_'
+						  . "$workbookCount.xls" );
+				}
+
+				$page++;
+				$lineCount = 0;
+				$software  = $workbook->add_worksheet("Software $page");
+
+				$software->write( $lineCount, 0,  "HOSTNAME" );
+				$software->write( $lineCount, 1,  "MODEL" );
+				$software->write( $lineCount, 2,  "SERIAL NUMBER" );
+				$software->write( $lineCount, 3,  "SCANTIME" );
+				$software->write( $lineCount, 4,  "OS" );
+				$software->write( $lineCount, 5,  "OS VERSION" );
+				$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
+				$software->write( $lineCount, 7,  "CHIP COUNT" );
+				$software->write( $lineCount, 8,  "MANUFACTURER" );	
+				$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+				$software->write( $lineCount, 10,  "PID" );
+				$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+				$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+				$software->write( $lineCount, 13, "LICENSE" );
+				$software->write( $lineCount, 14, "BANK ACCOUNT" );
+				$software->write( $lineCount, 15, "SCOPE" );
+			$lineCount++;
+			}
+
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }->{'productCount'}++;
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }->{'license'} =
+			  $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+			  ->{$softwareCategory}->{'level'};
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }->{'softwareManufacturer'} =
+			  $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+			  ->{$softwareCategory}->{'softwareManufacturer'};
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }
+			  ->{'processorCount'} +=
+			  $bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'};
+			$productCount->{ $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'osName'} }
+			  ->{ $bravoSoftware->{$accountNumber}->{$hostname}->{'software'}
+				  ->{$softwareCategory}->{'softwareName'} }
+			  ->{'chipCount'} +=
+			  $bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'};
+		}
+
+		foreach my $softwareCategory (
+			sort
+			keys %{ $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'} }
+		  )
+		{
+			foreach my $softwareName (
+				sort keys %{
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}
+				}
+			  )
+			{
+				my $softwareVersions;
+
+				$softwareVersions = max_sw_version(
+					keys %{
+						$bravoSoftware->{$accountNumber}->{$hostname}
+						  ->{'unknown'}->{$softwareCategory}->{$softwareName}
+						  ->{'softwareVersion'}
+					  }
+				);
+
+				$software->write_string( $lineCount, 0, $hostname );
+				$software->write( $lineCount, 1,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'model'} );
+				$software->write( $lineCount, 2,
+					"\""
+					  . $bravoSoftware->{$accountNumber}->{$hostname}
+					  ->{'biosSerial'} . "\"" );
+				$software->write( $lineCount, 3,
+					$bravoSoftware->{$accountNumber}->{$hostname}
+					  ->{'scantime'} );
+				$software->write( $lineCount, 4,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
+				$software->write( $lineCount, 5,
+					$osVersion);
+				$software->write( $lineCount, 6,
+					$bravoSoftware->{$accountNumber}->{$hostname}
+					  ->{'processorCount'} );
+			    $software->write( $lineCount, 7,
+					$bravoSoftware->{$accountNumber}->{$hostname}
+					  ->{'chipCount'} );
+				$software->write( $lineCount, 8, $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'} );					  
+				$software->write( $lineCount, 9, $softwareName );
+				$software->write( $lineCount, 10, 
+			  		$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					->{$softwareCategory}->{$softwareName}->{'pid'} );
+				$software->write( $lineCount, 11, $softwareVersions );
+				$software->write( $lineCount, 12,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					->{$softwareCategory}->{$softwareName}->{'discrepancyType'} );
+				$software->write( $lineCount, 13,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'level'} );
+				$software->write( $lineCount, 14,
+					$bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+					  ->{$softwareCategory}->{$softwareName}->{'bankAccount'} );
+			   $software->write( $lineCount, 15,
+                    $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+                      ->{$softwareCategory}->{$softwareName}->{'scopeDescription'} );
+
+				$lineCount++;
+
+				my $endPage = ( int( $lineCount / 60000 ) ) + 1;
+
+				if ( $endPage > 1 ) {
+
+					if ( $page > 1 ) {
+						$workbookCount++;
+						$page = 0;
+						$workbook->close();
+						$workbook =
+						  Spreadsheet::WriteExcel::Big->new(
+							    "$reportDir/$accountNumber" . '_'
+							  . "$workbookCount.xls" );
+					}
+
+					$page++;
+					$lineCount = 0;
+					$software  = $workbook->add_worksheet("Software $page");
+
+					$software->activate();
+					$software->write( $lineCount, 0,  "HOSTNAME" );
+					$software->write( $lineCount, 1,  "MODEL" );
+					$software->write( $lineCount, 2,  "SERIAL NUMBER" );
+					$software->write( $lineCount, 3,  "SCANTIME" );
+					$software->write( $lineCount, 4,  "OS" );
+					$software->write( $lineCount, 5,  "OS VERSION" );
+					$software->write( $lineCount, 6,  "PROCESSOR COUNT" );
+					$software->write( $lineCount, 7,  "CHIP COUNT" );
+					$software->write( $lineCount, 8,  "MANUFACTURER" );					
+					$software->write( $lineCount, 9,  "SOFTWARE NAME" );
+					$software->write( $lineCount, 10,  "PID" );
+					$software->write( $lineCount, 11,  "SOFTWARE VERSION" );
+					$software->write( $lineCount, 12, "DISCREPANCY TYPE");
+					$software->write( $lineCount, 13, "LICENSE" );
+					$software->write( $lineCount, 14, "BANK ACCOUNT" );
+					$software->write( $lineCount, 15, "SCOPE" );
+					$lineCount++;
+				}
+
+				my $osNameKey =
+				  $bravoSoftware->{$accountNumber}->{$hostname}->{'osName'};
+				$productCount->{$osNameKey}->{$softwareName}->{'productCount'}
+				  ++;
+				$productCount->{$osNameKey}->{$softwareName}->{'license'} =
+				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+				  ->{$softwareCategory}->{$softwareName}->{'level'};
+				$productCount->{$osNameKey}->{$softwareName}->{'softwareManufacturer'} =
+				  $bravoSoftware->{$accountNumber}->{$hostname}->{'unknown'}
+				  ->{$softwareCategory}->{$softwareName}->{'softwareManufacturer'};
+				$productCount->{$osNameKey}->{$softwareName}
+				  ->{'processorCount'} +=
+				  $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'processorCount'};
+				$productCount->{$osNameKey}->{$softwareName}
+				  ->{'chipCount'} +=
+				  $bravoSoftware->{$accountNumber}->{$hostname}
+				  ->{'chipCount'};
+			}
+		}
+		}
+	}
+
+sub zipFile{
+	if ( -e "$reportDir/$accountNumber.xls" ) {
+		$zipfile = "$JAR/MULTI.$accountNumber.zip";
+		unlink("$zipfile") if ( -e $zipfile );
+		my $cmd = "zip -j $zipfile $reportDir/$accountNumber*.xls";
+		logit( $cmd, $logFile );
+		`$cmd`;
+		chmod 0664, $zipfile;
+	    unlink <$reportDir/$accountNumber*.xls>;
+}}
+	
+sub sendReportToGSA {
+
+       my $cfg=Config::Properties::Simple->new(file=>$connConfigFile);
+       my $server=$cfg->getProperty('gsa.swmulti.report.server');
+       my $user=$cfg->getProperty('gsa.swmulti.report.user');
+       my $pw=$cfg->getProperty('gsa.swmulti.report.password');
+       my $targetFolder = $cfg->getProperty('gsa.swmulti.report.target.folder');
+       
+       my $ftp = Net::FTP->new($server, Debug => 0, Timeout => 600) or die "Cannot connect.\n";
+       $ftp->login($user, $pw) or die "Could not login.\n";
+      
+       $ftp->cwd($targetFolder) or die "Cannot change working directory.\n";
+       my $bin=$ftp->binary or die "Can not change the Type to Binary\n"; 
+            
+       $ftp->put($zipfile, "MULTI.$accountNumber.zip") or die "Could not upload.\n";
+       $ftp->quit;       
+    unlink("$zipfile");
+}
+
+sub max_sw_version (@) {
+    my @aStrings = @_;
+    return "" unless ( scalar @aStrings );
+    my %hString = ();
+    foreach my $String (@aStrings) {
+        my ( $Version, $Release ) = split( /\./, $String . "." );
+        $hString{$Version}->{$Release}->{$String} = 1;
+    }
+    my @aResult = ();
+    foreach my $Version ( keys %hString ) {
+        my @aRelease = keys %{ $hString{$Version} };
+        my  $myrelease = scalar @aRelease;
+        next unless ( scalar @aRelease == 1 );
+        my $Release = $aRelease[0];
+        if ( scalar keys %{ $hString{$Version}->{$Release} } == 1 ) {   
+            push( @aResult, keys %{ $hString{$Version}->{$Release} } );
+            delete( $hString{$Version} );
+        }
+    }
+
+    foreach my $Version ( sort { $a <=> $b } keys %hString ) {          
+        my @aRelease = keys %{ $hString{$Version} };
+         my  $myrelease = scalar @aRelease;
+        push( @aResult,
+            ( scalar @aRelease > 1 )
+            ? "$Version.*"
+            : "$Version.$aRelease[0].*" );
+    }
+
+    return join( ",", sort @aResult );
+}
 
