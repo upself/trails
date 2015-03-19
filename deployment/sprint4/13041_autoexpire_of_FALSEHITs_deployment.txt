@@ -6,9 +6,9 @@ chmod 777 falseHitExpire
 
 cron
 /opt/staging/v2/falseHitExpire.pl once per day (nightly hours, probably).
-One commandline parameter required (number of max expiry in one run), logfile can be found in the directory above.
+No commandline parameters required, logfile can be found in the directory above.
 The DB environment must be setup for the user cronning this script!
 
 Example:
 
-0 2 * * * /opt/staging/v2/falseHitExpire.pl 100
+0 2 * * * /opt/staging/v2/falseHitExpire.pl
