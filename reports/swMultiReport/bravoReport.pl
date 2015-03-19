@@ -114,7 +114,7 @@ logit( "Created product count sheet", $logFile );
 logit( "xls file generation finished", $logFile );
 $workbook->close();
 logit( "Zipping the report and sending to GSA", $logFile );
-#sendReportToGSA();
+sendReportToGSA();
 logit( "Report sent", $logFile );
 
 
