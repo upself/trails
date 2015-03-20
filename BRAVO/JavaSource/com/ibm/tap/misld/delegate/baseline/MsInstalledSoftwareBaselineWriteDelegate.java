@@ -214,7 +214,7 @@ public class MsInstalledSoftwareBaselineWriteDelegate extends Delegate {
 			throw new LoadException("Invalid software name");
 		}
 
-		if (software.getSoftwareCategory().getSoftwareCategoryName().equals(
+		if (software.getSoftwareCategory().getSoftwareCategoryName().contains(
 				Constants.OPERATING_SYSTEMS)) {
 			//Can't set an operating system to inactive
 			//if (!status.equals(Constants.ACTIVE)) {

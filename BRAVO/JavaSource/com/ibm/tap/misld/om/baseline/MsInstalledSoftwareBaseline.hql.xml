@@ -47,7 +47,7 @@
 	    and i.software.level = 'LICENSABLE'
 		and i.software.manufacturer.manufacturerName = 'MICROSOFT'
 		and i.software.softwareCategory.status = 'ACTIVE'
-		and i.software.softwareCategory.softwareCategoryName = 'Operating Systems'
+		and i.software.softwareCategory.softwareCategoryName like 'Operating Systems%'
 
 		order by i.softwareLpar.name
 

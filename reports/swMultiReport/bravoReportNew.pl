@@ -880,7 +880,7 @@ from
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
 		
         
-		if ( $softwareCategory eq 'Operating Systems' ) {
+		if ( $softwareCategory  =~ /Operating Systems/ ) {
 			if ( !defined( $data{$accountNumber}{$name}{'osName'} ) ) {
 				$data{$accountNumber}{$name}{'osName'}    = $softwareName;
 				$data{$accountNumber}{$name}{'osVersion'} = $softwareVersion;

@@ -939,7 +939,7 @@ from
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
         
-		if ( $softwareCategory eq 'Operating Systems' ) {
+		if ( $softwareCategory =~ /Operating Systems/ ) {
 			if (
 				exists(
 					$data{$accountNumber}{$name}{'osName'}

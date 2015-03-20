@@ -187,7 +187,7 @@ sub isCategoryOS {
 	my $softwareCategoryName = $self->getSoftwareCategoryName;
 
 	if ( defined $softwareCategoryName
-		&& $softwareCategoryName eq "Operating Systems" )
+		&& $softwareCategoryName =~ /Operating Systems/ )
 	{
 		return 1;
 	}
