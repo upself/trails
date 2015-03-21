@@ -197,35 +197,48 @@ public class ReconServiceImpl implements ReconService {
 	  return crossAccountAlertFlag;	
 	}
 	
-	//This method is used to judge if there is one validate schdeduleF record defined for cross account alert
+	//This method is used to judge if there is one validate schdeduleF record defined for current working alert and cross account alert
 	//1. SCHEDULE_F.SCOPE_ID = 3(IBM owned, IBM managed)
 	//2. SCHEDULE_F.LEVEL != 'HOSTNAME'(The value can be 'HWBOX','HWOWNER','PRODUCT')
-	private boolean validateScheduleFForCrossAccountAlert(AlertUnlicensedSw alert){
-		boolean validateScheduleFForCrossAccountAlertFlag = false;
+	private boolean validateScheduleF4WorkingAlertAndCrossAccountAlert(AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert){
+		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
 		
-		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
-				    alert.getInstalledSoftware().getSoftware().getSoftwareName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+		ScheduleF scheduleF4WorkingAlert = getScheduleFItem( workingAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				workingAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
 		
-		if (scheduleF != null) {
-			Long scopeId = scheduleF.getScope().getId();
+		ScheduleF scheduleF4RelatedAlert = getScheduleFItem( relatedAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				relatedAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
 		
-			if(scopeId.intValue()==3//IBM owned, IBM managed
-			  && scheduleF.getLevel()!=null
-			  && !scheduleF.getLevel().trim().equals("HOSTNAME")){
-			  validateScheduleFForCrossAccountAlertFlag = true;  
+		if (scheduleF4WorkingAlert!=null && scheduleF4RelatedAlert != null) {
+			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope().getId();
+			Long scopeId4RelatedAlert = scheduleF4RelatedAlert.getScope().getId();
+		
+			if(scopeId4WorkingAlert.intValue()==3//Working Alert Scope must be IBM owned, IBM managed
+			  && scheduleF4WorkingAlert.getLevel()!=null
+			  && !scheduleF4WorkingAlert.getLevel().trim().equals("HOSTNAME")//Working Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+			  && scopeId4RelatedAlert.intValue() == 3//Cross Account Alert Scope must be IBM owned, IBM managed
+			  && scheduleF4RelatedAlert.getLevel()!=null
+			  && !scheduleF4RelatedAlert.getLevel().trim().equals("HOSTNAME")//Cross Account Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+			  ){
+			  validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;  
 			}
 		}
 		
-		return validateScheduleFForCrossAccountAlertFlag;
+		return validateScheduleF4WorkingAlertAndCrossAccountAlertFlag;
 	}
 	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
-	
+
 	private ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial) {
+	
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
@@ -565,17 +578,17 @@ public class ReconServiceImpl implements ReconService {
 				
 				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
 				int alertlistSwOwner = -1;//default init value
-				boolean validateScheduleFForCrossAccountAlertFlag = false;//default init value
+				boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;//default init value
 				boolean crossAccountAlertFlag = isCrossAccountAlert(lausTemp.getInstalledSoftware().getSoftwareLpar().getAccount(), account);
 				if(crossAccountAlertFlag == false){//same account alert
 				  alertlistSwOwner = validateScheduleFowner(lausTemp);
 				}
 				else{//cross account alert
-				  validateScheduleFForCrossAccountAlertFlag = validateScheduleFForCrossAccountAlert(lausTemp);
+					validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = validateScheduleF4WorkingAlertAndCrossAccountAlert(aus,lausTemp);
 				}
 				
 				if((crossAccountAlertFlag == false && alertlistSwOwner == owner && owner != 2)//same account alert
-				||(crossAccountAlertFlag == true && validateScheduleFForCrossAccountAlertFlag == true))//cross alert alert
+				||(crossAccountAlertFlag == true && validateScheduleF4WorkingAlertAndCrossAccountAlertFlag == true))//cross alert alert
 				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 				{
 					if (bReconcileValidation) {

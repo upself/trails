@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ import com.ibm.asset.trails.domain.ReconSetting;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.Reconcile;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.VSoftwareLpar;
 import com.ibm.asset.trails.service.ReconService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
@@ -68,6 +72,19 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	private int alertsTotal;
 
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+	private EntityManager em;
+
+	@PersistenceContext(unitName = "trailspd")
+	public void setEntityManager(EntityManager em) {
+		this.em = em;
+	}
+
+	private EntityManager getEntityManager() {
+		return em;
+	}
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
+	
 	public int getAlertsProcessed() {
 		return alertsProcessed;
 	}
@@ -481,10 +498,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			AlertUnlicensedSw alert = alertDAO.findById(alertId);
 			List<Long> alertIds = new ArrayList<Long>();
 			if (alert.getReconcile().getMachineLevel() == 1) {
-				alertIds.addAll(alertDAO.findMachineLevelAffected(alert
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+				/*alertIds.addAll(alertDAO.findMachineLevelAffected(alert
 						.getInstalledSoftware().getSoftware().getSoftwareId(),
 						alert.getInstalledSoftware().getSoftwareLpar()
-								.getHardwareLpar().getHardware().getId()));
+								.getHardwareLpar().getHardware().getId()));*/
+				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(alert,alertDAO.findMachineLevelAffected(alert
+						.getInstalledSoftware().getSoftware()
+						.getSoftwareId(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getId())));
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 			} else {
 				alertIds.add(alertId);
 			}
@@ -529,11 +553,18 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				}
 				List<Long> alertIds = new ArrayList<Long>();
 				if (alert.getReconcile().getMachineLevel() == 1) {
-					alertIds.addAll(alertDAO.findMachineLevelAffected(alert
+					//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+					/*alertIds.addAll(alertDAO.findMachineLevelAffected(alert
 							.getInstalledSoftware().getSoftware()
 							.getSoftwareId(), alert.getInstalledSoftware()
 							.getSoftwareLpar().getHardwareLpar().getHardware()
-							.getId()));
+							.getId()));*/
+					alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(alert,alertDAO.findMachineLevelAffected(alert
+							.getInstalledSoftware().getSoftware()
+							.getSoftwareId(), alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware()
+							.getId())));
+					//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 				} else {
 					alertIds.add(alertId);
 				}
@@ -559,11 +590,18 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 			List<Long> alertIds = new ArrayList<Long>();
 			if (alert.getReconcile().getMachineLevel() == 1) {
-				alertIds.addAll(alertDAO.findMachineLevelAffected(alert
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+				/*alertIds.addAll(alertDAO.findMachineLevelAffected(alert
 						.getInstalledSoftware().getSoftware()
 						.getSoftwareId(), alert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getId()));
+						.getId()));*/
+				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(alert,alertDAO.findMachineLevelAffected(alert
+						.getInstalledSoftware().getSoftware()
+						.getSoftwareId(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getId())));
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End	
 			} else {
 				alertIds.add(alert.getId());
 			}		
@@ -722,4 +760,113 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 		return results;
 	}
+	
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+	private List<Long> filterTargetAffectedBreakAlertList4MachineLevel(AlertUnlicensedSw workingAlert, List<Long> affectedAlertList4MachineLevel){
+		List<Long> targetAffectedBreakAlertList4MachineLevel = new ArrayList<Long>();
+	    if(workingAlert!=null && affectedAlertList4MachineLevel!=null){
+	      int workingAlertAccountId = workingAlert.getInstalledSoftware().getSoftwareLpar().getAccount().getId().intValue();
+	      for(Long affectedAlertId: affectedAlertList4MachineLevel){
+	        AlertUnlicensedSw affectedAlertObj = alertDAO.findById(affectedAlertId);
+	        int affectedAlertAccountId = affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getAccount().getId().intValue();
+	        if(workingAlertAccountId == affectedAlertAccountId){//Same Acccount
+	          targetAffectedBreakAlertList4MachineLevel.add(affectedAlertId);
+	        }
+	        else{//Cross Account
+	        	ScheduleF scheduleF4WorkingAlert = getScheduleFItem(workingAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+	    				workingAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
+	    				workingAlert.getInstalledSoftware().getSoftwareLpar().getName(),
+	    				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+	    				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+	    				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+	    		
+	    		ScheduleF scheduleF4AffectedAlert = getScheduleFItem(affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getAccount(),
+	    				affectedAlertObj.getInstalledSoftware().getSoftware().getSoftwareName(),
+	    				affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getName(),
+	    				affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+	    				affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+	    				affectedAlertObj.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+	    		
+	    		if (scheduleF4WorkingAlert!=null && scheduleF4AffectedAlert != null) {
+	    			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope().getId();
+	    			Long scopeId4AffecteddAlert = scheduleF4AffectedAlert.getScope().getId();
+	    		
+	    			if(scopeId4WorkingAlert.intValue()==3//Working Alert Scope must be IBM owned, IBM managed
+	    			  && scheduleF4WorkingAlert.getLevel()!=null
+	    			  && !scheduleF4WorkingAlert.getLevel().trim().equals("HOSTNAME")//Working Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+	    			  && scopeId4AffecteddAlert.intValue() == 3//Cross Account Alert Scope must be IBM owned, IBM managed
+	    			  && scheduleF4AffectedAlert.getLevel()!=null
+	    			  && !scheduleF4AffectedAlert.getLevel().trim().equals("HOSTNAME")//Cross Account Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+	    			  ){
+	    			  targetAffectedBreakAlertList4MachineLevel.add(affectedAlertId);  
+	    			}
+	    		}
+	        }
+	      }
+	    }
+		
+		return targetAffectedBreakAlertList4MachineLevel;
+	}
+	
+	private ScheduleF getScheduleFItem(Account account, String swname,
+			String hostName, String hwOwner, String machineType, String serial) {
+	
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createQuery(
+						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
+				.setParameter("account", account)
+				.setParameter("swname", swname).getResultList();
+
+
+		if (results == null || results.isEmpty()) {
+			return null;
+		}
+
+		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
+
+		for (ScheduleF sf : results) {
+			String level = sf.getLevel();
+			if ("HOSTNAME".equals(level)) {
+				hostNameLevel.add(sf);
+			} else if ("HWBOX".equals(level)) {
+				hwboxLevel.add(sf);
+			} else if ("HWOWNER".equals(level)) {
+				hwOwnerLevel.add(sf);
+			} else {
+				proudctLevel.add(sf);
+			}
+		}
+
+		for (ScheduleF sf : hostNameLevel) {
+			if (sf.getHostname().equals(hostName)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : hwboxLevel) {
+			if (sf.getSerial().equals(serial)
+					&& sf.getMachineType().equals(machineType)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : hwOwnerLevel) {
+			if (sf.getHwOwner().equals(hwOwner)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : proudctLevel) {
+			if (sf.getSoftwareName().equals(swname)) {
+				return sf;
+			}
+		}
+
+		return null;
+	}
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 }
