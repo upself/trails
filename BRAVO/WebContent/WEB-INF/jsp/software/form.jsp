@@ -63,9 +63,11 @@
 		}
 		
 		// if discrepancy is False Hit, then only Complex discovery Category is accepted
-		if(flag1 && !flag2){
-			alert ("FALSE HIT only accept Complex discovery as Software Category!");
-			return false;
+		if(flag2){
+			if(!flag1){
+				alert ("The Software Category Complex discovery is only valid for the Discrepancy FALSE HIT");
+				return false;
+			}
 		}
 	}
 
