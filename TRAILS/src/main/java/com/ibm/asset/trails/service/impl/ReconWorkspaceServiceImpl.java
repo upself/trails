@@ -626,17 +626,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 		// current allocation methodology have not rules, apply default qty.
 		if (!coveredByRules && !cacualted) {
-			VSoftwareLpar lVSoftwareLpar = vSwLparDAO
-					.findById(pAlertUnlicensedSw.getInstalledSoftware()
-							.getSoftwareLpar().getId());
+			VSoftwareLpar lVSoftwareLpar = vSwLparDAO.findById(pAlertUnlicensedSw.getInstalledSoftware().getSoftwareLpar().getId());
 
-			liLicensesNeeded = (lsPer.equalsIgnoreCase("PROCESSOR") ? lVSoftwareLpar
-					.getProcessorCount().intValue()
-					: (lVSoftwareLpar.getHardwareLpar().getHardware()
-							.getProcessorCount() == null ? 0 : lVSoftwareLpar
-							.getHardwareLpar().getHardware()
-							.getProcessorCount().intValue()))
-					* liMaxLicenses;
+			if(lsPer.equalsIgnoreCase("PROCESSOR")){
+				liLicensesNeeded = lVSoftwareLpar.getHardwareLpar().getHardwareLparEff().getProcessorCount().intValue() * liMaxLicenses;
+			} else {
+				if(lVSoftwareLpar.getHardwareLpar().getHardware().getProcessorCount() == null){
+					liLicensesNeeded = 0 * liMaxLicenses;
+				}else{
+					liLicensesNeeded = lVSoftwareLpar.getHardwareLpar().getHardware().getProcessorCount().intValue() * liMaxLicenses;
+				}
+			}
 		}
 
 		return liLicensesNeeded;
