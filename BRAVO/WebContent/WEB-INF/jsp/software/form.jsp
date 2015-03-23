@@ -35,6 +35,44 @@
 	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
 <%@page
 	import="java.util.Calendar,java.util.Properties,java.io.FileInputStream,java.lang.String,com.ibm.tap.misld.framework.Constants"%>
+	
+<script type="text/javascript">
+	function validateDescripancy(){
+		//check discrepancy type
+		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
+		var flag1=false;
+		var flag2=false;
+		for(var i=0;i<descrepancyType.length;i++){
+			if(descrepancyType.options[i].selected){
+				var descreVal=descrepancyType.options[i].text;
+				if(descreVal=="FALSE HIT"){
+					flag1=true;
+				}
+			}
+		}
+		
+		//check invalid category
+		var invalideCate=document.getElementsByName("invalidCategory")[0];
+		for(var j=0;j<invalideCate.length;j++){
+			if(invalideCate.options[j].selected){
+			   var category=invalideCate.options[j].text;
+			   if(category=="Complex discovery"){
+				  flag2=true;
+			   }
+			}
+		}
+		
+		// if discrepancy is False Hit, then only Complex discovery Category is accepted
+		if(flag2){
+			if(!flag1){
+				alert ("The Software Category Complex discovery is only valid for the Discrepancy FALSE HIT");
+				return false;
+			}
+		}
+	}
+
+
+</script>
 
 <title><c:out value="${software.action}" /> Software: <c:out
 		value="${software.software.softwareName}" /></title>
@@ -201,8 +239,7 @@
 																readonly="readonly" />
 														</c:when>
 														<c:otherwise>
-															<html:select property="discrepancyTypeId"
-																styleClass="inputlong">
+															<html:select property="discrepancyTypeId" styleClass="inputlong" >
 																<html:optionsCollection property="discrepancyTypeList" />
 															</html:select>
 														</c:otherwise>
@@ -211,7 +248,7 @@
 														property="discrepancyType" /></td>
 											</tr>
 											<tr>
-												<td nowrap="nowrap">Invalid Software Category:</td>
+												<td nowrap="nowrap">Software Category:</td>
 												<td><html:select property="invalidCategory"
 														styleClass="inputlong"
 														disabled="${software.readOnly['invalidCategory']}">
@@ -235,7 +272,7 @@
 												<td nowrap="nowrap"><span class="ibm-btn-view-pri">
 														<html:submit property="action" value="${software.action}"
 															disabled="${software.readOnly['comment']}"
-															styleClass="ibm-btn-view-pri" /> <html:submit
+															styleClass="ibm-btn-view-pri" onclick="return validateDescripancy()" /> <html:submit
 															property="action" value="Cancel"
 															disabled="${software.readOnly['comment']}"
 															styleClass="ibm-btn-view-pri" />
@@ -277,19 +314,23 @@
 										<td></td>
 									</tr>
 									<tr>
-										<th>TADZ</th>
-										<td>It is kind of TADZ data</td>
+										<th>FH RESET</th>
+										<td>Software component was marked as FALSE HIT for longer then the allowed period and therefore returned back to the scope</td>
 									</tr>
 									<tr>
 										<td></td>
 									</tr>
 									<tr>
-										<td width="40%"><font style="color:#7a3" class="caption">Invalid
+										<td width="40%"><font style="color:#7a3" class="caption">
 											Software Categories:</font></td>
 										<td><font style="color:#7a3" class="caption">&nbsp;</font></td>
 									</tr>
 									<tr>
 										<td colspan=2><div class="hrule-dots"></div></td>
+									</tr>
+									<tr>
+										<th>Complex discovery</th>
+										<td>Used for managing complex discovery when components are discovered by advanced discovery method</td>
 									</tr>
 									<tr>
 										<th>Blocked in IFAPRD</th>

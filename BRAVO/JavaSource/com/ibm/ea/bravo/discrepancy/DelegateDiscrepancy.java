@@ -19,7 +19,7 @@ public abstract class DelegateDiscrepancy extends HibernateDelegate {
 
 	public static long INVALID = 5;
 	
-	public static long TADZ = 6;
+	public static long FH_RESET = 7;
 
 	@SuppressWarnings("unchecked")
     public static List<DiscrepancyType> getDiscrepancies() throws Exception {

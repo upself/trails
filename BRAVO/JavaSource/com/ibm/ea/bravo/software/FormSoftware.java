@@ -366,9 +366,9 @@ public class FormSoftware extends FormBase {
 			d4.setId(DelegateDiscrepancy.VALID);
 			discrepancyTypeList.add(d4);
 			
-			DiscrepancyType d6 = new DiscrepancyType();
-			d6.setId(DelegateDiscrepancy.TADZ);
-			discrepancyTypeList.add(d6);
+			DiscrepancyType d7 = new DiscrepancyType();
+			d7.setId(DelegateDiscrepancy.FH_RESET);
+			discrepancyTypeList.add(d7);
 			
 			if (discrepancyTypeId == null) {
 				return DelegateDiscrepancy.NONE;
