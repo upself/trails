@@ -39,6 +39,8 @@ public class MainframeFeatureServiceImpl extends
 			existing = update(existing, xmlEntity);
 		} else if (existing.getMainframeProductInfo() == null) {
 			existing.setMainframeProductInfo(this.buildProductInfo(existing));
+		} else if (!mfVersionService.findIdByNaturalKey(xmlEntity.getVersionGuid()).equals( existing.getVersion())) {
+			existing.setVersion(mfVersionService.findIdByNaturalKey(xmlEntity.getVersionGuid()));
 		} else {
 			existing = super.update(existing, xmlEntity);
 		}
