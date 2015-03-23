@@ -37,6 +37,10 @@ public class HardwareLparEff {
 	}
 
 	public Integer getProcessorCount() {
+		if(null != status && status.equalsIgnoreCase("INACTIVE")){
+			return 0;
+		}
+		
 		return processorCount;
 	}
 

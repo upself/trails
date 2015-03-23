@@ -220,7 +220,11 @@ public class VSoftwareLparDAOJpa extends
 			int i = 0;
 
 			while (objectsPerPage > i++) {
-				list.add((ReconWorkspace) itemCursor.get(0));
+				ReconWorkspace rw = (ReconWorkspace)itemCursor.get(0);
+				if(null != rw.getHwLparEffProcessorStatus() && rw.getHwLparEffProcessorStatus().equalsIgnoreCase("INACTIVE")){
+					rw.setHwLparEffProcessorCount(0);
+				}
+				list.add(rw);
 				if (!itemCursor.next())
 					break;
 			}
