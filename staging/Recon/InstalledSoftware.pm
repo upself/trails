@@ -2058,13 +2058,7 @@ sub getInstalledSoftwareReconData {
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
 		$installedSoftwareReconData->hChips( $rec{hChips} );
 
-		###The processor logic
-		if ( defined $rec{sleProcCount} ) {
-			$installedSoftwareReconData->processorCount( $rec{sleProcCount} );
-		}
-		else {
-			$installedSoftwareReconData->processorCount( $rec{slProcCount} );
-		}
+		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
 		###If recon is defined and it is machine level set processor count to hardware processor count
 		###No matter if it is 0 or not
@@ -2356,7 +2350,6 @@ sub queryReconInstalledSoftwareBaseData {
 	  slName
 	  slStatus
 	  slProcCount
-	  sleProcCount
 	  sId
 	  sName
 	  sStatus
@@ -2401,7 +2394,6 @@ sub queryReconInstalledSoftwareBaseData {
             ,sl.name
             ,sl.status
             ,sl.processor_count
-            ,sle.processor_count
             ,s.software_id
             ,s.software_name
             ,s.status
@@ -2426,10 +2418,6 @@ sub queryReconInstalledSoftwareBaseData {
                 m.id = s.manufacturer_id
             join software_category sc on 
                 sc.software_category_id = s.software_category_id
-            left outer join software_lpar_eff sle on 
-                sle.software_lpar_id = sl.id
-                and sle.status = \'ACTIVE\'
-                and sle.processor_count != 0
             left outer join hw_sw_composite hsc on 
                 hsc.software_lpar_id = sl.id
             left outer join hardware_lpar hl on 
