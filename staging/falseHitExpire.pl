@@ -116,6 +116,7 @@ sub queryGetISWids {
 				and isw.invalid_category <> \'$complexstring\'
 				and isw.status = \'ACTIVE\'
 				and isw.discrepancy_type_id = 3 )
+			order by age desc
 			fetch first $maxperonerun rows only with ur
     ";
     dlog("queryReconQueueByCustomerId=$query");
