@@ -91,7 +91,7 @@ sub queryhasOS {
 		        is.SOFTWARE_LPAR_ID = ?
 		        and is.status='ACTIVE' 
 		        and ( ( kb.deleted is null ) or ( kb.deleted <> 1 ) )
-		        and sc.SOFTWARE_CATEGORY_NAME='Operating Systems'
+		        and sc.SOFTWARE_CATEGORY_NAME like 'Operating Systems%'
 		        and sc.status='ACTIVE'
 		    with ur	         );
 	return ( 'hsOS', $query );

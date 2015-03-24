@@ -142,6 +142,7 @@ sub getAccNumber{
 sub getBravoSoftwareReport {
 	my ( $dbh, $customerId ) = @_;
 
+	my $accountNumber;
 	my $name;
 	my $model;
 	my $biosSerial;
@@ -324,7 +325,7 @@ from
 		$data{$accountNumber}{$name}{'lparStatus'}   = $lparStatus;
 		$data{$accountNumber}{$name}{'hardwareStatus'}   = $hardwareStatus;
         
-		if ( $softwareCategory eq 'Operating Systems' ) {
+		if ( $softwareCategory =~ /Operating Systems/ ) {
 			if (
 				exists(
 					$data{$accountNumber}{$name}{'osName'}
@@ -953,6 +954,8 @@ sub max_sw_version (@) {
             : "$Version.$aRelease[0].*" );
     }
 
+
     return join( ",", sort @aResult );
 }
+
 
