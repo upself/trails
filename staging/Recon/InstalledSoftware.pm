@@ -79,9 +79,9 @@ sub setUp {
 	if ( $self->installedSoftwareReconData->hProcCount > 0 ) {
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-	else {
-		$processorCount = $self->installedSoftwareReconData->processorCount;
-	}
+#	else {
+#		$processorCount = $self->installedSoftwareReconData->processorCount;
+#	}
 
 	my $chipCount = $self->installedSoftwareReconData->hChips;
 
