@@ -879,13 +879,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				String swFinancialResp = cell.getRichStringCellValue()
 						.getString();
 				if (!swFinancialResp.equals("CUSTO")
-						&& !swFinancialResp.equals("IBM")) {
+						&& !swFinancialResp.equals("IBM")
+						&& !swFinancialResp.equals("N/A")) {
 					throw new Exception(
-							"The value of SW Financial Resp should only be CUSTO or IBM.");
+							"The value of SW Financial Resp should only be IBM or CUSTO or N/A.");
 				} else if (scDesParts[0].contains("IBM owned")
-						&& swFinancialResp.equals("CUSTO")) {
+						&& (swFinancialResp.equals("CUSTO") || swFinancialResp
+								.equals("N/A"))) {
 					throw new Exception(
-							"The value of SW Financial Resp should only be IBM when the software is IBM owned.");
+							"The value of SW Financial Resp should only be IBM when this scheduleF scope is IBM owned.");
 				} else {
 					sf.setSWFinanceResp(swFinancialResp);
 				}
