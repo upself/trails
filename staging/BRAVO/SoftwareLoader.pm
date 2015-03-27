@@ -853,12 +853,14 @@ sub load {
                             if ( $rec{installedSoftwareType} eq 'MANUAL' ) {
                                 dlog("SIT=U|C,BSL,BSL=A,!BIS,SIT=M");
                                 $saveInstalledSoftware = 1;
+                                $addIswToRecon = 1;
                             }
                             ###SIT!=M
                             else {
                                 dlog("SIT=U|C,BSL,BSL=A,!BIS,SIT!=M");
                                 $saveInstalledSoftware = 1;
                                 $saveInstalledType     = 1;
+                                $addIswToRecon = 1;
                             }
                         }
                         ###BIS is defined
@@ -924,6 +926,7 @@ sub load {
                                     dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=I,SIT=M");
                                     $saveInstalledSoftware      = 1;
                                     $softwareDiscrepancyHistory = 'OPEN';
+                                    $addIswToRecon = 1;
                                 }
                                 ###SIT!=M
                                 else {
@@ -931,12 +934,14 @@ sub load {
                                     if ( defined $bravoInstalledType->id ) {
                                         ilog("SIT=U|C,BSL,BSL=A,BIS,BIS=I,SIT!=M,BIT");
                                         $saveInstalledSoftware = 1;
+                                        $addIswToRecon = 1;
                                     }
                                     ###!BIT
                                     else {
                                         dlog("SIT=U|C,BSL,BSL=A,BIS,BIS=I,SIT!=M,!BIT");
                                         $saveInstalledSoftware = 1;
                                         $saveInstalledType     = 1;
+                                        $addIswToRecon = 1;
                                     }
                                 }
                             }
