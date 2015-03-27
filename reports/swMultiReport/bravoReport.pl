@@ -142,7 +142,6 @@ sub getAccNumber{
 sub getBravoSoftwareReport {
 	my ( $dbh, $customerId ) = @_;
 
-	my $accountNumber;
 	my $name;
 	my $model;
 	my $biosSerial;
@@ -954,8 +953,6 @@ sub max_sw_version (@) {
             : "$Version.$aRelease[0].*" );
     }
 
-
     return join( ",", sort @aResult );
 }
-
 
