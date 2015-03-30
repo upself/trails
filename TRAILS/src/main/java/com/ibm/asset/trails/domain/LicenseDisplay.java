@@ -10,6 +10,8 @@ public class LicenseDisplay {
 
     private String productName;
 
+    private String fullDesc;
+    
     private String product;
 
     private Integer capTypeCode;
@@ -33,12 +35,13 @@ public class LicenseDisplay {
     public LicenseDisplay() {
     }
 
-    public LicenseDisplay(Long licenseId, String productName, String product,
+    public LicenseDisplay(Long licenseId, String fullDesc, String productName, String product,
             Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
         super();
         this.licenseId = licenseId;
+        this.fullDesc = fullDesc;
         this.productName = productName;
         this.product = product;
         this.capTypeCode = capTypeCode;
@@ -51,8 +54,16 @@ public class LicenseDisplay {
         this.environment = environment;
         this.ownerAccountNumber = ownerAccountNumber;
     }
+    
+    public String getFullDesc() {
+		return fullDesc;
+	}
 
-    public Integer getAvailableQty() {
+	public void setFullDesc(String fullDesc) {
+		this.fullDesc = fullDesc;
+	}
+
+	public Integer getAvailableQty() {
         return availableQty;
     }
 

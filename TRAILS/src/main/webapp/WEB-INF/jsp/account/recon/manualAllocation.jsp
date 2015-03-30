@@ -157,8 +157,12 @@
 				class="catalogMatch" value="" />
 			<display:column property="account.account" title="Account number"
 				sortable="true" />
-			<display:column property="software.softwareName" title="Product name"
+<%-- 			<display:column property="software.softwareName" title="Product name" --%>
+<%-- 				sortable="true" /> --%>
+			<display:column property="fullDesc" title="License Name"
 				sortable="true" />
+			<display:column property="productName" title="Primary Component"
+				sortable="true" />				
 			<display:column property="capacityType.description"
 				title="Capacity type" sortable="true" />
 			<display:column property="availableQty" title="Avail qty"
