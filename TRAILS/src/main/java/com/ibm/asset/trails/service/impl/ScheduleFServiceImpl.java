@@ -883,11 +883,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						&& !swFinancialResp.equals("N/A")) {
 					throw new Exception(
 							"The value of SW Financial Resp should only be IBM or CUSTO or N/A.");
-				} else if (scDesParts[0].contains("IBM owned")
-						&& (swFinancialResp.equals("CUSTO") || swFinancialResp
-								.equals("N/A"))) {
+				} else if (swFinancialResp.equals("CUSTO")
+						&& scDesParts[0].contains("IBM owned")) {
 					throw new Exception(
 							"The value of SW Financial Resp should only be IBM when this scheduleF scope is IBM owned.");
+				} else if (swFinancialResp.equals("N/A")
+						&& !(scDesParts[0].contains("Customer owned") && scDesParts[1]
+								.contains("Customer managed"))) {
+					throw new Exception(
+							"The value of SW Financial Resp could be N/A only when the scheduleF scope is Customer owned, Customer managed.");
 				} else {
 					sf.setSWFinanceResp(swFinancialResp);
 				}
