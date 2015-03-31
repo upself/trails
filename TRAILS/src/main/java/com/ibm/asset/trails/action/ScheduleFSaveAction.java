@@ -189,13 +189,19 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 						getSourceArrayList()));
 		
 		   //AB added
-				String sfr =getScheduleFForm().getSwFinanResp();
-				if ( sfr==null || sfr.equals("")||(sfDescParts[0].contains("IBM owned") && !sfr.equalsIgnoreCase("IBM"))){
-					addFieldError("scheduleFForm.swFinanResp","\"IBM Owned\" Scope only accept to \"IBM\" SW Financial Resp");
-					return INPUT;
-				} else{
-					getScheduleF().setSWFinanceResp(sfr);
-				}
+		String sfr =getScheduleFForm().getSwFinanResp();
+		if(sfr==null || sfr.equals("")){
+			addFieldError("scheduleFForm.swFinanResp","SW Financial Resp can't be blank.");
+			return INPUT;					
+		} else if ( sfDescParts[0].contains("IBM owned") && !sfr.equalsIgnoreCase("IBM")){
+			addFieldError("scheduleFForm.swFinanResp","\"IBM Owned\" Scope only accept to \"IBM\" SW Financial Resp.");
+			return INPUT;
+		} else if(!sfScope.getDescription().contains("Customer owned, Customer managed") && sfr.equalsIgnoreCase("N/A")){
+			addFieldError("scheduleFForm.swFinanResp","Only CUSTOMER OWNED CUSTOMER MANAGED Scope can accept N/A SW Financial Resp.");
+			return INPUT;					
+		}else{
+			getScheduleF().setSWFinanceResp(sfr);
+		}
 				
 		getScheduleF()
 				.setSourceLocation(getScheduleFForm().getSourceLocation());

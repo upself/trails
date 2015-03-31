@@ -11,13 +11,24 @@
     	
     	//AB added begin
     	var scopeSelectedVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    	var scopeSelectedVal2 = $('#scopeArrayList option:selected').text().split(",")[1];
+    	var scopeLoad=scopeSelectedVal+scopeSelectedVal2;
+
     	if(scopeSelectedVal== 'IBM owned'){
     		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
     		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
     	};
     	
+    	if(scopeLoad!='Customer owned Customer managed'){
+    		$('#swFinanceArrayList option[value="N/A"]').css({display:"none"});
+    		$("#swFinanceArrayList").find("option[value='N/A']").css({display:"none"});
+    	};
+    	
     	$("#scopeArrayList").change(function(){
-        	var scopeVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    		var scopeVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    		var scopeVal2 = $('#scopeArrayList option:selected').text().split(",")[1];
+    		var scopeInIf = scopeVal+scopeVal2;
+    		
         	if(scopeVal== 'IBM owned'){
         		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
         		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
@@ -25,6 +36,12 @@
         		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:""});
         	}  		
     		
+        	if(scopeInIf!='Customer owned Customer managed'){
+        		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+        		$("#swFinanceArrayList").find("option[value='N/A']").css({display:"none"});
+        	}else{
+        		$("#swFinanceArrayList").find("option[value='N/A']").css({display:""});
+        	}  	
     	});
     	//AB added end
     	
@@ -365,7 +382,7 @@ var lastValue = '';
 		<label for="swFinanResp">SW Financial Resp:</label>
 	</div>
 	<div class="float-left" style="width:70%;">
-		<s:select id="swFinanceArrayList" list="#{'IBM':'IBM', 'CUSTO':'CUSTO'}" name="scheduleFForm.swFinanResp"/>
+		<s:select id="swFinanceArrayList" list="#{'N/A':'N/A','IBM':'IBM', 'CUSTO':'CUSTO'}" name="scheduleFForm.swFinanResp"/>
 	</div>
 	<br />
 	<br />				
