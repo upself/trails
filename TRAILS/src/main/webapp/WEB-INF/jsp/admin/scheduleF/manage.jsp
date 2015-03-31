@@ -8,7 +8,12 @@
 	type="text/javascript"></script>
 <script type="text/javascript">
     $( document ).ready(function() {
-    	
+    	var flag='${scheduleFId}';
+    	if(flag=='') {
+    		$('#scopeArrayList option[value="3"]').attr("selected",true);
+    		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+    	}
+
     	//AB added begin
     	var scopeSelectedVal = $('#scopeArrayList option:selected').text().split(",")[0];
     	var scopeSelectedVal2 = $('#scopeArrayList option:selected').text().split(",")[1];
