@@ -62,7 +62,7 @@ public class AlertUnlicensedSoftwareDAOJpa extends
 			lsbQuery.append(lsbQuery.length() > 0 ? " UNION " : "")
 					.append("SELECT AUS.Id, AUS.CREATION_TIME FROM EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS, EAADMIN.Software_Lpar SL, EAADMIN.Software SW, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT")
 					.append(lsOwnerFromClause)
-					.append(" WHERE SL.Customer_Id = :customerId AND SW.Software_Id = :softwareItemId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SI.Software_Id = IS.Software_Id AND R.Installed_Software_Id = IS.Id AND RT.Id = R.Reconcile_Type_Id AND RT.Is_Manual = 1 ")
+					.append(" WHERE SL.Customer_Id = :customerId AND SW.Software_Id = :softwareItemId AND IS.Id = AUS.Installed_Software_Id AND SL.Id = IS.Software_Lpar_Id AND SW.Software_Id = IS.Software_Id AND R.Installed_Software_Id = IS.Id AND RT.Id = R.Reconcile_Type_Id AND RT.Is_Manual = 1 ")
 					.append(lsOwnerWhereClause);
 		}
 
