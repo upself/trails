@@ -465,8 +465,7 @@
 				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
 				,date(software_lpar.scantime) as scan_time
-				,case when software_lpar_eff.status = 'ACTIVE' then software_lpar_eff.processor_count
-				 else software_lpar.processor_count end as processor_count
+				,COALESCE (hle.processor_count,0) as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.effective_threads
 				,hardware_lpar.ext_id as hw_ext_id
@@ -503,12 +502,12 @@
 				,eaadmin.customer_type as customer_type
 				,eaadmin.pod as pod
 				,eaadmin.software_lpar as software_lpar
-				left outer join eaadmin.software_lpar_eff as software_lpar_eff on 
-					software_lpar_eff.id = software_lpar.id
 				left outer join eaadmin.hw_sw_composite as hw_sw_composite on 
 					hw_sw_composite.software_lpar_id = software_lpar.id 
 				left outer join eaadmin.hardware_lpar as hardware_lpar on 
 					hardware_lpar.id = hw_sw_composite.hardware_lpar_id
+				left outer join eaadmin.hardware_lpar_eff as hle on
+					( hardware_lpar.id = hle.hardware_lpar_id and hle.status = 'ACTIVE' )
 				left outer join eaadmin.hardware as hardware on 
 					hardware.id = hardware_lpar.hardware_id
 				left outer join eaadmin.machine_type as machine_type on 
@@ -655,65 +654,6 @@
 				and customer.customer_id = hardware.customer_id
 				and hardware.hardware_status <> 'REMOVED'
 				and not exists( select 1 from hardware_lpar a where a.hardware_id = hardware.id )
-		]]>
-	</sql-query>
-
-	<sql-query name="reportTrailsManualSoftwareLoader">
-		<![CDATA[
-			select
-				c.pod_name
-				,b.customer_name
-				,d.customer_type_name 
-				,a.nodename 
-				,a.bios_serial 
-				,a.processor_count 
-				,f.software_name 
-				,case	when (a.discrepancy_type_id = 3
-								or a.discrepancy_type_id = 5
-								or a.software_lpar_status = 'INACTIVE'
-								or a.inst_status = 'INACTIVE') then 'INACTIVE'
-						else 'ACTIVE'
-				 end
-				,max(a.version) 
-				,e.name 
-				,a.users 
-				,''
-				,''
-				,''
-			from 
-				v_installed_software a 
-				,customer b 
-				,pod c 
-				,customer_type d 
-				,bank_account e 
-				,software f 
-			where
-				a.customer_id = :customer_id
-				and a.customer_id = b.customer_id 
-				and b.pod_id = c.pod_id 
-				and b.customer_type_id = d.customer_type_id 
-				and a.bank_account_id = e.id 
-				and a.software_id = f.software_id 
-				and YEAR(a.scantime) > 2005 
-			group by  
-				c.pod_name
-				,b.customer_name
-				,d.customer_type_name 
-				,a.nodename 
-				,a.bios_serial 
-				,a.processor_count 
-				,f.software_name 
-				,case	when (a.discrepancy_type_id = 3
-								or a.discrepancy_type_id = 5
-								or a.software_lpar_status = 'INACTIVE'
-								or a.inst_status = 'INACTIVE') then 'INACTIVE'
-						else 'ACTIVE'
-				 end
-				,e.name 
-				,a.users 
-				,12
-				,13
-				,14
 		]]>
 	</sql-query>
 

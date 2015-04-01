@@ -68,9 +68,6 @@ public class DelegateReport extends HibernateDelegate {
 		if (reportName.equalsIgnoreCase(Constants.ACCOUNT_SOFTWARE))
 			report = new AccountSoftware();
 
-		if (reportName.equalsIgnoreCase(Constants.TRAILS_MANUAL_SW_LOADER))
-			report = new TrailsManualSoftwareLoader();
-
 		if (reportName.equalsIgnoreCase(Constants.SOFTWARE_DISCREPANCY_BLANK))
 			report = new SoftwareDiscrepancyLoaderTemplate();
 
@@ -417,37 +414,6 @@ public class DelegateReport extends HibernateDelegate {
 					.setEntity("customer", account.getCustomer())
 					.setEntity("software", software)
 					.setString("status", Constants.ACTIVE).list();
-
-			closeSession(session);
-
-		} catch (Exception e) {
-			logger.error(e);
-		}
-
-		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<Object[]> getReport(TrailsManualSoftwareLoader report,
-			HttpServletRequest request) throws ExceptionAccountAccess {
-		logger.debug("DelegateReport.getReport(TrailsManualSoftwareLoader)");
-		List<Object[]> list = new ArrayList<Object[]>();
-
-		// validate the account exists
-		Account account = DelegateAccount.getAccount(report.getAccountId(),
-				request);
-		if (account == null)
-			return list;
-
-		try {
-
-			Session session = getSession();
-
-			list = session
-					.getNamedQuery("reportTrailsManualSoftwareLoader")
-					.setLong("customer_id",
-							account.getCustomer().getCustomerId().longValue())
-					.list();
 
 			closeSession(session);
 

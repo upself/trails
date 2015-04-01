@@ -94,8 +94,7 @@ foreach my $accountNumber (@accountNumbers) {
 				,machine_type.name as machine_type_name
 				,hardware.customer_number as customer_number
 				,date(software_lpar.scantime) as scan_time
-				,case when software_lpar_eff.status = 'ACTIVE' then software_lpar_eff.processor_count
-				 else software_lpar.processor_count end as processor_count
+				,COALESCE (hle.processor_count,0) as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lper.os_type as os_type
 				,hardware_lpar.ext_id as ext_id
@@ -105,12 +104,12 @@ foreach my $accountNumber (@accountNumbers) {
 				,eaadmin.customer_type as customer_type
 				,eaadmin.pod as pod
 				,eaadmin.software_lpar as software_lpar
-				left outer join eaadmin.software_lpar_eff as software_lpar_eff on 
-					software_lpar_eff.id = software_lpar.id
 				left outer join eaadmin.hw_sw_composite as hw_sw_composite on 
 					hw_sw_composite.software_lpar_id = software_lpar.id 
 				left outer join eaadmin.hardware_lpar as hardware_lpar on 
 					hardware_lpar.id = hw_sw_composite.hardware_lpar_id
+				left outer join eaadmin.hadrware_lpar_eff hle on
+					( hardware_lpar.id = hle.hardware_lpar_id and hle.status = 'ACTIVE' )
 				left outer join eaadmin.hardware as hardware on 
 					hardware.id = hardware_lpar.hardware_id
 				left outer join eaadmin.machine_type as machine_type on 

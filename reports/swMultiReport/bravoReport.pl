@@ -209,11 +209,7 @@ from
                       ,b.nodename
                       ,b.model
                       ,b.bios_serial
-                      ,case
-                          when g.processor_count is null or g.status = 'INACTIVE' then b.processor_count
-                          else g.processor_count
-                       end
-                       as processor_count
+                      ,b.processor_count as processor_count
                       ,b.scantime
                       ,s.software_name as software_name
                       ,s.pid as pid
@@ -228,12 +224,8 @@ from
                       ,f.name as discrepancy_type
                   from
                       eaadmin.customer a
-                      ,eaadmin.v_installed_software b
-                      left outer join eaadmin.software_lpar_eff g
-                          on g.software_lpar_id = b.software_lpar_id
-                          
+                      ,eaadmin.v_installed_software b                          
                       ,eaadmin.software s
-                      
                       ,eaadmin.manufacturer SwMan
                       ,eaadmin.bank_account d
                       ,eaadmin.software_category e
