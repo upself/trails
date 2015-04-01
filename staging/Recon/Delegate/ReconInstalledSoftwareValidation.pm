@@ -629,20 +629,23 @@ sub validateLicenseAllocation {
     $self->installedSoftwareReconData->rMachineLevel
    );
 
+	# skip check of customer agreement for machinelevel closed reconciles in IBMOIBMM
+	if (( $self->installedSoftwareReconData->rMachineLevel != 1 ) or ( $self->installedSoftwareReconData->scopeName ne "IBMOIBMM" )) {
    #TODO check poolable
-   if ( $rec{pool} == 1 ) {
-    ###Validate customerId change
-    if ($rec{cId} != $self->installedSoftwareReconData->cId
-     && $self->isInParentPool( $rec{cId} ) != 1 )
-    {
-     dlog( "customer id does not match lic, adding to list to break" );
-     $validation->validationCode(0);
-    }
-   }
-   elsif ( $rec{cId} != $self->installedSoftwareReconData->cId ) {
-    dlog( "customer id does not match lic, adding to list to break" );
-    $validation->validationCode(0);
-   }
+		if ( $rec{pool} == 1 ) {
+			###Validate customerId change
+			if ($rec{cId} != $self->installedSoftwareReconData->cId
+			&& $self->isInParentPool( $rec{cId} ) != 1 )
+			{
+				dlog( "customer id does not match lic, adding to list to break" );
+				$validation->validationCode(0);
+			}
+		}
+		elsif ( $rec{cId} != $self->installedSoftwareReconData->cId ) {
+			dlog( "customer id does not match lic, adding to list to break" );
+			$validation->validationCode(0);
+		}
+	}
 
    ###Validate quantity.
    if ( $rec{lrmUsedQuantity} > $rec{quantity} ) {
