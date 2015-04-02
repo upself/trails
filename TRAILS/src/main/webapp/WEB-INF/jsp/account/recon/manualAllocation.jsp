@@ -191,7 +191,7 @@
 			<display:column property="ownerAccountNumber"
 				sortProperty="account.account" title="Account number"
 				sortable="true" />
-			<display:column property="licenseName"
+			<display:column property="fullDesc"
 				sortProperty="license.fullDesc" title="License name" sortable="true" />
 			<display:column property="productName"
 				sortProperty="software.softwareName" title="Primary component" sortable="true" />

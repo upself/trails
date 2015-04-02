@@ -211,7 +211,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)).alias("productName"),
 						software.get(Software_.softwareName),
-						license.get(License_.fullDesc).alias("licenseName"),
+						license.get(License_.fullDesc).alias("fullDesc"),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(

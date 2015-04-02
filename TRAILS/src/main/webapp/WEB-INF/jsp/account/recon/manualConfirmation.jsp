@@ -117,7 +117,8 @@
 			decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 			cellspacing="1" cellpadding="0">
 			<display:column title="" class="catalogMatch" value="" />
-			<display:column property="productName" title="Product name"
+			<display:column property="fullDesc" title="License Name"/>
+			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
 			<display:column property="capacityType.code" title="Capacity type" />

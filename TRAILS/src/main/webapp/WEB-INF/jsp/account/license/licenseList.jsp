@@ -25,7 +25,7 @@
 		cellspacing="1" cellpadding="0" requestURI="license.htm">
 		<display:column title="" class="catalogMatch" property="catalogMatch"
 			decorator="com.ibm.tap.trails.framework.LicenseCatalogColumnDecorator" />
-		<display:column property="licenseName" title="License name"
+		<display:column property="fullDesc" title="License name"
 			sortable="true" />
 		<display:column property="productName" title="Primary Component"
 			sortable="true" href="/TRAILS/account/license/licenseDetails.htm"
@@ -49,7 +49,7 @@
 		decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 		cellspacing="1" cellpadding="0" requestURI="licenseFreePool.htm">
 		<display:column title="" class="catalogMatch" value="" />
-		<display:column property="licenseName" title="License name"
+		<display:column property="fullDesc" title="License name"
 			sortable="true" />
 		<display:column property="productName" title="Primary Component"
 			sortable="true" href="/TRAILS/account/license/licenseDetails.htm"
