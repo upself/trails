@@ -303,7 +303,7 @@ sub daemonize {
 
 sub startJob {
     my $job = shift;
-    return SystemScheduleStatusDelegate->start($job,$connRetrySleepPeriod,$connRetrySleepPeriod);
+    return SystemScheduleStatusDelegate->start($job,$connRetryTimes,$connRetrySleepPeriod);
 }
 
 sub endJob {

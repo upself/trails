@@ -46,7 +46,8 @@ sub connect {
                  AutoCommit => 1
     );
 
-
+    $self->cNo(0);
+    
     while(1)
     {
       ###Build our string and connect
@@ -59,9 +60,9 @@ sub connect {
             && $self->cNo< $self->retry){
              
               $self->cNo($self->cNo+1);
-              dlog("Error:$@\n start sleep for". $self->sleepPeriod."seconds");
+              dlog("Error:$@ reconnect in ". $self->sleepPeriod." seconds");
               sleep $self->sleepPeriod;
-              dlog("reconnect ".$self->cNo." time(s) after sleep ".$self->sleepPeriod."seconds");
+              dlog("reconnecting ".$self->cNo." time(s)");
               next;
           }
         
