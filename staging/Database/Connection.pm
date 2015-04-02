@@ -7,11 +7,11 @@ use DBI;
 use Config::Properties::Simple;
 
 sub new {
-    my ( $class,$bankAccount,$retry,$sleepTime ) = @_;
+    my ( $class,$bankAccount,$retry,$sleepPeriod ) = @_;
     my $self = {
                  _bankAccount => $bankAccount,
                  _retry       => $retry,
-                 _sleepTime   => $sleepTime,
+                 _sleepPeriod   => $sleepPeriod,
                  _name        => undef,
                  _user        => undef,
                  _password    => undef,
@@ -54,19 +54,21 @@ sub connect {
       eval { $self->dbh( DBI->connect( $connect, $self->user, $self->password, \%attr ) ); };
       
       if ($@) {
-          if( defined $self->sleepTime && defined $self->retry 
+          if( defined $self->sleepPeriod && defined $self->retry 
             && ($@ =~ /SQL30081N/ || $@ =~ /SQL30082N/)
             && $self->cNo< $self->retry){
              
               $self->cNo($self->cNo+1);
-              sleep $self->sleepTime;
-              dlog("reconnect $self->cNo time(s) after sleep $self->sleepTime");
+              dlog("Error:$@\n start sleep for". $self->sleepPeriod."seconds");
+              sleep $self->sleepPeriod;
+              dlog("reconnect ".$self->cNo." time(s) after sleep ".$self->sleepPeriod."seconds");
               next;
           }
         
         croak( $@ . __LINE__ . "\n" . "connect called" );
         last;
       }
+      last;
     }
 
     eval { $self->dbh->do( "set current schema = " . $self->schema ) if ( defined $self->schema ); };
@@ -253,9 +255,9 @@ sub cNo{
     return $self->{_cNo};
 }
 
-sub sleepTime{
+sub sleepPeriod{
     my $self = shift;
-    $self->{_sleepTime} = shift if scalar @_ == 1;
-    return $self->{_sleepTime};
+    $self->{_sleepPeriod} = shift if scalar @_ == 1;
+    return $self->{_sleepPeriod};
 }
 1;

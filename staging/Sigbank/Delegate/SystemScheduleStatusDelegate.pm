@@ -13,6 +13,7 @@ sub start {
     dlog("Connecting to trails");
     my $connection = undef; 
     if(defined $retry && defined $sleepTime ){
+      dlog("Connecting to trails with retry=$retry, sleepTime=$sleepTime");
       $connection = Database::Connection->new('trails',$retry,$sleepTime);
     }else{
       $connection = Database::Connection->new('trails');
