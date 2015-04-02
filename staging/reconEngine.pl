@@ -40,7 +40,7 @@ my %runningCustomerIds = ();
 my %children           = ();
 my $children;
 
-my $connection = Database::Connection->new('trails');
+my $connection = Database::Connection->new('trails',3,1000);
 my @customerIds = getReconCustomerQueue( $connection, $testMode );
 my ( $masters, $members ) = getPoolCustomers($connection);
 my @softwareIds = getReconSoftwareQueue($connection);
@@ -301,7 +301,7 @@ sub daemonize {
 
 sub startJob {
     my $job = shift;
-    return SystemScheduleStatusDelegate->start($job);
+    return SystemScheduleStatusDelegate->start($job,3,1000);
 }
 
 sub endJob {

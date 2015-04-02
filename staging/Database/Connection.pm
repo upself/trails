@@ -7,16 +7,19 @@ use DBI;
 use Config::Properties::Simple;
 
 sub new {
-    my ( $class, $bankAccount ) = @_;
+    my ( $class,$bankAccount,$retry,$sleepTime ) = @_;
     my $self = {
                  _bankAccount => $bankAccount,
+                 _retry       => $retry,
+                 _sleepTime   => $sleepTime,
                  _name        => undef,
                  _user        => undef,
                  _password    => undef,
                  _schema      => undef,
                  _attributes  => undef,
                  _sql         => undef,
-                 _dbh         => undef
+                 _dbh         => undef,
+                 _cNo         => 0
     };
     bless $self, $class;
 
@@ -43,11 +46,27 @@ sub connect {
                  AutoCommit => 1
     );
 
-    ###Build our string and connect
-    my $connect = "dbi:DB2:" . $self->name;
-    eval { $self->dbh( DBI->connect( $connect, $self->user, $self->password, \%attr ) ); };
-    if ($@) {
+
+    while(1)
+    {
+      ###Build our string and connect
+      my $connect = "dbi:DB2:" . $self->name;
+      eval { $self->dbh( DBI->connect( $connect, $self->user, $self->password, \%attr ) ); };
+      
+      if ($@) {
+          if( defined $self->sleepTime && defined $self->retry 
+            && ($@ =~ /SQL30081N/ || $@ =~ /SQL30082N/)
+            && $self->cNo< $self->retry){
+             
+              $self->cNo($self->cNo+1);
+              sleep $self->sleepTime;
+              dlog("reconnect $self->cNo time(s) after sleep $self->sleepTime");
+              next;
+          }
+        
         croak( $@ . __LINE__ . "\n" . "connect called" );
+        last;
+      }
     }
 
     eval { $self->dbh->do( "set current schema = " . $self->schema ) if ( defined $self->schema ); };
@@ -220,5 +239,23 @@ sub schema {
     my $self = shift;
     $self->{_schema} = shift if scalar @_ == 1;
     return $self->{_schema};
+}
+
+sub retry {
+    my $self = shift;
+    $self->{_retry} = shift if scalar @_ == 1;
+    return $self->{_retry};
+}
+
+sub cNo{
+    my $self = shift;
+    $self->{_cNo} = shift if scalar @_ == 1;
+    return $self->{_cNo};
+}
+
+sub sleepTime{
+    my $self = shift;
+    $self->{_sleepTime} = shift if scalar @_ == 1;
+    return $self->{_sleepTime};
 }
 1;

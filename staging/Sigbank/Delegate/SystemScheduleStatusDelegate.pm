@@ -6,12 +6,17 @@ use Sigbank::OM::SystemScheduleStatus;
 use Database::Connection;
 
 sub start {
-    my ( $self, $name ) = @_;
+    my ( $self, $name, $retry, $sleepTime ) = @_;
 
     dlog("In start method of SystemScheduleStatusDelegate");
 
     dlog("Connecting to trails");
-    my $connection = Database::Connection->new('trails');
+    my $connection = undef; 
+    if(defined $retry && defined $sleepTime ){
+      $connection = Database::Connection->new('trails',$retry,$sleepTime);
+    }else{
+      $connection = Database::Connection->new('trails');
+    }
     dlog("Connected to trails");
 
     ###Set our fields
