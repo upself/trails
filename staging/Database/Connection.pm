@@ -18,8 +18,7 @@ sub new {
                  _schema      => undef,
                  _attributes  => undef,
                  _sql         => undef,
-                 _dbh         => undef,
-                 _cNo         => 0
+                 _dbh         => undef
     };
     bless $self, $class;
 
@@ -46,7 +45,7 @@ sub connect {
                  AutoCommit => 1
     );
 
-    $self->cNo(0);
+    my $reCounter = 0;
     
     while(1)
     {
@@ -57,12 +56,12 @@ sub connect {
       if ($@) {
           if( defined $self->sleepPeriod && defined $self->retry 
             && ($@ =~ /SQL30081N/ || $@ =~ /SQL30082N/)
-            && $self->cNo< $self->retry){
+            && $reCounter< $self->retry){
              
-              $self->cNo($self->cNo+1);
+              $reCounter++;
               dlog("Error:$@ reconnect in ". $self->sleepPeriod." seconds");
               sleep $self->sleepPeriod;
-              dlog("reconnecting ".$self->cNo." time(s)");
+              dlog("reconnecting ".$reCounter." time(s)");
               next;
           }
         
@@ -250,11 +249,6 @@ sub retry {
     return $self->{_retry};
 }
 
-sub cNo{
-    my $self = shift;
-    $self->{_cNo} = shift if scalar @_ == 1;
-    return $self->{_cNo};
-}
 
 sub sleepPeriod{
     my $self = shift;
