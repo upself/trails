@@ -184,9 +184,61 @@ public class ReconServiceImpl implements ReconService {
 		}
 		return owner;
 	}
+	
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+	//This method is used to judge if alert is a cross account alert or not
+	private boolean isCrossAccountAlert(Account alertExistedAccount, Account currentWorkingAccount){
+	 boolean crossAccountAlertFlag = false;
+	 if( alertExistedAccount!=null 
+	  && currentWorkingAccount!=null
+	  && alertExistedAccount.getAccount().intValue()!=currentWorkingAccount.getAccount().intValue()){
+       crossAccountAlertFlag = true;   	 
+	 }
+	  return crossAccountAlertFlag;	
+	}
+	
+	//This method is used to judge if there is one validate schdeduleF record defined for current working alert and cross account alert
+	//1. SCHEDULE_F.SCOPE_ID = 3(IBM owned, IBM managed)
+	//2. SCHEDULE_F.LEVEL != 'HOSTNAME'(The value can be 'HWBOX','HWOWNER','PRODUCT')
+	private boolean validateScheduleF4WorkingAlertAndCrossAccountAlert(AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert){
+		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
+		
+		ScheduleF scheduleF4WorkingAlert = getScheduleFItem( workingAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				workingAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+		
+		ScheduleF scheduleF4RelatedAlert = getScheduleFItem( relatedAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				relatedAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+		
+		if (scheduleF4WorkingAlert!=null && scheduleF4RelatedAlert != null) {
+			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope().getId();
+			Long scopeId4RelatedAlert = scheduleF4RelatedAlert.getScope().getId();
+		
+			if(scopeId4WorkingAlert.intValue()==3//Working Alert Scope must be IBM owned, IBM managed
+			  && scheduleF4WorkingAlert.getLevel()!=null
+			  && !scheduleF4WorkingAlert.getLevel().trim().equals("HOSTNAME")//Working Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+			  && scopeId4RelatedAlert.intValue() == 3//Cross Account Alert Scope must be IBM owned, IBM managed
+			  && scheduleF4RelatedAlert.getLevel()!=null
+			  && !scheduleF4RelatedAlert.getLevel().trim().equals("HOSTNAME")//Cross Account Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
+			  ){
+			  validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;  
+			}
+		}
+		
+		return validateScheduleF4WorkingAlertAndCrossAccountAlertFlag;
+	}
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 
 	private ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial) {
+	
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
@@ -523,8 +575,22 @@ public class ReconServiceImpl implements ReconService {
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
 				boolean bReconcileValidation = reconcileValidate(lausTemp,
 						pRecon, totalUsedLicenses);
-				int alertlistSwOwner = validateScheduleFowner(lausTemp);
-				if (alertlistSwOwner == owner && owner != 2) {
+				
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+				int alertlistSwOwner = -1;//default init value
+				boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;//default init value
+				boolean crossAccountAlertFlag = isCrossAccountAlert(lausTemp.getInstalledSoftware().getSoftwareLpar().getAccount(), account);
+				if(crossAccountAlertFlag == false){//same account alert
+				  alertlistSwOwner = validateScheduleFowner(lausTemp);
+				}
+				else{//cross account alert
+					validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = validateScheduleF4WorkingAlertAndCrossAccountAlert(aus,lausTemp);
+				}
+				
+				if((crossAccountAlertFlag == false && alertlistSwOwner == owner && owner != 2)//same account alert
+				||(crossAccountAlertFlag == true && validateScheduleF4WorkingAlertAndCrossAccountAlertFlag == true))//cross alert alert
+				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
+				{
 					if (bReconcileValidation) {
 						if (lausTemp.isOpen()) {
 							reconcile = createReconcile(
@@ -708,6 +774,8 @@ public class ReconServiceImpl implements ReconService {
 		return aush;
 	}
 
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
+	/**
 	@SuppressWarnings("unchecked")
 	private List<AlertUnlicensedSw> findAffectedAlertList(Account pAccount,
 			Long plProductInfoId, Long plHardwareID, boolean pbAutomated,
@@ -778,5 +846,69 @@ public class ReconServiceImpl implements ReconService {
 		}
 
 		return llAlertUnlicensedSw;
+	}**/
+	
+	//For User Story 17236, change the logic of findAffectedAlertList method to get the affected alert list 
+	//from account level to global cross account level for the same hardware box
+	@SuppressWarnings("unchecked")
+	private List<AlertUnlicensedSw> findAffectedAlertList(Account pAccount,
+			Long plProductInfoId, Long plHardwareID, boolean pbAutomated,
+			boolean pbManual) {
+		List<AlertUnlicensedSw> llAlertUnlicensedSw = new ArrayList<AlertUnlicensedSw>();
+		StringBuffer lsbQuery = null;
+
+			// This query will get all open alerts that meet our criteria, but
+			// the
+			// manual and automated variables do not come into play
+			lsbQuery = new StringBuffer(
+					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
+			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
+
+			llAlertUnlicensedSw = getEntityManager()
+					.createQuery(lsbQuery.toString())
+					.setParameter("hardwareID", plHardwareID)
+					.setParameter("productInfoId", plProductInfoId)
+					.getResultList();
+			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
+					.append(llAlertUnlicensedSw.size()));
+	
+		if (pbAutomated) {
+			Query lQuery = null;
+
+			// This query will get all alerts that were reconciled automatically
+			lsbQuery = new StringBuffer(
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID");
+				
+			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
+
+			lQuery = getEntityManager().createQuery(lsbQuery.toString())
+					.setParameter("productInfoId", plProductInfoId)
+					.setParameter("hardwareID", plHardwareID);
+			
+			llAlertUnlicensedSw.addAll(lQuery.getResultList());
+			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
+					.append(llAlertUnlicensedSw.size()));
+		}
+
+		if (pbManual) {
+			Query lQuery = null;
+
+			// This query will get all alerts that were reconciled manually
+			lsbQuery = new StringBuffer(
+					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID");
+					
+			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
+
+			lQuery = getEntityManager().createQuery(lsbQuery.toString())
+					.setParameter("productInfoId", plProductInfoId)
+					.setParameter("hardwareID", plHardwareID);
+		
+			llAlertUnlicensedSw.addAll(lQuery.getResultList());
+			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
+					.append(llAlertUnlicensedSw.size()));
+		}
+
+		return llAlertUnlicensedSw;
 	}
+	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
 }
