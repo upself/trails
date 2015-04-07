@@ -502,10 +502,11 @@ sub attemptCustOwnedIBMManagedCons {
 
 sub attemptExistingMachineLevel {
 	my $self = shift;
+	my $scope = shift;
 	dlog("attempt existing machine level");
 
 	my %licsToAllocate;
-	my $reconciles = $self->getExistingMachineLevelRecon;
+	my $reconciles = $self->getExistingMachineLevelRecon($scope);
 
 	my $reconcileTypeId;
 	my $reconcileIdForUsedLicense;
@@ -527,6 +528,8 @@ sub attemptExistingMachineLevel {
 		  Recon::InstalledSoftware->new( $self->connection,
 			$installedSoftware );
 		$recon->setUp;
+		
+		next if (( $scope eq "IBMOIBMM" ) && ( $recon->installedSoftwareReconData->scopeName ne "IBMOIBMM" ));
 
 		my $validation =
 		  new Recon::Delegate::ReconInstalledSoftwareValidation();
@@ -587,7 +590,7 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###Attempt to reconcile at machine level if one is already reconciled at machine level
 		( $licsToAllocate, $reconcileTypeId, $reconcileId ) =
-			$self->attemptExistingMachineLevel;
+			$self->attemptExistingMachineLevel($self->installedSoftwareReconData->scopeName);
 		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
 		if defined $licsToAllocate;
 	}
@@ -2609,10 +2612,11 @@ sub addChildrenToQueue {
 
 sub getExistingMachineLevelRecon {
 	my $self = shift;
+	my $scope = shift;
 
 	my %data;
 	$self->connection->prepareSqlQueryAndFields(
-		$self->queryExistingMachineLevelRecon() );
+		$self->queryExistingMachineLevelRecon($scope) );
 	my $sth = $self->connection->sql->{existingMachineLevelRecon};
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
@@ -2621,7 +2625,11 @@ sub getExistingMachineLevelRecon {
 		$self->installedSoftwareReconData->hId,
 		$self->installedSoftware->softwareId,
 		$self->customer->id, $self->customer->id
-	);
+	) if ( $scope ne "IBMOIBMM" );
+	$sth->execute(
+		$self->installedSoftwareReconData->hId,
+		$self->installedSoftware->softwareId
+	) if ( $scope eq "IBMOIBMM" );
 
 	while ( $sth->fetchrow_arrayref ) {
 		logRec( 'dlog', \%rec );
@@ -2755,6 +2763,11 @@ sub queryProductionHwlparCount {
 }
 
 sub queryExistingMachineLevelRecon {
+	my $self=shift;
+	my $scope=shift;
+	
+	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if ( $scope eq "IBMOIBMM" );
+	
 	my @fields = qw(
 	  reconcileId
 	  reconcileTypeId
@@ -2785,9 +2798,9 @@ sub queryExistingMachineLevelRecon {
             and sl.status = \'ACTIVE\'
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
-            and is.software_id = ?
-            and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))
-            and h.id = hl.hardware_id
+            and is.software_id = ?';
+$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if ( $scope ne "IBMOIBMM" );
+$query.='   and h.id = hl.hardware_id
             and hsc.software_lpar_id = sl.id
             and hsc.hardware_lpar_id = hl.id
             and sl.id = is.software_lpar_id
