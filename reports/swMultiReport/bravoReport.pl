@@ -84,7 +84,7 @@ open($logFile, '>>', $logFilePath);
 ###############################################################################          
 #-----------------------------------------------------------------------------
 logit( "Acquiring bravo database handle", $logFile );                                    
-my $dbh = Database::Connection->new('trails');
+my $dbh = Database::Connection->new('trailsst');
 logit( "Bravo Database handle acquired", $logFile ); 
 my $bravoSoftware;
 
