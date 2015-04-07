@@ -98,7 +98,7 @@ public class ReportServiceImpl implements ReportService {
 			"SHARED", "Hardware Status", "Lpar Status", "Composite" };
 	private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
 	private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
-			"Primary Component", "Manufacturer", "Vendor managed",
+			"Software product name", "Manufacturer", "Vendor managed",
 			"Hostname", "Bios serial", "Effective processor count", "Chips", "Scan time",
 			"Composite", "Serial", "Machine type", "Asset type" };
 	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
