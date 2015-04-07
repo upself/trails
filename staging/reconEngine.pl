@@ -21,6 +21,8 @@ my $cfgMgr       = Base::ConfigManager->instance($configFile);
 my $sleepPeriod  = $cfgMgr->sleepPeriod;
 my $server       = $cfgMgr->server;
 my $testMode     = $cfgMgr->testMode;
+my $connRetryTimes  = $cfgMgr->connRetryTimes;
+my $connRetrySleepPeriod = $cfgMgr->connRetrySleepPeriod;
 #my $applyChanges = $cfgMgr->applyChanges;
 
 ###Validate server
@@ -40,7 +42,7 @@ my %runningCustomerIds = ();
 my %children           = ();
 my $children;
 
-my $connection = Database::Connection->new('trails');
+my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
 my @customerIds = getReconCustomerQueue( $connection, $testMode );
 my ( $masters, $members ) = getPoolCustomers($connection);
 my @softwareIds = getReconSoftwareQueue($connection);
@@ -301,7 +303,7 @@ sub daemonize {
 
 sub startJob {
     my $job = shift;
-    return SystemScheduleStatusDelegate->start($job);
+    return SystemScheduleStatusDelegate->start($job,$connRetryTimes,$connRetrySleepPeriod);
 }
 
 sub endJob {

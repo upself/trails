@@ -7,9 +7,11 @@ use DBI;
 use Config::Properties::Simple;
 
 sub new {
-    my ( $class, $bankAccount ) = @_;
+    my ( $class,$bankAccount,$retry,$sleepPeriod ) = @_;
     my $self = {
                  _bankAccount => $bankAccount,
+                 _retry       => $retry,
+                 _sleepPeriod   => $sleepPeriod,
                  _name        => undef,
                  _user        => undef,
                  _password    => undef,
@@ -43,11 +45,30 @@ sub connect {
                  AutoCommit => 1
     );
 
-    ###Build our string and connect
-    my $connect = "dbi:DB2:" . $self->name;
-    eval { $self->dbh( DBI->connect( $connect, $self->user, $self->password, \%attr ) ); };
-    if ($@) {
+    my $reCounter = 0;
+    
+    while(1)
+    {
+      ###Build our string and connect
+      my $connect = "dbi:DB2:" . $self->name;
+      eval { $self->dbh( DBI->connect( $connect, $self->user, $self->password, \%attr ) ); };
+      
+      if ($@) {
+          if( defined $self->sleepPeriod && defined $self->retry 
+            && ($@ =~ /SQL30081N/ || $@ =~ /SQL30082N/)
+            && $reCounter< $self->retry){
+             
+              $reCounter++;
+              dlog("Error:$@ reconnect in ". $self->sleepPeriod." seconds");
+              sleep $self->sleepPeriod;
+              dlog("reconnecting ".$reCounter." time(s)");
+              next;
+          }
+        
         croak( $@ . __LINE__ . "\n" . "connect called" );
+        last;
+      }
+      last;
     }
 
     eval { $self->dbh->do( "set current schema = " . $self->schema ) if ( defined $self->schema ); };
@@ -220,5 +241,18 @@ sub schema {
     my $self = shift;
     $self->{_schema} = shift if scalar @_ == 1;
     return $self->{_schema};
+}
+
+sub retry {
+    my $self = shift;
+    $self->{_retry} = shift if scalar @_ == 1;
+    return $self->{_retry};
+}
+
+
+sub sleepPeriod{
+    my $self = shift;
+    $self->{_sleepPeriod} = shift if scalar @_ == 1;
+    return $self->{_sleepPeriod};
 }
 1;
