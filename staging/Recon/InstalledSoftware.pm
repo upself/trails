@@ -282,6 +282,8 @@ sub reconcile {
 		}
 
 		dlog("end attemptReconcile");
+		
+		$self->enqueuePotentialHWboxAlloc() if ( $machineLevel == 1 );
 
 		return 1;
 	}
@@ -500,6 +502,68 @@ sub attemptCustOwnedIBMManagedCons {
 
 }
 
+sub enqueuePotentialHWboxAlloc { # upon creating a machinelevel reconcile, this will put other potential softwares with open alerts to the queue
+	my $self = shift;
+	
+	dlog("Attempting to enqueue potential allocations on the same HW box.");
+	
+	my %data;
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryPotentialHWboxAlloc() );
+	my $sth = $self->connection->sql->{potentialHWboxAlloc};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{potentialHWboxAllocFields} } );
+	$sth->execute(
+		$self->installedSoftwareReconData->hId,
+		$self->installedSoftware->softwareId,
+		$self->installedSoftware->id
+	);
+
+	while ( $sth->fetchrow_arrayref ) {
+		dlog ("Enqueuing potential HW box alloc: iSW ".$rec{isId});
+		
+		my $InstSw = new BRAVO::OM::InstalledSoftware();
+		$InstSw->id( $rec{isId} );
+		$InstSw->getById( $self->connection );
+
+		my $SwLpar = new BRAVO::OM::SoftwareLpar();
+		$SwLpar->id( $rec{slId} );
+		$SwLpar->getById( $self->connection );
+
+		my $queue =
+		  Recon::Queue->new( $self->connection, $InstSw,
+			$SwLpar );
+		$queue->add;
+	}
+	$sth->finish;
+
+}
+
+sub queryPotentialHWboxAlloc {
+	my @fields = qw(
+	  isId
+	  slId
+	);
+	my $query = '
+		select
+			is.id as installed_sw_id
+			,is.software_lpar_id
+		from ( ( ( ( ( eaadmin.installed_software is
+				   join eaadmin.software_lpar sl on sl.id = is.software_lpar_id and is.status = \'ACTIVE\' and sl.status = \'ACTIVE\' and is.discrepancy_type_id not in ( 3, 5, 6 ) )
+                   join eaadmin.hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
+                   join eaadmin.hardware_lpar hl on hl.id = hsc.hardware_lpar_id and hl.status = \'ACTIVE\' )
+                   join eaadmin.customer c on c.customer_id = sl.customer_id and c.status = \'ACTIVE\' and c.sw_license_mgmt = \'YES\' )
+                   join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id and aus.open = 1 )
+     where 
+     		hl.hardware_id = ?
+     		and is.software_id = ?
+     		and is.id != ?
+     with ur;
+	';
+	return('potentialHWboxAlloc', $query, \@fields );
+}
+
 sub attemptExistingMachineLevel {
 	my $self = shift;
 	my $scope = shift;
@@ -567,6 +631,9 @@ sub attemptExistingMachineLevel {
 
 	if ( defined $reconcileTypeId && defined $reconcileIdForUsedLicense ) {
 		dlog("allocated");
+		
+#		$self->enqueuePotentialHWboxAlloc();
+		
 		return ( \%licsToAllocate, $reconcileTypeId,
 			$reconcileIdForUsedLicense );
 	}
@@ -2613,6 +2680,8 @@ sub addChildrenToQueue {
 sub getExistingMachineLevelRecon {
 	my $self = shift;
 	my $scope = shift;
+	
+	dlog("Getting existing machine level recon, scope $scope.");
 
 	my %data;
 	$self->connection->prepareSqlQueryAndFields(
