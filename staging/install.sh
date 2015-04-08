@@ -44,6 +44,8 @@ mkdir -p /var/staging/logs/swcmToStaging
 mkdir -p /var/staging/logs/tlcmzToSwasset
 mkdir -p /var/staging/logs/manualRecovery
 mkdir -p /var/staging/logs/bravoArchival
+mkdir -p /var/staging/logs/falseHitExpire
+
 dos2unix /opt/staging/v2/start-all.sh
 dos2unix /opt/staging/v2/stop-all.sh
 dos2unix /opt/staging/v2/scripts/*.sh
