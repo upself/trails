@@ -199,7 +199,7 @@ when rt.is_manual = 1 then rt.name || '(MANUAL)' end
 ,case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments
 ,parentS.software_name as parentName
 ,c.account_number as licAccount
-,l.full_desc as License Name
+,l.full_desc as licenseName
 ,case when l.id is null then '' when lsm.id is null then 'No' else 'Yes' end as catalogMatch
 ,l.prod_name as licProdName
 ,l.version as licVersion
