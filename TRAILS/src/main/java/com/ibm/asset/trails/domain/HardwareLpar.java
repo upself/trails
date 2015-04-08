@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -57,6 +58,17 @@ public class HardwareLpar {
 
 	@Column(name = "EFFECTIVE_THREADS")
 	private BigDecimal effectiveThreads;
+	
+	@OneToOne(fetch = FetchType.LAZY, mappedBy="hardwareLpar")
+	private HardwareLparEff hardwareLparEff;
+
+	public HardwareLparEff getHardwareLparEff() {
+		return hardwareLparEff;
+	}
+
+	public void setHardwareLparEff(HardwareLparEff hardwareLparEff) {
+		this.hardwareLparEff = hardwareLparEff;
+	}
 
 	public String getServerType() {
 		return serverType;

@@ -187,6 +187,9 @@ public class ReconWorkspace implements Serializable {
 	private Integer cpuIFL;
 
 	private BigDecimal effectiveThreads;
+	
+	private Integer hwLparEffProcessorCount;
+	private String hwLparEffProcessorStatus;
 
 	public String getLparServerType() {
 		return lparServerType;
@@ -330,6 +333,22 @@ public class ReconWorkspace implements Serializable {
 
 	public void setHardwareProcessorCount(Integer hardwareProcessorCount) {
 		this.hardwareProcessorCount = hardwareProcessorCount;
+	}
+
+	public Integer getHwLparEffProcessorCount() {
+		return hwLparEffProcessorCount;
+	}
+
+	public void setHwLparEffProcessorCount(Integer hwLparEffProcessorCount) {
+		this.hwLparEffProcessorCount = hwLparEffProcessorCount;
+	}
+
+	public String getHwLparEffProcessorStatus() {
+		return hwLparEffProcessorStatus;
+	}
+
+	public void setHwLparEffProcessorStatus(String hwLparEffProcessorStatus) {
+		this.hwLparEffProcessorStatus = hwLparEffProcessorStatus;
 	}
 
 	public String getAlertStatus() {

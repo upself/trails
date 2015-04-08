@@ -104,7 +104,7 @@
 			<display:column property="cpuMsu" title="CPU MSU" />
 			<display:column property="partMsu" title="Part MSU" />
 			<display:column property="shared" title="Shared" />
-			<display:column property="processorCount" title="LPAR proc" />
+			<display:column property="hwLparEffProcessorCount" title="LPAR proc" />
 			<display:column property="sysplex" title="Sysplex" />
 			<display:column property="spla" title="SPLA" />
 			<display:column property="internetIccFlag" title="Internet Acc" />
@@ -117,7 +117,8 @@
 			decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 			cellspacing="1" cellpadding="0">
 			<display:column title="" class="catalogMatch" value="" />
-			<display:column property="productName" title="Product name"
+			<display:column property="fullDesc" title="License Name"/>
+			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
 			<display:column property="capacityType.code" title="Capacity type" />

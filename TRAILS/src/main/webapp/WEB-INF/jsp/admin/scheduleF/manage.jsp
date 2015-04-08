@@ -8,6 +8,47 @@
 	type="text/javascript"></script>
 <script type="text/javascript">
     $( document ).ready(function() {
+    	var flag='${scheduleFId}';
+    	if(flag=='') {
+    		$('#scopeArrayList option[value="3"]').attr("selected",true);
+    		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+    	}
+
+    	//AB added begin
+    	var scopeSelectedVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    	var scopeSelectedVal2 = $('#scopeArrayList option:selected').text().split(",")[1];
+    	var scopeLoad=scopeSelectedVal+scopeSelectedVal2;
+
+    	if(scopeSelectedVal== 'IBM owned'){
+    		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
+    		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+    	};
+    	
+    	if(scopeLoad!='Customer owned Customer managed'){
+    		$('#swFinanceArrayList option[value="N/A"]').css({display:"none"});
+    		$("#swFinanceArrayList").find("option[value='N/A']").css({display:"none"});
+    	};
+    	
+    	$("#scopeArrayList").change(function(){
+    		var scopeVal = $('#scopeArrayList option:selected').text().split(",")[0];
+    		var scopeVal2 = $('#scopeArrayList option:selected').text().split(",")[1];
+    		var scopeInIf = scopeVal+scopeVal2;
+    		
+        	if(scopeVal== 'IBM owned'){
+        		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:"none"});
+        		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+        	}  else{
+        		$("#swFinanceArrayList").find("option[value='CUSTO']").css({display:""});
+        	}  		
+    		
+        	if(scopeInIf!='Customer owned Customer managed'){
+        		$('#swFinanceArrayList option[value="IBM"]').attr("selected",true);
+        		$("#swFinanceArrayList").find("option[value='N/A']").css({display:"none"});
+        	}else{
+        		$("#swFinanceArrayList").find("option[value='N/A']").css({display:""});
+        	}  	
+    	});
+    	//AB added end
     	
     	if ($('#softwareStatus').val() == 'true'){ 		
     		$('select[id="statusArrayList"]').find('option[value="2"]').attr("disabled","disabled");
@@ -340,6 +381,17 @@ var lastValue = '';
 	</div>
 	<br />
 	<br />
+	
+	<!-- AB added -->
+	<div class="float-left" style="width:30%;">
+		<label for="swFinanResp">SW Financial Resp:</label>
+	</div>
+	<div class="float-left" style="width:70%;">
+		<s:select id="swFinanceArrayList" list="#{'N/A':'N/A','IBM':'IBM', 'CUSTO':'CUSTO'}" name="scheduleFForm.swFinanResp"/>
+	</div>
+	<br />
+	<br />				
+	
 	<div class="float-left" style="width:30%;">
 		<label for="complianceReporting">Compliance reporting:</label>
 	</div>
@@ -403,6 +455,9 @@ var lastValue = '';
 	<display:column property="softwareTitle" title="Software title" />
 	<display:column property="manufacturer" title="Manufacturer" />
 	<display:column property="scope.description"  title="Scope" />
+		<!-- AB added -->
+	<display:column property="SWFinanceResp"  title="SW Financial Resp" />
+	
 	<display:column property="source.description"  title="Source" />
 	<display:column property="sourceLocation" title="Source location" />
 	<display:column property="status.description" title="Status" />

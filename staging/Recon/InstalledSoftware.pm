@@ -79,9 +79,9 @@ sub setUp {
 	if ( $self->installedSoftwareReconData->hProcCount > 0 ) {
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-	else {
-		$processorCount = $self->installedSoftwareReconData->processorCount;
-	}
+#	else {
+#		$processorCount = $self->installedSoftwareReconData->processorCount;
+#	}
 
 	my $chipCount = $self->installedSoftwareReconData->hChips;
 
@@ -187,7 +187,7 @@ sub isCategoryOS {
 	my $softwareCategoryName = $self->getSoftwareCategoryName;
 
 	if ( defined $softwareCategoryName
-		&& $softwareCategoryName eq "Operating Systems" )
+		&& $softwareCategoryName =~ /Operating Systems/ )
 	{
 		return 1;
 	}
@@ -282,6 +282,8 @@ sub reconcile {
 		}
 
 		dlog("end attemptReconcile");
+		
+		$self->enqueuePotentialHWboxAlloc() if ( $machineLevel == 1 );
 
 		return 1;
 	}
@@ -500,12 +502,75 @@ sub attemptCustOwnedIBMManagedCons {
 
 }
 
+sub enqueuePotentialHWboxAlloc { # upon creating a machinelevel reconcile, this will put other potential softwares with open alerts to the queue
+	my $self = shift;
+	
+	dlog("Attempting to enqueue potential allocations on the same HW box.");
+	
+	my %data;
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryPotentialHWboxAlloc() );
+	my $sth = $self->connection->sql->{potentialHWboxAlloc};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{potentialHWboxAllocFields} } );
+	$sth->execute(
+		$self->installedSoftwareReconData->hId,
+		$self->installedSoftware->softwareId,
+		$self->installedSoftware->id
+	);
+
+	while ( $sth->fetchrow_arrayref ) {
+		dlog ("Enqueuing potential HW box alloc: iSW ".$rec{isId});
+		
+		my $InstSw = new BRAVO::OM::InstalledSoftware();
+		$InstSw->id( $rec{isId} );
+		$InstSw->getById( $self->connection );
+
+		my $SwLpar = new BRAVO::OM::SoftwareLpar();
+		$SwLpar->id( $rec{slId} );
+		$SwLpar->getById( $self->connection );
+
+		my $queue =
+		  Recon::Queue->new( $self->connection, $InstSw,
+			$SwLpar );
+		$queue->add;
+	}
+	$sth->finish;
+
+}
+
+sub queryPotentialHWboxAlloc {
+	my @fields = qw(
+	  isId
+	  slId
+	);
+	my $query = '
+		select
+			is.id as installed_sw_id
+			,is.software_lpar_id
+		from ( ( ( ( ( eaadmin.installed_software is
+				   join eaadmin.software_lpar sl on sl.id = is.software_lpar_id and is.status = \'ACTIVE\' and sl.status = \'ACTIVE\' and is.discrepancy_type_id not in ( 3, 5, 6 ) )
+                   join eaadmin.hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
+                   join eaadmin.hardware_lpar hl on hl.id = hsc.hardware_lpar_id and hl.status = \'ACTIVE\' )
+                   join eaadmin.customer c on c.customer_id = sl.customer_id and c.status = \'ACTIVE\' and c.sw_license_mgmt = \'YES\' )
+                   join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id and aus.open = 1 )
+     where 
+     		hl.hardware_id = ?
+     		and is.software_id = ?
+     		and is.id != ?
+     with ur;
+	';
+	return('potentialHWboxAlloc', $query, \@fields );
+}
+
 sub attemptExistingMachineLevel {
 	my $self = shift;
+	my $scope = shift;
 	dlog("attempt existing machine level");
 
 	my %licsToAllocate;
-	my $reconciles = $self->getExistingMachineLevelRecon;
+	my $reconciles = $self->getExistingMachineLevelRecon($scope);
 
 	my $reconcileTypeId;
 	my $reconcileIdForUsedLicense;
@@ -527,6 +592,8 @@ sub attemptExistingMachineLevel {
 		  Recon::InstalledSoftware->new( $self->connection,
 			$installedSoftware );
 		$recon->setUp;
+		
+		next if (( $scope eq "IBMOIBMM" ) && ( $recon->installedSoftwareReconData->scopeName ne "IBMOIBMM" ));
 
 		my $validation =
 		  new Recon::Delegate::ReconInstalledSoftwareValidation();
@@ -564,6 +631,9 @@ sub attemptExistingMachineLevel {
 
 	if ( defined $reconcileTypeId && defined $reconcileIdForUsedLicense ) {
 		dlog("allocated");
+		
+#		$self->enqueuePotentialHWboxAlloc();
+		
 		return ( \%licsToAllocate, $reconcileTypeId,
 			$reconcileIdForUsedLicense );
 	}
@@ -587,7 +657,7 @@ sub attemptLicenseAllocation {
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###Attempt to reconcile at machine level if one is already reconciled at machine level
 		( $licsToAllocate, $reconcileTypeId, $reconcileId ) =
-			$self->attemptExistingMachineLevel;
+			$self->attemptExistingMachineLevel($self->installedSoftwareReconData->scopeName);
 		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
 		if defined $licsToAllocate;
 	}
@@ -2058,13 +2128,7 @@ sub getInstalledSoftwareReconData {
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
 		$installedSoftwareReconData->hChips( $rec{hChips} );
 
-		###The processor logic
-		if ( defined $rec{sleProcCount} ) {
-			$installedSoftwareReconData->processorCount( $rec{sleProcCount} );
-		}
-		else {
-			$installedSoftwareReconData->processorCount( $rec{slProcCount} );
-		}
+		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
 		###If recon is defined and it is machine level set processor count to hardware processor count
 		###No matter if it is 0 or not
@@ -2356,7 +2420,6 @@ sub queryReconInstalledSoftwareBaseData {
 	  slName
 	  slStatus
 	  slProcCount
-	  sleProcCount
 	  sId
 	  sName
 	  sStatus
@@ -2401,7 +2464,6 @@ sub queryReconInstalledSoftwareBaseData {
             ,sl.name
             ,sl.status
             ,sl.processor_count
-            ,sle.processor_count
             ,s.software_id
             ,s.software_name
             ,s.status
@@ -2426,10 +2488,6 @@ sub queryReconInstalledSoftwareBaseData {
                 m.id = s.manufacturer_id
             join software_category sc on 
                 sc.software_category_id = s.software_category_id
-            left outer join software_lpar_eff sle on 
-                sle.software_lpar_id = sl.id
-                and sle.status = \'ACTIVE\'
-                and sle.processor_count != 0
             left outer join hw_sw_composite hsc on 
                 hsc.software_lpar_id = sl.id
             left outer join hardware_lpar hl on 
@@ -2621,10 +2679,13 @@ sub addChildrenToQueue {
 
 sub getExistingMachineLevelRecon {
 	my $self = shift;
+	my $scope = shift;
+	
+	dlog("Getting existing machine level recon, scope $scope.");
 
 	my %data;
 	$self->connection->prepareSqlQueryAndFields(
-		$self->queryExistingMachineLevelRecon() );
+		$self->queryExistingMachineLevelRecon($scope) );
 	my $sth = $self->connection->sql->{existingMachineLevelRecon};
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
@@ -2633,7 +2694,11 @@ sub getExistingMachineLevelRecon {
 		$self->installedSoftwareReconData->hId,
 		$self->installedSoftware->softwareId,
 		$self->customer->id, $self->customer->id
-	);
+	) if ( $scope ne "IBMOIBMM" );
+	$sth->execute(
+		$self->installedSoftwareReconData->hId,
+		$self->installedSoftware->softwareId
+	) if ( $scope eq "IBMOIBMM" );
 
 	while ( $sth->fetchrow_arrayref ) {
 		logRec( 'dlog', \%rec );
@@ -2767,6 +2832,11 @@ sub queryProductionHwlparCount {
 }
 
 sub queryExistingMachineLevelRecon {
+	my $self=shift;
+	my $scope=shift;
+	
+	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if ( $scope eq "IBMOIBMM" );
+	
 	my @fields = qw(
 	  reconcileId
 	  reconcileTypeId
@@ -2797,9 +2867,9 @@ sub queryExistingMachineLevelRecon {
             and sl.status = \'ACTIVE\'
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
-            and is.software_id = ?
-            and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))
-            and h.id = hl.hardware_id
+            and is.software_id = ?';
+$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if ( $scope ne "IBMOIBMM" );
+$query.='   and h.id = hl.hardware_id
             and hsc.software_lpar_id = sl.id
             and hsc.hardware_lpar_id = hl.id
             and sl.id = is.software_lpar_id

@@ -226,7 +226,7 @@ public class PriceReportDelegate extends Delegate {
 			// If an operating system we need to make an authentication
 			// assumption
 			if (software.getSoftware().getSoftwareCategory()
-					.getSoftwareCategoryName().equals(
+					.getSoftwareCategoryName().contains(
 							Constants.OPERATING_SYSTEMS)) {
 
 				if (software.getInstalledSoftwareEff() == null

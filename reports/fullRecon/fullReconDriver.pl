@@ -1,16 +1,7 @@
 #!/usr/bin/perl
 #
 # IBM Confidential -- INTERNAL USE ONLY
-# programmer: dbryson@us.ibm.com
-# Service attendant: KFaler@US.IBM.com
-#  r1 trac 298 region list adjustments
-#  r2 trac 99 add swOwner
-#  r3 trac 251 add proc elements
-#  r4 union fr, etc
-#  r5 simultaneous runtime member
-#  r5a simultaneous runtime member
-#  rt8 new region base, all new processing
-# ========================================================
+
 use lib "/opt/report/bin";
 use File::Copy;
 use Getopt::Std;
@@ -176,7 +167,7 @@ ELSE 'Green' END as Alert_status
 ,hl.lpar_status
 ,h.processor_count as hwProcCount
 ,h.chips as hwChips
-,case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount
+,COALESCE (hle.processor_count,0) hwLparEffProcCount
 ,hl.EFFECTIVE_THREADS
 ,case when ibmb.id is not null then
 COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and
@@ -185,7 +176,7 @@ when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then 'DUAL-CORE'
 when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then 'QUAD-CORE'
 when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE'
 else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode
-,s.software_name as instSwName
+,s.software_name as primaryComponent
 ,s.pid as pid
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 where sf.customer_id = $customerId
@@ -208,7 +199,7 @@ when rt.is_manual = 1 then rt.name || '(MANUAL)' end
 ,case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments
 ,parentS.software_name as parentName
 ,c.account_number as licAccount
-,l.full_desc as licenseDesc
+,l.full_desc as License Name
 ,case when l.id is null then '' when lsm.id is null then 'No' else 'Yes' end as catalogMatch
 ,l.prod_name as licProdName
 ,l.version as licVersion
@@ -226,9 +217,9 @@ when l.ibm_owned = 1 then 'IBM' else '' end as License_owner
 ,l.record_time
 from
  eaadmin.software_lpar sl
- left outer join eaadmin.software_lpar_eff sle on sl.id = sle.software_lpar_id and sle.status = 'ACTIVE' and sle.processor_count != 0
  inner join eaadmin.hw_sw_composite hsc on sl.id = hsc.software_lpar_id
  inner join eaadmin.hardware_lpar hl on hsc.hardware_lpar_id = hl.id
+ left outer join eaadmin.hardware_lpar_eff hle on ( hle.hardware_lpar_id = hl.id and hle.status = 'ACTIVE' )
  inner join eaadmin.hardware h on hl.hardware_id = h.id
  inner join eaadmin.machine_type mt on h.machine_type_id = mt.id
  inner join eaadmin.installed_software is on sl.id = is.software_lpar_id

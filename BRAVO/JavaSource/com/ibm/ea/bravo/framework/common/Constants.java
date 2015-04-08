@@ -48,7 +48,6 @@ public class Constants {
 	public static final String ONHOLD = "ON-HOLD";
 	public static final String REMOVED = "REMOVED";
 	public static final String HWCATEGORY = "hwcategory";
-	public static final String TRAILS_MANUAL_SW_LOADER = "trailsManualSwLoader";
 	public static final String ACCOUNT_ACCESS = "account.access";
 	public static final String CONFIDENTIAL = "IBM Confidential";
 	public static final String POSITIVE_NUMBER = "positive.number";

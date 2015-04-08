@@ -30,7 +30,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] ALERT_VALID_CAUSE_CODE_HEADERS = { "Alert Type",
 			"Cause Code (CC)", "Responsibility" };
 	private final String[] ALERT_EXPIRED_MAINT_REPORT_COLUMN_HEADERS = {
-			"Status", "Product name", "Total qty", "Expiration date",
+			"Status", "Primary Component", "Total qty", "Expiration date",
 			"SWCM ID", "Create date/time", "Age", "Assignee",
 			"Assignee comments", "Assigned date/time" };
 	private final String ALERT_EXPIRED_MAINT_REPORT_NAME = "Expired maintenance alert report";
@@ -61,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
 			"BIOS SERIAL", "OS NAME", "ASSIGNEE", "COMMENT" };
 	private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_HWLPAR_COLUMN_HEADERS = {
 			"DATA EXCEPTION TYPE", "HOST NAME", "SERIAL", "CREATION TIME",
-			"HW PROCESSORS", "HW EXT ID", "HW CHIPS", "ASSIGNEE", "COMMENT" };
+			"PHYSICAL HW PROCESSOR COUNT", "HW EXT ID", "HW CHIPS", "ASSIGNEE", "COMMENT" };
 	private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
 			"Status", "Hostname", "Installed SW product name", "Number of instances",
 			"Create date/time", "Age", "Cause Code (CC)", "CC target date",
@@ -79,12 +79,12 @@ public class ReportServiceImpl implements ReportService {
 			"SHARED", "Hardware Status", "Lpar Status",
 			"Physical HW processor count", "Physical chips",
 			"Effective processor count","Effective threads","PVU/core",
-			"Installed SW product name","PID", "SW Owner", "Alert assignee",
+			"Primary Component","PID", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
 			"Inst SW validation status", "Reconciliation action", "Allocation methodology", 
 			"Reconciliation user", "Reconciliation date/time",
 			"Reconciliation comments", "Reconciliation parent product",
-			"License account number", "Full product description",
+			"License account number", "License Name",
 			"Catalog match", "License product name", "Version",
 			"Capacity type","Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
@@ -99,12 +99,12 @@ public class ReportServiceImpl implements ReportService {
 	private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
 	private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
 			"Software product name", "Manufacturer", "Vendor managed",
-			"Hostname", "Bios serial", "Processor count", "Chips", "Scan time",
+			"Hostname", "Bios serial", "Effective processor count", "Chips", "Scan time",
 			"Composite", "Serial", "Machine type", "Asset type" };
 	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
-	private final String[] LICENSE_COLUMN_HEADERS = { "Product name",
-			"Catalog match", "Full product description", "Capacity type",
+	private final String[] LICENSE_COLUMN_HEADERS = { "Primary Component",
+			"Catalog match", "License Name", "Capacity type",
 			"Environment","Total qty", "Available qty", "Expiration date", "PO number",
 			"Serial number", "License owner", "SWCM ID", "Pool",
 			"Record date/time" };
@@ -113,33 +113,33 @@ public class ReportServiceImpl implements ReportService {
 			"Account #", "Account name", "Account type", "Geography", "Region",
 			"Country", "Sector", "Workstation count", "HW status" };
 	private final String[] PENDING_CUSTOMER_DECISION_DETAIL_COLUMN_HEADERS = {
-			"Software product name", "Hostname", "Action performed",
+			"Primary Component", "Hostname", "Action performed",
 			"Create date/time", "Recon date/time", "Recon user" };
 	private final String PENDING_CUSTOMER_DECISION_DETAIL_REPORT_NAME = "Customer owned and IBM managed detail report";
 	private final String[] PENDING_CUSTOMER_DECISION_SUMMARY_COLUMN_HEADERS = {
-			"Software product name", "Action performed", "Total",
+			"Primary Component", "Action performed", "Total",
 			"0 - 45 days", "46 - 90 days", "91 - 120 days", "121 - 180 days",
 			"181 - 365 days", "Over 365 days" };
 	private final String PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME = "Customer owned and IBM managed summary report";
 	private final String[] RECONCILIATION_SUMMARY_COLUMN_HEADERS = {
-			"Product name", "Installed instances",
+			"Primary Component", "Installed instances",
 			"Installed instances covered by entitlement",
 			"Installed instances not covered by entitlement",
 			"Unassigned license pool count", "Unassigned license pool type", "Schedule F scope" };
 	private final String RECONCILIATION_SUMMARY_REPORT_NAME = "Reconciliation summary report";
 	private final String[] SOFTWARE_COMPLIANCE_SUMMARY_COLUMN_HEADERS = {
-			"Product name", "Installed instances",
+			"Primary Component", "Installed instances",
 			"Installed instances covered by entitlement",
 			"Installed instances not covered by entitlement",
 			"License pool type", "Unassigned license pool count",
 			"Assigned license pool count" };
 	private final String SOFTWARE_COMPLIANCE_SUMMARY_REPORT_NAME = "Software compliance summary report";
 	private final String[] SOFTWARE_LPAR_BASELINE_COLUMN_HEADERS = {
-			"Hostname", "Bios serial", "Processor count", "Scan time",
+			"Hostname", "Bios serial", "Effective processor count", "Scan time",
 			"Composite", "Serial", "Machine type", "Asset type" };
 	private final String SOFTWARE_LPAR_BASELINE_REPORT_NAME = "Software LPAR baseline report";
 	private final String[] SOFTWARE_VARIANCE_REPORT_COLUMN_HEADERS = {
-			"Product name", "Installed instances", "Scope software title" };
+			"Primary Component", "Installed instances", "Scope software title" };
 	private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
 	private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time , AC.name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id  FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id and VA.id=CC.alert_id and CC.alert_type_id = :alertTypeId and CC.alert_cause_id=AC.id ORDER BY SL.Name ASC";
 	private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Lpar_Name, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age, ac_name, target_date, cc_owner, cc_record_time, cc_remote_user, cc_id FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SL.Name AS Software_Lpar_Name, S.software_name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time, VA.ac_name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id FROM EAADMIN.V_Alerts VA, EAADMIN.software  S, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS , EAADMIN.cause_code CC, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = S.software_id and VA.id=CC.alert_id and CC.alert_type_id=17 AND IS.SOFTWARE_LPAR_ID=SL.ID GROUP BY SL.NAME, S.software_name, VA.ac_name, CC.target_date, CC.owner, CC.remote_user, CC.id, CC.record_time) AS TEMP ORDER BY Software_Item_Name ASC";
@@ -549,14 +549,14 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.lpar_status"
 				+ ",h.processor_count as hwProcCount "
 				+ ",h.chips as hwChips "
-				+ ",case when sle.software_lpar_id is null then sl.processor_count else sle.processor_count end as swLparProcCount "
+				+ ",COALESCE (hle.processor_count,0) as EffProcCount "
 				+ ",hl.EFFECTIVE_THREADS "
 				+ ",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
 				+ "(case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then  'SINGLE-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then  'DUAL-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then  'QUAD-CORE' "
 				+ "when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE' else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
-				+ ",instS.software_name as instSwName "
+				+ ",instS.software_name as primaryComponent "
 				+ ",instS.PID as pid ";
 		
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
@@ -580,7 +580,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",case when rt.is_manual = 0 then 'Auto Close' when rt.is_manual = 1 then r.comments end as reconComments "
 				+ ",parentS.software_name as parentName "
 				+ ",c.account_number as licAccount "
-				+ ",l.full_desc as licenseDesc "
+				+ ",l.full_desc as licenseName "
 				+ ",case when l.id is null then '' "
 				+ "when lsm.id is null then 'No' "
 				+ "else 'Yes' end as catalogMatch "
@@ -597,14 +597,12 @@ public class ReportServiceImpl implements ReportService {
 				+ ",l.ext_src_id " + ",l.record_time ";
 		String lsBaseFromClause = "from  "
 				+ "eaadmin.software_lpar sl "
-				+ "left outer join eaadmin.software_lpar_eff sle on "
-				+ "sl.id = sle.software_lpar_id "
-				+ "and sle.status = 'ACTIVE' "
-				+ "and sle.processor_count != 0 "
 				+ "inner join eaadmin.hw_sw_composite hsc on "
 				+ "sl.id = hsc.software_lpar_id "
 				+ "inner join eaadmin.hardware_lpar hl on "
 				+ "hsc.hardware_lpar_id = hl.id "
+				+ "left outer join eaadmin.hardware_lpar_eff hle on "
+				+ "( hle.hardware_lpar_id = hl.id and hle.status = 'ACTIVE' )"
 				+ "inner join eaadmin.hardware h on "
 				+ "hl.hardware_id = h.id "
 				+ "inner join eaadmin.machine_type mt on "
@@ -799,8 +797,34 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT S.software_name AS SI_Name, M.Name AS M_Name, CASE S.VENDOR_MANAGED WHEN 1 THEN 'Yes' ELSE 'No' END, SL.Name AS SL_Name, SL.Bios_Serial, VSLP.Processor_Count, H.Chips, SL.ScanTime, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END, H.Serial, MT.Name AS MT_Name, MT.Type FROM EAADMIN.software S, EAADMIN.Manufacturer M, EAADMIN.Software_Lpar SL, EAADMIN.V_Software_Lpar_Processor VSLP, EAADMIN.Installed_Software IS LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id, (SELECT SL2.Customer_Id, S2.software_id, S2.Software_Category_Id, MIN(S2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2, EAADMIN.software S2, EAADMIN.Product_Info PI2, EAADMIN.Installed_Software IS2 WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND S2.software_id = IS2.Software_Id AND S2.level = 'LICENSABLE' AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, S2.software_id, S2.Software_Category_Id) AS TEMP";
-		String lsBaseWhereClause = "WHERE S.software_id = IS.Software_Id and S.level = 'LICENSABLE' AND M.Id = S.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND VSLP.Id = SL.Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.software_Id = S.software_id AND TEMP.Software_Category_Id = S.Software_Category_Id AND TEMP.Priority = S.Priority";
+		String lsBaseSelectAndFromClause = "SELECT S.software_name AS SI_Name "
+												+ ", M.Name AS M_Name "
+												+ ", CASE S.VENDOR_MANAGED WHEN 1 THEN 'Yes' ELSE 'No' END "
+												+ ", SL.Name AS SL_Name "
+												+ ", SL.Bios_Serial "
+												+ ", COALESCE (hle.Processor_Count,0) "
+												+ ", H.Chips "
+												+ ", SL.ScanTime "
+												+ ", CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) "
+											+ "WHEN 0 THEN 'No' ELSE 'Yes' END "
+												+ ", H.Serial "
+												+ ", MT.Name AS MT_Name"
+												+ ", MT.Type "
+											+ "FROM EAADMIN.software S "
+												+ ", EAADMIN.Manufacturer M "
+												+ ", EAADMIN.Software_Lpar SL "
+												+ ", EAADMIN.Installed_Software IS "
+													+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id "
+													+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
+													+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
+													+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
+													+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
+												+ ", (SELECT SL2.Customer_Id, S2.software_id, S2.Software_Category_Id, MIN(S2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2 "
+																																					+ ", EAADMIN.software S2 "
+																																					+ ", EAADMIN.Product_Info PI2 "
+																																					+ ", EAADMIN.Installed_Software IS2 "
+																																				+ " WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND S2.software_id = IS2.Software_Id AND S2.level = 'LICENSABLE' AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, S2.software_id, S2.Software_Category_Id) AS TEMP ";
+		String lsBaseWhereClause = "WHERE S.software_id = IS.Software_Id and S.level = 'LICENSABLE' AND M.Id = S.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.software_Id = S.software_id AND TEMP.Software_Category_Id = S.Software_Category_Id AND TEMP.Priority = S.Priority ";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
@@ -1255,7 +1279,22 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT SL.Name AS SL_Name, SL.Bios_Serial, VSLP.Processor_Count, SL.ScanTime, CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END, H.Serial, MT.Name AS MT_Name, MT.Type FROM EAADMIN.Software_Lpar SL LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = SL.Id LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id, EAADMIN.V_Software_Lpar_Processor VSLP WHERE SL.Customer_Id = :customerId AND SL.Status = 'ACTIVE' AND VSLP.Id = SL.Id ORDER BY SL.Name ASC")
+						"SELECT SL.Name AS SL_Name"
+								+ ", SL.Bios_Serial"
+								+ ", COALESCE ( hle.Processor_Count,0)"
+								+ ", SL.ScanTime"
+								+ ", CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) WHEN 0 THEN 'No' ELSE 'Yes' END"
+								+ ", H.Serial"
+								+ ", MT.Name AS MT_Name"
+								+ ", MT.Type "
+						+ "FROM EAADMIN.Software_Lpar SL "
+							+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = SL.Id "
+							+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
+							+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
+							+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
+							+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
+						+ " WHERE SL.Customer_Id = :customerId AND SL.Status = 'ACTIVE' "
+						+ " ORDER BY SL.Name ASC")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 

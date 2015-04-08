@@ -211,6 +211,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)).alias("productName"),
 						software.get(Software_.softwareName),
+						license.get(License_.fullDesc).alias("fullDesc"),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(
@@ -230,6 +231,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				cb.coalesce(software.get(Software_.softwareName),
 						license.get(License_.fullDesc)),
 						software.get(Software_.softwareName),
+						license.get(License_.fullDesc),
 				capacityType.get(CapacityType_.code),
 				capacityType.get(CapacityType_.description),
 				license.get(License_.quantity),
@@ -271,7 +273,13 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				q.orderBy(cb.desc(cb.coalesce(software.get(orderBy),
 						license.get("fullDesc"))));
 			}
-		} else if (sort.startsWith("capacityType")) {
+		} else if (sort.startsWith("license")){
+			if (dir.equals("asc")) {
+				q.orderBy(cb.asc(license.get(orderBy)));
+			} else {
+				q.orderBy(cb.desc(license.get(orderBy)));
+			}
+		}else if(sort.startsWith("capacityType")) {
 			if (dir.equals("asc")) {
 				q.orderBy(cb.asc(capacityType.get(orderBy)));
 			} else {

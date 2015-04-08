@@ -9,8 +9,10 @@ public class LicenseDisplay {
     private String catalogMatch;
 
     private String productName;
-
+    
     private String product;
+    
+    private String fullDesc;
 
     private Integer capTypeCode;
 
@@ -33,7 +35,7 @@ public class LicenseDisplay {
     public LicenseDisplay() {
     }
 
-    public LicenseDisplay(Long licenseId, String productName, String product,
+    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
             Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -41,6 +43,7 @@ public class LicenseDisplay {
         this.licenseId = licenseId;
         this.productName = productName;
         this.product = product;
+        this.fullDesc =  fullDesc;
         this.capTypeCode = capTypeCode;
         this.capTypeDesc = capTypeDesc;
         this.availableQty = availableQty.intValue();
@@ -52,7 +55,7 @@ public class LicenseDisplay {
         this.ownerAccountNumber = ownerAccountNumber;
     }
 
-    public Integer getAvailableQty() {
+	public Integer getAvailableQty() {
         return availableQty;
     }
 
@@ -138,7 +141,15 @@ public class LicenseDisplay {
         this.productName = productName;
     }
 
-    public Integer getQuantity() {
+	public String getFullDesc() {
+		return fullDesc;
+	}
+
+	public void setFullDesc(String fullDesc) {
+		this.fullDesc = fullDesc;
+	}
+
+	public Integer getQuantity() {
         return quantity;
     }
 

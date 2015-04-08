@@ -26,6 +26,16 @@ sub testMode {
     return $self->{_cfg}->getProperty('testMode');
 }
 
+sub connRetryTimes {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('connRetryTimes');
+}
+
+sub connRetrySleepPeriod {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('connRetrySleepPeriod');
+}
+
 sub server {
     my $self = shift;
     return $self->{_cfg}->getProperty('server');

@@ -13,7 +13,7 @@
 <h2 class="bar-blue-med-light">License details</h2>
 <table cellspacing="0" cellpadding="0" class="basic-table">
 	<tr>
-		<td><span class="caption">Product name</span></td>
+		<td><span class="caption">Primary component</span></td>
 		<td><s:property value="license.productName" /></td>
 	</tr>
 	<tr>
@@ -21,7 +21,7 @@
 		<td><s:property value="license.catalogMatch" /></td>
 	</tr>
 	<tr>
-		<td><span class="caption">Product full description</span></td>
+		<td><span class="caption">License name</span></td>
 		<td><s:property value="license.fullDesc" /></td>
 	</tr>
 	<tr>

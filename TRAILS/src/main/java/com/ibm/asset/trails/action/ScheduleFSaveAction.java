@@ -187,6 +187,22 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 		getScheduleF().setSource(
 				findSourceInList(getScheduleFForm().getSourceId(),
 						getSourceArrayList()));
+		
+		   //AB added
+		String sfr =getScheduleFForm().getSwFinanResp();
+		if(sfr==null || sfr.equals("")){
+			addFieldError("scheduleFForm.swFinanResp","SW Financial Resp can't be blank.");
+			return INPUT;					
+		} else if ( sfDescParts[0].contains("IBM owned") && !sfr.equalsIgnoreCase("IBM")){
+			addFieldError("scheduleFForm.swFinanResp","\"IBM Owned\" Scope only accept to \"IBM\" SW Financial Resp.");
+			return INPUT;
+		} else if(!sfScope.getDescription().contains("Customer owned, Customer managed") && sfr.equalsIgnoreCase("N/A")){
+			addFieldError("scheduleFForm.swFinanResp","Only CUSTOMER OWNED CUSTOMER MANAGED Scope can accept N/A SW Financial Resp.");
+			return INPUT;					
+		}else{
+			getScheduleF().setSWFinanceResp(sfr);
+		}
+				
 		getScheduleF()
 				.setSourceLocation(getScheduleFForm().getSourceLocation());
 		if (laSoftware.get(0).getStatus().equalsIgnoreCase("INACTIVE")){
@@ -242,6 +258,8 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 				lsffManage.setManufacturer(getScheduleF().getManufacturer());
 				lsffManage.setScopeId(getScheduleF().getScope().getId());
 				lsffManage.setSourceId(getScheduleF().getSource().getId());
+				//AB added 
+				lsffManage.setSwFinanResp(getScheduleF().getSWFinanceResp());
 				lsffManage
 						.setSourceLocation(getScheduleF().getSourceLocation());
 				if(!getScheduleFService().findSoftwareBySoftwareName(getScheduleF().getSoftwareName().toString()).isEmpty()){

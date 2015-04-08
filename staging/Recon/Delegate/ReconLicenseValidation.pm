@@ -340,6 +340,9 @@ sub validateLicenseAllocationCustomer {
     elsif ( $self->license->customerId == $licenseAllocationView->slCustomerId ) {
         return 1;
     }
+    elsif (( $licenseAllocationView->scopeName eq "IBMOIBMM" ) && ( $licenseAllocationView->machineLevel == 1 )) {
+		return 1;
+	}
 
     ###Validate customerId change
     dlog("customer id does not match lic, adding to list to break");
