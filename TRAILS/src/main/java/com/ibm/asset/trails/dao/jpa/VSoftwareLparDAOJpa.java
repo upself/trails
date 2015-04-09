@@ -31,7 +31,7 @@ public class VSoftwareLparDAOJpa extends
 		Criteria criteria = getHibernateSessionCriteria();
 
 		criteria.createAlias("hardwareLpar", "hl")
-				.createAlias("hl.hardwareLparEff", "hle")
+				.createAlias("hl.hardwareLparEff", "hle", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
