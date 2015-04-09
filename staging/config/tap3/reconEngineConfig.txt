@@ -9,4 +9,4 @@ testBankAccounts=
 testCustomerIds=
 sleepPeriod=10800
 connRetryTimes=3
-connRetrySleepPeriod=5
+connRetrySleepPeriod=30
