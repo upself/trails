@@ -340,7 +340,9 @@ sub validateLicenseAllocationCustomer {
     elsif ( $self->license->customerId == $licenseAllocationView->slCustomerId ) {
         return 1;
     }
-    elsif (( $licenseAllocationView->scopeName eq "IBMOIBMM" ) && ( $licenseAllocationView->machineLevel == 1 )) {
+    elsif (( $licenseAllocationView->scopeName eq "IBMOIBMM" )
+			&& ( $licenseAllocationView->machineLevel == 1 )
+			&& ( $self->license->ibmOwned == 1 ) ) {
 		return 1;
 	}
 
@@ -516,7 +518,7 @@ sub validateMaintenanceExpiration {
     my ( $self, $machineType, $capType, $isManual, $expireAge, $reconcileId, $licenseId ) = @_;
 
     ###Validate expire date based on mt type if recon was auto.
-    if (( $machineType ne 'WORKSTATION' ) && ( $capType ne '9' )) {
+    if (( $machineType ne 'WORKSTATION' ) && ( $capType ne '9' ) && ( $capType ne '49' ) && ( $capType ne '48' )) {
         if ( $isManual == 0 ) {
             if (!defined $expireAge || $expireAge < 0 ) {
                 dlog("license is expired, adding to list to break");
