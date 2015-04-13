@@ -2686,17 +2686,21 @@ sub getExistingMachineLevelRecon {
 	my %data;
 	$self->connection->prepareSqlQueryAndFields(
 		$self->queryExistingMachineLevelRecon($scope) );
-	my $sth = $self->connection->sql->{existingMachineLevelRecon};
+	my $sth;
 	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
 	if (( not defined $scope ) || ( $scope ne "IBMOIBMM" )) {
+		$sth = $self->connection->sql->{existingMachineLevelRecon}
+		$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
 		$sth->execute(
 			$self->installedSoftwareReconData->hId,
 			$self->installedSoftware->softwareId,
 			$self->customer->id, $self->customer->id );
 	}
 	elsif (( defined $scope ) && ( $scope eq "IBMOIBMM" )) {
+		$sth = $self->connection->sql->{existingMachineLevelReconAll}
+		$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{existingMachineLevelReconAllFields} } );
 		$sth->execute(
 			$self->installedSoftwareReconData->hId,
 			$self->installedSoftware->softwareId );
@@ -2883,7 +2887,8 @@ $query.='   and h.id = hl.hardware_id
         with ur
     ';
 
-	return ( 'existingMachineLevelRecon', $query, \@fields );
+	return ( 'existingMachineLevelRecon', $query, \@fields )  if (( not defined $scope ) || ( $scope ne "IBMOIBMM" ));
+	return ( 'existingMachineLevelReconAll', $query, \@fields ) if (( defined $scope ) && ( $scope eq "IBMOIBMM" ));
 }
 
 sub createReconcile {
