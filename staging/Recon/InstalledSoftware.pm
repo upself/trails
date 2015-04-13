@@ -2689,7 +2689,7 @@ sub getExistingMachineLevelRecon {
 	my $sth;
 	my %rec;
 	if (( not defined $scope ) || ( $scope ne "IBMOIBMM" )) {
-		$sth = $self->connection->sql->{existingMachineLevelRecon}
+		$sth = $self->connection->sql->{existingMachineLevelRecon};
 		$sth->bind_columns( map { \$rec{$_} }
 		  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
 		$sth->execute(
@@ -2698,7 +2698,7 @@ sub getExistingMachineLevelRecon {
 			$self->customer->id, $self->customer->id );
 	}
 	elsif (( defined $scope ) && ( $scope eq "IBMOIBMM" )) {
-		$sth = $self->connection->sql->{existingMachineLevelReconAll}
+		$sth = $self->connection->sql->{existingMachineLevelReconAll};
 		$sth->bind_columns( map { \$rec{$_} }
 		  @{ $self->connection->sql->{existingMachineLevelReconAllFields} } );
 		$sth->execute(
