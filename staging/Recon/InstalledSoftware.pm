@@ -2690,15 +2690,17 @@ sub getExistingMachineLevelRecon {
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
 		  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
-	$sth->execute(
-		$self->installedSoftwareReconData->hId,
-		$self->installedSoftware->softwareId,
-		$self->customer->id, $self->customer->id
-	) if ( $scope ne "IBMOIBMM" );
-	$sth->execute(
-		$self->installedSoftwareReconData->hId,
-		$self->installedSoftware->softwareId
-	) if ( $scope eq "IBMOIBMM" );
+	if (( not defined $scope ) || ( $scope ne "IBMOIBMM" )) {
+		$sth->execute(
+			$self->installedSoftwareReconData->hId,
+			$self->installedSoftware->softwareId,
+			$self->customer->id, $self->customer->id );
+	}
+	elsif (( defined $scope ) && ( $scope eq "IBMOIBMM" )) {
+		$sth->execute(
+			$self->installedSoftwareReconData->hId,
+			$self->installedSoftware->softwareId );
+	}
 
 	while ( $sth->fetchrow_arrayref ) {
 		logRec( 'dlog', \%rec );
@@ -2835,7 +2837,7 @@ sub queryExistingMachineLevelRecon {
 	my $self=shift;
 	my $scope=shift;
 	
-	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if ( $scope eq "IBMOIBMM" );
+	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if (( defined $scope ) && ( $scope eq "IBMOIBMM" ));
 	
 	my @fields = qw(
 	  reconcileId
@@ -2868,7 +2870,7 @@ sub queryExistingMachineLevelRecon {
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
             and is.software_id = ?';
-$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if ( $scope ne "IBMOIBMM" );
+$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if (( not defined $scope ) || ( $scope ne "IBMOIBMM" ));
 $query.='   and h.id = hl.hardware_id
             and hsc.software_lpar_id = sl.id
             and hsc.hardware_lpar_id = hl.id
