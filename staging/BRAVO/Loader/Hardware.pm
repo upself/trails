@@ -99,13 +99,15 @@ sub logic {
 				$self->reconDeep(1);
 			}
 			elsif ( $bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS ) {
-				dlog(
-					"$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
+				dlog("$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
 				$self->reconDeep(1);
 			}
 			elsif ( $bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU ) {
-				dlog(
-					"$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
+				dlog("$bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU");
+				$self->reconDeep(1);
+			}
+			elsif ( $bravoHardware->nbrCoresPerChip != $self->bravoHardware->nbrCoresPerChip ) {
+				dlog("$bravoHardware->nbrCoresPerChip != $self->bravoHardware->nbrCoresPerChip");
 				$self->reconDeep(1);
 			}
 		}
