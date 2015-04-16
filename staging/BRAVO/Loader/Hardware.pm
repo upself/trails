@@ -56,6 +56,8 @@ sub logic {
 	$bravoHardware->country( $self->stagingHardware->country );
 	$bravoHardware->getByBizKey( $self->bravoConnection );
 	dlog( $bravoHardware->toString );
+	
+	
 
 	if ( defined $bravoHardware->id ) {
 		###We have a matching bravo hardware
@@ -66,49 +68,9 @@ sub logic {
 		###Set to save the bravo hardware if they are not equal
 		if ( !$bravoHardware->equals( $self->bravoHardware ) ) {
 			$self->saveBravoHardware(1);
-
-			if (   $self->bravoHardware->hardwareStatus eq 'HWCOUNT'
-				&& $bravoHardware->hardwareStatus ne 'HWCOUNT' )
-			{
-				$self->reconDeep(1);
-			}
-			elsif ($bravoHardware->hardwareStatus eq 'HWCOUNT'
-				&& $self->bravoHardware->hardwareStatus ne 'HWCOUNT' )
-			{
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->processorCount !=
-				$self->bravoHardware->processorCount )
-			{
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->chips != $self->bravoHardware->chips ) {
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->machineTypeId !=
-				$self->bravoHardware->machineTypeId )
-			{
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->model ne $self->bravoHardware->model ) {
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->processorType ne
-				$self->bravoHardware->processorType )
-			{
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS ) {
-				dlog("$bravoHardware->cpuMIPS != $self->bravoHardware->cpuMIPS");
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU ) {
-				dlog("$bravoHardware->cpuMSU != $self->bravoHardware->cpuMSU");
-				$self->reconDeep(1);
-			}
-			elsif ( $bravoHardware->nbrCoresPerChip != $self->bravoHardware->nbrCoresPerChip ) {
-				dlog("$bravoHardware->nbrCoresPerChip != $self->bravoHardware->nbrCoresPerChip");
-				$self->reconDeep(1);
+			
+			if ( $self->setReconFlagHardwares($self->bravoHardware,$bravoHardware) == 1) {
+				$self-> reconDeep(1);
 			}
 		}
 	}
@@ -120,6 +82,58 @@ sub logic {
 	}
 
 	$self->processHardwareLpars;
+}
+
+sub setReconFlagHardwares {
+	my ($self, $stagingHardware,$bravoHardware ) = @_;
+	
+			if (   $stagingHardware->hardwareStatus eq 'HWCOUNT' && $bravoHardware->hardwareStatus ne 'HWCOUNT' )
+			{
+				 dlog("stagingHardware->hardwareStatus eq HWCOUNT && bravoHardware->hardwareStatus ne HWCOUNT");
+				 return 1;
+			}
+			elsif ($bravoHardware->hardwareStatus eq 'HWCOUNT' && $stagingHardware->hardwareStatus ne 'HWCOUNT' )
+			{
+				dlog("stagingHardware->hardwareStatus ne HWCOUNT && bravoHardware->hardwareStatus eq HWCOUNT");
+				return 1;
+			}
+			elsif ( $bravoHardware->processorCount != $stagingHardware->processorCount )
+			{
+				dlog("processorCount : $bravoHardware->chips != $stagingHardware->chips");
+				return 1;
+			}
+			elsif ( $bravoHardware->chips != $stagingHardware->chips ) {
+				dlog("chips : $bravoHardware->chips != $stagingHardware->chips");
+				return 1;
+			}
+			elsif ( $bravoHardware->machineTypeId != $stagingHardware->machineTypeId )
+			{
+				dlog("machineTypeId : $bravoHardware->machineTypeId != $stagingHardware->machineTypeId");
+				return 1;
+			}
+			elsif ( $bravoHardware->model ne $stagingHardware->model ) {
+				dlog("model : $bravoHardware->model != $stagingHardware->model");
+				return 1;
+			}
+			elsif ( $bravoHardware->processorType ne $stagingHardware->processorType )
+			{
+				dlog("processorType : $bravoHardware->processorType != $stagingHardware->processorType");
+				return 1;
+			}
+			elsif ( $bravoHardware->cpuMIPS != $stagingHardware->cpuMIPS ) {
+				dlog("cpuMIPS : $bravoHardware->cpuMIPS != $stagingHardware->cpuMIPS");
+				return 1;
+			}
+			elsif ( $bravoHardware->cpuMSU != $stagingHardware->cpuMSU ) {
+				dlog("cpuMSU : $bravoHardware->cpuMSU != $stagingHardware->cpuMSU");
+				return 1;
+			}
+			elsif ( $bravoHardware->nbrCoresPerChip != $stagingHardware->nbrCoresPerChip ) {
+				dlog("nbrCoresPerChip : $bravoHardware->nbrCoresPerChip != $stagingHardware->nbrCoresPerChip");
+				return 1;
+			}
+		return 0;
+	
 }
 
 sub processHardwareLpars {
