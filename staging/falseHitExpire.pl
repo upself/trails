@@ -113,7 +113,7 @@ sub queryGetISWids {
 				from eaadmin.software_discrepancy_h sdh group by sdh.installed_software_id ) a
 			on ( 	isw.id = a.isw_id
 				and a.age > $falsehitage
-				and isw.invalid_category <> \'$complexstring\'
+				and ( isw.invalid_category != \'$complexstring\' or isw.invalid_category is null )
 				and isw.status = \'ACTIVE\'
 				and isw.discrepancy_type_id = 3 )
 			order by age desc
