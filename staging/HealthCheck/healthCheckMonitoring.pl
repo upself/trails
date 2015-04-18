@@ -1675,6 +1675,14 @@ sub eventRuleCheck{
                  }
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+			 }elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq 'SW_MULTI_REPORT_AGE'){
+			     
+			     my $rules  = new Common::MetaRule($metaRule);
+			     my $swmultiReportAgeHcm =  new EventCheckRules::FileSystem::SwMultiReportFileAge($rules);
+			     if($swmultiReportAgeHcm->validate()){
+			        $emailFullContent.=$swmultiReportAgeHcm->assembleNotification();
+			     }
+			     
 			 }
              #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
@@ -3042,7 +3050,7 @@ sub getTime
     $year+=1900;#From 1900 year
     
     #$wday is accumulated from Saturday, stands for which day of one week[0-6]
-    #$yday is accumulated from 1/1£¬stands for which day of one year[0,364]
+    #$yday is accumulated from 1/1ï¿½ï¿½stands for which day of one year[0,364]
     #$isdst is a flag
     my $weekday = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')[$wday];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
     return { 'second' => $sec,
