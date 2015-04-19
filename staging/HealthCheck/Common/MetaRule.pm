@@ -1,6 +1,7 @@
-package Common::MetaRule;
+package HealthCheck::Common::MetaRule;
 
 use strict;
+
 
 
 my $EVENT_RULE_CODE_INDEX                 = 0;#For example, "ERC001"
@@ -61,6 +62,25 @@ sub parse(){
   $self->metaRuleTriggerFrequency(trim($metaRule->[$EVENT_RULE_TRIGGER_FREQUENCY]));
 }
 
+sub trim
+{  
+   my $trimString = shift;
+   if(!defined $trimString)
+   {
+     $trimString = "";
+   }
+  
+   $trimString =~s/^\s+//;
+   $trimString =~s/\s+$//;
+   return $trimString;
+}
+
+
+sub rules{
+ 	my ( $self, $value ) = @_;
+	$self->{_rules} = $value if defined($value);
+	return ( $self->{_rules} );
+}
 
 sub metaRuleCode {
 	my ( $self, $value ) = @_;

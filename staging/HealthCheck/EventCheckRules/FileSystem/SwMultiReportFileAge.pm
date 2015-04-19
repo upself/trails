@@ -1,4 +1,4 @@
-package EventCheckRules::FileSystem::SwMultiReportFileAge;
+package HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
 
 use strict;
 use Base::Utils;
@@ -25,8 +25,8 @@ sub assembleNotification() {
  my $self = shift;
 
  my $cfg =
-   Config::Properties::Simple->new( file => ( $self->metaRuleParameter1 ) );
- my $liveDays = $self->metaRuleParameter2;
+   Config::Properties::Simple->new( file => ( $self->rules->metaRuleParameter1 ) );
+ my $liveDays = $self->rules->metaRuleParameter2;
 
  my $hostName = $cfg->getProperty('gsa.swmulti.report.server');
  my $user     = $cfg->getProperty('gsa.swmulti.report.user');
