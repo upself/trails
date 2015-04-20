@@ -38,62 +38,73 @@ public class PvuReconRule implements IReconcileRule {
 		}
 
 		if (hwProcessorCount > 0) {
-			String lsProcessorBrand = aus.getInstalledSoftware()
-					.getSoftwareLpar().getHardwareLpar().getHardware()
-					.getMastProcessorType();
-			String lsProcessorModel = aus.getInstalledSoftware()
-					.getSoftwareLpar().getHardwareLpar().getHardware()
-					.getProcessorModel();
-			MachineType lmtAlert = aus.getInstalledSoftware().getSoftwareLpar()
-					.getHardwareLpar().getHardware().getMachineType();
-
+			
 			PvuMap pvuMap = null;
+			pvuMap = getPvuMapByAus(aus);
+			
 			int liNumberOfCores = aus.getInstalledSoftware().getSoftwareLpar()
 					.getHardwareLpar().getHardware().getNbrCoresPerChip().intValue();
 
-			pvuMap = pvuMapDAO.getPvuMapByBrandAndModelAndMachineTypeId(
-					lsProcessorBrand, lsProcessorModel, lmtAlert);
+			licenseQty = getLicenseQtyByPvuAndNumberOfCores(liNumberOfCores,pvuMap,hwProcessorCount, pvuInfoDAO);
 
-			if (pvuMap == null || liNumberOfCores == 0) {
-				licenseQty = DEFAULT_PVU_VALUE * hwProcessorCount;
-			} else {
-				List<PvuInfo> llPvuInfo = null;
-				PvuInfo lpvuiAlert = null;
-				if (liNumberOfCores == 1 || liNumberOfCores == 2
-						|| liNumberOfCores == 4) {
-					llPvuInfo = pvuInfoDAO.find(pvuMap.getProcessorValueUnit()
-							.getId(), liNumberOfCores);
-					if (llPvuInfo != null && llPvuInfo.size() > 0) {
-						lpvuiAlert = llPvuInfo.get(0);
-					}
-				}
-
-				if (lpvuiAlert != null
-						&& lpvuiAlert.getValueUnitsPerCore().intValue() > 0) {
-
-					licenseQty = lpvuiAlert.getValueUnitsPerCore().intValue()
-							* hwProcessorCount;
-
-				} else {
-
-					llPvuInfo = pvuInfoDAO.find(pvuMap.getProcessorValueUnit()
-							.getId());
-					if (llPvuInfo != null && llPvuInfo.size() > 0) {
-						lpvuiAlert = llPvuInfo.get(0);
-					}
-
-					if (lpvuiAlert == null
-							|| lpvuiAlert.getValueUnitsPerCore().intValue() == 0) {
-						licenseQty = DEFAULT_PVU_VALUE * hwProcessorCount;
-					} else {
-						licenseQty = lpvuiAlert.getValueUnitsPerCore()
-								.intValue() * hwProcessorCount;
-					}
-				}
-			}
 		}
 
 		return licenseQty;
+	}
+	
+	public int getLicenseQtyByPvuAndNumberOfCores(int liNumberOfCores,PvuMap pvuMap, int hwProcessorCount,PVUInfoDAO pvuInfoDAOLocal) {
+
+		if (pvuMap == null || liNumberOfCores == 0) {
+			return DEFAULT_PVU_VALUE * hwProcessorCount;
+		} else {
+			List<PvuInfo> llPvuInfo = null;
+			PvuInfo lpvuiAlert = null;
+			if (liNumberOfCores == 1 || liNumberOfCores == 2
+					|| liNumberOfCores == 4) {
+				llPvuInfo = pvuInfoDAOLocal.find(pvuMap.getProcessorValueUnit()
+						.getId(), liNumberOfCores);
+				if (llPvuInfo != null && llPvuInfo.size() > 0) {
+					lpvuiAlert = llPvuInfo.get(0);
+				}
+			}
+
+			if (lpvuiAlert != null
+					&& lpvuiAlert.getValueUnitsPerCore().intValue() > 0) {
+
+				return lpvuiAlert.getValueUnitsPerCore().intValue()* hwProcessorCount;
+
+			} else {
+
+				llPvuInfo = pvuInfoDAOLocal.find(pvuMap.getProcessorValueUnit()
+						.getId());
+				if (llPvuInfo != null && llPvuInfo.size() > 0) {
+					lpvuiAlert = llPvuInfo.get(0);
+				}
+
+				if (lpvuiAlert == null
+						|| lpvuiAlert.getValueUnitsPerCore().intValue() == 0) {
+					return DEFAULT_PVU_VALUE * hwProcessorCount;
+				} else {
+					return lpvuiAlert.getValueUnitsPerCore().intValue() * hwProcessorCount;
+				}
+			}
+		}		
+	}
+	
+	private PvuMap getPvuMapByAus(AlertUnlicensedSw aus) {
+		
+		String lsProcessorBrand = aus.getInstalledSoftware()
+				.getSoftwareLpar().getHardwareLpar().getHardware()
+				.getMastProcessorType();
+		String lsProcessorModel = aus.getInstalledSoftware()
+				.getSoftwareLpar().getHardwareLpar().getHardware()
+				.getProcessorModel();
+		MachineType lmtAlert = aus.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getHardware().getMachineType();
+		
+		return pvuMapDAO.getPvuMapByBrandAndModelAndMachineTypeId(
+				lsProcessorBrand, lsProcessorModel, lmtAlert);	
+		
 	}
 
 	public boolean allocate(Recon recon, License license, AlertUnlicensedSw aus) {
