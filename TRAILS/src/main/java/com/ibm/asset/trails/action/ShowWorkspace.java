@@ -3,6 +3,8 @@ package com.ibm.asset.trails.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.ServletActionContext;
+
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconcileType;
 import com.ibm.asset.trails.domain.Report;
@@ -41,8 +43,8 @@ public class ShowWorkspace extends AccountReportBaseAction {
         lReport.add(new Report("Full reconciliation", "fullReconciliation"));
         super.setReportList(lReport);
     }
-
-    @Override
+    
+	@Override
     @UserRole(userRole = UserRoleType.READER)
     public String execute() {
 
@@ -51,6 +53,15 @@ public class ShowWorkspace extends AccountReportBaseAction {
         }
 
         reconcileTypes = getReconWorkspaceService().reconcileTypes(true);
+        
+        //AB added
+        String schedulefFlag=getUserSession().getSchedulefDefExistingIdentify();
+        if(schedulefFlag!=null && schedulefFlag.equalsIgnoreCase("N")){
+        	addActionError("Schedule F not defined.");
+        }
+        //clear the identify to avoid it to existing when refresh workspace page
+        getUserSession().setSchedulefDefExistingIdentify(null);
+        
         return SUCCESS;
     }
 
