@@ -29,8 +29,6 @@ public class PvuReconRule implements IReconcileRule {
 
 		int licenseQty = 0;
 
-		int hwChips = aus.getInstalledSoftware().getSoftwareLpar()
-				.getHardwareLpar().getHardware().getChips();
 		int hwProcessorCount = aus.getInstalledSoftware().getSoftwareLpar()
 				.getHardwareLpar().getHardware().getProcessorCount();
 
@@ -40,69 +38,60 @@ public class PvuReconRule implements IReconcileRule {
 		}
 
 		if (hwProcessorCount > 0) {
-			if (hwChips == 0) {
+			String lsProcessorBrand = aus.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware()
+					.getMastProcessorType();
+			String lsProcessorModel = aus.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware()
+					.getProcessorModel();
+			MachineType lmtAlert = aus.getInstalledSoftware().getSoftwareLpar()
+					.getHardwareLpar().getHardware().getMachineType();
+
+			PvuMap pvuMap = null;
+			int liNumberOfCores = aus.getInstalledSoftware().getSoftwareLpar()
+					.getHardwareLpar().getHardware().getNbrCoresPerChip().intValue();
+
+			pvuMap = pvuMapDAO.getPvuMapByBrandAndModelAndMachineTypeId(
+					lsProcessorBrand, lsProcessorModel, lmtAlert);
+
+			if (pvuMap == null || liNumberOfCores == 0) {
 				licenseQty = DEFAULT_PVU_VALUE * hwProcessorCount;
 			} else {
-				String lsProcessorBrand = aus.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getMastProcessorType();
-				String lsProcessorModel = aus.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getProcessorModel();
-				MachineType lmtAlert = aus.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getMachineType();
-				PvuMap pvuMap = null;
-				int liNumberOfCores = 0;
+				List<PvuInfo> llPvuInfo = null;
+				PvuInfo lpvuiAlert = null;
+				if (liNumberOfCores == 1 || liNumberOfCores == 2
+						|| liNumberOfCores == 4) {
+					llPvuInfo = pvuInfoDAO.find(pvuMap.getProcessorValueUnit()
+							.getId(), liNumberOfCores);
+					if (llPvuInfo != null && llPvuInfo.size() > 0) {
+						lpvuiAlert = llPvuInfo.get(0);
+					}
+				}
 
-				pvuMap = pvuMapDAO.getPvuMapByBrandAndModelAndMachineTypeId(
-						lsProcessorBrand, lsProcessorModel, lmtAlert);
+				if (lpvuiAlert != null
+						&& lpvuiAlert.getValueUnitsPerCore().intValue() > 0) {
 
-				if (pvuMap == null) {
-					licenseQty = DEFAULT_PVU_VALUE * hwProcessorCount;
+					licenseQty = lpvuiAlert.getValueUnitsPerCore().intValue()
+							* hwProcessorCount;
+
 				} else {
-					liNumberOfCores = hwProcessorCount / hwChips;
 
-					if (liNumberOfCores == 0) {
+					llPvuInfo = pvuInfoDAO.find(pvuMap.getProcessorValueUnit()
+							.getId());
+					if (llPvuInfo != null && llPvuInfo.size() > 0) {
+						lpvuiAlert = llPvuInfo.get(0);
+					}
+
+					if (lpvuiAlert == null
+							|| lpvuiAlert.getValueUnitsPerCore().intValue() == 0) {
 						licenseQty = DEFAULT_PVU_VALUE * hwProcessorCount;
 					} else {
-						List<PvuInfo> llPvuInfo = null;
-						PvuInfo lpvuiAlert = null;
-						if (liNumberOfCores == 1 || liNumberOfCores == 2
-								|| liNumberOfCores == 4) {
-							llPvuInfo = pvuInfoDAO.find(pvuMap
-									.getProcessorValueUnit().getId(),
-									liNumberOfCores);
-							if (llPvuInfo != null && llPvuInfo.size() > 0) {
-								lpvuiAlert = llPvuInfo.get(0);
-							}
-						}
-
-						if (lpvuiAlert != null
-								&& lpvuiAlert.getValueUnitsPerCore().intValue() > 0) {
-							licenseQty = lpvuiAlert.getValueUnitsPerCore()
-									.intValue() * hwProcessorCount;
-						} else {
-							llPvuInfo = pvuInfoDAO.find(pvuMap
-									.getProcessorValueUnit().getId());
-							if (llPvuInfo != null && llPvuInfo.size() > 0) {
-								lpvuiAlert = llPvuInfo.get(0);
-							}
-
-							if (lpvuiAlert == null
-									|| lpvuiAlert.getValueUnitsPerCore()
-											.intValue() == 0) {
-								licenseQty = DEFAULT_PVU_VALUE
-										* hwProcessorCount;
-							} else {
-								licenseQty = lpvuiAlert.getValueUnitsPerCore()
-										.intValue() * hwProcessorCount;
-							}
-						}
+						licenseQty = lpvuiAlert.getValueUnitsPerCore()
+								.intValue() * hwProcessorCount;
 					}
 				}
 			}
-		} 
+		}
 
 		return licenseQty;
 	}
