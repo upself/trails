@@ -44,6 +44,7 @@
 	<property name="rTypeId" type="scalar" equals="true" />
 	<property name="rParentInstSwId" type="scalar" equals="true" />
 	<property name="rMachineLevel" type="scalar" equals="true" />
+	<property name="rIsManual" type="scalar" equals="true" />
 	<property name="licsToRecon" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
 	<property name="hChips" type="scalar" equals="true" />

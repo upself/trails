@@ -234,6 +234,12 @@ sub getSoftwareLpar {
 
 sub reconcile {
 	my $self = shift;
+	
+	if (( not defined $self->installedSoftwareReconData->scopeName )
+			|| ( $self->installedSoftwareReconData->scopeName eq "" )) {
+				ilog("No ScheduleF defined, no auto-reconciliation will be performed!");
+				return 0;
+			}
 
 	return 1 if $self->attemptVendorManaged == 1;
 	return 1 if $self->attemptSoftwareCategory == 1;
@@ -662,11 +668,11 @@ sub attemptLicenseAllocation {
 		if defined $licsToAllocate;
 	}
 	
-	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
-		( $self->installedSoftwareReconData->scopeName eq '' )) {
-			dlog("ScheduleF not defined, license allocation won't be performed!");
-			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
-	}
+#	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
+#		( $self->installedSoftwareReconData->scopeName eq '' )) {
+#			dlog("ScheduleF not defined, license allocation won't be performed!");
+#			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
+#	}
 	
 	###Get license free pool by customer id and software id.
 	my $freePoolData = $self->getFreePoolData ( $self->installedSoftwareReconData->scopeName );
@@ -2127,6 +2133,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
 		$installedSoftwareReconData->hChips( $rec{hChips} );
+		$installedSoftwareReconData->rIsManual ( $rec{rIsManual} );
 
 		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
@@ -2434,6 +2441,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  rTypeId
 	  rParentInstSwId
 	  rMachineLevel
+	  rIsManual
 	);
 	my $query = '
         select
@@ -2478,6 +2486,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,r.reconcile_type_id
             ,r.parent_installed_software_id
             ,r.machine_level
+            ,rt.is_manual
         from
             installed_software is
             join software_lpar sl on 
@@ -2504,6 +2513,8 @@ sub queryReconInstalledSoftwareBaseData {
                 bc.id = bs.bundle_id
             left outer join reconcile r on 
                 r.installed_software_id = is.id
+            left outer join reconcile_type rt on
+                r.reconcile_type_id = rt.id
         where
             is.id = ?
         with ur

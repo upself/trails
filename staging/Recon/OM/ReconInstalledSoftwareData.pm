@@ -50,6 +50,7 @@ sub new {
         ,_rTypeId => undef
         ,_rParentInstSwId => undef
         ,_rMachineLevel => undef
+        ,_rIsManual => undef
         ,_licsToRecon => undef
         ,_scopeName => undef
         ,_hChips => undef
@@ -372,6 +373,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->rIsManual && defined $object->rIsManual) {
+        $equal = 1 if $self->rIsManual eq $object->rIsManual;
+    }
+    $equal = 1 if (!defined $self->rIsManual && !defined $object->rIsManual);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->licsToRecon && defined $object->licsToRecon) {
         $equal = 1 if $self->licsToRecon eq $object->licsToRecon;
     }
@@ -659,6 +667,12 @@ sub rMachineLevel {
     return $self->{_rMachineLevel};
 }
 
+sub rIsManual {
+    my $self = shift;
+    $self->{_rIsManual} = shift if scalar @_ == 1;
+    return $self->{_rIsManual};
+}
+
 sub licsToRecon {
     my $self = shift;
     $self->{_licsToRecon} = shift if scalar @_ == 1;
@@ -904,6 +918,11 @@ sub toString {
     $s .= "rMachineLevel=";
     if (defined $self->{_rMachineLevel}) {
         $s .= $self->{_rMachineLevel};
+    }
+    $s .= ",";
+    $s .= "rIsManual=";
+    if (defined $self->{_rIsManual}) {
+        $s .= $self->{_rIsManual};
     }
     $s .= ",";
     $s .= "licsToRecon=";
