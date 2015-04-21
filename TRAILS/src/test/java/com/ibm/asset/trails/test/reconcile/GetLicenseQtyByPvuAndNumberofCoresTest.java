@@ -53,6 +53,10 @@ public class GetLicenseQtyByPvuAndNumberofCoresTest {
 		
 		pvuMap.setProcessorValueUnit(processorValueUnit);
 		assertEquals("70 x 2 = 140", 140, pvuReconRule.getLicenseQtyByPvuAndNumberOfCores(2,pvuMap, 2,pvuInfoDAO));
+		assertEquals("70 x 3 = 210", 210, pvuReconRule.getLicenseQtyByPvuAndNumberOfCores(2,pvuMap, 3,pvuInfoDAO));
+		assertEquals("pvu is null, then license quantity is 0", 0, pvuReconRule.getLicenseQtyByPvuAndNumberOfCores(2,null, 2,pvuInfoDAO));
+		assertEquals("NumberOfCores = 0, then license quantity is 0", 0, pvuReconRule.getLicenseQtyByPvuAndNumberOfCores(0,pvuMap, 2,pvuInfoDAO));
+		assertEquals("return value from pvu_info is null, then license quantity is 0", 0, pvuReconRule.getLicenseQtyByPvuAndNumberOfCores(5,pvuMap, 2,pvuInfoDAO));
 
 	}
 
