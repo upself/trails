@@ -5,6 +5,8 @@
 	<property name="hProcCount" type="scalar" equals="true" />
 	<property name="hHwStatus" type="scalar" equals="true" />
 	<property name="hSerial" type="scalar" equals="true" />
+	<property name="hChips" type="scalar" equals="true" />
+	<property name="hNbrCoresPerChip" type="scalar" equals="true" />
 	<property name="hProcessorBrand" type="scalar" equals="true" />
 	<property name="hProcessorModel" type="scalar" equals="true" />
 	<property name="hMachineTypeId" type="scalar" equals="true" />
@@ -46,6 +48,5 @@
 	<property name="rMachineLevel" type="scalar" equals="true" />
 	<property name="licsToRecon" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
-	<property name="hChips" type="scalar" equals="true" />
 	<property name="scheduleFlevel" type="scalar" />
 </class>
