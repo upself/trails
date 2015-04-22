@@ -30,6 +30,16 @@ public class HardwareLparEff extends OrmBase {
 	private HardwareLpar hardwareLpar;
 
 	private Integer processorCount;
+	
+	private String status;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	/**
 	 * @return Returns the id.
@@ -50,6 +60,9 @@ public class HardwareLparEff extends OrmBase {
 	 * @return Returns the processorCount.
 	 */
 	public Integer getProcessorCount() {
+		if(null != status && status.equalsIgnoreCase("INACTIVE")){
+			return 0;
+		}
 		return processorCount;
 	}
 
