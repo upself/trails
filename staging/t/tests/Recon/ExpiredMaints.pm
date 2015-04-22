@@ -13,16 +13,16 @@ sub startup : Tests(startup => 1) {
 
 sub checkExpiredMaint : Tests(6) {
 	my $test = shift;
-	my $class = $test->class;
+	my $class = new $test->class;
 	
-	can_ok $class,'checkExpiredMaint';
+	can_ok $class,'validateMaintenanceExpiration';
 	
-	is($class->validateMaintenanceExpiration('SERVER','10',0,-5,123,321),0,'checkExpiredMaint: expired');
-	is($class->validateMaintenanceExpiration('SERVER','10',0,5,123,321),1,'checkExpiredMaint: valid');
-	is($class->validateMaintenanceExpiration('SERVER','49',0,-5,123,321),1,'checkExpiredMaint: IFL - expiration irrelevant');
-	is($class->validateMaintenanceExpiration('SERVER','9',0,-5,123,321),1,'checkExpiredMaint: MSU - expiration irrelevant');
-	is($class->validateMaintenanceExpiration('WORKSTATION','10',0,-5,123,321),1,'checkExpiredMaint: workstation - expiration irrelevant');
-	is($class->validateMaintenanceExpiration('SERVER','10',1,-5,123,321),1,'checkExpiredMaint: manual reconcile - expiration irrelevant');
+	is($class->validateMaintenanceExpiration('SERVER','10',0,-5,undef,undef),0,'checkExpiredMaint: expired');
+	is($class->validateMaintenanceExpiration('SERVER','10',0,5,undef,undef),1,'checkExpiredMaint: valid');
+	is($class->validateMaintenanceExpiration('SERVER','49',0,-5,undef,undef),1,'checkExpiredMaint: IFL - expiration irrelevant');
+	is($class->validateMaintenanceExpiration('SERVER','9',0,-5,undef,undef),1,'checkExpiredMaint: MSU - expiration irrelevant');
+	is($class->validateMaintenanceExpiration('WORKSTATION','10',0,-5,undef,undef),1,'checkExpiredMaint: workstation - expiration irrelevant');
+	is($class->validateMaintenanceExpiration('SERVER','10',1,-5,undef,undef),1,'checkExpiredMaint: manual reconcile - expiration irrelevant');
 	
 }
 1;
