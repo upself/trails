@@ -17,9 +17,19 @@ public class UserSession {
 	private List alertCountReport;
 	
 	private List exceptionCountReport;
+//AB added	
+	private String SchedulefDefExistingIdentify;
 
+	public String getSchedulefDefExistingIdentify() {
+		return SchedulefDefExistingIdentify;
+	}
+	
+	public void setSchedulefDefExistingIdentify(String schedulefDefExistingIdentify) {
+		SchedulefDefExistingIdentify = schedulefDefExistingIdentify;
+	}
 	// CPA - 3/31/09 - Commenting out for performance reasons
 	//private Integer maxAlertAge;
+
 
 	private ReconSetting reconSetting;
 

@@ -1,10 +1,16 @@
 package com.ibm.asset.trails.action;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.service.AlertService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
 import com.ibm.tap.trails.annotation.UserRoleType;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 
 public class ApplyManualRecon extends AccountBaseAction {
 
@@ -88,9 +94,27 @@ public class ApplyManualRecon extends AccountBaseAction {
 					recon.getComments());
 		}
 
+//AB added
+		/*
+		 * for manual recon action, the software instance need schedule F defined, so get the validation result for 
+		 * reconWorkspaceService and set it to userSession for next action to use
+		 */
+		if (recon.getReconcileType().getId().intValue() == 1
+				|| recon.getReconcileType().getId().intValue() == 2
+				|| recon.getReconcileType().getId().intValue() == 3
+				|| recon.getReconcileType().getId().intValue() == 4
+				|| recon.getReconcileType().getId().intValue() == 13) {
+			String flag = getReconWorkspaceService().getScheduleFExisting();
+			if (flag != null && flag.equalsIgnoreCase("N")) {
+				getUserSession().setSchedulefDefExistingIdentify("N");
+			} else {
+				getUserSession().setSchedulefDefExistingIdentify(null);
+			}
+
+		}
 		return SUCCESS;
 	}
-
+	
 	@Override
 	public void validate() {
 

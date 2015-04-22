@@ -21,5 +21,8 @@ public interface ReconService {
 
     public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
             Account account, String remoteUser);
-    public int validateScheduleFowner(AlertUnlicensedSw alert);
+    //AB added2
+    public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);
+    //AB added
+    public String getScheduleFDefinRecon();
 }
