@@ -171,10 +171,10 @@ ELSE 'Green' END as Alert_status
 ,hl.EFFECTIVE_THREADS
 ,case when ibmb.id is not null then
 COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and
-(case when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 1 then 'SINGLE-CORE'
-when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 2 then 'DUAL-CORE'
-when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) = 4 then 'QUAD-CORE'
-when COALESCE( h.PROCESSOR_COUNT / NULLIF(h.CHIPS,0), 0) > 0 then 'MULTI-CORE'
+(case when h.nbr_cores_per_chip = 1 then 'SINGLE-CORE' 
+when h.nbr_cores_per_chip = 2 then 'DUAL-CORE' 
+when h.nbr_cores_per_chip = 4 then 'QUAD-CORE' 
+when h.nbr_cores_per_chip > 0 then 'MULTI-CORE' 
 else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode
 ,s.software_name as primaryComponent
 ,s.pid as pid
