@@ -1754,7 +1754,7 @@ sub getValueUnitsPerProcessor {
 	dlog(
 "start calculating PVU, coresPerChip=$nbrCoresPerChip processorCount=$processorCount"
 	);
-	if (( not defined $nbrCoresPerChip ) || $nbrCoresPerChip < 1 )) {
+	if (( not defined $nbrCoresPerChip ) || ( $nbrCoresPerChip < 1 )) {
 		dlog("undefined or 0 or less cores per chip, $defaultValue PVU returned");
 		return $defaultValue;
 	}
