@@ -83,7 +83,7 @@ sub setUp {
 #		$processorCount = $self->installedSoftwareReconData->processorCount;
 #	}
 
-	my $nbrCoresPerChip = $self->installedSoftwareReconData->nbrCoresPerChip;
+	my $nbrCoresPerChip = $self->installedSoftwareReconData->hNbrCoresPerChip;
 
 	my $valueUnitsPerCore =
 	  $self->getValueUnitsPerProcessor( $nbrCoresPerChip, $processorCount );
