@@ -136,6 +136,7 @@ sub validate {
 	elsif ($self->validateVendorManaged == 0
 		|| $self->validateSoftwareCategory == 0
 		|| $self->validateBundle == 0
+		|| $self->validateScheduleFdefined == 0
 		|| $self->validateCustomerOwnedAndManaged == 0
 		|| $self->validateIBMOwned3rdManaged == 0
 		|| $self->validateCustomerOwned3rdManaged == 0
@@ -535,6 +536,23 @@ sub validateCustOwnedIBMManagedCons {
 
 	return 1;
 }
+
+sub validateScheduleFdefined { # since 20.5.2015, scheduleF must be defined for any auto-recon whatsoever (not just license recon)
+        my $self = shift;
+	dlog("begin validateScheduleFdefined");
+	if (( not defined $self->installedSoftwareReconData->scopeName )
+		|| ( $self->installedSoftwareReconData->scopeName eq "" ))
+		{
+			if (( defined $self->installedSoftwareReconData->rIsManual ) && ( $self->installedSoftwareReconData->rIsManual == 0 ))
+            {
+				dlog("reconcile automatic, scheduleF not defined");
+				return 0;
+			}
+		}
+
+	return 1;
+}
+
 
 sub validateLicenseAllocation {
  my $self = shift;
