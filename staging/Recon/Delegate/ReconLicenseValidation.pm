@@ -518,7 +518,7 @@ sub validateMaintenanceExpiration {
     my ( $self, $machineType, $capType, $isManual, $expireAge, $reconcileId, $licenseId ) = @_;
 
     ###Validate expire date based on mt type if recon was auto.
-    if (( $machineType ne 'WORKSTATION' ) && ( $capType ne '9' ) && ( $capType ne '49' ) && ( $capType ne '48' )) {
+    if (( $machineType ne 'WORKSTATION' ) && ( $capType ne '9' ) && ( $capType ne '49' )) {
         if ( $isManual == 0 ) {
             if (!defined $expireAge || $expireAge < 0 ) {
                 dlog("license is expired, adding to list to break");
