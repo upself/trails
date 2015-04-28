@@ -114,6 +114,7 @@ sub queuePotentialInstalledSoftware {
          && $self->license->capType ne '17'
          && $self->license->capType ne '34'
          && $self->license->capType ne '48'
+         && $self->license->capType ne '49'
          && $self->license->capType ne '70' )
     {
         return;
