@@ -7,8 +7,7 @@
 
 <h2>Action: Covered by IBM owned enterprise agreement</h2>
 <br />
-<p>Choose which systems to mark as customer owned and customer
-managed and whether or not to overwrite both manual and automated
+<p>Choose which systems to mark as Covered by IBM Owned enterprise agreement and whether or not to overwrite both manual and automated
 reconciliations that have the selected software products shown in the
 list below. When you are finished, click on the "Next" button to be
 taken to a confirmation page. Click on cancel to return to the
