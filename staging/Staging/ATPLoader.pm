@@ -253,6 +253,7 @@ sub doDelta {
                 	$action = 10**14 + $action if ( $hardware->processorModel ne $self->hardware->{$key}->processorModel );
                 	$action = 10**15 + $action if ( $hardware->nbrOfChipsMax ne $self->hardware->{$key}->nbrOfChipsMax );
                 	$action = 10**16 + $action if ( $hardware->cpuIFL ne $self->hardware->{$key}->cpuIFL );
+                	$action = 10**17 + $action if ( $hardware->nbrCoresPerChip ne $self->hardware->{$key}->nbrCoresPerChip );
                 dlog('hardware action is ' . $action->bstr() ); 
                 if ( $hardware->action eq '0' ) {
                 	###Set to update if the hardware is currently complete
