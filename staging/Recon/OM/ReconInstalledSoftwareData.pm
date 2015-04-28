@@ -11,6 +11,8 @@ sub new {
         ,_hProcCount => undef
         ,_hHwStatus => undef
         ,_hSerial => undef
+        ,_hChips => undef
+        ,_hNbrCoresPerChip => undef
         ,_hProcessorBrand => undef
         ,_hProcessorModel => undef
         ,_hMachineTypeId => undef
@@ -53,7 +55,6 @@ sub new {
         ,_rIsManual => undef
         ,_licsToRecon => undef
         ,_scopeName => undef
-        ,_hChips => undef
         ,_scheduleFlevel => undef
     };
     bless $self, $class;
@@ -97,6 +98,20 @@ sub equals {
         $equal = 1 if $self->hSerial eq $object->hSerial;
     }
     $equal = 1 if (!defined $self->hSerial && !defined $object->hSerial);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hChips && defined $object->hChips) {
+        $equal = 1 if $self->hChips eq $object->hChips;
+    }
+    $equal = 1 if (!defined $self->hChips && !defined $object->hChips);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->hNbrCoresPerChip && defined $object->hNbrCoresPerChip) {
+        $equal = 1 if $self->hNbrCoresPerChip eq $object->hNbrCoresPerChip;
+    }
+    $equal = 1 if (!defined $self->hNbrCoresPerChip && !defined $object->hNbrCoresPerChip);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -393,13 +408,6 @@ sub equals {
     $equal = 1 if (!defined $self->scopeName && !defined $object->scopeName);
     return 0 if $equal == 0;
 
-    $equal = 0;
-    if (defined $self->hChips && defined $object->hChips) {
-        $equal = 1 if $self->hChips eq $object->hChips;
-    }
-    $equal = 1 if (!defined $self->hChips && !defined $object->hChips);
-    return 0 if $equal == 0;
-
     return 1;
 }
 
@@ -431,6 +439,18 @@ sub hSerial {
     my $self = shift;
     $self->{_hSerial} = shift if scalar @_ == 1;
     return $self->{_hSerial};
+}
+
+sub hChips {
+    my $self = shift;
+    $self->{_hChips} = shift if scalar @_ == 1;
+    return $self->{_hChips};
+}
+
+sub hNbrCoresPerChip {
+    my $self = shift;
+    $self->{_hNbrCoresPerChip} = shift if scalar @_ == 1;
+    return $self->{_hNbrCoresPerChip};
 }
 
 sub hProcessorBrand {
@@ -685,12 +705,6 @@ sub scopeName {
     return $self->{_scopeName};
 }
 
-sub hChips {
-    my $self = shift;
-    $self->{_hChips} = shift if scalar @_ == 1;
-    return $self->{_hChips};
-}
-
 sub scheduleFlevel {
     my $self = shift;
     $self->{_scheduleFlevel} = shift if scalar @_ == 1;
@@ -723,6 +737,16 @@ sub toString {
     $s .= "hSerial=";
     if (defined $self->{_hSerial}) {
         $s .= $self->{_hSerial};
+    }
+    $s .= ",";
+    $s .= "hChips=";
+    if (defined $self->{_hChips}) {
+        $s .= $self->{_hChips};
+    }
+    $s .= ",";
+    $s .= "hNbrCoresPerChip=";
+    if (defined $self->{_hNbrCoresPerChip}) {
+        $s .= $self->{_hNbrCoresPerChip};
     }
     $s .= ",";
     $s .= "hProcessorBrand=";
@@ -933,11 +957,6 @@ sub toString {
     $s .= "scopeName=";
     if (defined $self->{_scopeName}) {
         $s .= $self->{_scopeName};
-    }
-    $s .= ",";
-    $s .= "hChips=";
-    if (defined $self->{_hChips}) {
-        $s .= $self->{_hChips};
     }
     $s .= ",";
     $s .= "scheduleFlevel=";
