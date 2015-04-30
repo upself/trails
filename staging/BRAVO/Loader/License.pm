@@ -82,14 +82,22 @@ sub logicFromBravoToStaging{
   
   if( !defined $stagingLicense->id ){
      $self->bravoLicense->status('INACTIVE');
-     $self->saveBravoLicense(1);
+     $self->saveBravoLicense(2);
   }
 }
 
 sub saveFromBravoToStaging{
    my $self = shift;
  
-   $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 );
+   $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 || $self->saveBravoLicense == 2 );
+   
+   if ($self->saveBravoLicense == 1) {
+   	 $self->recon;
+   }
+   elsif ( $self->saveBravoLicense == 2) {
+   	 $self->recon("DELETE");
+   }
+   
    $self->recon if ( $self->saveBravoLicense == 1 );
    
 }
@@ -189,9 +197,12 @@ sub save {
     ###Delete the license map, if we're supposed to
     $self->bravoLicSwMap->delete( $self->bravoConnection ) if ( $self->deleteBravoLicSwMap == 1 );
 
-    ###Call the recon engine if we save or delete anything
-    $self->recon
-      if ( $self->saveBravoLicense == 1 || $self->saveBravoLicSwMap == 1 || $self->deleteBravoLicSwMap == 1 );
+    ###Call the recon engine if we save or delete anything.
+   	if ( $self->saveBravoLicense == 2 )  {  	
+     	$self->recon("DELETE");
+    } elsif ( $self->saveBravoLicense == 1 || $self->saveBravoLicSwMap == 1 || $self->deleteBravoLicSwMap == 1 ) {
+    	$self->recon;	
+    }
 
     ###Return here if the staging license is already in complete
     return if $self->stagingLicense->action eq 'COMPLETE';
@@ -210,10 +221,10 @@ sub save {
 }
 
 sub recon {
-    my $self = shift;
+    my ($self , $action) = @_;
 
     ###Add the license to the queue
-    my $queue = Recon::Queue->new( $self->bravoConnection, $self->bravoLicense );
+    my $queue = Recon::Queue->new( $self->bravoConnection, $self->bravoLicense, undef, $action);
     $queue->add;
 }
 
