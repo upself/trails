@@ -87,7 +87,7 @@ else{
 }
 
 #Load required modules
-require "/opt/staging/v2/Database/Connection.pm";
+use lib '/opt/staging/v2';  
 use strict;
 use POSIX;
 use DBI;
@@ -99,6 +99,8 @@ use Base::ConfigManager;#Require the Staging Project Package
 use HealthCheck::OM::Event;
 use HealthCheck::Delegate::EventLoaderDelegate;
 use Config::Properties::Simple;
+use HealthCheck::Common::MetaRule;
+use HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
 
 #Globals
 my $eventRuleDefinitionFile = "/home/liuhaidl/working/scripts/eventCheckRuleDefinition.properties";
@@ -759,7 +761,7 @@ sub eventLogicProcess{
    }
    #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
    #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
-   elsif($groupName eq $FILE_SYSTEM_MONITORING && $eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
+   elsif($groupName eq $FILE_SYSTEM_MONITORING && ($eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING || $eventName eq 'SW_MULTI_REPORT_AGE')){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
   	  #For Event Type "FILE_SYSTEM_THRESHOLD_MONITORING",the eventValue value is not needed.
 	  #So set 0 for eventValue var
 	  eventRuleCheck($groupName,$eventName,0);
@@ -1675,6 +1677,14 @@ sub eventRuleCheck{
                  }
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+			 }elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq 'SW_MULTI_REPORT_AGE'){
+			     
+			     my $rules  = HealthCheck::Common::MetaRule->new($metaRule);
+			     my $swmultiReportAgeHcm = HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge->new($rules);
+			     if($swmultiReportAgeHcm->validate()){
+			        $emailFullContent.=$swmultiReportAgeHcm->assembleNotification();
+			     }
+			     
 			 }
              #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
@@ -3042,7 +3052,7 @@ sub getTime
     $year+=1900;#From 1900 year
     
     #$wday is accumulated from Saturday, stands for which day of one week[0-6]
-    #$yday is accumulated from 1/1£¬stands for which day of one year[0,364]
+    #$yday is accumulated from 1/1ï¿½ï¿½stands for which day of one year[0,364]
     #$isdst is a flag
     my $weekday = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')[$wday];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
     return { 'second' => $sec,
