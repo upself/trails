@@ -40,3 +40,6 @@ gui.bravo.server.password=Gr0wl3rs
 gui.trails.server.hostname=trails.boulder.ibm.com
 gui.trails.server.user=trails
 gui.trails.server.password=Gr0wl3rs
+hme.server.hostname=tap3.raleigh.ibm.com
+hme.trails.server.user=trails
+hme.trails.server.password=Gr0wl3rs
