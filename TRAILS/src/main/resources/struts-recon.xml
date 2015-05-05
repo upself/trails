@@ -121,6 +121,9 @@
 				tiles.account.recon.workspace.includedConfirmation
 			</result>
 			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="input" type="tiles">
+				tiles.account.recon.workspace.included
+			</result>
 		</action>
 
 		<action name="showAltPurchaseConfirmation" class="showConfirmation"
