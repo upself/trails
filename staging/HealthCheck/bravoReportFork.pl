@@ -41,7 +41,7 @@ use strict;
 use Getopt::Std;
 use POSIX ":sys_wait_h";
 use Tap::DBConnection;
-use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+use HealthCheck::Delegate::EventLoaderDelegate; 
 
 require '/opt/common/utils/loggingUtils.pl';
 
@@ -68,10 +68,10 @@ my $trailsSqlFile = $scriptDir . '/trails_sql.xml';
 my $logFile       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
 my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
-my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $bravoConnection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $customerIds;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT'; 
+my $eventObject; 
+my $bravoConnection; 
+my $customerIds; 
 
 ###############################################################################
 ### Basic Checks
@@ -102,9 +102,9 @@ $SIG{CHLD} = \&REAPER;
 ### Main
 ###
 ###############################################################################
-eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+eval { 
 
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+     
 	###Notify Event Engine that we are starting.
     logit("eventTypeName=$eventTypeName", $logFile);
 	logit("starting $eventTypeName event status", $logFile);
@@ -112,10 +112,10 @@ eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
     logit("started $eventTypeName event status", $logFile);
 
 	sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
-	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+	 
 
-   $bravoConnection = getConnection('trails', $trailsSqlFile);#Define $bravoConnection var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
-   $customerIds = getDistinctBravoCustomerIds();#Define $customerIds var as a Global one #Added by Larry for HealthCheck And Monitor Module - Phase 2B
+   $bravoConnection = getConnection('trails', $trailsSqlFile);#Define $bravoConnection var as a Global one  
+   $customerIds = getDistinctBravoCustomerIds();#Define $customerIds var as a Global one  
    $bravoConnection->disconnect;
 
 foreach my $customerId (sort @{$customerIds}) {
@@ -135,9 +135,9 @@ while ($children != 0) {
     sleep 5;
 }
 
-};#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+}; 
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+ 
 if ($@) {
 	###Notify the Event Engine that we had an error
 	logit("erroring $eventTypeName event status", $logFile);
@@ -153,7 +153,7 @@ else {
 	EventLoaderDelegate->stop($eventObject,$eventTypeName);
 	logit("stopped $eventTypeName event status", $logFile);
 }
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+ 
 
 # End of Program
 exit 0;
@@ -228,12 +228,12 @@ sub getConnection {
         $connection->disconnect;
         $bravoConnection->disconnect if (defined $bravoConnection);
 
-        #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start 
+         
         ###Notify the Event Engine that we had an error
 	    logit("erroring $eventTypeName event status", $logFile);
         EventLoaderDelegate->error($eventObject,$eventTypeName);
 	    logit("errored $eventTypeName event status", $logFile);
-		#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+		 
 
         die;
     }

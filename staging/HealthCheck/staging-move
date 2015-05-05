@@ -43,7 +43,7 @@ use Net::FTPServer::XferLog;
 use Log::Log4perl qw{:easy};
 $Archive::Extract::PREFER_BIN = 1; 
 
-use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+use HealthCheck::Delegate::EventLoaderDelegate; 
 
 #############################################################################
 # globals/constants
@@ -246,10 +246,10 @@ sub validate_options {
 # juuuuust to make sure
 umask 0002;
 
-my $eventTypeName = 'STAGINGMOVE_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $eventTypeName = 'STAGINGMOVE_START_STOP_SCRIPT'; 
+my $eventObject; 
 
-eval {#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+eval { 
   
 # get and validate our options
 parse_options();
@@ -261,7 +261,7 @@ Log::Log4perl->easy_init(
     { file => '>> /var/log/staging-move', level => $DEBUG },
 );
 
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+     
     ###Notify Event Engine that we are starting.
     DEBUG "eventTypeName=$eventTypeName";
     INFO "starting $eventTypeName event status";
@@ -269,7 +269,7 @@ Log::Log4perl->easy_init(
     INFO "started $eventTypeName event status";
 
     sleep 1;#sleep 1 second to resolve the startTime and endTime is the same case if process is too quick
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B End 
+     
 
 INFO 'Beginning run!';
 
@@ -465,9 +465,9 @@ $pid->remove;
 
 INFO '===> Finished!';
 
-};#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+}; 
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+ 
 if ($@) {
     
     ###Notify the Event Engine that we had an error
@@ -484,7 +484,7 @@ else {
     EventLoaderDelegate->stop($eventObject,$eventTypeName);
     INFO "stopped $eventTypeName event status";
 }
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+ 
 
 __END__ 
 
