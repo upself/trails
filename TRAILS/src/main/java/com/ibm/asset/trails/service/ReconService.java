@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.ibm.asset.trails.domain.Account;
@@ -24,5 +25,6 @@ public interface ReconService {
     //AB added2
     public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);
     //AB added
-    public String getScheduleFDefinRecon();
+    //Story 26012
+    public List<String> getScheduleFDefInRecon();
 }

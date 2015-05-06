@@ -45,14 +45,27 @@ public class ReconServiceImpl implements ReconService {
 	private EntityManager em;
 	
 	//AB added, flag used for export the validate result to reconWorkspaceImpl
-	private String ScheduleFDefinRecon;
+	//Story 26012
+	private List<String> ScheduleFDefInRecon;
 
-	public String getScheduleFDefinRecon() {
-		return ScheduleFDefinRecon;
+	public List<String> getScheduleFDefInRecon() {
+		return ScheduleFDefInRecon;
 	}
 
-	public void setScheduleFDefinRecon(String scheduleFDefinRecon) {
-		ScheduleFDefinRecon = scheduleFDefinRecon;
+	public void setScheduleFDefInRecon(String result) {
+		if(result!=null){
+			if(ScheduleFDefInRecon==null||ScheduleFDefInRecon.isEmpty()){
+				ScheduleFDefInRecon=new ArrayList<String>();
+				ScheduleFDefInRecon.add(result);
+			}else{
+				if(!ScheduleFDefInRecon.contains(result)){
+					ScheduleFDefInRecon.add(result);
+				}
+			}
+		}else{
+			ScheduleFDefInRecon=null;
+		}
+	
 	}
 
 	@Autowired
@@ -609,6 +622,8 @@ public class ReconServiceImpl implements ReconService {
 				usedLicenseHistories.add(ulh);
 			}
 
+			//Story 26012
+			int alertWithoutScheduleFcounter=0;
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
 				boolean bReconcileValidation = reconcileValidate(lausTemp,
 						pRecon, totalUsedLicenses);
@@ -622,8 +637,8 @@ public class ReconServiceImpl implements ReconService {
 				  //AB added
 					alertlistSwOwner = validateScheduleFowner(lausTemp, pRecon);
 				  //this only used to export the schedule F defined flag to ReconWorkspaceImpl
-				  if(alertlistSwOwner==2 && (getScheduleFDefinRecon()==null || !getScheduleFDefinRecon().equalsIgnoreCase("N"))){
-					  setScheduleFDefinRecon("N");
+				  if(alertlistSwOwner==2){
+					  alertWithoutScheduleFcounter++;
 				  }
 				  
 				}
@@ -707,6 +722,13 @@ public class ReconServiceImpl implements ReconService {
 								remoteUser);
 					}
 				}
+			}
+			
+			//Story 26012
+			if(alertWithoutScheduleFcounter==llAlertUnlicensedSw.size()){
+				setScheduleFDefInRecon("Schedule F not defined");
+			}else if(alertWithoutScheduleFcounter>0 && alertWithoutScheduleFcounter<llAlertUnlicensedSw.size()){
+				setScheduleFDefInRecon("Schedule F not defined for all alerts");
 			}
 
 			return aus.getInstalledSoftware().getSoftwareLpar()
