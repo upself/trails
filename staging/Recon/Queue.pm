@@ -195,7 +195,10 @@ sub addLicenseToQueue {
 	my $recon = new Recon::OM::ReconLicense();
 	$recon->licenseId( $self->object->id );
 	
-	if (! defined $recon->action) {
+	if (defined $self->action) {
+		$recon->action($self->action);
+	}
+	else {
 		$recon->action('UPDATE');
 	}
 	
