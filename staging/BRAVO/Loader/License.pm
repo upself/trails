@@ -21,6 +21,7 @@ sub new {
         _bravoLicSwMap       => undef,
         _saveBravoLicense    => 0,
         _saveBravoLicSwMap   => 0,
+        _addToReconDeleteFlag => 0,
         _deleteBravoLicSwMap => 0
 
     };
@@ -82,23 +83,22 @@ sub logicFromBravoToStaging{
   
   if( !defined $stagingLicense->id ){
      $self->bravoLicense->status('INACTIVE');
-     $self->saveBravoLicense(2);
+     $self->saveBravoLicense(1);
+     $self->addToReconDeleteFlag(1);
   }
 }
 
 sub saveFromBravoToStaging{
    my $self = shift;
  
-   $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 || $self->saveBravoLicense == 2 );
+   $self->bravoLicense->save( $self->bravoConnection ) if ( $self->saveBravoLicense == 1 );
    
-   if ($self->saveBravoLicense == 1) {
-   	 $self->recon;
+   if ( $self->addToReconDeleteFlag == 1 ) {
+   		$self->recon("DELETE");
    }
-   elsif ( $self->saveBravoLicense == 2) {
-   	 $self->recon("DELETE");
+   elsif ( $self->saveBravoLicense == 1 ) {
+   	 	$self->recon;
    }
-   
-   $self->recon if ( $self->saveBravoLicense == 1 );
    
 }
 
@@ -115,17 +115,40 @@ sub logic {
     dlog( $bravoLicense->toString );
 
     $self->bravoLicSwMap( new BRAVO::OM::LicenseSoftwareMap() );
-    if ( defined $bravoLicense->id ) {
-        ###We have a matching bravo license
+    
+	$self->compareLicensesAndSetFlags($bravoLicense);
+	$self->licenseSwMapLogic($bravoLicense);
+	
+}
 
-        ###Set the new bravo license id to the old id
-        $self->bravoLicense->id( $bravoLicense->id );
+sub compareLicensesAndSetFlags {
+	my ($self, $bravoLicense) = @_;
+	
+	    if ( defined $bravoLicense->id ) {
+	        ###We have a matching bravo license
+	
+	        ###Set the new bravo license id to the old id
+	        $self->bravoLicense->id( $bravoLicense->id );
+	
+	        ###Set to save the bravo license if they are not equal
+	        if ( !$bravoLicense->equals( $self->bravoLicense ) ) {
+	        	
+	        	if ( $bravoLicense->status eq 'ACTIVE' && $self->bravoLicense->status eq 'INACTIVE') {
+	        		$self->addToReconDeleteFlag(1);
+	        	}
+	        	
+	            $self->saveBravoLicense(1);
+	        }
+	    } else {
+        ###This is a new record
 
-        ###Set to save the bravo license if they are not equal
-        if ( !$bravoLicense->equals( $self->bravoLicense ) ) {
-            $self->saveBravoLicense(1);
+        ###Set to save the license
+        $self->saveBravoLicense(1);
         }
-
+}
+sub licenseSwMapLogic {
+		my ($self, $bravoLicense) = @_;
+		if ( defined $bravoLicense->id ) {
         ###Find the software map in bravo
         $self->bravoLicSwMap->licenseId( $bravoLicense->id );
         $self->bravoLicSwMap->getByBizKey( $self->bravoConnection );
@@ -167,9 +190,6 @@ sub logic {
     else {
         ###This is a new record
 
-        ###Set to save the license
-        $self->saveBravoLicense(1);
-
         if ( defined $self->stagingLicense->softwareId ) {
             ###Staging license has a software ID
 
@@ -198,7 +218,7 @@ sub save {
     $self->bravoLicSwMap->delete( $self->bravoConnection ) if ( $self->deleteBravoLicSwMap == 1 );
 
     ###Call the recon engine if we save or delete anything.
-   	if ( $self->saveBravoLicense == 2 )  {  	
+   	if ( $self->addToReconDeleteFlag == 1 )  {  	
      	$self->recon("DELETE");
     } elsif ( $self->saveBravoLicense == 1 || $self->saveBravoLicSwMap == 1 || $self->deleteBravoLicSwMap == 1 ) {
     	$self->recon;	
@@ -311,11 +331,16 @@ sub deleteBravoLicSwMap {
     return ( $self->{_deleteBravoLicSwMap} );
 }
 
-
 sub fromBravo {
     my ( $self, $value ) = @_;
     $self->{_fromBravo} = $value if defined($value);
     return ( $self->{_fromBravo} );
+}
+
+sub addToReconDeleteFlag {
+    my ( $self, $value ) = @_;
+    $self->{addToReconDeleteFlag} = $value if defined($value);
+    return ( $self->{addToReconDeleteFlag} );
 }
 
 1;
