@@ -130,16 +130,12 @@ sub validate {
 		|| $self->validateSoftware == 0 )
 	{
 		$self->validationCode(0);
-	}
-	
-	if ( $callfrom == "Recon::InventoryInstalledSoftware" ) {
+	} elsif ( $callfrom == "Recon::InventoryInstalledSoftware" ) {
 		$self->validationCode(1);
 		$self->isValid(1);
 		dlog("InstalledSoftware object is valid, needs to take over by Licensing engine.");
 		return;
-	}
-	
-	if ( $self->isInstalledSoftwareReconciled == 0 ) {
+	} elsif ( $self->isInstalledSoftwareReconciled == 0 ) {
 		$self->validationCode(1);
 	}
 	elsif ($self->validateVendorManaged == 0
