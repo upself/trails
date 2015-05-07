@@ -29,10 +29,10 @@ use HealthCheck::Common::MetaRule;
 use HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
 
 #Globals
-my $eventRuleDefinitionFile   = $HOME_DIR . "eventCheckRuleDefinition.properties";
-my $healthCheckMonitorLogFile = $HOME_DIR . "healthCheckMonitoring.log";
+my $eventRuleDefinitionFile   = $HOME_DIR . "/config/eventCheckRuleDefinition.properties";
+my $healthCheckMonitorLogFile = "/var/staging/logs/HME/healthCheckMonitoring.log";
 my $pidFile                   = "/tmp/healthCheckMonitoring.pid";
-my $configFile                = $HOME_DIR . "healthCheckMonitoring.properties";
+my $configFile                = $HOME_DIR . "/config/healthCheckMonitoring.properties";
 
 my $cfgMgr   = Base::ConfigManager->instance($configFile);
 my $configSleepPeriod  = trim($cfgMgr->sleepPeriod);
