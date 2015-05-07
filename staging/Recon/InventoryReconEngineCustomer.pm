@@ -302,6 +302,7 @@ sub queryReconQueueByCustomerId {
                     date(a.record_time) = date(b.record_time) and
                     a.id > b.id
             )
+        fetch first 200 rows only with ur
     ';
     dlog("queryReconQueueByCustomerId=$query");
     return ( 'reconQueueByCustomerId', $query, \@fields );
