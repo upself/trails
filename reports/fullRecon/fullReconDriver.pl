@@ -133,6 +133,11 @@ ELSE 'Green' END as Alert_status
 ,hl.tech_image_id as HW_TI_ID
 ,h.serial as hwSerial
 ,mt.name as hwMachType
+,COALESCE ( CAST ( (select 'YES' from eaadmin.reconcile_used_license rul2 
+join eaadmin.reconcile r2 on r2.id = rul2.reconcile_id
+join eaadmin.installed_software is2 on is2.id = r2.installed_software_id
+join eaadmin.software_lpar sl2 on sl2.id = is2.software_lpar_id
+where rul2.used_license_id = ul.id and sl2.customer_id != sl.customer_id fetch first 1 rows only) as char(3)), 'NO') as CrossAccountLevel
 ,h.MODEL
 ,h.CHASSIS_ID
 ,h.CLOUD_NAME 
