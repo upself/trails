@@ -3,7 +3,7 @@
 # This perl script is used to do health check and monitor application/system relates topics for example, current running threads, error number in the log etc
 # Author: liuhaidl@cn.ibm.com  && tomas.sima@cz.ibm.com
 
-my $HOME_DIR = "/opt/staging/v2/";#set Home Dir value
+my $HOME_DIR = "/opt/staging/v2";#set Home Dir value
 my $cdFlag = system('cd $HOME_DIR');
 if($cdFlag!=0){
  die "Change Directory to $HOME_DIR failed. Exit to the current perl program.\n";
@@ -579,14 +579,14 @@ sub eventLogicProcess{
 	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $STAGINGMOVE_START_STOP_SCRIPT)
    	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $CONTINUOUS_RUN_SCRIPTS)
    	   ||($groupName eq $FILE_SYSTEM_MONITORING    && $eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING)
-       ||($groupName eq $FILE_SYSTEM_MONITORING    && $eventName eq 'SW_MULTI_REPORT_AGE'))
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING"
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSST_DB_APPLY_GAP_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSST_DB_APPLY_GAP_MONITORING"
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING_2){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING_2"
-   	   ||($groupName eq $APPLICATION_MONITORING    && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING){#Event Group: "APPLICATION_MONITORING" + Event Type: "WEBAPP_RUNNING_STATUS_CHECK_MONITORING"
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
-   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
+       ||($groupName eq $FILE_SYSTEM_MONITORING    && $eventName eq 'SW_MULTI_REPORT_AGE')
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSST_DB_APPLY_GAP_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING_2)
+   	   ||($groupName eq $APPLICATION_MONITORING    && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP)
 	   ){
   	  #For these events,the eventValue value is not needed. It needs to be queried from EVENT DB table
 	  #So set 0 for eventValue var
@@ -595,7 +595,6 @@ sub eventLogicProcess{
    		print LOG "ERROR: Checking event with no defined event logic \n This should never happen, line:__LINE__";
    }
    
-   ==================================
  }
 
 #This method is used to do event rule check
@@ -3077,8 +3076,8 @@ sub getTrailsRPDBApplyGapFunction{
 }
 
 sub queryTrailsRPDBApplyGap{
-  print LOG "[queryTrailsRPDBApplyGap] Query SQL: {$GET_TRAILSRP_DB_APPLY_GAP_SQL}\n";
   my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
+  print LOG "[queryTrailsRPDBApplyGap] Query SQL: {$GET_TRAILSRP_DB_APPLY_GAP_SQL}\n";
   return ('trailsRPDBApplyGapSQL', $GET_TRAILSRP_DB_APPLY_GAP_SQL);
 }
 
@@ -3098,8 +3097,8 @@ sub getEventMetaDataFunction{
 }
 
 sub queryEventMetaData{
-  print LOG "[queryEventMetaData] Query SQL: {$GET_EVENT_META_DATA_SQL}\n";
   my $GET_EVENT_META_DATA_SQL = "SELECT EG.EVENT_GROUP_ID, EG.NAME, ET.EVENT_ID, ET.NAME FROM EVENT_GROUP EG, EVENT_TYPE ET WHERE EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID ORDER BY EG.EVENT_GROUP_ID, ET.EVENT_ID WITH UR";
+  print LOG "[queryEventMetaData] Query SQL: {$GET_EVENT_META_DATA_SQL}\n";
   return ('eventMetaDataSQL', $GET_EVENT_META_DATA_SQL);
 }
 
@@ -3122,8 +3121,8 @@ sub getEventAllDataCountFunction{
 }
 
 sub queryEventAllDataCount{
-  print LOG "[queryEventAllDataCount] Query SQL: {$GET_EVENT_ALL_DATA_COUNT_SQL}\n";
   my $GET_EVENT_ALL_DATA_COUNT_SQL = "SELECT COUNT(*) FROM EVENT E JOIN EVENT_TYPE ET ON ET.EVENT_ID = E.EVENT_ID JOIN EVENT_GROUP EG ON EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID WHERE EG.NAME = ? AND ET.NAME = ? WITH UR";
+  print LOG "[queryEventAllDataCount] Query SQL: {$GET_EVENT_ALL_DATA_COUNT_SQL}\n";
   return ('eventAllDataCountSQL', $GET_EVENT_ALL_DATA_COUNT_SQL);
 }
 
@@ -3147,8 +3146,8 @@ sub getEventAllDataFunction{
 }
 
 sub queryEventAllData{
-  print LOG "[queryEventAllData] Query SQL: {$GET_EVENT_ALL_DATA_SQL}\n";
   my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID ORDER BY E.RECORD_TIME DESC FETCH FIRST 100 ROWS ONLY WITH UR";
+  print LOG "[queryEventAllData] Query SQL: {$GET_EVENT_ALL_DATA_SQL}\n";
   return ('eventAllDataSQL', $GET_EVENT_ALL_DATA_SQL);
 }
 
@@ -3199,8 +3198,8 @@ sub getTrailsSTDBApplyGapFunction{
 }
 
 sub queryTrailsSTDBApplyGap{
-  print LOG "[queryTrailsSTDBApplyGap] Query SQL: {$GET_TRAILSST_DB_APPLY_GAP_SQL}\n";
   my $GET_TRAILSST_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
+  print LOG "[queryTrailsSTDBApplyGap] Query SQL: {$GET_TRAILSST_DB_APPLY_GAP_SQL}\n";
   return ('trailsSTDBApplyGapSQL', $GET_TRAILSST_DB_APPLY_GAP_SQL);
 }
 
@@ -3220,8 +3219,8 @@ sub getTotalRecordCountInQueueFunction{
 }
 
 sub queryTotalRecordCountInQueue{
-  print LOG "[queryTotalRecordCountInQueue] Query SQL: {$GET_TOTAL_RECORDS_IN_QUEUE_SQL}\n";
   my $GET_TOTAL_RECORDS_IN_QUEUE_SQL      = "SELECT COUNT(*) FROM V_RECON_QUEUE WITH UR";
+  print LOG "[queryTotalRecordCountInQueue] Query SQL: {$GET_TOTAL_RECORDS_IN_QUEUE_SQL}\n";
   return ('totalRecordCountInQueueSQL', $GET_TOTAL_RECORDS_IN_QUEUE_SQL);
 }
 
@@ -3241,8 +3240,8 @@ sub getTotalCustomerCountInQueueFunction{
 }
 
 sub queryTotalCustomerCountInQueue{
-  print LOG "[queryTotalCustomerCountInQueue] Query SQL: {$GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL}\n";
   my $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL = "SELECT COUNT(DISTINCT CUSTOMER_ID) FROM V_RECON_QUEUE WITH UR";
+  print LOG "[queryTotalCustomerCountInQueue] Query SQL: {$GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL}\n";
   return ('totalCustomerCountInQueueSQL', $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL);
 }
 
