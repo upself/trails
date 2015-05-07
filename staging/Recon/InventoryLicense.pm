@@ -1,4 +1,4 @@
-package Recon::License;
+package Recon::InventoryLicense;
 
 use strict;
 use Base::Utils;
@@ -40,6 +40,11 @@ sub recon {
     my %reconcilesToBreak;
     
     dlog("Began reconciliation of deleted license");
+    
+    if ( $self->license->status ne "INACTIVE" ) {
+		dlog("License is not inactive, returning to Licensing engine");
+		return 2;
+	}
 
     $self->connection->prepareSqlQueryAndFields( $self->queryLicenseReconciles() );
     my $sth = $self->connection->sql->{licenseReconciles};
@@ -49,17 +54,13 @@ sub recon {
     while ( $sth->fetchrow_arrayref ) {
         logRec( 'dlog', \%rec );
         
-        if ( $rec{lStatus} ne "INACTIVE" ) {
-			dlog("License is not inactive, returning to Licensing engine");
-			return 2;
-		}
-
         $reconcilesToBreak{ $rec{rId} } = 1;
     }
     $sth->finish;
 
-	foreach my $currID ( keys %reconcilesToBreak )
+	foreach my $currID ( keys %reconcilesToBreak ) {
 		Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $currID );
+	}
     
     return 0;
 }
@@ -67,19 +68,16 @@ sub recon {
 sub queryLicenseReconciles {
     my @fields = qw(
         rId
-        lStatus
     );
     my $query = '
         select
             r.id
-            ,l.status
         from
-			license l
-        	join used_license ul on l.id = ul.license_id
+        	used_license ul
         	join reconcile_used_license rul on rul.used_license_id = ul.id
         	join reconcile r on r.id = rul.reconcile_id
         where
-            l.license_id = ?
+            ul.license_id = ?
         with ur
     ';
     return ( 'licenseReconciles', $query, \@fields );

@@ -1,4 +1,4 @@
-package Recon::InstalledSoftware;
+package Recon::InventoryInstalledSoftware;
 
 use strict;
 use Base::Utils;
@@ -153,7 +153,7 @@ sub getInstalledSoftwareReconData {
 #		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 #		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
-#		$installedSoftwareReconData->sMfg( $rec{sMfg} );
+		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 #		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
 #		$installedSoftwareReconData->rTypeId( $rec{rTypeId} );
@@ -164,6 +164,8 @@ sub getInstalledSoftwareReconData {
 
 
 #		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
+
+	}
 
 	dlog("end getInstalledSoftwareReconData - Inventory");
 
@@ -184,6 +186,8 @@ sub queryReconInstalledSoftwareBaseData {
 	  sId
 	  sName
 	  sStatus
+	  sLevel
+	  sMfg
 	  rId
 	);
 	my $query = '
@@ -200,6 +204,8 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.software_id
             ,s.software_name
             ,s.status
+            ,s.level
+            ,m.name
             ,r.id
         from
             installed_software is
@@ -207,6 +213,8 @@ sub queryReconInstalledSoftwareBaseData {
                 sl.id = is.software_lpar_id
             join software s on 
                 s.software_id = is.software_id
+            join manufacturer m on 
+                m.id = s.manufacturer_id
             left outer join hw_sw_composite hsc on 
                 hsc.software_lpar_id = sl.id
             left outer join hardware_lpar hl on 
@@ -420,6 +428,28 @@ sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (s
     ';
 
 	return ( 'queryInsSwByParentProduct', $query, \@fields );
+}
+
+sub ibmArray {
+	my $self = shift;
+
+	my @ibmArray = (
+		'IBM',
+		'IBM_ITD',
+		'IBM FileNet',
+		'IBM Tivoli',
+		'Informix',
+		'Rational Software Corporation',
+		'Ascential Software',
+		'IBM WebSphere',
+		'Digital CandleWebSphere',
+		'IBM Rational',
+		'Lotus',
+		'Candle',
+		'Tivoli'
+	);
+
+	return @ibmArray;
 }
 
 sub connection {

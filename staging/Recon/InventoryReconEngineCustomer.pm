@@ -1,4 +1,4 @@
-package Recon::ReconEngineCustomer;
+package Recon::InventoryReconEngineCustomer;
 
 use strict;
 use Base::Utils;
@@ -173,11 +173,12 @@ sub recon {
                     $license->getById( $self->connection );
 
                     ###Call recon delegate to perform recon.
-                    $recon = Recon::License->new( $self->connection, $license );
+                    $recon = Recon::InventoryLicense->new( $self->connection, $license );
                     my $rc = $recon->recon;
 
                     ###Remove recon job from queue.
                     if ( $rc == 2 ) {
+						dlog("License with job DELETE, but still active - switching to Licensing recon engine.");
 						my $reconLicense = new Recon::OM::ReconLicense();
 						$reconLicense->id($id);
 						$reconLicense->licenseId($fk);
