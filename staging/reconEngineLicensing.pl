@@ -73,7 +73,7 @@ sub spawnChildren {
 sub keepTicking {
     wlog("$rNo Keep on ticking");
     my $count = 0;
-    while (1) {
+    while ( loaderCheckForStop($pidFile) == 0 ) {
         if ( scalar @customerIds == 0 ) {
              my $connection = Database::Connection->new('trails');
              @customerIds = getReconCustomerQueue( $connection, $testMode );
