@@ -55,12 +55,15 @@ public class ShowWorkspace extends AccountReportBaseAction {
         reconcileTypes = getReconWorkspaceService().reconcileTypes(true);
         
         //AB added
-        String schedulefFlag=getUserSession().getSchedulefDefExistingIdentify();
-        if(schedulefFlag!=null && schedulefFlag.equalsIgnoreCase("N")){
-        	addActionError("Schedule F not defined.");
+        //Story 26012
+        List<String> schedulefValResults=getUserSession().getSchedulefDefValResult();
+        if(schedulefValResults!=null && !schedulefValResults.isEmpty()){
+        	for(String msg:schedulefValResults){
+        		addActionError(msg);
+        	}
         }
         //clear the identify to avoid it to existing when refresh workspace page
-        getUserSession().setSchedulefDefExistingIdentify(null);
+        getUserSession().setSchedulefDefValResult(null);
         
         return SUCCESS;
     }
