@@ -195,6 +195,7 @@ public class ShowConfirmation extends AccountBaseAction {
 		recon.setAutomated(automated);
 		recon.setManual(manual);
 		recon.setRunon(runon);
+		recon.setComments(comments);
 		recon.setInstalledSoftware(getReconWorkspaceService()
 				.getInstalledSoftware(installedSoftwareId));
 		return SUCCESS;
@@ -292,11 +293,14 @@ public class ShowConfirmation extends AccountBaseAction {
 		}
 
 		if (recon.getReconcileType().getId() == 3
+				|| recon.getReconcileType().getId() == 4
 				|| recon.getReconcileType().getId() == 10
 				|| recon.getReconcileType().getId() == 11
 				|| recon.getReconcileType().getId() == 13) {
 			if (StringUtils.isBlank(comments)) {
-				addFieldError("comments", "You must enter a comment");
+				addFieldError("comments", "You must enter a comment, less than 255 characters");
+			}else if (StringUtils.length(comments) > 255){
+				addFieldError("comments", "comment must less than 255 characters");
 			}
 		}
 

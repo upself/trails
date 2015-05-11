@@ -72,16 +72,28 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	private int alertsTotal;
 	
-	//AB added
-	private String ScheduleFExisting;
+	//Story 26012
+	private List<String> ScheduleFValResult;
 
-	public String getScheduleFExisting() {
-		return ScheduleFExisting;
+	public void setScheduleFValResult(String result) {
+		if(result!=null){
+			if(ScheduleFValResult==null||ScheduleFValResult.isEmpty()){
+				ScheduleFValResult=new ArrayList<String>();
+				ScheduleFValResult.add(result);
+			}else{
+				if(!ScheduleFValResult.contains(result)){
+					ScheduleFValResult.add(result);
+				}
+			}
+		}else{
+			ScheduleFValResult=null;
+		}
 	}
 
-	public void setScheduleFExisting(String scheduleFExisting) {
-		ScheduleFExisting = scheduleFExisting;
+	public List<String> getScheduleFValResult() {
+		return ScheduleFValResult;
 	}
+
 
 	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
 	private EntityManager em;
@@ -162,7 +174,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 		String owner = null;
 		//AB added,each time access to the interface, first clear the flag to avoid of confusing by last time
-		setScheduleFExisting(null);
+		//Story 26012
+		setScheduleFValResult(null);
 		
 		// I can probably just get rid of this based on selection
 		if (runon.equals("IBMHW")) {
@@ -199,8 +212,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			//AB added
 			AlertUnlicensedSw aul = alertDAO.findById(alertId);
 			int SchedulefFlag = reconService.validateScheduleFowner(aul, pRecon);
-			if(SchedulefFlag==2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))){
-				setScheduleFExisting("N");
+			//Story 26012
+			if(SchedulefFlag==2){
+				setScheduleFValResult("Schedule F not defined");
 			}
 			//AB added end
 			//AB added, add IF condition for no Schedule F defined, then no close Alert
@@ -234,13 +248,15 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			setAlertsProcessed(0);
 			setAlertsTotal(alertList.size());
 			log.debug("alertList: " + alertList.size());
-
+			//Story 26012
+			int alertWithoutScheduleFcounter=0;
 			for (Long alertId : alertList) {
 				//AB added
 				AlertUnlicensedSw aul = alertDAO.findById(alertId);
 				int SchedulefFlag = reconService.validateScheduleFowner(aul, pRecon);
-				if(SchedulefFlag==2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))){
-					setScheduleFExisting("N");
+				//story 26012
+				if(SchedulefFlag==2){
+					alertWithoutScheduleFcounter++;
 				}
 				//AB added end
 				//AB added, add IF condition for no Schedule F defined, then not close the alert
@@ -250,6 +266,14 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					setAlertsProcessed(getAlertsProcessed() + 1);
 				}
 				
+			}
+			
+			//Story 26012
+			if (alertWithoutScheduleFcounter == alertList.size()) {
+				setScheduleFValResult("Schedule F not defined");
+			} else if (alertWithoutScheduleFcounter > 0
+					&& alertWithoutScheduleFcounter < alertList.size()) {
+				setScheduleFValResult("Schedule F not defined for all alerts");
 			}
 		}
 	}
@@ -263,7 +287,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		String owner = null;
 		
 		//AB added,each time access to the interface, first clear the flag first to avoid of confusing by last time
-		setScheduleFExisting(null);
+		setScheduleFValResult(null);
 		// I can probably just get rid of this based on selection
 		if (recon.getRunon().equals("IBMHW")) {
 			owner = "IBM";
@@ -298,8 +322,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		int owner = reconService.validateScheduleFowner(lausTemp, pRecon);
 		
 		//AB added, if no scheduleF defined for the alert, set the flag as N
-		if(owner==2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))){
-			setScheduleFExisting("N");
+		if(owner==2){
+			setScheduleFValResult("Schedule F not defined");
 		}
 		
 		if (!lalAlertUnlicensedSw.isEmpty() && liLicensesNeeded > 0
@@ -365,8 +389,13 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 						psRemoteUser, null, pAccount, lmLicenseApplied,
 						"selected", owner);
 				//AB added, when reconService process manualReconcileByAlert, it also validate ScheduleF again, so need to judge its validation result after the process
-				String scheduleFflagInRecon= reconService.getScheduleFDefinRecon();
-				setScheduleFExisting(scheduleFflagInRecon);
+				//Story 26012
+				List<String> scheduleFflagInRecon= reconService.getScheduleFDefInRecon();
+				if(scheduleFflagInRecon!=null && !scheduleFflagInRecon.isEmpty()){
+					for(String result:scheduleFflagInRecon){
+						setScheduleFValResult(result);
+					}
+				}
 			}
 		}
 		setAlertsProcessed(getAlertsProcessed() + 1);
@@ -388,14 +417,22 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		setAlertsProcessed(0);
 		setAlertsTotal(lalAlertUnlicensedSw.size());
 		log.debug("lalAlertUnlicensedSw: " + lalAlertUnlicensedSw.size());
+		
+		//Story 26012
+		int alertWithoutScheduleFcounter=0;
+		
 		for (Long alertId : lalAlertUnlicensedSw) {
 			AlertUnlicensedSw lausTemp = alertDAO.findById(alertId);
 			int scheduleFOwner = reconService.validateScheduleFowner(lausTemp, pRecon);
 			
-			//AB added, if no scheduleF defined for the alert, set the flag as N
-			if(scheduleFOwner==2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))){
-				setScheduleFExisting("N");
+			//Story 26012
+			if(scheduleFOwner==2){
+				alertWithoutScheduleFcounter++;
 			}
+			//AB added, if no scheduleF defined for the alert, set the flag as N
+//			if(scheduleFOwner==2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))){
+//				setScheduleFExisting("N");
+//			}
 			
 			liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
 			lbProcessAlert = processAlert(pRecon, processedHwIds, lausTemp);
@@ -480,8 +517,13 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 									lmLicenseApplied, "group", scheduleFOwner);
 					
 					//AB added, when reconService process manualReconcileByAlert, it also needs to validate ScheduleF again, so need to set its validation result after the process
-					String scheduleFflagInRecon= reconService.getScheduleFDefinRecon();
-					setScheduleFExisting(scheduleFflagInRecon);
+					//Story 26012
+					List<String> scheduleFflagInRecon= reconService.getScheduleFDefInRecon();
+					if(scheduleFflagInRecon!=null && !scheduleFflagInRecon.isEmpty()){
+						for(String result:scheduleFflagInRecon){
+							setScheduleFValResult(result);
+						}
+					}
 						
 					if (llHardwareId != null) {
 						processedHwIds.add(llHardwareId);
@@ -491,6 +533,14 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			}
 
 			setAlertsProcessed(getAlertsProcessed() + 1);
+		}
+		//Story 26012, above manualReconcileByAlert process, if already set validation result of schedule F, then will ignore here, to avoid of make conflict error msg
+		if(getScheduleFValResult()==null || getScheduleFValResult().isEmpty()){
+			if(alertWithoutScheduleFcounter==lalAlertUnlicensedSw.size()){
+				setScheduleFValResult("Schedule F not defined");
+			}else if(alertWithoutScheduleFcounter>0 && alertWithoutScheduleFcounter<lalAlertUnlicensedSw.size()){
+				setScheduleFValResult("Schedule F not defined for all alerts");
+			}			
 		}
 	}
 
@@ -509,12 +559,10 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		ReconWorkspace rw = selectedList.get(0);
 
 		// AB added, each time access to the interface, first clear the flag first to avoid of confusing by last time
-		setScheduleFExisting(null);
+		//Story 26012
+		setScheduleFValResult(null);
 		AlertUnlicensedSw aul = alertDAO.findById(rw.getAlertId());
 		int SchedulefFlag = reconService.validateScheduleFowner(aul, pRecon);
-		if (SchedulefFlag == 2 && (reconService.getScheduleFDefinRecon()==null || !reconService.getScheduleFDefinRecon().equalsIgnoreCase("N"))) {
-			setScheduleFExisting("N");
-		}
 		// AB added end
 		
 		setAlertsProcessed(0);
@@ -525,6 +573,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			reconService.reconcileByAlert(rw.getAlertId(), parentInstalledSoftware,
 					pRecon, remoteUser, null, account);
 		setAlertsProcessed(getAlertsProcessed() + 1);
+		//Story 26012
+		}else{
+			setScheduleFValResult("Schedule F not defined");
 		}
 	}
 

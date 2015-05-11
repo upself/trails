@@ -70,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
 			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
 			"HW LPAR name", "SW_EXT_ID", "HW_EXT_ID","SW_TI_ID", "HW_TI_ID",
-			"HW serial", "HW machine type","CPU Model","CHASSIS ID","Cloud Name",
+			"HW serial", "HW machine type","Cross account level","CPU Model","CHASSIS ID","Cloud Name",
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
@@ -516,6 +516,11 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.tech_image_id as HW_TI_ID"
 				+ ",h.serial as hwSerial "
 				+ ",mt.name as hwMachType "
+				+ ",COALESCE ( CAST ( (select 'YES' from eaadmin.reconcile_used_license rul2 "
+				+ "join eaadmin.reconcile r2 on r2.id = rul2.reconcile_id "
+				+ "join eaadmin.installed_software is2 on is2.id = r2.installed_software_id "
+				+ "join eaadmin.software_lpar sl2 on sl2.id = is2.software_lpar_id "
+				+ "where rul2.used_license_id = ul.id and sl2.customer_id != sl.customer_id fetch first 1 rows only) as char(3)), 'NO') as CrossAccountLevel "
 				+ ",h.model as cpuModel"
 				+ ",h.chassis_id"
 				+ ",h.cloud_name"

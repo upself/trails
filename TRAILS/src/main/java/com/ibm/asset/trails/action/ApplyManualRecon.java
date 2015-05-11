@@ -1,5 +1,7 @@
 package com.ibm.asset.trails.action;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
@@ -104,12 +106,9 @@ public class ApplyManualRecon extends AccountBaseAction {
 				|| recon.getReconcileType().getId().intValue() == 3
 				|| recon.getReconcileType().getId().intValue() == 4
 				|| recon.getReconcileType().getId().intValue() == 13) {
-			String flag = getReconWorkspaceService().getScheduleFExisting();
-			if (flag != null && flag.equalsIgnoreCase("N")) {
-				getUserSession().setSchedulefDefExistingIdentify("N");
-			} else {
-				getUserSession().setSchedulefDefExistingIdentify(null);
-			}
+			//Story 26012
+			List<String> resultList = getReconWorkspaceService().getScheduleFValResult();
+				getUserSession().setSchedulefDefValResult(resultList);;
 
 		}
 		return SUCCESS;
