@@ -198,12 +198,12 @@ sub addLicenseToQueue {
 	ilog("Checking for existing license in queue");
 	my $recon = new Recon::OM::ReconLicense();
 	$recon->licenseId( $self->object->id );
+	$recon->getByBizKey( $self->connection );
 	if ( defined $self->action() ) {
 		$recon->action( $self->action() );
 	} else {
 		$recon->action('UPDATE');
 	}
-	$recon->getByBizKey( $self->connection );
 
 	if ( !defined $recon->id ) {
 		ilog("License does not exist in queue...saving");
