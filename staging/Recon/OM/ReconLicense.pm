@@ -252,22 +252,24 @@ sub getByBizKey {
     my $sth = $connection->sql->{getByBizKeyReconLicense};
     my $id;
     my $customerId;
+    my $action;
     my $remoteUser;
     my $recordTime;
     $sth->bind_columns(
         \$id
         ,\$customerId
+        ,\$action
         ,\$remoteUser
         ,\$recordTime
     );
     $sth->execute(
         $self->licenseId
-        ,$self->action
     );
     $sth->fetchrow_arrayref;
     $sth->finish;
     $self->id($id);
     $self->customerId($customerId);
+    $self->action($action);
     $self->remoteUser($remoteUser);
     $self->recordTime($recordTime);
 }
@@ -277,13 +279,13 @@ sub queryGetByBizKey {
         select
             id
             ,customer_id
+            ,action
             ,remote_user
             ,record_time
         from
             recon_license
         where
             license_id = ?
-            and action = ?
      with ur';
     return ('getByBizKeyReconLicense', $query);
 }

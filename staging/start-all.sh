@@ -76,7 +76,9 @@ sleep $SLEEP
 sleep $SLEEP
 ./processorToBravo.pl start
 sleep $SLEEP
-./reconEngine.pl start
+./reconEngineInventory.pl start
+sleep $SLEEP
+./reconEngineLicensing.pl start
 sleep $SLEEP
 ./softwareToBravo.pl start
 sleep $SLEEP
