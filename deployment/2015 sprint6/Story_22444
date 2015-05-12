@@ -1,0 +1,3 @@
+-staging content modify. 
+1. add event type for sw multi report age monitoring. 
+insert into event_type(event_id, name, description, event_group_id) values(15,'SW_MULTI_REPORT_AGE', 'Monitor the age of sw multi report',2) 

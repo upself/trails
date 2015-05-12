@@ -1,83 +1,9 @@
 #!/usr/bin/perl -w
 #
 # This perl script is used to do health check and monitor application/system relates topics for example, current running threads, error number in the log etc
-# Author: liuhaidl@cn.ibm.com 
-# Date        Who            Version         Description
-# ----------  ------------   -----------     ----------------------------------------------------------------------------
-# 2013-04-03  Liu Hai(Larry) 1.0.0           This is the initial version for health check and monitor perl script
-# 2013-04-05  Liu Hai(Larry) 1.0.1           Implement the alert email sending function and do some code optimization
-# 2013-04-06  Liu Hai(Larry) 1.0.2           Add event rule definition, parse and check logic feature 
-# 2013-04-07  Liu Hai(Larry) 1.0.3           Add event rule definition, parse and check logic feature
-#                                            Go on optimizing code structure
-# 2013-04-17  Liu Hai(Larry) 1.1.0           HealthCheck and Monitor Module - Phase 2A: Add Event Group Name: TRAILS_BRAVO_CORE_SCRIPTS + Event Type: CONTINUOUS_RUN_SCRIPTS Feature
-# 2013-04-18  Liu Hai(Larry) 1.1.1           HealthCheck and Monitor Module - Phase 2A: Add Log Feature                                           
-# 2013-04-19  Liu Hai(Larry) 1.1.2           HealthCheck and Monitor Module - Phase 2A: Add Module Trigger Interval Time Feature
-# 2013-04-20  Liu Hai(Larry) 1.1.3           HealthCheck and Monitor Module - Phase 2A1: Add Event Rule Trigger Frequency Feature
-# 2013-04-23  Liu Hai(Larry) 1.1.4           HealthCheck and Monitor Module - Phase 2A1: Add Perl File Running Parameters(start/stop/run-once) and Process Running Check Features
-# 2013-04-24  Liu Hai(Larry) 1.1.5           HealthCheck and Monitor Module - Phase 2A1 1) Add Multi DB Support Feature
-#                                                                                       2) Add Configuration File named 'healthCheckMonitor.properties' Feature for Server Mode parameters etc
-###################################################################################################################################################################################################
-#                                            Phase 2B Development Formal Tag: 'Added by Larry for HealthCheck And Monitor Module - Phase 2B'
-# 2013-05-06  Liu Hai(Larry) 1.2.0           HealthCheck and Monitor Module - Phase 2B: Add Event O/R mapping object
-# 2013-05-08  Liu Hai(Larry) 1.2.1           HealthCheck and Monitor Module - Phase 2B: Add EventLoaderDelegate object
-#                                                                                       Extend Event Rule Parameters from 5 to 10
-#                                                                                       Add swkbt loader into continuous monitoring list on TAP3 server 
-# 2013-05-10  Liu Hai(Larry) 1.2.2           HealthCheck and Monitor Module - Phase 2B: Add Start/Stop Script Core Event Rule Check Business Logic
-# 2013-05-13  Liu Hai(Larry) 1.2.3           HealthCheck and Monitor Module - Phase 2B: Optimize HealthCheck Monitor Module Logic Code to refer Event object
-#                                                                                       Go on implementing phase 2B Event Rule Check Business Logic
-# 2013-05-16  Liu Hai(Larry) 1.2.4           HealthCheck and Monitor Module - Phase 2B: Optimize Event ALL Data Query SQL to get the first 100 row records from all row records
-###################################################################################################################################################################################################
-#                                            Phase 3 Development Formal Tag: 'Added by Larry for HealthCheck And Monitor Module - Phase 3'
-# 2013-05-20  Liu Hai(Larry) 1.3.0           HealthCheck and Monitor Module - Phase 3: File System Threshold Monitoring
-# 2013-05-23  Liu Hai(Larry) 1.3.1           HealthCheck and Monitor Module - Phase 3: Add Bravo/Trails Server Mode Support
-# 2013-05-24  Liu Hai(Larry) 1.3.2           HealthCheck and Monitor Module - Phase 3: Add Alert Email Signature Feature Support
-###################################################################################################################################################################################################
-#                                            Phase 4 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 4'
-# 2013-05-28  Liu Hai(Larry) 1.4.0           HealthCheck and Monitoring Service Component - Phase 4: Develop Database Monitoring - TrailsRP DB Apply Gap Basic Architecture
-#                                                                                                    Rename 'HealthCheck And Monitor Module' key words to 'HealthCheck And Monitoring Service Component' from Phase 4                                                                                                          
-#                                                                                                    The name of healthCheckMonitorLogFile has been changed to 'healthCheckMonitoring.log' from 'healthCheckMonitor.log'
-#                                                                                                    The name of pidFile has been changed to 'healthCheckMonitoring.pid' from 'healthCheckMonitor.pid'
-#                                                                                                    The name of configFile has been changed to 'healthCheckMonitoring.properties' from 'healthCheckMonitor.properties'
-# 2013-05-30  Liu Hai(Larry) 1.4.1           HealthCheck and Monitoring Service Component - Phase 4: A new feature to support that there is no alert message generated case. A server running with correct email needs to be sent to notify team that HealthCheck and Monitoring Service Compoment is running correctly and well. 
-###################################################################################################################################################################################################
-#                                            Phase 5 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 5'
-# 2013-06-04  Liu Hai(Larry) 1.5.0           HealthCheck and Monitoring Service Component - Phase 5: Develop Database Monitoring - CNDB Customer TME_OBJECT_ID Basic Architecture
-# 2013-06-05  Liu Hai(Larry) 1.5.1           HealthCheck and Monitoring Service Component - Phase 5: Refacor the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails')
-###################################################################################################################################################################################################
-#                                            Phase 6 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 6'
-# 2013-06-18  Liu Hai(Larry) 1.6.0           HealthCheck and Monitoring Service Component - Phase 6: Go on refactoring the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails')
-# 2013-06-21  Liu Hai(Larry) 1.6.1           HealthCheck and Monitoring Service Component - Phase 6: Refactor FileSystem Monitoring Function for Bravo/Trails Server using SFTP way 
-###################################################################################################################################################################################################
-#                                            Phase 7 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 7'
-# 2013-07-03  Liu Hai(Larry) 1.7.0           HealthCheck and Monitoring Service Component - Phase 7: Develop Database Monitoring - TrailsST DB Apply Gap Monitoring Feature Basic Architecture
-# 2013-07-04  Liu Hai(Larry) 1.7.1           HealthCheck and Monitoring Service Component - Phase 7: Develop Database Monitoring - TrailsRP DB Apply Gap Monitoring Feature 2 Basic Architecture
-# 2013-07-11  Liu Hai(Larry) 1.7.2           HealthCheck and Monitoring Service Component - Phase 7: Go on refactoring the way of getting DB connection and executing SQL statements - for example: Database::Connection->new('trails') 
-#                                                                                                    Add DB Exception Feature Support
-###################################################################################################################################################################################################
-#                                            Phase 7A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A'
-# 2013-08-01  Liu Hai(Larry) 1.7.3           HealthCheck and Monitoring Service Component - Phase 7A: Add the synctime is null case for TrailsRP Replication Error Email Support Feature
-#                                                                                                    Adjust the email content for TrailsRP Replication Success Email more meaningful 
-###################################################################################################################################################################################################
-#                                            Phase 8 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8'
-# 2013-09-26  Liu Hai(Larry) 1.8.0           HealthCheck and Monitoring Service Component - Phase 8: Design and Develop Application Monitoring - Web Application Running Status Check Basic Architecture and Business Logic
-# 2013-09-27  Liu Hai(Larry) 1.8.1           HealthCheck and Monitoring Service Component - Phase 8: Add Some Testing Function Codes only for TAP2 Testing Server
-# 2013-09-30  Liu Hai(Larry) 1.8.2           HealthCheck and Monitoring Service Component - Phase 8: Add HTTP 403 Forbidden Return Code for Trails Web Application to understand this case that Trails Web Applcation is also running 
-###################################################################################################################################################################################################
-#                                            Phase 8A Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A'
-# 2013-12-16  Liu Hai(Larry) 1.8.3           HealthCheck and Monitoring Service Component - Phase 8A: Design and Develop Self Healing Business Logic to automatically fix Bravo/Trails Web Application down case
-###################################################################################################################################################################################################
-#                                            Phase 9 Development Formal Tag: 'Added by Larry for HealthCheck And Monitoring Service Component - Phase 9'
-# 2014-01-15  Liu Hai(Larry) 1.9.0           HealthCheck and Monitoring Service Component - Phase 9: Design and Develop Database Monitoring - Database Exception Status Check Basic Architecture and Business Logic 
-# 2014-01-21  Liu Hai(Larry) 1.9.1           HealthCheck and Monitoring Service Component - Phase 9: The following new features have been added into this phase
-#                                                                                                    1) Database Exception Code List defined to notify DBA team Support
-#                                                                                                    2) Monitoring Database Exclusion Duration Time Support
-#                                                                                                    3) Database Exception Email Switch for DBA Team Support 
-#                                                                                                    
-#
-########################################################################################################################################################################                                   
-#                                            Phase 10 Development Formal Tag: 'Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10'
-# 2014-07-02  Tomas 1.10.0                   HealthCheck and Monitoring Service Component - Phase 10: Design and Develop Database Monitoring - Recon Queues Duplicate Data Monitoring and Cleanup Basic Architecture and Business Logic
-my $HOME_DIR = "/home/liuhaidl/working/scripts";#set Home Dir value
+# Author: liuhaidl@cn.ibm.com  && tomas.sima@cz.ibm.com
+
+my $HOME_DIR = "/opt/staging/v2";#set Home Dir value
 my $cdFlag = system('cd $HOME_DIR');
 if($cdFlag!=0){
  die "Change Directory to $HOME_DIR failed. Exit to the current perl program.\n";
@@ -87,24 +13,26 @@ else{
 }
 
 #Load required modules
-require "/opt/staging/v2/Database/Connection.pm";
+use lib '/opt/staging/v2';  
 use strict;
 use POSIX;
 use DBI;
 use DBD::DB2;
 use DBD::DB2::Constants;
 use File::Basename;
-use Base::ConfigManager;#Require the Staging Project Package
-#use Database::Connection;
+use Base::ConfigManager;
+use Database::Connection;
 use HealthCheck::OM::Event;
 use HealthCheck::Delegate::EventLoaderDelegate;
 use Config::Properties::Simple;
+use HealthCheck::Common::MetaRule;
+use HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
 
 #Globals
-my $eventRuleDefinitionFile = "/home/liuhaidl/working/scripts/eventCheckRuleDefinition.properties";
-my $healthCheckMonitorLogFile = "/home/liuhaidl/working/scripts/healthCheckMonitoring.log";#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4
-my $pidFile    = "/home/liuhaidl/working/scripts/healthCheckMonitoring.pid";#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4
-my $configFile = "/home/liuhaidl/working/scripts/healthCheckMonitoring.properties";#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4
+my $eventRuleDefinitionFile   = $HOME_DIR . "/config/eventCheckRuleDefinition.properties";
+my $healthCheckMonitorLogFile = "/var/staging/logs/HME/healthCheckMonitoring.log";
+my $pidFile                   = "/tmp/healthCheckMonitoring.pid";
+my $configFile                = $HOME_DIR . "/config/healthCheckMonitoring.properties";
 
 my $cfgMgr   = Base::ConfigManager->instance($configFile);
 my $configSleepPeriod  = trim($cfgMgr->sleepPeriod);
@@ -113,14 +41,12 @@ my $configServerMode    = trim($cfgMgr->server);
 print "configServerMode: {$configServerMode}\n";
 
 #SERVER MODE
-my $TAP          = "TAP";#TAP Server for toStaging Loaders
-my $TAP2         = "TAP2";#TAP2 Testing Server
-my $TAP3         = "TAP3";#TAP3 Server for toBravo Loaders
-my $TAPMF        = "TAPMF";#TAPMF Server
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
-my $BRAVO        = "BRAVO";#BRAVO Server
-my $TRAILS       = "TRAILS";#TRAILS Server
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
+my $TAP          = "TAP";
+my $TAP2         = "TAP2";
+my $TAP3         = "TAP3";
+my $TAPMF        = "TAPMF";
+my $BRAVO        = "BRAVO";
+my $TRAILS       = "TRAILS";
 my $SERVER_MODE  = $configServerMode;#Set Server Mode Value from configuration file
 
 #HealthCheck and Minitor Module Trigger Interval Time
@@ -131,7 +57,7 @@ my $STYLE1 = 1;#YYYY-MM-DD-HH.MM.SS For Example: 2013-04-18-10.30.33
 my $STYLE2 = 2;#YYYYMMDDHHMMSS For Example: 20130418103033
 
 #Vars definition
-my $staging_connection;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $staging_connection; 
 my @row;
 my @row2;
 my $totalCnt;
@@ -141,25 +67,6 @@ my @eventMetaRecords;
 my @ruleMetaRecords;
 my $currentTimeStamp;
 my $DB_ENV;
-
-#SQL Statements
-my $GET_TOTAL_RECORDS_IN_QUEUE_SQL      = "SELECT COUNT(*) FROM V_RECON_QUEUE WITH UR";
-my $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL    = "SELECT COUNT(DISTINCT CUSTOMER_ID) FROM V_RECON_QUEUE WITH UR";
-my $GET_EVENT_META_DATA_SQL             = "SELECT EG.EVENT_GROUP_ID, EG.NAME, ET.EVENT_ID, ET.NAME FROM EVENT_GROUP EG, EVENT_TYPE ET WHERE EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID ORDER BY EG.EVENT_GROUP_ID, ET.EVENT_ID WITH UR";
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
-my $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID AND E.RECORD_TIME >= CURRENT TIMESTAMP - #1 HOURS AND E.RECORD_TIME <= CURRENT TIMESTAMP ORDER BY E.RECORD_TIME DESC WITH UR";# #1 parameter is used to replace with job cron number
-my $GET_EVENT_ALL_DATA_COUNT_SQL = "SELECT COUNT(*) FROM EVENT E JOIN EVENT_TYPE ET ON ET.EVENT_ID = E.EVENT_ID JOIN EVENT_GROUP EG ON EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID WHERE EG.NAME = ? AND ET.NAME = ? WITH UR";
-my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID ORDER BY E.RECORD_TIME DESC FETCH FIRST 100 ROWS ONLY WITH UR";#Added by Larry for HealthCheck And Monitor Module - Phase 2B: Optimize Event ALL Data Query SQL to get the first 100 row records from all row records
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
-my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-my $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL = "SELECT ACCOUNT_NUMBER, TME_OBJECT_ID FROM CUSTOMER WHERE TME_OBJECT_ID LIKE '%#1%'";# #1 parameter is used to replace with searching key for example: 'DEFAULT'
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
-my $GET_TRAILSST_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
 #The Index Definition For Result Fields
 #Total Records Index
@@ -171,14 +78,14 @@ my $EVENT_GROUP_ID_INDEX   = 0;
 my $EVENT_GROUP_NAME_INDEX = 1;
 my $EVENT_ID_INDEX         = 2;
 my $EVENT_NAME_INDEX       = 3;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+ 
 #Event Data For Certain Time Indexes
 my $EVENT_ID_DATA_INDEX            = 0;
 my $EVENT_VALUE_DATA_INDEX         = 1;
 my $EVENT_RECORD_TIME_DATA_INDEX   = 2;
 #Event ALL Data For Certain Event Rule Type Total Count Index
 my $EVENT_ALL_DATA_TOTAL_CNT_INDEX = 0;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+ 
 
 #Event Rule Meta Data Indexes
 my $EVENT_RULE_CODE_INDEX                 = 0;#For example, "ERC001"
@@ -189,13 +96,13 @@ my $PARAMETER_2_INDEX					  = 4;#For example, "reconEngine.pl'softwareToBravo.pl
 my $PARAMETER_3_INDEX					  = 5;#For example, "TAP"
 my $PARAMETER_4_INDEX					  = 6;#For example, "doranaToSwasset.pl'hdiskToStaging.pl'ipAddressToStaging.pl"
 my $PARAMETER_5_INDEX					  = 7;#For example, "N/A"
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+ 
 my $PARAMETER_6_INDEX					  = 8;#For example, "N/A"
 my $PARAMETER_7_INDEX					  = 9;#For example, "N/A"
 my $PARAMETER_8_INDEX					  = 10;#For example, "N/A"
 my $PARAMETER_9_INDEX					  = 11;#For example, "N/A"
 my $PARAMETER_10_INDEX					  = 12;#For example, "N/A"
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+ 
 my $EVENT_RULE_TITLE                      = 13;#For example, "Loader Running Status on @1 Server"
 my $EVENT_RULE_MESSAGE                    = 14;#For example, "Loader @2 is currently not running."
 my $EVENT_RULE_HANDLING_INSTRUCTION_CODE  = 15;#For example, "E-TBS-CRS-001"
@@ -215,7 +122,7 @@ my $emailSubjectInfo;
 my $emailToAddressList;
 my $emailCcAddressList;
 my $emailFullContent = "";
-my @startAndStopScriptsEmailAlertArray = ();#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my @startAndStopScriptsEmailAlertArray = ();
 
 #Event Group Name and its children Event Type Names
 #Recon Engine - Event Group Name
@@ -227,73 +134,49 @@ my $TOTAL_CUSTOMERS_IN_QUEUE                = "TOTAL_CUSTOMERS_IN_QUEUE";
 my $TRAILS_BRAVO_CORE_SCRIPTS               = "TRAILS_BRAVO_CORE_SCRIPTS";
 #Trails/Bravo Core Scripts - its children Event Type Names
 my $CONTINUOUS_RUN_SCRIPTS                  = "CONTINUOUS_RUN_SCRIPTS";#EVENT_TYPE_ID = 1
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 my $ATPTOSTAGING_START_STOP_SCRIPT          = "ATPTOSTAGING_START_STOP_SCRIPT";#EVENT_TYPE_ID = 2
 my $SWCMTOSTAGING_START_STOP_SCRIPT         = "SWCMTOSTAGING_START_STOP_SCRIPT";#EVENT_TYPE_ID = 3
 my $MOVEMAINFRAME_START_STOP_SCRIPT         = "MOVEMAINFRAME_START_STOP_SCRIPT";#EVENT_TYPE_ID = 4
 my $BRAVOREPORTFORK_START_STOP_SCRIPT       = "BRAVOREPORTFORK_START_STOP_SCRIPT";#EVENT_TYPE_ID = 5
 my $STAGINGMOVE_START_STOP_SCRIPT           = "STAGINGMOVE_START_STOP_SCRIPT";#EVENT_TYPE_ID = 6
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
 #File System Monitoring - Event Group Name
 my $FILE_SYSTEM_MONITORING                  = "FILE_SYSTEM_MONITORING";#EVENT_GROUP_ID = 2
 #File System Monitoring - its children Event Type Name
 my $FILE_SYSTEM_THRESHOLD_MONITORING        = "FILE_SYSTEM_THRESHOLD_MONITORING";#EVENT_TYPE_ID = 7
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
 #Database Monitoring - Event Group Name
 my $DATABASE_MONITORING                     = "DATABASE_MONITORING";#EVENT_GROUP_ID = 3
 #Database Monitoring - its children Event Type Name
 my $TRAILSRP_DB_APPLY_GAP_MONITORING        = "TRAILSRP_DB_APPLY_GAP_MONITORING";#EVENT_TYPE_ID = 8
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
 my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING  = "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING";#EVENT_TYPE_ID = 9
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
 my $TRAILSST_DB_APPLY_GAP_MONITORING        = "TRAILSST_DB_APPLY_GAP_MONITORING";#EVENT_TYPE_ID = 10
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_2      = "TRAILSRP_DB_APPLY_GAP_MONITORING_2";#EVENT_TYPE_ID = 11
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
 my $DB_EXCEPTION_STATUS_CHECK_MONITORING    = "DB_EXCEPTION_STATUS_CHECK_MONITORING";#EVENT_TYPE_ID = 13
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
 #Application Monitoring - Event Group Name
 my $APPLICATION_MONITORING                  = "APPLICATION_MONITORING";#EVENT_GROUP_ID = 4
 #Application Monitoring - its children Event Type Name
 my $WEBAPP_RUNNING_STATUS_CHECK_MONITORING  = "WEBAPP_RUNNING_STATUS_CHECK_MONITORING";#EVENT_TYPE_ID = 12
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
 
 #Event Group ID and its children Event IDs
 #Trails/Bravo Core Scripts
 my $TRAILS_BRAVO_CORE_SCRIPTS_EVENT_GROUP_ID       = 1;
 my $CONTINUOUS_RUN_SCRIPTS_EVENT_TYPE_ID           = 1;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 my $ATPTOSTAGING_START_STOP_SCRIPT_EVENT_TYPE_ID     = 2;
 my $SWCMTOSTAGING_START_STOP_SCRIPT_EVENT_TYPE_ID    = 3;
 my $MOVEMAINFRAME_START_STOP_SCRIPT_EVENT_TYPE_ID    = 4;
 my $BRAVOREPORTFORK_START_STOP_SCRIPT_EVENT_TYPE_ID  = 5;
 my $STAGINGMOVE_START_STOP_SCRIPT_EVENT_TYPE_ID      = 6;
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
 #File System Monitoring
 my $FILE_SYSTEM_MONITORING_EVENT_GROUP_ID            = 2;
 my $FILE_SYSTEM_THRESHOLD_MONITORING_EVENT_TYPE_ID   = 7;
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
 #Database Monitoring
 my $DATABASE_MONITORING_EVENT_GROUP_ID               = 3;
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_EVENT_TYPE_ID   = 8;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
 my $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING_EVENT_TYPE_ID = 9;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
 my $TRAILSST_DB_APPLY_GAP_MONITORING_EVENT_TYPE_ID   = 10;
 my $TRAILSRP_DB_APPLY_GAP_MONITORING_2_EVENT_TYPE_ID = 11;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
 #Continuous Run Scripts Special Check List
-my $CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt";#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+my $CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt";
 
 #Comment Char
 my $COMMENT_CHAR                     = "#";
@@ -309,14 +192,11 @@ my $EMAIL_RULE_ACTION_TO_ADDRESS_LIST_INDEX = 2;
 my $EMAIL_RULE_ACTION_CC_ADDRESS_LIST_INDEX = 3;
 my $EMAIL_RULE_ACTION_EMAIL_CONTENT_INDEX   = 4;
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 #Start/Stop Script Loader Status Code List
 my $LOADER_STARTED_STATUS_CODE = "STARTED";
 my $LOADER_ERRORED_STATUS_CODE = "ERRORED";
 my $LOADER_STOPPED_STATUS_CODE = "STOPPED";
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
 #File System Information Definition Indexes
 my $TOTAL_DISK_INDEX    = 1;
 my $USED_DISK_INDEX     = 2;
@@ -326,31 +206,23 @@ my $FILE_SYSTEM_INDEX   = 5;
 #Event Trigger Rule File System Definition Indexes
 my $EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_FILE_SYSTEM_INDEX = 0;
 my $EVENT_TRIGGER_RULE_FILE_SYSTEM_MONITOR_THRESHOLD_INDEX   = 1;
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
 #TrailsRP DB Apply Gap Indexes
 my $TRAILSRP_DB_CURRENT_TIME_INDEX   = 0;
 my $TRAILSRP_DB_LAST_SYN_TIME_INDEX  = 1;
 my $TRAILSRP_DB_APPLY_GAP_INDEX      = 2;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
 #CNDB Customer Indexes
 my $CNDB_CUSTOMER_ACCOUNT_NUMBER_INDEX = 0;
 my $CNDB_CUSTOMER_TME_OBJECT_ID_INDEX  = 1;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
 my $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_ON_FLAG   = "Y";
 my $REMOTE_SERVER_FILE_SYSTEM_MONITORING_TURN_OFF_FLAG  = "N";
 my $REMOTE_FILE_SFTP_GET_METHOD                         = "SFTP";
 my $REMOTE_FILE_GSA_GET_METHOD                          = "GSA";
-my $BRAVO_SERVER_FILE_SYSTEM_INFO_FILE                  = "/home/liuhaidl/working/scripts/bravoServerFileSystemUsedDiskInfo.txt";
-my $TRAILS_SERVER_FILE_SYSTEM_INFO_FILE                 = "/home/liuhaidl/working/scripts/trailsServerFileSystemUsedDiskInfo.txt";
-#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 6a Start
-my $TAP3_SERVER_FILE_SYSTEM_INFO_FILE                 = "/home/liuhaidl/working/scripts/tap3ServerFileSystemUsedDiskInfo.txt";
-#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 6a End
+my $BRAVO_SERVER_FILE_SYSTEM_INFO_FILE                  =  $HOME_DIR . "/HealthCheck/info/bravoServerFileSystemUsedDiskInfo.txt";
+my $TRAILS_SERVER_FILE_SYSTEM_INFO_FILE                 =  $HOME_DIR . "/HealthCheck/info/trailsServerFileSystemUsedDiskInfo.txt";
+my $TAP3_SERVER_FILE_SYSTEM_INFO_FILE                   =  $HOME_DIR . "/HealthCheck/info/tap3ServerFileSystemUsedDiskInfo.txt";
 #File System Information Definition Indexes for 6 Fields
 my $FILE_SYSTEM_MOUNT_INDEX_6_FIELDS                    = 1;
 my $TOTAL_DISK_INDEX_6_FIELDS                           = 2;
@@ -358,9 +230,9 @@ my $USED_DISK_INDEX_6_FIELDS                            = 3;
 my $FREE_DISK_INDEX_6_FIELDS                            = 4;
 my $USED_DISK_PCT_INDEX_6_FIELDS                        = 5;
 my $FILE_SYSTEM_INDEX_6_FIELDS                          = 6;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+ 
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
+ 
 #TrailsST DB Apply Gap Indexes
 my $TRAILSST_DB_CURRENT_TIME_INDEX   = 0;
 my $TRAILSST_DB_LAST_SYN_TIME_INDEX  = 1;
@@ -376,20 +248,15 @@ my $ONLY_SEND_ERROR_EMAIL_FLAG       = "N";#Only Send Error Email Flag
 my $DB_EXCEPTION_MESSAGE = "Database Exception Message";
 #HealthCheck and Monitoring Engine Startup Error Messages
 my $HME_ERROR_EMAIL_TITLE          = "HealthCheck and Monitoring Engine Startup Error Email";
-my $HME_ERROR_EMAIL_TO_PERSON_LIST = "liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
+my $HME_ERROR_EMAIL_TO_PERSON_LIST = "tomas.sima\@cz.ibm.com,liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
 my $HME_ERROR_EMAIL_TXT            = "HealthCheck and Monitoring Engine Startup Error Message";
 my $hme_error_mail_message;
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
-
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
 #Web Application Check Configuration Value Definition Indexes
 my $WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX        = 0;#For example: 'Bravo'
 my $WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX    = 1;#For example: '15' seconds - CONNECT_TIMEOUT stands for the max http request time
 my $WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX           = 2;#For example: '20' seconds - MAX_TIME stands for the max transfer time
 my $WEBAPP_CHECK_CONFIG_VALUE_URL_INDEX                = 3;#For example: 'http://bravo.boulder.ibm.com/BRAVO/home.do'
 
-#Web Application CURL Unix Command
-my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
 
 my $FALSE = 0;#For perl, 0 = false
 my $TRUE  = 1;#For perl, 1 = true
@@ -400,9 +267,9 @@ my $HTTP_OK_CODE        = "200";
 #To support this HTTP return code for Trails Web Application, the Trails Web Application is running if this HTTP code has been returned
 my $HTTP_FORBIDDEN_CODE = "403";
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
+ 
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
+ 
 #Self Healing Engine Restart Web Application Operation Definition Indexes
 my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_PROGRAM_NAME_INDEX = 0;#For example: selfHealingEngine.pl
 my $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_CODE_INDEX         = 1;#For example: RESTART_BRAVO_WEB_APPLICATION
@@ -417,9 +284,9 @@ my $BRAVO_WEB_APP  = "Bravo";
 my $TRAILS_WEB_APP = "Trails";
 
 my $PWD_UNIX_COMMAND = "pwd";
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
+ 
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
+ 
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_REAL_NAME_INDEX               = 0;#For example: 'TRAILS'
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_ALIAS_INDEX                   = 1;#For example: 'trails.name'
 my $DB_EXPCEPTION_CHECK_CONFIG_VALUE_MONITORING_DB_USERID_INDEX                  = 2;#For example: 'trails.user'
@@ -436,8 +303,6 @@ my $DB_CONNECTION_COMMAND = "db2 connect to \@1 user \@2 using \@3";
 my $DB_CONNECTION_SUCCESS_KEY_MESSAGE = "Database Connection Information";
 
 my %WEEKDAY_HASH = ("Monday"=>1,"Tuesday"=>2,"Wednesday"=>3,"Thursday"=>4,"Friday"=>5,"Saturday"=>6,"Sunday"=>7);
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
-#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
 my $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP = "RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP";
 my $RECON_QUEUE_DUPLICATE_CHECK_1 = "select count(*) from EAADMIN.recon_sw_lpar r where r.id in(select max(rc.id) from eaadmin.recon_sw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.software_lpar_id having count(rc.id)>1) with ur";
 my $RECON_QUEUE_DUPLICATE_CHECK_2 = "select count(*) from EAADMIN.recon_hw_lpar r where r.id in (select max(rc.id) from eaadmin.recon_hw_lpar rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_lpar_id having count(rc.id)>1) with ur";
@@ -445,7 +310,6 @@ my $RECON_QUEUE_DUPLICATE_CHECK_3 = "select count(*) from EAADMIN.recon_license 
 my $RECON_QUEUE_DUPLICATE_CHECK_4 = "select count(*) from EAADMIN.recon_hardware r where r.id in (select max(rc.id) from eaadmin.recon_hardware rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.hardware_id having count(rc.id)>1) with ur";
 my $RECON_QUEUE_DUPLICATE_CHECK_5 = "select count(*) from EAADMIN.recon_customer r where r.id in (select max(rc.id) from eaadmin.recon_customer rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.customer_id having count(rc.id)>1) with ur";
 my $RECON_QUEUE_DUPLICATE_CHECK_6 = "select count(*) from EAADMIN.recon_installed_sw r where r.id in (select max(rc.id) from eaadmin.recon_installed_sw rc where rc.action = 'UPDATE' and rc.remote_user in ('STAGING','TRIGGER') group by rc.installed_software_id having count(rc.id)>2) with ur";
-#Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
 my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');       
 my %dbs; # To store database login credentials
 open(EVENTRULE_DEFINITION_FILE_HANDLER, "<", $eventRuleDefinitionFile ) or die "Event Rule Definition File {$eventRuleDefinitionFile} doesn't exist. Perl script exits due to this reason.";
@@ -462,14 +326,6 @@ exit if $pid;
 
 loaderStart(shift @ARGV, $pidFile);#Start HealthCheck and Monitor Process
 
-###Close handles to avoid console output.
-#open( STDIN, "/dev/null" )
-#  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
-#open( STDOUT, "/dev/null" )
-#  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
-#open( STDERR, "/dev/null" )
-#  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
-
 ###Wrap everything in an eval so we can capture in logfile.
 eval{
 	#1.Do event init operation
@@ -480,10 +336,8 @@ eval{
     postProcess();
 };
 if ($@) {
-    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
     $hme_error_mail_message="$HME_ERROR_EMAIL_TXT: $@";
 	sendHMEStartupErrorEmail($HME_ERROR_EMAIL_TITLE,$HME_ERROR_EMAIL_TO_PERSON_LIST,$hme_error_mail_message);
-    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
     die $@;
 }
 
@@ -497,10 +351,8 @@ sub init{
     #setup db2 environment
     setupDB2Env();
 
-    #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
     #get DB connection object
 	$staging_connection = Database::Connection->new('staging');
-	#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 
 	#Set the loopIndex var init value
 	$loopIndex = 0;
@@ -520,25 +372,8 @@ sub init{
 
 #This method is used to load event meta data
 sub loadEventMetaData{
-  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
   @eventMetaRecords = getEventMetaDataFunction($staging_connection);
-  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
 
-  #Add mock event meta data here to support DB cannot be connected case
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","1","CONTINUOUS_RUN_SCRIPTS")];
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","2","ATPTOSTAGING_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","3","SWCMTOSTAGING_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","4","MOVEMAINFRAME_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","5","BRAVOREPORTFORK_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-  #push @eventMetaRecords, [("1","TRAILS_BRAVO_CORE_SCRIPTS","6","STAGINGMOVE_START_STOP_SCRIPT")];#Added by Larry for HealthCheck And Monitor Module - Phase 2B
-  #push @eventMetaRecords, [("2","FILE_SYSTEM_MONITORING","7","FILE_SYSTEM_THRESHOLD_MONITORING")];#Added by Larry for HealthCheck And Monitor Module - Phase 3
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","8","TRAILSRP_DB_APPLY_GAP_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","9","CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","10","TRAILSST_DB_APPLY_GAP_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","11","TRAILSRP_DB_APPLY_GAP_MONITORING_2")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7
-  #push @eventMetaRecords, [("4","APPLICATION_MONITORING","12","WEBAPP_RUNNING_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","13","DB_EXCEPTION_STATUS_CHECK_MONITORING")];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
-  #push @eventMetaRecords, [("3","DATABASE_MONITORING","14","RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP")]; # Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10
 }
 
 #This method is used to load event rule and email information definition
@@ -579,14 +414,10 @@ sub process{
         ###Trigger event logic
         eventLogging();
         
-		#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
-		#For Testing Purpose on TAP2 Server only Start
-		#For TAP2 Testing Server, only let HealthCheck and Monitoring Engine run 1 time for testing purpose
-		if(($SERVER_MODE eq $TAP2) && ($loopIndex==1)){
+		#For TAP2 Testing Server, only let HealthCheck and Monitoring Engine run 2 times for testing purpose
+		if(($SERVER_MODE eq $TAP2) && ($loopIndex==2)){
 		  last;
 		}
-        #For Testing Purpose on TAP2 Server only End
-		#Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server End
         
 		sleep $sleepPeriod;
     }
@@ -599,7 +430,7 @@ sub postProcess{
 	#Close Log File Handler
 	close LOG;
 	#Disconnect DB
-	$staging_connection->disconnect();#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+	$staging_connection->disconnect();
 }
 
 #This core method is used to do business statistic work based on event name 
@@ -624,15 +455,15 @@ sub eventLogging{
 	 }
 
      #Append Start And Stop Script Email Alerts Into Email Content
-     appendStartAndStopScriptEmailAlertsIntoEmailContent();#Added by Larry for HealthCheck And Monitor Module - Phase 2B 
+     appendStartAndStopScriptEmailAlertsIntoEmailContent(); 
      
      #Send Out Alert Email
 	 if($emailFullContent ne ""){#Send email only email content has value
 		#Append Alert Email Signature Into Email Content
-        appendAlertEmailSignatureIntoEmailContent();#Added by Larry for HealthCheck And Monitor Module - Phase 3
+        appendAlertEmailSignatureIntoEmailContent(); 
         sendEmail($emailSubjectInfo,$emailToAddressList,$emailCcAddressList,$emailFullContent);
      }
-	 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
+	  
 	 elsif($emailFullContent eq ""){#A new feature to support that there is no alert message generated case
         #Append Server Normal Running Information Into Email Content
         appendServerNormalRunningInfoIntoEmailContent();
@@ -640,11 +471,11 @@ sub eventLogging{
         appendAlertEmailSignatureIntoEmailContent();
         sendEmail($emailSubjectInfo,$emailToAddressList,$emailCcAddressList,$emailFullContent);
 	 }
-     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
+      
 
-     #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+      
 	 @startAndStopScriptsEmailAlertArray = ();#Reset Start And Stop Script Email Alert Array Object To Empty
-	 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+	  
 
 	 #Reset Email Content To Empty String
 	 $emailFullContent = "";
@@ -659,9 +490,9 @@ sub eventLogicProcess{
   my($groupName,$eventName,$eventID) = @_;
   if($groupName eq $RECON_ENGINE && $eventName eq $TOTAL_RECORDS_IN_QUEUE){#Event Group: "RECON_ENGINE" + Event Type: "TOTAL_RECORDS_IN_QUEUE"
       
-	  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
+	   
 	  eval{
-	     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Refacor the way of getting DB connection and executing SQL statements Start
+	      
 	     my $trails_connection;#var used to store Trails DB connection object
 
 	     #Get Trails DB Connection 
@@ -672,19 +503,19 @@ sub eventLogicProcess{
 	
          #Disconnect Trails DB Connection 
 	     $trails_connection->disconnect();
-	     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Refacor the way of getting DB connection and executing SQL statements End      
+	      
 	     $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	     print LOG "[$currentTimeStamp]{TotalRecordsInQueue Number: $totalCnt} is for {Event Group Name: $groupName} + {Event Name: $eventName}.\n";
 	     $eventFiredTime = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
          $eventFiredTime.=".000000"; 
 	     #Insert record into the EVENT DB TABLE
-         #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+          
 	     my $event = new HealthCheck::OM::Event();
 	     $event->eventId($eventID);#set eventId
          $event->eventValue($totalCnt);#set eventValue
 	     $event->eventRecordTime($eventFiredTime);#set eventRecordTime
 	     $event->insert($staging_connection);
-         #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+          
          $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	     print LOG "[$currentTimeStamp]Event Record - {EVENT_ID: $eventID} + {VALUE: $totalCnt} + {RECORD_TIME: $eventFiredTime} has been inserted into EVENT DB Table successfully.\n";
 	     #Event Rule Check
@@ -698,12 +529,12 @@ sub eventLogicProcess{
          $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
          print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $groupName} + {Event Name: $eventName}.\n"; 
 	  }
-	  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
+	   
    }
    elsif($groupName eq $RECON_ENGINE && $eventName eq $TOTAL_CUSTOMERS_IN_QUEUE){#Event Group: "RECON_ENGINE" + Event Type: "TOTAL_CUSTOMERS_IN_QUEUE"
-      #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
+       
 	  eval{
-         #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Refacor the way of getting DB connection and executing SQL statements Start
+          
          my $trails_connection;#var used to store Trails DB connection object
 
 	     #Get Trails DB Connection 
@@ -714,19 +545,19 @@ sub eventLogicProcess{
 	
          #Disconnect Trails DB Connection 
 	     $trails_connection->disconnect();
-	     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Refacor the way of getting DB connection and executing SQL statements End
+	      
 	     $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
          print LOG "[$currentTimeStamp]{TotalCustomersInQueue Number: $totalCnt} is for {Event Group Name: $groupName} + {Event Name: $eventName}.\n";
          $eventFiredTime = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
          $eventFiredTime.=".000000"; 
 	     #Insert record into the EVENT DB TABLE
-         #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+          
 	     my $event = new HealthCheck::OM::Event();
 	     $event->eventId($eventID);#set eventId
          $event->eventValue($totalCnt);#set eventValue
 	     $event->eventRecordTime($eventFiredTime);#set eventRecordTime
 	     $event->insert($staging_connection);
-         #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+          
          print LOG "[$currentTimeStamp]Event Record - {EVENT_ID: $eventID} + {VALUE: $totalCnt} + {RECORD_TIME: $eventFiredTime} has been inserted into EVENT DB Table successfully.\n";
 	     #Event Rule Check
 	     eventRuleCheck($groupName,$eventName,$totalCnt);
@@ -739,83 +570,31 @@ sub eventLogicProcess{
          $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
          print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $groupName} + {Event Name: $eventName}.\n"; 
 	  }
-	  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
+	   
    }
-   elsif($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $CONTINUOUS_RUN_SCRIPTS){#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "CONTINUOUS_RUN_SCRIPTS"
-  	  #For Event Type "CONTINUOUS_RUN_SCRIPTS",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
-   elsif(($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $ATPTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "ATPTOSTAGING_START_STOP_SCRIPT"
-       ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $SWCMTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "SWCMTOSTAGING_START_STOP_SCRIPT"
-	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $MOVEMAINFRAME_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "MOVEMAINFRAME_START_STOP_SCRIPT"
-	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $BRAVOREPORTFORK_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "BRAVOREPORTFORK_START_STOP_SCRIPT"
-	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $STAGINGMOVE_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "STAGINGMOVE_START_STOP_SCRIPT"
+   elsif(($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $ATPTOSTAGING_START_STOP_SCRIPT)
+       ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $SWCMTOSTAGING_START_STOP_SCRIPT)
+	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $MOVEMAINFRAME_START_STOP_SCRIPT)
+	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $BRAVOREPORTFORK_START_STOP_SCRIPT)
+	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $STAGINGMOVE_START_STOP_SCRIPT)
+   	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $CONTINUOUS_RUN_SCRIPTS)
+   	   ||($groupName eq $FILE_SYSTEM_MONITORING    && $eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING)
+       ||($groupName eq $FILE_SYSTEM_MONITORING    && $eventName eq 'SW_MULTI_REPORT_AGE')
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSST_DB_APPLY_GAP_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING_2)
+   	   ||($groupName eq $APPLICATION_MONITORING    && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)
+   	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP)
 	   ){
-  	  #For "Start/Stop Scripts",the eventValue value is not needed. It needs to be queried from EVENT DB table
+  	  #For these events,the eventValue value is not needed. It needs to be queried from EVENT DB table
 	  #So set 0 for eventValue var
 	  eventRuleCheck($groupName,$eventName,0);
+   }else{
+   		print LOG "ERROR: Checking event with no defined event logic \n This should never happen, line:__LINE__";
    }
-   #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-   #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
-   elsif($groupName eq $FILE_SYSTEM_MONITORING && $eventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
-  	  #For Event Type "FILE_SYSTEM_THRESHOLD_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
-  	  #For Event Type "TRAILSRP_DB_APPLY_GAP_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING"
-  	  #For Event Type "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $TRAILSST_DB_APPLY_GAP_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSST_DB_APPLY_GAP_MONITORING"
-  	  #For Event Type "TRAILSST_DB_APPLY_GAP_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING_2){#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING_2"
-  	  #For Event Type "TRAILSRP_DB_APPLY_GAP_MONITORING_2",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   }
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
-   elsif($groupName eq $APPLICATION_MONITORING && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING){#Event Group: "APPLICATION_MONITORING" + Event Type: "WEBAPP_RUNNING_STATUS_CHECK_MONITORING"
-  	  #For Event Type "WEBAPP_RUNNING_STATUS_CHECK_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   } 
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
-  	  #For Event Type "DB_EXCEPTION_STATUS_CHECK_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   } 
-   #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
-   #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
-   elsif($groupName eq $DATABASE_MONITORING && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP){#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
-  	  #For Event Type "DB_EXCEPTION_STATUS_CHECK_MONITORING",the eventValue value is not needed.
-	  #So set 0 for eventValue var
-	  eventRuleCheck($groupName,$eventName,0);
-   } 
-   #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
-   #A piece of code template which is used for 'New Event Group' + 'New Event Type' business logic
-   #elsif($groupName eq "SAMPLE_GROUP_NAME" && $eventName eq "SAMPLE_EVENT_NAME"){#Event Group: "SAMPLE_GROUP_NAME" + Event Type: "SAMPLE_EVENT_NAME"
-   #Add 'New Event Group' + 'New Event Type' business logic here
-   #}
+   
  }
 
 #This method is used to do event rule check
@@ -836,13 +615,13 @@ sub eventRuleCheck{
      my $metaRuleParameter3;#For example, "TAP"
      my $metaRuleParameter4;#For example, "doranaToSwasset.pl'hdiskToStaging.pl'ipAddressToStaging.pl"
      my $metaRuleParameter5;#For example, "N/A"
-	 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+	  
      my $metaRuleParameter6;#For example, "N/A"
      my $metaRuleParameter7;#For example, "N/A"
      my $metaRuleParameter8;#For example, "N/A"
      my $metaRuleParameter9;#For example, "N/A"
      my $metaRuleParameter10;#For example, "N/A"
-	 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+	  
  	 my $metaRuleTitle;#For example, "Loader Running Status on @1 Server"
 	 my $metaRuleMessage;#For example, "Loader @2 is currently not running."
      my $metaRuleHandlingInstrcutionCode;#For example, "E-TBS-CRS-001"
@@ -857,13 +636,13 @@ sub eventRuleCheck{
           $metaRuleParameter3 = trim($metaRule->[$PARAMETER_3_INDEX]);#Remove space chars
 		  $metaRuleParameter4 = trim($metaRule->[$PARAMETER_4_INDEX]);#Remove space chars
 		  $metaRuleParameter5 = trim($metaRule->[$PARAMETER_5_INDEX]);#Remove space chars
-		  #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+		   
           $metaRuleParameter6 = trim($metaRule->[$PARAMETER_6_INDEX]);#Remove space chars
           $metaRuleParameter7 = trim($metaRule->[$PARAMETER_7_INDEX]);#Remove space chars
 		  $metaRuleParameter8 = trim($metaRule->[$PARAMETER_8_INDEX]);#Remove space chars
 		  $metaRuleParameter9 = trim($metaRule->[$PARAMETER_9_INDEX]);#Remove space chars
 		  $metaRuleParameter10 = trim($metaRule->[$PARAMETER_10_INDEX]);#Remove space chars
-		  #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+		   
 	      $metaRuleTitle = trim($metaRule->[$EVENT_RULE_TITLE]);#Remove space chars
           $metaRuleMessage = trim($metaRule->[$EVENT_RULE_MESSAGE]);#Remove space chars
           $metaRuleHandlingInstrcutionCode = trim($metaRule->[$EVENT_RULE_HANDLING_INSTRUCTION_CODE]);#Remove space chars
@@ -914,7 +693,7 @@ sub eventRuleCheck{
 			        $processedRuleTitle = $metaRuleTitle;#reset the defined meta rule message to processedRuleTitle var for every loop
 					$processedRuleMessage = $metaRuleMessage;#reset the defined meta rule message to processedRuleMessage var for every loop
                     
-					#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+					 
 					my $specialLoaderNameMatched = ($loaderName=~ m/$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST/);#$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt"
 					if($specialLoaderNameMatched == 1){
 					  print LOG "Matched special loader name[$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST] is LoaderName: $loaderName\n";
@@ -924,7 +703,7 @@ sub eventRuleCheck{
 					else{
 					  $returnProcessNum = `ps -ef|grep $loaderName|grep start|wc -l`;#calculate the number of running processes for certain loader name
 					}
-                    #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
+                     
 
 					chomp($returnProcessNum);#remove the return line char
                     $returnProcessNum--;#decrease the unix command itself from the total calculated process number
@@ -956,13 +735,14 @@ sub eventRuleCheck{
 					  $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 			     }
 			 }
-			 #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
+			  
 			 elsif((($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $ATPTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "ATPTOSTAGING_START_STOP_SCRIPT"
                  ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $SWCMTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "SWCMTOSTAGING_START_STOP_SCRIPT"
 	             ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $MOVEMAINFRAME_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "MOVEMAINFRAME_START_STOP_SCRIPT"
 				 ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $BRAVOREPORTFORK_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "BRAVOREPORTFORK_START_STOP_SCRIPT"
                  ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $STAGINGMOVE_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "STAGINGMOVE_START_STOP_SCRIPT"
 	            )&&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
+				  my $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID AND E.RECORD_TIME >= CURRENT TIMESTAMP - #1 HOURS AND E.RECORD_TIME <= CURRENT TIMESTAMP ORDER BY E.RECORD_TIME DESC WITH UR";# #1 parameter is used to replace with job cron number
                   my $getEventDataConvertedSQL = $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL;
 				  my $eventRecordCnt = 0;#set 0 as the initial value for Event Record Count
                   my $ruleServerMode = $metaRuleParameter1;#server mode - for example: TAP
@@ -992,7 +772,7 @@ sub eventRuleCheck{
 				  $getEventDataConvertedSQL =~ s/\#1/$loaderCronNumber/g;
                   print LOG "Converted Get Event Data SQL: $getEventDataConvertedSQL\n";
 				  
-				  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
+				   
                   #Get Event Data For Certain Time
              	  my @eventRows = getEventDataForCertainTimeFunction($staging_connection,$triggerEventGroup,$triggerEventName,$getEventDataConvertedSQL);
                   
@@ -1006,14 +786,14 @@ sub eventRuleCheck{
 						 print LOG "{Error Time: $loaderErrorTime} for {Loader Name: $loaderName} has been found.\n";
 					  }
 				  }#end foreach my $eventRow (@eventRows)
-				  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
+				   
                   
 				  if($eventRecordCnt==0){#It means that the loader has not started yet
             
 			          #Get the total count for certain event rule type 
-					  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
+					   
 					  $eventDataAllCnt = getEventAllDataCountFunction($staging_connection,$triggerEventGroup,$triggerEventName);
-					  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
+					   
 					  print LOG "{Total Count: $eventDataAllCnt} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}\n";
                       
 					  if($eventDataAllCnt!=0){#trigger event rule check only if the loader has been ran before
@@ -1027,7 +807,7 @@ sub eventRuleCheck{
                           print LOG "$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $processedRuleHandlingInstructionCode\n";
 					  
                           #Get the start time and stop time of the last successfully run for certain loader
-						  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
+						   
 					      my @eventAllDataRows = getEventAllDataFunction($staging_connection,$triggerEventGroup,$triggerEventName);
 						  
 						  foreach my $eventRow (@eventAllDataRows){
@@ -1058,7 +838,7 @@ sub eventRuleCheck{
                                 $startTimeForTheLastSuccessRun = "";
 							 }
                           }#end foreach my $eventRow (@eventAllDataRows)
-						  #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
+						   
                           
 						  if($startTimeForTheLastSuccessRunFindFlag && $endTimeForTheLastSuccessRunFindFlag){#support the last successfully ran record has been found case
 							 $processedRuleMessage = $loaderNotStartedMessage;
@@ -1101,11 +881,11 @@ sub eventRuleCheck{
 					 }#end if($loaderErrorFlag)
 				  }#end else #$eventRecordCnt > 0 case
           	 }
-			 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
-			 #Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
+			  
+			  
              elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq $FILE_SYSTEM_THRESHOLD_MONITORING){#Event Group: "FILE_SYSTEM_MONITORING" + Event Type: "FILE_SYSTEM_THRESHOLD_MONITORING"
          		 my $serverMode = $SERVER_MODE;#var used to store server mode - for example: 'TAP'
-				 my $monitorFileSystemList = "";#var used to store monitor file system list - for example: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%' #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6
+				 my $monitorFileSystemList = "";#var used to store monitor file system list - for example: '/db2/cndb~95%'/db2/staging~95%'/db2/swasset~95%'/db2/tap~90%'/var/bravo~90%'/var/ftp~90%'/var/http_reports~90%'/var/staging~90%'  
                  my @monitorFileSystemListArray;#array used to store monitor file system list array
 				 my $fileSystemDefinition;#var used to store one monitoring file system definition - for example: '/db2/cndb~95%'
 				 my @fileSystemDefinitionArray;#array used to store the parsed file system definition- for ecxample: '(/db2/cndb,95%)'
@@ -1114,7 +894,7 @@ sub eventRuleCheck{
                  my $usedPct;#var used to store the current used file system percentage - for example: 6%
 				 my @fileSystemEmailAlertMessageArray = ();#array used to store the file system email alert messages
 				 my $fileSystemEmailAlertMessageCount;#var used to store the count of the file system email alert messages
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+				  
 				 my $remoteServerFileSystemMonitoringFlag = $metaRuleParameter7;#var used to store the remote server file system monitor flag 'Y' or 'N' 
 				 my $remoteFileGetMethod = $metaRuleParameter8;#var used to store the remote file get method for Bravo/Trails server. For example, SFTP or GSA
 				 #Vars Definition for Bravo Server
@@ -1144,7 +924,7 @@ sub eventRuleCheck{
                  my @parsedTap3ServerMonitoringFileSystemListArray;#array used to store parsed trails server monitoring file system list array - (("/opt/trails","90%"),("/var/trails","95%"))
                  my @tap3ServerFileSystemEmailAlertMessageArray = ();#array used to store the trails server file system email alert messages
 				 my $tap3ServerFileSystemEmailAlertMessageArrayCount = 0;#var used to store the count of the trails server file system email alert messages
-			     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+			      
 
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Filespace monitoring on @1 Server'
 				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Filespace equal to or above @2 for @3 has been reached.'
@@ -1168,18 +948,18 @@ sub eventRuleCheck{
                  elsif($serverMode eq $metaRuleParameter5){#TRAILS Server
 					$monitorFileSystemList = $metaRuleParameter6;#Filesystem Monitor List: '/opt/trails~90%'/var/trails~95%'
 				 }
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+                  
 				 elsif($serverMode eq $metaRuleParameter9){#TAP3 Server
                     $monitorFileSystemList = $metaRuleParameter10;#Filesystem Monitor List: '/boot~90%'/opt/reports~90%'/opt/tap~90%'/var/staging~90%'/opt/staging~90%'/usr~90%'/var~90%'/tmp~90%'/opt~90%'/home~90%D for TAP3
 				 }
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+				  
                  #elsif($serverMode eq $metaRuleParameter9){#TAP2 Server
                  #   $monitorFileSystemList = $metaRuleParameter10;#TBD for TAP2
 				 #}
 
 				 print LOG "File System Monitor Server Mode: {$serverMode}\n";
                  print LOG "File System Monitor List: {$monitorFileSystemList}\n";
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+				  
 		         print LOG "Remote Server File System Monitor Flag: {$remoteServerFileSystemMonitoringFlag}\n";
 				
 				 if($monitorFileSystemList ne ""){#only do file system using percentage check when monitroing file system list has been defined for target server for example, TAP
@@ -1207,7 +987,7 @@ sub eventRuleCheck{
                             $usedPct = trim($usedPct);
 					        print LOG "The File System Used Percentage: {$usedPct} for File System: {$fileSystem}\n";
 
-					        if(compareUsedDiskPctWithFileSystemThreshold($usedPct,$threshold) >=0){#if the current used file system percentage >= file system defined threshold value, then trigger the event rule alert message #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6
+					        if(compareUsedDiskPctWithFileSystemThreshold($usedPct,$threshold) >=0){#if the current used file system percentage >= file system defined threshold value, then trigger the event rule alert message  
 					           print LOG "The File System Used Percentage: {$usedPct} is great then or equal to the file system defined threshold value: {$threshold}\n";
 
 						       $processedRuleMessage = $metaRuleMessage;
@@ -1536,7 +1316,7 @@ sub eventRuleCheck{
 				 else{
 				    print LOG "The Remote Server File System Monitroing Function has been turned off for Bravo and Trails servers.\n";  
 				 }#end else
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End 
+                  
 				  
 				 #append file system email alert messages into the email content
                  $fileSystemEmailAlertMessageCount = scalar(@fileSystemEmailAlertMessageArray);
@@ -1546,7 +1326,7 @@ sub eventRuleCheck{
 	                   $emailFullContent.="$fileSystemEmailAlertMessage";#append file system email alert message into email content
                     }
 					
-                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+                     
 					#Append Bravo Server File System Alert Messages into Email Content
 					$bravoServerFileSystemEmailAlertMessageArrayCount = scalar(@bravoServerFileSystemEmailAlertMessageArray);
 					if($bravoServerFileSystemEmailAlertMessageArrayCount > 0){
@@ -1606,10 +1386,10 @@ sub eventRuleCheck{
                           print LOG "Tap3 Server - The Processed Rule Message: {$tap3ServerFileSystemEmailAlertMessage}\n";
                        }#end foreach my $tap3ServerFileSystemEmailAlertMessage (@tap3ServerFileSystemEmailAlertMessageArray)
 					}
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+					 
 	                $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
                  }#end if($fileSystemEmailAlertMessageCount > 2)
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
+                  
 				 else{
 				    $bravoServerFileSystemEmailAlertMessageArrayCount = scalar(@bravoServerFileSystemEmailAlertMessageArray);
 				    $trailsServerFileSystemEmailAlertMessageArrayCount = scalar(@trailsServerFileSystemEmailAlertMessageArray);
@@ -1669,15 +1449,21 @@ sub eventRuleCheck{
 					   
 					}#end if($tap3ServerFileSystemEmailAlertMessageArrayCount > 0)
 				 }#end else
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
+                  
                  if($trailsServerFileSystemEmailAlertMessageArrayCount > 0 || $bravoServerFileSystemEmailAlertMessageArrayCount > 0 || $tap3ServerFileSystemEmailAlertMessageArrayCount > 0){
 	  			   	$emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
                  }
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+			 }elsif($triggerEventGroup eq $FILE_SYSTEM_MONITORING && $triggerEventName eq 'SW_MULTI_REPORT_AGE'){
+			     
+			     my $rules  = HealthCheck::Common::MetaRule->new($metaRule);
+			     my $swmultiReportAgeHcm = HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge->new($rules);
+			     if($swmultiReportAgeHcm->validate()){
+			        $emailFullContent.=$swmultiReportAgeHcm->assembleNotification();
+			     }
+			     
 			 }
-             #Added by Larry for HealthCheck And Monitor Module - Phase 3 End
-			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                  my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
@@ -1694,12 +1480,10 @@ sub eventRuleCheck{
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Message: {$errorEventRuleMessage}\n";
                  my $errorEventRuleHandlingInstructionCode = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TRP-001'
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code: {$errorEventRuleHandlingInstructionCode}\n";
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
 				 my $errorEventRuleMessageForReplicationFailed = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Message For Replication Failed: {$errorEventRuleMessageForReplicationFailed}\n";
                  my $errorEventRuleHandlingInstructionCodeForReplicationFailed = $metaRuleParameter9;#var used to store error event rule handling instruction code for replication failed - for example: 'E-DBM-TRP-002'
 				 print LOG "TrailsRP DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code For Replication Failed: {$errorEventRuleHandlingInstructionCodeForReplicationFailed}\n";
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
 
 				 my $trailsrp_connection;#var used to store TrailsRP DB connection object
 				 my @trailsRPDBApplyGapRow;#array used to store trailsRP DB apply gap row
@@ -1715,16 +1499,13 @@ sub eventRuleCheck{
 				 my $trailsRPDBApplyGapMins;#var used to store trailsRP DB apply gap mins - for example: 5 mins
 				 my $trailsRPDBApplyGapRemainingSecs;#var used to store trailsRP DB apply gap remaining secs: $trailsRPDBApplyGapRemainingSecs =$trailsRPDBApplyGapSecs%3600 - for example: 360 seconds 
 			      
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
 				 eval{
 				    #move all the DB operations within the business logic scope for Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
-                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
 				    #Get TrailsRP DB Connection 
                     $trailsrp_connection = Database::Connection->new('trailsrp');
 
                     #Get TrailsRP DB Apply Gap Row
 				    @trailsRPDBApplyGapRow = getTrailsRPDBApplyGapFunction($trailsrp_connection);
-				    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
              
 				    #get trailsRP DB current time, last syn time and apply gap seconds
                     $trailsRPDBCurrentTime = $trailsRPDBApplyGapRow[$TRAILSRP_DB_CURRENT_TIME_INDEX];
@@ -1734,7 +1515,7 @@ sub eventRuleCheck{
                     #Disconnect TrailsRP DB Connection 
 				    $trailsrp_connection->disconnect();
                     
-					if(defined $trailsRPDBLastSYNTime){#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A  
+					if(defined $trailsRPDBLastSYNTime){ 
 				      print LOG "{TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
                  
                       $processedRuleTitle = $metaRuleTitle;
@@ -1787,8 +1568,7 @@ sub eventRuleCheck{
 				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
 				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 				      }#end elsif($trailsRPDBApplyGapSecs > $errorTrailsRPDBApplyGap)
-					}#end if(defined $trailsRPDBLastSYNTime)#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
+					}#end if(defined $trailsRPDBLastSYNTime) 
 					#Support the synctime is null case
 					else{
 					   
@@ -1808,7 +1588,6 @@ sub eventRuleCheck{
 				      $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
 				      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 					}
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
 					
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
@@ -1821,10 +1600,7 @@ sub eventRuleCheck{
                     $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
 				 }
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
              }
-             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
-			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "CNDB_CUSTOMER_TME_OBJECT_ID_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
 				 my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
@@ -1832,6 +1608,7 @@ sub eventRuleCheck{
 				 my $searchKeyword = $metaRuleParameter2;#var used to store search keyword - for example: DEFAULT
                  print LOG "CNDB Customer TME_OBJECT_ID Monitoring - Search Keyword: {$searchKeyword}\n";
 				 
+				my $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL = "SELECT ACCOUNT_NUMBER, TME_OBJECT_ID FROM CUSTOMER WHERE TME_OBJECT_ID LIKE '%#1%'";# #1 parameter is used to replace with searching key for example: 'DEFAULT'
 				 my $getCNDBCustomerTMEObjectIDSQL = $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL;
 				 my $cndb_connection;#var used to store CNDB connection object
 				 my @customerRows;#array used to store customer rows object
@@ -1851,7 +1628,6 @@ sub eventRuleCheck{
                  $processedRuleTitle =~ s/\@1/$serverMode/g;#replace @1 with server mode value - for example: TAP
                  print LOG "CNDB Customer TME_OBJECT_ID Monitoring - The Processed Event Rule Title: {$processedRuleTitle}\n"; 
                  
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
 	             eval{
                     #Get CNDB Connection
                     $cndb_connection = Database::Connection->new('cndb');
@@ -1900,10 +1676,7 @@ sub eventRuleCheck{
                     $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
 	             }
-	             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
              }
-             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
-			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $TRAILSST_DB_APPLY_GAP_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSST_DB_APPLY_GAP_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                  my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
@@ -1920,12 +1693,10 @@ sub eventRuleCheck{
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Message: {$errorEventRuleMessage}\n";
                  my $errorEventRuleHandlingInstructionCode = $metaRuleParameter7;#var used to store error event rule handling instruction code - for example: 'E-DBM-TST-001'
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code: {$errorEventRuleHandlingInstructionCode}\n";
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
 				 my $errorEventRuleMessageForReplicationFailed = $metaRuleParameter8;#var used to store error event rule message for replication failed - for example: 'Replication FAILED.'
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Message For Replication Failed: {$errorEventRuleMessageForReplicationFailed}\n";
                  my $errorEventRuleHandlingInstructionCodeForReplicationFailed = $metaRuleParameter9;#var used to store error event rule handling instruction code for replication failed - for example: 'E-DBM-TST-002'
 				 print LOG "TrailsST DB Apply Gap Monitoring - Error Event Rule Handling Instruction Code For Replication Failed: {$errorEventRuleHandlingInstructionCodeForReplicationFailed}\n";
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
 				  
 				 my $trailsst_connection;#var used to store TrailsST DB connection object
 				 my @trailsSTDBApplyGapRow;#array used to store trailsST DB apply gap row
@@ -1941,16 +1712,15 @@ sub eventRuleCheck{
 				 my $trailsSTDBApplyGapMins;#var used to store trailsST DB apply gap mins - for example: 5 mins
 				 my $trailsSTDBApplyGapRemainingSecs;#var used to store trailsST DB apply gap remaining secs: $trailsSTDBApplyGapRemainingSecs =$trailsSTDBApplyGapSecs%3600 - for example: 360 seconds 
 			     
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
 	             eval{ 
 				    #move all the DB operations within the business logic scope for Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSST_DB_APPLY_GAP_MONITORING"
-                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements Start
+                     
 				    #Get TrailsST DB Connection 
                     $trailsst_connection = Database::Connection->new('trailsst');
 
                     #Get TrailsST DB Apply Gap Row
 				    @trailsSTDBApplyGapRow = getTrailsSTDBApplyGapFunction($trailsst_connection);
-				    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 - Refacor the way of getting DB connection and executing SQL statements End
+				     
              
 				    #get trailsST DB current time, last syn time and apply gap seconds
                     $trailsSTDBCurrentTime = $trailsSTDBApplyGapRow[$TRAILSST_DB_CURRENT_TIME_INDEX];
@@ -1960,7 +1730,7 @@ sub eventRuleCheck{
                     #Disconnect TrailsST DB Connection 
 				    $trailsst_connection->disconnect();
                     
-					if(defined $trailsSTDBLastSYNTime){#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
+					if(defined $trailsSTDBLastSYNTime){ 
 				      print LOG "{TrailsST Database Apply Gap Seconds: $trailsSTDBApplyGapSecs} from {LAST_SYN_TIME: $trailsSTDBLastSYNTime} with {CURRENT_TIME: $trailsSTDBCurrentTime}\n";
                  
                       $processedRuleTitle = $metaRuleTitle;
@@ -2013,8 +1783,7 @@ sub eventRuleCheck{
 				         $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
 				         $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 				      }#end elsif($trailsSTDBApplyGapSecs > $errorTrailsSTDBApplyGap)
-					}#end if(defined $trailsSTDBLastSYNTime)#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
+					}#end if(defined $trailsSTDBLastSYNTime) 
 					#Support the synctime is null case
 					else{
 					   
@@ -2034,7 +1803,7 @@ sub eventRuleCheck{
 				      $emailFullContent.="$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email content
 				      $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 					}
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
+					 
 
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
@@ -2047,7 +1816,7 @@ sub eventRuleCheck{
                     $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
 	             }
-	             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
+	              
              }
 			 elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $TRAILSRP_DB_APPLY_GAP_MONITORING_2)#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING_2"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
@@ -2094,7 +1863,7 @@ sub eventRuleCheck{
                  
                  my $defineApplyGapErrorThresholdHours;#var used to store the define apply gap error threshold hours
 
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support Start
+				  
 				 eval{  
 				    #Get TrailsRP DB Connection 
                     $trailsrp_connection = Database::Connection->new('trailsrp');
@@ -2110,7 +1879,6 @@ sub eventRuleCheck{
                     #Disconnect TrailsRP DB Connection 
 				    $trailsrp_connection->disconnect();
 				    
-					#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start
 					if(defined $trailsRPDBLastSYNTime){
 					  print LOG "TrailsRP DB Apply Gap Monitoring 2 - {TrailsRP Database Apply Gap Seconds: $trailsRPDBApplyGapSecs} from {LAST_SYN_TIME: $trailsRPDBLastSYNTime} with {CURRENT_TIME: $trailsRPDBCurrentTime}\n";
             	    
@@ -2217,7 +1985,6 @@ sub eventRuleCheck{
 					    print LOG "TrailsRP DB Apply Gap Monitoring 2 - Email Send Flag: {$TRAILSRP_DB_EMAIL_SENT_FLAG}\n";
                       }#end if(($trailsRPDBEmailSendFlag eq $TRAILSRP_DB_EMAIL_NOT_SENT_FLAG) && ($eventTriggerDay eq $currentDay)) 
 					}#end else
-                    #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End 
             
 				    $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                     print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
@@ -2242,10 +2009,8 @@ sub eventRuleCheck{
 					$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 					print LOG "[$currentTimeStamp]$DB_EXCEPTION_MESSAGE: $@ happened for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName}.\n"; 
 				 }
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 - Add DB Exception Feature Support End
+                  
 			 } 
-             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
-			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 Start
              elsif(($triggerEventGroup eq $APPLICATION_MONITORING && $triggerEventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING)#Event Group: "APPLICATION_MONITORING" + Event Type: "WEBAPP_RUNNING_STATUS_CHECK_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                  my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
@@ -2253,7 +2018,6 @@ sub eventRuleCheck{
 				 my $webAppsCheckConfigValues = $metaRuleParameter2;#var used to store web application check configuration values - for example: "TAP2^Bravo~15~20~http://bravo.boulder.ibm.com/BRAVO/home.do'Trails~15~20~http://trails.boulder.ibm.com/TRAILS/"
 				 print LOG "Web Application Running Status Check Monitoring - The Web Applications Check Configuration Values: {$webAppsCheckConfigValues}\n";
 
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
 				 my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing
 			     my $selfHealingEngineSwitch = $metaRuleParameter3;#var used to store Self Healing Engine Switch(Y/N) - For example: Y
 				 print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Switch: {$selfHealingEngineSwitch}\n";
@@ -2295,7 +2059,6 @@ sub eventRuleCheck{
                  print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Fail Message: {$selfHealingEngineRestartWebAppOperationFailMessage}\n";
             	 
 				 my $selfHealingEngineRestartWebAppOperationProcessedMessage;#var used to store Self Healing Engine Restart Web Application Operation Processed Message
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
 
 				 my $processedRuleTitle;#var used to store processed rule title - for example: 'Web Applications Running Status Check on @1 Server'
 				 my $processedRuleMessage;#var used to store processed rule message - for example: 'Web Application @2 is currently not running.'
@@ -2309,6 +2072,7 @@ sub eventRuleCheck{
 				 
 				   $processedRuleMessage = $metaRuleMessage;#Reset to metaRuleMessage for every loop
                    
+				   my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
                    my $processedCURL = $WEBAPP_CURL_COMMAND;#Reset CURL initial value for every loop
 
 				   my @webAppsCheckConfigValuesArrayItemArray = split(/\~/,$webAppsCheckConfigValuesArrayItem);
@@ -2350,14 +2114,12 @@ sub eventRuleCheck{
                    if($webAppRunningFlag == $TRUE){
                      print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n"; 
 					 
-                     #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server Start
 					 #For Testing Purpose on TAP2 Server only Start
 					 #For TAP2 Testing Server, whatever there are actual webApp Error Messages or not, always generates webApp Error Messages about Alert Email Content for testing purpose 
 					 if($SERVER_MODE eq $TAP2){
                        $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					   push @webAppErrorMessageArray, $processedRuleMessage;
                        
-                       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
                        #Please note that the following codes have been added for Testing Purpose on TAP2 Server only
 					   #The Self Healing Engine Restart Web Application Operation Automatically Started here
 					   if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
@@ -2412,17 +2174,14 @@ sub eventRuleCheck{
 					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
 					   }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
                        #The Self Healing Engine Restart Web Application Operation Automatically Ended here
-                       #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
 					 }#end if($SERVER_MODE eq $TAP2)
 					 #For Testing Purpose on TAP2 Server only End
-					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 - Add Some Testing Function Codes only for TAP2 Testing Server End
 				   }#end if($webAppRunningFlag == $TRUE)
 				   else{
 					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					 push @webAppErrorMessageArray, $processedRuleMessage;
 				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
 					 
-					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A Start
 					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
 					 if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
 					  &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
@@ -2476,7 +2235,6 @@ sub eventRuleCheck{
 					   }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
 					 }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
                      #The Self Healing Engine Restart Web Application Operation Automatically Ended here
-					 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8A End
 				   }#end else
          		 }#end foreach my $webAppsCheckConfigValuesArrayItem (@webAppsCheckConfigValuesArray)
                  
@@ -2507,8 +2265,6 @@ sub eventRuleCheck{
 				 $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 		     }#end elsif(($triggerEventGroup eq $APPLICATION_MONITORING && $triggerEventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
-             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 8 End
-			 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)#Event Group: "DATABASE_MONITORING" + Event Type: "DB_EXCEPTION_STATUS_CHECK_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
 				 my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');
@@ -2716,8 +2472,6 @@ sub eventRuleCheck{
                  $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $processedRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
 			 }#end elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING) && ($SERVER_MODE eq $metaRuleParameter1)) 
-             #Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
-             #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 Start
              elsif(($triggerEventGroup eq $DATABASE_MONITORING && $triggerEventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP)#Event Group: "DATABASE_MONITORING" + Event Type: "TRAILSRP_DB_APPLY_GAP_MONITORING"
 				 &&($SERVER_MODE eq $metaRuleParameter1)){#trigger rule only if the running server is equal to the rule setting server - for example: TAP
                  my $serverMode = $metaRuleParameter1;#var used to store trigger server mode - for example: 'TAP'
@@ -2739,10 +2493,8 @@ sub eventRuleCheck{
                  my $MessageTitle = $metaRuleParameter7;#var used to store message Title
 				 $MessageTitle =~ s/\@1/$SERVER_MODE/g;# Add server mode into message title, for example 'TAP'
 				 print LOG "Recon queues duplicate data monitoring - Message title: {$MessageTitle}\n";
-				 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A Start 
 				 my $DuplicatesInfoMessage = $metaRuleParameter8;#var used to store message to put in HME mail
 				 print LOG "Recon queues duplicate data monitoring - Duplicate info message before cleanup: {$DuplicatesInfoMessage}\n";
-                 #Added by Larry for HealthCheck And Monitoring Service Component - Phase 7A End
                  my $bravo_connection = Database::Connection->new('trails');
                  my @Duplicate;
                  my @NumbersOfDuplicates;
@@ -2990,13 +2742,11 @@ sub eventRuleCheck{
 				   $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 				 }
 			 }
-                 #Added by Tomas for HealthCheck And Monitoring Service Component - Phase 10 End
 			 elsif($triggerEventValue > $metaRuleParameter1){#Default Rule Check Logic Here
                  my $processedRuleMessage = $metaRuleMessage;#set the defined meta rule message to processedRuleMessage var
 			     
 				 $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
 			     $emailFullContent.="$EVENT_RULE_TITLE_TXT: $metaRuleTitle\n";#append event rule title into email content
-			     #Replace @1 param using Event Value and @2 param using Event Time for email content
 		         $processedRuleMessage =~ s/\@1/$triggerEventValue/g;
                  $eventFiredTime = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                  $processedRuleMessage =~ s/\@2/$eventFiredTime/g;
@@ -3019,7 +2769,6 @@ sub eventRuleCheck{
 #This core method is used to send email to corresponding persons based on certain defined business parameters and rules
 sub sendEmail{
   my ($emailSubject,$toEmailAddress,$ccEmailAddress,$emailContent) = @_;
-  #system("echo \"$emailContent\" | mail -s \"$emailSubject\" -c \"$ccEmailAddress\" \"$toEmailAddress\"");#For Email CC Address List Function, It doesn't work.
   system("echo \"$emailContent\" | mail -s \"$emailSubject\" \"$toEmailAddress\"");
   $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
   print LOG "[$currentTimeStamp]HealthCheck and Monitor Email with subject \"$emailSubject\" has been sent to users \"$toEmailAddress\" successfully.\n";
@@ -3042,9 +2791,9 @@ sub getTime
     $year+=1900;#From 1900 year
     
     #$wday is accumulated from Saturday, stands for which day of one week[0-6]
-    #$yday is accumulated from 1/1£¬stands for which day of one year[0,364]
+    #$yday is accumulated from 1/1ï¿½ï¿½stands for which day of one year[0,364]
     #$isdst is a flag
-    my $weekday = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')[$wday];#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9
+    my $weekday = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')[$wday];
     return { 'second' => $sec,
              'minute' => $min,
              'hour'   => $hour,
@@ -3212,14 +2961,12 @@ sub setDB2ENVPath{
 	elsif($SERVER_MODE eq $TAPMF){#TAPMF Server
 	  $DB_ENV = '/db2/cndb/sqllib/db2profile'; 
 	}
-	#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
     elsif($SERVER_MODE eq $BRAVO){#BRAVO Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
 	}
 	elsif($SERVER_MODE eq $TRAILS){#TRAILS Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
 	}
-	#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 }
 
 #This method is used to setup DB2 into System ENV var
@@ -3236,7 +2983,6 @@ sub setupDB2Env {
     return 1;
 }
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
 #This method is used to append start and stop script email alerts into email content
 sub appendStartAndStopScriptEmailAlertsIntoEmailContent{
    my $startAndStopScriptEmailAlertsMessageCount = scalar(@startAndStopScriptsEmailAlertArray);
@@ -3256,9 +3002,7 @@ sub appendStartAndStopScriptEmailAlertsIntoEmailContent{
        $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
    }
 }
-#Added by Larry for HealthCheck And Monitor Module - Phase 2B End
 
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 Start
 #This method is used to append alert email signature into the end of email content
 sub appendAlertEmailSignatureIntoEmailContent{
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
@@ -3269,19 +3013,14 @@ sub appendAlertEmailSignatureIntoEmailContent{
    $emailFullContent.="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/Asset%20Management%20Support/page/Filesystem%20Monitoring\n";
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 }
-#Added by Larry for HealthCheck And Monitor Module - Phase 3 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 Start
 #This method is used to append server normal running information into email content
 sub appendServerNormalRunningInfoIntoEmailContent{
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
    $emailFullContent.="The Health Condition of $SERVER_MODE server is perfect! There is no alert message generated for it.\n";
    $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 4 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 Start
-#my $GET_EVENT_DATA_FOR_CERTAIN_TIME_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID AND E.RECORD_TIME >= CURRENT TIMESTAMP - #1 HOURS AND E.RECORD_TIME <= CURRENT TIMESTAMP ORDER BY E.RECORD_TIME DESC WITH UR";# #1 parameter is used to replace with job cron number
 sub getEventDataForCertainTimeFunction{
   my ($connection, $eventGroup, $eventName, $querySQL) = @_;
   my @eventRows = ();
@@ -3303,7 +3042,6 @@ sub queryEventDataForCertainTime{
   return ('eventDataForCertainTimeSQL', $query);
 }
 
-#my $GET_CNDB_CUSTOMER_TME_OBJECT_ID_SQL = "SELECT ACCOUNT_NUMBER, TME_OBJECT_ID FROM CUSTOMER WHERE TME_OBJECT_ID LIKE '%#1%'";# #1 parameter is used to replace with searching key for example: 'DEFAULT'
 sub getCNDBCustomerTMEObjectIDFunction{
   my ($connection, $querySQL) = @_;
   my @customerRows = ();
@@ -3325,7 +3063,6 @@ sub queryCNDBCustomerTMEObjectID{
   return ('cndbCustomerTMEObjectIDSQL', $query);
 }
 
-#my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
 sub getTrailsRPDBApplyGapFunction{
   my $connection = shift;
   my @trailsRPDBApplyGapRow;
@@ -3339,11 +3076,11 @@ sub getTrailsRPDBApplyGapFunction{
 }
 
 sub queryTrailsRPDBApplyGap{
+  my $GET_TRAILSRP_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
   print LOG "[queryTrailsRPDBApplyGap] Query SQL: {$GET_TRAILSRP_DB_APPLY_GAP_SQL}\n";
   return ('trailsRPDBApplyGapSQL', $GET_TRAILSRP_DB_APPLY_GAP_SQL);
 }
 
-#my $GET_EVENT_META_DATA_SQL = "SELECT EG.EVENT_GROUP_ID, EG.NAME, ET.EVENT_ID, ET.NAME FROM EVENT_GROUP EG, EVENT_TYPE ET WHERE EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID ORDER BY EG.EVENT_GROUP_ID, ET.EVENT_ID WITH UR";
 sub getEventMetaDataFunction{
   my $connection = shift;
   my @eventMetaRecords = ();
@@ -3360,13 +3097,11 @@ sub getEventMetaDataFunction{
 }
 
 sub queryEventMetaData{
+  my $GET_EVENT_META_DATA_SQL = "SELECT EG.EVENT_GROUP_ID, EG.NAME, ET.EVENT_ID, ET.NAME FROM EVENT_GROUP EG, EVENT_TYPE ET WHERE EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID ORDER BY EG.EVENT_GROUP_ID, ET.EVENT_ID WITH UR";
   print LOG "[queryEventMetaData] Query SQL: {$GET_EVENT_META_DATA_SQL}\n";
   return ('eventMetaDataSQL', $GET_EVENT_META_DATA_SQL);
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 5 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements Start
-#my $GET_EVENT_ALL_DATA_COUNT_SQL = "SELECT COUNT(*) FROM EVENT E JOIN EVENT_TYPE ET ON ET.EVENT_ID = E.EVENT_ID JOIN EVENT_GROUP EG ON EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID WHERE EG.NAME = ? AND ET.NAME = ? WITH UR";
 sub getEventAllDataCountFunction{
   my $connection = shift;
   my $eventGroupName = shift;
@@ -3386,11 +3121,11 @@ sub getEventAllDataCountFunction{
 }
 
 sub queryEventAllDataCount{
+  my $GET_EVENT_ALL_DATA_COUNT_SQL = "SELECT COUNT(*) FROM EVENT E JOIN EVENT_TYPE ET ON ET.EVENT_ID = E.EVENT_ID JOIN EVENT_GROUP EG ON EG.EVENT_GROUP_ID = ET.EVENT_GROUP_ID WHERE EG.NAME = ? AND ET.NAME = ? WITH UR";
   print LOG "[queryEventAllDataCount] Query SQL: {$GET_EVENT_ALL_DATA_COUNT_SQL}\n";
   return ('eventAllDataCountSQL', $GET_EVENT_ALL_DATA_COUNT_SQL);
 }
 
-#my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID ORDER BY E.RECORD_TIME DESC FETCH FIRST 100 ROWS ONLY WITH UR";
 sub getEventAllDataFunction{
   my $connection = shift;
   my $eventGroupName = shift;
@@ -3411,13 +3146,11 @@ sub getEventAllDataFunction{
 }
 
 sub queryEventAllData{
+  my $GET_EVENT_ALL_DATA_SQL = "SELECT E.EVENT_ID, E.VALUE, E.RECORD_TIME FROM EVENT E, EVENT_TYPE ET, EVENT_GROUP EG WHERE EG.NAME = ? AND ET.NAME = ? AND E.EVENT_ID = ET.EVENT_ID AND ET.EVENT_GROUP_ID = EG.EVENT_GROUP_ID ORDER BY E.RECORD_TIME DESC FETCH FIRST 100 ROWS ONLY WITH UR";
   print LOG "[queryEventAllData] Query SQL: {$GET_EVENT_ALL_DATA_SQL}\n";
   return ('eventAllDataSQL', $GET_EVENT_ALL_DATA_SQL);
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 - Refacor the way of getting DB connection and executing SQL statements End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 Start
-#The following method is used to compare the used disk percentage with the defined file system threshold
 sub compareUsedDiskPctWithFileSystemThreshold{
    my $usedDiskPct = shift;
    my $fileSystemThreshold = shift;
@@ -3451,10 +3184,7 @@ sub compareUsedDiskPctWithFileSystemThreshold{
   
    return $compareResultValue;
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 6 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 Start
-#my $GET_TRAILSST_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
 sub getTrailsSTDBApplyGapFunction{
   my $connection = shift;
   my @trailsSTDBApplyGapRow;
@@ -3468,11 +3198,11 @@ sub getTrailsSTDBApplyGapFunction{
 }
 
 sub queryTrailsSTDBApplyGap{
+  my $GET_TRAILSST_DB_APPLY_GAP_SQL = "SELECT DISTINCT CURRENT TIMESTAMP, SYNCHTIME, ((DAYS(CURRENT TIMESTAMP) - DAYS(SYNCHTIME)) * 86400 + (MIDNIGHT_SECONDS(CURRENT TIMESTAMP) - MIDNIGHT_SECONDS(SYNCHTIME))) FROM ASN.IBMSNAP_SUBS_SET";
   print LOG "[queryTrailsSTDBApplyGap] Query SQL: {$GET_TRAILSST_DB_APPLY_GAP_SQL}\n";
   return ('trailsSTDBApplyGapSQL', $GET_TRAILSST_DB_APPLY_GAP_SQL);
 }
 
-#my $GET_TOTAL_RECORDS_IN_QUEUE_SQL = "SELECT COUNT(*) FROM V_RECON_QUEUE WITH UR";
 sub getTotalRecordCountInQueueFunction{
   my $connection = shift;
   my @totalRecordCountRowInQueue;
@@ -3489,11 +3219,11 @@ sub getTotalRecordCountInQueueFunction{
 }
 
 sub queryTotalRecordCountInQueue{
+  my $GET_TOTAL_RECORDS_IN_QUEUE_SQL      = "SELECT COUNT(*) FROM V_RECON_QUEUE WITH UR";
   print LOG "[queryTotalRecordCountInQueue] Query SQL: {$GET_TOTAL_RECORDS_IN_QUEUE_SQL}\n";
   return ('totalRecordCountInQueueSQL', $GET_TOTAL_RECORDS_IN_QUEUE_SQL);
 }
 
-#my $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL = "SELECT COUNT(DISTINCT CUSTOMER_ID) FROM V_RECON_QUEUE WITH UR";
 sub getTotalCustomerCountInQueueFunction{
   my $connection = shift;
   my @totalCustomerCountRowInQueue;
@@ -3510,18 +3240,16 @@ sub getTotalCustomerCountInQueueFunction{
 }
 
 sub queryTotalCustomerCountInQueue{
+  my $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL = "SELECT COUNT(DISTINCT CUSTOMER_ID) FROM V_RECON_QUEUE WITH UR";
   print LOG "[queryTotalCustomerCountInQueue] Query SQL: {$GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL}\n";
   return ('totalCustomerCountInQueueSQL', $GET_TOTAL_CUSTOMERS_IN_QUEUE_SQL);
 }
 
-#This method is used to send HME startup error email 
 sub sendHMEStartupErrorEmail{
   my ($emailSubject,$toEmailAddress,$emailContent) = @_;
   system("echo \"$emailContent\" | mail -s \"$emailSubject\" \"$toEmailAddress\"");
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 7 End
 
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 Start
 sub getCurrentWeekdayNumber{
  my $currentWeekday = shift;
  my $currentWeekdayNumber =-1;#default value = -1
@@ -3533,4 +3261,3 @@ sub getCurrentWeekdayNumber{
  }#end foreach my $weekdayKey(keys %WEEKDAY_HASH)
  return $currentWeekdayNumber;
 }
-#Added by Larry for HealthCheck And Monitoring Service Component - Phase 9 End
