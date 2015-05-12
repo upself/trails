@@ -109,6 +109,8 @@ sub queuePotentialInstalledSoftware {
 
     ###We don't auto reconcile anything unless its in this list
     if (    $self->license->capType ne '2'
+         && $self->license->capType ne '5'
+         && $self->license->capType ne '9'
          && $self->license->capType ne '13'
          && $self->license->capType ne '14'
          && $self->license->capType ne '17'
