@@ -300,7 +300,7 @@ public class ShowConfirmation extends AccountBaseAction {
 			if (StringUtils.isBlank(comments)) {
 				addFieldError("comments", "You must enter a comment, less than 255 characters");
 			}else if (StringUtils.length(comments) > 255){
-				addFieldError("comments", "comment must less than 255 characters");
+				addFieldError("comments", "comment must be less than 255 characters");
 			}
 		}
 
