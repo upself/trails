@@ -1702,7 +1702,8 @@ sub getCustomerId {
 		|| $sr->bankAccountId == 738
 		|| $sr->bankAccountId == 853
 		|| $sr->bankAccountId == 920 
-		|| $sr->bankAccountId == 1305 )
+		|| $sr->bankAccountId == 1305
+		|| $sr->bankAccountId == 1401 )
 	{
 		$acceptFlag = 1;
 	}
