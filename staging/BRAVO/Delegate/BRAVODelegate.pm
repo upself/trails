@@ -33,6 +33,7 @@ sub getDiscrepancyTypeMap {
     $data{'VALID'}     = 4;
     $data{'INVALID'}   = 5;
     $data{'TADZ'}      = 6;
+    $data{'FH RESET'}  = 7;
 
     return \%data;
 }

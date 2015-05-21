@@ -66,8 +66,8 @@ sub recon0101 {
 		$autoquery.="2, 17, ";
 	}
 	if ( catchRight(\$action) == "1" ){ # 10^4
-		$manquery.=$allocMethodologyMap->{'Per hardware chip'}.$allocMethodologyMap->{'Per PVU'};
-		$autoquery.="48, 17, ";
+		$manquery.=$allocMethodologyMap->{'Per hardware chip'};
+		$autoquery.="48, ";
 	}
 	if ( catchRight(\$action) == "1" ){ # 10^5
 		$manquery.=$allocMethodologyMap->{'Per PVU'};
@@ -99,6 +99,11 @@ sub recon0101 {
 		$manquery.=$allocMethodologyMap->{'Per hardware IFL'};
 		$autoquery.="49, ";
 	}
+	if ( catchRight(\$action) == "1" ){ # 10^17
+		$manquery.=$allocMethodologyMap->{'Per PVU'};
+		$autoquery.="17, ";
+	}
+
 		
 	return if ($manquery == "");
 	

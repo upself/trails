@@ -17,9 +17,21 @@ public class UserSession {
 	private List alertCountReport;
 	
 	private List exceptionCountReport;
-
+//AB added
+	//Story 26012
+	private List<String> SchedulefDefValResult;
+ 
 	// CPA - 3/31/09 - Commenting out for performance reasons
 	//private Integer maxAlertAge;
+
+
+	public List<String> getSchedulefDefValResult() {
+		return SchedulefDefValResult;
+	}
+
+	public void setSchedulefDefValResult(List<String> schedulefDefValResult) {
+		SchedulefDefValResult = schedulefDefValResult;
+	}
 
 	private ReconSetting reconSetting;
 

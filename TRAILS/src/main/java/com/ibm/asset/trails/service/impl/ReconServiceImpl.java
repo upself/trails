@@ -43,6 +43,30 @@ public class ReconServiceImpl implements ReconService {
 	private static final Log log = LogFactory.getLog(ReconServiceImpl.class);
 
 	private EntityManager em;
+	
+	//AB added, flag used for export the validate result to reconWorkspaceImpl
+	//Story 26012
+	private List<String> ScheduleFDefInRecon;
+
+	public List<String> getScheduleFDefInRecon() {
+		return ScheduleFDefInRecon;
+	}
+
+	public void setScheduleFDefInRecon(String result) {
+		if(result!=null){
+			if(ScheduleFDefInRecon==null||ScheduleFDefInRecon.isEmpty()){
+				ScheduleFDefInRecon=new ArrayList<String>();
+				ScheduleFDefInRecon.add(result);
+			}else{
+				if(!ScheduleFDefInRecon.contains(result)){
+					ScheduleFDefInRecon.add(result);
+				}
+			}
+		}else{
+			ScheduleFDefInRecon=null;
+		}
+	
+	}
 
 	@Autowired
 	private AllocationMethodologyService allocationMethodologyService;
@@ -164,7 +188,8 @@ public class ReconServiceImpl implements ReconService {
 		return false;
 	}
 	
-	public int validateScheduleFowner(AlertUnlicensedSw alert){
+	//AB added2
+	public int validateScheduleFowner(AlertUnlicensedSw alert,Recon recon){
 		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				    alert.getInstalledSoftware().getSoftware().getSoftwareName(),
 				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
@@ -175,7 +200,32 @@ public class ReconServiceImpl implements ReconService {
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
 					.split(",");
-
+			
+			//AB added2
+			/**
+			 * manualAllocation, 		reconType=1,    Schedule F scope must be xxxIBM Managed
+			 * customerOwned,			reconType=2,    Schedule F scope must be Customer owned Customer managed.
+			 * altPurchase, 			reconType=3,    Schedule F scope must be xxxIBM Managed
+			 * Included, 				reconType=4,    Schedule F scope must be xxxIBM Managed
+			 * enterpriseAgreement, 	reconType=13,   Schedule F scope must be IBM Ownedxxx
+			 */
+			int reconType=recon.getReconcileType().getId().intValue();
+			if(reconType!=0){
+				if(reconType == 1 || reconType == 3 || reconType == 4){
+					if(!scDesParts[1].contains("IBM managed")){
+						return owner;
+					}
+				}else if(reconType == 2){
+					if(!scDesParts[0].contains("Customer owned") || !scDesParts[1].contains("Customer managed")){
+						return owner;
+					}
+				}else if(reconType == 13){
+					if(!scDesParts[0].contains("IBM owned")){
+						return owner;
+					}
+				}
+			}
+			
 			if (scDesParts[0].contains("IBM owned")) {
 				owner = 1;
 			} else if (scDesParts[0].contains("Customer owned")) {
@@ -572,6 +622,8 @@ public class ReconServiceImpl implements ReconService {
 				usedLicenseHistories.add(ulh);
 			}
 
+			//Story 26012
+			int alertWithoutScheduleFcounter=0;
 			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
 				boolean bReconcileValidation = reconcileValidate(lausTemp,
 						pRecon, totalUsedLicenses);
@@ -581,7 +633,14 @@ public class ReconServiceImpl implements ReconService {
 				boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;//default init value
 				boolean crossAccountAlertFlag = isCrossAccountAlert(lausTemp.getInstalledSoftware().getSoftwareLpar().getAccount(), account);
 				if(crossAccountAlertFlag == false){//same account alert
-				  alertlistSwOwner = validateScheduleFowner(lausTemp);
+					
+				  //AB added
+					alertlistSwOwner = validateScheduleFowner(lausTemp, pRecon);
+				  //this only used to export the schedule F defined flag to ReconWorkspaceImpl
+				  if(alertlistSwOwner==2){
+					  alertWithoutScheduleFcounter++;
+				  }
+				  
 				}
 				else{//cross account alert
 					validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = validateScheduleF4WorkingAlertAndCrossAccountAlert(aus,lausTemp);
@@ -663,6 +722,13 @@ public class ReconServiceImpl implements ReconService {
 								remoteUser);
 					}
 				}
+			}
+			
+			//Story 26012
+			if(alertWithoutScheduleFcounter==llAlertUnlicensedSw.size()){
+				setScheduleFDefInRecon("Schedule F not defined");
+			}else if(alertWithoutScheduleFcounter>0 && alertWithoutScheduleFcounter<llAlertUnlicensedSw.size()){
+				setScheduleFDefInRecon("Schedule F not defined for all alerts");
 			}
 
 			return aus.getInstalledSoftware().getSoftwareLpar()

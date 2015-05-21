@@ -58,7 +58,7 @@ sub queue {
                           $self->installedSoftwares->{$installedSoftwareId} );
 
         my $queue = Recon::Queue->new( $self->connection, $installedSoftware,
-                                       $softwareLpar );
+                                       $softwareLpar, 'LICENSING' );
         $queue->add;
     }
 }

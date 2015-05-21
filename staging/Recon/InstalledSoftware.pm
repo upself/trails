@@ -83,10 +83,10 @@ sub setUp {
 #		$processorCount = $self->installedSoftwareReconData->processorCount;
 #	}
 
-	my $chipCount = $self->installedSoftwareReconData->hChips;
+	my $nbrCoresPerChip = $self->installedSoftwareReconData->hNbrCoresPerChip;
 
 	my $valueUnitsPerCore =
-	  $self->getValueUnitsPerProcessor( $chipCount, $processorCount );
+	  $self->getValueUnitsPerProcessor( $nbrCoresPerChip, $processorCount );
 	$self->pvuValue($valueUnitsPerCore);
 
 	###fetch the hw server type, if its lpar is mix
@@ -234,6 +234,12 @@ sub getSoftwareLpar {
 
 sub reconcile {
 	my $self = shift;
+	
+	if (( not defined $self->installedSoftwareReconData->scopeName )
+			|| ( $self->installedSoftwareReconData->scopeName eq "" )) {
+				ilog("No ScheduleF defined, no auto-reconciliation will be performed!");
+				return 0;
+			}
 
 	return 1 if $self->attemptVendorManaged == 1;
 	return 1 if $self->attemptSoftwareCategory == 1;
@@ -662,11 +668,11 @@ sub attemptLicenseAllocation {
 		if defined $licsToAllocate;
 	}
 	
-	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
-		( $self->installedSoftwareReconData->scopeName eq '' )) {
-			dlog("ScheduleF not defined, license allocation won't be performed!");
-			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
-	}
+#	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
+#		( $self->installedSoftwareReconData->scopeName eq '' )) {
+#			dlog("ScheduleF not defined, license allocation won't be performed!");
+#			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
+#	}
 	
 	###Get license free pool by customer id and software id.
 	my $freePoolData = $self->getFreePoolData ( $self->installedSoftwareReconData->scopeName );
@@ -1748,14 +1754,14 @@ sub attemptLicenseAllocationPVU {
 }
 
 sub getValueUnitsPerProcessor {
-	my ( $self, $chipCount, $processorCount ) = @_;
+	my ( $self, $nbrCoresPerChip, $processorCount ) = @_;
 	my $defaultValue      = -1; # 100 should no longer be a default value
 	my $valueUnitsPerCore = 0;
 	dlog(
-"start caculating pvu, chipCount=$chipCount processorCount=$processorCount"
+"start calculating PVU, coresPerChip=$nbrCoresPerChip processorCount=$processorCount"
 	);
-	if ( $chipCount == 0 ) {
-		dlog("end of caculating pvu $defaultValue returned");
+	if (( not defined $nbrCoresPerChip ) || ( $nbrCoresPerChip < 1 )) {
+		dlog("undefined or 0 or less cores per chip, $defaultValue PVU returned");
 		return $defaultValue;
 	}
 
@@ -1769,22 +1775,17 @@ sub getValueUnitsPerProcessor {
 
 	if ( defined $pvuMap->id ) {
 
-		my $procTypeFlag = $processorCount / $chipCount;
-		if ( $procTypeFlag == 0 || $procTypeFlag < 1 ) {
-			return $defaultValue;
-		}
-
 		my $processorSql = '';
 
-		if ( $procTypeFlag == 1 ) {
+		if ( $nbrCoresPerChip == 1 ) {
 			$processorSql =
-" (processor_type = 'SINGLE-CORE' or processor_type like \'%ONE%\') ";
+" (processor_type = 'SINGLE-CORE' or processor_type like '%ONE%') ";
 		}
-		elsif ( $procTypeFlag == 2 ) {
-			$processorSql = " processor_type = \'DUAL-CORE\' ";
+		elsif ( $nbrCoresPerChip == 2 ) {
+			$processorSql = " processor_type = 'DUAL-CORE' ";
 		}
-		elsif ( $procTypeFlag == 4 ) {
-			$processorSql = " processor_type like \'%QUAD-CORE%\' ";
+		elsif ( $nbrCoresPerChip == 4 ) {
+			$processorSql = " processor_type like '%QUAD-CORE%' ";
 		}
 
 		if ( $processorSql ne '' ) {
@@ -1792,8 +1793,8 @@ sub getValueUnitsPerProcessor {
 			  $self->getValueUnitsPerCore( $processorSql, $pvuMap->pvuId );
 		}
 
-		if ( $valueUnitsPerCore == 0 && $procTypeFlag > 1 ) {
-			$processorSql      = " processor_type like \'%MULTI-CORE%\' ";
+		if ( $valueUnitsPerCore == 0 && $nbrCoresPerChip > 1 ) {
+			$processorSql      = " processor_type like '%MULTI-CORE%' ";
 			$valueUnitsPerCore =
 			  $self->getValueUnitsPerCore( $processorSql, $pvuMap->pvuId );
 		}
@@ -2093,6 +2094,8 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hProcCount( $rec{hProcCount} );
 		$installedSoftwareReconData->hHwStatus( $rec{hHwStatus} );
 		$installedSoftwareReconData->hSerial( $rec{hSerial} );
+		$installedSoftwareReconData->hChips( $rec{hChips} );
+		$installedSoftwareReconData->hNbrCoresPerChip ( $rec{hNbrCoresPerChip} );
 		$installedSoftwareReconData->hProcessorBrand( $rec{hProcessorBrand} );
 		$installedSoftwareReconData->hProcessorModel( $rec{hProcessorModel} );
 		$installedSoftwareReconData->hMachineTypeId( $rec{hMachineTypeId} );
@@ -2126,7 +2129,8 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
 		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
-		$installedSoftwareReconData->hChips( $rec{hChips} );
+		$installedSoftwareReconData->rIsManual ( $rec{rIsManual} );
+
 
 		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
@@ -2399,6 +2403,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  hSerial
 	  hProcCount
 	  hChips
+	  hNbrCoresPerChip
 	  hProcessorBrand
 	  hProcessorModel
 	  hMachineTypeId
@@ -2434,6 +2439,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  rTypeId
 	  rParentInstSwId
 	  rMachineLevel
+	  rIsManual
 	);
 	my $query = '
         select
@@ -2443,6 +2449,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,h.serial
             ,h.processor_count
             ,h.chips
+            ,h.nbr_cores_per_chip
             ,h.mast_processor_type
             ,h.model
             ,h.machine_type_id
@@ -2478,6 +2485,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,r.reconcile_type_id
             ,r.parent_installed_software_id
             ,r.machine_level
+            ,rt.is_manual
         from
             installed_software is
             join software_lpar sl on 
@@ -2504,6 +2512,8 @@ sub queryReconInstalledSoftwareBaseData {
                 bc.id = bs.bundle_id
             left outer join reconcile r on 
                 r.installed_software_id = is.id
+            left outer join reconcile_type rt on
+                r.reconcile_type_id = rt.id
         where
             is.id = ?
         with ur

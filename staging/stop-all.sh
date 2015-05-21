@@ -84,7 +84,9 @@ sleep $SLEEP
 sleep $SLEEP
 ./procgrpsToBravo.pl stop
 sleep $SLEEP
-./reconEngine.pl stop
+./reconEngineInventory.pl stop
+sleep $SLEEP
+./reconEngineLicensing.pl stop
 sleep $SLEEP
 ./scanRecordToLpar.pl stop
 sleep $SLEEP

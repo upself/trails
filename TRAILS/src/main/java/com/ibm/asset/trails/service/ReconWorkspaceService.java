@@ -57,4 +57,7 @@ public interface ReconWorkspaceService extends BaseService {
 
 	List<Long> findAffectedAlertUnlicensedSwList(Account pAccount,
 			List<ReconWorkspace> plReconWorkspace, String psRunOn);
+	
+	//Story 26012
+	public List<String> getScheduleFValResult();
 }

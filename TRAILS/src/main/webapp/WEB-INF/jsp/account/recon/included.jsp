@@ -15,6 +15,10 @@ confirmation page. Click on cancel to return to the workspace.</p>
 <br />
 <div class="hrule-dots"></div>
 <br />
+<s:if test="hasErrors()">
+	<s:actionerror />
+	<s:fielderror />
+</s:if>
 <s:form action="showIncludedConfirmation" namespace="/account/recon"
 	theme="simple">
 	<div class="float-left" style="width:25%;"><label for="runon">Product:</label></div>
@@ -22,6 +26,10 @@ confirmation page. Click on cancel to return to the workspace.</p>
 		name="installedSoftwareId" label="Software"
 		list="recon.installedSoftwareList" listKey="id"
 		listValue="software.softwareName" /></div>
+		
+	<div class="float-left" style="width:25%; margin-top:5px;"><label for="automated">Comments:</label></div>
+	
+	<div class="float-left" style="width:75%; margin-top:5px;"><s:textarea rows="4" cols="63" name="comments" id="comments" wrap="virtual" /></div>
 
 	<div class="clear"></div>
 	<div class="button-bar">
