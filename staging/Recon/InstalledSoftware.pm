@@ -1540,7 +1540,7 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			}
 		}
 	}
-	if ( $isFullyAllocated == 0 ) { # master pool
+	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 1 )) { # master pool
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
