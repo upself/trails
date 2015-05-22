@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 
@@ -1362,11 +1363,17 @@ public class ReportServiceImpl implements ReportService {
 	private String outputData(Object[] poaData) {
 		StringBuffer lsbData = new StringBuffer();
 		String lsData = null;
+		
+		String regx = "^((-?\\d+.?\\d*)[Ee]{1}(-?\\d+))$";
+		Pattern pattern = Pattern.compile(regx);
 
 		for (int i = 0; poaData != null && i < poaData.length; i++) {
 			lsData = poaData[i] == null ? "" : poaData[i].toString();
-
-			lsbData.append(i == 0 ? "" : "\t").append(lsData);
+			if(pattern.matcher(lsData).matches()){
+				lsbData.append(i == 0 ? "" : "\t").append(lsData + "\f");
+			}else{
+				lsbData.append(i == 0 ? "" : "\t").append(lsData);
+			}
 		}
 
 		return lsbData.toString();
