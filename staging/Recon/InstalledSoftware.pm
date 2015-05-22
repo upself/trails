@@ -1478,7 +1478,7 @@ sub attemptLicenseAllocationMipsMsuGartner {
 				$freePoolData->{$lId}->quantity(0);
 			}
 		}
-		if ( $isFullyAllocated == 0 ) { # named LPAR, master pool's licenses
+		if (( $isFullyAllocated == 0 ) && ( $machineLevel == 1 )) { # named LPAR, master pool's licenses
 			foreach my $lId ( keys %{$freePoolData} ) {
 				my $lEnv    = $freePoolData->{$lId}->environment;
 				my $licView = $freePoolData->{$lId};
