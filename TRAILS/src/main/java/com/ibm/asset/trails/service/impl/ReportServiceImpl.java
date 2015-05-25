@@ -104,7 +104,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
 	private final String[] LICENSE_COLUMN_HEADERS = { "Primary Component",
-			"Catalog match", "License Name", "Capacity type",
+			"Catalog match", "License Name", "Software product PID", "Capacity type",
 			"Environment","Total qty", "Available qty", "Expiration date", "PO number",
 			"Serial number", "License owner", "SWCM ID", "Pool",
 			"Record date/time" };
