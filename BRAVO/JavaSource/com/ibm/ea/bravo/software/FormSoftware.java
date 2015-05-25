@@ -306,7 +306,7 @@ public class FormSoftware extends FormBase {
 		 * .getDiscrepancyType(DelegateDiscrepancy.VALID)); }
 		 **/
 		// build the list of invalid software categories
-		invalidCategoryList = DelegateSoftware.getInvalidCategoryList();
+		invalidCategoryList = DelegateSoftware.getInvalidCategoryList(software.getChangeJustification());
 
 		return errors;
 	}
