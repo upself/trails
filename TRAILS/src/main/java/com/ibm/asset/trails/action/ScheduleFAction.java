@@ -2,10 +2,11 @@ package com.ibm.asset.trails.action;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
@@ -17,7 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.ibm.asset.trails.domain.ReportDeliveryTracking;
+import com.ibm.asset.trails.domain.ReportDeliveryTrackingHistory;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.form.ReportDeliveryTrackingForm;
 import com.ibm.asset.trails.service.ReportDeliveryTrackingService;
@@ -126,6 +133,51 @@ public class ScheduleFAction extends AccountBaseAction {
 
 			Gson gson = new Gson();
 			writer.write(gson.toJson(form));
+
+		} else {
+			writer.write("{\"empty\":\"true\"}");
+		}
+
+		return com.opensymphony.xwork2.Action.NONE;
+	}
+
+	@UserRole(userRole = UserRoleType.READER)
+	@Action("getReportTrackingHistory")
+	public String doGetReportTrackingHistory() throws IOException {
+		ReportDeliveryTracking reportDeliveryTracking = reperDeliveryTrackingService
+				.getByAccount(getAccount());
+		List<ReportDeliveryTrackingHistory> historyList = reperDeliveryTrackingService
+				.getHistory(reportDeliveryTracking);
+
+		PrintWriter writer = ServletActionContext.getResponse().getWriter();
+
+		if (historyList != null && historyList.size() > 0) {
+
+			GsonBuilder builder = new GsonBuilder();
+			Gson gson = builder.registerTypeAdapter(
+					ReportDeliveryTrackingHistory.class,
+					new JsonSerializer<ReportDeliveryTrackingHistory>() {
+
+						public JsonElement serialize(
+								ReportDeliveryTrackingHistory src,
+								Type typeOfSrc, JsonSerializationContext context) {
+							SimpleDateFormat fmt = new SimpleDateFormat(
+									"MM/dd/yy");
+							JsonObject obj = new JsonObject();
+							obj.addProperty("lastDate",
+									fmt.format(src.getLastDeliveryTime()));
+							obj.addProperty("cycle", src.getReportingCycle());
+							obj.addProperty("nextDate",
+									fmt.format(src.getNextDeliveryTime()));
+							obj.addProperty("qmx", src.getQmxReference());
+							obj.addProperty("createdDate",
+									fmt.format(src.getRecordTime()));
+							obj.addProperty("user", src.getRemoteUser());
+							return obj;
+						}
+					}).create();
+
+			writer.write(gson.toJson(historyList));
 
 		} else {
 			writer.write("{\"empty\":\"true\"}");

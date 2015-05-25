@@ -21,7 +21,7 @@
 			$('#nextReportDeliveryDueDate').val(dataStr);
 		}
 
-		function restored(add) {
+		function btnRender(add) {
 			if (add) {
 				$("#reportTrackingRestoreBtn").attr("disabled", "true");
 				$("#reportTrackingUpdateBtn").removeAttr("disabled");
@@ -37,7 +37,7 @@
 			$("#reportTrackingRestoreBtn").removeAttr("disabled");
 			$("#reportTrackingUpdateBtn").removeAttr("disabled");
 		}
-		
+
 		restore();
 
 		function restore() {
@@ -60,7 +60,7 @@
 					}
 				});
 				$("#reportTrackingRestoreBtn").val('Restore');
-				restored(add)
+				btnRender(add)
 			});
 
 		}
@@ -91,6 +91,9 @@
 
 		var frm = $("#reportTracking");
 		$("#reportTrackingUpdateBtn").click(function() {
+			$("#reportTrackingUpdateBtn").val("Updating...");
+			$("#reportTrackingRestoreBtn").attr("disabled", "true");
+			$("#reportTrackingUpdateBtn").attr("disabled", "true");
 			frm.submit();
 		});
 
@@ -106,17 +109,76 @@
 								url : "${pageContext.request.contextPath}//admin/scheduleF/mergeReportTracking.htm",
 								data : frm.serialize(),
 								success : function(data) {
-									alert(data);
 									if (data == 'add' || data == 'error') {
-										restored(true);
+										btnRender(true);
 									} else {
-										restored(false);
+										btnRender(false);
+										var active = $(
+												"#reportTrackingHistory")
+												.accordion("option", "active");
+										if ((typeof active)==='number') {
+											$("#historyContent").html(
+													"reloading...");
+											fetchHistory();
+										}
 									}
+
 								}
 							});
 
 					return false;
 				});
+
+		$("#reportTrackingHistory").accordion({
+			active : false,
+			collapsible : true,
+			heightStyle : "content",
+			beforeActivate : function(event, ui) {
+				if (ui.oldHeader.length == 0) {
+					$("#historyContent").html("Loading...");
+					fetchHistory();
+				}
+			}
+		});
+
+		function fetchHistory() {
+			var url = "${pageContext.request.contextPath}//admin/scheduleF/getReportTrackingHistory.htm";
+			$.getJSON(url, function(data) {
+				$.each(data, function(key, value) {
+					if (key == 'empty') {
+						$("#historyContent").html("No history found.");
+					} else {
+						drawTable(data);
+					}
+				});
+
+			});
+		}
+
+		function drawTable(data) {
+			var historySection = $("#historyContent");
+			historySection.empty();
+			historySection.append("<table>");
+			historySection.append("<tr>");
+			historySection.append("<th>Last Date</th>");
+			historySection.append("<th>Cycle</th>");
+			historySection.append("<th>Next Date</th>");
+			historySection.append("<th>QMX</th>");
+			historySection.append("<th>Created Date</th>");
+			historySection.append("<th>User</th>");
+			historySection.append("</tr>");
+			for (var i = 0; i < data.length; i++) {
+				historySection.append("<tr>");
+				historySection.append("<td>" + data[i].lastDate + "</td>");
+				historySection.append("<td>" + data[i].cycle + "</td>");
+				historySection.append("<td>" + data[i].nextDate + "</td>");
+				historySection.append("<td>" + data[i].qmx + "</td>");
+				historySection.append("<td>" + data[i].createdDate + "</td>");
+				historySection.append("<td>" + data[i].user + "</td>");
+				historySection.append("</tr>")
+			}
+			historySection.append("</table>");
+		}
 
 	});
 </script>
@@ -161,6 +223,19 @@
 </form>
 <input type="button" id="reportTrackingUpdateBtn" value="Update">
 <input type="button" id="reportTrackingRestoreBtn" value="Restore">
+<br />
+<br />
+<style>
+#reportTrackingHistory table, #reportTrackingHistory th,
+	#reportTrackingHistory td {
+	border: 1px solid black;
+}
+</style>
+<div id="reportTrackingHistory">
+	<h3>Report Delivery Tracking History</h3>
+	<div id="historyContent"></div>
+
+</div>
 <div class="hrule-dots"></div>
 <br />
 
