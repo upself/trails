@@ -46,13 +46,14 @@ public class ReportDeliveryTrackingServiceImpl implements
 
 	}
 
-	@Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED)
-	public void merge(ReportDeliveryTracking reportDeliveryTracking) {
+	@Transactional(readOnly = false, isolation = Isolation.DEFAULT)
+	public int merge(ReportDeliveryTracking reportDeliveryTracking) {
 		ReportDeliveryTracking temp = getByAccount(reportDeliveryTracking
 				.getAccount());
-
+		int code = ERROR;
 		if (temp == null) {
 			em.persist(reportDeliveryTracking);
+			code = ADD;
 		} else if (!temp.equals(reportDeliveryTracking)) {
 
 			// create history.
@@ -60,20 +61,12 @@ public class ReportDeliveryTrackingServiceImpl implements
 			em.persist(history);
 
 			// update existing one.
-//			temp.setRecordTime(reportDeliveryTracking.getRecordTime());
-//			temp.setRemoteUser(reportDeliveryTracking.getRemoteUser());
-//			temp.setQmxReference(reportDeliveryTracking.getQmxReference());
-//			temp.setNextDeliveryTime(reportDeliveryTracking
-//					.getNextDeliveryTime());
-//			temp.setReportingCycle(reportDeliveryTracking.getReportingCycle());
-//			temp.setLastDeliveryTime(reportDeliveryTracking
-//					.getLastDeliveryTime());
-//			temp.setAccount(reportDeliveryTracking.getAccount());
-//			
 			reportDeliveryTracking.setId(temp.getId());
 			em.merge(reportDeliveryTracking);
-
+			code = UPDATE;
 		}
+
+		return code;
 	}
 
 	private ReportDeliveryTrackingHistory buildHistory(

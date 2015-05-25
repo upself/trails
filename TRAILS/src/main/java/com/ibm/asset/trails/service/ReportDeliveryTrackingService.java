@@ -8,10 +8,14 @@ import com.ibm.asset.trails.domain.ReportDeliveryTrackingHistory;
 
 public interface ReportDeliveryTrackingService {
 
+	public static int ERROR = -1;
+	public static int ADD = 1;
+	public static int UPDATE = 2;
+
 	public ReportDeliveryTracking getByAccount(Account account);
 
 	public List<ReportDeliveryTrackingHistory> getHistory(
 			ReportDeliveryTracking reportDeliveryTracking);
 
-	public void merge(ReportDeliveryTracking reportDeliveryTracking);
+	public int merge(ReportDeliveryTracking reportDeliveryTracking);
 }
