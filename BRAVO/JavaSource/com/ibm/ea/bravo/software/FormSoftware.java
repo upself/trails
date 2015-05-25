@@ -58,6 +58,8 @@ public class FormSoftware extends FormBase {
 	private String action;
 	private String search;
 	private String context;
+	
+	private String changeJustification;
 
 	private SoftwareLpar softwareLpar;
 	//Change Bravo to use Software View instead of Product Object Start
@@ -234,7 +236,9 @@ public class FormSoftware extends FormBase {
 			manufacturer = software.getManufacturer().getManufacturerName();
 			licenseLevel = software.getLevel();
 		}
-
+		
+		this.setChangeJustification(software.getChangeJustification());
+		
 		// initialize form read only fields
 		readOnly.put(Constants.SOFTWARE_NAME, Constants.TRUE);
 		readOnly.put(Constants.MANUFACTURER, Constants.TRUE);
@@ -306,7 +310,7 @@ public class FormSoftware extends FormBase {
 		 * .getDiscrepancyType(DelegateDiscrepancy.VALID)); }
 		 **/
 		// build the list of invalid software categories
-		invalidCategoryList = DelegateSoftware.getInvalidCategoryList(software.getChangeJustification());
+		this.setInvalidCategoryList(DelegateSoftware.getInvalidCategoryList(this.getChangeJustification()));
 
 		return errors;
 	}
@@ -655,6 +659,7 @@ public class FormSoftware extends FormBase {
 		s += ",manufacturer=" + this.getManufacturer();
 		s += ",licenseLevel=" + this.getLicenseLevel();
 		s += ",discrepancyTypeId=" + this.getDiscrepancyTypeId();
+		s += ",changeJustification=" + this.getChangeJustification();
 		s += ",comment=" + this.getComment();
 		s += ",status=" + this.getStatus();
 		s += ",processorCount=" + this.getProcessorCount();
@@ -686,4 +691,14 @@ public class FormSoftware extends FormBase {
 	public void setButtonPressed(String buttonPressed) {
 		this.buttonPressed = buttonPressed;
 	}
+
+
+	public String getChangeJustification() {
+		return changeJustification;
+	}
+
+	public void setChangeJustification(String changeJustification) {
+		this.changeJustification = changeJustification;
+	}
+	
 }
