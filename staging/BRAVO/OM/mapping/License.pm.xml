@@ -39,6 +39,8 @@
 		sql-name="environment" />
 	<property name="lparName" type="scalar" equals="true"
 		sql-name="lpar_name" />
+	<property name="pid" type="scalar" sql-name="pid"
+		equals="true" />
 	<property name="table" type="scalar" default="license" />
 	<property name="idField" type="scalar" default="id" />
 	<method name="save" />

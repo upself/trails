@@ -39,6 +39,8 @@
 		equals="true" />
 	<property name="lparName" type="scalar" sql-name="lpar_name"
 		equals="true" />
+	<property name="pid" type="scalar" sql-name="pid"
+		equals="true" />
 	<property name="status" type="scalar" sql-name="status" />
 	<property name="action" type="scalar" sql-name="action" />
 	<property name="table" type="scalar" default="license" />

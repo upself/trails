@@ -273,6 +273,7 @@ sub buildBravoLicense {
     $bravoLicense->agreementType( $self->stagingLicense->agreementType );
     $bravoLicense->environment($self->stagingLicense->environment);
     $bravoLicense->lparName($self->stagingLicense->lparName);
+    $bravoLicense->pid($self->stagingLicense->pid);
     
     $self->bravoLicense($bravoLicense);
 }
