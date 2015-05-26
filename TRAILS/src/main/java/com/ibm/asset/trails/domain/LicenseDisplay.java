@@ -31,6 +31,8 @@ public class LicenseDisplay {
     private String environment;
 
     private Long ownerAccountNumber;
+    
+    private String pId;
 
     public LicenseDisplay() {
     }
@@ -44,6 +46,27 @@ public class LicenseDisplay {
         this.productName = productName;
         this.product = product;
         this.fullDesc =  fullDesc;
+        this.capTypeCode = capTypeCode;
+        this.capTypeDesc = capTypeDesc;
+        this.availableQty = availableQty.intValue();
+        this.quantity = quantity;
+        this.expireDate = expireDate;
+        this.cpuSerial = cpuSerial;
+        this.extSrcId = extSrcId;
+        this.environment = environment;
+        this.ownerAccountNumber = ownerAccountNumber;
+    }
+    
+    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    		String pId, Integer capTypeCode, String capTypeDesc, Long availableQty,
+            Integer quantity, Date expireDate, String cpuSerial,
+            String extSrcId, String environment, Long ownerAccountNumber) {
+        super();
+        this.licenseId = licenseId;
+        this.productName = productName;
+        this.product = product;
+        this.fullDesc =  fullDesc;
+        this.pId = pId;
         this.capTypeCode = capTypeCode;
         this.capTypeDesc = capTypeDesc;
         this.availableQty = availableQty.intValue();
@@ -172,4 +195,14 @@ public class LicenseDisplay {
 	public void setEnvironment(String environment) {
 		this.environment = environment;
 	}
+
+	public String getpId() {
+		return pId;
+	}
+
+	public void setpId(String pId) {
+		this.pId = pId;
+	}
+	
+	
 }

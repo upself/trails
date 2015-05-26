@@ -24,7 +24,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @NamedQueries({
 		@NamedQuery(name = "licenseTotalByAccount", query = "SELECT COUNT(*) FROM License L WHERE L.account.id = :account AND L.status = 'ACTIVE'"),
 		@NamedQuery(name = "licenseBaseline", query = "SELECT L.id AS licenseId, L.fullDesc AS fullDesc,  CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END AS catalogMatch, COALESCE(sw.softwareName, L.fullDesc) AS productName, L.capacityType.code AS capTypeCode, L.capacityType.description AS capTypeDesc, coalesce(L.quantity - sum(LUQV.usedQuantity),l.quantity) AS availableQty, L.quantity AS quantity, L.expireDate AS expireDate, L.cpuSerial AS cpuSerial, L.extSrcId AS extSrcId, L.account.account AS ownerAccountNumber FROM License L LEFT OUTER JOIN L.usedLicenses LUQV LEFT OUTER JOIN L.software sw WHERE L.account.id = :account AND L.status = 'ACTIVE' group by L.id, L.fullDesc, CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, COALESCE(sw.softwareName, L.fullDesc), L.capacityType.code, L.capacityType.description, L.quantity, L.expireDate, L.cpuSerial, L.extSrcId, L.account.account"),
-		@NamedQuery(name = "freePoolReport", query = "SELECT COALESCE(sw.softwareName, L.fullDesc), CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.fullDesc, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, coalesce(L.quantity - sum(LUQV.usedQuantity),L.quantity), L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime FROM License L LEFT OUTER JOIN L.usedLicenses LUQV LEFT OUTER JOIN L.software sw WHERE L.account.account = :account AND L.status = 'ACTIVE' group by sw.softwareName, L.fullDesc, CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime having coalesce(l.quantity - sum(LUQV.usedQuantity),l.quantity) > 0 ORDER BY sw.softwareName ASC"),
+		@NamedQuery(name = "freePoolReport", query = "SELECT COALESCE(sw.softwareName, L.fullDesc), CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.fullDesc, L.pId, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, coalesce(L.quantity - sum(LUQV.usedQuantity),L.quantity), L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime FROM License L LEFT OUTER JOIN L.usedLicenses LUQV LEFT OUTER JOIN L.software sw WHERE L.account.account = :account AND L.status = 'ACTIVE' group by sw.softwareName, L.fullDesc, L.pId, CASE LENGTH(COALESCE(sw.softwareName, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, CONCAT(CONCAT(RTRIM(CHAR(L.capacityType.code)), '-'), L.capacityType.description), L.environment, L.quantity, L.expireDate, L.poNumber, L.cpuSerial, CASE L.ibmOwned WHEN 1 THEN 'IBM' ELSE 'Cust' END, L.extSrcId, L.pool, L.recordTime having coalesce(l.quantity - sum(LUQV.usedQuantity),l.quantity) > 0 ORDER BY sw.softwareName ASC"),
 		@NamedQuery(name = "licenseDetails", query = "FROM License L JOIN fetch l.account join fetch l.capacityType LEFT OUTER JOIN FETCH L.software LEFT OUTER JOIN FETCH L.usedLicenses WHERE L.id = :id"),
 		@NamedQuery(name = "productNameByAccount", query = "SELECT DISTINCT(l.prodName) From License l WHERE l.account.id=:accountId and UPPER(l.prodName) like :key and ((l.account.softwareFinancialResponsibility='IBM' and l.ibmOwned=true) or (l.account.softwareFinancialResponsibility='CUSTOMER' and l.ibmOwned=false) or l.account.softwareFinancialResponsibility='BOTH' or l.account.softwareFinancialResponsibility in ('IBM','CUSTOMER','BOTH') ) and l.status='ACTIVE' ORDER BY l.prodName ASC"),
 		@NamedQuery(name = "manufacturerNameByAccount", query = "SELECT DISTINCT(l.software.manufacturer.manufacturerName) From License l WHERE l.account.id=:accountId and UPPER(l.software.manufacturer.manufacturerName) like :key and ((l.account.softwareFinancialResponsibility='IBM' and l.ibmOwned=true) or (l.account.softwareFinancialResponsibility='CUSTOMER' and l.ibmOwned=false) or l.account.softwareFinancialResponsibility='BOTH' or l.account.softwareFinancialResponsibility in ('IBM','CUSTOMER','BOTH') ) and l.status='ACTIVE' ORDER BY l.software.manufacturer.manufacturerName ASC") })
@@ -100,6 +100,9 @@ public class License extends AbstractDomainEntity {
 
 	@Column(name = "ENVIRONMENT")
 	private String environment;
+	
+	@Column(name = "PID")
+	private String pId;
 
 	public String getEnvironment() {
 		return environment;
@@ -330,4 +333,11 @@ public class License extends AbstractDomainEntity {
 		this.tryAndBuy = tryAndBuy;
 	}
 
+	public String getpId() {
+		return pId;
+	}
+
+	public void setpId(String pId) {
+		this.pId = pId;
+	}
 }
