@@ -259,7 +259,7 @@ sub reconcile {
 	my $reconcileTypeId;
 	my $machineLevel;
 	my $reconcileIdForMachineLevel;
-	my $allocMethodId
+	my $allocMethodId;
 
 	(
 		$licsToAllocate, $reconcileTypeId,
