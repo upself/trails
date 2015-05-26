@@ -190,14 +190,6 @@ table.gridtable td {
 			var historySection = $("#historyContent");
 			historySection.empty();
 			historySection.append("<table id='historytable' class='gridtable'><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Created Date</th><th>User</th></tr></table>");
-			//historySection.append("<tr>");
-			//historySection.append("<th>Last Date</th>");
-			//historySection.append("<th>Cycle</th>");
-			//historySection.append("<th>Next Date</th>");
-			//historySection.append("<th>QMX</th>");
-			//historySection.append("<th>Created Date</th>");
-			//historySection.append("<th>User</th>");
-			//historySection.append("</tr>");
 			
 			for (var i = 0; i < data.length; i++) {
 				var cyc;
@@ -219,17 +211,7 @@ table.gridtable td {
 				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
 						+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
 				$("#historytable tr:last").after(newRow);
-				//historySection.append("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + data[i].cycle + "</td>"+"<td>" + data[i].nextDate 
-					//	+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
-				//historySection.append("<td>" + data[i].lastDate + "</td>");
-				//historySection.append("<td>" + data[i].cycle + "</td>");
-				//historySection.append("<td>" + data[i].nextDate + "</td>");
-				//historySection.append("<td>" + data[i].qmx + "</td>");
-				//historySection.append("<td>" + data[i].createdDate + "</td>");
-				//historySection.append("<td>" + data[i].user + "</td>");
-				//historySection.append("</tr>")
 			}
-			//historySection.append("</table>");
 		}
 
 	});
