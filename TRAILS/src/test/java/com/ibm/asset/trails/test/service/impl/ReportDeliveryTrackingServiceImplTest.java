@@ -3,6 +3,7 @@ package com.ibm.asset.trails.test.service.impl;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.ReportDeliveryTracking;
+import com.ibm.asset.trails.domain.ReportDeliveryTrackingHistory;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ReportDeliveryTrackingService;
 
@@ -48,6 +50,16 @@ public class ReportDeliveryTrackingServiceImplTest {
 
 		assertNotNull(retrived);
 	}
+	
+	@Test
+	public void testGetHistory(){
+		Account account = accountService.getAccount(2541L);
+		ReportDeliveryTracking reportDeliveryTracking = reportDeliveryTrackingService
+				.getByAccount(account);
+			List<ReportDeliveryTrackingHistory>historyList = reportDeliveryTrackingService.getHistory(reportDeliveryTracking);
+			assertNotNull(historyList);
+	}
+	
 
 	private ReportDeliveryTracking buildReportDeliveryTracking(Account account) {
 		ReportDeliveryTracking reportDeliveryTracking = new ReportDeliveryTracking();
