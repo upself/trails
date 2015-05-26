@@ -200,7 +200,23 @@ table.gridtable td {
 			//historySection.append("</tr>");
 			
 			for (var i = 0; i < data.length; i++) {
-				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + data[i].cycle + "</td>"+"<td>" + data[i].nextDate 
+				var cyc;
+				if(data[i].cycle==7){
+					cyc="weekly";
+				}else if(data[i].cycle==30){
+					cyc="Monthly";
+				}else if(data[i].cycle==60){
+					cyc="Every Other Month";
+				}else if(data[i].cycle==90){
+					cyc="Quarterly";
+				}else if(data[i].cycle==120){
+					cyc="Every Four Months";
+				}else if(data[i].cycle==182){
+					cyc="Bi-Annualy";
+				}else if(data[i].cycle==365){
+					cyc="Annualy";
+				}
+				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
 						+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
 				$("#historytable tr:last").after(newRow);
 				//historySection.append("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + data[i].cycle + "</td>"+"<td>" + data[i].nextDate 
