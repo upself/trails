@@ -129,7 +129,7 @@ table.gridtable td {
 		});
 		
 		function validateFields(){
-			var qmx=$("#qmxReference").val();
+			var qmx=$.trim($("#qmxReference").val());
 			if(qmx==null || qmx==''){
 				alert("QMX is required!");
 				return;
