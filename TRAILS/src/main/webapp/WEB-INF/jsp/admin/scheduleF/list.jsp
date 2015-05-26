@@ -7,6 +7,33 @@
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+	
+<style type="text/css">
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	width:100%;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+
+table.gridtable th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+table.gridtable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+</style>
 
 <script>
 	$(function() {
@@ -140,6 +167,10 @@
 				}
 			}
 		});
+		
+		$("#addScheduleF").click(function(){
+			location.href="/TRAILS/admin/scheduleF/manage.htm";
+		});
 
 		function fetchHistory() {
 			var url = "${pageContext.request.contextPath}//admin/scheduleF/getReportTrackingHistory.htm";
@@ -158,26 +189,31 @@
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table>");
-			historySection.append("<tr>");
-			historySection.append("<th>Last Date</th>");
-			historySection.append("<th>Cycle</th>");
-			historySection.append("<th>Next Date</th>");
-			historySection.append("<th>QMX</th>");
-			historySection.append("<th>Created Date</th>");
-			historySection.append("<th>User</th>");
-			historySection.append("</tr>");
+			historySection.append("<table id='historytable' class='gridtable'><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Created Date</th><th>User</th></tr></table>");
+			//historySection.append("<tr>");
+			//historySection.append("<th>Last Date</th>");
+			//historySection.append("<th>Cycle</th>");
+			//historySection.append("<th>Next Date</th>");
+			//historySection.append("<th>QMX</th>");
+			//historySection.append("<th>Created Date</th>");
+			//historySection.append("<th>User</th>");
+			//historySection.append("</tr>");
+			
 			for (var i = 0; i < data.length; i++) {
-				historySection.append("<tr>");
-				historySection.append("<td>" + data[i].lastDate + "</td>");
-				historySection.append("<td>" + data[i].cycle + "</td>");
-				historySection.append("<td>" + data[i].nextDate + "</td>");
-				historySection.append("<td>" + data[i].qmx + "</td>");
-				historySection.append("<td>" + data[i].createdDate + "</td>");
-				historySection.append("<td>" + data[i].user + "</td>");
-				historySection.append("</tr>")
+				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + data[i].cycle + "</td>"+"<td>" + data[i].nextDate 
+						+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
+				$("#historytable tr:last").after(newRow);
+				//historySection.append("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + data[i].cycle + "</td>"+"<td>" + data[i].nextDate 
+					//	+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
+				//historySection.append("<td>" + data[i].lastDate + "</td>");
+				//historySection.append("<td>" + data[i].cycle + "</td>");
+				//historySection.append("<td>" + data[i].nextDate + "</td>");
+				//historySection.append("<td>" + data[i].qmx + "</td>");
+				//historySection.append("<td>" + data[i].createdDate + "</td>");
+				//historySection.append("<td>" + data[i].user + "</td>");
+				//historySection.append("</tr>")
 			}
-			historySection.append("</table>");
+			//historySection.append("</table>");
 		}
 
 	});
@@ -216,7 +252,7 @@
 		id="nextReportDeliveryDueDate"
 		name="reportForm.nextReportDeliveryDate" readonly> <br /> <br />
 	<label>Last Report Delivery Date:</label> <input type="text"
-		id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate">
+		id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate" readonly>
 	<label for="qmxReference">Evidence Posted to QMX: </label>
 	<s:textfield id="qmxReference" name="reportForm.qmxReference"
 		required="true" />
@@ -231,7 +267,7 @@
 	border: 1px solid black;
 }
 </style>
-<div id="reportTrackingHistory">
+<div id="reportTrackingHistory" style="width:60%">
 	<h3>Report Delivery Tracking History</h3>
 	<div id="historyContent"></div>
 
@@ -240,7 +276,7 @@
 <br />
 
 <div style="float: right">
-	<s:a href="/TRAILS/admin/scheduleF/manage.htm">Add</s:a>
+	<input type="button" value="Add" id="addScheduleF"/>
 </div>
 <br />
 <br />
