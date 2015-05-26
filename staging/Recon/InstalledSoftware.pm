@@ -259,22 +259,24 @@ sub reconcile {
 	my $reconcileTypeId;
 	my $machineLevel;
 	my $reconcileIdForMachineLevel;
+	my $allocMethodId
 
 	(
 		$licsToAllocate, $reconcileTypeId,
-		$machineLevel,   $reconcileIdForMachineLevel
+		$machineLevel,   $reconcileIdForMachineLevel, $allocMethodId
 	  )
 	  = $self->attemptLicenseAllocation;
 
 	dlog( "reconcileTypeId=" . $reconcileTypeId );
 	dlog( "machineLevel=" . $machineLevel );
+	dlog( "allocMethodId=" . $allocMethodId ) if defined ($allocMethodId);
 
 	if ( defined $licsToAllocate ) {
 
 		###Create reconcile and set id in data.
 		my $rId =
 		  $self->createReconcile( $reconcileTypeId, $machineLevel,
-			$self->installedSoftware->id );
+			$self->installedSoftware->id, $allocMethodId );
 
 		foreach my $lId ( keys %{$licsToAllocate} ) {
 			dlog( "allocating license id=$lId, using quantity="
@@ -580,6 +582,7 @@ sub attemptExistingMachineLevel {
 
 	my $reconcileTypeId;
 	my $reconcileIdForUsedLicense;
+	my $allocMethodId;
 
 	foreach my $reconcileId ( sort keys %{$reconciles} ) {
 		dlog( "reconcileId=" . $reconcileId );
@@ -617,6 +620,8 @@ sub attemptExistingMachineLevel {
 		$validation->validate;
 
 		next if ( $validation->isValid != 1 );
+		
+		$allocMethodId = $reconcile->allocationMethodologyId();
 
 		foreach my $licenseId ( keys %{ $reconciles->{$reconcileId} } ) {
 			dlog( "licenseId=" . $licenseId );
@@ -641,11 +646,11 @@ sub attemptExistingMachineLevel {
 #		$self->enqueuePotentialHWboxAlloc();
 		
 		return ( \%licsToAllocate, $reconcileTypeId,
-			$reconcileIdForUsedLicense );
+			$reconcileIdForUsedLicense, $allocMethodId );
 	}
 	else {
 		dlog("unable to allocate");
-		return ( undef, undef, undef );
+		return ( undef, undef, undef, undef );
 	}
 }
 
@@ -658,13 +663,13 @@ sub attemptLicenseAllocation {
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 	my $machineLevel;
 	my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
-	my ( $licsToAllocate, $reconcileTypeId, $reconcileId );
+	my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
 	
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
 		###Attempt to reconcile at machine level if one is already reconciled at machine level
-		( $licsToAllocate, $reconcileTypeId, $reconcileId ) =
+		( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
 			$self->attemptExistingMachineLevel($self->installedSoftwareReconData->scopeName);
-		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId )
+		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId )
 		if defined $licsToAllocate;
 	}
 	
@@ -2902,7 +2907,7 @@ $query.='   and h.id = hl.hardware_id
 }
 
 sub createReconcile {
-	my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId ) =
+	my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId, $allocMethodId ) =
 	  @_;
 	dlog("begin createReconcile");
 
@@ -2911,6 +2916,7 @@ sub createReconcile {
 	$reconcile->reconcileTypeId($reconcileTypeId);
 	$reconcile->installedSoftwareId( $self->installedSoftware->id );
 	$reconcile->parentInstalledSoftwareId($parentInstalledSoftwareId);
+	$reconcile->allocationMethodologyId($allocMethodId) if defined ($allocMethodId);
 	$reconcile->machineLevel($machineLevel);
 	$reconcile->comments('AUTO RECON');
 	$reconcile->save( $self->connection );
