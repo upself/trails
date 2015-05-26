@@ -160,7 +160,9 @@
 			<display:column property="fullDesc" title="License Name"
 				sortable="true" />
 			<display:column property="software.softwareName" title="Primary Component"
- 				sortable="true" /> 				
+ 				sortable="true" />
+ 			<display:column property="pId" title="Software product PID"
+ 				sortable="true" /> 	 				
 			<display:column property="capacityType.description"
 				title="Capacity type" sortable="true" />
 			<display:column property="availableQty" title="Avail qty"
@@ -195,6 +197,8 @@
 				sortProperty="license.fullDesc" title="License name" sortable="true" />
 			<display:column property="productName"
 				sortProperty="software.softwareName" title="Primary component" sortable="true" />
+			<display:column property="pId"
+				sortProperty="license.pId" title="Software product PID" sortable="true" />
 			<display:column property="capTypeDesc"
 				sortProperty="capacityType.description" title="Capacity type"
 				sortable="true" />
