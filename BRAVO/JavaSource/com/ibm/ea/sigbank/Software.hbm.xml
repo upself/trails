@@ -28,6 +28,8 @@
 		<property name="version" column="VERSION" length="64" not-null="false"/>
 		<property name="productRole" column="PRODUCT_ROLE" length="32" not-null="true"/>
         <!-- Change Bravo to use Software View instead of Product Object End -->
+        
+        <property name="changeJustification" column="CHANGE_JUSTIFICATION" length="5" />
 	</class>
 </hibernate-mapping>
 

@@ -329,6 +329,10 @@
 										<td colspan=2><div class="hrule-dots"></div></td>
 									</tr>
 									<tr>
+										<th>IBM SW GSD Build</th>
+										<td>Used to mark those products (with NO use) which may have been delivered in error and any removal may pose a risk due to the mixed product load libraries instance.  Will improve with GSD z/OS V2.2 where all PSF V4.5 features can exploit IFAPRDxx to disable the product.</td>
+									</tr>
+									<tr>
 										<th>Complex discovery</th>
 										<td>Used for managing complex discovery when components are discovered by advanced discovery method</td>
 									</tr>
