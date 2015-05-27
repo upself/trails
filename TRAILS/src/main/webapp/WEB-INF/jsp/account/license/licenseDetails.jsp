@@ -25,6 +25,10 @@
 		<td><s:property value="license.fullDesc" /></td>
 	</tr>
 	<tr>
+		<td><span class="caption">Software product PID</span></td>
+		<td><s:property value="license.pId" /></td>
+	</tr>
+	<tr>
 		<td><span class="caption">Capacity type</span></td>
 		<td><s:property value="license.capacityType.code" /> - <s:property value="license.capacityType.description" /></td>
 	</tr>
