@@ -26,7 +26,7 @@
 	</tr>
 	<tr>
 		<td><span class="caption">Software product PID</span></td>
-		<td><s:property value="license.pId" /></td>
+		<td><s:property value="license.swproPID" /></td>
 	</tr>
 	<tr>
 		<td><span class="caption">Capacity type</span></td>
