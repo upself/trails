@@ -121,7 +121,7 @@
 			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
-			<display:column property="pId" title="Software product PID"/>
+			<display:column property="swproPID" title="Software product PID"/>
 			<display:column property="capacityType.code" title="Capacity type" />
 			<display:column property="availableQty" title="Avail qty" />
 			<display:column property="quantity" title="Total qty" />

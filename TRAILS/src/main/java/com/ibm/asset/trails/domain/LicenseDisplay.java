@@ -32,7 +32,7 @@ public class LicenseDisplay {
 
     private Long ownerAccountNumber;
     
-    private String pId;
+    private String swproPID;
 
     public LicenseDisplay() {
     }
@@ -58,7 +58,7 @@ public class LicenseDisplay {
     }
     
     public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
-    		String pId, Integer capTypeCode, String capTypeDesc, Long availableQty,
+    		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
         super();
@@ -66,7 +66,7 @@ public class LicenseDisplay {
         this.productName = productName;
         this.product = product;
         this.fullDesc =  fullDesc;
-        this.pId = pId;
+        this.swproPID = swproPID;
         this.capTypeCode = capTypeCode;
         this.capTypeDesc = capTypeDesc;
         this.availableQty = availableQty.intValue();
@@ -196,13 +196,11 @@ public class LicenseDisplay {
 		this.environment = environment;
 	}
 
-	public String getpId() {
-		return pId;
+	public String getSwproPID() {
+		return swproPID;
 	}
 
-	public void setpId(String pId) {
-		this.pId = pId;
+	public void setSwproPID(String swproPID) {
+		this.swproPID = swproPID;
 	}
-	
-	
 }
