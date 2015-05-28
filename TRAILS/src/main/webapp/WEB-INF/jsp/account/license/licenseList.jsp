@@ -30,6 +30,8 @@
 		<display:column property="productName" title="Primary Component"
 			sortable="true" href="/TRAILS/account/license/licenseDetails.htm"
 			paramId="licenseId" paramProperty="licenseId" />
+		<display:column property="pId" title="Software product PID"
+			sortable="true" />
 		<display:column property="capTypeCode" title="Capacity type"
 			sortable="true" />
 		<display:column property="availableQty" title="Avail qty"
@@ -54,6 +56,8 @@
 		<display:column property="productName" title="Primary Component"
 			sortable="true" href="/TRAILS/account/license/licenseDetails.htm"
 			paramId="licenseId" paramProperty="licenseId" />
+		<display:column property="pId" title="Software product PID"
+			sortable="true" />
 		<display:column property="capTypeCode" title="Capacity type"
 			sortable="true" />
 		<display:column property="availableQty" title="Avail quantity"
