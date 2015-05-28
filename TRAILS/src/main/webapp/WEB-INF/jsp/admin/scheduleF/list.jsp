@@ -132,14 +132,15 @@ table.gridtable td {
 			var qmx=$.trim($("#qmxReference").val());
 			if(qmx==null || qmx==''){
 				alert("QMX is required!");
-				return;
+				return false;
+			}else{
+				return true;
 			}
 		}
 
 		frm
 				.submit(function() {
-					validateFields();
-					
+					if(validateFields()){
 					$
 							.ajax({
 								type : "POST",
@@ -162,6 +163,7 @@ table.gridtable td {
 
 								}
 							});
+					}
 
 					return false;
 				});
