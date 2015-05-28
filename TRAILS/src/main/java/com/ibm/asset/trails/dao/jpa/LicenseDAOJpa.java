@@ -208,10 +208,10 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		q.where(predicates.toArray(new Predicate[predicates.size()]));
 		q.multiselect(
 				license.get(License_.id).alias("licenseId"),
-				cb.coalesce(software.get(Software_.softwareName),
-						license.get(License_.fullDesc)).alias("productName"),
-						software.get(Software_.softwareName),
-						license.get(License_.fullDesc).alias("fullDesc"),
+				cb.coalesce(software.get(Software_.softwareName),license.get(License_.fullDesc)).alias("productName"),
+				software.get(Software_.softwareName),
+				license.get(License_.fullDesc).alias("fullDesc"),
+				license.get(License_.swproPID).alias("swproPID"),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(
@@ -228,10 +228,10 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						.alias("accountName"));
 		q.groupBy(
 				license.get(License_.id),
-				cb.coalesce(software.get(Software_.softwareName),
-						license.get(License_.fullDesc)),
-						software.get(Software_.softwareName),
-						license.get(License_.fullDesc),
+				cb.coalesce(software.get(Software_.softwareName),license.get(License_.fullDesc)),
+				software.get(Software_.softwareName),
+				license.get(License_.fullDesc),
+				license.get(License_.swproPID),
 				capacityType.get(CapacityType_.code),
 				capacityType.get(CapacityType_.description),
 				license.get(License_.quantity),
