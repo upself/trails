@@ -233,57 +233,83 @@ table.gridtable td {
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
+<br>
+	<div style="font-size: 22px; display: inline">
+		<s:property value="account.name" />
+		(
+		<s:property value="account.account" />
+		)
+		&nbsp;<p class="confidential" style="font-size:12px">IBM Confidential</p>
+	</div>
+	<div id="reportTrackHeader">
+		<div style="font-size: 22px; display: inline">
+			Software License Management Report Delivery Tracking
+		</div><br><br>
+		Track the required report delivery cycle and most recent report delivery date.<br><br>
+	</div>
+	<form id="reportTracking">
+		<div id="firstline" style="width:60%">
+		   <div id="line1col1" style="width:30%; float:left">
+			<label>Report Delivery Cycle:</label> 
+		   </div>
+		   <div id="line1col2" style="width:20%; float:left">
+			<select
+				name="reportForm.reportDeliveryCycle" id="reportDeliveryCycle">
+				<option value="7">Weekly</option>
+				<option value="30">Monthly</option>
+				<option value="60">Every Other Month</option>
+				<option value="90">Quarterly</option>
+				<option value="120">Every Four Months</option>
+				<option value="182">Bi-Annually</option>
+				<option value="365">Annually</option>
+			</select> 
+		   </div>
+		   <div id="line1col3" style="width:30%; float:left">
+			 <label>Next Report Delivery Due Date:</label> 
+		   </div>
+		   <div id="line1col4" style="width:20%; float:left">
+			<input type="text" id="nextReportDeliveryDueDate" name="reportForm.nextReportDeliveryDate" readonly style="background-color:#EAEAEA"> 
+		   </div>			
+		</div>
+		
+		<br /> 
+		<div id="secondline" style="width:60%">
+		<div id="line2col1" style="width:30%; float:left">
+			<label>Last Report Delivery Date:</label> 
+		</div>
+		<div id="line2col2" style="width:20%; float:left">
+			<input type="text" id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate" readonly style="width:138px">
+		</div>
+		<div id="line2col3" style="width:30%; float:left">
+			<label for="qmxReference">Evidence Posted to QMX: </label>
+		</div>			
+		<div id="line2col4" style="width:20%; float:left">
+			<s:textfield id="qmxReference" name="reportForm.qmxReference" required="true" />
+		</div>
+		</div>	
+			
+	</form>
+	<br><br>
+		<input type="button" id="reportTrackingUpdateBtn" value="Update">
+		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
+	<br><br>
+	<style>
+	#reportTrackingHistory table, #reportTrackingHistory th,
+		#reportTrackingHistory td {
+		border: 1px solid black;
+	}
+	</style>
+	<div id="reportTrackingHistory" style="width:60%">
+		<h3>Report Delivery Tracking History</h3>
+		<div id="historyContent" style="max-height:210px"></div>
+	
+	</div><br>
+	<div class="hrule-dots"></div>
+
 <h1 class="oneline">Schedule F</h1>
-<div style="font-size: 22px; display: inline">
-	&nbsp;:
-	<s:property value="account.name" />
-	(
-	<s:property value="account.account" />
-	)
-</div>
-<p class="confidential">IBM Confidential</p>
-<br />
 <p>To edit a schedule F record, press one of the links below. If you
 	want to add a new record, press the Add link.</p>
-<br />
 <div class="hrule-dots"></div>
-<br />
-<form id="reportTracking">
-	<label>Report Delivery Cycle:</label> <select
-		name="reportForm.reportDeliveryCycle" id="reportDeliveryCycle">
-		<option value="7">Weekly</option>
-		<option value="30">Monthly</option>
-		<option value="60">Every Other Month</option>
-		<option value="90">Quarterly</option>
-		<option value="120">Every Four Months</option>
-		<option value="182">Bi-Annually</option>
-		<option value="365">Annually</option>
-	</select> <label>Next Report Delivery Due Date:</label> <input type="text"
-		id="nextReportDeliveryDueDate"
-		name="reportForm.nextReportDeliveryDate" readonly> <br /> <br />
-	<label>Last Report Delivery Date:</label> <input type="text"
-		id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate" readonly>
-	<label for="qmxReference">Evidence Posted to QMX: </label>
-	<s:textfield id="qmxReference" name="reportForm.qmxReference"
-		required="true" />
-</form>
-<input type="button" id="reportTrackingUpdateBtn" value="Update">
-<input type="button" id="reportTrackingRestoreBtn" value="Restore">
-<br />
-<br />
-<style>
-#reportTrackingHistory table, #reportTrackingHistory th,
-	#reportTrackingHistory td {
-	border: 1px solid black;
-}
-</style>
-<div id="reportTrackingHistory" style="width:60%">
-	<h3>Report Delivery Tracking History</h3>
-	<div id="historyContent" style="max-height:210px"></div>
-
-</div>
-<div class="hrule-dots"></div>
-<br />
 
 <div style="float: right">
 	<input type="button" value="Add" id="addScheduleF"/>
