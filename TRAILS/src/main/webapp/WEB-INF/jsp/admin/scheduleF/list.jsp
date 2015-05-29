@@ -248,7 +248,7 @@ table.gridtable td {
 		Track the required report delivery cycle and most recent report delivery date.<br><br>
 	</div>
 	<form id="reportTracking">
-		<div id="firstline" style="width:60%">
+		<div id="firstline" style="width:60%;float:left">
 		   <div id="line1col1" style="width:30%; float:left">
 			<label>Report Delivery Cycle:</label> 
 		   </div>
@@ -273,7 +273,7 @@ table.gridtable td {
 		</div>
 		
 		<br /> 
-		<div id="secondline" style="width:60%">
+		<div id="secondline" style="width:60%;float:left">
 		<div id="line2col1" style="width:30%; float:left">
 			<label>Last Report Delivery Date:</label> 
 		</div>
