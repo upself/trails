@@ -59,7 +59,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwNotId")
 				.setParameter("account", pAccount)
-				.setParameter("software", pSoftware)
+				.setParameter("softwareName", pSoftware.getSoftwareName())
 				.setParameter("id", plScheduleFId).getResultList();
 		ScheduleF result;
 		if (results == null || results.isEmpty()) {
@@ -77,7 +77,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSw")
 				.setParameter("account", pAccount)
-				.setParameter("software", pSoftware).getResultList();
+				.setParameter("softwareName", pSoftware.getSoftwareName()).getResultList();
 		ScheduleF result;
 		if (results == null || results.isEmpty()) {
 			result = null;
@@ -94,7 +94,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwAndLevel")
 				.setParameter("account", pAccount)
-				.setParameter("software", pSoftware)
+				.setParameter("softwareName", pSoftware.getSoftwareName())
 				.setParameter("level", level).getResultList();
 
 		if (results == null || results.isEmpty()) {
@@ -347,11 +347,11 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				for (ScheduleF existsSF : lsfExists) {
 					if (existsSF instanceof ScheduleF) {
 						if (psfSave.getLevel().toString().equals(ScheduleFLevelEnumeration.PRODUCT.toString()) ){
-							psfSave.setId(existsSF.getId());
+							if(psfSave.getId() != null) {psfSave.setId(existsSF.getId());};
 						} else if((psfSave.getLevel().toString().equals(ScheduleFLevelEnumeration.HWOWNER.toString()) && psfSave.getHwOwner().equals(existsSF.getHwOwner()) )
 								|| (psfSave.getLevel().toString().equals(ScheduleFLevelEnumeration.HOSTNAME.toString()) && psfSave.getHostname().equals(existsSF.getHostname()) )
 								|| (psfSave.getLevel().toString().equals(ScheduleFLevelEnumeration.HWBOX.toString()) && psfSave.getMachineType().equals(existsSF.getMachineType()) && psfSave.getSerial().equals(existsSF.getSerial()) )) {
-							psfSave.setId(existsSF.getId());
+							if(psfSave.getId() != null) {psfSave.setId(existsSF.getId());};
 						}
 					}
 				}
@@ -701,7 +701,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.getString().equals(ScheduleFLevelEnumeration.HWOWNER.toString())) {
 					throw new Exception("Level is not specified with HWOWNER.");
 				} else {
-					sf.setHwOwner(cell.getRichStringCellValue().getString());
+					sf.setHwOwner(cell.getRichStringCellValue().getString().trim());
 				}
 			}
 			break;
@@ -716,7 +716,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.getString().equals(ScheduleFLevelEnumeration.HOSTNAME.toString())) {
 					throw new Exception("Level is not specified with HOSTNAME.");
 				} else {
-					sf.setHostname(cell.getRichStringCellValue().getString());
+					sf.setHostname(cell.getRichStringCellValue().getString().trim());
 				}
 			}
 			break;
@@ -731,7 +731,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.getString().equals(ScheduleFLevelEnumeration.HWBOX.toString())) {
 					throw new Exception("Level is not specified with HWBOX.");
 				} else {
-					sf.setSerial(cell.getRichStringCellValue().getString());
+					sf.setSerial(cell.getRichStringCellValue().getString().trim());
 				}
 			}
 			break;
@@ -749,7 +749,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					if (mtlist == null || mtlist.isEmpty()) {
 						throw new Exception("Machine Type is invalid.");
 					} else {
-					sf.setMachineType(mtlist.get(0).getName());
+					sf.setMachineType(mtlist.get(0).getName().trim());
 					}
 				}
 			}
@@ -791,7 +791,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				throw new Exception("Software title is required.");
 			} else {
-				sf.setSoftwareTitle(cell.getRichStringCellValue().getString());
+				sf.setSoftwareTitle(cell.getRichStringCellValue().getString().trim());
 			}
 
 			break;
@@ -801,7 +801,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			ArrayList<Software> lalProductInfo = null;
 
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-				sf.setSoftwareName(cell.getRichStringCellValue().getString());
+				sf.setSoftwareName(cell.getRichStringCellValue().getString().trim());
 			} else {
 				throw new Exception("Software name is not a string.");
 			}
@@ -833,7 +833,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				throw new Exception("Manufacturer is required.");
 			} else {
-				sf.setManufacturer(cell.getRichStringCellValue().getString());
+				sf.setManufacturer(cell.getRichStringCellValue().getString().trim());
 			}
 
 			break;
@@ -877,7 +877,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				String[] scDesParts = cell.getRow().getCell(9)
 						.getRichStringCellValue().getString().split(",");
 				String swFinancialResp = cell.getRichStringCellValue()
-						.getString();
+						.getString().trim();
 				if (!swFinancialResp.equals("CUSTO")
 						&& !swFinancialResp.equals("IBM")
 						&& !swFinancialResp.equals("N/A")) {
@@ -932,7 +932,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				throw new Exception("Source location is required.");
 			} else {
-				sf.setSourceLocation(cell.getRichStringCellValue().getString());
+				sf.setSourceLocation(cell.getRichStringCellValue().getString().trim());
 			}
 
 			break;
