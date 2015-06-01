@@ -292,7 +292,6 @@ table.gridtable td {
 
 </div>
 <div class="hrule-dots"></div>
-<br />
 <h1 class="oneline">Schedule F</h1>
 <p>To edit a schedule F record, press one of the links below. If you
 	want to add a new record, press the Add link.</p>
