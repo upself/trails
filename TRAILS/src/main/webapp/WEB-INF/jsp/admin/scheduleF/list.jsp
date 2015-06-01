@@ -234,7 +234,6 @@ table.gridtable td {
 <h1>Software License Management Report Delivery Tracking</h1>
 <p>Track the required report delivery cycle and most recent report delivery date.</p>
 <div class="hrule-dots"></div>
-<br />
 	<form id="reportTracking">
 		<div id="firstline" style="width:60%;float:left">
 		   <div id="line1col1" style="width:30%; float:left">
@@ -261,7 +260,7 @@ table.gridtable td {
 		</div>
 		
 		<br /> 
-		<div id="secondline" style="width:60%;float:left">
+		<div id="secondline" style="width:60%;float:left;margin-top:10px">
 			<div id="line2col1" style="width:30%; float:left">
 				<label>Last Report Delivery Date:</label> 
 			</div>
@@ -276,11 +275,11 @@ table.gridtable td {
 			</div>
 		</div>	
 	</form>
-	<br><br>
-<input type="button" id="reportTrackingUpdateBtn" value="Update">
-<input type="button" id="reportTrackingRestoreBtn" value="Restore">
-<br />
-<br />
+	<div style="clear:both">
+		<input type="button" id="reportTrackingUpdateBtn" value="Update">
+		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
+	</div>
+<br>
 <style>
 #reportTrackingHistory table, #reportTrackingHistory th,
 	#reportTrackingHistory td {
@@ -289,11 +288,10 @@ table.gridtable td {
 </style>
 <div id="reportTrackingHistory" style="width:60%">
 	<h3>Report Delivery Tracking History</h3>
-	<div id="historyContent"></div>
+	<div id="historyContent" style="max-height:180px"></div>
 
 </div>
 <div class="hrule-dots"></div>
-<br />
 <h1 class="oneline">Schedule F</h1>
 <p>To edit a schedule F record, press one of the links below. If you
 	want to add a new record, press the Add link.</p>
