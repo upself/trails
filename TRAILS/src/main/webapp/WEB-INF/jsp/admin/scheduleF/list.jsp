@@ -232,7 +232,7 @@ table.gridtable td {
 <p class="confidential">IBM Confidential</p>
 <br />
 <h1>Software License Management Report Delivery Tracking</h1>
-
+<p>Track the required report delivery cycle and most recent report delivery date.</p>
 <div class="hrule-dots"></div>
 <br />
 	<form id="reportTracking">
