@@ -288,7 +288,7 @@ table.gridtable td {
 </style>
 <div id="reportTrackingHistory" style="width:60%">
 	<h3>Report Delivery Tracking History</h3>
-	<div id="historyContent"></div>
+	<div id="historyContent" style="max-height:180px"></div>
 
 </div>
 <div class="hrule-dots"></div>
