@@ -127,18 +127,9 @@ table.gridtable td {
 		$("#qmxReference").change(function() {
 			changed();
 		});
-		
-		function validateFields(){
-			var qmx=$.trim($("#qmxReference").val());
-			if(qmx==null || qmx==''){
-				alert("QMX is required!");
-				return;
-			}
-		}
 
 		frm
 				.submit(function() {
-					validateFields();
 					
 					$
 							.ajax({
