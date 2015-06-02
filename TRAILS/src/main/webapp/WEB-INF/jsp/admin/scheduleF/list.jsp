@@ -109,7 +109,7 @@ table.gridtable td {
 				function() {
 					var dateStr = $("#lastReportDeliveryDate").val();
 					var date=new Date(dateStr);
-					if (date != null) {
+					if (dateStr!=null && dateStr!='' && date != null) {
 						caculateNextDeliveryDate(date,
 								$("#reportDeliveryCycle").val());
 					}
@@ -190,7 +190,7 @@ table.gridtable td {
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table id='historytable' class='gridtable'><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Created Date</th><th>User</th></tr></table>");
+			historySection.append("<table id='historytable' class='gridtable'><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Record Date</th><th>User</th></tr></table>");
 			
 			for (var i = 0; i < data.length; i++) {
 				var cyc;
