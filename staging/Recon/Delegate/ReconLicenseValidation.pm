@@ -181,7 +181,7 @@ sub validate {
             $licenseAllocationView->machineLevel, $licenseAllocationView->rId
         );
         $rValid *= $self->validateMipsGartnerMsu(
-			$licenseAllocationView->rtIsManual, $self->license->capType, $licenseAllocationView->mtType,
+			$licenseAllocationView->rtIsManual, $self->license->capType, $self->license->licType, $licenseAllocationView->mtType,
 			$licenseAllocationView->machineLevel, $licenseAllocationView->rId,
 			$licenseAllocationView->hCpuMIPS, $licenseAllocationView->hCpuGartnerMIPS, $licenseAllocationView->hCpuMSU,
 			$licenseAllocationView->hlPartMIPS, $licenseAllocationView->hlPartGartnerMIPS, $licenseAllocationView->hlPartMSU
@@ -679,7 +679,7 @@ sub isLicenseSoftwareMapValidToReconcile {
 }
 
 sub validateMipsGartnerMsu {
-    my ( $self, $isManual, $capType, $machineType, $isMachineLevel, $reconcileId,
+    my ( $self, $isManual, $capType, $licType, $machineType, $isMachineLevel, $reconcileId,
 		$hCpuMIPS, $hCpuGartnerMIPS, $hCpuMSU, $hlPartMIPS, $hlPartGartnerMIPS, $hlPartMSU ) = @_;
 		
 	my $isValid=1;
@@ -707,6 +707,8 @@ sub validateMipsGartnerMsu {
     
     $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 0 ) && ( !defined $hlPartMSU ));
     $isValid=0 if (( $capType eq '9' ) && ( $isMachineLevel == 0 ) && ( defined $hlPartMSU ) && ( $hlPartMSU <= 0 ));
+    
+    $isValid=0 if (( $licType ne 'NAMED LPAR' ) && ( $isMachineLevel == 0 ));
     
     if ($isValid == 0 ) {
 		 dlog("Reconcile not validated, Gartner/MIPS/MSU");

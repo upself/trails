@@ -633,7 +633,7 @@ sub validateLicenseAllocation {
    $validation->validateSubCapacity( $rec{licenseType}, undef, 0 );
    
    ###Validate MIPS / Gartner MIPS / MSU, the component count on the hardware box
-   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $self->installedSoftwareReconData->mtType,
+   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $rec{licenseType}, $self->installedSoftwareReconData->mtType,
 			$self->installedSoftwareReconData->rMachineLevel, undef,
 			$self->installedSoftwareReconData->hCpuMIPS, $self->installedSoftwareReconData->hCpuGartnerMIPS, $self->installedSoftwareReconData->hCpuMSU,
 			$self->installedSoftwareReconData->hlPartMIPS, $self->installedSoftwareReconData->hlPartGartnerMIPS, $self->installedSoftwareReconData->hlPartMSU
