@@ -220,7 +220,7 @@ public class ScheduleFSaveAction extends AccountBaseAction {
 					"Same entry with the given software name already exists.");
 			return INPUT;
 		}
-		if (sfoExists != null && sfoExists.equals(getScheduleF())) {
+		if (sfiExists == null && sfoExists != null && sfoExists.Keyquals(getScheduleF())) {
 			addFieldError("scheduleFForm.softwareName",
 					"Same entry with the given software name already exists.");
 			return INPUT;
