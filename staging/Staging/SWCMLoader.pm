@@ -419,6 +419,7 @@ sub doLicenseDelta {
 		$license->environment(
 			$self->getEnvironment( $rec{environment}, undef ) );
 		$license->status( $rec{status} );
+		$license->pid( $rec{pid} );
 		$license->action( $rec{action} );
 
 		dlog( "current staging license obj=" . $license->toString() );

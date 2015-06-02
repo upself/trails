@@ -128,6 +128,20 @@ sub differentLicensesRecordTime : Tests(2) {
 	
 }
 
+sub differentLicensesPid : Tests(2) {
+	my $test  = shift;
+	my $class = $test->class;
+	
+	prepareTestEnvironment();
+	
+	$stagingLicense->pid('p26190id');
+	$licenseLoader->bravoLicense($stagingLicense);
+	$licenseLoader->compareLicensesAndSetFlags($bravoLicense);	
+	is($licenseLoader->saveBravoLicense,1, " Licenses not are same (only PID changed), loader will not process license to trailspd and add it to recon queue.");
+	is($licenseLoader->addToReconDeleteFlag,0, " Licenses are not same, but loader will not add delete flag to recon queue.");	
+	
+}
+
 sub prepareTestEnvironment {
 	$licenseLoader->saveBravoLicense(0);
 	$licenseLoader->addToReconDeleteFlag(0);
@@ -165,6 +179,7 @@ sub fullData {
 		$bravoLicense->agreementType( 'testString' );
 		$bravoLicense->environment('testString' );
 		$bravoLicense->status( 'testString' );
+		$bravoLicense->pid( 'testString' );
         
 		$stagingLicense->id( 1111 );
 		$stagingLicense->extSrcId( 'testString' );
@@ -189,7 +204,7 @@ sub fullData {
 		$stagingLicense->agreementType( 'testString' );
 		$stagingLicense->environment('testString' );
 		$stagingLicense->status( 'testString' );
-        
+        $stagingLicense->pid( 'testString' );
 }
 
 1;

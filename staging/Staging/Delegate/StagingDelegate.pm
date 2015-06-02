@@ -2723,6 +2723,7 @@ sub queryLicenseData {
         swcmRecordTime
         agreementType
         environment
+        pid
         status
         action
     );
@@ -2750,6 +2751,7 @@ sub queryLicenseData {
             ,a.swcm_record_time  
             ,a.agreement_type
             ,a.environment
+            ,a.pid
             ,a.status          
             ,a.action
         from
