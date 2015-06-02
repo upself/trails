@@ -1,5 +1,11 @@
 package integration::softwareToBravo::TC1;
 
+##############################################################
+#
+# This test case change processor count in staging, execute softwareToBravo loader and check results on trailspd and staging databases.
+#
+##############################################################
+
 
 use Test::More;
 use base 'Test::Class';
@@ -14,7 +20,6 @@ my @swLparCustomerResult;
 my $logFilePath   = "/var/staging/logs/softwareToBravo/TC1.log";
 my $logFilePathChild   = "/var/staging/logs/softwareToBravo/TC1child.log";
 my $configFile = "/opt/staging/v2/config/softwareToBravo.txt";
-#my $logFilePath   = "/home/ondrej/development/tmp/TC1.log";
 my $stagingConnection;
 my $trailsConnection;
 
@@ -108,8 +113,8 @@ sub checkTrailsResults {
     	logRec( 'dlog', \%rec );        
         push @swLparCustomerResult, { swLparProcessorCount => $rec{swLparProcessorCount}, iswProcessorCount => $rec{iswProcessorCount}, swLparId => $rec{swLparId}, installedSoftwareId => $rec{installedSoftwareId}};
     
- 		is($rec{swLparProcessorCount},$swLparCustomer[0]{processorCount}, " Processor count has been writen to trailspd.");
-		is($rec{iswProcessorCount},$swLparCustomer[0]{processorCount}, " Processor count has been writen to trailspd.");	
+ 		is($rec{swLparProcessorCount},$swLparCustomer[0]{processorCount}, " Processor count has been writen to trailspd. (software lpar)");
+		is($rec{iswProcessorCount},$swLparCustomer[0]{processorCount}, " Processor count has been writen to trailspd. (installed software)");	
     }
 	
 }
