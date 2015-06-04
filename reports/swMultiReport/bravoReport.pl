@@ -224,7 +224,7 @@ from
                       ,f.name as discrepancy_type
                   from
                       eaadmin.customer a
-                      ,eaadmin.v_installed_software b                          
+                      ,eaadmin.v_installed_software_mqt b                          
                       ,eaadmin.software s
                       ,eaadmin.manufacturer SwMan
                       ,eaadmin.bank_account d
