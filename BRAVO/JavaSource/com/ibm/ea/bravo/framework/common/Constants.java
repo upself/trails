@@ -52,7 +52,7 @@ public class Constants {
 	public static final String CONFIDENTIAL = "IBM Confidential";
 	public static final String POSITIVE_NUMBER = "positive.number";
 
-	public static final String CONF_DIR = "/opt/bravo/conf/";
+	public static final String CONF_DIR = "C:\\personal\\software\\Trails_props\\bravo\\";
 	public static final String APP_PROPERTIES = CONF_DIR + "bravo.properties";
 	public static final String HIBERNATE_PROPERTIES = CONF_DIR
 			+ "hibernate.properties";

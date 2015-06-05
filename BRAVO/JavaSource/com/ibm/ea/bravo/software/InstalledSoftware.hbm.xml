@@ -41,6 +41,21 @@
 <!--        <property name="status" column="STATUS" length="32" not-null="true"/>-->
 
         <property name="invalidCategory" column="INVALID_CATEGORY" length="64"/>
-    
+    	
+    	<!-- ab added sprint9 story 27296-->
+    	<one-to-one name="installedSaProduct"
+			class="com.ibm.ea.bravo.software.InstalledSaProduct"
+			property-ref="installedSoftware" cascade="delete" />
+			
+    	<one-to-one name="installedTadz"
+			class="com.ibm.ea.bravo.software.InstalledTadz"
+			property-ref="installedSoftware" cascade="delete" />			
+    	<!-- 
+    	<join table="INSTALLED_SA_PRODUCT" optional="true">
+			<key column="" unique="true" />
+			<many-to-one name="softwareLpar" column="SOFTWARE_LPAR_ID"
+				not-null="true" unique="true" lazy="false" />
+		</join>
+    	 -->
     </class>
 </hibernate-mapping>

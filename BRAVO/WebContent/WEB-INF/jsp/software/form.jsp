@@ -71,6 +71,34 @@
 		}
 	}
 
+	//ab added sprint9 story 27299
+	function validateCategory(){
+		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
+		var softwareCategory= document.getElementsByName("invalidCategory")[0];
+	    softwareCategory.options[2].style.display="";
+	    softwareCategory.options[3].style.display="";
+	    
+		for(var i=0;i<descrepancyType.length;i++){
+			if(descrepancyType.options[i].selected){
+				var descreVal=descrepancyType.options[i].text;
+				if(descreVal=="INVALID"){
+					//var swkbt="${requestScope.software.software.remoteUser}";
+					var tadz="${requestScope.software.tadz}";
+					var tlcmz="${requestScope.software.tlcmz}";
+					
+					if(tadz!=null && tadz != ""){  //if it is TADz, then remove below 2 child node of Software Category
+						softwareCategory.options[2].style.display="none";
+					    softwareCategory.options[3].style.display="none";
+					    
+					}
+					if(tlcmz!=null && tlcmz != ""){  //if it is TLCMz, then reactive child node of Software Category
+					    softwareCategory.options[2].style.display="";
+					    softwareCategory.options[3].style.display="";
+					}
+				}
+			}
+		}
+	}
 
 </script>
 
@@ -239,7 +267,8 @@
 																readonly="readonly" />
 														</c:when>
 														<c:otherwise>
-															<html:select property="discrepancyTypeId" styleClass="inputlong" >
+														<!-- ab added sprint9 story 27299 -->
+															<html:select property="discrepancyTypeId" styleClass="inputlong" onclick="validateCategory()">
 																<html:optionsCollection property="discrepancyTypeList" />
 															</html:select>
 														</c:otherwise>
@@ -302,21 +331,24 @@
 									</tr>
 									<tr>
 										<th>NONE</th>
-										<td>Product has not been validated yet</td>
+										<td>Software component has not been validated yet</td>
 									</tr>
 									<tr>
 										<th>FALSE HIT</th>
-										<td>Softaudit identifies a product that is not installed
-											on the system</td>
+										<td>Incorrectly identified installed software component</td>
 									</tr>
 									<tr>
 										<th>INVALID</th>
-										<td></td>
+										<td>Indicates the software component which is confirmed as either Blocked in IFAPRD, or duplicated (Duplicate product - In Use) or not in use on this LPAR (Shared DASD).</td>
 									</tr>
 									<tr>
 										<th>FH RESET</th>
 										<td>Software component was marked as FALSE HIT for longer then the allowed period and therefore returned back to the scope</td>
 									</tr>
+									<tr>
+										<th>VALID</th>
+										<td>The discovery of the software component is confirmed as valid</td>
+									</tr>									
 									<tr>
 										<td></td>
 									</tr>
@@ -338,32 +370,11 @@
 									</tr>
 									<tr>
 										<th>Blocked in IFAPRD</th>
-										<td>When the product is listed in the IFAPRD member as
-											"Disable"</td>
-									</tr>
-									<tr>
-										<th>Customer managed</th>
-										<td>The customer manages the support and installation of
-											the product</td>
+										<td>When the software component is listed in the IFAPRD member as "Disable"</td>
 									</tr>
 									<tr>
 										<th>Duplicate product - In Use</th>
-										<td>If SoftAudit has identified a product multiple times,
-											mark this one as duplicate product and add a comment as to
-											the product name it is a duplicate of. Make sure that the
-											correct occurrence is marked as a valid product</td>
-									</tr>
-									<tr>
-										<th>Misidentification</th>
-										<td>Softaudit identified this as one product but it is
-											really another product. Add a comment as to the correct
-											product name</td>
-									</tr>
-									<tr>
-										<th>Part of Another Product</th>
-										<td>If the product is a free feature of or included in
-											another product and not available separately. Add a comment
-											as to what product this is part of</td>
+										<td>If TADz has identified a software component multiple times, mark this one as duplicate software component and add a comment as to the software component name it is a duplicate of. Make sure that the correct occurrence is marked as a valid software component</td>
 									</tr>
 									<tr>
 										<th>Shared DASD (not in use on this LPAR)</th>
@@ -372,30 +383,9 @@
 											this product is used on</td>
 									</tr>
 									<tr>
-										<th>Vendor Key Required but Not Present</th>
-										<td>If the product is installed but cannot run because a
-											key is required and has not been installed</td>
-									</tr>
-									<tr>
-										<th>Restrictive vendor key</th>
-										<td>A vendor packages many related products together and
-											then supplies a key specific to some combination of those
-											products. (aka. the ones you have licensed). The other
-											products are installed but are not accessable by this
-											restricted key. (ex. SAS) Mark these other products that can
-											not be accessed as: Invalid. Restrictive Vendor Key. Add a
-											comment to state what product package they are part of</td>
-									</tr>
-									<tr>
 										<td></td>
 									</tr>
-									<tr>
-										<th colspan="2">NOTE: If the product does not fall into
-											any of the categories above, it should be marked "Valid"</th>
-									</tr>
 								</table>
-
-
 							</div>
 						</div>
 					</div>
