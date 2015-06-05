@@ -50,12 +50,5 @@
     	<one-to-one name="installedTadz"
 			class="com.ibm.ea.bravo.software.InstalledTadz"
 			property-ref="installedSoftware" cascade="delete" />			
-    	<!-- 
-    	<join table="INSTALLED_SA_PRODUCT" optional="true">
-			<key column="" unique="true" />
-			<many-to-one name="softwareLpar" column="SOFTWARE_LPAR_ID"
-				not-null="true" unique="true" lazy="false" />
-		</join>
-    	 -->
     </class>
 </hibernate-mapping>
