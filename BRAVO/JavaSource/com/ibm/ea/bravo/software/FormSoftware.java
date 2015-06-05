@@ -344,12 +344,6 @@ public class FormSoftware extends FormBase {
 		// build the list of invalid software categories
 		this.setInvalidCategoryList(DelegateSoftware.getInvalidCategoryList(this.getChangeJustification()));
 		
-		//ab added sprint9 story 27299
-//		if(!("TLCMz".equalsIgnoreCase(getTlcmz())) ||"TADz".equalsIgnoreCase(getTadz())){
-//			getInvalidCategoryList().remove("Duplicate product - In Use");
-//			getInvalidCategoryList().remove("Shared DASD (not used in this LPAR)");
-//		}
-		
 		return errors;
 	}
 
