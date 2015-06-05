@@ -74,9 +74,23 @@
 	//ab added sprint9 story 27299
 	function validateCategory(){
 		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
+		
 		var softwareCategory= document.getElementsByName("invalidCategory")[0];
-	    softwareCategory.options[2].style.display="";
-	    softwareCategory.options[3].style.display="";
+		var dupProd,sharedDASD;
+		
+	    for(var i=0;i<softwareCategory.length;i++){
+	    	if(softwareCategory.options[i].value=='Duplicate product - In Use'){
+	    		dupProd=softwareCategory.options[i];
+	    	}
+			if(softwareCategory.options[i].value=='Shared DASD (not used in this LPAR)'){
+				sharedDASD=softwareCategory.options[i];
+	    	}
+	    }
+	    
+		//softwareCategory.options[2].style.display="";
+	    //softwareCategory.options[3].style.display="";
+	    dupProd.style.display="";
+	    sharedDASD.style.display="";
 	    
 		for(var i=0;i<descrepancyType.length;i++){
 			if(descrepancyType.options[i].selected){
@@ -86,14 +100,13 @@
 					var tadz="${requestScope.software.tadz}";
 					var tlcmz="${requestScope.software.tlcmz}";
 					
-					if(tadz!=null && tadz != ""){  //if it is TADz, then remove below 2 child node of Software Category
-						softwareCategory.options[2].style.display="none";
-					    softwareCategory.options[3].style.display="none";
-					    
+					if((tadz!=null && tadz != "")||(tlcmz!=null && tlcmz != "")){  //if it is TADz, then remove below 2 child node of Software Category
+					    dupProd.style.display="none";
+					    sharedDASD.style.display="none";
 					}
 					if(tlcmz!=null && tlcmz != ""){  //if it is TLCMz, then reactive child node of Software Category
-					    softwareCategory.options[2].style.display="";
-					    softwareCategory.options[3].style.display="";
+					    dupProd.style.display="";
+					    sharedDASD.style.display="";
 					}
 				}
 			}
