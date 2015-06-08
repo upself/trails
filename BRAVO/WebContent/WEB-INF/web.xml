@@ -6,7 +6,7 @@
 
 	<context-param>
 		<param-name>config-file</param-name>
-		<param-value>C:\\personal\\software\\Trails_props\\bravo\\quartz.properties</param-value>
+		<param-value>/opt/bravo/conf/quartz.properties</param-value>
 	</context-param>
 	<context-param>
 		<param-name>shutdown-on-unload</param-name>
@@ -118,7 +118,6 @@
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
-<!--  -->
 
 	<security-constraint>
 		<display-name>Tool Home</display-name>
@@ -139,7 +138,7 @@
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
 		<user-data-constraint>
-			<transport-guarantee>NONE</transport-guarantee>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
 
@@ -168,7 +167,7 @@
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
 		<user-data-constraint>
-			<transport-guarantee>NONE</transport-guarantee>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint> 
 
@@ -186,7 +185,7 @@
 			<role-name>com.ibm.tap.admin</role-name>
 		</auth-constraint>
 		<user-data-constraint>
-			<transport-guarantee>NONE</transport-guarantee>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
 
