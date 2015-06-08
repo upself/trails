@@ -99,7 +99,7 @@ sub setReconFlagHardwares {
 			}
 			elsif ( $bravoHardware->processorCount != $stagingHardware->processorCount )
 			{
-				dlog("processorCount : $bravoHardware->chips != $stagingHardware->chips");
+				dlog("processorCount : $bravoHardware->processorCount != $stagingHardware->processorCount");
 				return 1;
 			}
 			elsif ( $bravoHardware->chips != $stagingHardware->chips ) {
@@ -161,7 +161,6 @@ sub processHardwareLpars {
 			$self->stagingConnection, $self->bravoConnection,
 			$stagingHardwareLpar,     $self->bravoHardware
 		);
-		$hardwareLparLoader->reconDeep( $self->reconDeep );
 		$hardwareLparLoader->logic;
 		if ( $hardwareLparLoader->error == 1 ) {
 			$self->error(1);
@@ -192,9 +191,9 @@ sub save {
 		}
 	}
 
-	###Call the recon engine if we save anything
+	###Call the recon engine if recoDeep flag is set
 	$self->recon
-	  if ( $self->saveBravoHardware == 1 );
+	  if ( $self->reconDeep == 1 );
 
 	###Return here if the staging hardware is already in complete
 	return if ( $self->stagingHardware->action eq 'COMPLETE' || substr($self->stagingHardware->action,-1) eq '0' );

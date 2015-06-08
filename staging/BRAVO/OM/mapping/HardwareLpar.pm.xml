@@ -5,10 +5,9 @@
 		biz-key="true" />
 	<property name="customerId" type="scalar" equals="true"
 		sql-name="customer_id" biz-key="true" />
-	<property name="hardwareId" type="scalar" equals="true"
-		sql-name="hardware_id" />
+	<property name="hardwareId" type="scalar" sql-name="hardware_id" />
 	<property name="status" type="scalar" equals="true" sql-name="status" />
-	<property name="action" type="scalar" equals="true" default="0" />
+	<property name="action" type="scalar" default="0" />
 	<property name="remoteUser" type="scalar" sql-name="remote_user"
 		default="ATP" />
 	<property name="recordTime" type="scalar" sql-name="record_time" />
