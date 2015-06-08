@@ -19,9 +19,9 @@ public class Constants {
 	
 	public static final String USER_CONTAINER = "user.container";
 
-	public static final String CONF_DIR = "C:\\personal\\software\\Trails_props\\bravo\\";
+	public static final String CONF_DIR = "/opt/bravo/conf";
 
-	public static final String PROPERTIES = "bravo.properties";
+	public static final String PROPERTIES = "/bravo.properties";
 
 	public static final String ERROR_DIR = "/opt/IBMIHS/htdocs/en_US/uploadReport";
 
