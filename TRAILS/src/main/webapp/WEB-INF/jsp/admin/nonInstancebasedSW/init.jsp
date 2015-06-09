@@ -123,11 +123,16 @@ function searchData(){
 	var capacityDesc = $("capacityDesc_id").val();
 	var statusId = $("statusId_id").val();
 
+	var searchParam = "?softwareName=" + softwareName;
+	searchParam += "&manufacturerName=" + manufacturerName;
+	searchParam += "&restriction=" + restriction;
+	searchParam += "&baseOnly=" + baseOnly;
+	searchParam += "&capacityDesc=" + capacityDesc;
+	searchParam += "&statusId=" + statusId;
 	
 	$.ajax({
-		url: "${pageContext.request.contextPath}/ws/noninstance/search?softwareName=abc",
+		url: "${pageContext.request.contextPath}/ws/noninstance/search" + searchParam,
 		type: "GET",
-		data:{'softwareName' : softwareName, 'manufacturerName' : manufacturerName, 'restriction' : restriction, 'baseOnly' : baseOnly, 'capacityDesc' : capacityDesc, 'statusId' : statusId},
 		dataType:'json',
 		success:function(data){
 			var html = '';

@@ -43,16 +43,20 @@ public class NonInstanceServiceEndpoint {
 	@GET
 	@Path("/search")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<NonInstanceDisplay> search(@FormParam("softwareName") String s1,@PathParam("softwareName") String s2,
-			@QueryParam("softwareName") String s3, @CookieParam("softwareName") String s4, @HeaderParam("softwareName") String s5) {
+	public List<NonInstanceDisplay> search(@QueryParam("softwareName") String softwareName,
+			@QueryParam("manufacturerName") String manufacturerName,
+			@QueryParam("restriction") String restriction,
+			@QueryParam("capacityDesc") String capacityDesc,
+			@QueryParam("baseOnly") Integer baseOnly,
+			@QueryParam("statusId") Long statusId) {
 
 		NonInstanceDisplay searchObj = new NonInstanceDisplay();
-		/*searchObj.setSoftwareName(softwareName);
+		searchObj.setSoftwareName(softwareName);
 		searchObj.setManufacturerName(manufacturerName);
 		searchObj.setRestriction(restriction);
 		searchObj.setCapacityDesc(capacityDesc);
 		searchObj.setBaseOnly(baseOnly);
-		searchObj.setStatusId(statusId);*/
+		searchObj.setStatusId(statusId);
 
 		List<NonInstanceDisplay> nonList = nonInstanceService
 				.findNonInstanceDisplays(searchObj);
