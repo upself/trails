@@ -71,6 +71,17 @@
 		<servlet-name>ReportDownload</servlet-name>
 		<url-pattern>/report/download/*</url-pattern>
 	</servlet-mapping>
+	
+	<!-- CXF Servlet -->
+	<servlet>
+	    <servlet-name>CXFServlet</servlet-name>
+	    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CXFServlet</servlet-name>
+	    <url-pattern>/ws/*</url-pattern>
+	</servlet-mapping>
+
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
@@ -96,7 +107,7 @@
 		</auth-constraint>
  		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-		</user-data-constraint> 
+		</user-data-constraint>
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>

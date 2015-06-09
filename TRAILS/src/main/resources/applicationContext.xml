@@ -582,4 +582,7 @@
 
 	<bean id="adminAction" class="com.ibm.asset.trails.action.AdminAction">
 	</bean>
+	
+	<!--web services-->
+  	<import resource="applicationContext-ws.xml"/>
 </beans>

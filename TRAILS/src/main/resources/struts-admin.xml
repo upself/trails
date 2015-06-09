@@ -73,5 +73,13 @@
 		</action>
 
 	</package>
+	
+	<package name="nonInstancebasedSW" extends="trails-struts-default" namespace="/admin/nonInstancebasedSW">
+		<action name="init" class="pvuMappingAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.init
+			</result>
+		</action>
+	</package>
 
 </struts>
