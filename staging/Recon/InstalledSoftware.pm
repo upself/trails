@@ -260,10 +260,11 @@ sub reconcile {
 	my $machineLevel;
 	my $reconcileIdForMachineLevel;
 	my $allocMethodId;
+	my $freePoollData;
 
 	(
-		$licsToAllocate, $reconcileTypeId,
-		$machineLevel,   $reconcileIdForMachineLevel, $allocMethodId
+		$licsToAllocate, $reconcileTypeId, $machineLevel,
+		$reconcileIdForMachineLevel, $allocMethodId, $freePoollData
 	  )
 	  = $self->attemptLicenseAllocation;
 
@@ -295,22 +296,6 @@ sub reconcile {
 
 		return 1;
 	}
-##	elsif ( defined $self->customer->swComplianceMgmt
-##		&& $self->customer->swComplianceMgmt eq 'YES' )
-##	{
-##		if ( defined $self->installedSoftwareReconData->scopeName ) {
-##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
-				###Create reconcile and set id in data.
-##				my $reconcileTypeMap =
-##				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-##				my $rId =
-##				  $self->createReconcile(
-##					$reconcileTypeMap->{'Pending customer decision'},
-##					0, $self->installedSoftware->id );
-##				return 1;
-##			}
-##		}
-##	}
 
 	return 0;
 }
@@ -650,7 +635,7 @@ sub attemptExistingMachineLevel {
 	}
 	else {
 		dlog("unable to allocate");
-		return ( undef, undef, undef, undef );
+		return ( undef, undef, undef,undef );
 	}
 }
 
@@ -669,7 +654,7 @@ sub attemptLicenseAllocation {
 		###Attempt to reconcile at machine level if one is already reconciled at machine level
 		( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
 			$self->attemptExistingMachineLevel($self->installedSoftwareReconData->scopeName);
-		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId )
+		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId,undef )
 		if defined $licsToAllocate;
 	}
 	
@@ -688,7 +673,7 @@ sub attemptLicenseAllocation {
 		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 1 );
 		return ( $licsToAllocate,
 				$reconcileTypeMap->{'Automatic license allocation'},
-				$machineLevel )
+				$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 	}
 
@@ -697,7 +682,7 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel,undef,undef,$freePoolData )
 	  if defined $licsToAllocate;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
@@ -706,7 +691,7 @@ sub attemptLicenseAllocation {
 		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 1 );
 		return ( $licsToAllocate,
 				$reconcileTypeMap->{'Automatic license allocation'},
-				$machineLevel )
+				$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 	}
 
@@ -715,7 +700,7 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel,undef,undef,$freePoolData )
 	  if defined $licsToAllocate;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
@@ -724,7 +709,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 	}
 
@@ -733,7 +718,7 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel,undef,undef,$freePoolData )
 	  if defined $licsToAllocate;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
@@ -742,7 +727,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationHardware($freePoolData);
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 			if defined $licsToAllocate;
 	}
 
@@ -751,7 +736,7 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationLpar( $freePoolData, 1 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel,undef,undef,$freePoolData )
 	  if defined $licsToAllocate;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
@@ -760,7 +745,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 
 		###License type: hw specific IFL (zLinux)
@@ -768,7 +753,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 
 		###License type: hw specific pvu
@@ -776,7 +761,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationPVU( $freePoolData, 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 	
 		###License type: chip(48)
@@ -784,7 +769,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationChip($freePoolData);
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 	}
 
@@ -793,7 +778,7 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationLpar( $freePoolData, 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel,undef,undef,$freePoolData )
 	  if defined $licsToAllocate;
 
 	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
@@ -802,7 +787,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 0 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 		
 		###License type: IFL processor (zLinux)
@@ -810,7 +795,7 @@ sub attemptLicenseAllocation {
 			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 0 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
+			$machineLevel,undef,undef,$freePoolData )
 		if defined $licsToAllocate;
 
 		###License type: pvu
@@ -820,7 +805,7 @@ sub attemptLicenseAllocation {
 
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel );
+		$machineLevel,undef,undef, $freePoolData);
 
 }
 
@@ -892,6 +877,7 @@ sub getFreePoolData {
 			$licView->licenseType( $rec{licenseType} );
 			$licView->lparName( $rec{lparName} );
 			$licView->environment( $rec{lEnvironment} );
+			$licView->extSrcId( $rec{extSrcId} );
 			dlog( $licView->toString );
 
 			if ( defined $rec{usedQuantity} ) {
@@ -2012,6 +1998,7 @@ sub queryFreePoolData {
 	  capType
 	  licenseType
 	  pool
+	  extSrcId
 	  ulId
 	  usedQuantity
 	  machineLevel
@@ -2030,6 +2017,7 @@ select
        l.cap_type, 
        l.lic_type, 
        l.pool,
+       l.ext_src_id,
        ul.id,
        ul.used_quantity,
        r.machine_level,
