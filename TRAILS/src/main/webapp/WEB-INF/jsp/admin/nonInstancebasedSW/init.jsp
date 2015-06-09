@@ -2,7 +2,7 @@
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<form onsubmit="searchData(); return false;" action="[REPLACE]" class="ibm-column-form" enctype="multipart/form-data" method="post">
+		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<p>
 				<label for="softwareName_id">
 					Software title:<span class="ibm-required">*</span>
@@ -76,7 +76,6 @@
 				<div class="ibm-col-6-3">
 					<p>
 						<input value="Search" name="ibm-submit" class="ibm-btn-pri" type="submit">
-						<input value="Add" name="ibm-submit" class="ibm-btn-pri" type="submit">
 					</p>
 				</div>
 			</div>
@@ -89,7 +88,7 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
-			summary="Sortable data table example">
+			summary="Sortable Non Instance based SW table">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Software title</span><span class="ibm-icon"></span></a></th>
@@ -100,7 +99,7 @@
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Capacity type </span><span class="ibm-icon"></span></a>
 					</th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Operation</span><span class="ibm-icon"></span></a></th>
+					<th scope="col">Operation</th>
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
@@ -116,22 +115,30 @@ $(function(){
 });
 
 function searchData(){
-	var softwareName = $("softwareName_id").val();
-	var manufacturerName = $("manufacturerName_id").val();
-	var restriction = $("restriction_id").val();
-	var baseOnly = $("baseOnly_id").val();
-	var capacityDesc = $("capacityDesc_id").val();
-	var statusId = $("statusId_id").val();
+	var softwareName = $("#softwareName_id").val();
+	var manufacturerName = $("#manufacturerName_id").val();
+	var restriction = $("#restriction_id").val();
+	var baseOnly = $("#baseOnly_id").val();
+	var capacityDesc = $("#capacityDesc_id").val();
+	var statusId = $("#statusId_id").val();
 
-	var searchParam = "?softwareName=" + softwareName;
+
+	var searchParam = "?";
+	searchParam += "softwareName=" + softwareName;
 	searchParam += "&manufacturerName=" + manufacturerName;
 	searchParam += "&restriction=" + restriction;
-	searchParam += "&baseOnly=" + baseOnly;
+	if(baseOnly != ''){
+		searchParam += "&baseOnly=" + baseOnly;
+	}
 	searchParam += "&capacityDesc=" + capacityDesc;
-	searchParam += "&statusId=" + statusId;
-	
+	if(statusId != ''){
+		searchParam += "&statusId=" + statusId;
+	}
+
+	var url =  "${pageContext.request.contextPath}/ws/noninstance/search" + searchParam;
+
 	$.ajax({
-		url: "${pageContext.request.contextPath}/ws/noninstance/search" + searchParam,
+		url: url,
 		type: "GET",
 		dataType:'json',
 		success:function(data){
@@ -149,16 +156,13 @@ function searchData(){
 					}
 					html += "<td>" + data[i].capacityDesc +"</td>";
 					html += "<td>" + data[i].statusDesc + "</td>";
-					html += "<td><a href='javascript:void()'>Delete</a>&nbsp;|&nbsp;";
-					html += "<a href='javascript:void()'>Update</a>&nbsp;|&nbsp;";
-					html += "<a href='javascript:void()'>View history</a>&nbsp;|&nbsp;</td>";
+					html += "<td>";
+					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/addOrUpdate.htm?id="+data[i].id+"'>Update</a>&nbsp;|&nbsp;";
+					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?id="+data[i].id+"'>View history</a></td>";
 					html += "</tr>";
 				}
 			}
 			$("#non_instance_list").html(html);
-		},
-		error:function(er){
-			alert(er);
 		}
 	}); 
 };

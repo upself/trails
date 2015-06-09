@@ -22,19 +22,19 @@ public class NonInstanceDAOJpa extends
 		}
 		
 		if(nonInstanceDisplay.getSoftwareName() != null && !"".equals(nonInstanceDisplay.getSoftwareName())){
-			hql += " and non.software.softwareName like %" + nonInstanceDisplay.getSoftwareName() + "%";
+			hql += " and non.software.softwareName like '%" + nonInstanceDisplay.getSoftwareName() + "%'";
 		}
 		
 		if(nonInstanceDisplay.getManufacturerName() != null && !"".equals(nonInstanceDisplay.getManufacturerName())){
-			hql += " and non.manufacturer.manufacturerName like %" + nonInstanceDisplay.getManufacturerName() + "%";
+			hql += " and non.manufacturer.manufacturerName like '%" + nonInstanceDisplay.getManufacturerName() + "%'";
 		}
 		
 		if(nonInstanceDisplay.getRestriction() != null && !"".equals(nonInstanceDisplay.getRestriction())){
-			hql += " and non.restriction like %" + nonInstanceDisplay.getRestriction() + "%";
+			hql += " and non.restriction like '%" + nonInstanceDisplay.getRestriction() + "%'";
 		}
 		
 		if(nonInstanceDisplay.getCapacityDesc() != null  && !"".equals(nonInstanceDisplay.getCapacityDesc())){
-			hql += " and non.capacityType.description like %" + nonInstanceDisplay.getCapacityDesc() + "%";
+			hql += " and non.capacityType.description like '%" + nonInstanceDisplay.getCapacityDesc() + "%'";
 		}
 		
 		if(nonInstanceDisplay.getBaseOnly() != null){

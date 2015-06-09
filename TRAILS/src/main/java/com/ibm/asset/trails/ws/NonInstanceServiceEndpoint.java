@@ -30,6 +30,7 @@ import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.service.NonInstanceService;
+import com.ibm.asset.trails.service.ReportService;
 
 @Path("/noninstance")
 public class NonInstanceServiceEndpoint {
@@ -39,6 +40,9 @@ public class NonInstanceServiceEndpoint {
 
 	@Autowired
 	private NonInstanceService nonInstanceService;
+	
+	@Autowired
+	private ReportService reportService;
 
 	@GET
 	@Path("/search")
@@ -62,7 +66,7 @@ public class NonInstanceServiceEndpoint {
 				.findNonInstanceDisplays(searchObj);
 		return nonList;
 	}
-
+	
 	@GET
 	@Path("/getById/{id}/info")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
