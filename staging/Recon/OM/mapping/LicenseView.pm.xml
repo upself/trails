@@ -8,6 +8,7 @@
 	<property name="expireAge" type="scalar" equals="true" />
 	<property name="quantity" type="scalar" equals="true" />
 	<property name="pool" type="scalar" equals="true" />
+	<property name="extSrcId" type="scalar" equals="false" />
 	<property name="capType" type="scalar" equals="true" />
 	<property name="licenseType" type="scalar" equals="true" />
 	<property name="usedQuantity" type="scalar" equals="true" />
