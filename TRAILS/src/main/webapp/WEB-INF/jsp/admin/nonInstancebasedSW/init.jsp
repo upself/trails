@@ -158,7 +158,7 @@ function searchData(){
 					html += "<td>" + data[i].statusDesc + "</td>";
 					html += "<td>";
 					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/addOrUpdate.htm?id="+data[i].id+"'>Update</a>&nbsp;|&nbsp;";
-					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?id="+data[i].id+"'>View history</a></td>";
+					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
 					html += "</tr>";
 				}
 			}

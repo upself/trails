@@ -1,16 +1,20 @@
 package com.ibm.asset.trails.dao.jpa;
 
 import java.util.List;
+
 import org.springframework.stereotype.Repository;
+
 import com.ibm.asset.trails.dao.NonInstanceDAO;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
+import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 
 @Repository
 public class NonInstanceDAOJpa extends
 		AbstractGenericEntityDAOJpa<NonInstance, Long> implements
 		NonInstanceDAO {
 
+	@SuppressWarnings("unchecked")
 	public List<NonInstanceDisplay> findNonInstanceDisplays(
 			NonInstanceDisplay nonInstanceDisplay) {
 		// TODO Auto-generated method stub
@@ -50,9 +54,24 @@ public class NonInstanceDAOJpa extends
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	public NonInstance findNonInstancesDisplayById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId) {
+		// TODO Auto-generated method stub
+		String hql = "select new com.ibm.asset.trails.domain.NonInstanceHDisplay(non.id,non.nonInstanceId, "
+				+ "non.software.softwareId, non.software.softwareName, "
+				+ "non.manufacturer.manufacturerName, non.restriction, non.capacityType.code, "
+				+ "non.capacityType.description, non.baseOnly, non.status.id, non.status.description,"
+				+ "non.remoteUser, non.recordTime) from NonInstanceH as non where nonInstanceId = " + nonInstanceId;
+		
+		List<NonInstanceHDisplay> list =  entityManager.createQuery(hql).getResultList();
+
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")

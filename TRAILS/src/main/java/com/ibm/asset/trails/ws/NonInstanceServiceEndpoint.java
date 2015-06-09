@@ -28,6 +28,7 @@ import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
+import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
@@ -65,6 +66,25 @@ public class NonInstanceServiceEndpoint {
 		List<NonInstanceDisplay> nonList = nonInstanceService
 				.findNonInstanceDisplays(searchObj);
 		return nonList;
+	}
+	
+	@GET
+	@Path("/history/{nonInstanceId}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public List<NonInstanceHDisplay> history(@PathParam("nonInstanceId") Long nonInstanceId) {
+
+
+		List<NonInstanceHDisplay> nonHList = nonInstanceService.findNonInstanceHDisplays(nonInstanceId);
+		
+		if(null == nonHList || nonHList.size() == 0){
+			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+			builder.type(MediaType.APPLICATION_JSON);
+			builder.entity("There is no any NonInsance history record which has not been found!");
+			throw new WebApplicationException(builder.build());
+		}else{
+			return nonHList;
+		}
+		
 	}
 	
 	@GET

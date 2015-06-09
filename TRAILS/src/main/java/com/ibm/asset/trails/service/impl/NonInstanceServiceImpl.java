@@ -11,6 +11,7 @@ import com.ibm.asset.trails.dao.BaseEntityDAO;
 import com.ibm.asset.trails.dao.NonInstanceDAO;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
+import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.service.NonInstanceService;
 
 @Service
@@ -35,6 +36,12 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 	public NonInstance findNonInstancesDisplayById(Long id) {
 		// TODO Auto-generated method stub
 		return dao.findNonInstancesDisplayById(id);
+	}
+
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId) {
+		// TODO Auto-generated method stub
+		return dao.findNonInstanceHDisplays(nonInstanceId);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)

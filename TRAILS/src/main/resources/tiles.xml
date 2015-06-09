@@ -225,7 +225,7 @@
 	<definition name="tiles.v17e.w3OneColumnLayout" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
 		<put-attribute name="content" type="template" value="" />
-		<put-attribute name="contentSidebar" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/nonInstanceSidebar.jsp" />
+		<put-attribute name="contentSidebar" type="template" value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
 	</definition>
 	
@@ -1206,8 +1206,16 @@
 	<definition name="tiles.admin.nonInstancebasedSW.init"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/nonInstancebasedSW/init.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/init.jsp" />
+		<put-attribute name="contentSidebar" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/nonInstanceSidebar.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.history"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/history.jsp" />
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>

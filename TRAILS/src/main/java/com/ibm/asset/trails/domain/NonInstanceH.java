@@ -10,33 +10,30 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "NON_INSTANCE")
-@NamedQueries({@NamedQuery(name = "findNonInstancesByRestriction", query = "from NonInstance where restriction = :restriction")
-	          ,@NamedQuery(name = "findNonInstancesBySoftwareId", query = "from NonInstance nonInstance where nonInstance.software.softwareId = :softwareId")
-	          ,@NamedQuery(name = "findNonInstancesByManufacturerId", query = "from NonInstance nonInstance where nonInstance.manufacturer.id = :manufacturerId"),
-               @NamedQuery(name = "removeNonInstanceById", query = "update NonInstance nonInstance set nonInstance.status.id = 1 where id = :id")})
-public class NonInstance extends AbstractDomainEntity {
+@Table(name = "NON_INSTANCE_H")
+public class NonInstanceH extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1570160658765275811L;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
+	
+	@Column(name = "NON_INSTANCE_ID", nullable  = false)
+	private Long nonInstanceId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID", nullable = false)
+	@JoinColumn(name = "SOFTWARE_ID" , nullable  = false)
 	private Software software;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "MANUFACTURER_ID", nullable = false)
+	@JoinColumn(name = "MANUFACTURER_ID" , nullable  = false)
 	private Manufacturer manufacturer;
 
-	@Column(name = "RESTRICTION", length=8, nullable = false)
+	@Column(name = "RESTRICTION", length=8, nullable  = false)
 	private String restriction;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -57,12 +54,21 @@ public class NonInstance extends AbstractDomainEntity {
 	private Date recordTime;
 
 	
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getNonInstanceId() {
+		return nonInstanceId;
+	}
+
+	public void setNonInstanceId(Long nonInstanceId) {
+		this.nonInstanceId = nonInstanceId;
 	}
 
 	public Software getSoftware() {
