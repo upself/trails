@@ -2,6 +2,10 @@ package com.ibm.asset.trails.domain;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.ibm.asset.trails.ws.adapter.DateAdapter;
+
 public class NonInstanceHDisplay {
 	
 	private Long id;
@@ -24,6 +28,7 @@ public class NonInstanceHDisplay {
 	
 	private String remoteUser;
 	
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date recordTime;
 
 	
