@@ -201,7 +201,7 @@ sub newChild {
     my $reconEngine = new Recon::LicensingReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 30;
+    sleep 1;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
