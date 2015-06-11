@@ -1,10 +1,26 @@
 package com.ibm.asset.trails.service.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +28,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +57,10 @@ import com.ibm.asset.trails.service.NonInstanceService;
 @Service
 public class NonInstanceServiceImpl implements NonInstanceService{
 
+
+	@Autowired
+	private NonInstanceDAO dao;
+	
 	private EntityManager em;
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -216,10 +238,245 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.setParameter("code", capacityCode)
 				.getResultList();
 	}
+	public NonInstance findBySoftwareNameAndCapacityCode(String softwareName, String Capcode){
+		// TODO Auto-generated method stub
+				return null;
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException{
+            HSSFWorkbook wb = new HSSFWorkbook(fileinput);
+      		HSSFSheet sheet = wb.getSheetAt(0);
+      		Iterator liRow = null;
+      		HSSFRow row = null;
+      		NonInstance ni = null;
+      		boolean error = false;
+      		StringBuffer lsbErrorMessage = null;
+      		HSSFCellStyle lcsError = wb.createCellStyle();
+      		HSSFCellStyle lcsNormal = wb.createCellStyle();
+      		HSSFCellStyle lcsMessage = wb.createCellStyle();
+      		HSSFCell cell = null;
+      		boolean lbHeaderRow = false;
 
+      		lcsError.setFillForegroundColor(HSSFColor.RED.index);
+      		lcsError.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+      		lcsNormal.setFillForegroundColor(HSSFColor.WHITE.index);
+      		lcsNormal.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+      		lcsMessage.setFillForegroundColor(HSSFColor.YELLOW.index);
+      		lcsMessage.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+      		for (liRow = sheet.rowIterator(); liRow.hasNext();) {
+      			row = (HSSFRow) liRow.next();
+      			ni = new NonInstance();
+      			error = false;
+      			lsbErrorMessage = new StringBuffer();
+      			lbHeaderRow = false;
+
+      			for (int i = 0; i <= 5; i++) {
+      				cell = row.getCell(i);
+      				if (cell == null) {
+      					cell = row.createCell(i);
+      						cell.setCellStyle(lcsError);
+      						lsbErrorMessage.append(error ? "\n" : "").append(
+      								getErrorMessage(i));
+      						error = true;
+      				} else {
+      					cell.setCellStyle(lcsNormal);
+
+      					try {
+      						if (row.getRowNum() == 0 && cell.getColumnIndex() == 0) {
+      							lbHeaderRow = true;
+      							break;
+      						} else {
+      							parseCell(cell, ni);
+      						}
+      					} catch (Exception e) {
+      						cell.setCellStyle(lcsError);
+      						// e.printStackTrace();
+      						lsbErrorMessage.append(error ? "\n" : "").append(
+      								e.getMessage());
+      						error = true;
+      					}
+      				}
+      			}
+
+      			if (!lbHeaderRow) {
+      				if (error) {
+      					cell = row.createCell(16);
+      					cell.setCellStyle(lcsError);
+      					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
+      							.toString()));
+      				} else if (ni.getSoftware() != null && ni.getCapacityType() != null
+      						) {
+      					NonInstance iExists =  findBySoftwareNameAndCapacityCode(ni.getSoftware().getSoftwareName(),ni.getCapacityType().getDescription());
+      					if (iExists != null) {
+      									ni.setId(iExists.getId());	
+      					}
+      					dao.merge(ni);
+      					cell = row.createCell(16);
+      					cell.setCellStyle(lcsMessage);
+      					cell.setCellValue(new StringBuffer(
+      							"YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
+      				}
+      			}
+      		}
+      		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    		wb.write(bos);
+
+		return bos;
+	}
+    @SuppressWarnings("null")
+	private void parseCell(HSSFCell cell, NonInstance ni) throws Exception {
+
+		switch (cell.getColumnIndex()) {
+		case 0: { // Software Name
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("Software Name is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("Software Name is required.");
+			} else {
+				List<Software> swlist = findSoftwareBySoftwareName(cell.getRichStringCellValue().getString()
+						.trim());
+				ni.setSoftware(swlist.get(0));
+			}
+
+			break;
+		}
+		case 1: { // Manufacturer
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("Manufacturer is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("Manufacturer is required.");
+			} else {
+				List<Manufacturer> mlist = findManufacturerByName(cell.getRichStringCellValue().getString()
+				.trim());
+				ni.setManufacturer(mlist.get(0));
+			}
+
+			break;
+		}
+		case 2: { // RESTRICTION
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("RESTRICTION is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("RESTRICTION is required.");
+			} else {
+				ni.setRestriction(cell.getRichStringCellValue().getString()
+						.trim());
+			}
+
+			break;
+		}
+		case 3: { // CAPACITY_TYPE
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("CAPACITY TYPE is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("CAPACITY TYPE is required.");
+			} else {
+				List<CapacityType> cplist = findCapacityTypeByDesc(cell.getRichStringCellValue().getString()
+						.trim());
+				ni.setCapacityType(cplist.get(0));
+			}
+
+			break;
+		}
+		case 4: { // BASE ONLY
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("BASE ONLY is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("BASE ONLY is required.");
+			} else {
+				String baseOnly = cell.getRichStringCellValue().getString()
+						.trim();
+				if (baseOnly.equalsIgnoreCase("YES")) {
+					ni.setBaseOnly(1);
+				} else {
+					ni.setBaseOnly(0);
+				}
+			}
+
+
+			break;
+		}
+		case 5: { // STATUS
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
+				throw new Exception("STATUS is not a string.");
+			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
+					.getString())) {
+				throw new Exception("STATUS is required.");
+			} else {
+				@SuppressWarnings("unchecked")
+				List<com.ibm.asset.trails.domain.Status> results = getEntityManager()
+						.createNamedQuery("statusDetails")
+						.setParameter(
+								"description",
+								cell.getRichStringCellValue().getString()
+										.toUpperCase()).getResultList();
+				if (results == null || results.isEmpty()) {
+					throw new Exception("Status is invalid.");
+				} else  {
+				    ni.setStatus(results.get(0));
+				}
+			break;
+		}
+		}
+		}
+	}
+
+ 
+	private String getErrorMessage(int piCellIndex) {
+		String lsErrorMessage = null;
+
+		switch (piCellIndex) {
+		case 0: { // Software Name
+			lsErrorMessage = " Software Name is required.";
+
+			break;
+		}
+
+		case 1: { // Manufacturer
+			lsErrorMessage = "  Manufacturer is required.";
+			
+			break;
+		}
+
+		case 2: { // RESTRICTION
+			lsErrorMessage = "RESTRICTION is required.";
+			
+			break;
+		}
+
+		case 3: { // CAPACITY_TYPE_CODE
+			lsErrorMessage = " CAPACITY TYPE CODE is required.";
+			
+			break;
+		}
+
+		case 4: { // BASE_ONLY
+			lsErrorMessage = " BASE ONLY is required.";
+			
+			break;
+		}
+
+		case 5: { // STATUS
+			lsErrorMessage = "STATUS is required.";
+
+			break;
+		}
+		}
+
+		return lsErrorMessage;
+	}
+	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<NonInstance> findNonInstanceByswIdAndCapacityCodeNotEqId(
 			Long softwareId, Integer capacityCode, Long id) {
+
 		// TODO Auto-generated method stub
 		return getEntityManager()
 				.createNamedQuery("findNonInstancesBySwIdAndCapacityCodeNotEqId")
@@ -228,7 +485,7 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.setParameter("id", id)
 				.getResultList();
 	}
-	
+
 	@PersistenceContext(unitName="trailspd")
     public void setEntityManager(EntityManager em) {
         this.em = em;
