@@ -4,22 +4,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import com.ibm.asset.trails.domain.CapacityType;
+import com.ibm.asset.trails.domain.Manufacturer;
 
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
+import com.ibm.asset.trails.domain.Software;
 
 public interface NonInstanceService {
 	
+	public NonInstanceDisplay findNonInstanceDisplayById(Long Id);
 	public List<NonInstanceDisplay> findNonInstanceDisplays(NonInstanceDisplay nonInstanceDisplay);
-	public NonInstance findNonInstancesDisplayById(Long id);
-	
 	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId);
 	
-	public List<NonInstance> findNonInstancesByRestriction(String restriction);
-	public List<NonInstance> findNonInstancesBySoftwareId(long softwareId);
-	public List<NonInstance> findNonInstancesByManufacturerId(Long manufacturerId);
-	public void removeNonInsanceById(Long id);
-    public ByteArrayOutputStream parserUpload(FileInputStream fileinput);
+	public void saveNonInstance(NonInstance nonInstance);
+    public List<Software> findSoftwareBySoftwareName(String softwareName);
+	public List<Manufacturer> findManufacturerByName(String manufacturerName);
+	public List<CapacityType> findCapacityTypeByDesc(String description);
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput);
 }

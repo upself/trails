@@ -1,4 +1,7 @@
 package com.ibm.asset.trails.domain;
+
+import java.util.Date;
+
 public class NonInstanceDisplay {
 	
 	private Long id;
@@ -17,27 +20,19 @@ public class NonInstanceDisplay {
 	private Long statusId;
 	private String statusDesc;
 	
+	private String remoteUser;
+	private Date recordTime;
 	
 	
 	public NonInstanceDisplay() {
 
 	}
 
-	
-	
-	public NonInstanceDisplay(Long id, String softwareName, String restriction) {
-		super();
-		this.id = id;
-		this.softwareName = softwareName;
-		this.restriction = restriction;
-	}
-
-
 
 	public NonInstanceDisplay(Long id, Long softwareId, String softwareName,
 			String manufacturerName, String restriction, Integer capacityCode,
 			String capacityDesc, Integer baseOnly, Long statusId,
-			String statusDesc) {
+			String statusDesc, String remoteUser, Date recordTime) {
 		super();
 		this.id = id;
 		this.softwareId = softwareId;
@@ -49,14 +44,15 @@ public class NonInstanceDisplay {
 		this.baseOnly = baseOnly;
 		this.statusId = statusId;
 		this.statusDesc = statusDesc;
+		this.remoteUser = remoteUser;
+		this.recordTime = recordTime;
 	}
 
 
-
+	
 	public Long getId() {
 		return id;
 	}
-
 
 
 	public void setId(Long id) {
@@ -64,11 +60,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public Long getSoftwareId() {
 		return softwareId;
 	}
-
 
 
 	public void setSoftwareId(Long softwareId) {
@@ -76,11 +70,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public String getSoftwareName() {
 		return softwareName;
 	}
-
 
 
 	public void setSoftwareName(String softwareName) {
@@ -88,11 +80,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public String getManufacturerName() {
 		return manufacturerName;
 	}
-
 
 
 	public void setManufacturerName(String manufacturerName) {
@@ -100,11 +90,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public String getRestriction() {
 		return restriction;
 	}
-
 
 
 	public void setRestriction(String restriction) {
@@ -112,11 +100,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public Integer getCapacityCode() {
 		return capacityCode;
 	}
-
 
 
 	public void setCapacityCode(Integer capacityCode) {
@@ -124,11 +110,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public String getCapacityDesc() {
 		return capacityDesc;
 	}
-
 
 
 	public void setCapacityDesc(String capacityDesc) {
@@ -136,11 +120,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public Integer getBaseOnly() {
 		return baseOnly;
 	}
-
 
 
 	public void setBaseOnly(Integer baseOnly) {
@@ -148,11 +130,9 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public Long getStatusId() {
 		return statusId;
 	}
-
 
 
 	public void setStatusId(Long statusId) {
@@ -160,16 +140,32 @@ public class NonInstanceDisplay {
 	}
 
 
-
 	public String getStatusDesc() {
 		return statusDesc;
 	}
 
 
-
 	public void setStatusDesc(String statusDesc) {
 		this.statusDesc = statusDesc;
 	}
-	
-	
+
+
+	public String getRemoteUser() {
+		return remoteUser;
+	}
+
+
+	public void setRemoteUser(String remoteUser) {
+		this.remoteUser = remoteUser;
+	}
+
+
+	public Date getRecordTime() {
+		return recordTime;
+	}
+
+
+	public void setRecordTime(Date recordTime) {
+		this.recordTime = recordTime;
+	}
 }

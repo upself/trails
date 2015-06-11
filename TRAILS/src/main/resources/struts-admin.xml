@@ -75,15 +75,27 @@
 	</package>
 	
 	<package name="nonInstancebasedSW" extends="trails-struts-default" namespace="/admin/nonInstancebasedSW">
-		<action name="init" class="nonInstancebasedSWAction">
+		<action name="init" method="list" class="nonInstancebasedSWAction">
 			<interceptor-ref name="defaultStack" />
-			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.init
+			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.list
 			</result>
 		</action>
 		
 		<action name="history" method="history" class="nonInstancebasedSWAction">
 			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.history
+			</result>
+		</action>
+		
+		<action name="manage" method="manage" class="nonInstancebasedSWAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.manage
+			</result>
+		</action>
+		
+		<action name="update" method="update" class="nonInstancebasedSWAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.update
 			</result>
 		</action>
 	</package>

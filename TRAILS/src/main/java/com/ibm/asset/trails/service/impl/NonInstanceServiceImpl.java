@@ -24,16 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.BaseEntityDAO;
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-import com.ibm.asset.trails.domain.Account;
-import com.ibm.asset.trails.domain.MachineType;
+
+import com.ibm.asset.trails.dao.SoftwareDAO;
+import com.ibm.asset.trails.domain.CapacityType;
+import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
-import com.ibm.asset.trails.domain.ScheduleF;
-import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
-import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
-import com.ibm.asset.trails.domain.Source;
+
 import com.ibm.asset.trails.service.NonInstanceService;
 
 @Service
@@ -41,10 +40,13 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 
 	@Autowired
 	private NonInstanceDAO dao;
-	@Override
-	protected BaseEntityDAO<NonInstance, Long> getDao() {
+	
+	
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public NonInstanceDisplay findNonInstanceDisplayById(Long Id) {
 		// TODO Auto-generated method stub
-		return dao;
+		return dao.findNonInstanceDisplayById(Id);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -55,39 +57,29 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public NonInstance findNonInstancesDisplayById(Long id) {
-		// TODO Auto-generated method stub
-		return dao.findNonInstancesDisplayById(id);
-	}
-
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId) {
 		// TODO Auto-generated method stub
 		return dao.findNonInstanceHDisplays(nonInstanceId);
 	}
-
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstance> findNonInstancesByRestriction(String restriction) {
+	
+	public void saveNonInstance(NonInstance nonInstance) {
 		// TODO Auto-generated method stub
-		return dao.findNonInstancesByRestriction(restriction);
+		
 	}
 
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstance> findNonInstancesBySoftwareId(long softwareId) {
+	public List<Software> findSoftwareBySoftwareName(String softwareName) {
 		// TODO Auto-generated method stub
-		return dao.findNonInstancesBySoftwareId(softwareId);
+		return null;
 	}
 
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstance> findNonInstancesByManufacturerId(
-			Long manufacturerId) {
+	public List<Manufacturer> findManufacturerByName(String manufacturerName) {
 		// TODO Auto-generated method stub
-		return dao.findNonInstancesByManufacturerId(manufacturerId);
+		return null;
 	}
 
-	public void removeNonInsanceById(Long id) {
+	public List<CapacityType> findCapacityTypeByDesc(String description) {
 		// TODO Auto-generated method stub
-		dao.removeNonInsanceById(id);
+		return null;
 	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -307,5 +299,10 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 		}
 
 		return lsErrorMessage;
+	}
+	
+	protected BaseEntityDAO<NonInstance, Long> getDao() {
+		// TODO Auto-generated method stub
+		return dao;
 	}
 }

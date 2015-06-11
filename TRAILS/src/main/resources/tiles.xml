@@ -1203,10 +1203,10 @@
 		<put-attribute name="keywords" value="TRAILS PVU mapping success" />
 	</definition>
 	
-	<definition name="tiles.admin.nonInstancebasedSW.init"
+	<definition name="tiles.admin.nonInstancebasedSW.list"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/init.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/list.jsp" />
 		<put-attribute name="contentSidebar" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/nonInstanceSidebar.jsp" />
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
@@ -1214,8 +1214,24 @@
 	
 	<definition name="tiles.admin.nonInstancebasedSW.history"
 		extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Non Instance based SW" />
+		<put-attribute name="contentTitle" value="Non Instance based SW history" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/history.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.manage"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.update"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
