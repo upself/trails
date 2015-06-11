@@ -4,7 +4,7 @@
 %>
 	<div id="ibm-contact-module">
 		<!--IBM Contact Module-->
-		<a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/addOrUpdate.htm">Add Non Instance base SW</a> <br />
+		<a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=add">Add Non Instance base SW</a> <br />
 		<a href="">Export Non Instance based SW</a>
 	</div>
 	

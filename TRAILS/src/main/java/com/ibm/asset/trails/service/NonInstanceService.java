@@ -18,9 +18,14 @@ public interface NonInstanceService {
 	public List<NonInstanceDisplay> findNonInstanceDisplays(NonInstanceDisplay nonInstanceDisplay);
 	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId);
 	
+	public void updateNonInstance(NonInstance nonInstance);
 	public void saveNonInstance(NonInstance nonInstance);
     public List<Software> findSoftwareBySoftwareName(String softwareName);
 	public List<Manufacturer> findManufacturerByName(String manufacturerName);
 	public List<CapacityType> findCapacityTypeByDesc(String description);
+
 	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException;
+	public List<NonInstance> findNonInstanceByswIdAndCapacityCode(Long softwareId, Integer capacityCode);
+	public List<NonInstance> findNonInstanceByswIdAndCapacityCodeNotEqId(Long softwareId, Integer capacityCode, Long id);
+
 }

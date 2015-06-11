@@ -37,29 +37,33 @@ function searchData(){
 		url: "${pageContext.request.contextPath}/ws/noninstance/history/<s:property value='nonInstanceId' />",
 		type: "GET",
 		dataType:'json',
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus);
+    	},
 		success:function(data){
-			var html="";
-			for(var i = 0; i < data.length; i++){
-				html += "<tr>";
-				html += "<td>" + data[i].softwareName + "</td>";
-				html += "<td>" + data[i].manufacturerName + "</td>";
-				html += "<td>" + data[i].restriction + "</td>";
-				if(data[i].baseOnly == 1){
-					html += "<td>Y</td>";
-				}else{
-					html += "<td>N</td>";
+			var html = '';
+			if(data.status != 200){
+				html += "<tr><td colspan='8'>"+data.msg+"</td></tr>"
+			}else{
+				var list = data.dataList;
+				for(var i = 0; i < list.length; i++){
+					html += "<tr>";
+					html += "<td>" + list[i].softwareName + "</td>";
+					html += "<td>" + list[i].manufacturerName + "</td>";
+					html += "<td>" + list[i].restriction + "</td>";
+					if(list[i].baseOnly == 1){
+						html += "<td>Y</td>";
+					}else{
+						html += "<td>N</td>";
+					}
+					html += "<td>" + list[i].capacityDesc +"</td>";
+					html += "<td>" + list[i].statusDesc + "</td>";
+					html += "<td>" + list[i].remoteUser + "</td>";
+					html += "<td>" + list[i].recordTime + "</td>";
+					html += "</tr>";
 				}
-				html += "<td>" + data[i].capacityDesc +"</td>";
-				html += "<td>" + data[i].statusDesc + "</td>";
-				html += "<td>" + data[i].remoteUser + "</td>";
-				html += "<td>" + data[i].recordTime + "</td>";
-				html += "</tr>";
 			}
-			
 			$("#non_instance_list").html(html);
-		},
-		error:function(xhr, type, exception){
-			alert(xhr.responseText, "Failed"); 
 		}
 	}); 
 };
