@@ -1,31 +1,56 @@
 package com.ibm.asset.trails.ws;
 
-import java.util.Date;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.util.List;
+
+import javax.activation.DataHandler;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+
+import java.util.Date;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ibm.asset.trails.dao.NonInstanceDAO;
+
 import com.ibm.asset.trails.domain.CapacityType;
+
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
+import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
+import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
+import com.ibm.asset.trails.domain.Source;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.WSMsg;
+
 
 @Path("/noninstance")
 public class NonInstanceServiceEndpoint {
@@ -34,6 +59,8 @@ public class NonInstanceServiceEndpoint {
 	
 	@Autowired
 	private ReportService reportService;
+	@Autowired
+	private NonInstanceDAO nonInstanceDAO;
 	
 	@GET
 	@Path("/search")
@@ -172,4 +199,92 @@ public class NonInstanceServiceEndpoint {
 			}
 		}
 	}
+
+	@PUT
+	@Path("/updateNonInstanceByForm")
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public Response updateNonInstanceByForm(@FormParam("id") String id,
+			@FormParam("softwareId") String softwareId,
+			@FormParam("manufacturerId") String manufacturerId,
+			@FormParam("restriction") String restriction,
+			@FormParam("capacityTypeCode") String capacityTypeCode,
+			@FormParam("baseOnly") String baseOnly,
+			@FormParam("statusId") String statusId) {
+
+		if (id == null || id.trim().length() == 0) {
+			return Response
+					.status(Status.BAD_REQUEST)
+					.entity("The Update NonInsance record must have id value for it!")
+					.build();
+		}
+
+		NonInstance nonInstance = nonInstanceDAO.findById(new Long(id));
+		if (nonInstance == null) {
+			return Response
+					.status(Status.BAD_REQUEST)
+					.entity("The NonInsance record with id {" + id
+							+ "} has not existed in the DB!").build();
+		}
+
+		try {
+			// Set new values for non instance object
+			Software software = new Software();// set software object
+			software.setSoftwareId(new Long(softwareId).longValue());
+			nonInstance.setSoftware(software);
+
+			Manufacturer manufacturer = new Manufacturer();// set manufacturer
+															// object
+			manufacturer.setId(new Long(manufacturerId));
+			nonInstance.setManufacturer(manufacturer);
+
+			nonInstance.setRestriction(restriction);// set restriction
+
+			CapacityType capacityType = new CapacityType();
+			capacityType.setCode(new Integer(capacityTypeCode));
+			nonInstance.setCapacityType(capacityType);// set capacityType object
+
+			nonInstance.setBaseOnly(new Integer(baseOnly));// set base only
+
+			com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
+			status.setId(new Long(statusId));
+			nonInstance.setStatus(status);
+
+			// Persist Non Instance Object into DB
+			nonInstanceDAO.merge(nonInstance);
+			return Response
+					.status(Status.OK)
+					.entity("The NonInsance record has been updated in the DB successfully!")
+					.build();
+		} catch (Exception e) {
+			return Response
+					.status(Status.BAD_REQUEST)
+					.entity("The NonInsance record has been updated in the DB failed!")
+					.build();
+		}
+	}
+	
+	@POST
+    @Path("/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
+		 ByteArrayOutputStream bos = null;
+		for(Attachment attr : attachments) {
+            DataHandler handler = attr.getDataHandler();
+            try {
+            	FileInputStream fin = (FileInputStream) handler.getInputStream();
+                MultivaluedMap<String, String> map = attr.getHeaders();
+
+                 bos = nonInstanceService.parserUpload(fin);
+        		 
+            } catch(Exception e) {
+              e.printStackTrace();
+            }
+        }
+     
+        ResponseBuilder responseBuilder = Response.ok((Object) bos);
+        responseBuilder.header("Content-Disposition" ,
+        		"attachment; filename=results.xls");
+        return responseBuilder.build();
+    }
+
 }
