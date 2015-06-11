@@ -1,4 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
@@ -83,7 +84,6 @@
 		<!-- FORM_END -->
 	</div>
 </div>
-
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
@@ -108,6 +108,20 @@
 		</table>
 	</div>
 </div>
+
+<%
+	boolean admin = request.isUserInRole("com.ibm.tap.admin");
+	if(admin){
+%>
+	<s:set name="admin" value="1" ></s:set>
+<%
+	} else{
+%>
+	<s:set name="admin" value="0" ></s:set>
+<%
+	}
+%>
+
 <script>
 
 $(function(){
@@ -157,8 +171,15 @@ function searchData(){
 					html += "<td>" + data[i].capacityDesc +"</td>";
 					html += "<td>" + data[i].statusDesc + "</td>";
 					html += "<td>";
-					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/addOrUpdate.htm?id="+data[i].id+"'>Update</a>&nbsp;|&nbsp;";
-					html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
+					<s:if test='#admin eq 1'>
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+data[i].id+"'>Update</a>&nbsp;|&nbsp;";
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
+					</s:if>
+					
+					<s:if test='#admin eq 0'>
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
+					</s:if>
+					
 					html += "</tr>";
 				}
 			}

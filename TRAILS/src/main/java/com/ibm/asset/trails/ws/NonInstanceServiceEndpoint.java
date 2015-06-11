@@ -32,6 +32,7 @@ import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
+import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/noninstance")
 public class NonInstanceServiceEndpoint {
@@ -87,24 +88,35 @@ public class NonInstanceServiceEndpoint {
 		
 	}
 	
-	@GET
-	@Path("/getById/{id}/info")
+	@POST
+	@Path("/saveOrUpdate")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public NonInstance getNonInstanceById(@PathParam("id") String id) {
-		NonInstance nonInstanceObject = nonInstanceDAO.findById(new Long(id));
+	public WSMsg getNonInstanceById(
+			@FormParam("id") Long id,
+			@FormParam("softwareName") String softwareName,
+			@FormParam("manufacturerName") String manufacturerName,
+			@FormParam("restriction") String restriction,
+			@FormParam("capacityDesc") String capacityDesc,
+			@FormParam("baseOnly") Integer baseOnly,
+			@FormParam("statusId") Long statusId) {
 
-		if (nonInstanceObject == null) {
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.type(MediaType.APPLICATION_JSON);
-			builder.entity("There is no any NonInsance record which has not been found with id {"
-					+ id + "}!");
-			throw new WebApplicationException(builder.build());
-		} else {
-			return nonInstanceObject;
-		}
+		NonInstanceDisplay nonInstanceDisplay = new NonInstanceDisplay();
+		nonInstanceDisplay.setId(id);
+		nonInstanceDisplay.setSoftwareName(softwareName);
+		nonInstanceDisplay.setManufacturerName(manufacturerName);
+		nonInstanceDisplay.setRestriction(restriction);
+		nonInstanceDisplay.setCapacityDesc(capacityDesc);
+		nonInstanceDisplay.setBaseOnly(baseOnly);
+		nonInstanceDisplay.setStatusId(statusId);
+		
+		
+		
+		
+		
+		return WSMsg.successMessage("success");
 	}
 
-	@GET
+	/*@GET
 	@Path("/getBySoftwareId/{softwareId}/info")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public List<NonInstance> getNonInstancesBySoftwareId(
@@ -185,7 +197,7 @@ public class NonInstanceServiceEndpoint {
 								+ "} has removed failed!").build();
 			}
 		}
-	}
+	}*/
 
 	@POST
 	@Path("/addNonInstanceByObject")
