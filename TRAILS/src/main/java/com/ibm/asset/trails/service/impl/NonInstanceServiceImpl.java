@@ -45,7 +45,26 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 		return dao.findNonInstanceHDisplays(nonInstanceId);
 	}
 	
-	
+	public void saveNonInstance(NonInstance nonInstance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<Software> findSoftwareBySoftwareName(String softwareName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Manufacturer> findManufacturerByName(String manufacturerName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<CapacityType> findCapacityTypeByDesc(String description) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
 	protected BaseEntityDAO<NonInstance, Long> getDao() {
 		// TODO Auto-generated method stub

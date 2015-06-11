@@ -14,4 +14,10 @@ public interface NonInstanceService {
 	public NonInstanceDisplay findNonInstanceDisplayById(Long Id);
 	public List<NonInstanceDisplay> findNonInstanceDisplays(NonInstanceDisplay nonInstanceDisplay);
 	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId);
+	
+	public void saveNonInstance(NonInstance nonInstance);
+	
+	public List<Software> findSoftwareBySoftwareName(String softwareName);
+	public List<Manufacturer> findManufacturerByName(String manufacturerName);
+	public List<CapacityType> findCapacityTypeByDesc(String description);
 }
