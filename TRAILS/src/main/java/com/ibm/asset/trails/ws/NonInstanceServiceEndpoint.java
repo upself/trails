@@ -1,7 +1,18 @@
 package com.ibm.asset.trails.ws;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.activation.DataHandler;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -14,24 +25,45 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
+import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.CapacityType;
+import com.ibm.asset.trails.domain.MachineType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
+import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
+import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
+import com.ibm.asset.trails.domain.Source;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
+import com.ibm.asset.trails.service.impl.ECauseCodeReport;
+import com.ibm.ea.common.State;
+import com.ibm.ea.common.State.EStatus;
 
 @Path("/noninstance")
 public class NonInstanceServiceEndpoint {
@@ -356,4 +388,28 @@ public class NonInstanceServiceEndpoint {
 					.build();
 		}
 	}
+	
+	@POST
+    @Path("/file")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
+		 ByteArrayOutputStream bos = null;
+		for(Attachment attr : attachments) {
+            DataHandler handler = attr.getDataHandler();
+            try {
+            	FileInputStream fin = (FileInputStream) handler.getInputStream();
+                MultivaluedMap<String, String> map = attr.getHeaders();
+
+                 bos = nonInstanceService.parserUpload(fin);
+        		 
+            } catch(Exception e) {
+              e.printStackTrace();
+            }
+        }
+     
+        ResponseBuilder responseBuilder = Response.ok((Object) bos);
+        responseBuilder.header("Content-Disposition" ,
+        		"attachment; filename=results.xls");
+        return responseBuilder.build();
+    }
 }

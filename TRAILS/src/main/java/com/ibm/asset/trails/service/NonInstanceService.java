@@ -1,6 +1,10 @@
 package com.ibm.asset.trails.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
@@ -17,4 +21,5 @@ public interface NonInstanceService {
 	public List<NonInstance> findNonInstancesBySoftwareId(long softwareId);
 	public List<NonInstance> findNonInstancesByManufacturerId(Long manufacturerId);
 	public void removeNonInsanceById(Long id);
+    public ByteArrayOutputStream parserUpload(FileInputStream fileinput);
 }
