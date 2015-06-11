@@ -91,7 +91,7 @@ function keyup(type) {
 
 						$("li.prompt").click(
 							function() {
-								if(type.name == 'nonInstanceDisplay.softwareName') {
+								if(type.name == 'softwareName') {
 									type.value = $(this).text().slice(11,-10);	
 								} else {
 									type.value = $(this).text();	
@@ -142,7 +142,7 @@ function keyup(type) {
 			<p>
 				<label for="baseOnly_id"> Non Instance based only :<span class="ibm-required">*</span>
 				</label> <span> <select class="iform" name="baseOnly" id="baseOnly_id">
-						<option value="" selected="selected">Please select one</option>
+						<option value="">Please select one</option>
 						<option value="1" <s:if test="#request.nonInstanceDisplay.baseOnly eq 1">selected="selected"</s:if> >Y</option>
 						<option value="0" <s:if test="#request.nonInstanceDisplay.baseOnly eq 0">selected="selected"</s:if> >N</option>
 				</select>
@@ -158,7 +158,7 @@ function keyup(type) {
 			<p>
 				<label for="statusId_id"> Status:<span class="ibm-required">*</span>
 				</label> <span> <select class="iform" name="statusId" id="statusId_id">
-						<option value="" selected="selected">Please select one</option>
+						<option value="">Please select one</option>
 						<option value="2" <s:if test="#request.nonInstanceDisplay.statusId eq 2">selected="selected"</s:if> >ACTIVE</option>
 						<option value="1" <s:if test="#request.nonInstanceDisplay.statusId eq 1">selected="selected"</s:if> >INACTIVE</option>
 				</select>
@@ -181,24 +181,66 @@ function keyup(type) {
 </div>
 <script>
 function submitForm(){
-	$.ajax({
-        cache: true,
-        type: "POST",
-        url: '${pageContext.request.contextPath}/ws/noninstance/saveOrUpdate',
-        data: $('#myForm').serialize(),
-        dataType:'json',
-        async: false,
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert(textStatus);
-        },
-        success: function(data) {
-            alert(data.msg);
-        }
-    });
+	if(validateForm()){
+		$.ajax({
+	        cache: true,
+	        type: "POST",
+	        url: '${pageContext.request.contextPath}/ws/noninstance/saveOrUpdate',
+	        data: $('#myForm').serialize(),
+	        dataType:'json',
+	        async: false,
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	            alert(textStatus);
+	        },
+	        success: function(data) {
+	            alert(data.msg);
+	        }
+	    });
+	} 
+}
+
+function validateForm(){
+	var softwareName = $("#softwareName_id").val();
+	var manufacturerName = $("#manufacturerName_id").val();
+	var restriction = $("#restriction_id").val();
+	var baseOnly = $("#baseOnly_id").val();
+	var capacityDesc = $("#capacityDesc_id").val();
+	var statusId = $("#statusId_id").val();
+
+	if(softwareName.trim() == ''){
+		alert('Software title is required');
+		return false;
+	}
+	
+	if(manufacturerName.trim() == ''){
+		alert('Manufacturer is required');
+		return false;
+	}
+	
+	if(restriction.trim() == ''){
+		alert('Restriction is required');
+		return false;
+	}
+	
+	if(baseOnly.trim() == ''){
+		alert('Non Instance based only is required');
+		return false;
+	}
+	
+	if(capacityDesc.trim() == ''){
+		alert('Capacity type is required');
+		return false;
+	}
+	
+	if(statusId.trim() == ''){
+		alert('Status is required');
+		return false;
+	}
+	
+	return true;
 }
 
 </script>
-
 
 
 

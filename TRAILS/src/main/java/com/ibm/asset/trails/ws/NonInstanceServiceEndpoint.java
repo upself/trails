@@ -1,29 +1,22 @@
 package com.ibm.asset.trails.ws;
 
+import java.util.Date;
 import java.util.List;
-
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.ibm.asset.trails.dao.NonInstanceDAO;
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
@@ -36,20 +29,16 @@ import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/noninstance")
 public class NonInstanceServiceEndpoint {
-
-	@Autowired
-	private NonInstanceDAO nonInstanceDAO;
-
 	@Autowired
 	private NonInstanceService nonInstanceService;
 	
 	@Autowired
 	private ReportService reportService;
-
+	
 	@GET
 	@Path("/search")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public List<NonInstanceDisplay> search(@QueryParam("softwareName") String softwareName,
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg search(@QueryParam("softwareName") String softwareName,
 			@QueryParam("manufacturerName") String manufacturerName,
 			@QueryParam("restriction") String restriction,
 			@QueryParam("capacityDesc") String capacityDesc,
@@ -64,26 +53,28 @@ public class NonInstanceServiceEndpoint {
 		searchObj.setBaseOnly(baseOnly);
 		searchObj.setStatusId(statusId);
 
-		List<NonInstanceDisplay> nonList = nonInstanceService
-				.findNonInstanceDisplays(searchObj);
-		return nonList;
+		
+		List<NonInstanceDisplay> nonList = nonInstanceService.findNonInstanceDisplays(searchObj);
+		
+		if(null == nonList || nonList.size() <= 0){
+			return WSMsg.failMessage("No data found");
+		}else{
+			return WSMsg.successMessage("", nonList);
+		}
 	}
 	
 	@GET
 	@Path("/history/{nonInstanceId}")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public List<NonInstanceHDisplay> history(@PathParam("nonInstanceId") Long nonInstanceId) {
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg history(@PathParam("nonInstanceId") Long nonInstanceId) {
 
 
 		List<NonInstanceHDisplay> nonHList = nonInstanceService.findNonInstanceHDisplays(nonInstanceId);
 		
 		if(null == nonHList || nonHList.size() == 0){
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.type(MediaType.APPLICATION_JSON);
-			builder.entity("There is no any NonInsance history record which has not been found!");
-			throw new WebApplicationException(builder.build());
+			return WSMsg.failMessage("No data found");
 		}else{
-			return nonHList;
+			return WSMsg.successMessage("", nonHList);
 		}
 		
 	}
@@ -98,274 +89,87 @@ public class NonInstanceServiceEndpoint {
 			@FormParam("restriction") String restriction,
 			@FormParam("capacityDesc") String capacityDesc,
 			@FormParam("baseOnly") Integer baseOnly,
-			@FormParam("statusId") Long statusId) {
+			@FormParam("statusId") Long statusId, @Context HttpServletRequest request) {
 
-		NonInstanceDisplay nonInstanceDisplay = new NonInstanceDisplay();
-		nonInstanceDisplay.setId(id);
-		nonInstanceDisplay.setSoftwareName(softwareName);
-		nonInstanceDisplay.setManufacturerName(manufacturerName);
-		nonInstanceDisplay.setRestriction(restriction);
-		nonInstanceDisplay.setCapacityDesc(capacityDesc);
-		nonInstanceDisplay.setBaseOnly(baseOnly);
-		nonInstanceDisplay.setStatusId(statusId);
-		
-		
-		
-		
-		
-		return WSMsg.successMessage("success");
-	}
-
-	/*@GET
-	@Path("/getBySoftwareId/{softwareId}/info")
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<NonInstance> getNonInstancesBySoftwareId(
-			@PathParam("softwareId") String softwareId) {
-		List<NonInstance> allNonInstancesBySoftwareId = nonInstanceDAO
-				.findNonInstancesBySoftwareId(new Long(softwareId).longValue());
-		if (allNonInstancesBySoftwareId == null
-				|| allNonInstancesBySoftwareId.size() == 0) {
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.type(MediaType.APPLICATION_JSON);
-			builder.entity("There is no any NonInsance record which has not been found with softwareId {"
-					+ softwareId + "}!");
-			throw new WebApplicationException(builder.build());
+		//validation
+		if(null == softwareName || "".equals(softwareName)){
+			return WSMsg.failMessage("Software name is required");
+			
+		} else if(null == manufacturerName || "".equals(manufacturerName)){
+			return WSMsg.failMessage("Manufacturer name is required");
+			
+		} else if(null == restriction || "".equals(restriction)){
+			return WSMsg.failMessage("Restriction is required");
+			
+		} else if(null == capacityDesc || "".equals(capacityDesc)){
+			return WSMsg.failMessage("Capacity description is required");
+			
+		} else if(null == baseOnly){
+			return WSMsg.failMessage("Non instance based only is required");
+			
+		} else if(null == statusId){
+			return WSMsg.failMessage("Status is required");
 		} else {
-			return allNonInstancesBySoftwareId;
+			
 		}
-	}
-
-	@GET
-	@Path("/getByManufacturerId/{manufacturerId}/info")
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<NonInstance> getNonInstanceByManufacturerId(
-			@PathParam("manufacturerId") String manufacturerId) {
-		List<NonInstance> allNonInstancesByManufacturerId = nonInstanceDAO
-				.findNonInstancesByManufacturerId(new Long(manufacturerId));
-		if (allNonInstancesByManufacturerId == null
-				|| allNonInstancesByManufacturerId.size() == 0) {
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.type(MediaType.APPLICATION_JSON);
-			builder.entity("There is no any NonInsance record which has not been found with manufacturerId {"
-					+ manufacturerId + "}!");
-			throw new WebApplicationException(builder.build());
-		} else {
-			return allNonInstancesByManufacturerId;
+		
+		List<Software> swList = nonInstanceService.findSoftwareBySoftwareName(softwareName);
+		if(null == swList || swList.size() <= 0){
+			return WSMsg.failMessage("Sotware not found");
 		}
-	}
-
-	@GET
-	@Path("/getByRestriction/{restriction}/info")
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<NonInstance> getNonInstancesByRestriction(
-			@PathParam("restriction") String restriction) {
-		List<NonInstance> allNonInstancesByRestriction = nonInstanceDAO
-				.findNonInstancesByRestriction(restriction.toUpperCase());
-		if (allNonInstancesByRestriction == null
-				|| allNonInstancesByRestriction.size() == 0) {
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.type(MediaType.APPLICATION_JSON);
-			builder.entity("There is no any NonInsance record which has not been found with restrction {"
-					+ restriction + "}!");
-			throw new WebApplicationException(builder.build());
-		} else {
-			return allNonInstancesByRestriction;
+		
+		List<Manufacturer> mfList = nonInstanceService.findManufacturerByName(manufacturerName);
+		if(null == mfList || mfList.size() <=0){
+			return WSMsg.failMessage("Manufacturer not found");
 		}
-	}
+		
+		List<CapacityType> ctList = nonInstanceService.findCapacityTypeByDesc(capacityDesc);
+		if(null == ctList || ctList.size() <=0){
+			return WSMsg.failMessage("CapacityType not found");
+		}
+		
+		Software sw = swList.get(0);
+		Manufacturer mf = mfList.get(0);
+		CapacityType ct =  ctList.get(0);
+		com.ibm.asset.trails.domain.Status st = new com.ibm.asset.trails.domain.Status();
+		st.setId(statusId);
 
-	@DELETE
-	@Path("/removeById/{id}")
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public Response removeNonInstanesById(@PathParam("id") String id) {
-		NonInstance NonInstance = nonInstanceDAO.findById(new Long(id));
-		if (NonInstance == null) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("There is no any NonInsance record which has not been found with id {"
-							+ id + "}!").build();
-		} else {
-			try {
-				nonInstanceDAO.removeNonInsanceById(new Long(id));
-				return Response
-						.status(Status.OK)
-						.entity("The NonInsance record with id {" + id
-								+ "} has removed successfully!").build();
-			} catch (Exception e) {
-				return Response
-						.status(Status.BAD_REQUEST)
-						.entity("The NonInsance record with id {" + id
-								+ "} has removed failed!").build();
+		if(null != id){
+			//update
+			List<NonInstance> nonInstanceList = nonInstanceService.findNonInstanceByswIdAndCapacityCodeNotEqId(sw.getSoftwareId(), ct.getCode(), id);
+			if(null != nonInstanceList && nonInstanceList.size() >0){
+				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + capacityDesc+"]" );
+			}else{
+				NonInstance nonInstance = new NonInstance();
+				nonInstance.setId(id);
+				nonInstance.setSoftware(sw);
+				nonInstance.setManufacturer(mf);
+				nonInstance.setRestriction(restriction);
+				nonInstance.setCapacityType(ct);
+				nonInstance.setBaseOnly(baseOnly);
+				nonInstance.setStatus(st);
+				nonInstance.setRemoteUser(request.getRemoteUser());
+				nonInstance.setRecordTime(new Date());
+				nonInstanceService.updateNonInstance(nonInstance);
+				return WSMsg.successMessage("Update non instance success");
 			}
-		}
-	}*/
-
-	@POST
-	@Path("/addNonInstanceByObject")
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public Response addNonInstance(NonInstance nonInstance) {
-		if (nonInstance.getId() != null) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The NonInstance Id cannot be set due that DB will generate Id value!")
-					.build();
-		} else {
-			try {
-				nonInstanceDAO.persist(nonInstance);
-				return Response
-						.status(Status.OK)
-						.entity("The NonInsance record has been added in the DB successfully!")
-						.build();
-			} catch (Exception e) {
-				return Response
-						.status(Status.BAD_REQUEST)
-						.entity("The NonInsance record has been added in the DB failed!")
-						.build();
+		}else{
+			List<NonInstance> nonInstanceList = nonInstanceService.findNonInstanceByswIdAndCapacityCode(sw.getSoftwareId(), ct.getCode());
+			if(null != nonInstanceList && nonInstanceList.size() >0){
+				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + capacityDesc+"]" );
+			}else{
+				NonInstance nonInstance = new NonInstance();
+				nonInstance.setSoftware(sw);
+				nonInstance.setManufacturer(mf);
+				nonInstance.setRestriction(restriction);
+				nonInstance.setCapacityType(ct);
+				nonInstance.setBaseOnly(baseOnly);
+				nonInstance.setStatus(st);
+				nonInstance.setRemoteUser(request.getRemoteUser());
+				nonInstance.setRecordTime(new Date());
+				nonInstanceService.saveNonInstance(nonInstance);
+				return WSMsg.successMessage("Save non instance success");
 			}
-		}
-	}
-
-	@POST
-	@Path("/addNonInstanceByForm")
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public Response addNonInstanceByForm(
-			@FormParam("softwareId") String softwareId,
-			@FormParam("manufacturerId") String manufacturerId,
-			@FormParam("restriction") String restriction,
-			@FormParam("capacityTypeCode") String capacityTypeCode,
-			@FormParam("baseOnly") String baseOnly,
-			@FormParam("statusId") String statusId) {
-
-		try {
-			// Generate Non Instance Object with necessary information values
-			NonInstance nonInstance = new NonInstance();
-
-			Software software = new Software();// set software object
-			software.setSoftwareId(new Long(softwareId).longValue());
-			nonInstance.setSoftware(software);
-
-			Manufacturer manufacturer = new Manufacturer();// set manufacturer
-															// object
-			manufacturer.setId(new Long(manufacturerId));
-			nonInstance.setManufacturer(manufacturer);
-
-			nonInstance.setRestriction(restriction);// set restriction
-
-			CapacityType capacityType = new CapacityType();
-			capacityType.setCode(new Integer(capacityTypeCode));
-			nonInstance.setCapacityType(capacityType);// set capacityType object
-
-			nonInstance.setBaseOnly(new Integer(baseOnly));// set base only
-
-			com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
-			status.setId(new Long(statusId));
-			nonInstance.setStatus(status);
-
-			// Persist Non Instance Object into DB
-			nonInstanceDAO.persist(nonInstance);
-			return Response
-					.status(Status.OK)
-					.entity("The NonInsance record has been added in the DB successfully!")
-					.build();
-		} catch (Exception e) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The NonInsance record has been added in the DB failed!")
-					.build();
-		}
-	}
-
-	@PUT
-	@Path("/udpateNonInstanceByObject")
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public Response updateNonInstance(NonInstance nonInstance) {
-		NonInstance NonInstanceObject = nonInstanceDAO.findById(nonInstance
-				.getId());
-		if (NonInstanceObject == null) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The NonInsance record with id {"
-							+ nonInstance.getId()
-							+ "} has not existed in the DB!").build();
-		} else {
-			try {
-				nonInstanceDAO.merge(nonInstance);
-				return Response
-						.status(Status.OK)
-						.entity("The NonInsance record with id {"
-								+ nonInstance.getId()
-								+ "} has been updated in the DB successfully!")
-						.build();
-			} catch (Exception e) {
-				return Response
-						.status(Status.BAD_REQUEST)
-						.entity("The NonInsance record with id {"
-								+ nonInstance.getId()
-								+ "} has been updated in the DB failed!")
-						.build();
-			}
-		}
-	}
-
-	@PUT
-	@Path("/updateNonInstanceByForm")
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public Response updateNonInstanceByForm(@FormParam("id") String id,
-			@FormParam("softwareId") String softwareId,
-			@FormParam("manufacturerId") String manufacturerId,
-			@FormParam("restriction") String restriction,
-			@FormParam("capacityTypeCode") String capacityTypeCode,
-			@FormParam("baseOnly") String baseOnly,
-			@FormParam("statusId") String statusId) {
-
-		if (id == null || id.trim().length() == 0) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The Update NonInsance record must have id value for it!")
-					.build();
-		}
-
-		NonInstance nonInstance = nonInstanceDAO.findById(new Long(id));
-		if (nonInstance == null) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The NonInsance record with id {" + id
-							+ "} has not existed in the DB!").build();
-		}
-
-		try {
-			// Set new values for non instance object
-			Software software = new Software();// set software object
-			software.setSoftwareId(new Long(softwareId).longValue());
-			nonInstance.setSoftware(software);
-
-			Manufacturer manufacturer = new Manufacturer();// set manufacturer
-															// object
-			manufacturer.setId(new Long(manufacturerId));
-			nonInstance.setManufacturer(manufacturer);
-
-			nonInstance.setRestriction(restriction);// set restriction
-
-			CapacityType capacityType = new CapacityType();
-			capacityType.setCode(new Integer(capacityTypeCode));
-			nonInstance.setCapacityType(capacityType);// set capacityType object
-
-			nonInstance.setBaseOnly(new Integer(baseOnly));// set base only
-
-			com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
-			status.setId(new Long(statusId));
-			nonInstance.setStatus(status);
-
-			// Persist Non Instance Object into DB
-			nonInstanceDAO.merge(nonInstance);
-			return Response
-					.status(Status.OK)
-					.entity("The NonInsance record has been updated in the DB successfully!")
-					.build();
-		} catch (Exception e) {
-			return Response
-					.status(Status.BAD_REQUEST)
-					.entity("The NonInsance record has been updated in the DB failed!")
-					.build();
 		}
 	}
 }

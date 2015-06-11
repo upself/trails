@@ -23,7 +23,7 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/listPvu.htm"
 				icon="false" />
 			<item value="Cause code" link="/admin/alertCause/list.htm" icon="false" />
-			<item value="Non Instance based SW" link="/admin/nonInstancebasedSW/init.htm" icon="false" />
+			<item value="Non Instance based SW" link="/admin/nonInstancebasedSW/list.htm" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/scheduleF/showUpload.htm">
 			<item value="View" link="/admin/scheduleF/list.htm" icon="scheduleFList" />

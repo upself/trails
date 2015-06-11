@@ -155,29 +155,35 @@ function searchData(){
 		url: url,
 		type: "GET",
 		dataType:'json',
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+	            alert(textStatus);
+	    },
 		success:function(data){
 			var html = '';
-			if(null != data){
-				for(var i = 0; i < data.length; i++){
+			if(data.status != 200){
+				html += "<tr><td colspan='7'>"+data.msg+"</td></tr>"
+			}else{
+				var list = data.dataList;
+				for(var i = 0; i < list.length; i++){
 					html += "<tr>";
-					html += "<td><input type='hidden' value='" + data[i].id + "'>" + data[i].softwareName + "</td>";
-					html += "<td>" + data[i].manufacturerName + "</td>";
-					html += "<td>" + data[i].restriction + "</td>";
-					if(data[i].baseOnly == 1){
+					html += "<td><input type='hidden' value='" + list[i].id + "'>" + list[i].softwareName + "</td>";
+					html += "<td>" + list[i].manufacturerName + "</td>";
+					html += "<td>" + list[i].restriction + "</td>";
+					if(list[i].baseOnly == 1){
 						html += "<td>Y</td>";
 					}else{
 						html += "<td>N</td>";
 					}
-					html += "<td>" + data[i].capacityDesc +"</td>";
-					html += "<td>" + data[i].statusDesc + "</td>";
+					html += "<td>" + list[i].capacityDesc +"</td>";
+					html += "<td>" + list[i].statusDesc + "</td>";
 					html += "<td>";
 					<s:if test='#admin eq 1'>
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+data[i].id+"'>Update</a>&nbsp;|&nbsp;";
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"'>Update</a>&nbsp;|&nbsp;";
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
 					</s:if>
 					
 					<s:if test='#admin eq 0'>
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+data[i].id+"'>View history</a></td>";
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
 					</s:if>
 					
 					html += "</tr>";

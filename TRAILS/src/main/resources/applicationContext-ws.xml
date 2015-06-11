@@ -6,7 +6,9 @@
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint"/>
+	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint">
+		
+	</bean>
 	
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>

@@ -12,10 +12,17 @@
 	    		<li><a href="${pageContext.request.contextPath}/admin/scheduleF/showUpload.htm">Schedule F</a></li>
 	    		<li><a href="${pageContext.request.contextPath}/admin/pvuMapping/listPvu.htm">PVU Mapping</a></li>
 	    		<li><a href="${pageContext.request.contextPath}/admin/alertCause/list.htm">Cause code</a></li>
-	    		<li class="ibm-active"><a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/init.htm">Non Instance based SW</a>
-	    			<ul>
-	    				<li><a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=add">Non Instance based SW manage</a></li>
-	    			</ul>
+	    		<li class="ibm-active"><a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/list.htm">Non Instance based SW</a>
+	    			<%
+						boolean admin = request.isUserInRole("com.ibm.tap.admin");
+						if(admin){
+					%>
+						<ul>
+	    					<li><a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=add">Non Instance based SW manage</a></li>
+	    				</ul>
+					<%
+						} 
+					%>
 	    		</li>
 			</ul>
 		</li>

@@ -75,7 +75,7 @@
 	</package>
 	
 	<package name="nonInstancebasedSW" extends="trails-struts-default" namespace="/admin/nonInstancebasedSW">
-		<action name="init" method="list" class="nonInstancebasedSWAction">
+		<action name="list" method="list" class="nonInstancebasedSWAction">
 			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.list
 			</result>

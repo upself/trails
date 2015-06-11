@@ -4,6 +4,7 @@
 
 <!DOCTYPE html>
 <html>
+<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<!-- Add meta tag to consistently detect the width on an iPad at 768px -->
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
