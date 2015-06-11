@@ -400,7 +400,7 @@ public class NonInstanceServiceEndpoint {
 	}
 	
 	@POST
-    @Path("/file")
+    @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
 		 ByteArrayOutputStream bos = null;

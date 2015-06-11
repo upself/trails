@@ -10,7 +10,7 @@
 	
 	<div id="ibm-merchandising-module">
 		<!--IBM Web Merchandising Module-->
-		<a href="">Import Non Instance based SW</a>
+		<a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/upload.htm">Import Non Instance based SW</a>
 	</div>
 <%
 } else{

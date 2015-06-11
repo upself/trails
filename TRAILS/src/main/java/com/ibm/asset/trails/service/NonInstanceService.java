@@ -2,11 +2,11 @@ package com.ibm.asset.trails.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
-
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
@@ -22,5 +22,5 @@ public interface NonInstanceService {
     public List<Software> findSoftwareBySoftwareName(String softwareName);
 	public List<Manufacturer> findManufacturerByName(String manufacturerName);
 	public List<CapacityType> findCapacityTypeByDesc(String description);
-	public ByteArrayOutputStream parserUpload(FileInputStream fileinput);
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException;
 }

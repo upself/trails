@@ -2,10 +2,13 @@ package com.ibm.asset.trails.service.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.BaseEntityDAO;
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-
 import com.ibm.asset.trails.dao.SoftwareDAO;
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
@@ -32,7 +34,6 @@ import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.domain.Software;
-
 import com.ibm.asset.trails.service.NonInstanceService;
 
 @Service
@@ -41,6 +42,7 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 	@Autowired
 	private NonInstanceDAO dao;
 	
+	private EntityManager em;
 	
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -81,10 +83,14 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public NonInstance findBySoftwareNameAndCapacityCode(String softwareName, String Capcode){
+		// TODO Auto-generated method stub
+				return null;
+	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public ByteArrayOutputStream parserUpload(FileInputStream fileinput){
-        HSSFWorkbook wb = new HSSFWorkbook(fileinput);
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException{
+            HSSFWorkbook wb = new HSSFWorkbook(fileinput);
       		HSSFSheet sheet = wb.getSheetAt(0);
       		Iterator liRow = null;
       		HSSFRow row = null;
@@ -147,15 +153,9 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
       							.toString()));
       				} else if (ni.getSoftware() != null && ni.getCapacityType() != null
       						) {
-      					NonInstance lniExists =  dao.findNonInstancesBySoftwareId(ni.getSoftware().getSoftwareId());
-      					if (lniExists != null) {
-      						for (NonInstance existsNI : lniExists) {
-      							if (existsNI instanceof NonInstance) {
-      								if (ni.getCapacityType().toString().equals(existsNI.getCapacityType().toString())) {
-      									ni.setId(existsNI.getId());
-      								}
-      							}
-      						}
+      					NonInstance iExists =  findBySoftwareNameAndCapacityCode(ni.getSoftware().getSoftwareName(),ni.getCapacityType().getDescription());
+      					if (iExists != null) {
+      									ni.setId(iExists.getId());	
       					}
       					dao.merge(ni);
       					cell = row.createCell(16);
@@ -181,8 +181,9 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 					.getString())) {
 				throw new Exception("Software Name is required.");
 			} else {
-				ni.setSoftware(cell.getRichStringCellValue().getString()
+				List<Software> swlist = findSoftwareBySoftwareName(cell.getRichStringCellValue().getString()
 						.trim());
+				ni.setSoftware(swlist.get(0));
 			}
 
 			break;
@@ -194,8 +195,9 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 					.getString())) {
 				throw new Exception("Manufacturer is required.");
 			} else {
-				ni.setManufacturer(cell.getRichStringCellValue().getString()
-						.trim());
+				List<Manufacturer> mlist = findManufacturerByName(cell.getRichStringCellValue().getString()
+				.trim());
+				ni.setManufacturer(mlist.get(0));
 			}
 
 			break;
@@ -220,8 +222,9 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 					.getString())) {
 				throw new Exception("CAPACITY TYPE is required.");
 			} else {
-				ni.setCapacityType(cell.getRichStringCellValue().getString()
+				List<CapacityType> cplist = findCapacityTypeByDesc(cell.getRichStringCellValue().getString()
 						.trim());
+				ni.setCapacityType(cplist.get(0));
 			}
 
 			break;
@@ -233,8 +236,13 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 					.getString())) {
 				throw new Exception("BASE ONLY is required.");
 			} else {
-				ni.setBaseOnly(cell.getRichStringCellValue().getString()
-						.trim());
+				String baseOnly = cell.getRichStringCellValue().getString()
+						.trim();
+				if (baseOnly.equalsIgnoreCase("YES")) {
+					ni.setBaseOnly(1);
+				} else {
+					ni.setBaseOnly(0);
+				}
 			}
 
 			break;
@@ -246,14 +254,22 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 					.getString())) {
 				throw new Exception("STATUS is required.");
 			} else {
-				ni.setStatus(cell.getRichStringCellValue().getString()
-						.trim());
-			}
-
+				@SuppressWarnings("unchecked")
+				List<com.ibm.asset.trails.domain.Status> results = getEntityManager()
+						.createNamedQuery("statusDetails")
+						.setParameter(
+								"description",
+								cell.getRichStringCellValue().getString()
+										.toUpperCase()).getResultList();
+				if (results == null || results.isEmpty()) {
+					throw new Exception("Status is invalid.");
+				} else  {
+				    ni.setStatus(results.get(0));
+				}
 			break;
 		}
 		}
-
+		}
 	}
 
  
@@ -304,5 +320,14 @@ public class NonInstanceServiceImpl extends AbstractGenericEntityService<NonInst
 	protected BaseEntityDAO<NonInstance, Long> getDao() {
 		// TODO Auto-generated method stub
 		return dao;
+	}
+	
+	private EntityManager getEntityManager() {
+		return em;
+	}
+
+	@PersistenceContext(unitName = "trailspd")
+	public void setEntityManager(EntityManager em) {
+		this.em = em;
 	}
 }
