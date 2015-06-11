@@ -116,5 +116,5 @@ public interface ReportService {
 	void getWorkstationAccountsReport(String remoteUser, String lsName,  PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
 	
-	void getNonInstanceBasedSW(PrintWriter pPrintWriter);
+	void getNonInstanceBasedSWReport(PrintWriter pPrintWriter);
 }

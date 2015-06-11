@@ -5,7 +5,7 @@
 	<div id="ibm-contact-module">
 		<!--IBM Contact Module-->
 		<a href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=add">Add Non Instance base SW</a> <br />
-		<a href="">Export Non Instance based SW</a>
+		<a href="${pageContext.request.contextPath}/ws/noninstance/download">Export Non Instance based SW</a>
 	</div>
 	
 	<div id="ibm-merchandising-module">
@@ -18,7 +18,7 @@
 %>
 	<div id="ibm-contact-module">
 		<!--IBM Contact Module-->
-		<a href="">Export Non Instance based SW</a>
+		<a href="${pageContext.request.contextPath}/ws/noninstance/download">Export Non Instance based SW</a>
 	</div>
 	
 	<div id="ibm-merchandising-module">

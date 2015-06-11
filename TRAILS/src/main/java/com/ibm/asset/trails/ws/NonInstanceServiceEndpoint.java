@@ -1,12 +1,21 @@
 package com.ibm.asset.trails.ws;
 
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 
 import java.util.Date;
@@ -19,7 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -28,16 +36,26 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
+
+
+
+
+
+
+
+
+
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-
 import com.ibm.asset.trails.domain.CapacityType;
-
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
@@ -200,6 +218,20 @@ public class NonInstanceServiceEndpoint {
 		}
 	}
 
+	@GET
+	@Path("/download")
+	@Produces("application/vnd.ms-excel")
+	public Response download() throws IOException{
+
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,"utf-8"));
+		
+		reportService.getNonInstanceBasedSWReport(pw);
+		
+		return Response.ok(bos.toByteArray()).header("Content-Disposition", "attachment; filename=nonInstanceBasedSWReport.xls").build();
+	}
+	
 	@PUT
 	@Path("/updateNonInstanceByForm")
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)

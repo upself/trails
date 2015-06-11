@@ -166,7 +166,7 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.setParameter("id", nonInstance.getId())
 				.getResultList().get(0);
 		if(null != dbNonInstance){
-			getEntityManager().merge(dbNonInstance);
+			getEntityManager().merge(nonInstance);
 			
 			NonInstanceH nonInstanceH = new NonInstanceH();
 			nonInstanceH.setNonInstanceId(nonInstance.getId());
