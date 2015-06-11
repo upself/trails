@@ -3,10 +3,12 @@ package com.ibm.asset.trails.ws;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 
 import java.util.Date;
@@ -19,7 +21,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -28,16 +29,21 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
+
+
+
+
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-
+import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.CapacityType;
-
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
@@ -47,9 +53,12 @@ import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
+import com.ibm.asset.trails.form.LicenseBaselineReport;
+import com.ibm.asset.trails.form.ReportBase;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.WSMsg;
+import com.ibm.tap.trails.framework.UserSession;
 
 
 @Path("/noninstance")
@@ -198,6 +207,58 @@ public class NonInstanceServiceEndpoint {
 				return WSMsg.successMessage("Save non instance success");
 			}
 		}
+	}
+	
+	@GET
+	@Path("/export")
+	//@Produces("application/vnd.ms-excel")
+	//public Response exportNonInstancesRecords(
+	public void exportNonInstancesRecords(
+			@Context HttpServletRequest request,
+			@Context HttpServletResponse response) {
+		
+		String lsName = "licenseBaseline";
+		
+		Account lAccount = ((UserSession) request.getSession()
+				.getAttribute("userSession")).getAccount();
+		String remoteUser = request.getRemoteUser();
+		
+		response.setContentType("application/vnd.ms-excel");
+		
+		response.setHeader("Content-Disposition", new StringBuffer(
+				"filename=").append(lsName).append(
+				lAccount != null ? lAccount.getAccount().toString() : "").append(
+				".xls").toString());
+		
+		ReportBase lReportBase = null;
+		
+		try {
+			lReportBase = new LicenseBaselineReport(reportService, response.getOutputStream(),
+					true,
+					true,
+					true,
+					true,
+					true,
+					true,
+					true,
+					true,
+					true);
+			
+			lReportBase.execute(request, lAccount, remoteUser, lsName);
+			
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+
+		//ResponseBuilder response = Response.ok((Object) file);
+		//ResponseBuilder responseBuilder = Response.fromResponse((Response)response);
+		//responseBuilder.header("Content-Disposition", "attachment; filename=test.xls");
+	    
+	    //return responseBuilder.build();
 	}
 
 	@PUT
