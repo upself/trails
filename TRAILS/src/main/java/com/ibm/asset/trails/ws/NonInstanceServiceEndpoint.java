@@ -1,12 +1,8 @@
 package com.ibm.asset.trails.ws;
-
-
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -35,26 +31,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-
-
-
-
-
-
-
-
-
-
-
-
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
+import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
@@ -65,9 +48,12 @@ import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
+import com.ibm.asset.trails.form.LicenseBaselineReport;
+import com.ibm.asset.trails.form.ReportBase;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.WSMsg;
+import com.ibm.tap.trails.framework.UserSession;
 
 
 @Path("/noninstance")
@@ -217,6 +203,8 @@ public class NonInstanceServiceEndpoint {
 			}
 		}
 	}
+	
+	
 
 	@GET
 	@Path("/download")
