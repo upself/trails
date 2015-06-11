@@ -161,7 +161,7 @@ sub newChild {
     my $reconEngine = new Recon::InventoryReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 1;
+    sleep 30;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
