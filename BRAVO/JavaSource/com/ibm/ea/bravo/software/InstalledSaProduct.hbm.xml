@@ -16,6 +16,5 @@
         <many-to-one name="saProduct" class="com.ibm.ea.sigbank.SaProduct">
         	<column name="SA_PRODUCT_ID" not-null="true" index="IDX_ISAPSAP"/>
         </many-to-one>
-
     </class>
 </hibernate-mapping>
