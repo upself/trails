@@ -98,6 +98,12 @@
 			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.update
 			</result>
 		</action>
+		
+		<action name="upload" method="upload" class="nonInstancebasedSWAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.upload
+			</result>
+		</action>
 	</package>
 
 </struts>

@@ -3,6 +3,8 @@ package com.ibm.asset.trails.ws;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -19,7 +21,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -28,16 +29,19 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
+
+
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-
 import com.ibm.asset.trails.domain.CapacityType;
-
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
@@ -265,10 +269,11 @@ public class NonInstanceServiceEndpoint {
 	
 	@POST
     @Path("/upload")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
+	@Produces({MediaType.MULTIPART_FORM_DATA,MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Consumes({MediaType.MULTIPART_FORM_DATA,MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response uploadFile(@Context HttpServletRequest request) throws IOException  {
 		 ByteArrayOutputStream bos = null;
-		for(Attachment attr : attachments) {
+	/*	for(Attachment attr : attachments) {
             DataHandler handler = attr.getDataHandler();
             try {
             	FileInputStream fin = (FileInputStream) handler.getInputStream();
@@ -279,8 +284,12 @@ public class NonInstanceServiceEndpoint {
             } catch(Exception e) {
               e.printStackTrace();
             }
-        }
-     
+        }*/
+		NonInstance nonInstance = nonInstanceDAO.findById(new Long(2234234));
+	/*	return Response
+				.status(Status.OK)
+				.entity("The NonInsance record has been updated in the DB successfully!")
+				.build();*/
         ResponseBuilder responseBuilder = Response.ok((Object) bos);
         responseBuilder.header("Content-Disposition" ,
         		"attachment; filename=results.xls");

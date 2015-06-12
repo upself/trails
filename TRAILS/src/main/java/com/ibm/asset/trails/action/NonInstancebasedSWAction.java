@@ -52,6 +52,11 @@ public class NonInstancebasedSWAction extends AccountBaseAction {
 		return SUCCESS;
 	}
 	
+	@UserRole(userRole = UserRoleType.ADMIN)
+	public String doUpload() throws Exception{
+		return SUCCESS;
+	}
+	
 	public String getType() {
 		return type;
 	}

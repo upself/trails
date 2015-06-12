@@ -1442,4 +1442,9 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return dbdeterminativeService.getEntityManager();
 	}
+
+	public void getNonInstanceBasedSW(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		
+	}
 }

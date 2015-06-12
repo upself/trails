@@ -1236,6 +1236,13 @@
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
 	
+	<definition name="tiles.admin.nonInstancebasedSW.upload"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW upload" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/upload.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>	
 
 	<definition name="tiles.account.exception.lparZEROPROC"
 		extends="tiles.w3OneColumnLayout">
