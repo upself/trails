@@ -187,6 +187,9 @@ sub toString {
 
 sub save {
     my($self, $connection) = @_;
+    if (!defined $self->remoteUser) {
+        $self->remoteUser = "STAGING"
+    }
     ilog("saving: ".$self->toString());
     if( ! defined $self->id ) {
         $connection->prepareSqlQuery($self->queryInsert());
@@ -198,6 +201,7 @@ sub save {
             ,$self->softwareLparId
             ,$self->hostname
             ,$self->softwareId
+            ,$self->remoteUser
             ,$self->deleted
             ,$self->comments
         );
@@ -213,6 +217,7 @@ sub save {
             ,$self->softwareLparId
             ,$self->hostname
             ,$self->softwareId
+            ,$self->remoteUser
             ,$self->deleted
             ,$self->comments
             ,$self->id
@@ -242,7 +247,7 @@ sub queryInsert {
             ,?
             ,?
             ,CURRENT TIMESTAMP
-            ,\'STAGING\'
+            ,?
             ,?
             ,?
         ))
@@ -259,7 +264,7 @@ sub queryUpdate {
             ,hostname = ?
             ,software_id = ?
             ,record_time = CURRENT TIMESTAMP
-            ,remote_user = \'STAGING\'
+            ,remote_user = ?
             ,deleted = ?
             ,comments = ?
         where
