@@ -172,102 +172,61 @@ sub getBravoSoftwareReport {
 	my %data;
 
 	my $query = "
-select 				   ol.account_number
-                      ,ol.nodename
-                      ,ol.model
-                      ,ol.bios_serial
-                      ,ol.processor_count
-                      ,COALESCE(j.chips, 0)
-                      ,ol.scantime
-                      ,ol.software_name
-                      ,ol.pid
-                      ,ol.manufacturer
-                      ,ol.level
-                      ,ol.priority
-                      ,ol.version
-                      ,ol.name
-                      ,ol.software_category_name
-                      ,ol.os_minor_vers
-                      ,ol.os_sub_vers
-                      ,ol.discrepancy_type
-                      ,sc.description
-                      ,j.server_type
-                      ,j.cpu_mips
-                      ,j.cpu_gartner_mips
-                      ,j.cpu_msu
-                      ,i.part_mips
-                      ,i.part_gartner_mips
-                      ,i.part_msu
-                      ,i.lpar_status
-                      ,j.hardware_status
-from 
-                     (select
-                      a.customer_id
-                      ,b.software_id 
-                      ,b.software_lpar_id
-                      ,a.account_number
-                      ,b.nodename
-                      ,b.model
-                      ,b.bios_serial
-                      ,b.processor_count as processor_count
-                      ,b.scantime
-                      ,s.software_name as software_name
-                      ,s.pid as pid
-                      ,SwMan.name as manufacturer
-                      ,s.level as level
-                      ,s.priority
-                      ,b.version
-                      ,d.name
-                      ,e.software_category_name
-                      ,b.os_minor_vers
-                      ,b.os_sub_vers
-                      ,f.name as discrepancy_type
-                  from
-                      eaadmin.customer a
-                      ,eaadmin.v_installed_software_mqt b                          
-                      ,eaadmin.software s
-                      ,eaadmin.manufacturer SwMan
-                      ,eaadmin.bank_account d
-                      ,eaadmin.software_category e
-                      ,eaadmin.discrepancy_type f
-                  where
-                      a.customer_id = $customerId
-                      and b.software_lpar_status = 'ACTIVE'
-                      
-                      and b.discrepancy_type_id != 3
-                      and b.discrepancy_type_id != 5
-                      and b.software_lpar_status = b.inst_status
-                      and b.inst_status = e.status
-                      and a.customer_id = b.customer_id
-                      and b.software_id = s.software_id
-                      and b.bank_account_id = d.id
-                      and s.software_category_id = e.software_category_id
-                      and b.discrepancy_type_id = f.id
-                      and s.MANUFACTURER_ID = SwMan.id
-                     ) as ol 
-	      		    left outer join eaadmin.hw_sw_composite h
-                        on h.software_lpar_id = ol.software_lpar_id
-                    left outer join eaadmin.hardware_lpar i
-                        on i.id = h.hardware_lpar_id 
-                    left outer join eaadmin.hardware j
-                        on j.id = i.hardware_id
-                        
-                    left outer join eaadmin.machine_type mt
-                        on j.machine_type_id = mt.id 
-                    left outer join eaadmin.schedule_f sf 
-                        on ol.customer_id =  sf.customer_id and ol.software_name = sf.software_name
-                    left outer join eaadmin.status st
-                        on sf.status_id = st.id  and st.description = 'ACTIVE' 
-                    left outer join eaadmin.scope sc
-                        on sf.scope_id = sc.id 
-                    WHERE (sf.id in (select ssf.id  
-                    from schedule_f ssf where  ol.customer_id =  ssf.customer_id and ol.software_name = ssf.software_name order by 
-                     CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = ol.nodename THEN 1 ELSE 
-                     CASE WHEN  ssf.level='HWBOX' and ssf.serial = j.serial and ssf.machine_type = mt.name THEN 2 ELSE
-                     CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = j.owner THEN 3 ELSE
-                      4 END END END 
- fetch first 1 row only ) ) or (sf.id is null)
-                    order by priority ASC with ur";
+select
+					   c.account_number
+                      ,v_isw.nodename
+                      ,v_isw.model
+                      ,v_isw.bios_serial
+                      ,v_isw.processor_count
+                      ,COALESCE(hw.chips, 0)
+                      ,v_isw.scantime
+                      ,sw.software_name
+                      ,sw.pid
+                      ,man.name
+                      ,sw.level
+                      ,sw.priority
+                      ,v_isw.version
+                      ,ba.name
+                      ,sw_sc.software_category_name
+                      ,v_isw.os_minor_vers
+                      ,v_isw.os_sub_vers
+                      ,dt.name
+                      , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
+							where sf.customer_id = 92
+							and sf.status_id=2
+							and sf.software_name = sw.software_name
+							and ( ( sf.level = 'PRODUCT' )
+							or (( sf.hostname = v_isw.nodename ) and ( level = 'HOSTNAME' ))
+							or (( sf.serial = hw.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' ))
+							or (( sf.hw_owner = hw.owner ) and ( sf.level ='HWOWNER' )) )
+							order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner
+                      ,hw.server_type
+                      ,hw.cpu_mips
+                      ,hw.cpu_gartner_mips
+                      ,hw.cpu_msu
+                      ,hl.part_mips
+                      ,hl.part_gartner_mips
+                      ,hl.part_msu
+                      ,hl.lpar_status
+                      ,hw.hardware_status
+	from
+		eaadmin.customer c
+		join eaadmin.v_installed_software v_isw on ( c.customer_id = v_isw.customer_id and v_isw.discrepancy_type_id not in (3,5) and v_isw.inst_status = 'ACTIVE' and v_isw.software_lpar_status = 'ACTIVE' )
+		join eaadmin.software sw on ( sw.software_id = v_isw.software_id )
+		join eaadmin.manufacturer man on ( man.id = sw.manufacturer_id )
+		join eaadmin.software_category sw_sc on ( sw_sc.software_category_id = sw.software_category_id and sw_sc.status = 'ACTIVE' )
+		join eaadmin.discrepancy_type dt on ( dt.id = v_isw.discrepancy_type_id )
+		join eaadmin.bank_account ba on ( ba.id =  v_isw.bank_account_id )
+						
+		left outer join eaadmin.hw_sw_composite hwsw on ( hwsw.software_lpar_id = v_isw.software_lpar_id )
+		left outer join eaadmin.hardware_lpar hl on ( hl.id = hwsw.hardware_lpar_id )
+		left outer join eaadmin.hardware hw on ( hw.id = hl.hardware_id )
+						
+		left outer join eaadmin.machine_type mt on ( mt.id = hw.machine_type_id )
+	
+	where c.customer_id = 92
+ 
+	order by sw.priority ASC";
 
     $dbh->prepareSqlQuery( 'bravoreport', $query);
     $dbh->prepareSqlQuery('simplereport',"SELECT account_number from eaadmin.customer where customer_id=$customerId and status='ACTIVE' with ur");
