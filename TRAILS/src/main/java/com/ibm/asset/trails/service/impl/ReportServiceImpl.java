@@ -153,6 +153,9 @@ public class ReportServiceImpl implements ReportService {
 	private final String CAUSE_CODE_SUMMARY_REPORT_NAME = "Cause Code Summary Report";
 	private final String[] CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS = {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
+	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
+	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
+			"Software Title", "Manufacturer", "Restriction", "Capacity Type", "Base Only", "Status", "Remote User", "Record Time" };
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -1344,6 +1347,24 @@ public class ReportServiceImpl implements ReportService {
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}
+		lsrReport.close();
+	}
+	
+	
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		printHeader(NON_INSTANCE_REPORT_NAME, null,
+				NON_INSTANCE_REPORT_COLUMN_HEADERS, pPrintWriter);
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate())
+				.createSQLQuery(
+						"SELECT sw.SOFTWARE_NAME, mf.NAME, non.RESTRICTION, ct.DESCRIPTION, non.BASE_ONLY, st.DESCRIPTION, non.REMOTE_USER, non.RECORD_TIME FROM EAADMIN.NON_INSTANCE non, EAADMIN.SOFTWARE sw, EAADMIN.MANUFACTURER mf, EAADMIN.CAPACITY_TYPE ct, EAADMIN.STATUS st WHERE non.SOFTWARE_ID = sw.SOFTWARE_ID AND non.MANUFACTURER_ID = mf.ID AND non.CAPACITY_TYPE_CODE = ct.CODE AND non.STATUS_ID = st.ID")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+		
 		lsrReport.close();
 	}
 

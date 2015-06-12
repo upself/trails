@@ -1,14 +1,23 @@
 package com.ibm.asset.trails.ws;
-
-
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 
 import java.util.Date;
@@ -33,6 +42,7 @@ import javax.ws.rs.core.Response.Status;
 
 
 
+
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
@@ -41,6 +51,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ibm.asset.trails.dao.NonInstanceDAO;
+import com.ibm.asset.trails.domain.Account;
+
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
@@ -51,9 +70,12 @@ import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
+import com.ibm.asset.trails.form.LicenseBaselineReport;
+import com.ibm.asset.trails.form.ReportBase;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.WSMsg;
+import com.ibm.tap.trails.framework.UserSession;
 
 
 @Path("/noninstance")
@@ -203,7 +225,23 @@ public class NonInstanceServiceEndpoint {
 			}
 		}
 	}
+	
+	
 
+	@GET
+	@Path("/download")
+	@Produces("application/vnd.ms-excel")
+	public Response download() throws IOException{
+
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,"utf-8"));
+		
+		reportService.getNonInstanceBasedSWReport(pw);
+		
+		return Response.ok(bos.toByteArray()).header("Content-Disposition", "attachment; filename=nonInstanceBasedSWReport.xls").build();
+	}
+	
 	@PUT
 	@Path("/updateNonInstanceByForm")
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
