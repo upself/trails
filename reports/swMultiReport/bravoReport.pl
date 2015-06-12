@@ -192,7 +192,7 @@ select
                       ,v_isw.os_sub_vers
                       ,dt.name
                       , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
-							where sf.customer_id = 92
+							where sf.customer_id = $customerId
 							and sf.status_id=2
 							and sf.software_name = sw.software_name
 							and ( ( sf.level = 'PRODUCT' )
@@ -224,7 +224,7 @@ select
 						
 		left outer join eaadmin.machine_type mt on ( mt.id = hw.machine_type_id )
 	
-	where c.customer_id = 92
+	where c.customer_id = $customerId
  
 	order by sw.priority ASC";
 
