@@ -22,6 +22,7 @@ use Recon::OM::PvuMap;
 use Recon::OM::PvuInfo;
 use Recon::SoftwareLpar;
 use Recon::CauseCode;
+use Recon::ScarletInstalledSoftware;
 
 sub new {
 	my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -31,8 +32,8 @@ sub new {
 		_poolParentCustomers        => undef,
 		_customer                   => undef,
 		_installedSoftwareReconData => undef,
-		_poolRunning => $poolRunning
-		
+		_poolRunning                => $poolRunning
+
 	};
 	bless $self, $class;
 
@@ -79,9 +80,10 @@ sub setUp {
 	if ( $self->installedSoftwareReconData->hProcCount > 0 ) {
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-#	else {
-#		$processorCount = $self->installedSoftwareReconData->processorCount;
-#	}
+
+	#	else {
+	#		$processorCount = $self->installedSoftwareReconData->processorCount;
+	#	}
 
 	my $nbrCoresPerChip = $self->installedSoftwareReconData->hNbrCoresPerChip;
 
@@ -98,10 +100,9 @@ sub setUp {
 	$self->mechineLevelServerType($hwServerType);
 }
 
-sub recon {
+sub validateScope {
 	my $self = shift;
 
-	dlog("begin recon");
 	$self->setUp;
 
 	###0 --> Installed Software Object is invalid
@@ -122,6 +123,15 @@ sub recon {
 	$validation->valueUnitsPerCore( $self->pvuValue );
 	$validation->validate;
 
+	return $validation;
+}
+
+sub recon {
+	my $self = shift;
+
+	dlog("begin recon");
+	my $validation = $self->validateScope();
+
 	if ( $validation->isValid == 1 ) {
 		dlog("Installed software is reconciled and valid, closing alert");
 		$self->closeAlertUnlicensedSoftware(1);
@@ -139,12 +149,16 @@ sub recon {
 	}
 	elsif ( $validation->validationCode == 1 ) {
 		dlog("Installed software is not reconciled");
-		my $returnCode = $self->reconcile;
+		my ( $returnCode, $scarletInstalledSoftware ) = $self->reconcile;
+
 		if ( $returnCode == 1 ) {
 			$self->closeAlertUnlicensedSoftware(1);
+
+			$scarletInstalledSoftware->tryToReconcile(
+				$self->installedSoftware );
 		}
-		elsif ($returnCode == 2) {
-		    return $returnCode;
+		elsif ( $returnCode == 2 ) {
+			return $returnCode;
 		}
 		else {
 			$self->openAlertUnlicensedSoftware;
@@ -232,14 +246,32 @@ sub getSoftwareLpar {
 	return $softwareLpar;
 }
 
+sub validateScheduleFScope {
+	my ( $self, $scarletScheduleFScopeName ) = @_;
+
+	if (
+		   ( not defined $self->installedSoftwareReconData->scopeName )
+		|| ( $self->installedSoftwareReconData->scopeName eq "" )
+		|| ( $self->installedSoftwareReconData->scopeName ne
+			$scarletScheduleFScopeName )
+	  )
+	{
+		ilog("No ScheduleF defined or not match for scarlet product");
+		return 0;
+	}
+
+	return 1;    
+}
+
 sub reconcile {
 	my $self = shift;
-	
-	if (( not defined $self->installedSoftwareReconData->scopeName )
-			|| ( $self->installedSoftwareReconData->scopeName eq "" )) {
-				ilog("No ScheduleF defined, no auto-reconciliation will be performed!");
-				return 0;
-			}
+
+	if (   ( not defined $self->installedSoftwareReconData->scopeName )
+		|| ( $self->installedSoftwareReconData->scopeName eq "" ) )
+	{
+		ilog("No ScheduleF defined, no auto-reconciliation will be performed!");
+		return 0;
+	}
 
 	return 1 if $self->attemptVendorManaged == 1;
 	return 1 if $self->attemptSoftwareCategory == 1;
@@ -251,8 +283,8 @@ sub reconcile {
 	return 1 if $self->attemptIBMOwnedIBMManagedCons == 1;
 	return 1 if $self->attemptCustOwnedIBMManagedCons == 1;
 
-	if($self->poolRunning == 1) {
-	    return 2;
+	if ( $self->poolRunning == 1 ) {
+		return 2;
 	}
 
 	my $licsToAllocate;
@@ -260,23 +292,29 @@ sub reconcile {
 	my $machineLevel;
 	my $reconcileIdForMachineLevel;
 	my $allocMethodId;
+	my $freePoolData;
 
 	(
-		$licsToAllocate, $reconcileTypeId,
-		$machineLevel,   $reconcileIdForMachineLevel, $allocMethodId
+		$licsToAllocate, $reconcileTypeId, $machineLevel,
+		$reconcileIdForMachineLevel, $allocMethodId, $freePoolData
 	  )
 	  = $self->attemptLicenseAllocation;
 
 	dlog( "reconcileTypeId=" . $reconcileTypeId );
 	dlog( "machineLevel=" . $machineLevel );
-	dlog( "allocMethodId=" . $allocMethodId ) if defined ( $allocMethodId );
+	dlog( "allocMethodId=" . $allocMethodId ) if defined($allocMethodId);
 
 	if ( defined $licsToAllocate ) {
 
 		###Create reconcile and set id in data.
-		my $rId =
-		  $self->createReconcile( $reconcileTypeId, $machineLevel,
-			$self->installedSoftware->id, $allocMethodId );
+		my $rId = $self->createReconcile(
+			$reconcileTypeId,             $machineLevel,
+			$self->installedSoftware->id, $allocMethodId
+		);
+
+		my $scarletInstalledSw =
+		  new Recon::ScarletInstalledSoftware( $reconcileTypeId, $machineLevel,
+			$allocMethodId, $self->installedSoftwareReconData->scopeName );
 
 		foreach my $lId ( keys %{$licsToAllocate} ) {
 			dlog( "allocating license id=$lId, using quantity="
@@ -287,32 +325,20 @@ sub reconcile {
 			  $self->createReconcileUsedLicense( $lId, $rId,
 				$licsToAllocate->{$lId},
 				$machineLevel, $reconcileIdForMachineLevel );
+
+			###Append correspond ext src id of the license into scarlet installed software.
+			$scarletInstalledSw->appendData( $freePoolData, $lId,
+				$rul->usedLicenseId );
 		}
 
 		dlog("end attemptReconcile");
-		
+
 		$self->enqueuePotentialHWboxAlloc() if ( $machineLevel == 1 );
 
-		return 1;
+		return ( 1, $scarletInstalledSw );
 	}
-##	elsif ( defined $self->customer->swComplianceMgmt
-##		&& $self->customer->swComplianceMgmt eq 'YES' )
-##	{
-##		if ( defined $self->installedSoftwareReconData->scopeName ) {
-##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
-				###Create reconcile and set id in data.
-##				my $reconcileTypeMap =
-##				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-##				my $rId =
-##				  $self->createReconcile(
-##					$reconcileTypeMap->{'Pending customer decision'},
-##					0, $self->installedSoftware->id );
-##				return 1;
-##			}
-##		}
-##	}
 
-	return 0;
+	return ( 0, undef );
 }
 
 sub attemptVendorManaged {
@@ -402,14 +428,14 @@ sub attemptCustomerOwnedAndManaged {
 		dlog("end attemptReconcile");
 		return 1;
 	}
-	
+
 	dlog("Did not reconcile as customer owned and managed");
 	return 0;
 }
 
 sub attemptIBMOwned3rdManaged {
 	my $self = shift;
-	
+
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
@@ -424,14 +450,14 @@ sub attemptIBMOwned3rdManaged {
 		dlog("end attemptReconcile");
 		return 1;
 	}
-	
+
 	dlog("Did not reconcile as IBM owned and 3rd party managed");
 	return 0;
 }
 
 sub attemptCustomerOwned3rdManaged {
 	my $self = shift;
-	
+
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
@@ -439,20 +465,22 @@ sub attemptCustomerOwned3rdManaged {
 		&& $self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM' )
 	{
 		dlog("reconciling as customer owned and 3rd party managed");
-		
+
 		if ( defined $self->customer->swComplianceMgmt
-			&& $self->customer->swComplianceMgmt eq 'YES' ) {
-				###Create reconcile and set id in data.
-				$self->createReconcile(
-					$reconcileTypeMap->{'Customer owned, managed by 3rd party'},
-					0, $self->installedSoftware->id );
-				dlog("end attemptReconcile");
-				return 1;
-			} else {
-				dlog("CUSTO3RDM scope, but not sw compliance - not reconciled.");
-			}
+			&& $self->customer->swComplianceMgmt eq 'YES' )
+		{
+			###Create reconcile and set id in data.
+			$self->createReconcile(
+				$reconcileTypeMap->{'Customer owned, managed by 3rd party'},
+				0, $self->installedSoftware->id );
+			dlog("end attemptReconcile");
+			return 1;
+		}
+		else {
+			dlog("CUSTO3RDM scope, but not sw compliance - not reconciled.");
+		}
 	}
-	
+
 	dlog("Did not reconcile as customer owned and 3rd party managed");
 	return 0;
 
@@ -460,7 +488,7 @@ sub attemptCustomerOwned3rdManaged {
 
 sub attemptIBMOwnedIBMManagedCons {
 	my $self = shift;
-	
+
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
@@ -471,19 +499,20 @@ sub attemptIBMOwnedIBMManagedCons {
 		###Create reconcile and set id in data.
 		$self->createReconcile(
 			$reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'},
-			0, $self->installedSoftware->id );
+			0, $self->installedSoftware->id
+		);
 		dlog("end attemptReconcile");
 		return 1;
 	}
-	
+
 	dlog("Did not reconcile as IBM owned, IBM managed, SW consumption based");
 	return 0;
-	
+
 }
 
 sub attemptCustOwnedIBMManagedCons {
 	my $self = shift;
-	
+
 	my $reconcileTypeMap =
 	  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
@@ -491,30 +520,38 @@ sub attemptCustOwnedIBMManagedCons {
 		&& $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO' )
 	{
 		dlog("reconciling as Customer owned, IBM managed SW consumption based");
-		
+
 		if ( defined $self->customer->swComplianceMgmt
-			&& $self->customer->swComplianceMgmt eq 'YES' ) {
-				###Create reconcile and set id in data.
-				$self->createReconcile(
-					$reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'},
-					0, $self->installedSoftware->id );
-				dlog("end attemptReconcile");
-				return 1;
-			} else {
-				dlog("CUSTOIBMMSWCO scope, but not sw compliance - not reconciled.");
-			}
+			&& $self->customer->swComplianceMgmt eq 'YES' )
+		{
+			###Create reconcile and set id in data.
+			$self->createReconcile(
+				$reconcileTypeMap->{
+					'Customer owned, IBM managed SW consumption based'},
+				0, $self->installedSoftware->id
+			);
+			dlog("end attemptReconcile");
+			return 1;
+		}
+		else {
+			dlog(
+				"CUSTOIBMMSWCO scope, but not sw compliance - not reconciled.");
+		}
 	}
-	
-	dlog("Did not reconcile as Customer owned, IBM managed SW consumption based");
+
+	dlog(
+		"Did not reconcile as Customer owned, IBM managed SW consumption based"
+	);
 	return 0;
 
 }
 
-sub enqueuePotentialHWboxAlloc { # upon creating a machinelevel reconcile, this will put other potential softwares with open alerts to the queue
+sub enqueuePotentialHWboxAlloc
+{ # upon creating a machinelevel reconcile, this will put other potential softwares with open alerts to the queue
 	my $self = shift;
-	
+
 	dlog("Attempting to enqueue potential allocations on the same HW box.");
-	
+
 	my %data;
 	$self->connection->prepareSqlQueryAndFields(
 		$self->queryPotentialHWboxAlloc() );
@@ -529,8 +566,8 @@ sub enqueuePotentialHWboxAlloc { # upon creating a machinelevel reconcile, this 
 	);
 
 	while ( $sth->fetchrow_arrayref ) {
-		dlog ("Enqueuing potential HW box alloc: iSW ".$rec{isId});
-		
+		dlog( "Enqueuing potential HW box alloc: iSW " . $rec{isId} );
+
 		my $InstSw = new BRAVO::OM::InstalledSoftware();
 		$InstSw->id( $rec{isId} );
 		$InstSw->getById( $self->connection );
@@ -539,9 +576,7 @@ sub enqueuePotentialHWboxAlloc { # upon creating a machinelevel reconcile, this 
 		$SwLpar->id( $rec{slId} );
 		$SwLpar->getById( $self->connection );
 
-		my $queue =
-		  Recon::Queue->new( $self->connection, $InstSw,
-			$SwLpar );
+		my $queue = Recon::Queue->new( $self->connection, $InstSw, $SwLpar );
 		$queue->add;
 	}
 	$sth->finish;
@@ -569,11 +604,11 @@ sub queryPotentialHWboxAlloc {
      		and is.id != ?
      with ur;
 	';
-	return('potentialHWboxAlloc', $query, \@fields );
+	return ( 'potentialHWboxAlloc', $query, \@fields );
 }
 
 sub attemptExistingMachineLevel {
-	my $self = shift;
+	my $self  = shift;
 	my $scope = shift;
 	dlog("attempt existing machine level");
 
@@ -598,11 +633,14 @@ sub attemptExistingMachineLevel {
 		dlog( $installedSoftware->toString );
 
 		my $recon =
-		  Recon::LicensingInstalledSoftware->new( $self->connection,
+		  Recon::InstalledSoftware->new( $self->connection,
 			$installedSoftware );
 		$recon->setUp;
-		
-		next if (( $scope eq "IBMOIBMM" ) && ( $recon->installedSoftwareReconData->scopeName ne "IBMOIBMM" ));
+
+		next
+		  if ( ( $scope eq "IBMOIBMM" )
+			&& ( $recon->installedSoftwareReconData->scopeName ne "IBMOIBMM" )
+		  );
 
 		my $validation =
 		  new Recon::Delegate::ReconInstalledSoftwareValidation();
@@ -620,7 +658,7 @@ sub attemptExistingMachineLevel {
 		$validation->validate;
 
 		next if ( $validation->isValid != 1 );
-		
+
 		$allocMethodId = $reconcile->allocationMethodologyId();
 
 		foreach my $licenseId ( keys %{ $reconciles->{$reconcileId} } ) {
@@ -642,11 +680,13 @@ sub attemptExistingMachineLevel {
 
 	if ( defined $reconcileTypeId && defined $reconcileIdForUsedLicense ) {
 		dlog("allocated");
-		
-#		$self->enqueuePotentialHWboxAlloc();
-		
-		return ( \%licsToAllocate, $reconcileTypeId,
-			$reconcileIdForUsedLicense, $allocMethodId );
+
+		#		$self->enqueuePotentialHWboxAlloc();
+
+		return (
+			\%licsToAllocate,           $reconcileTypeId,
+			$reconcileIdForUsedLicense, $allocMethodId
+		);
 	}
 	else {
 		dlog("unable to allocate");
@@ -664,32 +704,36 @@ sub attemptLicenseAllocation {
 	my $machineLevel;
 	my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
 	my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
-	
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###Attempt to reconcile at machine level if one is already reconciled at machine level
 		( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
-			$self->attemptExistingMachineLevel($self->installedSoftwareReconData->scopeName);
-		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId )
-		if defined $licsToAllocate;
+		  $self->attemptExistingMachineLevel(
+			$self->installedSoftwareReconData->scopeName );
+		return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId,
+			$allocMethodId, undef )
+		  if defined $licsToAllocate;
 	}
-	
-#	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
-#		( $self->installedSoftwareReconData->scopeName eq '' )) {
-#			dlog("ScheduleF not defined, license allocation won't be performed!");
-#			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
-#	}
-	
-	###Get license free pool by customer id and software id.
-	my $freePoolData = $self->getFreePoolData ( $self->installedSoftwareReconData->scopeName );
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+   #	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
+   #		( $self->installedSoftwareReconData->scopeName eq '' )) {
+   #			dlog("ScheduleF not defined, license allocation won't be performed!");
+   #			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
+   #	}
+
+	###Get license free pool by customer id and software id.
+	my $freePoolData =
+	  $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
+
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: GARTNER MIPS, machine level
 		( $licsToAllocate, $machineLevel ) =
-		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 1 );
+		  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70',
+			1 );
 		return ( $licsToAllocate,
-				$reconcileTypeMap->{'Automatic license allocation'},
-				$machineLevel )
-		if defined $licsToAllocate;
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 	}
 
 	###License type: GARTNER MIPS, lpar level
@@ -697,17 +741,18 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel, undef, undef, $freePoolData )
 	  if defined $licsToAllocate;
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: MIPS, machine level
 		( $licsToAllocate, $machineLevel ) =
-		$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 1 );
+		  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5',
+			1 );
 		return ( $licsToAllocate,
-				$reconcileTypeMap->{'Automatic license allocation'},
-				$machineLevel )
-		if defined $licsToAllocate;
+			$reconcileTypeMap->{'Automatic license allocation'},
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 	}
 
 	###License type: MIPS, lpar level
@@ -715,17 +760,18 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel, undef, undef, $freePoolData )
 	  if defined $licsToAllocate;
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: MSU, machine level
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 1 );
+		  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9',
+			1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 	}
 
 	###License type: MSU, lpar level
@@ -733,17 +779,17 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel, undef, undef, $freePoolData )
 	  if defined $licsToAllocate;
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: hardware
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationHardware($freePoolData);
+		  $self->attemptLicenseAllocationHardware($freePoolData);
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-			if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 	}
 
 	###License type: hw specific lpar
@@ -751,41 +797,43 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationLpar( $freePoolData, 1 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel, undef, undef, $freePoolData )
 	  if defined $licsToAllocate;
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: hw specific processor
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 1 );
+		  $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2',
+			1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 
 		###License type: hw specific IFL (zLinux)
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 1 );
+		  $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49',
+			1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 
 		###License type: hw specific pvu
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationPVU( $freePoolData, 1 );
+		  $self->attemptLicenseAllocationPVU( $freePoolData, 1 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
-	
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
+
 		###License type: chip(48)
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationChip($freePoolData);
+		  $self->attemptLicenseAllocationChip($freePoolData);
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 	}
 
 	###License type: lpar
@@ -793,46 +841,49 @@ sub attemptLicenseAllocation {
 	  $self->attemptLicenseAllocationLpar( $freePoolData, 0 );
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel )
+		$machineLevel, undef, undef, $freePoolData )
 	  if defined $licsToAllocate;
 
-	if ( $scheduleFlevel < 3 ) { # skip for hostname-specific scheduleF
+	if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
 		###License type: processor
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 0 );
+		  $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2',
+			0 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
-		
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
+
 		###License type: IFL processor (zLinux)
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49', 0 );
+		  $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '49',
+			0 );
 		return ( $licsToAllocate,
 			$reconcileTypeMap->{'Automatic license allocation'},
-			$machineLevel )
-		if defined $licsToAllocate;
+			$machineLevel, undef, undef, $freePoolData )
+		  if defined $licsToAllocate;
 
 		###License type: pvu
 		( $licsToAllocate, $machineLevel ) =
-			$self->attemptLicenseAllocationPVU( $freePoolData, 0 );
+		  $self->attemptLicenseAllocationPVU( $freePoolData, 0 );
 	}
 
 	return ( $licsToAllocate,
 		$reconcileTypeMap->{'Automatic license allocation'},
-		$machineLevel );
+		$machineLevel, undef, undef, $freePoolData );
 
 }
 
 sub getFreePoolData {
-	my $self = shift;
-	my $scopeName=shift;
+	my $self      = shift;
+	my $scopeName = shift;
 	dlog("begin getFreePoolData");
 
 	my %data = ();
 	my %machineLevel;
 
-	$self->connection->prepareSqlQueryAndFields( $self->queryFreePoolData( $scopeName ) );
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryFreePoolData($scopeName) );
 	my $sth = $self->connection->sql->{freePoolData};
 	my %rec;
 	$sth->bind_columns( map { \$rec{$_} }
@@ -845,19 +896,20 @@ sub getFreePoolData {
 
 	while ( $sth->fetchrow_arrayref ) {
 		dlog("lId =$rec{lId}");
-#		if ( defined $rec{usedQuantity} && $rec{machineLevel} == 1 ) {
-#			my $hwServerType = $self->mechineLevelServerType;
-#			dlog("it is machine level");
-#			###not do auto recon if hw and lic don't have the same environment.
-#			dlog(
-#				"serverType=$hwServerType,rec{lEnvironment}=$rec{lEnvironment}"
-#			);
-#			next
-#			  if (
-#				$self->isEnvironmentSame( $hwServerType, $rec{lEnvironment} ) ==
-#				0 );
-#			dlog('getFreePoolData-license and hw environment same');
-#		}
+
+		#		if ( defined $rec{usedQuantity} && $rec{machineLevel} == 1 ) {
+		#			my $hwServerType = $self->mechineLevelServerType;
+		#			dlog("it is machine level");
+		#			###not do auto recon if hw and lic don't have the same environment.
+		#			dlog(
+		#				"serverType=$hwServerType,rec{lEnvironment}=$rec{lEnvironment}"
+		#			);
+		#			next
+		#			  if (
+		#				$self->isEnvironmentSame( $hwServerType, $rec{lEnvironment} ) ==
+		#				0 );
+		#			dlog('getFreePoolData-license and hw environment same');
+		#		}
 
 		###I should centralize this check
 		if ( defined $self->customer->swComplianceMgmt
@@ -892,6 +944,7 @@ sub getFreePoolData {
 			$licView->licenseType( $rec{licenseType} );
 			$licView->lparName( $rec{lparName} );
 			$licView->environment( $rec{lEnvironment} );
+			$licView->extSrcId( $rec{extSrcId} );
 			dlog( $licView->toString );
 
 			if ( defined $rec{usedQuantity} ) {
@@ -912,9 +965,7 @@ sub getFreePoolData {
 			if ( defined $rec{usedQuantity} ) {
 				dlog( $rec{usedQuantity} );
 				if ( $rec{machineLevel} == 1 ) {
-					if (
-						exists $machineLevel{ $rec{ulId}} )
-					{
+					if ( exists $machineLevel{ $rec{ulId} } ) {
 						next;
 					}
 					else {
@@ -942,8 +993,8 @@ sub getFreePoolData {
 			$self->customer->swFinancialResponsibility,
 			$licView->ibmOwned, undef );
 		$validation->validateMaintenanceExpiration(
-			$self->installedSoftwareReconData->mtType, $licView->capType,
-			0, $licView->expireAge, undef, undef );
+			$self->installedSoftwareReconData->mtType,
+			$licView->capType, 0, $licView->expireAge, undef, undef );
 		$validation->validatePhysicalCpuSerialMatch( $licView->capType,
 			$licView->licenseType, $self->installedSoftwareReconData->hSerial,
 			$licView->cpuSerial, undef, undef, 0 );
@@ -957,7 +1008,9 @@ sub getFreePoolData {
 			undef,
 			0
 		);
-		$validation->validateProcessorChip(0,$licView->capType,$self->installedSoftwareReconData->mtType,1,undef);
+		$validation->validateProcessorChip( 0, $licView->capType,
+			$self->installedSoftwareReconData->mtType,
+			1, undef );
 
 		###Check pool
 		if ( $licView->pool == 0 ) {
@@ -985,7 +1038,7 @@ sub getFreePoolData {
 
 sub isEnvironmentSame {
 	return 1;
-	
+
 	my ( $self, $hwEnv, $licEnv ) = @_;
 	$hwEnv = 'PRODUCTION'
 	  if !defined $hwEnv || $hwEnv eq '';
@@ -1082,7 +1135,8 @@ sub attemptLicenseAllocationLpar {
 		next
 		  unless $licView->capType eq '13' || $licView->capType eq '14';
 		next
-		  if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
+		  if ( ( $licView->capType eq '14' )
+			&& ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
 		next unless defined $licView->cpuSerial;
 		next
 		  unless $licView->cpuSerial eq
@@ -1103,7 +1157,10 @@ sub attemptLicenseAllocationLpar {
 			  unless $licView->capType eq '13'
 			  || $licView->capType     eq '14';
 			next
-				if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
+			  if ( ( $licView->capType eq '14' )
+				&& (
+					$self->installedSoftwareReconData->mtType ne 'WORKSTATION' )
+			  );
 			next unless defined $licView->cpuSerial;
 			next
 			  unless $licView->cpuSerial eq
@@ -1129,7 +1186,10 @@ sub attemptLicenseAllocationLpar {
 			  unless $licView->capType eq '13'
 			  || $licView->capType     eq '14';
 			next
-				if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
+			  if ( ( $licView->capType eq '14' )
+				&& (
+					$self->installedSoftwareReconData->mtType ne 'WORKSTATION' )
+			  );
 			dlog("found matching license - non hw specific");
 			$licsToAllocate{$lId}  = 1;
 			$tempQuantityAllocated = 1;
@@ -1145,7 +1205,11 @@ sub attemptLicenseAllocationLpar {
 				  unless $licView->capType eq '13'
 				  || $licView->capType     eq '14';
 				next
-					if ( ( $licView->capType eq '14' ) &&  ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) );
+				  if (
+					( $licView->capType eq '14' )
+					&& ( $self->installedSoftwareReconData->mtType ne
+						'WORKSTATION' )
+				  );
 				next
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
@@ -1181,12 +1245,16 @@ sub attemptLicenseAllocationProcessorOrIFL {
 	my $machineLevel;
 	my $processorCount = 0;
 
-	if (( $self->installedSoftwareReconData->hProcCount > 0 ) && ( $myCapType eq '2' )) {
+	if (   ( $self->installedSoftwareReconData->hProcCount > 0 )
+		&& ( $myCapType eq '2' ) )
+	{
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-	
-	if (( $self->installedSoftwareReconData->hCpuIFL > 0 ) && ( $myCapType eq '49' )) {
+
+	if (   ( $self->installedSoftwareReconData->hCpuIFL > 0 )
+		&& ( $myCapType eq '49' ) )
+	{
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hCpuIFL;
 	}
@@ -1207,8 +1275,17 @@ sub attemptLicenseAllocationProcessorOrIFL {
 		next
 		  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 		next unless $licView->capType eq $myCapType;
-		next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
-		next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
+		next
+		  if ( ( !defined $licView->cpuSerial )
+			&& ( $licView->licenseType eq "NAMED CPU" ) );
+		next
+		  if (
+			(
+				$licView->cpuSerial ne
+				$self->installedSoftwareReconData->hSerial
+			)
+			&& ( $licView->licenseType eq "NAMED CPU" )
+		  );
 		dlog("found matching license - hw specific");
 		my $neededQuantity = $processorCount - $tempQuantityAllocated;
 		dlog( "neededQuantity=" . $neededQuantity );
@@ -1235,8 +1312,17 @@ sub attemptLicenseAllocationProcessorOrIFL {
 			next unless $licView->capType eq $myCapType;
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-			next if (( ! defined $licView->cpuSerial ) && ( $licView-> licenseType eq "NAMED CPU" ));
-			next if (( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ) && ( $licView -> licenseType eq "NAMED CPU" ));
+			next
+			  if ( ( !defined $licView->cpuSerial )
+				&& ( $licView->licenseType eq "NAMED CPU" ) );
+			next
+			  if (
+				(
+					$licView->cpuSerial ne
+					$self->installedSoftwareReconData->hSerial
+				)
+				&& ( $licView->licenseType eq "NAMED CPU" )
+			  );
 			dlog("found matching license - hw specific");
 			my $neededQuantity = $processorCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1266,8 +1352,15 @@ sub attemptLicenseAllocationProcessorOrIFL {
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 			next unless $licView->capType eq $myCapType;
-			next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
-				# the licenses with DEFINED and different CPU than the one recon'ed are skipped
+			next
+			  if (
+				   ( $licView->licenseType eq "NAMED CPU" )
+				&& ( defined $licView->cpuSerial )
+				&& ( $licView->cpuSerial ne
+					$self->installedSoftwareReconData->hSerial )
+			  );
+
+ # the licenses with DEFINED and different CPU than the one recon'ed are skipped
 			dlog("found matching license - non hw specific");
 			my $neededQuantity = $processorCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
@@ -1296,8 +1389,14 @@ sub attemptLicenseAllocationProcessorOrIFL {
 				  unless $licView->cId ne
 				  $self->installedSoftwareReconData->cId;
 				next unless $licView->capType eq $myCapType;
-				next if (( $licView->licenseType eq "NAMED CPU" ) && ( defined $licView->cpuSerial ) && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial ));
-				
+				next
+				  if (
+					   ( $licView->licenseType eq "NAMED CPU" )
+					&& ( defined $licView->cpuSerial )
+					&& ( $licView->cpuSerial ne
+						$self->installedSoftwareReconData->hSerial )
+				  );
+
 				dlog("found matching license - non hw specific");
 				my $neededQuantity = $processorCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
@@ -1336,47 +1435,56 @@ sub attemptLicenseAllocationMipsMsuGartner {
 	my ( $self, $freePoolData, $myCapType, $machineLevel ) = @_;
 	dlog("begin attemptLicenseAllocationMIPS");
 	dlog( "machineLevel=" . $machineLevel );
-#	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
+
+	#	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
 
 	return undef
 	  if $self->installedSoftwareReconData->mtType ne 'MAINFRAME';
 
-# 	only MAINFRAME
+	# 	only MAINFRAME
 
 	###Hash to return.
 	my %licsToAllocate;
 	my $myCount = 0;
-	
-	if ( $myCapType eq '5' ) { # MIPS
+
+	if ( $myCapType eq '5' ) {    # MIPS
 		dlog("Allocating MIPS...");
-		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMIPS > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hCpuMIPS;
-			}
-		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartMIPS > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hlPartMIPS;
-			}
-	} elsif ( $myCapType eq '9' ) { # MSU
+		if (   $machineLevel == 1
+			&& $self->installedSoftwareReconData->hCpuMIPS > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hCpuMIPS;
+		}
+		elsif ($machineLevel == 0
+			&& $self->installedSoftwareReconData->hlPartMIPS > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hlPartMIPS;
+		}
+	}
+	elsif ( $myCapType eq '9' ) {    # MSU
 		dlog("Allocating MSU...");
-		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuMSU > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hCpuMSU;
-			}
-		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartMSU > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hlPartMSU;
-			}
-	} elsif ( $myCapType eq '70' ) { # GARTNER MIPS
+		if (   $machineLevel == 1
+			&& $self->installedSoftwareReconData->hCpuMSU > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hCpuMSU;
+		}
+		elsif ($machineLevel == 0
+			&& $self->installedSoftwareReconData->hlPartMSU > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hlPartMSU;
+		}
+	}
+	elsif ( $myCapType eq '70' ) {    # GARTNER MIPS
 		dlog("Allocating Gartner MIPS...");
-		if ( $machineLevel == 1 && $self->installedSoftwareReconData->hCpuGartnerMIPS > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hCpuGartnerMIPS;
-			}
-		elsif ($machineLevel == 0 && $self->installedSoftwareReconData->hlPartGartnerMIPS > 0 )
-			{
-				$myCount = $self->installedSoftwareReconData->hlPartGartnerMIPS;
-			}
+		if (   $machineLevel == 1
+			&& $self->installedSoftwareReconData->hCpuGartnerMIPS > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hCpuGartnerMIPS;
+		}
+		elsif ($machineLevel == 0
+			&& $self->installedSoftwareReconData->hlPartGartnerMIPS > 0 )
+		{
+			$myCount = $self->installedSoftwareReconData->hlPartGartnerMIPS;
+		}
 	}
 
 	return undef if $myCount == 0;
@@ -1400,71 +1508,9 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 			next unless defined $licView->cpuSerial;
 			next
-			  unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
-	
-			my $neededQuantity = $myCount - $tempQuantityAllocated;
-			dlog( "neededQuantity=" . $neededQuantity );
-			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
-	
-			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-				$licsToAllocate{$lId}  = $neededQuantity;
-				$tempQuantityAllocated = $tempQuantityAllocated + $neededQuantity;
-				$isFullyAllocated      = 1;
-				last;
-			}
-			else {
-				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-				$tempQuantityAllocated =
-				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-				$freePoolData->{$lId}->quantity(0);
-			}
-		}
-		if ( $isFullyAllocated == 0 ) { # named CPU, pool master's licenses
-			foreach my $lId ( keys %{$freePoolData} ) {
-				my $lEnv    = $freePoolData->{$lId}->environment;
-				my $licView = $freePoolData->{$lId};
-				next unless $licView->capType     eq $myCapType;
-				next unless $licView->licenseType eq 'NAMED CPU';
-				next
-				  unless $licView->cId ne $self->installedSoftwareReconData->cId;
-				next unless defined $licView->cpuSerial;
-				next
-					unless $licView->cpuSerial eq $self->installedSoftwareReconData->hSerial;
-	
-				my $neededQuantity = $myCount - $tempQuantityAllocated;
-				dlog( "neededQuantity=" . $neededQuantity );
-				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
-	
-				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
-					$licsToAllocate{$lId} = $neededQuantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $neededQuantity;
-					$isFullyAllocated = 1;
-					last;
-				}
-				else {
-					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
-					$tempQuantityAllocated =
-					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
-					$freePoolData->{$lId}->quantity(0);
-				}
-			}
-		}
-	}
-	
-	###Named LPAR, customer's licenses
-	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 0 )) {
-		foreach my $lId ( keys %{$freePoolData} ) {
-			my $lEnv    = $freePoolData->{$lId}->environment;
-			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq $myCapType;
-			next unless $licView->licenseType eq 'NAMED LPAR';
-			next
-			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
-			next unless defined $licView->lparName;
-			next
-				unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
-				
+			  unless $licView->cpuSerial eq
+			  $self->installedSoftwareReconData->hSerial;
+
 			my $neededQuantity = $myCount - $tempQuantityAllocated;
 			dlog( "neededQuantity=" . $neededQuantity );
 			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
@@ -1483,7 +1529,75 @@ sub attemptLicenseAllocationMipsMsuGartner {
 				$freePoolData->{$lId}->quantity(0);
 			}
 		}
-		if (( $isFullyAllocated == 0 ) && ( $machineLevel == 0 )) { # named LPAR, master pool's licenses
+		if ( $isFullyAllocated == 0 ) {    # named CPU, pool master's licenses
+			foreach my $lId ( keys %{$freePoolData} ) {
+				my $lEnv    = $freePoolData->{$lId}->environment;
+				my $licView = $freePoolData->{$lId};
+				next unless $licView->capType     eq $myCapType;
+				next unless $licView->licenseType eq 'NAMED CPU';
+				next
+				  unless $licView->cId ne
+				  $self->installedSoftwareReconData->cId;
+				next unless defined $licView->cpuSerial;
+				next
+				  unless $licView->cpuSerial eq
+				  $self->installedSoftwareReconData->hSerial;
+
+				my $neededQuantity = $myCount - $tempQuantityAllocated;
+				dlog( "neededQuantity=" . $neededQuantity );
+				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
+
+				if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
+					$licsToAllocate{$lId} = $neededQuantity;
+					$tempQuantityAllocated =
+					  $tempQuantityAllocated + $neededQuantity;
+					$isFullyAllocated = 1;
+					last;
+				}
+				else {
+					$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
+					$tempQuantityAllocated =
+					  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
+					$freePoolData->{$lId}->quantity(0);
+				}
+			}
+		}
+	}
+
+	###Named LPAR, customer's licenses
+	if ( ( $isFullyAllocated == 0 ) && ( $machineLevel == 0 ) ) {
+		foreach my $lId ( keys %{$freePoolData} ) {
+			my $lEnv    = $freePoolData->{$lId}->environment;
+			my $licView = $freePoolData->{$lId};
+			next unless $licView->capType     eq $myCapType;
+			next unless $licView->licenseType eq 'NAMED LPAR';
+			next
+			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
+			next unless defined $licView->lparName;
+			next
+			  unless $licView->lparName eq
+			  $self->installedSoftwareReconData->hlName;
+
+			my $neededQuantity = $myCount - $tempQuantityAllocated;
+			dlog( "neededQuantity=" . $neededQuantity );
+			dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
+
+			if ( $freePoolData->{$lId}->quantity >= $neededQuantity ) {
+				$licsToAllocate{$lId} = $neededQuantity;
+				$tempQuantityAllocated =
+				  $tempQuantityAllocated + $neededQuantity;
+				$isFullyAllocated = 1;
+				last;
+			}
+			else {
+				$licsToAllocate{$lId} = $freePoolData->{$lId}->quantity;
+				$tempQuantityAllocated =
+				  $tempQuantityAllocated + $freePoolData->{$lId}->quantity;
+				$freePoolData->{$lId}->quantity(0);
+			}
+		}
+		if ( ( $isFullyAllocated == 0 ) && ( $machineLevel == 0 ) )
+		{    # named LPAR, master pool's licenses
 			foreach my $lId ( keys %{$freePoolData} ) {
 				my $lEnv    = $freePoolData->{$lId}->environment;
 				my $licView = $freePoolData->{$lId};
@@ -1494,8 +1608,9 @@ sub attemptLicenseAllocationMipsMsuGartner {
 				  $self->installedSoftwareReconData->cId;
 				next unless defined $licView->lparName;
 				next
-					unless $licView->lparName eq $self->installedSoftwareReconData->hlName;
-				
+				  unless $licView->lparName eq
+				  $self->installedSoftwareReconData->hlName;
+
 				my $neededQuantity = $myCount - $tempQuantityAllocated;
 				dlog( "neededQuantity=" . $neededQuantity );
 				dlog( "freeQuantity=" . $freePoolData->{$lId}->quantity );
@@ -1517,12 +1632,15 @@ sub attemptLicenseAllocationMipsMsuGartner {
 		}
 	}
 	###other licenses
-	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 1 )) { # customer's own
+	if ( ( $isFullyAllocated == 0 ) && ( $machineLevel == 1 ) )
+	{    # customer's own
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq $myCapType;
-			next if (( $licView->licenseType eq 'NAMED CPU' ) || ( $licView->licenseType eq 'NAMED LPAR' ));
+			next unless $licView->capType eq $myCapType;
+			next
+			  if ( ( $licView->licenseType eq 'NAMED CPU' )
+				|| ( $licView->licenseType eq 'NAMED LPAR' ) );
 			next
 			  unless $licView->cId eq $self->installedSoftwareReconData->cId;
 
@@ -1545,12 +1663,14 @@ sub attemptLicenseAllocationMipsMsuGartner {
 			}
 		}
 	}
-	if (( $isFullyAllocated == 0 ) && ( $machineLevel == 1 )) { # master pool
+	if ( ( $isFullyAllocated == 0 ) && ( $machineLevel == 1 ) ) {  # master pool
 		foreach my $lId ( keys %{$freePoolData} ) {
 			my $lEnv    = $freePoolData->{$lId}->environment;
 			my $licView = $freePoolData->{$lId};
-			next unless $licView->capType     eq $myCapType;
-			next if (( $licView->licenseType eq 'NAMED CPU' ) || ( $licView->licenseType eq 'NAMED LPAR' ));
+			next unless $licView->capType eq $myCapType;
+			next
+			  if ( ( $licView->licenseType eq 'NAMED CPU' )
+				|| ( $licView->licenseType eq 'NAMED LPAR' ) );
 			next
 			  unless $licView->cId ne $self->installedSoftwareReconData->cId;
 
@@ -1600,14 +1720,17 @@ sub attemptLicenseAllocationPVU {
 		$machineLevel   = 1;
 		$processorCount = $self->installedSoftwareReconData->hProcCount;
 	}
-#	else { no longer used, ticket 394
-#		$machineLevel   = 0;
-#		$processorCount = $self->installedSoftwareReconData->processorCount;
-#	}
+
+	#	else { no longer used, ticket 394
+	#		$machineLevel   = 0;
+	#		$processorCount = $self->installedSoftwareReconData->processorCount;
+	#	}
 
 	return undef if $processorCount == 0;
-	
-	return undef if ( $self->pvuValue == -1 ); # for PVU not found in table, no PVU recon will be performed
+
+	return undef
+	  if ( $self->pvuValue == -1 )
+	  ;    # for PVU not found in table, no PVU recon will be performed
 
 	###Counter to keep allocation count.
 	my $tempQuantityAllocated = 0;
@@ -1760,13 +1883,15 @@ sub attemptLicenseAllocationPVU {
 
 sub getValueUnitsPerProcessor {
 	my ( $self, $nbrCoresPerChip, $processorCount ) = @_;
-	my $defaultValue      = -1; # 100 should no longer be a default value
+	my $defaultValue      = -1;    # 100 should no longer be a default value
 	my $valueUnitsPerCore = 0;
 	dlog(
 "start calculating PVU, coresPerChip=$nbrCoresPerChip processorCount=$processorCount"
 	);
-	if (( not defined $nbrCoresPerChip ) || ( $nbrCoresPerChip < 1 )) {
-		dlog("undefined or 0 or less cores per chip, $defaultValue PVU returned");
+	if ( ( not defined $nbrCoresPerChip ) || ( $nbrCoresPerChip < 1 ) ) {
+		dlog(
+			"undefined or 0 or less cores per chip, $defaultValue PVU returned"
+		);
 		return $defaultValue;
 	}
 
@@ -1996,9 +2121,9 @@ sub attemptLicenseAllocationChip {
 }
 
 sub queryFreePoolData {
-	my $self=shift;
-	my $scopeName=shift;
-	
+	my $self      = shift;
+	my $scopeName = shift;
+
 	my @fields = qw(
 	  lId
 	  lEnvironment
@@ -2012,6 +2137,7 @@ sub queryFreePoolData {
 	  capType
 	  licenseType
 	  pool
+	  extSrcId
 	  ulId
 	  usedQuantity
 	  machineLevel
@@ -2030,6 +2156,7 @@ select
        l.cap_type, 
        l.lic_type, 
        l.pool,
+       l.ext_src_id,
        ul.id,
        ul.used_quantity,
        r.machine_level,
@@ -2064,16 +2191,19 @@ from
             and s.status = \'ACTIVE\'
             and l.environment <> \'DEVELOPMENT\'
             ';
-    $query .= 'and l.ibm_owned = 0' if ( ( $scopeName eq 'CUSTOIBMM' ) || ( $scopeName eq 'CUSTO3RDM' ) || ( $scopeName eq 'CUSTOIBMMSWCO' ) );
-    $query .= 'and l.ibm_owned = 1' if ( ( $scopeName eq 'IBMOIBMM' ) );
-    $query.='
+	$query .= 'and l.ibm_owned = 0'
+	  if ( ( $scopeName eq 'CUSTOIBMM' )
+		|| ( $scopeName eq 'CUSTO3RDM' )
+		|| ( $scopeName eq 'CUSTOIBMMSWCO' ) );
+	$query .= 'and l.ibm_owned = 1' if ( ( $scopeName eq 'IBMOIBMM' ) );
+	$query .= '
         order by
         	l.id
         with ur
     ';
-    
-    dlog("Reading licenses query: $query"); # debug
-    
+
+	dlog("Reading licenses query: $query");    # debug
+
 	return ( 'freePoolData', $query, \@fields );
 }
 
@@ -2100,13 +2230,13 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hHwStatus( $rec{hHwStatus} );
 		$installedSoftwareReconData->hSerial( $rec{hSerial} );
 		$installedSoftwareReconData->hChips( $rec{hChips} );
-		$installedSoftwareReconData->hNbrCoresPerChip ( $rec{hNbrCoresPerChip} );
+		$installedSoftwareReconData->hNbrCoresPerChip( $rec{hNbrCoresPerChip} );
 		$installedSoftwareReconData->hProcessorBrand( $rec{hProcessorBrand} );
 		$installedSoftwareReconData->hProcessorModel( $rec{hProcessorModel} );
 		$installedSoftwareReconData->hMachineTypeId( $rec{hMachineTypeId} );
 		$installedSoftwareReconData->hServerType( $rec{hServerType} );
 		$installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
-		$installedSoftwareReconData->hCpuGartnerMIPS ( $rec{hCpuGartnerMIPS} );
+		$installedSoftwareReconData->hCpuGartnerMIPS( $rec{hCpuGartnerMIPS} );
 		$installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
 		$installedSoftwareReconData->hCpuIFL( $rec{hCpuIFL} );
 		$installedSoftwareReconData->hOwner( $rec{hOwner} );
@@ -2115,14 +2245,15 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->hlStatus( $rec{hlStatus} );
 		$installedSoftwareReconData->hlName( $rec{hlName} );
 		$installedSoftwareReconData->hlPartMIPS( $rec{hlPartMIPS} );
-		$installedSoftwareReconData->hlPartGartnerMIPS ( $rec{hlPartGartnerMIPS} );
+		$installedSoftwareReconData->hlPartGartnerMIPS(
+			$rec{hlPartGartnerMIPS} );
 		$installedSoftwareReconData->hlPartMSU( $rec{hlPartMSU} );
 		$installedSoftwareReconData->slId( $rec{slId} );
 		$installedSoftwareReconData->cId( $rec{cId} );
 		$installedSoftwareReconData->slName( $rec{slName} );
 		$installedSoftwareReconData->slStatus( $rec{slStatus} );
-		$installedSoftwareReconData->sId ( $rec{sId} );
-		$installedSoftwareReconData->sName ( $rec{sName} );
+		$installedSoftwareReconData->sId( $rec{sId} );
+		$installedSoftwareReconData->sName( $rec{sName} );
 		$installedSoftwareReconData->sStatus( $rec{sStatus} );
 		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
@@ -2134,8 +2265,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
 		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
-		$installedSoftwareReconData->rIsManual ( $rec{rIsManual} );
-
+		$installedSoftwareReconData->rIsManual( $rec{rIsManual} );
 
 		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
@@ -2171,20 +2301,22 @@ sub getInstalledSoftwareReconData {
 		}
 	}
 	$sth->finish;
-	
+
 	###Reading new scope from scheduleF, procedure added by Michal Gross
-	
-	my ( $scopename_temp, $priofound_temp ) = getScheduleFScope( $self,
-																$installedSoftwareReconData->cId, # customer ID
-																$installedSoftwareReconData->sName, # software name
-																$installedSoftwareReconData->hOwner, # hardware owner ID
-																$installedSoftwareReconData->hSerial, # hardware serial
-																$installedSoftwareReconData->hMachineTypeId, #machine type
-																$installedSoftwareReconData->slName #hostname
-															  );
-															  
-    $installedSoftwareReconData->scopeName ( $scopename_temp );
-    $installedSoftwareReconData->scheduleFlevel ( $priofound_temp ); # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
+
+	my ( $scopename_temp, $priofound_temp ) = getScheduleFScope(
+		$self,
+		$installedSoftwareReconData->cId,               # customer ID
+		$installedSoftwareReconData->sName,             # software name
+		$installedSoftwareReconData->hOwner,            # hardware owner ID
+		$installedSoftwareReconData->hSerial,           # hardware serial
+		$installedSoftwareReconData->hMachineTypeId,    #machine type
+		$installedSoftwareReconData->slName             #hostname
+	);
+
+	$installedSoftwareReconData->scopeName($scopename_temp);
+	$installedSoftwareReconData->scheduleFlevel($priofound_temp)
+	  ;    # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
 
 	###Execute extended query of all inst sw for this lpar if in category,
 	###a parent of a bundle, or a child in a bundle.
@@ -2310,57 +2442,97 @@ sub getInstalledSoftwareReconData {
 }
 
 sub getScheduleFScope {
-	my $self=shift;
-	my $custId=shift;
-	my $softName=shift;
-	my $hwOwner=shift;
-	my $hSerial=shift;
-	my $hMachineTypeId=shift;
-	my $slName=shift;
-	
-	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
-	my $scopeToReturn=undef;
-	
-	$self->connection->prepareSqlQueryAndFields(
-		$self->queryScheduleFScope() );
+	my $self           = shift;
+	my $custId         = shift;
+	my $softName       = shift;
+	my $hwOwner        = shift;
+	my $hSerial        = shift;
+	my $hMachineTypeId = shift;
+	my $slName         = shift;
+
+	my $prioFound = 0
+	  ; # temporary value with the priority of schedule F found, so we don't have to run several cycles
+	my $scopeToReturn = undef;
+
+	$self->connection->prepareSqlQueryAndFields( $self->queryScheduleFScope() );
 	my $sth = $self->connection->sql->{ScheduleFScope};
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
 	$sth->execute( $custId, $softName );
-	
-	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
-	
+
+	dlog(   "Searching for ScheduleF scope, customer=" . $custId
+		  . ", software="
+		  . $softName );
+
 	while ( $sth->fetchrow_arrayref ) {
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
-			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HOSTNAME" )
+			&& ( $slName eq $recc{hostname} )
+			&& ( $prioFound == 3 ) )
+		{
+			wlog(   "ScheduleF HOSTNAME = " . $slName
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=3;
+		if (   ( $recc{level} eq "HOSTNAME" )
+			&& ( $slName eq $recc{hostname} )
+			&& ( $prioFound < 3 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 3;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
-			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HWBOX" )
+			&& ( $hSerial        eq $recc{hSerial} )
+			&& ( $hMachineTypeId eq $recc{hMachineTypeId} )
+			&& ( $prioFound == 2 ) )
+		{
+			wlog(   "ScheduleF HWBOX = " . $hSerial
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=2;
+		if (   ( $recc{level} eq "HWBOX" )
+			&& ( $hSerial        eq $recc{hSerial} )
+			&& ( $hMachineTypeId eq $recc{hMachineTypeId} )
+			&& ( $prioFound < 2 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 2;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
-			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HWOWNER" )
+			&& ( $hwOwner eq $recc{hwOwner} )
+			&& ( $prioFound == 1 ) )
+		{
+			wlog(   "ScheduleF HWOWNER =" . $hwOwner
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=1;
+		if (   ( $recc{level} eq "HWOWNER" )
+			&& ( $hwOwner eq $recc{hwOwner} )
+			&& ( $prioFound < 1 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 1;
 		}
-		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+		$scopeToReturn = $recc{scopeName}
+		  if ( ( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ) );
 	}
-	
-	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
-	
+
+	dlog(
+"custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound"
+	);
+
 	return ( $scopeToReturn, $prioFound );
 }
 
@@ -2394,11 +2566,9 @@ sub queryScheduleFScope {
 	    sf.status_id = 2
 	  with ur
 	';
-	return('ScheduleFScope', $query, \@fields );
-	
+	return ( 'ScheduleFScope', $query, \@fields );
+
 }
-
-
 
 sub queryReconInstalledSoftwareBaseData {
 	my @fields = qw(
@@ -2524,13 +2694,13 @@ sub queryReconInstalledSoftwareBaseData {
         with ur
 	';
 	return ( 'reconInstalledSoftwareBaseData', $query, \@fields );
-	
-#	            left outer join schedule_f sf on
-#                sf.customer_id = sl.customer_id
-#                and sf.software_id = is.software_id
-#                and sf.status_id = 2
-#            left outer join scope scope on
-#                scope.id = sf.scope_id
+
+	#	            left outer join schedule_f sf on
+	#                sf.customer_id = sl.customer_id
+	#                and sf.software_id = is.software_id
+	#                and sf.status_id = 2
+	#            left outer join scope scope on
+	#                scope.id = sf.scope_id
 
 }
 
@@ -2607,13 +2777,13 @@ sub closeAlertUnlicensedSoftware {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 		}
-		Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
+		Recon::CauseCode::updateCCtable( $alert->id, 17, $self->connection );
 	}
 	elsif ( $createNew == 1 ) {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
-		Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
-	}	
+		Recon::CauseCode::updateCCtable( $alert->id, 17, $self->connection );
+	}
 
 	dlog("end closeAlertUnlicensedSoftware");
 }
@@ -2693,9 +2863,9 @@ sub addChildrenToQueue {
 }
 
 sub getExistingMachineLevelRecon {
-	my $self = shift;
+	my $self  = shift;
 	my $scope = shift;
-	
+
 	dlog("Getting existing machine level recon, scope $scope.");
 
 	my %data;
@@ -2703,22 +2873,25 @@ sub getExistingMachineLevelRecon {
 		$self->queryExistingMachineLevelRecon($scope) );
 	my $sth;
 	my %rec;
-	if (( not defined $scope ) || ( $scope ne "IBMOIBMM" )) {
+	if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
 		$sth = $self->connection->sql->{existingMachineLevelRecon};
 		$sth->bind_columns( map { \$rec{$_} }
-		  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
+			  @{ $self->connection->sql->{existingMachineLevelReconFields} } );
 		$sth->execute(
 			$self->installedSoftwareReconData->hId,
 			$self->installedSoftware->softwareId,
-			$self->customer->id, $self->customer->id );
+			$self->customer->id, $self->customer->id
+		);
 	}
-	elsif (( defined $scope ) && ( $scope eq "IBMOIBMM" )) {
+	elsif ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) ) {
 		$sth = $self->connection->sql->{existingMachineLevelReconAll};
 		$sth->bind_columns( map { \$rec{$_} }
-		  @{ $self->connection->sql->{existingMachineLevelReconAllFields} } );
+			  @{ $self->connection->sql->{existingMachineLevelReconAllFields} }
+		);
 		$sth->execute(
 			$self->installedSoftwareReconData->hId,
-			$self->installedSoftware->softwareId );
+			$self->installedSoftware->softwareId
+		);
 	}
 
 	while ( $sth->fetchrow_arrayref ) {
@@ -2761,61 +2934,67 @@ sub fetchMechineLevelServerType {
 	return 'DEVELOPMENT';
 }
 
-sub queueSoftwareCategory { # puts all the installed software, who's category parent 
-							# is the software just considered invalid, into queue
-	my $self=shift;
-	my $swId=shift;
-	
-	dlog("Checking for installed SW ID $swId to be used as software category parent");
-	
-	 #Prepare the query.
-	$self->connection->prepareSqlQueryAndFields( $self->queryInsSwByParentProduct() );
+sub queueSoftwareCategory
+{    # puts all the installed software, who's category parent
+	    # is the software just considered invalid, into queue
+	my $self = shift;
+	my $swId = shift;
+
+	dlog(
+"Checking for installed SW ID $swId to be used as software category parent"
+	);
+
+	#Prepare the query.
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryInsSwByParentProduct() );
 
 	#Acquire the statement handle.
 	my $sth = $self->connection->sql->{queryInsSwByParentProduct};
 
- #Bind fields.
- my %rec;
- $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{queryInsSwByParentProductFields} } );
+	#Bind fields.
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{queryInsSwByParentProductFields} } );
 
- #Fetch correspond sw recon infor.
- $sth->execute( $swId );
- 
- my $total = 0;
-  
- while ( $sth->fetchrow_arrayref ) {
-	 
-  dlog("Software ID ".$rec{isId}." found.");
-  
-  my $childInstSw = new BRAVO::OM::InstalledSoftware();
-  $childInstSw->id($rec{isId});
-  $childInstSw->getById( $self->connection );
+	#Fetch correspond sw recon infor.
+	$sth->execute($swId);
 
-  my $childSwLpar = new BRAVO::OM::SoftwareLpar();
-  $childSwLpar->id( $childInstSw->softwareLparId );
-  $childSwLpar->getById( $self->connection );
+	my $total = 0;
 
-  my $queue = Recon::Queue->new( $self->connection, $childInstSw, $childSwLpar );
-  $queue->add;
-  
-  $total++;
+	while ( $sth->fetchrow_arrayref ) {
 
- }
+		dlog( "Software ID " . $rec{isId} . " found." );
 
- $sth->finish;
- 
- dlog("$total installed SW's added into queue.");
- 
- return 0;
-	
+		my $childInstSw = new BRAVO::OM::InstalledSoftware();
+		$childInstSw->id( $rec{isId} );
+		$childInstSw->getById( $self->connection );
+
+		my $childSwLpar = new BRAVO::OM::SoftwareLpar();
+		$childSwLpar->id( $childInstSw->softwareLparId );
+		$childSwLpar->getById( $self->connection );
+
+		my $queue =
+		  Recon::Queue->new( $self->connection, $childInstSw, $childSwLpar );
+		$queue->add;
+
+		$total++;
+
+	}
+
+	$sth->finish;
+
+	dlog("$total installed SW's added into queue.");
+
+	return 0;
+
 }
 
-sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (software category)
+sub queryInsSwByParentProduct
+{    # taking in 4 (included with), 7 (bundled), 8 (software category)
 	my @fields = qw(
 	  isId
 	);
-	
+
 	my $query = '
     select 
       r.installed_software_id
@@ -2853,11 +3032,12 @@ sub queryProductionHwlparCount {
 }
 
 sub queryExistingMachineLevelRecon {
-	my $self=shift;
-	my $scope=shift;
-	
-	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if (( defined $scope ) && ( $scope eq "IBMOIBMM" ));
-	
+	my $self  = shift;
+	my $scope = shift;
+
+	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM")
+	  if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
+
 	my @fields = qw(
 	  reconcileId
 	  reconcileTypeId
@@ -2889,8 +3069,10 @@ sub queryExistingMachineLevelRecon {
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
             and is.software_id = ?';
-$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if (( not defined $scope ) || ( $scope ne "IBMOIBMM" ));
-$query.='   and h.id = hl.hardware_id
+	$query .=
+'   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
+	  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
+	$query .= '   and h.id = hl.hardware_id
             and hsc.software_lpar_id = sl.id
             and hsc.hardware_lpar_id = hl.id
             and sl.id = is.software_lpar_id
@@ -2902,13 +3084,16 @@ $query.='   and h.id = hl.hardware_id
         with ur
     ';
 
-	return ( 'existingMachineLevelRecon', $query, \@fields )  if (( not defined $scope ) || ( $scope ne "IBMOIBMM" ));
-	return ( 'existingMachineLevelReconAll', $query, \@fields ) if (( defined $scope ) && ( $scope eq "IBMOIBMM" ));
+	return ( 'existingMachineLevelRecon', $query, \@fields )
+	  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
+	return ( 'existingMachineLevelReconAll', $query, \@fields )
+	  if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
 }
 
 sub createReconcile {
-	my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId, $allocMethodId ) =
-	  @_;
+	my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId,
+		$allocMethodId )
+	  = @_;
 	dlog("begin createReconcile");
 
 	###Instantiate reconcile object.
@@ -2916,7 +3101,8 @@ sub createReconcile {
 	$reconcile->reconcileTypeId($reconcileTypeId);
 	$reconcile->installedSoftwareId( $self->installedSoftware->id );
 	$reconcile->parentInstalledSoftwareId($parentInstalledSoftwareId);
-	$reconcile->allocationMethodologyId($allocMethodId) if defined ( $allocMethodId );
+	$reconcile->allocationMethodologyId($allocMethodId)
+	  if defined($allocMethodId);
 	$reconcile->machineLevel($machineLevel);
 	$reconcile->comments('AUTO RECON');
 	$reconcile->save( $self->connection );
@@ -2932,11 +3118,6 @@ sub createReconcileUsedLicense {
 	  = @_;
 	dlog("begin createReconcileUsedLicense");
 
-	###Get license object.
-	my $license = new BRAVO::OM::License();
-	$license->id($licenseId);
-	$license->getById( $self->connection );
-	dlog( "license=" . $license->toString() );
 	my $ulId = undef;
 	if ( $machineLevel && defined $reconcileIdForMachineLevel ) {
 
@@ -2958,6 +3139,11 @@ sub createReconcileUsedLicense {
 	}
 
 	if ( !defined $ulId ) {
+		###Get license object.
+		my $license = new BRAVO::OM::License();
+		$license->id($licenseId);
+		$license->getById( $self->connection );
+		dlog( "license=" . $license->toString() );
 
 		my $ul = new Recon::OM::UsedLicense();
 		$ul->licenseId($licenseId);
@@ -2971,6 +3157,12 @@ sub createReconcileUsedLicense {
 		);
 	}
 
+	return $self->createReconcileUsedLicenseMap( $reconcileId, $ulId );
+}
+
+sub createReconcileUsedLicenseMap {
+	my ( $self, $reconcileId, $ulId ) = @_;
+
 	###Instantiate reconcile used lincese object.
 	my $rul = new Recon::OM::ReconcileUsedLicense();
 	$rul->reconcileId($reconcileId);
@@ -2979,6 +3171,7 @@ sub createReconcileUsedLicense {
 	$rul->save( $self->connection );
 	dlog( "rul=" . $rul->toString() );
 	dlog("end createReconcileUsedLicense");
+
 	return $rul;
 }
 
@@ -3013,8 +3206,8 @@ sub recordAlertUnlicensedSoftwareHistory {
 }
 
 sub openAlertUnlicensedSoftware {
-	my $self = shift;
-	my $CCalertType=0;
+	my $self        = shift;
+	my $CCalertType = 0;
 	dlog("begin openAlertUnlicensedSoftware");
 
 	###Instantiate alert object.
@@ -3039,11 +3232,11 @@ sub openAlertUnlicensedSoftware {
 		$self->ibmArray )
 	{
 		$alert->type('IBM');
-		$CCalertType=7;
+		$CCalertType = 7;
 	}
 	else {
 		$alert->type('ISV');
-		$CCalertType=8;
+		$CCalertType = 8;
 	}
 	$alert->comments('Auto Open');
 	$alert->open(1);
@@ -3063,8 +3256,8 @@ sub openAlertUnlicensedSoftware {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
 	}
-	
-	Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
+
+	Recon::CauseCode::updateCCtable( $alert->id, 17, $self->connection );
 
 	dlog("end openAlertUnlicensedSoftware");
 }
@@ -3114,11 +3307,10 @@ sub mechineLevelServerType {
 }
 
 sub poolRunning {
-    my $self = shift;
-    $self->{_poolRunning} = shift
-      if scalar @_ == 1;
-    return $self->{_poolRunning};
+	my $self = shift;
+	$self->{_poolRunning} = shift
+	  if scalar @_ == 1;
+	return $self->{_poolRunning};
 }
 1;
-
 
