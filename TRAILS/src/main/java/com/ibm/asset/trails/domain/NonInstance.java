@@ -21,6 +21,7 @@ import javax.persistence.Table;
 	          ,@NamedQuery(name = "findNonInstancesByManufacturerId", query = "from NonInstance nonInstance where nonInstance.manufacturer.id = :manufacturerId")
 	          ,@NamedQuery(name = "findNonInstancesById", query = "from NonInstance nonInstance where nonInstance.id = :id") 
 	          ,@NamedQuery(name = "findNonInstancesBySwIdAndCapacityCode", query = "from NonInstance nonInstance where nonInstance.software.softwareId = :softwareId and nonInstance.capacityType.code = :code")
+              ,@NamedQuery(name = "findNonInstancesBySwNameAndCapacityCode", query = "from NonInstance nonInstance where nonInstance.software.softwareName = :softwareName and nonInstance.capacityType.code = :code")
 	          ,@NamedQuery(name = "findNonInstancesBySwIdAndCapacityCodeNotEqId", query = "from NonInstance nonInstance where nonInstance.software.softwareId = :softwareId and nonInstance.capacityType.code = :code and nonInstance.id != :id") 
 	          ,@NamedQuery(name = "removeNonInstanceById", query = "update NonInstance nonInstance set nonInstance.status.id = 1 where id = :id")})
 public class NonInstance extends AbstractDomainEntity {
