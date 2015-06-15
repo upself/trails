@@ -356,10 +356,7 @@ while (my @row = $sth->fetchrow_array )
 			}
 			
 			
-		} else {
-			print LOG "Did not find Discrepancy software combineId : $hostName$softwareName not in active software table --  processing line $count\n";
-			
-		}
+		} 
 $get_discrepancy_lpar->finish;
 $get_discrepancy_software->finish;
 $get_discrepancy_sw_lpar->finish;
