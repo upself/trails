@@ -155,7 +155,7 @@ public class ReportServiceImpl implements ReportService {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
 	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
 	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
-			"Software Title", "Manufacturer", "Restriction", "Capacity Type", "Base Only", "Status", "Remote User", "Record Time" };
+			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
