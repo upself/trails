@@ -20,3 +20,4 @@ gsa.swmulti.report.server=bejgsa.ibm.com
 gsa.swmulti.report.user=trails
 gsa.swmulti.report.password=B0sBru1n
 gsa.swmulti.report.target.folder=/gsa/bejgsa/projects/s/swtools/test/swMultiReport/
+scarlet.guids=http://lexbz180075.cloud.dst.ibm.com:13080/guids
