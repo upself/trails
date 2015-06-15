@@ -1,17 +1,7 @@
 package com.ibm.asset.trails.ws;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
+import java.io.*;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -43,9 +33,13 @@ import javax.ws.rs.core.Response.Status;
 
 
 
+
+
+
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
+import org.apache.cxf.jaxrs.utils.multipart.AttachmentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,23 +53,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
 import com.ibm.asset.trails.domain.Account;
-
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
-import com.ibm.asset.trails.domain.ScheduleF;
-import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
-import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
-import com.ibm.asset.trails.domain.Source;
-import com.ibm.asset.trails.form.LicenseBaselineReport;
-import com.ibm.asset.trails.form.ReportBase;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.WSMsg;
-import com.ibm.tap.trails.framework.UserSession;
+
 
 
 @Path("/noninstance")
@@ -307,31 +294,72 @@ public class NonInstanceServiceEndpoint {
 	
 	@POST
     @Path("/upload")
-	@Produces({MediaType.MULTIPART_FORM_DATA,MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	@Consumes({MediaType.MULTIPART_FORM_DATA,MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response uploadFile(@Context HttpServletRequest request) throws IOException  {
+	@Consumes({MediaType.MULTIPART_FORM_DATA})
+    public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
 		 ByteArrayOutputStream bos = null;
-	/*	for(Attachment attr : attachments) {
-            DataHandler handler = attr.getDataHandler();
-            try {
-            	FileInputStream fin = (FileInputStream) handler.getInputStream();
-                MultivaluedMap<String, String> map = attr.getHeaders();
+		 File f =null;
+		 FileInputStream fin = null;
+		for(Attachment attr : attachments) {
+			  DataHandler handler = attr.getDataHandler();
+	            try {
+	            	  InputStream stream = handler.getInputStream();
+	                  MultivaluedMap<String, String> map = attr.getHeaders();
+	                  System.out.println("fileName Here" + getFileName(map));
+	                  f = new File("/tmp/" + getFileName(map));
+	                  OutputStream out = new FileOutputStream(f);      		 
+	                  int read = 0;
+	                  byte[] bytes = new byte[1024];
+	                  while ((read = stream.read(bytes)) != -1) {
+	                     out.write(bytes, 0, read);
+	                  }
+	                  stream.close();
+	                  out.flush();
+	                  out.close();
+	                  if(f.exists()){
+	                  fin = new FileInputStream(f);
+	                  }else{
+	                	  return Response
+	          					.status(Status.BAD_REQUEST)
+	          					.entity("The file of NonInsance based failed!")
+	          					.build();
+	            	  }
+	               } catch (Exception e) {
+	            	   e.printStackTrace();
+	               }
+	        }
+			
 
-                 bos = nonInstanceService.parserUpload(fin);
-        		 
-            } catch(Exception e) {
-              e.printStackTrace();
-            }
-        }*/
-		NonInstance nonInstance = nonInstanceDAO.findById(new Long(2234234));
-	/*	return Response
-				.status(Status.OK)
-				.entity("The NonInsance record has been updated in the DB successfully!")
-				.build();*/
+	        try {
+				bos = nonInstanceService.parserUpload(fin);
+			} catch (IOException e) {
+				 e.printStackTrace();
+			}finally {
+				try {
+					if (fin != null)
+						fin.close();
+					    f.delete();
+					    System.out.println("file uploaed and deleted!");
+				} catch (IOException ex) {
+					 ex.printStackTrace();
+				}
+			}
+	        
         ResponseBuilder responseBuilder = Response.ok((Object) bos);
         responseBuilder.header("Content-Disposition" ,
         		"attachment; filename=results.xls");
         return responseBuilder.build();
     }
+	
+	  private String getFileName(MultivaluedMap<String, String> header) {
+	      String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
+	      for (String filename : contentDisposition) {
+	         if ((filename.trim().startsWith("filename"))) {
+	            String[] name = filename.split("=");
+	            String exactFileName = name[1].trim().replaceAll("\"", "");
+	            return exactFileName;
+	         }
+	      }
+	      return "unknown";
+	   }
 
 }

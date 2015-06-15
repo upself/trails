@@ -25,7 +25,25 @@
 		<filter-name>struts2</filter-name>
 		<filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
 	</filter>
-	<filter-mapping>
+	<filter-mapping> 
+        <filter-name>struts2</filter-name> 
+        <url-pattern>*.action</url-pattern> 
+    </filter-mapping> 
+
+    <filter-mapping> 
+        <filter-name>struts2</filter-name> 
+        <url-pattern>*.jsp</url-pattern> 
+    </filter-mapping> 
+    <filter-mapping> 
+        <filter-name>struts2</filter-name> 
+        <url-pattern>*.htm</url-pattern> 
+    </filter-mapping> 
+
+    <filter-mapping> 
+        <filter-name>struts2</filter-name> 
+        <url-pattern>*.do</url-pattern> 
+    </filter-mapping> 
+ <filter-mapping>
 		<filter-name>ResponseOverrideFilter</filter-name>
 		<url-pattern>*.htm</url-pattern>
 	</filter-mapping>
@@ -33,10 +51,10 @@
 		<filter-name>ResponseOverrideFilter</filter-name>
 		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>
-	<filter-mapping>
+<!-- 	<filter-mapping>
 		<filter-name>struts2</filter-name>
 		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+	</filter-mapping> -->
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
