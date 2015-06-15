@@ -183,40 +183,37 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.createNamedQuery("findNonInstancesById")
 				.setParameter("id", nonInstance.getId())
 				.getResultList().get(0);
+		
 		if(null != dbNonInstance){
-			getEntityManager().merge(nonInstance);
-			
 			NonInstanceH nonInstanceH = new NonInstanceH();
-			nonInstanceH.setNonInstanceId(nonInstance.getId());
-			nonInstanceH.setSoftware(nonInstance.getSoftware());
-			nonInstanceH.setManufacturer(nonInstance.getManufacturer());
-			nonInstanceH.setRestriction(nonInstance.getRestriction());
-			nonInstanceH.setCapacityType(nonInstance.getCapacityType());
-			nonInstanceH.setBaseOnly(nonInstance.getBaseOnly());
-			nonInstanceH.setStatus(nonInstance.getStatus());
-			nonInstanceH.setRemoteUser(nonInstance.getRemoteUser());
-			nonInstanceH.setRecordTime(nonInstance.getRecordTime());
+			nonInstanceH.setNonInstanceId(dbNonInstance.getId());
+			nonInstanceH.setSoftware(dbNonInstance.getSoftware());
+			nonInstanceH.setManufacturer(dbNonInstance.getManufacturer());
+			nonInstanceH.setRestriction(dbNonInstance.getRestriction());
+			nonInstanceH.setCapacityType(dbNonInstance.getCapacityType());
+			nonInstanceH.setBaseOnly(dbNonInstance.getBaseOnly());
+			nonInstanceH.setStatus(dbNonInstance.getStatus());
+			nonInstanceH.setRemoteUser(dbNonInstance.getRemoteUser());
+			nonInstanceH.setRecordTime(dbNonInstance.getRecordTime());
 			getEntityManager().persist(nonInstanceH);
+		
+			
+			dbNonInstance.setSoftware(nonInstance.getSoftware());
+			dbNonInstance.setManufacturer(nonInstance.getManufacturer());
+			dbNonInstance.setRestriction(nonInstance.getRestriction());
+			dbNonInstance.setCapacityType(nonInstance.getCapacityType());
+			dbNonInstance.setBaseOnly(nonInstance.getBaseOnly());
+			dbNonInstance.setStatus(nonInstance.getStatus());
+			dbNonInstance.setRemoteUser(nonInstance.getRemoteUser());
+			dbNonInstance.setRecordTime(nonInstance.getRecordTime());
+			getEntityManager().merge(dbNonInstance);
 		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveNonInstance(NonInstance nonInstance) {
 		// TODO Auto-generated method stub
-
 			getEntityManager().persist(nonInstance);
-/*			
-			NonInstanceH nonInstanceH = new NonInstanceH();
-			nonInstanceH.setNonInstanceId(nonInstance.getId());
-			nonInstanceH.setSoftware(nonInstance.getSoftware());
-			nonInstanceH.setManufacturer(nonInstance.getManufacturer());
-			nonInstanceH.setRestriction(nonInstance.getRestriction());
-			nonInstanceH.setCapacityType(nonInstance.getCapacityType());
-			nonInstanceH.setBaseOnly(nonInstance.getBaseOnly());
-			nonInstanceH.setStatus(nonInstance.getStatus());
-			nonInstanceH.setRemoteUser(nonInstance.getRemoteUser());
-			nonInstanceH.setRecordTime(nonInstance.getRecordTime());
-			getEntityManager().persist(nonInstanceH);*/
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -236,16 +233,64 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.setParameter("name", manufacturerName.toUpperCase())
 				.getResultList();
 	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<Software> findSoftwareBySoftwareNameLike(String softwareName,Integer maxResult) {
+		// TODO Auto-generated method stub
+		
+		if(null == maxResult){
+			return getEntityManager()
+					.createNamedQuery("softwareBySoftwareNameLike")
+					.setParameter("name", "%" + softwareName.toUpperCase() + "%")
+					.getResultList();
+		}else{
+			return getEntityManager()
+					.createNamedQuery("softwareBySoftwareNameLike")
+					.setParameter("name", "%" + softwareName.toUpperCase() + "%")
+					.setMaxResults(maxResult)
+					.getResultList();
+		}
+		
+	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<CapacityType> findCapacityTypeByDesc(String description) {
+	public List<Manufacturer> findManufacturerByNameLike(String manufacturerName,Integer maxResult) {
+		// TODO Auto-generated method stub
+		
+		if(null == maxResult){
+			return getEntityManager()
+					.createNamedQuery("manufacturerByNameLike")
+					.setParameter("name", "%" + manufacturerName.toUpperCase() + "%")
+					.getResultList();
+		}else{
+			return getEntityManager()
+					.createNamedQuery("manufacturerByNameLike")
+					.setParameter("name", "%" + manufacturerName.toUpperCase() + "%")
+					.setMaxResults(maxResult)
+					.getResultList();
+		}
+		
+	}
+
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<CapacityType> findCapacityTypeByDesc(String desc) {
 		// TODO Auto-generated method stub
 		return getEntityManager()
 				.createNamedQuery("capacityTypeByDesc")
-				.setParameter("desc", description.toUpperCase())
+				.setParameter("desc", desc)
 				.getResultList();
 	}
 	
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<CapacityType> findCapacityTypeByCode(Integer code) {
+		// TODO Auto-generated method stub
+		return getEntityManager()
+				.createNamedQuery("capacityTypeByCode")
+				.setParameter("code", code)
+				.getResultList();
+	}
+
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<CapacityType> findAllCapacityType() {
 		// TODO Auto-generated method stub

@@ -1359,7 +1359,7 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
-						"SELECT sw.SOFTWARE_NAME, mf.NAME, non.RESTRICTION, ct.DESCRIPTION, non.BASE_ONLY, st.DESCRIPTION, non.REMOTE_USER, non.RECORD_TIME FROM EAADMIN.NON_INSTANCE non, EAADMIN.SOFTWARE sw, EAADMIN.MANUFACTURER mf, EAADMIN.CAPACITY_TYPE ct, EAADMIN.STATUS st WHERE non.SOFTWARE_ID = sw.SOFTWARE_ID AND non.MANUFACTURER_ID = mf.ID AND non.CAPACITY_TYPE_CODE = ct.CODE AND non.STATUS_ID = st.ID")
+						"SELECT sw.SOFTWARE_NAME, mf.NAME, non.RESTRICTION, ct.DESCRIPTION, CASE non.BASE_ONLY WHEN 1 THEN 'Y' ELSE 'N' END, st.DESCRIPTION, non.REMOTE_USER, non.RECORD_TIME FROM EAADMIN.NON_INSTANCE non, EAADMIN.SOFTWARE sw, EAADMIN.MANUFACTURER mf, EAADMIN.CAPACITY_TYPE ct, EAADMIN.STATUS st WHERE non.SOFTWARE_ID = sw.SOFTWARE_ID AND non.MANUFACTURER_ID = mf.ID AND non.CAPACITY_TYPE_CODE = ct.CODE AND non.STATUS_ID = st.ID")
 				.scroll(ScrollMode.FORWARD_ONLY);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));

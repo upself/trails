@@ -1,13 +1,9 @@
 package com.ibm.asset.trails.ws;
 import java.io.*;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.NoSuchFileException;
 import java.util.List;
 
 import javax.activation.DataHandler;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 
 import java.util.Date;
@@ -27,32 +23,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-
-
-
-
-
-
-
-
-
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
-import org.apache.cxf.jaxrs.utils.multipart.AttachmentUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.ibm.asset.trails.dao.NonInstanceDAO;
-
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.NonInstanceDAO;
-import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
@@ -163,9 +139,9 @@ public class NonInstanceServiceEndpoint {
 			return WSMsg.failMessage("Manufacturer not found");
 		}
 		
-		List<CapacityType> ctList = nonInstanceService.findCapacityTypeByDesc(description)
+		List<CapacityType> ctList = nonInstanceService.findCapacityTypeByCode(capacityCode);
 		if(null == ctList || ctList.size() <=0){
-			return WSMsg.failMessage("CapacityType not found");
+			return WSMsg.failMessage("Non Instance capacity type not found");
 		}
 		
 		Software sw = swList.get(0);
@@ -178,7 +154,7 @@ public class NonInstanceServiceEndpoint {
 			//update
 			List<NonInstance> nonInstanceList = nonInstanceService.findNonInstanceByswIdAndCapacityCodeNotEqId(sw.getSoftwareId(), ct.getCode(), id);
 			if(null != nonInstanceList && nonInstanceList.size() >0){
-				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + capacityDesc+"]" );
+				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + ct.getDescription()+"]" );
 			}else{
 				NonInstance nonInstance = new NonInstance();
 				nonInstance.setId(id);
@@ -196,7 +172,7 @@ public class NonInstanceServiceEndpoint {
 		}else{
 			List<NonInstance> nonInstanceList = nonInstanceService.findNonInstanceByswIdAndCapacityCode(sw.getSoftwareId(), ct.getCode());
 			if(null != nonInstanceList && nonInstanceList.size() >0){
-				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + capacityDesc+"]" );
+				return WSMsg.failMessage("Non Instance is already exist for [Software = " + softwareName +", Capacity Type = " + ct.getDescription()+"]" );
 			}else{
 				NonInstance nonInstance = new NonInstance();
 				nonInstance.setSoftware(sw);
@@ -217,16 +193,19 @@ public class NonInstanceServiceEndpoint {
 
 	@GET
 	@Path("/download")
-	@Produces("application/vnd.ms-excel")
 	public Response download() throws IOException{
 
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,"utf-8"));
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,"utf-8"),true);
 		
 		reportService.getNonInstanceBasedSWReport(pw);
 		
-		return Response.ok(bos.toByteArray()).header("Content-Disposition", "attachment; filename=nonInstanceBasedSWReport.xls").build();
+		ResponseBuilder responseBuilder = Response.ok(bos.toByteArray());
+		responseBuilder.header("Content-Type","application/vnd.ms-excel;charset=UTF-8");
+		responseBuilder.header("Content-Disposition", "attachment; filename=nonInstanceBasedSWReport.xls");
+		
+		return responseBuilder.build();
 	}
 	
 	@PUT

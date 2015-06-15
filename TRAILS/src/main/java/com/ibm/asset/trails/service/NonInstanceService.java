@@ -22,8 +22,14 @@ public interface NonInstanceService {
 	
 	public void updateNonInstance(NonInstance nonInstance);
 	public void saveNonInstance(NonInstance nonInstance);
-    public List<Software> findSoftwareBySoftwareName(String softwareName);
+    
+	public List<Software> findSoftwareBySoftwareName(String softwareName);
 	public List<Manufacturer> findManufacturerByName(String manufacturerName);
+	
+	public List<Software> findSoftwareBySoftwareNameLike(String softwareName,Integer maxResult);
+	public List<Manufacturer> findManufacturerByNameLike(String manufacturerName, Integer maxResult);
+	
+	public List<CapacityType> findCapacityTypeByDesc(String desc);
 	public List<CapacityType> findCapacityTypeByCode(Integer code);
 	public List<CapacityType> findAllCapacityType();
 

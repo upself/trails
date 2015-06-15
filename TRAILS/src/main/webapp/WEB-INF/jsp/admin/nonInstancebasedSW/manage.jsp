@@ -47,7 +47,7 @@ function keyup(type) {
 	this.timer = setTimeout(
 			function() {
 				$.ajax({
-					url : "${pageContext.request.contextPath}/admin/liveSearch.htm",
+					url : "${pageContext.request.contextPath}/admin/nonInstancebasedSW/liveSearch.htm",
 					async : true,
 					type : "POST",
 					data : {
@@ -124,7 +124,7 @@ function keyup(type) {
 					<span class="ibm-item-note"></span>
 				</label> 
 				<span> 
-					<input name="manufacturerName" id="manufacturerName_id" value="<s:property value='#request.nonInstanceDisplay.manufacturerName'/>" size="40" value="" type="text">
+					<input name="manufacturerName" id="manufacturerName_id" value="<s:property value='#request.nonInstanceDisplay.manufacturerName'/>" size="40" value="" type="text" onKeyUp="keyup(this)">
 				</span>
 			</p>
 			<p>
@@ -132,8 +132,8 @@ function keyup(type) {
 				</label> <span> 
 				<select name="restriction" id="restriction_id">
 					<option value="">Please select one</option>
-					<option value="account" <s:if test="#request.nonInstanceDisplay.restriction eq 'account'">selected="selected"</s:if> >account</option>
-					<option value="machine" <s:if test="#request.nonInstanceDisplay.restriction eq 'machine'">selected="selected"</s:if>>machine</option>
+					<option value="Account" <s:if test="#request.nonInstanceDisplay.restriction eq 'Account'">selected="selected"</s:if> >Account</option>
+					<option value="Machine" <s:if test="#request.nonInstanceDisplay.restriction eq 'Machine'">selected="selected"</s:if>>Machine</option>
 					<option value="LPAR" <s:if test="#request.nonInstanceDisplay.restriction eq 'LPAR'">selected="selected"</s:if>>LPAR</option>
 				</select>
 				</span>

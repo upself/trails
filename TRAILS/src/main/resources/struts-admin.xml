@@ -104,6 +104,8 @@
 			<result name="success" type="tiles">tiles.admin.nonInstancebasedSW.upload
 			</result>
 		</action>
+		
+		<action name="liveSearch" method="liveSearch" class="nonInstanceAjaxAction"></action>
 	</package>
 
 </struts>

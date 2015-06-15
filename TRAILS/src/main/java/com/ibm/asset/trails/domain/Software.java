@@ -28,6 +28,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 		@NamedQuery(name = "Software.findAll", query = "FROM Software s"),
 		@NamedQuery(name = "softwareDetail", query = "FROM Software s where s.softwareId=:softwareId"),
 		@NamedQuery(name = "softwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
+		@NamedQuery(name = "softwareBySoftwareNameLike", query = "FROM Software WHERE UCASE(softwareName) like :name and status = 'ACTIVE' order by PRODUCT_ROLE desc"),
 		@NamedQuery(name = "inactiveSoftwareBySoftwareName", query = "FROM Software WHERE UCASE(softwareName) = :name order by PRODUCT_ROLE desc"),
 		@NamedQuery(name = "softwareByAliasName", query = "FROM Software sw JOIN sw.productInfo.alias AS A where UCASE(A.name) = :name and status = 'ACTIVE' order by sw.productRole desc"),
 		@NamedQuery(name = "inactiveSoftwareByAliasName", query = "FROM Software sw JOIN sw.productInfo.alias AS A where UCASE(A.name) = :name order by sw.productRole desc") })

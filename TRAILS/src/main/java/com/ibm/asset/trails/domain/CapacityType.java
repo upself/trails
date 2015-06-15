@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @NamedQueries({
 	@NamedQuery(name = "capacityTypeList", query = "FROM CapacityType ORDER BY code"),
 	@NamedQuery(name = "capacityTypeByDesc", query = "FROM CapacityType ct where UCASE(ct.description) = :desc"),
+	@NamedQuery(name = "capacityTypeByCode", query = "FROM CapacityType ct where ct.code = :code")
 })
 
 public class CapacityType extends AbstractDomainEntity {
