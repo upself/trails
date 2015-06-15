@@ -294,7 +294,8 @@ public class NonInstanceServiceEndpoint {
 	
 	@POST
     @Path("/upload")
-	@Consumes({MediaType.MULTIPART_FORM_DATA})
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/vnd.ms-excel")
     public Response uploadFile(List<Attachment> attachments,@Context HttpServletRequest request) {
 		 ByteArrayOutputStream bos = null;
 		 File f =null;
@@ -304,7 +305,6 @@ public class NonInstanceServiceEndpoint {
 	            try {
 	            	  InputStream stream = handler.getInputStream();
 	                  MultivaluedMap<String, String> map = attr.getHeaders();
-	                  System.out.println("fileName Here" + getFileName(map));
 	                  f = new File("/tmp/" + getFileName(map));
 	                  OutputStream out = new FileOutputStream(f);      		 
 	                  int read = 0;
@@ -320,7 +320,7 @@ public class NonInstanceServiceEndpoint {
 	                  }else{
 	                	  return Response
 	          					.status(Status.BAD_REQUEST)
-	          					.entity("The file of NonInsance based failed!")
+	          					.entity("The file of NonInsance based upload failed!")
 	          					.build();
 	            	  }
 	               } catch (Exception e) {
@@ -330,7 +330,7 @@ public class NonInstanceServiceEndpoint {
 			
 
 	        try {
-				bos = nonInstanceService.parserUpload(fin);
+				bos = nonInstanceService.parserUpload(fin,request);
 			} catch (IOException e) {
 				 e.printStackTrace();
 			}finally {
@@ -338,15 +338,15 @@ public class NonInstanceServiceEndpoint {
 					if (fin != null)
 						fin.close();
 					    f.delete();
-					    System.out.println("file uploaed and deleted!");
 				} catch (IOException ex) {
 					 ex.printStackTrace();
 				}
 			}
 	        
-        ResponseBuilder responseBuilder = Response.ok((Object) bos);
+        ResponseBuilder responseBuilder = Response.ok((Object) bos.toByteArray());
+        responseBuilder.type("application/vnd.ms-excel; charset=UTF-8");
         responseBuilder.header("Content-Disposition" ,
-        		"attachment; filename=results.xls");
+        		"attachment; filename=results.xls;");
         return responseBuilder.build();
     }
 	

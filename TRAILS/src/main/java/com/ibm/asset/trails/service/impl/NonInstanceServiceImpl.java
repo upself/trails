@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,9 @@ import javax.persistence.criteria.Root;
 
 
 
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,6 +52,7 @@ import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.domain.NonInstanceH;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.domain.NonInstance_;
+import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Software_;
 import com.ibm.asset.trails.domain.Status;
@@ -57,10 +62,6 @@ import com.ibm.asset.trails.service.NonInstanceService;
 @Service
 public class NonInstanceServiceImpl implements NonInstanceService{
 
-
-	@Autowired
-	private NonInstanceDAO dao;
-	
 	private EntityManager em;
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -204,7 +205,7 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 		// TODO Auto-generated method stub
 
 			getEntityManager().persist(nonInstance);
-			
+/*			
 			NonInstanceH nonInstanceH = new NonInstanceH();
 			nonInstanceH.setNonInstanceId(nonInstance.getId());
 			nonInstanceH.setSoftware(nonInstance.getSoftware());
@@ -215,7 +216,7 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 			nonInstanceH.setStatus(nonInstance.getStatus());
 			nonInstanceH.setRemoteUser(nonInstance.getRemoteUser());
 			nonInstanceH.setRecordTime(nonInstance.getRecordTime());
-			getEntityManager().persist(nonInstanceH);
+			getEntityManager().persist(nonInstanceH);*/
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
@@ -263,13 +264,52 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.setParameter("code", capacityCode)
 				.getResultList();
 	}
-	public NonInstance findBySoftwareNameAndCapacityCode(String softwareName, String Capcode){
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<NonInstance> findNonInstanceByswIdAndCapacityCodeNotEqId(
+			Long softwareId, Integer capacityCode, Long id) {
 		// TODO Auto-generated method stub
-				return null;
+		return getEntityManager()
+				.createNamedQuery("findNonInstancesBySwIdAndCapacityCodeNotEqId")
+				.setParameter("softwareId", softwareId)
+				.setParameter("code", capacityCode)
+				.setParameter("id", id)
+				.getResultList();
 	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException{
+	public List<Status> findStatusByDesc(String StatusDesc) {
+		List<Status> results =  getEntityManager()
+				.createNamedQuery("statusDetails")
+				.setParameter(
+						"description", StatusDesc)
+						.getResultList();
+		if (results == null || results.isEmpty()) {
+			results = null;
+		} else {
+			return results;
+		}
+		return results;
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<NonInstance> findBySoftwareNameAndCapacityCode(String softwareName, Integer capacityCode){
+		// TODO Auto-generated method stub
+		List<NonInstance> results =  getEntityManager()
+				.createNamedQuery("findNonInstancesBySwNameAndCapacityCode")
+				.setParameter("softwareName", softwareName)
+				.setParameter("code", capacityCode)
+				.getResultList();
+		if (results == null || results.isEmpty() ) {
+			results = null;
+		} else {
+			return results;
+		}
+		return results;
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput,HttpServletRequest request) throws IOException{
             HSSFWorkbook wb = new HSSFWorkbook(fileinput);
       		HSSFSheet sheet = wb.getSheetAt(0);
       		Iterator liRow = null;
@@ -327,18 +367,22 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 
       			if (!lbHeaderRow) {
       				if (error) {
-      					cell = row.createCell(16);
+      					cell = row.createCell(6);
       					cell.setCellStyle(lcsError);
       					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
       							.toString()));
       				} else if (ni.getSoftware() != null && ni.getCapacityType() != null
       						) {
-      					NonInstance iExists =  findBySoftwareNameAndCapacityCode(ni.getSoftware().getSoftwareName(),ni.getCapacityType().getDescription());
-      					if (iExists != null) {
-      									ni.setId(iExists.getId());	
+      					ni.setRemoteUser(request.getRemoteUser());
+      					ni.setRecordTime(new Date());
+      					List<NonInstance> ilExists =  findBySoftwareNameAndCapacityCode(ni.getSoftware().getSoftwareName(),ni.getCapacityType().getCode());
+      					if (ilExists != null) {
+      									ni.setId(ilExists.get(0).getId());	
+      					    updateNonInstance(ni);
+      					} else {     	     				
+          					saveNonInstance(ni);
       					}
-      					dao.merge(ni);
-      					cell = row.createCell(16);
+      					cell = row.createCell(6);
       					cell.setCellStyle(lcsMessage);
       					cell.setCellValue(new StringBuffer(
       							"YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
@@ -435,17 +479,11 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 					.getString())) {
 				throw new Exception("STATUS is required.");
 			} else {
-				@SuppressWarnings("unchecked")
-				List<com.ibm.asset.trails.domain.Status> results = getEntityManager()
-						.createNamedQuery("statusDetails")
-						.setParameter(
-								"description",
-								cell.getRichStringCellValue().getString()
-										.toUpperCase()).getResultList();
-				if (results == null || results.isEmpty()) {
+				List<Status> statusList = findStatusByDesc(cell.getRichStringCellValue().getString().trim());
+				if (statusList == null || statusList.isEmpty()) {
 					throw new Exception("Status is invalid.");
 				} else  {
-				    ni.setStatus(results.get(0));
+				    ni.setStatus(statusList.get(0));
 				}
 			break;
 		}
@@ -496,19 +534,6 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 		}
 
 		return lsErrorMessage;
-	}
-	
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstance> findNonInstanceByswIdAndCapacityCodeNotEqId(
-			Long softwareId, Integer capacityCode, Long id) {
-
-		// TODO Auto-generated method stub
-		return getEntityManager()
-				.createNamedQuery("findNonInstancesBySwIdAndCapacityCodeNotEqId")
-				.setParameter("softwareId", softwareId)
-				.setParameter("code", capacityCode)
-				.setParameter("id", id)
-				.getResultList();
 	}
 
 	@PersistenceContext(unitName="trailspd")
