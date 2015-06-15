@@ -22,7 +22,6 @@ use Recon::OM::PvuMap;
 use Recon::OM::PvuInfo;
 use Recon::SoftwareLpar;
 use Recon::CauseCode;
-use Recon::Delegate::ScarletDelegate;
 use Recon::ScarletInstalledSoftware;
 
 sub new {
