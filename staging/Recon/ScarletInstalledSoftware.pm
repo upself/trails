@@ -26,7 +26,7 @@ sub new {
 		_scheduleFScopeName => $scheduleFScopeName,
 		_config             => Config::Properties::Simple->new(
 			file => '/opt/staging/v2/config/connectionConfig.txt'
-		);
+		  )    
 	};
 	bless $self, $class;
 }
@@ -116,7 +116,7 @@ sub httpGetGuids {
 
 	my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
-	my $scarletGuidsApi = $self->config->getProperty('scarlet.guids'); 
+	my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
 
 	foreach my $extSrcId ( @{ $self->extSrcIds } ) {
 		my $swcmLicenseId = undef;
