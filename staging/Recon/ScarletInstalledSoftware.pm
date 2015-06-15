@@ -6,7 +6,7 @@ use Carp qw( croak );
 use LWP::UserAgent;
 use URI;
 use JSON;
-use Recon::InstalledSoftware;
+use Recon::LicensingInstalledSoftware;
 use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
 use Config::Properties::Simple;
@@ -191,7 +191,7 @@ sub tryToReconcile {
 
 	my ( $self, $installedSoftware ) = @_;
 
-	$self->httpGetGuids( $self->installedSoftware->id );
+	$self->httpGetGuids( $installedSoftware->id );
 
 	my $foundQty = scalar keys %{ $self->guids };
 	if ( $foundQty <= 0 ) {
@@ -245,7 +245,7 @@ sub tryToReconcile {
 		$is->getById( $self->connection );
 
 		my $installedSoftware =
-		  new Recon::InstalledSoftware( $self->connection, $is, 0 );
+		  new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
 
 		###reuse the validate of installed software to check if it's in scope.
 		my $validation = $installedSoftware->validateScope();
