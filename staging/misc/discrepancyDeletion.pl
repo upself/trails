@@ -120,6 +120,24 @@ $get_manual_queue = $dbh->prepare("SELECT software_id,software_lpar_id,customer_
     AND software_lpar_id=?
     with ur");
 
+   $get_discrepancy_sw_lpar = $dbh->prepare("SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
+sl.name||si.name as slsi_id
+FROM EAADMIN.installed_software is 
+JOIN EAADMIN.product pd       on is.software_id = pd.id
+JOIN EAADMIN.software_item  si  on pd.id = si.id
+JOIN EAADMIN.product_info  pi   on pd.id=pi.id
+JOIN EAADMIN.kb_definition kbd  on pd.id=kbd.id
+JOIN EAADMIN.software_lpar sl on sl.id=is.software_lpar_id
+JOIN EAADMIN.customer cs on sl.customer_id=cs.customer_id
+where
+is.status='ACTIVE'
+AND kbd.deleted<>1
+AND sl.status='ACTIVE'
+AND is.status='ACTIVE'
+AND cs.status ='ACTIVE'
+AND cs.account_number =?
+AND sl.id=? 
+with ur ");
 
 $get_discrepancy_hostnames_queue = $dbh->prepare("
 SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
