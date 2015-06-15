@@ -8,182 +8,267 @@ use URI;
 use JSON;
 use Recon::InstalledSoftware;
 use Database::Connection;
+use BRAVO::OM::InstalledSoftware;
 
 sub new {
- my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId ) = @_;
- my $self = {
-  _connection      => Database::Connection->new('trails'),
-  _extSrcIds       => [],
-  _guids           => {},
-  _usedLicenses    => [],
-  _reconcileTypeId => $reconcileTypeId,
-  _machineLevel    => $machineLevel,
-  _allocMethodId   => $allocMethodId
- };
- bless $self, $class;
+	my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
+		$scheduleFScopeName )
+	  = @_;
+	my $self = {
+		_connection         => Database::Connection->new('trails'),
+		_extSrcIds          => [],
+		_guids              => {},
+		_usedLicenses       => [],
+		_reconcileTypeId    => $reconcileTypeId,
+		_machineLevel       => $machineLevel,
+		_allocMethodId      => $allocMethodId,
+		_scheduleFScopeName => $scheduleFScopeName
+	};
+	bless $self, $class;
 
- return $self;
+	return $self;
 }
 
 sub connection {
- my $self = shift;
- $self->{_connection} = shift if scalar @_ == 1;
- return $self->{_connection};
+	my $self = shift;
+	$self->{_connection} = shift if scalar @_ == 1;
+	return $self->{_connection};
 }
 
 sub extSrcIds {
- my $self = shift;
- $self->{_extSrcIds} = shift if scalar @_ == 1;
- return $self->{_extSrcIds};
+	my $self = shift;
+	$self->{_extSrcIds} = shift if scalar @_ == 1;
+	return $self->{_extSrcIds};
 }
 
 sub guids {
- my $self = shift;
- $self->{_guids} = shift if scalar @_ == 1;
- return $self->{_guids};
+	my $self = shift;
+	$self->{_guids} = shift if scalar @_ == 1;
+	return $self->{_guids};
 }
 
 sub usedLicenses {
- my $self = shift;
- $self->{_usedLicenses} = shift if scalar @_ == 1;
- return $self->{_usedLicenses};
+	my $self = shift;
+	$self->{_usedLicenses} = shift if scalar @_ == 1;
+	return $self->{_usedLicenses};
 }
 
 sub reconcileTypeId {
- my $self = shift;
- $self->{_reconcileTypeId} = shift if scalar @_ == 1;
- return $self->{_reconcileTypeId};
+	my $self = shift;
+	$self->{_reconcileTypeId} = shift if scalar @_ == 1;
+	return $self->{_reconcileTypeId};
 }
 
 sub machineLevel {
- my $self = shift;
- $self->{_machineLevel} = shift if scalar @_ == 1;
- return $self->{_machineLevel};
+	my $self = shift;
+	$self->{_machineLevel} = shift if scalar @_ == 1;
+	return $self->{_machineLevel};
 }
 
 sub allocMethodId {
- my $self = shift;
- $self->{_allocMethodId} = shift if scalar @_ == 1;
- return $self->{_allocMethodId};
+	my $self = shift;
+	$self->{_allocMethodId} = shift if scalar @_ == 1;
+	return $self->{_allocMethodId};
+}
+
+sub scheduleFScopeName {
+	my $self = shift;
+	$self->{_scheduleFScopeName} = shift if scalar @_ == 1;
+	return $self->{_scheduleFScopeName};
 }
 
 sub appendData {
 
- my ( $self, $freePoollData, $licenseId, $usedLicense ) = @_;
+	my ( $self, $freePoollData, $licenseId, $usedLicenseId ) = @_;
 
- my $extSrcId;
- if ( defined $freePoollData ) {
-  $extSrcId = $freePoollData->{$licenseId}->extSrcId();
- }
- else {
+	my $extSrcId;
+	if ( defined $freePoollData ) {
+		dlog('license cached in the free pool');
+		$extSrcId = $freePoollData->{$licenseId}->extSrcId();
+	}
+	else {
+		dlog('license not cached, fetching by id');
+		my $license = new BRAVO::OM::License();
+		$license->id($licenseId);
+		$license->getById( $self->connection );
+		$extSrcId = $license->extSrcId();
+	}
+	dlog(   'scarlet cache data extSrcId= '
+		  . $extSrcId
+		  . ' usedLicenseId='
+		  . $usedLicenseId );
 
-  #it's machine level there's no free pool data constructed.
-  my $license = new BRAVO::OM::License();
-  $license->id($licenseId);
-  $license->getById( $self->connection );
-  dlog( "license=" . $license->toString() );
-  $extSrcId = $license->extSrcId();
- }
-
- push @{ $self->extSrcIds },    $extSrcId;
- push @{ $self->usedLicenses }, $usedLicense;
+	push @{ $self->extSrcIds },    $extSrcId;
+	push @{ $self->usedLicenses }, $usedLicenseId;
 }
 
 sub httpGetGuids {
 
- my ( $self, $guid ) = @_;
+	my ( $self, $installedSoftwareId ) = @_;
 
- my $scarletGuidsApi = "http://lexbz180075.cloud.dst.ibm.com:13080/guids";
+	my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
- foreach my $extSrcId ( @{ $self->extSrcIds } ) {
+	my $scarletGuidsApi = "http://lexbz180075.cloud.dst.ibm.com:13080/guids";
 
-  my $uri = URI->new($scarletGuidsApi);
-  $uri->query_form(
-   'componentGuid' => $guid,
-   'licenseId'     => $extSrcId
-  );
+	foreach my $extSrcId ( @{ $self->extSrcIds } ) {
+		my $swcmLicenseId = undef;
+		if ( $extSrcId =~ /SWCM_(\d*)/ ) {
+			$swcmLicenseId = $1;
+		}
+		else {
+			dlog('license not from swcm, skip');
+			next;
+		}
 
-  my $ua = LWP::UserAgent->new;
-  $ua->timeout(10);
-  $ua->env_proxy;
+		dlog(
+			"GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId"
+		);
+		my $uri = URI->new($scarletGuidsApi);
+		$uri->query_form(
+			'componentGuid' => $guid,
+			'licenseId'     => $swcmLicenseId
+		);
 
-  my $response = $ua->get($uri);
+		my $ua = LWP::UserAgent->new;
+		$ua->timeout(10);
+		$ua->env_proxy;
 
-  my $scarletGuids = [];
-  if ( $response->is_success ) {
-   my $json  = new JSON;
-   my $jsObj = $json->decode( $response->decoded_content );
-   $scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
-  }
-  else {
-   die $response->status_line;
-  }
+		my $response = $ua->get($uri);
 
-  foreach my $guid ( @{$scarletGuids} ) {
-   $self->guids->{$guid} = 1;
-  }
+		my $scarletGuids = [];
+		if ( $response->is_success ) {
+			my $json  = new JSON;
+			my $jsObj = $json->decode( $response->decoded_content );
+			$scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
+			dlog(
+				'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
+		}
+		else {
+			wlog( 'scarlet requesting failed: ' . $response->status_line );
+		}
 
- }
+		foreach my $id ( @{$scarletGuids} ) {
+			next if ( $id eq $guid );
+
+			$self->guids->{$id} = 1;
+			dlog( 'guid=' . $id );
+		}
+
+	}
+}
+
+sub getGuiIdByInstalledSoftwareId {
+	my ( $self, $installedSoftwareId ) = @_;
+
+	my $query = 'select kbd.guid from kb_definition kbd, installed_software is
+	where kbd.id = is.software_id
+	and is.id = ?';
+
+	dlog( 'getGuiIdByInstalledSoftwareIdQuery=' . $query );
+	my $guid;
+	$self->connection->prepareSqlQuery( 'getGuiIdByInstalledSoftwareIdQuery',
+		$query );
+	my $sth = $self->connection->sql->{getGuiIdByInstalledSoftwareIdQuery};
+	$sth->bind_columns( \$guid );
+	$sth->execute($installedSoftwareId);
+	$sth->fetchrow_arrayref;
+	$sth->finish;
+
+	dlog( 'guid=' . $guid );
+
+	return $guid;
 }
 
 sub tryToReconcile {
 
- my ($self) = @_;
+	my ( $self, $installedSoftware ) = @_;
 
- #TODO.
- my $softwareLparId;
- my $installedSoftwareId;
- my $guids;
+	$self->httpGetGuids( $self->installedSoftware->id );    
 
- my $query = 'select is.id 
-from 
-alert_unlicensed_sw aus, 
-installed_software is, 
-kb_definition kbd
-where aus.installed_software_id = is.id
-and is.software_id = kbd.id
-and aus.open =1
-and is.software_lpar_id = ' . $softwareLparId . '
-and is.id != ' . $installedSoftwareId . '
-and kbd.guid in (' . $guids . ')
-with ur';
+	  my $foundQty = scalar keys %{ $self->guids };
+	if ( $foundQty <= 0 ) {
+		dlog('no guid found in scarlet');
+		return;
+	}
+	dlog( $foundQty . ' guid found in scarlet' );
 
- dlog( 'getInstalledSoftwareIdQuery=' . $query );
+	my $counter = 0;
+	my $guids;
+	foreach my $id ( keys %{ $self->guids } ) {
+		$counter++;
+		if ( $counter < $foundQty ) {
+			$guids .= "'$id',";
+		}
+		else {
+			$guids .= "'$id'";
+		}
+	}
 
- my $installedSwId;
- $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
- my $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
- $sth->bind_columns( \$installedSwId );
- $sth->execute();
+	my $query = ' select is . id from alert_unlicensed_sw aus,
+			  installed_software is,
+			  kb_definition kbd where aus . installed_software_id = is . id
+			  and is . software_id      = kbd . id
+			  and aus . open            = 1
+			  and is . software_lpar_id =
+			      ' . $installedSoftware->softwareLparId . '
+			  and is . id != ' . $installedSoftware->id . '
+			  and kbd
+			  . guid in(' . $guids . ') with ur ';
 
- my @isIds;
- while ( $sth->fetchrow_arrayref ) {
-  push @isIds, $installedSwId;
- }
+	dlog( ' getInstalledSoftwareIdQuery = ' . $query );
 
- $sth->finish;
+	my $installedSwId;
+	$self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
+	my $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
+	$sth->bind_columns( \$installedSwId );
+	$sth->execute();
 
- foreach my $isId (@isIds) {
-  my $installedSoftware =
-    new Recon::InstalledSoftware( $self->connection, $isId, 0 );
+	my @isIds;
+	while ( $sth->fetchrow_arrayref ) {
+		push @isIds, $installedSwId;
+	}
+	$sth->finish;
 
-  #reuse the validate of installed software to check if it's in scope.
-  my $validation = $installedSoftware->validateScope();
+	dlog( scalar @isIds . ' matched installed software found' );
 
-  #validate code 1, in scope installed software without any reconcile.
-  if ( $validation->validationCode == 1 ) {
+	foreach my $isId (@isIds) {
+		my $is = new BRAVO::OM::InstalledSoftware();
+		$is->id($isId);
+		$is->getById( $self->connection );
 
-   my $reconcile =
-     $installedSoftware->createReconcile( $self->reconcileTypeId,
-    $self->machineLevel, $isId, $self->allocMethodId );
+		my $installedSoftware =
+		  new Recon::InstalledSoftware( $self->connection, $is, 0 );
 
-   foreach my $ulId ( @{ $self->usedLicenses } ) {
-    $installedSoftware->createReconcileUsedLicenseMap( $reconcile, $ulId );
-   }
+		###reuse the validate of installed software to check if it's in scope.
+		my $validation = $installedSoftware->validateScope();
 
-   $installedSoftware->closeAlertUnlicensedSoftware(1);
+		#validate code 1, in scope installed software without any reconcile.
+		if ( $validation->validationCode == 1 ) {
 
-  }
- }
+			if (
+				not $installedSoftware->validateScheduleFScope(
+					$self->scheduleFScopeName
+				)
+			  )
+			{
+				next;
+			}
+			dlog("ScheduleF defined and matched");
+
+			my $reconcile =
+			  $installedSoftware->createReconcile( $self->reconcileTypeId,
+				$self->machineLevel, $isId, $self->allocMethodId );
+
+			foreach my $ulId ( @{ $self->usedLicenses } ) {
+				$installedSoftware->createReconcileUsedLicenseMap( $reconcile,
+					$ulId );
+			}
+
+			$installedSoftware->closeAlertUnlicensedSoftware(1);
+
+		}
+	}
 
 }
+
+1;
