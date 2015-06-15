@@ -9,6 +9,7 @@ use JSON;
 use Recon::InstalledSoftware;
 use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
+use Config::Properties::Simple;
 
 sub new {
 	my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
@@ -22,11 +23,12 @@ sub new {
 		_reconcileTypeId    => $reconcileTypeId,
 		_machineLevel       => $machineLevel,
 		_allocMethodId      => $allocMethodId,
-		_scheduleFScopeName => $scheduleFScopeName
+		_scheduleFScopeName => $scheduleFScopeName,
+		_config             => Config::Properties::Simple->new(
+			file => '/opt/staging/v2/config/connectionConfig.txt'
+		);
 	};
 	bless $self, $class;
-
-	return $self;
 }
 
 sub connection {
@@ -77,6 +79,12 @@ sub scheduleFScopeName {
 	return $self->{_scheduleFScopeName};
 }
 
+sub config {
+	my $self = shift;
+	$self->{_config} = shift if scalar @_ == 1;
+	return $self->{_config};
+}
+
 sub appendData {
 
 	my ( $self, $freePoollData, $licenseId, $usedLicenseId ) = @_;
@@ -108,7 +116,7 @@ sub httpGetGuids {
 
 	my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
-	my $scarletGuidsApi = "http://lexbz180075.cloud.dst.ibm.com:13080/guids";
+	my $scarletGuidsApi = $self->config->getProperty('scarlet.guids'); 
 
 	foreach my $extSrcId ( @{ $self->extSrcIds } ) {
 		my $swcmLicenseId = undef;
@@ -183,9 +191,9 @@ sub tryToReconcile {
 
 	my ( $self, $installedSoftware ) = @_;
 
-	$self->httpGetGuids( $self->installedSoftware->id );    
+	$self->httpGetGuids( $self->installedSoftware->id );
 
-	  my $foundQty = scalar keys %{ $self->guids };
+	my $foundQty = scalar keys %{ $self->guids };
 	if ( $foundQty <= 0 ) {
 		dlog('no guid found in scarlet');
 		return;
