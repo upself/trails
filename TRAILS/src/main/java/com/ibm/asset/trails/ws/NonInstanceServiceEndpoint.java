@@ -81,7 +81,7 @@ public class NonInstanceServiceEndpoint {
 	public WSMsg search(@QueryParam("softwareName") String softwareName,
 			@QueryParam("manufacturerName") String manufacturerName,
 			@QueryParam("restriction") String restriction,
-			@QueryParam("capacityDesc") String capacityDesc,
+			@QueryParam("capacityCode") Integer capacityCode,
 			@QueryParam("baseOnly") Integer baseOnly,
 			@QueryParam("statusId") Long statusId) {
 
@@ -89,7 +89,7 @@ public class NonInstanceServiceEndpoint {
 		searchObj.setSoftwareName(softwareName);
 		searchObj.setManufacturerName(manufacturerName);
 		searchObj.setRestriction(restriction);
-		searchObj.setCapacityDesc(capacityDesc);
+		searchObj.setCapacityCode(capacityCode);
 		searchObj.setBaseOnly(baseOnly);
 		searchObj.setStatusId(statusId);
 
@@ -127,13 +127,13 @@ public class NonInstanceServiceEndpoint {
 			@FormParam("softwareName") String softwareName,
 			@FormParam("manufacturerName") String manufacturerName,
 			@FormParam("restriction") String restriction,
-			@FormParam("capacityDesc") String capacityDesc,
+			@FormParam("capacityCode") Integer capacityCode,
 			@FormParam("baseOnly") Integer baseOnly,
 			@FormParam("statusId") Long statusId, @Context HttpServletRequest request) {
 
 		//validation
 		if(null == softwareName || "".equals(softwareName)){
-			return WSMsg.failMessage("Software name is required");
+			return WSMsg.failMessage("Software component is required");
 			
 		} else if(null == manufacturerName || "".equals(manufacturerName)){
 			return WSMsg.failMessage("Manufacturer name is required");
@@ -141,8 +141,8 @@ public class NonInstanceServiceEndpoint {
 		} else if(null == restriction || "".equals(restriction)){
 			return WSMsg.failMessage("Restriction is required");
 			
-		} else if(null == capacityDesc || "".equals(capacityDesc)){
-			return WSMsg.failMessage("Capacity description is required");
+		} else if(null == capacityCode){
+			return WSMsg.failMessage("Non Instance capacity type is required");
 			
 		} else if(null == baseOnly){
 			return WSMsg.failMessage("Non instance based only is required");
@@ -163,7 +163,7 @@ public class NonInstanceServiceEndpoint {
 			return WSMsg.failMessage("Manufacturer not found");
 		}
 		
-		List<CapacityType> ctList = nonInstanceService.findCapacityTypeByDesc(capacityDesc);
+		List<CapacityType> ctList = nonInstanceService.findCapacityTypeByDesc(description)
 		if(null == ctList || ctList.size() <=0){
 			return WSMsg.failMessage("CapacityType not found");
 		}

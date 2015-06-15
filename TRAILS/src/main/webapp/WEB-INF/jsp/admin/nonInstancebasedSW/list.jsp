@@ -6,8 +6,7 @@
 		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<p>
 				<label for="softwareName_id">
-					Software title:<span class="ibm-required">*</span>
-					<span class="ibm-item-note">(e.g., KANA IQ)</span>
+					Software component:<span class="ibm-required">*</span>
 				</label> 
 				<span> 
 					<input name="softwareName" id="softwareName_id" size="40" value="" type="text">
@@ -16,7 +15,6 @@
 			<p>
 				<label for="manufacturerName_id">
 					Manufacturer:<span class="ibm-required">*</span>
-					<span class="ibm-item-note">(e.g., KANA)</span>
 				</label> 
 				<span> 
 					<input name="manufacturerName" id="manufacturerName_id" size="40" value="" type="text">
@@ -29,8 +27,8 @@
 				<span>
 					<select name="restriction" id="restriction_id">
 						<option value="">Please select one</option>
-						<option value="account">account</option>
-						<option value="machine">machine</option>
+						<option value="Account">Account</option>
+						<option value="Machine">Machine</option>
 						<option value="LPAR">LPAR</option>
 					</select> 
 				</span>
@@ -40,7 +38,7 @@
 					Non Instance based only :<span class="ibm-required">*</span>
 				</label> 
 				<span> 
-					<select class="iform" name="baseOnly" id="baseOnly_id">
+					<select name="baseOnly" id="baseOnly_id">
 						<option value="" selected="selected">Please select one</option>
 						<option value="1">Y</option>
 						<option value="0">N</option>
@@ -50,11 +48,16 @@
 			</p>
 			<p>
 				<label for="capacityDesc_id">
-					Capacity type:<span class="ibm-required">*</span>
-					<span class="ibm-item-note">(e.g., USERS)</span>
+					Non Instance capacity type:<span class="ibm-required">*</span>
 				</label> 
-				<span> 
-					<input name="capacityDesc" id="capacityDesc_id" size="40" value="" type="text">
+				<span>
+					<select name="capacityCode" id="capacityCode_id" style="max-width:270px;">
+						<option value="" selected="selected">Please select one</option>
+						<s:iterator value="#request.capacityTypeList" id="capacityType">
+							<option value="<s:property value='#capacityType.code'/>" ><s:property value='#capacityType.description'/></option>
+						</s:iterator>
+					</select>  
+					
 				</span>
 			</p>
 			<p>
@@ -83,20 +86,19 @@
 		</form>
 		<!-- FORM_END -->
 	</div>
-</div>
-<!-- SORTABLE DATA TABLE -->
-<div class="ibm-columns">
+	
+	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
 			summary="Sortable Non Instance based SW table">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Software title</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Software component</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Restriction</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Non Instance based only</span><span
 							class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Capacity type </span><span class="ibm-icon"></span></a>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Non Instance capacity type</span><span class="ibm-icon"></span></a>
 					</th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
 					<th scope="col">Operation</th>
@@ -133,7 +135,7 @@ function searchData(){
 	var manufacturerName = $("#manufacturerName_id").val();
 	var restriction = $("#restriction_id").val();
 	var baseOnly = $("#baseOnly_id").val();
-	var capacityDesc = $("#capacityDesc_id").val();
+	var capacityCode = $("#capacityCode_id").val();
 	var statusId = $("#statusId_id").val();
 
 
@@ -144,7 +146,10 @@ function searchData(){
 	if(baseOnly != ''){
 		searchParam += "&baseOnly=" + baseOnly;
 	}
-	searchParam += "&capacityDesc=" + capacityDesc;
+	if(capacityCode != ''){
+		searchParam += "&capacityCode=" + capacityCode;
+	}
+	
 	if(statusId != ''){
 		searchParam += "&statusId=" + statusId;
 	}
@@ -178,8 +183,11 @@ function searchData(){
 					html += "<td>" + list[i].statusDesc + "</td>";
 					html += "<td>";
 					<s:if test='#admin eq 1'>
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"'>Update</a>&nbsp;|&nbsp;";
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
+						html += "<p class='ibm-button-link-alternate'>"
+						html += "<a href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
+						html += "<a href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
+						/* html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"'>Update</a>&nbsp;|&nbsp;";
+						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>"; */
 					</s:if>
 					
 					<s:if test='#admin eq 0'>
@@ -193,6 +201,10 @@ function searchData(){
 		}
 	}); 
 };
+
+function openLink(url){
+	window.location.href = url;
+}
 </script>
 
 

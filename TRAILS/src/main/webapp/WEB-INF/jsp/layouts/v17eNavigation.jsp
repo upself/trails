@@ -29,15 +29,5 @@
 		<li><a href="${pageContext.request.contextPath}/help/home.htm">Help</a></li>
 		<li><a href="http://tap.raleigh.ibm.com/">Asset home</a></li>
 	</ul>
-	
-	<div id="ibm-secondary-navigation">
-	<!-- SECONDARY NAVIGATION SECTION -->
-		<h2>Related links</h2>
-		<ul id="ibm-related-links">
-			<li><a href="#3">Nonumy eirmod</a></li>
-			<li><a href="#4">Tempor invidunt</a></li>
-			<li><a href="#5">Vacca foeda</a></li>
-		</ul>
-	</div>
 </div>
 <!-- NAVIGATION_END -->

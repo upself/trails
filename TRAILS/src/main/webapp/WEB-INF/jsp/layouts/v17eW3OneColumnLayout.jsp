@@ -33,12 +33,29 @@
 	<link href="//1.www.s81c.com/common/v17e/css/application.css" rel="stylesheet" title="www" type="text/css"/>
 	<link href="//1.www.s81c.com/common/v17e/css/data.css" rel="stylesheet" title="www" type="text/css" />
 	<link href="//1.www.s81c.com/common/v17e/css/form.css" rel="stylesheet" title="www" type="text/css" />
+	<style type="text/css">
+	
+		@media only screen and (min-width: 1024px) {
+			#ibm-content-main {
+				width: 980px;
+			}
+		}
+	
+		@media only screen and (min-width: 1100px) {
+		
+		}
+	
+		@media only screen and (min-width: 1200px) {
+		
+		}
+	
+	</style>
 </head>
 
 	
 <body id="ibm-com" class="ibm-type">
 
-	<div id="ibm-top" class="ibm-default">
+	<div id="ibm-top">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
 			<div id="ibm-mast-options">
@@ -71,10 +88,9 @@
 		</div>
 		<!-- MASTHEAD_END -->
 	
-		<div id="ibm-pcon">
+		<div id="ibm-pcon" style="width:100%;">
 			<!-- CONTENT_BEGIN -->
 			<div id="ibm-content">
-				
 				<div id="ibm-content-head">
 					<!-- LEADSPACE_BEGIN -->
 					<div id="ibm-leadspace-head" class="ibm-alternate">
@@ -94,16 +110,14 @@
 					<div id="ibm-content-main">
 						<tmp:insertAttribute name="content" />      
 					</div>
-		
-					<!-- FEATURES_BEGIN -->
-					<div id="ibm-content-sidebar">
-						<tmp:insertAttribute name="contentSidebar" />
-					</div>
-					<!-- FEATURES_END -->
-					
 				</div>
 				<!-- CONTENT_BODY_END -->
 			
+				<!-- FEATURES_BEGIN -->
+				<div id="ibm-content-sidebar">
+					<tmp:insertAttribute name="contentSidebar" />
+				</div>
+				<!-- FEATURES_END -->
 			</div>
 			<!-- CONTENT_END -->
 	

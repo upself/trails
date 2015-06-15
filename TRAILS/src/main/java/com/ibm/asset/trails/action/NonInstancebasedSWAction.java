@@ -1,4 +1,7 @@
 package com.ibm.asset.trails.action;
+import java.util.List;
+
+import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.tap.trails.annotation.UserRole;
@@ -10,6 +13,7 @@ public class NonInstancebasedSWAction extends AccountBaseAction {
 	
 	private String type;
 	private Long nonInstanceId;
+	private List<CapacityType> capacityTypeList;
 	private NonInstanceDisplay nonInstanceDisplay;
 	private NonInstanceService nonInstanceService;
 	
@@ -20,6 +24,7 @@ public class NonInstancebasedSWAction extends AccountBaseAction {
 	@UserRole(userRole = UserRoleType.READER)
 	public String list() throws Exception {
 		// TODO Auto-generated method stub
+		setCapacityTypeList(nonInstanceService.findAllCapacityType());
 		return SUCCESS;
 	}
 	
@@ -30,6 +35,7 @@ public class NonInstancebasedSWAction extends AccountBaseAction {
 	
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String manage() throws Exception {
+		setCapacityTypeList(nonInstanceService.findAllCapacityType());
 		if(type.equals(REQUEST_ADD)){
 			setNonInstanceId(null);
 			setNonInstanceDisplay(null);
@@ -87,5 +93,13 @@ public class NonInstancebasedSWAction extends AccountBaseAction {
 
 	public void setNonInstanceService(NonInstanceService nonInstanceService) {
 		this.nonInstanceService = nonInstanceService;
+	}
+
+	public List<CapacityType> getCapacityTypeList() {
+		return capacityTypeList;
+	}
+
+	public void setCapacityTypeList(List<CapacityType> capacityTypeList) {
+		this.capacityTypeList = capacityTypeList;
 	}
 }

@@ -112,28 +112,45 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 			hql += " and non.id = " + nonInstanceDisplay.getId();
 		}
 		
+		if(nonInstanceDisplay.getSoftwareId() != null){
+			hql += " and non.software.softwareId = " + nonInstanceDisplay.getSoftwareId();
+		}
+		
 		if(nonInstanceDisplay.getSoftwareName() != null && !"".equals(nonInstanceDisplay.getSoftwareName())){
-			hql += " and non.software.softwareName like '%" + nonInstanceDisplay.getSoftwareName() + "%'";
+			hql += " and UCASE(non.software.softwareName) like UCASE('%" + nonInstanceDisplay.getSoftwareName() + "%')";
 		}
 		
 		if(nonInstanceDisplay.getManufacturerName() != null && !"".equals(nonInstanceDisplay.getManufacturerName())){
-			hql += " and non.manufacturer.manufacturerName like '%" + nonInstanceDisplay.getManufacturerName() + "%'";
+			hql += " and UCASE(non.manufacturer.manufacturerName) like UCASE('%" + nonInstanceDisplay.getManufacturerName() + "%')";
 		}
 		
 		if(nonInstanceDisplay.getRestriction() != null && !"".equals(nonInstanceDisplay.getRestriction())){
-			hql += " and non.restriction like '%" + nonInstanceDisplay.getRestriction() + "%'";
+			hql += " and UCASE(non.restriction) like UCASE('%" + nonInstanceDisplay.getRestriction() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getCapacityCode() != null){
+			hql += " and non.capacityType.code = " + nonInstanceDisplay.getCapacityCode();
 		}
 		
 		if(nonInstanceDisplay.getCapacityDesc() != null  && !"".equals(nonInstanceDisplay.getCapacityDesc())){
-			hql += " and non.capacityType.description like '%" + nonInstanceDisplay.getCapacityDesc() + "%'";
+			hql += " and UCASE(non.capacityType.description) like UCASE('%" + nonInstanceDisplay.getCapacityDesc() + "%')";
 		}
+		
 		
 		if(nonInstanceDisplay.getBaseOnly() != null){
 			hql += " and non.baseOnly =" + nonInstanceDisplay.getBaseOnly();
 		}
 		
 		if(nonInstanceDisplay.getStatusId() != null){
-			hql += " and non.status.id =" + nonInstanceDisplay.getSoftwareId();
+			hql += " and non.status.id =" + nonInstanceDisplay.getStatusId();
+		}
+		
+		if(nonInstanceDisplay.getStatusDesc() != null && !"".equals(nonInstanceDisplay.getStatusDesc())){
+			hql += " and UCASE(non.status.description) like UCASE('%" + nonInstanceDisplay.getStatusDesc() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getRemoteUser() != null && !"".equals(nonInstanceDisplay.getRemoteUser())){
+			hql += " and UCASE(non.remoteUser) like UCASE('%" + nonInstanceDisplay.getRemoteUser() + "%')";
 		}
 		
 		List<NonInstanceDisplay> list =  getEntityManager().createQuery(hql).getResultList();
@@ -228,6 +245,14 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				.getResultList();
 	}
 	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<CapacityType> findAllCapacityType() {
+		// TODO Auto-generated method stub
+		return getEntityManager()
+				.createNamedQuery("capacityTypeList")
+				.getResultList();
+	}
+
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<NonInstance> findNonInstanceByswIdAndCapacityCode(
 			Long softwareId, Integer capacityCode) {

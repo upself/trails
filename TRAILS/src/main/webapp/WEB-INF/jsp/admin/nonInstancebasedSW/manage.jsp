@@ -111,9 +111,8 @@ function keyup(type) {
 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" />
 			</s:if>
 			<p>
-				<label for="softwareName_id"> Software title:
+				<label for="softwareName_id">Software component:
 					<span class="ibm-required">*</span> 
-					<span class="ibm-item-note">(e.g., KANA IQ)</span>
 				</label> 
 				<span>
 					<input name="softwareName" id="softwareName_id" value="<s:property value='#request.nonInstanceDisplay.softwareName'/>" size="40" type="text" onKeyUp="keyup(this)">
@@ -122,7 +121,7 @@ function keyup(type) {
 			<p>
 				<label for="manufacturerName_id"> Manufacturer:
 					<span class="ibm-required">*</span> 
-					<span class="ibm-item-note">(e.g., KANA)</span>
+					<span class="ibm-item-note"></span>
 				</label> 
 				<span> 
 					<input name="manufacturerName" id="manufacturerName_id" value="<s:property value='#request.nonInstanceDisplay.manufacturerName'/>" size="40" value="" type="text">
@@ -141,7 +140,7 @@ function keyup(type) {
 			</p>
 			<p>
 				<label for="baseOnly_id"> Non Instance based only :<span class="ibm-required">*</span>
-				</label> <span> <select class="iform" name="baseOnly" id="baseOnly_id">
+				</label> <span> <select name="baseOnly" id="baseOnly_id">
 						<option value="">Please select one</option>
 						<option value="1" <s:if test="#request.nonInstanceDisplay.baseOnly eq 1">selected="selected"</s:if> >Y</option>
 						<option value="0" <s:if test="#request.nonInstanceDisplay.baseOnly eq 0">selected="selected"</s:if> >N</option>
@@ -150,14 +149,20 @@ function keyup(type) {
 
 			</p>
 			<p>
-				<label for="capacityDesc_id"> Capacity type:<span class="ibm-required">*</span> <span class="ibm-item-note">(e.g.,
-						USERS)</span>
-				</label> <span> <input name="capacityDesc" id="capacityDesc_id" value="<s:property value='#request.nonInstanceDisplay.capacityDesc'/>" size="40" type="text">
+				<label for="capacityDesc_id"> Non Instance capacity type:<span class="ibm-required">*</span>
+				</label> 
+				<span>
+					<select name="capacityCode" id="capacityCode_id" style="max-width:270px;">
+						<option value="">Please select one</option>
+						<s:iterator value="#request.capacityTypeList" id="capacityType">
+							<option value="<s:property value='#capacityType.code'/>" <s:if test="#request.nonInstanceDisplay.capacityCode eq #capacityType.code">selected="selected"</s:if> ><s:property value='#capacityType.description'/></option>
+						</s:iterator>
+					</select>  
 				</span>
 			</p>
 			<p>
 				<label for="statusId_id"> Status:<span class="ibm-required">*</span>
-				</label> <span> <select class="iform" name="statusId" id="statusId_id">
+				</label> <span> <select name="statusId" id="statusId_id">
 						<option value="">Please select one</option>
 						<option value="2" <s:if test="#request.nonInstanceDisplay.statusId eq 2">selected="selected"</s:if> >ACTIVE</option>
 						<option value="1" <s:if test="#request.nonInstanceDisplay.statusId eq 1">selected="selected"</s:if> >INACTIVE</option>
@@ -204,11 +209,11 @@ function validateForm(){
 	var manufacturerName = $("#manufacturerName_id").val();
 	var restriction = $("#restriction_id").val();
 	var baseOnly = $("#baseOnly_id").val();
-	var capacityDesc = $("#capacityDesc_id").val();
+	var capacityCode = $("#capacityCode_id").val();
 	var statusId = $("#statusId_id").val();
 
 	if(softwareName.trim() == ''){
-		alert('Software title is required');
+		alert('Software component is required');
 		return false;
 	}
 	
@@ -227,8 +232,8 @@ function validateForm(){
 		return false;
 	}
 	
-	if(capacityDesc.trim() == ''){
-		alert('Capacity type is required');
+	if(capacityCode.trim() == ''){
+		alert('Non Instance capacity type is required');
 		return false;
 	}
 	

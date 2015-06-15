@@ -22,7 +22,8 @@ public interface NonInstanceService {
 	public void saveNonInstance(NonInstance nonInstance);
     public List<Software> findSoftwareBySoftwareName(String softwareName);
 	public List<Manufacturer> findManufacturerByName(String manufacturerName);
-	public List<CapacityType> findCapacityTypeByDesc(String description);
+	public List<CapacityType> findCapacityTypeByCode(Integer code);
+	public List<CapacityType> findAllCapacityType();
 
 	public ByteArrayOutputStream parserUpload(FileInputStream fileinput) throws IOException;
 	public List<NonInstance> findNonInstanceByswIdAndCapacityCode(Long softwareId, Integer capacityCode);
