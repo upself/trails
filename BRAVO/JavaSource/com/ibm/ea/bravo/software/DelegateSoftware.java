@@ -1041,7 +1041,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		list.add(new InvalidCategory("Duplicate product - In Use"));
 		list.add(new InvalidCategory("Shared DASD (not used in this LPAR)"));
 		list.add(new InvalidCategory("Complex discovery"));
-		if (changeJustification.equals("TADZ")) {
+		if (changeJustification!= null && changeJustification.equals("TADZ")) {
 			list.add(new InvalidCategory("IBM SW GSD Build"));
 		}
 		return list;
