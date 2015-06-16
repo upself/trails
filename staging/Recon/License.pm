@@ -19,180 +19,196 @@ use Recon::Delegate::ReconLicenseValidation;
 use CNDB::Delegate::CNDBDelegate;
 
 sub new {
-    my ( $class, $connection, $license ) = @_;
-    my $self = {
-                 _connection            => $connection,
-                 _license               => $license,
-                 _licenseAllocationData => undef,
-                 _accountPoolChildren   => undef,
-                 _licSwMap              => undef
-    };
-    bless $self, $class;
+	my ( $class, $connection, $license ) = @_;
+	my $self = {
+		_connection            => $connection,
+		_license               => $license,
+		_licenseAllocationData => undef,
+		_accountPoolChildren   => undef,
+		_licSwMap              => undef
+	};
+	bless $self, $class;
 
-    $self->validate;
+	$self->validate;
 
-    return $self;
+	return $self;
 }
 
 sub validate {
-    my $self = shift;
+	my $self = shift;
 
-    croak 'Connection is undefined'
-        unless defined $self->connection;
+	croak 'Connection is undefined'
+	  unless defined $self->connection;
 
-    croak 'License is undefined'
-        unless defined $self->license;
+	croak 'License is undefined'
+	  unless defined $self->license;
 }
 
 sub recon {
-    my $self = shift;
+	my $self = shift;
 
-    my $customer = new BRAVO::OM::Customer();
-    $customer->id( $self->license->customerId );
-    $customer->getById( $self->connection );
-    $self->customer($customer);
+	my $customer = new BRAVO::OM::Customer();
+	$customer->id( $self->license->customerId );
+	$customer->getById( $self->connection );
+	$self->customer($customer);
 
-    ###Alert expired maint.
-    $self->alertLogicExpiredMaint;
+	###Alert expired maint.
+	$self->alertLogicExpiredMaint;
 
-    ###Get necessary data
-    $self->getLicenseAllocationsData;
-    $self->accountPoolChildren(
-                  CNDB::Delegate::CNDBDelegate->getAccountPoolChildren( $self->connection, $self->customer->id ) );
+	###Get necessary data
+	$self->getLicenseAllocationsData;
+	$self->accountPoolChildren(
+		CNDB::Delegate::CNDBDelegate->getAccountPoolChildren(
+			$self->connection, $self->customer->id
+		)
+	);
 
-    my $licSwMap = new BRAVO::OM::LicenseSoftwareMap();
-    $licSwMap->licenseId( $self->license->id );
-    $licSwMap->getByBizKey( $self->connection );
-    $self->licSwMap($licSwMap);
-    dlog( "licSwMap=" . $licSwMap->toString() );
+	my $licSwMap = new BRAVO::OM::LicenseSoftwareMap();
+	$licSwMap->licenseId( $self->license->id );
+	$licSwMap->getByBizKey( $self->connection );
+	$self->licSwMap($licSwMap);
+	dlog( "licSwMap=" . $licSwMap->toString() );
 
-    my $validation = new Recon::Delegate::ReconLicenseValidation();
-    $validation->customer( $self->customer );
-    $validation->license( $self->license );
-    $validation->licenseAllocationData( $self->licenseAllocationData );
-    $validation->licSwMap($licSwMap);
-    $validation->accountPoolChildren( $self->accountPoolChildren );
-    $validation->connection( $self->connection );
-    $validation->validate;
+	my $validation = new Recon::Delegate::ReconLicenseValidation();
+	$validation->customer( $self->customer );
+	$validation->license( $self->license );
+	$validation->licenseAllocationData( $self->licenseAllocationData );
+	$validation->licSwMap($licSwMap);
+	$validation->accountPoolChildren( $self->accountPoolChildren );
+	$validation->connection( $self->connection );
+	$validation->validate;
 
-    if ( defined $validation->deleteQueue ) {
-        foreach my $licenseId ( keys %{ $validation->deleteQueue } ) {
-            my $recon = new Recon::OM::ReconLicense();
-            $recon->licenseId( $self->license->id );
-            $recon->action('UPDATE');
-            $recon->getByBizKey( $self->connection );
-            $recon->delete( $self->connection );
-        }
-    }
+	if ( defined $validation->deleteQueue ) {
+		foreach my $licenseId ( keys %{ $validation->deleteQueue } ) {
+			my $recon = new Recon::OM::ReconLicense();
+			$recon->licenseId( $self->license->id );
+			$recon->action('UPDATE');
+			$recon->getByBizKey( $self->connection );
+			$recon->delete( $self->connection );
+		}
+	}
 
-    if ( defined $validation->reconcilesToBreak ) {
-        foreach my $reconcileId ( keys %{ $validation->reconcilesToBreak } ) {
-            dlog("reconcileId=$reconcileId");
-            Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $reconcileId );
-        }
-    }
+	if ( defined $validation->reconcilesToBreak ) {
+		foreach my $reconcileId ( keys %{ $validation->reconcilesToBreak } ) {
+			dlog("reconcileId=$reconcileId");
+			Recon::Delegate::ReconDelegate->breakReconcileById(
+				$self->connection, $reconcileId );
+		}
+	}
 
-    if ( $validation->isValid == 0 ) {
-        dlog("License is not valid, returning");
-        return 1;
-    }
+	if ( $validation->isValid == 0 ) {
+		dlog("License is not valid, returning");
+		return 1;
+	}
 
-    $self->queuePotentialInstalledSoftware;
+	$self->queuePotentialInstalledSoftware;
 
-    dlog("end recon");
-    return;
+	dlog("end recon");
+	return;
 }
 
 sub queuePotentialInstalledSoftware {
-    my $self = shift;
-    dlog("begin attemptAllocations");
+	my $self = shift;
+	dlog("begin attemptAllocations");
 
-    ###We don't auto reconcile anything unless its in this list
-    if (    $self->license->capType ne '2'
-         && $self->license->capType ne '5'
-         && $self->license->capType ne '9'
-         && $self->license->capType ne '13'
-         && $self->license->capType ne '14'
-         && $self->license->capType ne '17'
-         && $self->license->capType ne '34'
-         && $self->license->capType ne '48'
-         && $self->license->capType ne '49'
-         && $self->license->capType ne '70' )
-    {
-        return;
-    }
+	###We don't auto reconcile anything unless its in this list
+	if (   $self->license->capType ne '2'
+		&& $self->license->capType ne '5'
+		&& $self->license->capType ne '9'
+		&& $self->license->capType ne '13'
+		&& $self->license->capType ne '14'
+		&& $self->license->capType ne '17'
+		&& $self->license->capType ne '34'
+		&& $self->license->capType ne '48'
+		&& $self->license->capType ne '49'
+		&& $self->license->capType ne '70' )
+	{
+		return;
+	}
 
-    ###List of inst sw to attempt recon.
-    my @instSwsToAttemptAllocation = ();
+	###List of inst sw to attempt recon.
+	my @instSwsToAttemptAllocation = ();
 
-    foreach my $priority ( sort keys %{ $self->accountPoolChildren } ) {
-        foreach my $customerId ( keys %{ $self->accountPoolChildren->{$priority} } ) {
-            ###Get hw specific inst sw if lic has hw serial specified.
-            if ( defined $self->license->cpuSerial ) {
-                my @tempInstSwsHwSpecific = $self->getPotentialInstalledSoftwaresHwSpecific($customerId);
-                push @instSwsToAttemptAllocation, @tempInstSwsHwSpecific;
-            }
+	foreach my $priority ( sort keys %{ $self->accountPoolChildren } ) {
+		foreach
+		  my $customerId ( keys %{ $self->accountPoolChildren->{$priority} } )
+		{
+			###Get hw specific inst sw if lic has hw serial specified.
+			if ( defined $self->license->cpuSerial ) {
+				my @tempInstSwsHwSpecific =
+				  $self->getPotentialInstalledSoftwaresHwSpecific($customerId);
+				push @instSwsToAttemptAllocation, @tempInstSwsHwSpecific;
+			}
 
-            ###Get non hw specific inst sw unless license is hardware cap type. 34 - Physical cpu
-            unless ( $self->license->capType eq '34' ) {
-                my @tempInstSws = $self->getPotentialInstalledSoftwares($customerId);
-                push @instSwsToAttemptAllocation, @tempInstSws;
-            }
-        }
-    }
+			###Get non hw specific inst sw unless license is hardware cap type. 34 - Physical cpu
+			unless ( $self->license->capType eq '34' ) {
+				my @tempInstSws =
+				  $self->getPotentialInstalledSoftwares($customerId);
+				push @instSwsToAttemptAllocation, @tempInstSws;
+			}
+		}
+	}
 
-    ###Attempt allocations until free capacity is utilized.
-    foreach my $isId (@instSwsToAttemptAllocation) {
+	###Attempt allocations until free capacity is utilized.
+	foreach my $isId (@instSwsToAttemptAllocation) {
 
-        ###Instantiate inst sw object and recon.
-        my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-        $installedSoftware->id($isId);
-        $installedSoftware->getById( $self->connection );
-        dlog( "installedSoftware=" . $installedSoftware->toString() );
+		###Instantiate inst sw object and recon.
+		my $installedSoftware = new BRAVO::OM::InstalledSoftware();
+		$installedSoftware->id($isId);
+		$installedSoftware->getById( $self->connection );
+		dlog( "installedSoftware=" . $installedSoftware->toString() );
 
-        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-        $softwareLpar->id($installedSoftware->softwareLparId);
-        $softwareLpar->getById( $self->connection );
-        dlog( "softwareLpar=" . $softwareLpar->toString() );
+		my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+		$softwareLpar->id( $installedSoftware->softwareLparId );
+		$softwareLpar->getById( $self->connection );
+		dlog( "softwareLpar=" . $softwareLpar->toString() );
 
-        ###Call recon
-        my $queue = Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar );
-        $queue->add;
-    }
+		###Call recon
+		my $queue =
+		  Recon::Queue->new( $self->connection, $installedSoftware,
+			$softwareLpar );
+		$queue->add;
+	}
 
-    dlog("end attemptAllocations");
+	dlog("end attemptAllocations");
 }
 
 sub getPotentialInstalledSoftwaresHwSpecific {
-    my ( $self, $customerId ) = @_;
-    dlog("begin getPotentialInstalledSoftwaresHwSpecific");
+	my ( $self, $customerId ) = @_;
+	dlog("begin getPotentialInstalledSoftwaresHwSpecific");
 
-    my @ids = ();
+	my @ids = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryPotentialInstalledSoftwaresHwSpecific() );
-    my $sth = $self->connection->sql->{potentialInstalledSoftwaresHwSpecific};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} }
-                        @{ $self->connection->sql->{potentialInstalledSoftwaresHwSpecificFields} } );
-    $sth->execute( $customerId, $self->licSwMap->softwareId, $self->license->cpuSerial );
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryPotentialInstalledSoftwaresHwSpecific() );
+	my $sth = $self->connection->sql->{potentialInstalledSoftwaresHwSpecific};
+	my %rec;
+	$sth->bind_columns(
+		map { \$rec{$_} } @{
+			$self->connection->sql
+			  ->{potentialInstalledSoftwaresHwSpecificFields}
+		  }
+	);
+	$sth->execute( $customerId, $self->licSwMap->softwareId,
+		$self->license->cpuSerial );
 
-    while ( $sth->fetchrow_arrayref ) {
-        logRec( 'dlog', \%rec );
+	while ( $sth->fetchrow_arrayref ) {
+		logRec( 'dlog', \%rec );
 
-        ###Add inst sw id to list.
-        push @ids, $rec{isId};
-    }
-    $sth->finish;
+		###Add inst sw id to list.
+		push @ids, $rec{isId};
+	}
+	$sth->finish;
 
-    dlog("end getPotentialInstalledSoftwaresHwSpecific");
-    return @ids;
+	dlog("end getPotentialInstalledSoftwaresHwSpecific");
+	return @ids;
 }
 
 sub queryPotentialInstalledSoftwaresHwSpecific {
-    my @fields = qw(
-        isId
-    );
-    my $query = '
+	my @fields = qw(
+	  isId
+	);
+	my $query = '
         select
             is.id
         from
@@ -217,37 +233,39 @@ sub queryPotentialInstalledSoftwaresHwSpecific {
             aus.creation_time
         with ur
     ';
-    return ( 'potentialInstalledSoftwaresHwSpecific', $query, \@fields );
+	return ( 'potentialInstalledSoftwaresHwSpecific', $query, \@fields );
 }
 
 sub getPotentialInstalledSoftwares {
-    my ( $self, $customerId ) = @_;
-    dlog("begin getPotentialInstalledSoftwares");
+	my ( $self, $customerId ) = @_;
+	dlog("begin getPotentialInstalledSoftwares");
 
-    my @ids = ();
+	my @ids = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryPotentialInstalledSoftwares() );
-    my $sth = $self->connection->sql->{potentialInstalledSoftwares};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{potentialInstalledSoftwaresFields} } );
-    $sth->execute( $customerId, $self->licSwMap->softwareId );
-    while ( $sth->fetchrow_arrayref ) {
-        logRec( 'dlog', \%rec );
-        dlog( $rec{isId} );
-        ###Add inst sw id to list.
-        push @ids, $rec{isId};
-    }
-    $sth->finish;
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryPotentialInstalledSoftwares() );
+	my $sth = $self->connection->sql->{potentialInstalledSoftwares};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{potentialInstalledSoftwaresFields} } );
+	$sth->execute( $customerId, $self->licSwMap->softwareId );
+	while ( $sth->fetchrow_arrayref ) {
+		logRec( 'dlog', \%rec );
+		dlog( $rec{isId} );
+		###Add inst sw id to list.
+		push @ids, $rec{isId};
+	}
+	$sth->finish;
 
-    dlog("end getPotentialInstalledSoftwares");
-    return @ids;
+	dlog("end getPotentialInstalledSoftwares");
+	return @ids;
 }
 
 sub queryPotentialInstalledSoftwares {
-    my @fields = qw(
-        isId
-    );
-    my $query = '
+	my @fields = qw(
+	  isId
+	);
+	my $query = '
         select
             is.id
         from
@@ -271,124 +289,168 @@ sub queryPotentialInstalledSoftwares {
             aus.creation_time
         with ur
     ';
-    return ( 'potentialInstalledSoftwares', $query, \@fields );
+	return ( 'potentialInstalledSoftwares', $query, \@fields );
 }
 
 sub getScheduleFScope {
-	my $self=shift;
-	my $custId=shift;
-	my $softName=shift;
-	my $hwOwner=shift;
-	my $hSerial=shift;
-	my $hMachineTypeId=shift;
-	my $slName=shift;
-	
-	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
-	my $scopeToReturn=undef;
-	
-	$self->connection->prepareSqlQueryAndFields(
-		$self->queryScheduleFScope() );
+	my $self           = shift;
+	my $custId         = shift;
+	my $softName       = shift;
+	my $hwOwner        = shift;
+	my $hSerial        = shift;
+	my $hMachineTypeId = shift;
+	my $slName         = shift;
+
+	my $prioFound = 0
+	  ; # temporary value with the priority of schedule F found, so we don't have to run several cycles
+	my $scopeToReturn = undef;
+
+	$self->connection->prepareSqlQueryAndFields( $self->queryScheduleFScope() );
 	my $sth = $self->connection->sql->{ScheduleFScope};
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
 	$sth->execute( $custId, $softName );
-	
+
 #	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
-	
+
 	while ( $sth->fetchrow_arrayref ) {
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
-			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HOSTNAME" )
+			&& ( $slName eq $recc{hostname} )
+			&& ( $prioFound == 3 ) )
+		{
+			wlog(   "ScheduleF HOSTNAME = " . $slName
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=3;
+		if (   ( $recc{level} eq "HOSTNAME" )
+			&& ( $slName eq $recc{hostname} )
+			&& ( $prioFound < 3 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 3;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
-			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HWBOX" )
+			&& ( $hSerial        eq $recc{hSerial} )
+			&& ( $hMachineTypeId eq $recc{hMachineTypeId} )
+			&& ( $prioFound == 2 ) )
+		{
+			wlog(   "ScheduleF HWBOX = " . $hSerial
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=2;
+		if (   ( $recc{level} eq "HWBOX" )
+			&& ( $hSerial        eq $recc{hSerial} )
+			&& ( $hMachineTypeId eq $recc{hMachineTypeId} )
+			&& ( $prioFound < 2 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 2;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
-			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
+		if (   ( $recc{level} eq "HWOWNER" )
+			&& ( $hwOwner eq $recc{hwOwner} )
+			&& ( $prioFound == 1 ) )
+		{
+			wlog(   "ScheduleF HWOWNER =" . $hwOwner
+				  . " for customer="
+				  . $custId
+				  . " and software="
+				  . $softName
+				  . " found twice!" );
 			return undef;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=1;
+		if (   ( $recc{level} eq "HWOWNER" )
+			&& ( $hwOwner eq $recc{hwOwner} )
+			&& ( $prioFound < 1 ) )
+		{
+			$scopeToReturn = $recc{scopeName};
+			$prioFound     = 1;
 		}
-		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+		$scopeToReturn = $recc{scopeName}
+		  if ( ( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ) );
 	}
-	
-	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
-	
+
+	dlog(
+"custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound"
+	);
+
 	return ( $scopeToReturn, $prioFound );
 }
 
 sub getLicenseAllocationsData {
-    my $self = shift;
-    dlog("begin getLicenseAllocationsData");
+	my $self = shift;
+	dlog("begin getLicenseAllocationsData");
 
-    my %data = ();
+	my %data = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryLicenseAllocationsData() );
-    my $sth = $self->connection->sql->{licenseAllocationsData};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{licenseAllocationsDataFields} } );
-    $sth->execute( $self->license->id );
-    while ( $sth->fetchrow_arrayref ) {
-        logRec( 'dlog', \%rec );
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryLicenseAllocationsData() );
+	my $sth = $self->connection->sql->{licenseAllocationsData};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{licenseAllocationsDataFields} } );
+	$sth->execute( $self->license->id );
+	while ( $sth->fetchrow_arrayref ) {
+		logRec( 'dlog', \%rec );
 
-        ###Instantiate lic allocation view object and populate.
-        my $lav = new Recon::OM::LicenseAllocationView();
-        $lav->expireAge( $rec{expireAge} );
-        $lav->lrmCapType( $rec{lrmCapType} );
-        $lav->lrmUsedQuantity( $rec{lrmUsedQuantity} );
-        $lav->machineLevel( $rec{machineLevel} );
-        $lav->rId( $rec{rId} );
-        $lav->lrmId( $rec{lrmId} );
-        $lav->rtName( $rec{rtName} );
-        $lav->rtIsManual( $rec{rtIsManual} );
-        $lav->isId( $rec{isId} );
-        $lav->isSoftwareId( $rec{isSoftwareId} );
-        $lav->slCustomerId( $rec{slCustomerId} );
-        $lav->slName( $rec{slName} );
-        $lav->hId( $rec{hId} );
-        $lav->hSerial( $rec{hSerial} );
-        $lav->hProcessorCount ( $rec{hProcessorCount} );
-        $lav->hServerType ( $rec{hServerType} );
-        $lav->hlName( $rec{hlName} );
-        $lav->mtType( $rec{mtType} );
-#        $lav->scopeName( $rec{scopeName} );
-        $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
-        
-       	my ( $scopename_temp, undef ) = getScheduleFScope( 	$self,
-															$rec{slCustomerId}, # customer ID from SW LPAR
-															$rec{swName}, # software name
-															$rec{hOwner}, # hardware owner ID
-															$rec{hSerial}, # hardware serial
-															$rec{mtType}, #machine type
-															$rec{slName} #hostname
-															  );
-															  
-		$lav->scopeName ( $scopename_temp );
+		###Instantiate lic allocation view object and populate.
+		my $lav = new Recon::OM::LicenseAllocationView();
+		$lav->expireAge( $rec{expireAge} );
+		$lav->lrmCapType( $rec{lrmCapType} );
+		$lav->lrmUsedQuantity( $rec{lrmUsedQuantity} );
+		$lav->machineLevel( $rec{machineLevel} );
+		$lav->rId( $rec{rId} );
+		$lav->lrmId( $rec{lrmId} );
+		$lav->rtName( $rec{rtName} );
+		$lav->rtIsManual( $rec{rtIsManual} );
+		$lav->isId( $rec{isId} );
+		$lav->isSoftwareId( $rec{isSoftwareId} );
+		$lav->slCustomerId( $rec{slCustomerId} );
+		$lav->slName( $rec{slName} );
+		$lav->hId( $rec{hId} );
+		$lav->hSerial( $rec{hSerial} );
+		$lav->hProcessorCount( $rec{hProcessorCount} );
+		$lav->hServerType( $rec{hServerType} );
+		$lav->hlName( $rec{hlName} );
+		$lav->mtType( $rec{mtType} );
 
-        ###Add lic allocation view object to data hash.
-        $data{ $rec{rId} } = $lav;
-    }
-    $sth->finish;
+		#        $lav->scopeName( $rec{scopeName} );
+		$lav->slComplianceMgmt( $rec{slComplianceMgmt} );
+		$lav->guid( $rec{guid} );
 
-    dlog("end getLicenseAllocationsData");
-    $self->licenseAllocationData( \%data );
+		my ( $scopename_temp, undef ) = getScheduleFScope(
+			$self,
+			$rec{slCustomerId},    # customer ID from SW LPAR
+			$rec{swName},          # software name
+			$rec{hOwner},          # hardware owner ID
+			$rec{hSerial},         # hardware serial
+			$rec{mtType},          #machine type
+			$rec{slName}           #hostname
+		);
+
+		$lav->scopeName($scopename_temp);
+
+		###Add lic allocation view object to data hash.
+		$data{ $rec{rId} } = $lav;
+	}
+	$sth->finish;
+
+	dlog("end getLicenseAllocationsData");
+	$self->licenseAllocationData( \%data );
 }
 
 sub queryScheduleFScope {
-	# this needs to be updated if there ever is a level other than HOSTNAME HWBOX HWOWNER PRODUCT, that does not alphabetically
-	# fit into the correct priority-spot
+
+# this needs to be updated if there ever is a level other than HOSTNAME HWBOX HWOWNER PRODUCT, that does not alphabetically
+# fit into the correct priority-spot
 	my @fields = qw(
 	  hwOwner
 	  hSerial
@@ -418,41 +480,42 @@ sub queryScheduleFScope {
 	    sf.status_id = 2
 	  with ur
 	';
-	return('ScheduleFScope', $query, \@fields );
-	
+	return ( 'ScheduleFScope', $query, \@fields );
+
 }
 
 sub queryLicenseAllocationsData {
-    my @fields = qw(
-        rId
-        lrmId
-        lrmCapType
-        lrmUsedQuantity
-        machineLevel
-        expireAge
-        rtName
-        rtIsManual
-        isId
-        isSoftwareId
-        slCustomerId
-        slName
-        swName
-        hId
-        hSerial
-        hProcessorCount
-        hCpuMIPS
-        hCpuGartnerMIPS
-        hCpuMSU
-        hOwner
-        hServerType
-        hlName
-        hlPartMIPS
-        hlPartGartnerMIPS
-        hlPartMSU
-        mtType
-        slComplianceMgmt
-    );
-    my $query = '
+	my @fields = qw(
+	  rId
+	  lrmId
+	  lrmCapType
+	  lrmUsedQuantity
+	  machineLevel
+	  expireAge
+	  rtName
+	  rtIsManual
+	  isId
+	  isSoftwareId
+	  slCustomerId
+	  slName
+	  swName
+	  hId
+	  hSerial
+	  hProcessorCount
+	  hCpuMIPS
+	  hCpuGartnerMIPS
+	  hCpuMSU
+	  hOwner
+	  hServerType
+	  hlName
+	  hlPartMIPS
+	  hlPartGartnerMIPS
+	  hlPartMSU
+	  mtType
+	  slComplianceMgmt
+	  guid
+	);
+	my $query = '
         select
             r.id
             ,ul.id
@@ -481,6 +544,7 @@ sub queryLicenseAllocationsData {
             ,hl.part_msu
             ,mt.type
             ,c.sw_compliance_mgmt
+            ,kbd.guid
         from
         	used_license ul
         	join license l on l.id = ul.license_id
@@ -495,136 +559,137 @@ sub queryLicenseAllocationsData {
             join hardware_lpar hl on hl.id = hsc.hardware_lpar_id
             join hardware h on h.id = hl.hardware_id
             join machine_type mt on mt.id = h.machine_type_id
+            join kb_definition kbd on kbd.id = is.software_id
         where
             ul.license_id = ?
         with ur
     ';
-    return ( 'licenseAllocationsData', $query, \@fields );
+	return ( 'licenseAllocationsData', $query, \@fields );
 }
 
 sub alertLogicExpiredMaint {
-    my $self = shift;
-    dlog("begin alertLogicExpiredMaint");
+	my $self = shift;
+	dlog("begin alertLogicExpiredMaint");
 
-    ###Instantiate alert object and get if exists.
-    my $alert = new Recon::OM::AlertExpiredMaint();
-    $alert->licenseId( $self->license->id );
-    $alert->getByBizKey( $self->connection );
-    dlog( "alert=" . $alert->toString() );
+	###Instantiate alert object and get if exists.
+	my $alert = new Recon::OM::AlertExpiredMaint();
+	$alert->licenseId( $self->license->id );
+	$alert->getByBizKey( $self->connection );
+	dlog( "alert=" . $alert->toString() );
 
-    ###Determine if there is an open alert.
-    my $isOpenAlert = 0;
-    if ( defined $alert->id ) {
-        if ( $alert->open == 1 ) {
-            $isOpenAlert = 1;
-        }
-    }
-    dlog( "isOpenAlert=" . $isOpenAlert );
+	###Determine if there is an open alert.
+	my $isOpenAlert = 0;
+	if ( defined $alert->id ) {
+		if ( $alert->open == 1 ) {
+			$isOpenAlert = 1;
+		}
+	}
+	dlog( "isOpenAlert=" . $isOpenAlert );
 
-    ###Determine if the maint for this sw lpar is expired.
-    my $isMaintExpired = $self->isMaintExpired;
-    dlog( "isMaintExpired" . $isMaintExpired );
+	###Determine if the maint for this sw lpar is expired.
+	my $isMaintExpired = $self->isMaintExpired;
+	dlog( "isMaintExpired" . $isMaintExpired );
 
-    ###Perform alert logic.
+	###Perform alert logic.
 
-    ###CUST=A
-    if (    $self->customer->status eq 'ACTIVE'
-         && $self->customer->swLicenseMgmt eq 'YES'
-         && $self->license->status         eq 'ACTIVE'
-         && $isMaintExpired == 1 )
-    {
-        if ( $isOpenAlert == 0 ) {
-            dlog("CUST=A,SWLM=1,LIC=A,!VALID,OPEN=0");
+	###CUST=A
+	if (   $self->customer->status eq 'ACTIVE'
+		&& $self->customer->swLicenseMgmt eq 'YES'
+		&& $self->license->status         eq 'ACTIVE'
+		&& $isMaintExpired == 1 )
+	{
+		if ( $isOpenAlert == 0 ) {
+			dlog("CUST=A,SWLM=1,LIC=A,!VALID,OPEN=0");
 
-            ###Open alert.
-            $self->openAlertExpiredMaint($alert);
-        }
-    }
-    else {
-        if ( $isOpenAlert == 1 ) {
-            dlog("CUST=I,OPEN=1");
+			###Open alert.
+			$self->openAlertExpiredMaint($alert);
+		}
+	}
+	else {
+		if ( $isOpenAlert == 1 ) {
+			dlog("CUST=I,OPEN=1");
 
-            ###Close alert.
-            $self->closeAlertExpiredMaint($alert);
-        }
-    }
+			###Close alert.
+			$self->closeAlertExpiredMaint($alert);
+		}
+	}
 
-    dlog("end alertLogicExpiredMaint");
+	dlog("end alertLogicExpiredMaint");
 }
 
 sub openAlertExpiredMaint {
-    my ( $self, $alert ) = @_;
-    dlog("begin openAlertExpiredMaint");
+	my ( $self, $alert ) = @_;
+	dlog("begin openAlertExpiredMaint");
 
-    if ( defined $alert->id ) {
-        $self->recordAlertExpiredMaintHistory($alert);
-    }
-    $alert->creationTime( currentTimeStamp() );
-    $alert->comments('Auto Open');
-    $alert->open(1);
-    $alert->save( $self->connection );
+	if ( defined $alert->id ) {
+		$self->recordAlertExpiredMaintHistory($alert);
+	}
+	$alert->creationTime( currentTimeStamp() );
+	$alert->comments('Auto Open');
+	$alert->open(1);
+	$alert->save( $self->connection );
 
-    dlog("end openAlertExpiredMaint");
+	dlog("end openAlertExpiredMaint");
 }
 
 sub closeAlertExpiredMaint {
-    my ( $self, $alert ) = @_;
-    dlog("begin closeAlertExpiredMaint");
+	my ( $self, $alert ) = @_;
+	dlog("begin closeAlertExpiredMaint");
 
-    if ( defined $alert->id ) {
-        $self->recordAlertExpiredMaintHistory($alert);
-    }
-    else {
-        $alert->creationTime( currentTimeStamp() );
-    }
-    $alert->comments('Auto Close');
-    $alert->open(0);
-    $alert->save( $self->connection );
+	if ( defined $alert->id ) {
+		$self->recordAlertExpiredMaintHistory($alert);
+	}
+	else {
+		$alert->creationTime( currentTimeStamp() );
+	}
+	$alert->comments('Auto Close');
+	$alert->open(0);
+	$alert->save( $self->connection );
 
-    dlog("end closeAlertExpiredMaint");
+	dlog("end closeAlertExpiredMaint");
 }
 
 sub recordAlertExpiredMaintHistory {
-    my ( $self, $alert ) = @_;
-    my $history = new Recon::OM::AlertExpiredMaintHistory();
-    $history->alertExpiredMaintId( $alert->id );
-    $history->creationTime( $alert->creationTime );
-    $history->comments( $alert->comments );
-    $history->open( $alert->open );
-    $history->recordTime( $alert->recordTime );
-    $history->save( $self->connection );
+	my ( $self, $alert ) = @_;
+	my $history = new Recon::OM::AlertExpiredMaintHistory();
+	$history->alertExpiredMaintId( $alert->id );
+	$history->creationTime( $alert->creationTime );
+	$history->comments( $alert->comments );
+	$history->open( $alert->open );
+	$history->recordTime( $alert->recordTime );
+	$history->save( $self->connection );
 }
 
 sub isMaintExpired {
-    my $self = shift;
-    dlog("begin isMaintExpired");
+	my $self = shift;
+	dlog("begin isMaintExpired");
 
-    my $diff;
-    $self->connection->prepareSqlQuery( $self->queryIsMaintExpired() );
-    my $sth = $self->connection->sql->{isMaintExpired};
-    $sth->bind_columns( \$diff );
-    $sth->execute( $self->license->id );
-    $sth->fetchrow_arrayref;
-    $sth->finish;
+	my $diff;
+	$self->connection->prepareSqlQuery( $self->queryIsMaintExpired() );
+	my $sth = $self->connection->sql->{isMaintExpired};
+	$sth->bind_columns( \$diff );
+	$sth->execute( $self->license->id );
+	$sth->fetchrow_arrayref;
+	$sth->finish;
 
-    if ( defined $diff ) {
-        if ( $diff >= 0 ) {
-            return 0;
-        }
-        else {
-            return 1;
-        }
-    }
-    else {
-        return 0;
-    }
+	if ( defined $diff ) {
+		if ( $diff >= 0 ) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
+	else {
+		return 0;
+	}
 
-    dlog("end isMaintExpired");
-    return;
+	dlog("end isMaintExpired");
+	return;
 }
 
 sub queryIsMaintExpired {
-    my $query = '
+	my $query = '
         select
             days(l.expire_date) - days(current timestamp)
         from
@@ -633,43 +698,43 @@ sub queryIsMaintExpired {
             l.id = ?
         with ur
     ';
-    return ( 'isMaintExpired', $query );
+	return ( 'isMaintExpired', $query );
 }
 
 sub connection {
-    my $self = shift;
-    $self->{_connection} = shift if scalar @_ == 1;
-    return $self->{_connection};
+	my $self = shift;
+	$self->{_connection} = shift if scalar @_ == 1;
+	return $self->{_connection};
 }
 
 sub license {
-    my $self = shift;
-    $self->{_license} = shift if scalar @_ == 1;
-    return $self->{_license};
+	my $self = shift;
+	$self->{_license} = shift if scalar @_ == 1;
+	return $self->{_license};
 }
 
 sub customer {
-    my $self = shift;
-    $self->{_customer} = shift if scalar @_ == 1;
-    return $self->{_customer};
+	my $self = shift;
+	$self->{_customer} = shift if scalar @_ == 1;
+	return $self->{_customer};
 }
 
 sub licenseAllocationData {
-    my $self = shift;
-    $self->{_licenseAllocationData} = shift if scalar @_ == 1;
-    return $self->{_licenseAllocationData};
+	my $self = shift;
+	$self->{_licenseAllocationData} = shift if scalar @_ == 1;
+	return $self->{_licenseAllocationData};
 }
 
 sub accountPoolChildren {
-    my $self = shift;
-    $self->{_accountPoolChildren} = shift if scalar @_ == 1;
-    return $self->{_accountPoolChildren};
+	my $self = shift;
+	$self->{_accountPoolChildren} = shift if scalar @_ == 1;
+	return $self->{_accountPoolChildren};
 }
 
 sub licSwMap {
-    my $self = shift;
-    $self->{_licSwMap} = shift if scalar @_ == 1;
-    return $self->{_licSwMap};
+	my $self = shift;
+	$self->{_licSwMap} = shift if scalar @_ == 1;
+	return $self->{_licSwMap};
 }
 
 1;
