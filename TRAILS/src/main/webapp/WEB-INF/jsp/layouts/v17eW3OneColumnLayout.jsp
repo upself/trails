@@ -37,7 +37,11 @@
 	
 		@media only screen and (min-width: 1024px) {
 			#ibm-content-main {
-				width: 980px;
+				width: 760px;
+			}
+			
+			#ibm-content-sidebar{
+				width:220px;
 			}
 		}
 	
@@ -111,13 +115,13 @@
 						<tmp:insertAttribute name="content" />      
 					</div>
 				</div>
-				<!-- CONTENT_BODY_END -->
-			
+				
 				<!-- FEATURES_BEGIN -->
 				<div id="ibm-content-sidebar">
 					<tmp:insertAttribute name="contentSidebar" />
 				</div>
 				<!-- FEATURES_END -->
+				<!-- CONTENT_BODY_END -->
 			</div>
 			<!-- CONTENT_END -->
 	

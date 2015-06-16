@@ -184,7 +184,7 @@ public class NonInstanceServiceEndpoint {
 				nonInstance.setRemoteUser(request.getRemoteUser());
 				nonInstance.setRecordTime(new Date());
 				nonInstanceService.updateNonInstance(nonInstance);
-				return WSMsg.successMessage("Update non instance success");
+				return WSMsg.successMessage("Update Non Instance success");
 			}
 		} else {
 			List<NonInstance> nonInstanceList = nonInstanceService
@@ -207,7 +207,7 @@ public class NonInstanceServiceEndpoint {
 				nonInstance.setRemoteUser(request.getRemoteUser());
 				nonInstance.setRecordTime(new Date());
 				nonInstanceService.saveNonInstance(nonInstance);
-				return WSMsg.successMessage("Save non instance success");
+				return WSMsg.successMessage("Save Non Instance success");
 			}
 		}
 	}

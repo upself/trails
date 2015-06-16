@@ -5,7 +5,7 @@
 	<div class="ibm-col-1-1">
 		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<p>
-				<label for="softwareName_id">
+				<label style="width:30%" for="softwareName_id">
 					Software component:<span class="ibm-required">*</span>
 				</label> 
 				<span> 
@@ -13,7 +13,7 @@
 				</span>
 			</p>
 			<p>
-				<label for="manufacturerName_id">
+				<label style="width:30%" for="manufacturerName_id">
 					Manufacturer:<span class="ibm-required">*</span>
 				</label> 
 				<span> 
@@ -21,7 +21,7 @@
 				</span>
 			</p>
 			<p>
-				<label for="restriction_id">
+				<label style="width:30%" for="restriction_id">
 					Restriction:<span class="ibm-required">*</span>
 				</label> 
 				<span>
@@ -34,7 +34,7 @@
 				</span>
 			</p>
 			<p>
-				<label for="baseOnly_id">
+				<label style="width:30%" for="baseOnly_id">
 					Non Instance based only :<span class="ibm-required">*</span>
 				</label> 
 				<span> 
@@ -47,7 +47,7 @@
 
 			</p>
 			<p>
-				<label for="capacityDesc_id">
+				<label style="width:30%" for="capacityDesc_id">
 					Non Instance capacity type:<span class="ibm-required">*</span>
 				</label> 
 				<span>
@@ -61,7 +61,7 @@
 				</span>
 			</p>
 			<p>
-				<label for="statusId_id">
+				<label style="width:30%" for="statusId_id">
 					Status:<span class="ibm-required">*</span>
 				</label>
 				<span> 
@@ -101,7 +101,7 @@
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Non Instance capacity type</span><span class="ibm-icon"></span></a>
 					</th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col">Operation</th>
+					<th scope="col" style="min-width:180px; text-align:center">Operation</th>
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
@@ -181,17 +181,17 @@ function searchData(){
 					}
 					html += "<td>" + list[i].capacityDesc +"</td>";
 					html += "<td>" + list[i].statusDesc + "</td>";
-					html += "<td>";
+					html += "<td style='text-align:center'>";
 					<s:if test='#admin eq 1'>
 						html += "<p class='ibm-button-link-alternate'>"
-						html += "<a href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
-						html += "<a href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
+						html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
+						html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
 						/* html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"'>Update</a>&nbsp;|&nbsp;";
 						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>"; */
 					</s:if>
 					
 					<s:if test='#admin eq 0'>
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
+						html += "<a class='ibm-btn-small' href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
 					</s:if>
 					
 					html += "</tr>";

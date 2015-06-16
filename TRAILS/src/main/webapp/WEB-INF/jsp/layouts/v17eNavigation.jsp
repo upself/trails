@@ -2,8 +2,7 @@
 <div id="ibm-navigation">
 	<h2 class="ibm-access">Content navigation</h2>
 	<ul id="ibm-primary-links">
-		<li id="ibm-parent-link"><a href="${pageContext.request.contextPath}">TRAILS home</a></li>
-		<li id="ibm-overview"><a href="javascript:void(0)">Menu</a></li>
+		<li id="ibm-overview"><a href="${pageContext.request.contextPath}">TRAILS home</a></li>
 		<li><a href="${pageContext.request.contextPath}/search/home.htm">Search</a></li>
 		<li><a href="${pageContext.request.contextPath}/reports/home.htm">Reports</a></li>
 		<li><a href="${pageContext.request.contextPath}/account/home.htm">Account</a></li>

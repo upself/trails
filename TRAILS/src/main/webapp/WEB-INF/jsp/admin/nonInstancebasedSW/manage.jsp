@@ -111,7 +111,7 @@ function keyup(type) {
 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" />
 			</s:if>
 			<p>
-				<label for="softwareName_id">Software component:
+				<label style="width:30%" for="softwareName_id">Software component:
 					<span class="ibm-required">*</span> 
 				</label> 
 				<span>
@@ -119,7 +119,7 @@ function keyup(type) {
 				</span>
 			</p>
 			<p>
-				<label for="manufacturerName_id"> Manufacturer:
+				<label style="width:30%" for="manufacturerName_id"> Manufacturer:
 					<span class="ibm-required">*</span> 
 					<span class="ibm-item-note"></span>
 				</label> 
@@ -128,7 +128,7 @@ function keyup(type) {
 				</span>
 			</p>
 			<p>
-				<label for="restriction_id"> Restriction:<span class="ibm-required">*</span>
+				<label style="width:30%" for="restriction_id"> Restriction:<span class="ibm-required">*</span>
 				</label> <span> 
 				<select name="restriction" id="restriction_id">
 					<option value="">Please select one</option>
@@ -139,7 +139,7 @@ function keyup(type) {
 				</span>
 			</p>
 			<p>
-				<label for="baseOnly_id"> Non Instance based only :<span class="ibm-required">*</span>
+				<label style="width:30%" for="baseOnly_id"> Non Instance based only :<span class="ibm-required">*</span>
 				</label> <span> <select name="baseOnly" id="baseOnly_id">
 						<option value="">Please select one</option>
 						<option value="1" <s:if test="#request.nonInstanceDisplay.baseOnly eq 1">selected="selected"</s:if> >Y</option>
@@ -149,7 +149,7 @@ function keyup(type) {
 
 			</p>
 			<p>
-				<label for="capacityDesc_id"> Non Instance capacity type:<span class="ibm-required">*</span>
+				<label style="width:30%" for="capacityDesc_id"> Non Instance capacity type:<span class="ibm-required">*</span>
 				</label> 
 				<span>
 					<select name="capacityCode" id="capacityCode_id" style="max-width:270px;">
@@ -161,7 +161,7 @@ function keyup(type) {
 				</span>
 			</p>
 			<p>
-				<label for="statusId_id"> Status:<span class="ibm-required">*</span>
+				<label style="width:30%" for="statusId_id"> Status:<span class="ibm-required">*</span>
 				</label> <span> <select name="statusId" id="statusId_id">
 						<option value="">Please select one</option>
 						<option value="2" <s:if test="#request.nonInstanceDisplay.statusId eq 2">selected="selected"</s:if> >ACTIVE</option>
