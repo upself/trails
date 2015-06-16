@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import com.ibm.asset.trails.domain.Status;
 
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
@@ -33,8 +34,10 @@ public interface NonInstanceService {
 	public List<CapacityType> findCapacityTypeByCode(Integer code);
 	public List<CapacityType> findAllCapacityType();
 
-	public ByteArrayOutputStream parserUpload(FileInputStream fileinput,HttpServletRequest request) throws IOException;
 	public List<NonInstance> findNonInstanceByswIdAndCapacityCode(Long softwareId, Integer capacityCode);
 	public List<NonInstance> findNonInstanceByswIdAndCapacityCodeNotEqId(Long softwareId, Integer capacityCode, Long id);
+	public List<Status> findStatusByDesc(String trim);
+	public List<NonInstance> findBySoftwareNameAndCapacityCode(
+			String softwareName, Integer code);
 
 }
