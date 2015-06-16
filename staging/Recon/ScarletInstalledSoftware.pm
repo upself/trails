@@ -26,7 +26,7 @@ sub new {
 		_scheduleFScopeName => $scheduleFScopeName,
 		_config             => Config::Properties::Simple->new(
 			file => '/opt/staging/v2/config/connectionConfig.txt'
-		  )    
+		)
 	};
 	bless $self, $class;
 }
@@ -110,13 +110,61 @@ sub appendData {
 	push @{ $self->usedLicenses }, $usedLicenseId;
 }
 
-sub httpGetGuids {
+sub existInScarlet {
+	my ( $self, $extSrcId, $guid ) = @_;
+
+	my $swcmLicenseId = undef;
+	if ( $extSrcId =~ /SWCM_(\d*)/ ) {
+		$swcmLicenseId = $1;
+	}
+	else {
+		return 0;
+	}
+
+	my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
+	foreach my $id ( @{$scarletGuids} ) {    
+		return 1 if ( $id eq $guid );
+	}
+
+	return 0;
+}
+
+sub httpGetScarletGuids {
+	my ( $self, $swcmLicenseId, $guid ) = @_;
+
+	my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
+	dlog("GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId");
+	my $uri = URI->new($scarletGuidsApi);
+	$uri->query_form(
+		'componentGuid' => $guid,
+		'licenseId'     => $swcmLicenseId
+	);
+
+	my $ua = LWP::UserAgent->new;
+	$ua->timeout(10);
+	$ua->env_proxy;
+
+	my $response = $ua->get($uri);
+
+	my $scarletGuids = [];
+	if ( $response->is_success ) {
+		my $json  = new JSON;
+		my $jsObj = $json->decode( $response->decoded_content );
+		$scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
+		dlog( 'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
+	}
+	else {
+		wlog( 'scarlet requesting failed: ' . $response->status_line );
+	}
+
+	return $scarletGuids;
+}
+
+sub setUpGuidsFromScarlet {
 
 	my ( $self, $installedSoftwareId ) = @_;
 
 	my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
-
-	my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
 
 	foreach my $extSrcId ( @{ $self->extSrcIds } ) {
 		my $swcmLicenseId = undef;
@@ -128,32 +176,7 @@ sub httpGetGuids {
 			next;
 		}
 
-		dlog(
-			"GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId"
-		);
-		my $uri = URI->new($scarletGuidsApi);
-		$uri->query_form(
-			'componentGuid' => $guid,
-			'licenseId'     => $swcmLicenseId
-		);
-
-		my $ua = LWP::UserAgent->new;
-		$ua->timeout(10);
-		$ua->env_proxy;
-
-		my $response = $ua->get($uri);
-
-		my $scarletGuids = [];
-		if ( $response->is_success ) {
-			my $json  = new JSON;
-			my $jsObj = $json->decode( $response->decoded_content );
-			$scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
-			dlog(
-				'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
-		}
-		else {
-			wlog( 'scarlet requesting failed: ' . $response->status_line );
-		}
+		my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
 
 		foreach my $id ( @{$scarletGuids} ) {
 			next if ( $id eq $guid );
@@ -191,7 +214,7 @@ sub tryToReconcile {
 
 	my ( $self, $installedSoftware ) = @_;
 
-	$self->httpGetGuids( $installedSoftware->id );
+	$self->setUpGuidsFromScarlet( $installedSoftware->id );
 
 	my $foundQty = scalar keys %{ $self->guids };
 	if ( $foundQty <= 0 ) {
