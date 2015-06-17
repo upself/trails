@@ -240,6 +240,7 @@ sub getData {
         $license->swcmRecordTime( $rec{recordTime} );
         $license->agreementType( $rec{agreementType} );
         $license->lparName($rec{lparName});
+        $license->pid($rec{pid});
 
 		###Add the license to the list
 		if ( !exists $licenseList{$key} ) {
@@ -327,6 +328,7 @@ sub querySWCMLicenseData {
         agreementType
         environment
         lparName
+        pid
     );
     my $query = '
         select
@@ -355,6 +357,7 @@ sub querySWCMLicenseData {
             ,a.lic_agree_type
             ,a.environment
             ,c.name
+            ,ltrim(rtrim(a.LIC_SW_PROD_PID))
         from
             swlm.lics2trails5 a 
         left outer join swlm.cpu2trails b
@@ -407,6 +410,7 @@ sub querySWCMLicenseDeltaData {
         agreementType
         environment
         lparName
+        pid
     );
     my $query = '
         select
@@ -435,6 +439,7 @@ sub querySWCMLicenseDeltaData {
             ,a.lic_agree_type
             ,a.environment
             ,c.name
+            ,ltrim(rtrim(a.LIC_SW_PROD_PID))
         from
             swlm.lics2trails5 a 
             left outer join swlm.cpu2trails b

@@ -76,6 +76,26 @@ public class InstalledSoftware extends OrmBase {
 	private Integer userCount;
 	
 	private String comment;
+	
+	//ab added sprint9 story 27296
+	private InstalledSaProduct installedSaProduct;
+	private InstalledTadz installedTadz;
+
+	public InstalledTadz getInstalledTadz() {
+		return installedTadz;
+	}
+
+	public void setInstalledTadz(InstalledTadz installedTadz) {
+		this.installedTadz = installedTadz;
+	}
+
+	public InstalledSaProduct getInstalledSaProduct() {
+		return installedSaProduct;
+	}
+
+	public void setInstalledSaProduct(InstalledSaProduct installedSaProduct) {
+		this.installedSaProduct = installedSaProduct;
+	}
 
 	public String getKeyManaged() {
 		String keyManaged = "No";

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 
@@ -104,7 +105,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
 	private final String[] LICENSE_COLUMN_HEADERS = { "Primary Component",
-			"Catalog match", "License Name", "Capacity type",
+			"Catalog match", "License Name", "Software product PID", "Capacity type",
 			"Environment","Total qty", "Available qty", "Expiration date", "PO number",
 			"Serial number", "License owner", "SWCM ID", "Pool",
 			"Record date/time" };
@@ -152,6 +153,9 @@ public class ReportServiceImpl implements ReportService {
 	private final String CAUSE_CODE_SUMMARY_REPORT_NAME = "Cause Code Summary Report";
 	private final String[] CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS = {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
+	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
+	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
+			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -958,7 +962,7 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked)
 			throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
+		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID as swproPID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
@@ -1045,7 +1049,7 @@ public class ReportServiceImpl implements ReportService {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
 					.append(lsBaseWhereClause).append(" ");
 		}
-		lsbSql.append("group by COALESCE(S.software_name, L.Full_Desc), CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
+		lsbSql.append("group by COALESCE(S.software_name, L.Full_Desc), CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
 		lsbSql.append("ORDER BY Product_Name ASC");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())
@@ -1345,6 +1349,24 @@ public class ReportServiceImpl implements ReportService {
 		}
 		lsrReport.close();
 	}
+	
+	
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		printHeader(NON_INSTANCE_REPORT_NAME, null,
+				NON_INSTANCE_REPORT_COLUMN_HEADERS, pPrintWriter);
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate())
+				.createSQLQuery(
+						"SELECT sw.SOFTWARE_NAME, mf.NAME, non.RESTRICTION, ct.DESCRIPTION, CASE non.BASE_ONLY WHEN 1 THEN 'Y' ELSE 'N' END, st.DESCRIPTION, non.REMOTE_USER, non.RECORD_TIME FROM EAADMIN.NON_INSTANCE non, EAADMIN.SOFTWARE sw, EAADMIN.MANUFACTURER mf, EAADMIN.CAPACITY_TYPE ct, EAADMIN.STATUS st WHERE non.SOFTWARE_ID = sw.SOFTWARE_ID AND non.MANUFACTURER_ID = mf.ID AND non.CAPACITY_TYPE_CODE = ct.CODE AND non.STATUS_ID = st.ID")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+		
+		lsrReport.close();
+	}
 
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
@@ -1362,11 +1384,17 @@ public class ReportServiceImpl implements ReportService {
 	private String outputData(Object[] poaData) {
 		StringBuffer lsbData = new StringBuffer();
 		String lsData = null;
+		
+		String regx = "^((-?\\d+.?\\d*)[Ee]{1}(-?\\d+))$";
+		Pattern pattern = Pattern.compile(regx);
 
 		for (int i = 0; poaData != null && i < poaData.length; i++) {
 			lsData = poaData[i] == null ? "" : poaData[i].toString();
-
-			lsbData.append(i == 0 ? "" : "\t").append(lsData);
+			if(pattern.matcher(lsData).matches()){
+				lsbData.append(i == 0 ? "" : "\t").append(lsData + "\f");
+			}else{
+				lsbData.append(i == 0 ? "" : "\t").append(lsData);
+			}
 		}
 
 		return lsbData.toString();
@@ -1434,5 +1462,10 @@ public class ReportServiceImpl implements ReportService {
 			e.printStackTrace();
 		}
 		return dbdeterminativeService.getEntityManager();
+	}
+
+	public void getNonInstanceBasedSW(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		
 	}
 }

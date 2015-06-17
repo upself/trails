@@ -20,12 +20,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "SCHEDULE_F")
 @NamedQueries({
-		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software = :software"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software = :software AND id = :id"),
+		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName"),
+		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName AND id = :id"),
 		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software = :software AND SF.level = :level") })
+		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.level = :level") })
 public class ScheduleF {
 
 	@Id
@@ -343,9 +343,61 @@ public class ScheduleF {
 		return super.equals(o);
 	}
 	/*
-	 * public Set<ScheduleFH> getScheduleFHSet() { return scheduleFHSet; }
+	 * add Keyquals method to filter duplicating record 
+	 *  according to unique key of recon 
 	 * 
-	 * public void setScheduleFHSet(Set<ScheduleFH> scheduleFHSet) {
-	 * this.scheduleFHSet = scheduleFHSet; }
+	 * software_name +level + HW_OWNER+ serial+ machine_type + hostname
 	 */
+	public boolean Keyquals(Object o) {
+		if (o instanceof ScheduleF) {
+
+			ScheduleF other = (ScheduleF) o;
+
+			if (!this.getSoftwareName().equals(other.getSoftwareName())) {
+				return false;
+			}
+
+			if (!this.getLevel().equals(other.getLevel())) {
+				return false;
+			}
+	
+			if (this.getHwOwner() != null && other.getHwOwner() != null) {
+				if (!this.getHwOwner().equals(other.getHwOwner())) {
+					return false;
+				}
+			} else if (!((this.getHwOwner() == null ||this.getHwOwner() == "") && (other.getHwOwner() == null || other.getHwOwner() == ""))) {
+				return false;
+			}
+
+			if (this.getSerial() != null && other.getSerial() != null) {
+				if (!this.getSerial().equals(other.getSerial())) {
+					return false;
+				}
+			} else if (!((this.getSerial() == null || this.getSerial() == "") && (other.getSerial() == null || other.getSerial() == "" ))
+					) {
+				return false;
+			}
+
+			if (this.getMachineType() != null && other.getMachineType() != null) {
+				if (!this.getMachineType().equals(other.getMachineType())) {
+					return false;
+				}
+			} else if (!((this.getMachineType() == null || this.getMachineType() == "" ) && (other.getMachineType() == null || other.getMachineType() == ""))
+					) {
+				return false;
+			}
+
+			if (this.getHostname() != null && other.getHostname() != null) {
+				if (!this.getHostname().equals(other.getHostname())) {
+					return false;
+				}
+			} else if (!((this.getHostname() == null || this.getHostname() == "" ) && ( other.getHostname() == null ||  other.getHostname() == "" ))
+					) {
+				return false;
+			}
+
+			return true;
+		}
+       return super.equals(o);
+	}
 }

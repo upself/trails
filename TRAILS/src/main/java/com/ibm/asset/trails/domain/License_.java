@@ -28,6 +28,7 @@ public class License_ {
 	public static volatile SetAttribute<License, UsedLicenseHistory> usedLicenseHistories;
 	public static volatile SingularAttribute<License, Integer> pool;
 	public static volatile SingularAttribute<License, String> environment;
+	public static volatile SingularAttribute<License, String> swproPID;
 	public static volatile SingularAttribute<License, String> licenseType;
 	public static volatile SingularAttribute<License, Boolean> tryAndBuy;
 }

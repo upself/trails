@@ -30,6 +30,7 @@ sub new {
         ,_agreementType => undef
         ,_environment => undef
         ,_lparName => undef
+        ,_pid => undef
         ,_table => 'license'
         ,_idField => 'id'
     };
@@ -188,6 +189,13 @@ sub equals {
     $equal = 1 if (!defined $self->lparName && !defined $object->lparName);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->pid && defined $object->pid) {
+        $equal = 1 if $self->pid eq $object->pid;
+    }
+    $equal = 1 if (!defined $self->pid && !defined $object->pid);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -335,6 +343,12 @@ sub lparName {
     return $self->{_lparName};
 }
 
+sub pid {
+    my $self = shift;
+    $self->{_pid} = shift if scalar @_ == 1;
+    return $self->{_pid};
+}
+
 sub table {
     my $self = shift;
     $self->{_table} = shift if scalar @_ == 1;
@@ -470,6 +484,11 @@ sub toString {
         $s .= $self->{_lparName};
     }
     $s .= ",";
+    $s .= "pid=";
+    if (defined $self->{_pid}) {
+        $s .= $self->{_pid};
+    }
+    $s .= ",";
     $s .= "table=";
     if (defined $self->{_table}) {
         $s .= $self->{_table};
@@ -514,6 +533,7 @@ sub save {
             ,$self->agreementType
             ,$self->environment
             ,$self->lparName
+            ,$self->pid
         );
         $sth->fetchrow_arrayref;
         $sth->finish;
@@ -544,6 +564,7 @@ sub save {
             ,$self->agreementType
             ,$self->environment
             ,$self->lparName
+            ,$self->pid
             ,$self->id
         );
         $sth->finish;
@@ -580,6 +601,7 @@ sub queryInsert {
             ,agreement_type
             ,environment
             ,lpar_name
+            ,pid
         ) values (
             ?
             ,?
@@ -600,6 +622,7 @@ sub queryInsert {
             ,?
             ,\'STAGING\'
             ,CURRENT TIMESTAMP
+            ,?
             ,?
             ,?
             ,?
@@ -636,6 +659,7 @@ sub queryUpdate {
             ,agreement_type = ?
             ,environment = ?
             ,lpar_name = ?
+            ,pid = ?
         where
             id = ?
     ';
@@ -691,6 +715,7 @@ sub getByBizKey {
     my $agreementType;
     my $environment;
     my $lparName;
+    my $pid;
     $sth->bind_columns(
         \$id
         ,\$customerId
@@ -715,6 +740,7 @@ sub getByBizKey {
         ,\$agreementType
         ,\$environment
         ,\$lparName
+        ,\$pid
     );
     $sth->execute(
         $self->extSrcId
@@ -744,6 +770,7 @@ sub getByBizKey {
     $self->agreementType($agreementType);
     $self->environment($environment);
     $self->lparName($lparName);
+    $self->pid($pid);
 }
 
 sub queryGetByBizKey {
@@ -772,6 +799,7 @@ sub queryGetByBizKey {
             ,agreement_type
             ,environment
             ,lpar_name
+            ,pid
         from
             license
         where
@@ -807,6 +835,7 @@ sub getById {
     my $agreementType;
     my $environment;
     my $lparName;
+    my $pid;
     $sth->bind_columns(
         \$customerId
         ,\$extSrcId
@@ -831,6 +860,7 @@ sub getById {
         ,\$agreementType
         ,\$environment
         ,\$lparName
+        ,\$pid
     );
     $sth->execute(
         $self->id
@@ -860,6 +890,7 @@ sub getById {
     $self->agreementType($agreementType);
     $self->environment($environment);
     $self->lparName($lparName);
+    $self->pid($pid);
     return (defined $found) ? 1 : 0;
 }
 
@@ -889,6 +920,7 @@ sub queryGetById {
             ,agreement_type
             ,environment
             ,lpar_name
+            ,pid
         from
             license
         where

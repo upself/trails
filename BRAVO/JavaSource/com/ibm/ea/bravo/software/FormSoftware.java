@@ -58,6 +58,8 @@ public class FormSoftware extends FormBase {
 	private String action;
 	private String search;
 	private String context;
+	
+	private String changeJustification;
 
 	private SoftwareLpar softwareLpar;
 	//Change Bravo to use Software View instead of Product Object Start
@@ -73,6 +75,26 @@ public class FormSoftware extends FormBase {
 	private String[] validateSelected;
 	private String[] deleteSelected;
 	private String buttonPressed;
+	
+	//ab added sprint9 story 27296
+	private String tadz;
+	private String tlcmz;	
+
+	public String getTadz() {
+		return tadz;
+	}
+
+	public void setTadz(String tadz) {
+		this.tadz = tadz;
+	}
+
+	public String getTlcmz() {
+		return tlcmz;
+	}
+
+	public void setTlcmz(String tlcmz) {
+		this.tlcmz = tlcmz;
+	}
 
 	public FormSoftware() {
 	}
@@ -128,12 +150,22 @@ public class FormSoftware extends FormBase {
 			// get the software
 			InstalledSoftware installedSoftware = DelegateSoftware
 					.getInstalledSoftware(id);
-
+			
 			// if the software isn't valid, return an error
 			if (installedSoftware == null) {
 				// TODO - add error for invalid software id
 				logger.debug("*** installedSoftware is null");
 				return errors;
+			}
+			
+			//ab added sprint9
+			InstalledSaProduct isp = installedSoftware.getInstalledSaProduct();
+			if(isp!=null){
+				setTlcmz("TLCMz");
+			}
+			InstalledTadz it = installedSoftware.getInstalledTadz();
+			if(it!=null){
+				setTadz("TADz");
 			}
 
 			// initialize the customer
@@ -234,7 +266,11 @@ public class FormSoftware extends FormBase {
 			manufacturer = software.getManufacturer().getManufacturerName();
 			licenseLevel = software.getLevel();
 		}
-
+		
+		//ab added sprint9 story 27296
+		if(software!=null && software.getChangeJustification()!=null)
+			this.setChangeJustification(software.getChangeJustification());
+		
 		// initialize form read only fields
 		readOnly.put(Constants.SOFTWARE_NAME, Constants.TRUE);
 		readOnly.put(Constants.MANUFACTURER, Constants.TRUE);
@@ -306,8 +342,8 @@ public class FormSoftware extends FormBase {
 		 * .getDiscrepancyType(DelegateDiscrepancy.VALID)); }
 		 **/
 		// build the list of invalid software categories
-		invalidCategoryList = DelegateSoftware.getInvalidCategoryList();
-
+		this.setInvalidCategoryList(DelegateSoftware.getInvalidCategoryList(this.getChangeJustification()));
+		
 		return errors;
 	}
 
@@ -353,14 +389,20 @@ public class FormSoftware extends FormBase {
 			DiscrepancyType d1 = new DiscrepancyType();
 			d1.setId(DelegateDiscrepancy.NONE);
 			discrepancyTypeList.add(d1);
-
-			DiscrepancyType d2 = new DiscrepancyType();
-			d2.setId(DelegateDiscrepancy.FALSE_HIT);
-			discrepancyTypeList.add(d2);
-
-			DiscrepancyType d3 = new DiscrepancyType();
-			d3.setId(DelegateDiscrepancy.INVALID);
-			discrepancyTypeList.add(d3);
+			
+			//ab added sprint9 story 27299
+			if(!"TADz".equalsIgnoreCase(getTadz()) || (getSoftware()!=null && "SWKBT".equalsIgnoreCase(getSoftware().getRemoteUser()))){
+				DiscrepancyType d2 = new DiscrepancyType();
+				d2.setId(DelegateDiscrepancy.FALSE_HIT);
+				discrepancyTypeList.add(d2);				
+			}
+			
+			//ab added sprint9 story 27296
+			if("TADz".equalsIgnoreCase(getTadz()) || "TLCMz".equalsIgnoreCase(getTlcmz())){
+				DiscrepancyType d3 = new DiscrepancyType();
+				d3.setId(DelegateDiscrepancy.INVALID);
+				discrepancyTypeList.add(d3);				
+			}
 
 			DiscrepancyType d4 = new DiscrepancyType();
 			d4.setId(DelegateDiscrepancy.VALID);
@@ -655,6 +697,7 @@ public class FormSoftware extends FormBase {
 		s += ",manufacturer=" + this.getManufacturer();
 		s += ",licenseLevel=" + this.getLicenseLevel();
 		s += ",discrepancyTypeId=" + this.getDiscrepancyTypeId();
+		s += ",changeJustification=" + this.getChangeJustification();
 		s += ",comment=" + this.getComment();
 		s += ",status=" + this.getStatus();
 		s += ",processorCount=" + this.getProcessorCount();
@@ -686,4 +729,14 @@ public class FormSoftware extends FormBase {
 	public void setButtonPressed(String buttonPressed) {
 		this.buttonPressed = buttonPressed;
 	}
+
+
+	public String getChangeJustification() {
+		return changeJustification;
+	}
+
+	public void setChangeJustification(String changeJustification) {
+		this.changeJustification = changeJustification;
+	}
+	
 }

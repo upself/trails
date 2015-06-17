@@ -2642,7 +2642,9 @@ sub getValidLoaderListOnTAP3Server{
   my @vaildLoaderList = ();
 
   #TAP3 Loader List
-  push @vaildLoaderList,"reconEngine.pl";#1
+#  push @vaildLoaderList,"reconEngine.pl";#1
+  push @vaildLoaderList,"reconEngineInventory.pl";#1
+  push @vaildLoaderList,"reconEngineLicensing.pl";#1a
   push @vaildLoaderList,"softwareToBravo.pl";#2
   push @vaildLoaderList,"ipAddressToBravo.pl";#3
   push @vaildLoaderList,"memModToBravo.pl";#4

@@ -42,6 +42,7 @@ public class Software
     private String manufacturerId;
     private String owner;
     private MicrosoftProductMap microsoftProductMap;
+    private String changeJustification;
     
     //Change Bravo to use Software View instead of Product Object Start
     private String version;
@@ -286,6 +287,22 @@ public class Software
 	   */
 	 public void setProductRole(String productRole) {
 	   this.productRole = productRole;
-	 }	
+	 }
+
+	/**
+	 * @return the changeJustification
+	 */
+	public String getChangeJustification() {
+		return changeJustification;
+	}
+
+	/**
+	 * @param changeJustification the changeJustification to set
+	 */
+	public void setChangeJustification(String changeJustification) {
+		this.changeJustification = changeJustification;
+	}
+	 
+	 
 	//Change Bravo to use Software View instead of Product Object End
 }

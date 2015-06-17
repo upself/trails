@@ -147,7 +147,7 @@ sub validate {
 		|| $self->validateCustomerOwned3rdManaged == 0
 		|| $self->validateIBMOwnedIBMManagedCons == 0
 		|| $self->validateCustOwnedIBMManagedCons == 0
-		|| $self->validateCustomerPendingDecision == 0
+		|| $self->validateManualCustomerOwnedAndManaged == 0
 		|| $self->validateParentInstalledSW == 0
 		|| $self->validateLicenseAllocation == 0 )
 	{
@@ -395,150 +395,148 @@ sub validateBundle {
  return 1;
 }
 
-sub validateCustomerPendingDecision {
+sub validateManualCustomerOwnedAndManaged {
 	my $self = shift;
-	if (( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Pending customer decision'} ) || ( $self->installedSoftwareReconData->rTypeId == 14 ))
+	if($self->installedSoftwareReconData->rTypeId == 2)
 	{
-		dlog('reconciled as pending customer decision');
-##		if ( defined $self->customer->swComplianceMgmt
-##			&& $self->customer->swComplianceMgmt eq 'YES' )
-##		{
-##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
-##				dlog("reconcile validated");
-##				return 1;
-##			}
-
-##		}
-##		dlog(
-## "reconciled as pending customer decision but does not pass validation"
-##		); COMMENTED OUT AS PCD SHOULD NO LONGER BE A VALID RECONCILE, EVER
-		return 0;
+	  dlog("reconciled as manual customer owned and customer managed, it will be broken.");
+	  return 0;
 	}
+	
 	return 1;
 }
 
 sub validateCustomerOwnedAndManaged {
-        my $self = shift;
+    my $self = shift;
 	dlog("begin validateCustomerOwnedAndManaged");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
+   
+	if ((defined $self->installedSoftwareReconData->scopeName)
+		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'))
+    {
+		dlog("scheduleF scope is CUSTOCUSTM");
+		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'Customer owned and customer managed'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned and customer managed'} )
-	{
-		dlog("reconciled as customer owned and customer managed");
-		if ( defined $self->installedSoftwareReconData->scopeName
-			&& $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' )
+		  
+		if ($self->installedSoftwareReconData->rTypeId ==
+			$self->reconcileTypeMap->{'Customer owned and customer managed'})
 		{
-			dlog("reconcile validated");
+			dlog("reconciled as customer owned and customer managed");
 			return 1;
 		}
-
-		dlog("reconciled as custocustm but does not pass validation");
+	   
+		dlog("A different reconcile type than automatic CUSTOCUSTM, so invalid.");
 		return 0;
 	}
-
+	
 	return 1;
 }
 
-sub validateIBMOwned3rdManaged{
-        my $self = shift;
+sub validateIBMOwned3rdManaged {
+    my $self = shift;
 	dlog("begin validateIBMOwned3rdManaged");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
+   
+	if ((defined $self->installedSoftwareReconData->scopeName)
+		&& ($self->installedSoftwareReconData->scopeName eq 'IBMO3RDM'))
+    {
+		dlog("scheduleF scope is IBMO3RDM");
+		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} )
-	{
-		dlog("reconciled as IBM owned, managed by 3rd party");
-		if ( defined $self->installedSoftwareReconData->scopeName
-			&& $self->installedSoftwareReconData->scopeName eq 'IBMO3RDM' )
+		  
+		if ($self->installedSoftwareReconData->rTypeId ==
+			$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'})
 		{
-			dlog("reconcile validated");
+			dlog("reconciled as IBM owned, managed by 3rd party");
 			return 1;
 		}
-
-		dlog("reconciled as IBMO3RDM but does not pass validation");
+	   
+		dlog("A different reconcile type than automatic IBMO3RDM, so invalid.");
 		return 0;
 	}
-
+	
 	return 1;
 }
 
 sub validateCustomerOwned3rdManaged {
-        my $self = shift;
+    my $self = shift;
 	dlog("begin validateCustomerOwned3rdManaged");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
+   
+	if ((defined $self->installedSoftwareReconData->scopeName)
+		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM')
+		&& (defined $self->customer->swComplianceMgmt)
+	    && ($self->customer->swComplianceMgmt eq 'YES'))
+    {
+		dlog("scheduleF scope is CUSTO3RDM");
+		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} )
-	{
-		dlog("reconciled as Customer owned, managed by 3rd party");
-		if (( defined $self->installedSoftwareReconData->scopeName )
-			&& ( $self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM' )
-			&& ( defined $self->customer->swComplianceMgmt )
-			&& ( $self->customer->swComplianceMgmt eq 'YES' ))
+		  
+		if ($self->installedSoftwareReconData->rTypeId ==
+			$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'})
 		{
-			dlog("reconcile validated");
+			dlog("reconciled as customer owned, managed by 3rd party");
 			return 1;
 		}
-
-		dlog("reconciled as CUSTO3RDM but does not pass validation");
+	   
+		dlog("A different reconcile type than automatic CUSTO3RDM, so invalid.");
 		return 0;
 	}
-
+	
 	return 1;
 }
 
 sub validateIBMOwnedIBMManagedCons {
-        my $self = shift;
+    my $self = shift;
 	dlog("begin validateIBMOwnedIBMManagedCons");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
+   
+	if ((defined $self->installedSoftwareReconData->scopeName)
+		&& ($self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO'))
+    {
+		dlog("scheduleF scope is IBMOIBMMSWCO");
+		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} )
-	{
-		dlog("reconciled as IBM owned, IBM managed SW consumption based");
-		if ( defined $self->installedSoftwareReconData->scopeName
-			&& $self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO' )
+		  
+		if ($self->installedSoftwareReconData->rTypeId ==
+			$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'})
 		{
-			dlog("reconcile validated");
+			dlog("reconciled as IBM owned, IBM managed SW consumption based");
 			return 1;
 		}
-
-		dlog("reconciled as IBMOIBMMSWCO but does not pass validation");
+	   
+		dlog("A different reconcile type than automatic IBMOIBMMSWCO, so invalid.");
 		return 0;
 	}
-
+	
 	return 1;
 }
 
 sub validateCustOwnedIBMManagedCons {
-        my $self = shift;
+    my $self = shift;
 	dlog("begin validateCustOwnedIBMManagedCons");
-	dlog( "reconcile type id" . $self->installedSoftwareReconData->rTypeId );
-	dlog( "reconcile map id"
+   
+	if ((defined $self->installedSoftwareReconData->scopeName)
+		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO')
+		&& (defined $self->customer->swComplianceMgmt)
+	    && ($self->customer->swComplianceMgmt eq 'YES'))
+    {
+		dlog("scheduleF scope is CUSTOIBMMSWCO");
+		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} );
-	if ( $self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} )
-	{
-		dlog("reconciled as Customer owned, IBM managed SW consumption based");
-		if (( defined $self->installedSoftwareReconData->scopeName )
-			&& ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO' )
-			&& ( defined $self->customer->swComplianceMgmt )
-			&& ( $self->customer->swComplianceMgmt eq 'YES' ))
+		  
+		if ($self->installedSoftwareReconData->rTypeId ==
+			$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'})
 		{
-			dlog("reconcile validated");
+			dlog("reconciled as Customer owned, IBM managed SW consumption based");
 			return 1;
 		}
-
-		dlog("reconciled as CUSTOIBMMSWCO but does not pass validation");
+	   
+		dlog("A different reconcile type than automatic CUSTOIBMMSWCO, so invalid.");
 		return 0;
 	}
-
+	
 	return 1;
 }
 
@@ -635,7 +633,7 @@ sub validateLicenseAllocation {
    $validation->validateSubCapacity( $rec{licenseType}, undef, 0 );
    
    ###Validate MIPS / Gartner MIPS / MSU, the component count on the hardware box
-   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $self->installedSoftwareReconData->mtType,
+   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $rec{licenseType}, $self->installedSoftwareReconData->mtType,
 			$self->installedSoftwareReconData->rMachineLevel, undef,
 			$self->installedSoftwareReconData->hCpuMIPS, $self->installedSoftwareReconData->hCpuGartnerMIPS, $self->installedSoftwareReconData->hCpuMSU,
 			$self->installedSoftwareReconData->hlPartMIPS, $self->installedSoftwareReconData->hlPartGartnerMIPS, $self->installedSoftwareReconData->hlPartMSU

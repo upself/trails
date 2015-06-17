@@ -114,11 +114,15 @@ sub keepTicking {
             }
         }
         
-        if(scalar @customerIds == 0){
+        if ((scalar @customerIds == 0) && ( $children > 0 )) {
             wlog("$rNo loop of customer array finished will sleep till end of child");
             sleep;
             wlog("$rNo waked up");   
-        }    
+        }
+        elsif ((scalar @customerIds == 0) && ( $children == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
+			wlog("$rNo customer array empty and no children running, waiting 10 minutes before reloading the queue");
+			sleep 600;
+		}
     }
 }
 
@@ -197,7 +201,7 @@ sub newChild {
     my $reconEngine = new Recon::LicensingReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 30;
+    sleep 5;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;

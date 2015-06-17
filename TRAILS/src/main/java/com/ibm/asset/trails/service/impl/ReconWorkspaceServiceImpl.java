@@ -130,12 +130,40 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> reconcileTypeActions() {
-		return reconTypeDAO.reconcileTypeActions();
+		//User Story 23223 - remove "CO/CM" from reconcile type list Start
+		List<Map<String, Object>> reconcileTypeList = reconTypeDAO.reconcileTypeActions();
+		List<Map<String, Object>> reconcileTypeRemoveList = new ArrayList<Map<String, Object>>();
+		
+		for(Map<String, Object> reconcileTypeMap:reconcileTypeList){
+		 if(reconcileTypeMap.get("id")!=null && ((Long)reconcileTypeMap.get("id")).intValue()==2){//judge if reconcile type is manual CO/CM
+			reconcileTypeRemoveList.add(reconcileTypeMap);//add manual CO/CM reconcile type into reconcile type remove list 
+		 }	
+		}
+		
+		reconcileTypeList.removeAll(reconcileTypeRemoveList);//remove manual CO/CM reconcile type from reconcile type list
+		return reconcileTypeList;
+		//User Story 23223 - remove "CO/CM" from reconcile type list End
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public List<ReconcileType> reconcileTypes(boolean isManual) {
-		return reconTypeDAO.reconcileTypes(isManual);
+		//User Story 23223 - remove "CO/CM" from reconcile type list Start
+		List<ReconcileType> reconcileTypeList = reconTypeDAO.reconcileTypes(isManual);
+		
+		if(isManual){
+		   List<ReconcileType> reconcileTypeRemoveList = new ArrayList<ReconcileType>();
+			
+	  	   for(ReconcileType reconcileType: reconcileTypeList){
+		     if(reconcileType.getId()!=null && reconcileType.getId().intValue()==2){//judge if reconcile type is manual CO/CM
+		       reconcileTypeRemoveList.add(reconcileType);//add manual CO/CM reconcile type into reconcile type remove list
+		     }
+		   }
+	  	   
+	  	   reconcileTypeList.removeAll(reconcileTypeRemoveList);//remove manual CO/CM reconcile type from reconcile type list
+		}
+	
+		return reconcileTypeList;
+		//User Story 23223 - remove "CO/CM" from reconcile type list End
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
