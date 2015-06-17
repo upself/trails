@@ -56,10 +56,24 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->hardwareId && defined $object->hardwareId) {
+        $equal = 1 if $self->hardwareId eq $object->hardwareId;
+    }
+    $equal = 1 if (!defined $self->hardwareId && !defined $object->hardwareId);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->status && defined $object->status) {
         $equal = 1 if $self->status eq $object->status;
     }
     $equal = 1 if (!defined $self->status && !defined $object->status);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->action && defined $object->action) {
+        $equal = 1 if $self->action eq $object->action;
+    }
+    $equal = 1 if (!defined $self->action && !defined $object->action);
     return 0 if $equal == 0;
 
     $equal = 0;
