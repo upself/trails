@@ -123,9 +123,9 @@ sub logic {
 				$bravoHardware->getById( $self->bravoConnection );
 				dlog( $bravoHardware->toString );
 				
-				if (( $self->bravoHardware->serial ne $bravoHardware->serial )
+				if (( $self->bravoHardware->serial != $bravoHardware->serial )
 					|| ( $self->bravoHardware->machineTypeId != $bravoHardware->machineTypeId )
-					|| ( $self->bravoHardware->country ne $bravoHardware->country ))
+					|| ( $self->bravoHardware->country != $bravoHardware->country ))
 				{
 					$self->reconDeep(1);
 					$self->reconHardware($bravoHardware);
