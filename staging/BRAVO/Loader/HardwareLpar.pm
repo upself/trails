@@ -82,19 +82,19 @@ sub logic {
 			dlog('staging hw lpar and bravo not same');
 			$self->saveBravoHardwareLpar(1);
 			
-			if ( $bravoHardwareLpar->lparStatus ne $self->bravoHardwareLpar->lparStatus )
+			if ( $bravoHardwareLpar->lparStatus != $self->bravoHardwareLpar->lparStatus )
 			{
 				$self->reconDeep(1);
 			}
-			elsif ( $bravoHardwareLpar->status ne $self->bravoHardwareLpar->status )
+			elsif ( $bravoHardwareLpar->status != $self->bravoHardwareLpar->status )
 			{
 				$self->reconDeep(1);
 			}
-			elsif ( $bravoHardwareLpar->extId ne $self->bravoHardwareLpar->extId )
+			elsif ( $bravoHardwareLpar->extId != $self->bravoHardwareLpar->extId )
 			{
 				$self->reconDeep(1);
 			}			
-			elsif ( $bravoHardwareLpar->techImageId ne $self->bravoHardwareLpar->techImageId )
+			elsif ( $bravoHardwareLpar->techImageId != $self->bravoHardwareLpar->techImageId )
 			{
 				$self->reconDeep(1);
 			}	
@@ -145,7 +145,6 @@ sub logic {
 			$self->bravoHardwareLpar->status('INACTIVE');
 			$self->bravoHardwareLpar->lparStatus('INACTIVE');
 			$self->saveBravoHardwareLpar(1);
-			$self->reconDeep(1);
 		}
 
 	}
