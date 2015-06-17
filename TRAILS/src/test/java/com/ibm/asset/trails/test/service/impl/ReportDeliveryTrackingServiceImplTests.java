@@ -23,7 +23,7 @@ import com.ibm.asset.trails.service.ReportDeliveryTrackingService;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class ReportDeliveryTrackingServiceImplTest {
+public class ReportDeliveryTrackingServiceImplTests {
 
 	@Autowired
 	private ReportDeliveryTrackingService reportDeliveryTrackingService;

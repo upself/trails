@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
 
 	<context:annotation-config />
 	<context:component-scan base-package="com.ibm.asset.trails.dao" />
@@ -19,10 +21,15 @@
 		<property name="locations">
 			<list>
 				<value>
-					file:/opt/trails/conf/hibernate.properties
+					file:c:\\hibernate.properties
 				</value>
-				<value>file:/opt/trails/conf/trails.properties
+				<value>file:c:\\trails.properties
 				</value>
+				<!-- <value>
+					file:/opt/trails/conf/hibernateDST1185.properties
+				</value>
+				<value>file:/opt/trails/conf/trailsDST1185.properties
+				</value> -->
 			</list>
 		</property>
 	</bean>
@@ -49,7 +56,6 @@
 		<property name="password" value="${pd.password}" />
 	</bean>
 
-
 	<bean id="namedParamJdbcTemplate"
 		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
 		<constructor-arg ref="dataSource" />
@@ -58,6 +64,12 @@
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
+	
+	<!-- Constuct H2 in-memory tables and import data -->
+	<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
+        <jdbc:script location="classpath:h2/schema.sql" />
+        <jdbc:script location="classpath:h2/import-data.sql" encoding="UTF-8"/>
+    </jdbc:initialize-database>
 
 	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
 	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />

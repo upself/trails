@@ -42,7 +42,8 @@ public class ScheduleFServiceImplTest {
 	@Test
 	public void testScheduleFfindScheduleFbyCustomerAndSoftware() {
 		Account account = accountService.getAccountByAccountNumber(35400L);
-		Software software = softwareDAO.getSoftwareDetails(218119L);
+		//Software software = softwareDAO.getSoftwareDetails(218119L);
+		Software software = scheduleFService.findSoftwareBySoftwareName(psSoftwareName).get(0);
 		ScheduleF scheduleF = scheduleFService.findScheduleF(account,software);
 		assertNotNull(scheduleF);
 		System.out.println(scheduleF.getSoftwareName().toString());

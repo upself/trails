@@ -22,7 +22,7 @@ import com.ibm.asset.trails.service.ReconService;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class ReconServiceImplTest {
+public class ReconServiceImplTests {
 	@Autowired
 	private ReconService reconService;
 	@Autowired

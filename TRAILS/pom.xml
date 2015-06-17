@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.5</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -265,6 +265,53 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
+		
+		<!-- CXF -->
+		<dependency> 
+		  <groupId>javax.ws.rs</groupId> 
+		  <artifactId>jsr311-api</artifactId> 
+		  <version>1.1.1</version> 
+		</dependency> 
+		
+		<dependency> 
+		  <groupId>org.apache.cxf</groupId> 
+		  <artifactId>cxf-rt-frontend-jaxrs</artifactId> 
+		  <version>2.4.4</version> 
+		  </dependency> 
+		
+		<dependency>
+		  <groupId>org.apache.cxf</groupId>
+		  <artifactId>cxf-rt-transports-http-jetty</artifactId>
+		  <version>2.4.6</version>
+		</dependency>
+		
+		<!-- JSON/XML support for CXF -->
+		<dependency>
+		   <groupId>com.fasterxml.jackson.jaxrs</groupId>
+		   <artifactId>jackson-jaxrs-json-provider</artifactId>
+		   <version>2.3.2</version>
+		</dependency>
+		
+		<dependency>
+		   <groupId>com.fasterxml.jackson.jaxrs</groupId>
+		   <artifactId>jackson-jaxrs-xml-provider</artifactId>
+		   <version>2.3.5</version>
+		</dependency>
+		
+		<!-- HttpClient support-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.1</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 
 		<!-- add mockito test support, add by jackie -->
 		<dependency>
@@ -304,6 +351,13 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
+		</dependency>
+		
+		<!-- add by Pascal for h2-poc -->
+		<dependency>  
+		    <groupId>com.h2database</groupId>  
+		    <artifactId>h2</artifactId>  
+		    <version>1.4.187</version>
 		</dependency>
 	</dependencies>
 

@@ -26,7 +26,7 @@ import com.ibm.asset.trails.service.ReconWorkspaceService;
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class ReconWorkspaceServiceImplTest {
+public class ReconWorkspaceServiceImplTests {
 
 	@Autowired
 	private ReconWorkspaceService reconWorkspaceService;
