@@ -84,7 +84,7 @@
 					<param name="excludeMethods">cancel</param>
 				</interceptor-ref>
 			</interceptor-stack>
-		</interceptors> 
+		</interceptors>
 
 		<default-interceptor-ref name="defaultStack" />
 		<default-action-ref name="home" />
