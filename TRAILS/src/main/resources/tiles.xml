@@ -23,6 +23,7 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/listPvu.htm"
 				icon="false" />
 			<item value="Cause code" link="/admin/alertCause/list.htm" icon="false" />
+			<item value="Non Instance based SW" link="/admin/nonInstancebasedSW/list.htm" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/scheduleF/showUpload.htm">
 			<item value="View" link="/admin/scheduleF/list.htm" icon="scheduleFList" />
@@ -218,6 +219,17 @@
 		<put-attribute name="content" type="template" value="" />
 	</definition>
 
+	<!-- V17E support -->
+	<definition name="tiles.v17e.navigation" template="/WEB-INF/jsp/layouts/v17eNavigation.jsp">
+	</definition>
+	<definition name="tiles.v17e.w3OneColumnLayout" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="contentSidebar" type="template" value="" />
+		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+	</definition>
+	
+	
 	<definition name="tiles.home" extends="tiles.w3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/home.jsp" />
@@ -1190,6 +1202,47 @@
 		<put-attribute name="description" value="TRAILS PVU mapping success" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping success" />
 	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.list"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/list.jsp" />
+		<put-attribute name="contentSidebar" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/nonInstanceSidebar.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.history"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW history" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/history.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.manage"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.update"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+	
+	<definition name="tiles.admin.nonInstancebasedSW.upload"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW upload" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/nonInstancebasedSW/upload.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>	
 
 	<definition name="tiles.account.exception.lparZEROPROC"
 		extends="tiles.w3OneColumnLayout">

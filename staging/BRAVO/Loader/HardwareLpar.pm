@@ -81,53 +81,40 @@ sub logic {
 		if ( !$bravoHardwareLpar->equals( $self->bravoHardwareLpar ) ) {
 			dlog('staging hw lpar and bravo not same');
 			$self->saveBravoHardwareLpar(1);
-			
-			if ( $bravoHardwareLpar->lparStatus ne $self->bravoHardwareLpar->lparStatus )
+
+			if (   $self->bravoHardwareLpar->lparStatus eq 'HWCOUNT'
+				&& $bravoHardwareLpar->lparStatus ne 'HWCOUNT' )
 			{
 				$self->reconDeep(1);
 			}
-			elsif ( $bravoHardwareLpar->status ne $self->bravoHardwareLpar->status )
+			elsif ($bravoHardwareLpar->lparStatus eq 'HWCOUNT'
+				&& $self->bravoHardwareLpar->lparStatus ne 'HWCOUNT' )
 			{
 				$self->reconDeep(1);
 			}
-			elsif ( $bravoHardwareLpar->extId ne $self->bravoHardwareLpar->extId )
-			{
-				$self->reconDeep(1);
-			}			
-			elsif ( $bravoHardwareLpar->techImageId ne $self->bravoHardwareLpar->techImageId )
-			{
-				$self->reconDeep(1);
-			}	
-			elsif ( $bravoHardwareLpar->partGartnerMIPS != $self->bravoHardwareLpar->partGartnerMIPS )
-			{
-				$self->reconDeep(1);
-			}	
-			elsif ( $bravoHardwareLpar->effectiveThreads != $self->bravoHardwareLpar->effectiveThreads )
-			{
-				$self->reconDeep(1);
-			}							
-			elsif ( $bravoHardwareLpar->partMIPS != $self->bravoHardwareLpar->partMIPS )
+
+			if ( $bravoHardwareLpar->partMIPS !=
+				$self->bravoHardwareLpar->partMIPS )
 			{
 				$self->reconDeep(1);
 			}
-			elsif ( $bravoHardwareLpar->partMSU != $self->bravoHardwareLpar->partMSU )
+			elsif ( $bravoHardwareLpar->partMSU !=
+				$self->bravoHardwareLpar->partMSU )
 			{
 				$self->reconDeep(1);
 			}
 
 			if ( defined $self->bravoHardwareLpar->hardwareId ) {
-				
-				###Find the hardware in bravo for this hardware lpar
-				my $bravoHardware = new BRAVO::OM::Hardware();
-				$bravoHardware->id( $bravoHardwareLpar->hardwareId );
-				$bravoHardware->getById( $self->bravoConnection );
-				dlog( $bravoHardware->toString );
-				
-				if (( $self->bravoHardware->serial ne $bravoHardware->serial )
-					|| ( $self->bravoHardware->machineTypeId != $bravoHardware->machineTypeId )
-					|| ( $self->bravoHardware->country ne $bravoHardware->country ))
+				if ( $self->bravoHardwareLpar->hardwareId !=
+					$bravoHardwareLpar->hardwareId )
 				{
 					$self->reconDeep(1);
+
+					my $bravoHardware = new BRAVO::OM::Hardware();
+					$bravoHardware->id( $bravoHardwareLpar->hardwareId );
+					$bravoHardware->getById( $self->bravoConnection );
+					dlog( $bravoHardware->toString );
+
 					$self->reconHardware($bravoHardware);
 				}
 			}
@@ -145,7 +132,6 @@ sub logic {
 			$self->bravoHardwareLpar->status('INACTIVE');
 			$self->bravoHardwareLpar->lparStatus('INACTIVE');
 			$self->saveBravoHardwareLpar(1);
-			$self->reconDeep(1);
 		}
 
 	}
@@ -155,7 +141,6 @@ sub logic {
 
 		###Set to save the hardware
 		$self->saveBravoHardwareLpar(1);
-		$self->reconDeep(1);
 	}
 
 	$self->processHardwareLparEff;
@@ -210,7 +195,11 @@ sub save {
 		$self->addCountToCount( $self->hardwareLparEffLoader );
 	}
 
-	if ( $self->reconDeep == 1 ) {
+	###Call the recon engine if we save anything
+	if ( $self->saveBravoHardwareLpar == 1 ) {
+		$self->recon;
+	}
+	elsif ( $self->reconDeep == 1 ) {
 		$self->recon;
 	}
 	
@@ -321,7 +310,6 @@ sub buildBravoHardwareLpar {
 	$bravoHardwareLpar->customerId( $self->stagingHardwareLpar->customerId );
 	$bravoHardwareLpar->hardwareId( $self->bravoHardware->id );
 	$bravoHardwareLpar->status( $self->stagingHardwareLpar->status );
-	
 
 	my $action     = $self->stagingHardwareLpar->action;
 	my $lparStatus = $self->stagingHardwareLpar->lparStatus;
