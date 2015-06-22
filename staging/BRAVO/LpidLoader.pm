@@ -291,7 +291,7 @@ sub queryLpidData {
     my $query  = '
         select
             l.lpid_id
-            ,l.lpid_name
+            ,substr(l.lpid_name,1,8)
             ,l.major_id
         from
             lpid l
