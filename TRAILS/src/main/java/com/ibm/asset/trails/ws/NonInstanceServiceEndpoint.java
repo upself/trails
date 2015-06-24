@@ -188,7 +188,7 @@ public class NonInstanceServiceEndpoint {
 			}
 		} else {
 			List<NonInstance> nonInstanceList = nonInstanceService
-					.findNonInstanceByswIdAndCapacityCode(sw.getSoftwareId(),
+					.findBySoftwareNameAndCapacityCode(sw.getSoftwareName(),
 							ct.getCode());
 			if (null != nonInstanceList && nonInstanceList.size() > 0) {
 				return WSMsg
@@ -303,12 +303,18 @@ public class NonInstanceServiceEndpoint {
 		ByteArrayOutputStream bos = null;
 		File f = null;
 		FileInputStream fin = null;
+		Boolean error = false;
 		for (Attachment attr : attachments) {
 			DataHandler handler = attr.getDataHandler();
 			try {
 				InputStream stream = handler.getInputStream();
 				MultivaluedMap<String, String> map = attr.getHeaders();
-				f = new File("/tmp/" + getFileName(map));
+				String filename = getFileName(map);
+				String extension = filename.substring(filename.lastIndexOf('.'));
+				if (!(extension.toLowerCase().equals(".xls")||extension.toLowerCase().equals(".cvs")||extension.toLowerCase().equals(".xlsx"))){
+					error = true;
+				}
+				f = new File("/tmp/" + filename);
 				OutputStream out = new FileOutputStream(f);
 				int read = 0;
 				byte[] bytes = new byte[1024];
@@ -321,16 +327,14 @@ public class NonInstanceServiceEndpoint {
 				if (f.exists()) {
 					fin = new FileInputStream(f);
 				} else {
-					return Response
-							.status(Status.BAD_REQUEST)
-							.entity("The file of NonInsance based upload failed!")
-							.build();
+					error = true;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
+    
+		if (!error){
 		try {
 			bos = parserUpload(fin, request);
 		} catch (IOException e) {
@@ -339,9 +343,20 @@ public class NonInstanceServiceEndpoint {
 			try {
 				if (fin != null)
 					fin.close();
-				f.delete();
+				if (f != null) 
+					f.delete();
 			} catch (IOException ex) {
 				ex.printStackTrace();
+			}
+		}
+		} else {
+			try {
+			    bos = new ByteArrayOutputStream();
+				PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos, "UTF-8"),
+						true);
+				pw.println("SEEMS YOU ARE LOADING A FILE WITH NOT ACCEPTABLE FORMAT!");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
 			}
 		}
 
