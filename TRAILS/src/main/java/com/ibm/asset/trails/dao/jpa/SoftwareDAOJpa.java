@@ -2,6 +2,7 @@ package com.ibm.asset.trails.dao.jpa;
 
 import java.util.List;
 
+import javax.persistence.NamedQuery;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -22,19 +23,18 @@ public class SoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Software, Long>
 		return (Software) lQuery.getSingleResult();
 	}
 
-	  @SuppressWarnings("unchecked")
-	    public List<Software> findSoftwareBySoftwareName(String softwareName) {
-	        return entityManager.createNamedQuery("softwareBySoftwareName")
-	                .setParameter("name", softwareName.toUpperCase())
-	                .getResultList();
-	    }
-	  
-	  @SuppressWarnings("unchecked")
-	    public List<Software> findInactiveSoftwareBySoftwareName(String softwareName) {
-	        return entityManager.createNamedQuery("inactiveSoftwareBySoftwareName")
-	                .setParameter("name", softwareName.toUpperCase())
-	                .getResultList();
-	    }
+	@SuppressWarnings("unchecked")
+	public List<Software> findSoftwareBySoftwareName(String softwareName) {
+		return entityManager.createNamedQuery("softwareBySoftwareName")
+				.setParameter("name", softwareName.toUpperCase())
+				.getResultList();
+	}
 
+	@SuppressWarnings("unchecked")
+	public List<Software> findInactiveSoftwareBySoftwareName(String softwareName) {
+		return entityManager.createNamedQuery("inactiveSoftwareBySoftwareName")
+				.setParameter("name", softwareName.toUpperCase())
+				.getResultList();
+	}
 
 }
