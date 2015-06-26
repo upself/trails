@@ -81,12 +81,12 @@ sub getScheduleFScope {
 	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
 	my $scopeToReturn=undef;
 	
-	$self->connection->prepareSqlQueryAndFields(
+	$connection->prepareSqlQueryAndFields(
 		$self->queryScheduleFScope() );
-	my $sth = $self->connection->sql->{ScheduleFScope};
+	my $sth = $connection->sql->{ScheduleFScope};
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
-		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
+		  @{ $connection->sql->{ScheduleFScopeFields} } );
 	$sth->execute( $custId, $softName );
 	
 	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
