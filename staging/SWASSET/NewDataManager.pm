@@ -838,7 +838,8 @@ sub loadManualQueue {
 		$queue->customerId( $rec{customerId} );
 		$queue->softwareLparId( $rec{softwareLparId} );
 		$queue->softwareId( $rec{softwareId} );
-                $queue->hostname( $rec{hostname} );
+        $queue->hostname( $rec{hostname} );
+        $queue->remoteUser( $rec{remoteuser} );
         
 		push @data, $queue;
 	}
@@ -857,6 +858,7 @@ sub queryManualQueue {
 	  softwareLparId
 	  softwareId
 	  hostname
+	  remoteuser
 	);
 
 	my $query = '
@@ -866,6 +868,7 @@ sub queryManualQueue {
             ,a.software_lpar_id
             ,a.software_id
             ,a.hostname
+            ,a.remote_user
         from
             manual_queue a
         where

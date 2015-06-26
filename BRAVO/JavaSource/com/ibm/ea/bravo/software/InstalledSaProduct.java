@@ -23,8 +23,8 @@ public class InstalledSaProduct extends InstalledBase {
     //	private Long id;
 //	private InstalledSoftware installedSoftware;
 	private SaProduct saProduct;
+	
 //	private BankAccount bankAccount;
-
 	/**
 	 * @return Returns the bankAccount.
 	 */

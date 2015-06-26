@@ -60,9 +60,9 @@ if ( $test_flag eq "TESTING" ) {
 }
 else {
 	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILS";
+	$trails_db       = "dbi:DB2:TRAILSPD";
 	$trails_user     = "eaadmin";
-	$trails_password = "Zum49tip";
+	$trails_password = "may2012a";
 }
 
 open LOG, ">>$logFile"; 
@@ -77,8 +77,6 @@ print LOG "Have handle\n";
 
 if ( $opt_i ) {
 	$discrepancyFile = $opt_i;
-	open( INPUTFILE, "<", $discrepancyFile ) or die "Cannot open $discrepancyFile";
-	print LOG "Opened $discrepancyFile \n";
 	$insert_manual_queue = $dbh->prepare(
 	"INSERT INTO EAADMIN.manual_queue
 (ID,SOFTWARE_ID,SOFTWARE_LPAR_ID,CUSTOMER_ID,HOSTNAME,RECORD_TIME,REMOTE_USER,DELETED,COMMENTS) VALUES ( DEFAULT,?,?,?,?,CURRENT TIMESTAMP,?,0,NULL);"
@@ -94,7 +92,7 @@ if ( $opt_i ) {
     JOIN EAADMIN.customer cs on sl.customer_id=cs.customer_id
     WHERE sl.status='ACTIVE'
     AND cs.status ='ACTIVE'
-    AND cs.account_number =?
+    AND cs.account_number =? 
     AND sl.name =?
     with ur");
 
@@ -113,11 +111,16 @@ AND kbd.deleted<>1
 AND sl.status='ACTIVE'
 AND is.status='ACTIVE'
 AND cs.status ='ACTIVE'
-AND cs.account_number =?
+AND cs.account_number =? 
 AND sl.name||si.name =? 
 with ur");
 
-    $get_discrepancy_sw_lpar = $dbh->prepare("SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
+$get_manual_queue = $dbh->prepare("SELECT software_id,software_lpar_id,customer_id,deleted FROM EAADMIN.manual_queue 
+    WHERE software_id=?
+    AND software_lpar_id=?
+    with ur");
+
+   $get_discrepancy_sw_lpar = $dbh->prepare("SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
 sl.name||si.name as slsi_id
 FROM EAADMIN.installed_software is 
 JOIN EAADMIN.product pd       on is.software_id = pd.id
@@ -135,13 +138,34 @@ AND cs.status ='ACTIVE'
 AND cs.account_number =?
 AND sl.id=? 
 with ur ");
-    $get_manual_queue = $dbh->prepare("SELECT software_id,software_lpar_id,customer_id,deleted FROM EAADMIN.manual_queue 
-    WHERE software_id=?
-    AND software_lpar_id=?
-    with ur");
+
+$get_discrepancy_hostnames_queue = $dbh->prepare("
+SELECT sl.id as swlpar_id,sl.name as sl_name,is.id as installedsw_id,pd.id as sw_id,si.name as sw_name,cs.customer_id as customer_id,cs.account_number,
+sl.name||si.name as slsi_id
+FROM EAADMIN.installed_software is 
+JOIN EAADMIN.product pd       on is.software_id = pd.id
+JOIN EAADMIN.software_item  si  on pd.id = si.id
+JOIN EAADMIN.product_info  pi   on pd.id=pi.id
+JOIN EAADMIN.kb_definition kbd  on pd.id=kbd.id
+JOIN EAADMIN.software_lpar sl on sl.id=is.software_lpar_id
+JOIN EAADMIN.customer cs on sl.customer_id=cs.customer_id
+where
+is.status='ACTIVE'
+AND kbd.deleted<>1
+AND sl.status='ACTIVE'
+AND is.status='ACTIVE'
+AND cs.status ='ACTIVE'
+AND is.DISCREPANCY_TYPE_ID=2 
+AND (select count(*) from EAADMIN.INSTALLED_SOFTWARE where SOFTWARE_LPAR_ID=sl.ID and DISCREPANCY_TYPE_ID<>2 )=0
+AND cs.account_number =? 
+AND sl.name = ?
+with ur");
 
 
 	
+
+open( INPUTFILE, "<", $discrepancyFile ) or die "Cannot open $discrepancyFile";
+print LOG "Opened $discrepancyFile \n";
 LINE:	while (<INPUTFILE>) {
 		$dbh->commit;
 		chomp;
@@ -159,21 +183,20 @@ LINE:	while (<INPUTFILE>) {
 		print LOG  "$requester \n" ;
 		print LOG  "$softwareName \n" ;
 
+		my $sth;
         if (!defined $softwareName) {
         	$combineId = $accountNumber.$hostName;
         	print LOG "$combineId \n";
-        	$get_discrepancy_lpar->execute($accountNumber,$hostName);
-        	@row = $get_discrepancy_lpar->fetchrow_array();
+        	$get_discrepancy_hostnames_queue->execute($accountNumber,$hostName);
+        	$sth = $get_discrepancy_hostnames_queue;
         } else {
         	$combineId=$hostName.$softwareName;
         	print LOG "$combineId \n";
 	    	$get_discrepancy_software->execute($accountNumber,$combineId);
-	    	@row = $get_discrepancy_software->fetchrow_array() 
+        	$sth = $get_discrepancy_software;
         }
 
-		
-		
-		if ( @row  )
+while (my @row = $sth->fetchrow_array ) 
 		 {
   
 			$swlparId = $row[0];
@@ -351,10 +374,7 @@ LINE:	while (<INPUTFILE>) {
 			}
 			
 			
-		} else {
-			print LOG "Did not find Discrepancy software combineId : $hostName$softwareName not in active software table --  processing line $count\n";
-			
-		}
+		} 
 $get_discrepancy_lpar->finish;
 $get_discrepancy_software->finish;
 $get_discrepancy_sw_lpar->finish;

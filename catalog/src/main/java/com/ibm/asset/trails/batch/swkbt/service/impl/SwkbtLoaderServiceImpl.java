@@ -168,8 +168,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 
 	public void save(FileType xmlEntity) throws Exception {
 		logger.debug("Saving FileType");
-		boolean islonger = isLonger(xmlEntity.getName(), 88);
-		if (writeDatabase.contentEquals("true") && !islonger) {
+		if (writeDatabase.contentEquals("true") ) {
 			logger.debug("Saving File Type " + xmlEntity.getName());
 			fileService.save(xmlEntity);
 		}else {
@@ -180,13 +179,6 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 	public void save(FileSignatureType xmlEntity) {
 		logger.debug("Saving FileSignatureType");
 	    List<FileType> fileTypes = xmlEntity.getFile();
-		for (Iterator<FileType> it = fileTypes.iterator(); it.hasNext();) {
-			  FileType fileType = it.next();
-		       boolean islonger = isLonger(fileType.getName(), 88);
-		    if (islonger){
-		    	it.remove();
-		    }
-		}
 		if (writeDatabase.contentEquals("true") && !xmlEntity.getFile().isEmpty()) {
 			logger.debug("Saving File Signature Type ");
 			fileSignatureService.save(xmlEntity);
@@ -197,8 +189,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 
 	public void save(FilterSignatureType xmlEntity) {
 		logger.debug("Saving FilterSignatureType");
-		boolean islonger = isLonger(xmlEntity.getPackageVendor(),32);
-		if (writeDatabase.contentEquals("true") && !islonger) {
+		if (writeDatabase.contentEquals("true") ) {
 			logger.debug("Saving Filter Signature Type");
 			filterSignatureService.save(xmlEntity);
 		}else {
@@ -218,8 +209,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 
 	public void save(J2EeApplicationSignatureType xmlEntity) {
 		logger.debug("Saving J2EeApplicationSignatureType");
-		boolean islonger = isLonger(xmlEntity.getName(),125);
-		if (writeDatabase.contentEquals("true") && !islonger) {
+		if (writeDatabase.contentEquals("true") ) {
 			j2eeApplicationSignatureService.save(xmlEntity);
 		}else {
 			logger.debug("Saving disabled");
@@ -229,9 +219,6 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 	public void save(ManufacturerType xmlEntity) {
 		logger.debug("Saving ManufacturerType");
 		logger.info("Saving " + xmlEntity.toString());
-		xmlEntity.setDId(fixLength(xmlEntity.getDId(), 16));
-		xmlEntity.setName(fixLength(xmlEntity.getName(),64));
-		xmlEntity.setWebsite(fixLength(xmlEntity.getWebsite(), 128));
 		if (writeDatabase.contentEquals("true")) {
 			manufacturerService.save(xmlEntity);
 		}else {
@@ -270,9 +257,6 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 	public void save(DistributedProductType xmlEntity) {
 		logger.debug("Saving DistributedProductType");
 		logger.info("Saving " + xmlEntity.toString());
-		xmlEntity.setName(fixLength(xmlEntity.getName(), 255));
-		xmlEntity.setProductId(fixLength(xmlEntity.getProductId(), 255));
-		xmlEntity.setWebsite(fixLength(xmlEntity.getWebsite(), 255));
 		if (xmlEntity.isDeleted().equals(null)){
 			xmlEntity.setDeleted(false);
 		}
@@ -314,7 +298,6 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 	public void save(DistributedReleaseType xmlEntity) {
 		logger.debug("Saving DistributedReleaseType");
 		logger.info("Saving " + xmlEntity.toString());
-		xmlEntity.setWebsite(fixLength(xmlEntity.getWebsite(), 255));
 		if (writeDatabase.contentEquals("true")) {
 
 			releaseService.save(xmlEntity);
@@ -335,7 +318,6 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 
 	public void save(DistributedVersionType xmlEntity) {
 		logger.debug("Saving DistributedVersionType");
-		xmlEntity.setWebsite(fixLength(xmlEntity.getWebsite(), 255));
 		if (writeDatabase.contentEquals("true")) {
 
 			versionService.save(xmlEntity);
@@ -389,40 +371,4 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 		}
 	}
 	
-	public boolean isLonger (String field, int maxLength){
-		if ( field == null ) {
-			return false;
-		}
-		try {
-		byte[] c_byte_array = field.getBytes("UTF-8");
-		if (c_byte_array.length > maxLength) {
-			
-			logger.error("Field too long, skip save of " + field);
-			return true;
-		}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return false ;
-	}
-	
-	public String fixLength(String field, int maxLength) {
-		if ( field == null ) {
-			return null;
-		}
-		try {
-			byte[] c_byte_array = field.getBytes("UTF-8");
-			if (c_byte_array.length > maxLength) {
-				int maxLen = maxLength - 2;
-				String truncString = new String(field.getBytes(
-						"UTF-8"), 0, maxLen, "UTF-8");
-				logger.error("Field too long " + field);
-				return truncString;
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		return field;
-	}
 }
