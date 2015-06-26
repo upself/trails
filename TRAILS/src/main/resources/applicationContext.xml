@@ -96,14 +96,16 @@
 	<bean id="ScheduleFAjaxAction" class="com.ibm.asset.trails.action.ScheduleFAjaxAction">
 		<property name="scheduleFService" ref="scheduleFServiceImpl" />
 	</bean>
-	
+
 	<bean id="nonInstanceAjaxAction" class="com.ibm.asset.trails.action.NonInstanceAjaxAction">
 		<property name="nonInstanceService" ref="nonInstanceServiceImpl" />
 	</bean>
-	
+
 	<bean id="nonInstancebasedSWAction" class="com.ibm.asset.trails.action.NonInstancebasedSWAction">
 		<property name="nonInstanceService" ref="nonInstanceServiceImpl" />
 	</bean>
+
+	<bean id="priorityISVAction" class="com.ibm.asset.trails.action.PriorityISVAction" />
 
 	<bean id="dbdeterminativeService"
 		class="com.ibm.asset.trails.service.impl.DatabaseDeterminativeServiceImpl">
@@ -590,7 +592,7 @@
 
 	<bean id="adminAction" class="com.ibm.asset.trails.action.AdminAction">
 	</bean>
-	
-	<!--web services-->
-  	<import resource="applicationContext-ws.xml"/>
+
+	<!--web services -->
+	<import resource="applicationContext-ws.xml" />
 </beans>
