@@ -5,11 +5,7 @@
 	<s:fielderror />
 </s:if>
 <div class="ibm-columns">
-	<div class="ibm-col-1-1" style="width:100%;float: right">
-		<p class='ibm-button-link-alternate'>
-			<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add</a>
-		</p>
-	</div>
+	
 </div>
 
 
@@ -17,6 +13,11 @@
 
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
+		<div style="float: right">
+			<p class='ibm-button-link-alternate'>
+				<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add</a>
+			</p>
+		</div>
 		<div style="width: 100%; float: left">
 			<div style="width: 30%; float: left">
 				View as Level:
