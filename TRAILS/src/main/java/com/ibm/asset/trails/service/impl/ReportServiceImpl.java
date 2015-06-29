@@ -156,6 +156,9 @@ public class ReportServiceImpl implements ReportService {
 	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
 	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
 			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
+	private final String PRIORITY_ISV_SW_REPORT_NAME = "Priority ISV Software report";
+	private final String[] PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS = {
+			"Manufacturer name", "Level", "CNDB name", "CNDB ID", "Evidence location", "Status", "Business justification", "Remote User", "Record Time" };
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -1350,6 +1353,22 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getPriorityISVSWReport(PrintWriter pPrintWriter) {
+		printHeader(PRIORITY_ISV_SW_REPORT_NAME, null,
+				PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS, pPrintWriter);
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate())
+				.createSQLQuery(
+						"SELECT mf.NAME, isv.LEVEL, case when isv.LEVEL = 'GLOBAL' then 'ALL' else cus.CUSTOMER_NAME end as CUSTOMER_NAME, case when isv.LEVEL = 'GLOBAL' then -1 else cus.CUSTOMER_ID end as CUSTOMER_ID, isv.EVIDENCE_LOCATION, st.DESCRIPTION, isv.BUSINESS_JUSTIFICATION,isv.REMOTE_USER, isv.RECORD_TIME from EAADMIN.PRIORITY_ISV_SW isv inner join EAADMIN.MANUFACTURER mf on isv.MANUFACTURER_ID = mf.ID inner join EAADMIN.STATUS st on isv.STATUS_ID = st.ID left outer join EAADMIN.CUSTOMER cus on isv.CUSTOMER_ID = cus.CUSTOMER_ID")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+		
+		lsrReport.close();
+	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
