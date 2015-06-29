@@ -42,7 +42,7 @@
 					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>Account Name</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
-					<th scope="col"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col"><span>Status</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Remote User</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
