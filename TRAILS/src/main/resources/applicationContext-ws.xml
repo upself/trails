@@ -6,13 +6,13 @@
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint">
-		
-	</bean>
+	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint"/>
+	<bean id="priorityISVSoftwareServiceEndpoint" class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint"/>	
 	
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>
 			<ref bean="nonInstanceServiceEndpoint"/>
+			<ref bean="priorityISVSoftwareServiceEndpoint"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
           <entry key="json" value="application/json"/>
