@@ -81,12 +81,9 @@
 		searchData();
 	});
 
-	$("#download").click(
-			function() {
+	$("#download").click(function() {
 				var levelType = $("#selectLevel option:selected").text();
-				$(this).attr(
-						"href",
-						"${pageContext.request.contextPath}/ws/priorityISV/isv/download";
+				$(this).attr("href","${pageContext.request.contextPath}/ws/priorityISV/isv/download")
 			});
 
 	$("#selectLevel").change(function() {
