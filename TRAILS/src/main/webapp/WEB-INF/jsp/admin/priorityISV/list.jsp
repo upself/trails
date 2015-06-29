@@ -1,20 +1,15 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-
-<h2 style="font-size:24px">Priority ISV SW</h2>
-
-<p style="font-weight: bold">IBM Confidential</p><br>
 <s:if test="hasErrors()">
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
-<p>To edit a Priority ISV SW record, press one of the links below. If you
-	want to add a new record, press the Add link.</p>
-
-<div style="float: right">
-<p class='ibm-button-link-alternate'>
-	<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add</a>
-</p>
+<div class="ibm-columns">
+	<div class="ibm-col-1-1" style="width:100%;float: right">
+		<p class='ibm-button-link-alternate'>
+			<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add</a>
+		</p>
+	</div>
 </div>
 
 
@@ -31,9 +26,9 @@
 					<option value="account">account</option>
 				</select>
 			</div>
-			<div id="ibm-contact-module" style="width: 50%; float: left">
-				<p class="ibm-button-link">
-					<a class="ibm-btn-small" id="download" href="#">Download Priority ISV</a>
+			<div  style="float: right">
+				<p class="ibm-button-link-alternate">
+					<a class="ibm-btn-small" id="download" href="#">Download Report</a>
 				</p>
 			</div>
 		</div>
@@ -42,18 +37,12 @@
 			class="ibm-data-table ibm-sortable-table" summary="Priority ISV list">
 			<thead>
 				<tr>
-					<th scope="col"><span>Manufacturer name</span><span
-						class="ibm-icon"></span></th>
-					<th id="level_th" scope="col" class="ibm-sort"><a href="#sort"><span>Level</span><span
-							class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Account Name</span><span
-						class="ibm-icon"></span></th>
-					<th scope="col"><span>Evidence Location</span><span
-						class="ibm-icon"></span></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span
-							class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Business Justification</span><span
-						class="ibm-icon"></span></th>
+					<th scope="col"><span>Manufacturer name</span><span class="ibm-icon"></span></th>
+					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col"><span>Account Name</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
+					<th scope="col"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Remote User</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
 				</tr>
@@ -97,8 +86,7 @@
 				var levelType = $("#selectLevel option:selected").text();
 				$(this).attr(
 						"href",
-						"${pageContext.request.contextPath}/ws/priorityISV/isv/download?type="
-								+ levelType);
+						"${pageContext.request.contextPath}/ws/priorityISV/isv/download";
 			});
 
 	$("#selectLevel").change(function() {
@@ -268,11 +256,10 @@
 										+ "</td>";
 								html += "<td style='text-align:center'>";
 								html += "<p class='ibm-button-link-alternate'>"
-								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
-										+ list[i].id + "\")'>Update</a>";
-								html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?isvid="
-										+ list[i].id
-										+ "\"); return false;'>View history</a></p>"
+								//html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
+									//	+ list[i].id + "\")'>Update</a>";
+								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?isvid="
+										+ list[i].id + "\"); return false;'>View history</a></p>"
 								html += "</tr>";
 							}
 						}
