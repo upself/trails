@@ -117,4 +117,5 @@ public interface ReportService {
 			throws HibernateException, Exception;
 	
 	void getNonInstanceBasedSWReport(PrintWriter pPrintWriter);
+	void getPriorityISVSWReport(PrintWriter pPrintWriter);
 }
