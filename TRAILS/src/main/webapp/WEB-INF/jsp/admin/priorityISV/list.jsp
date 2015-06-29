@@ -84,7 +84,7 @@
 
 	$("#download").click(function() {
 				var levelType = $("#selectLevel option:selected").text();
-				$(this).attr("href","${pageContext.request.contextPath}/ws/priorityISV/isv/download")
+				$(this).attr("href","${pageContext.request.contextPath}/ws/priorityISV/isv/alldatafile")
 			});
 
 	$("#selectLevel").change(function() {
@@ -143,91 +143,10 @@
 					url : url,
 					type : "GET",
 					dataType : 'json',
-					success : function(XMLHttpRequest, textStatus, errorThrown) {
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus);
 					},
-					error : function(data) {
-						var data = {
-							'status' : '200',
-							'msg' : 'All Priority ISV Software Data have been returned.',
-							'data' : null,
-							'dataList' : [
-									{
-										'id' : 1,
-										'level' : 'ACCOUNT',
-										'customerId' : 16793,
-										'accountName' : 'CEMEX U.A.EMIRATES WORKSTATIONS',
-										'accountNumber' : 169628,
-										'manufacturerId' : 1,
-										'manufacturerName' : 'BARRON MCCANN',
-										'evidenceLocation' : 'Larry Testing Record',
-										'statusId' : 2,
-										'statusDesc' : 'ACTIVE',
-										'businessJustification' : 'Larry Testing Record',
-										'remoteUser' : 'liuhaidl@cn.ibm.com',
-										'recordTime' : 1435250754212
-									},
-									{
-										'id' : 2,
-										'level' : 'GLOBAL',
-										'customerId' : null,
-										'accountName' : null,
-										'accountNumber' : null,
-										'manufacturerId' : 2,
-										'manufacturerName' : 'CENTENNIAL SOFTWARE',
-										'evidenceLocation' : 'Larry Testing Record 2',
-										'statusId' : 2,
-										'statusDesc' : 'ACTIVE',
-										'businessJustification' : 'Larry Testing Record 2',
-										'remoteUser' : 'liuhaidl@cn.ibm.com',
-										'recordTime' : 1435264627248
-									},
-									{
-										'id' : 3,
-										'level' : 'ACCOUNT',
-										'customerId' : 17601,
-										'accountName' : 'STATE STREET - CUST OWNED - SERVER',
-										'accountNumber' : 173709,
-										'manufacturerId' : 3,
-										'manufacturerName' : 'COMPTEL',
-										'evidenceLocation' : 'Larry Testing Record 3',
-										'statusId' : 2,
-										'statusDesc' : 'ACTIVE',
-										'businessJustification' : 'Larry Testing Record 3',
-										'remoteUser' : 'liuhaidl@cn.ibm.com',
-										'recordTime' : 1435264627641
-									},
-									{
-										'id' : 4,
-										'level' : 'GLOBAL',
-										'customerId' : null,
-										'accountName' : null,
-										'accountNumber' : null,
-										'manufacturerId' : 4,
-										'manufacturerName' : 'SECURIT',
-										'evidenceLocation' : 'Larry Testing Record 4',
-										'statusId' : 2,
-										'statusDesc' : 'ACTIVE',
-										'businessJustification' : 'Larry Testing Record 5',
-										'remoteUser' : 'liuhaidl@cn.ibm.com',
-										'recordTime' : 1435264627890
-									},
-									{
-										'id' : 5,
-										'level' : 'ACCOUNT',
-										'customerId' : 7508,
-										'accountName' : 'DIAGEO UAE---AEDIAGEO---DIST',
-										'accountNumber' : 85190,
-										'manufacturerId' : 5,
-										'manufacturerName' : 'BEYONDTRUST',
-										'evidenceLocation' : 'Larry Testing Record 5',
-										'statusId' : 2,
-										'statusDesc' : 'ACTIVE',
-										'businessJustification' : 'Larry Testing Record 5',
-										'remoteUser' : 'liuhaidl@cn.ibm.com',
-										'recordTime' : 1435264628165
-									} ]
-						};
+					success : function(data) {
 						var html = '';
 						if (data.status == 400) {
 							html += "<tr><td colspan='7'>" + data.msg
