@@ -5,11 +5,6 @@
 	<s:fielderror />
 </s:if>
 <div class="ibm-columns">
-	
-</div>
-
-
-<div class="ibm-columns">
 
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
@@ -41,11 +36,14 @@
 					<th scope="col"><span>Manufacturer name</span><span class="ibm-icon"></span></th>
 					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>Account Name</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Account Number</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Status</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Remote User</span><span class="ibm-icon"></span></th>
+					<!-- 
 					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
+					 -->
 				</tr>
 			</thead>
 			<tbody id="priority_isv_list" />
@@ -163,14 +161,14 @@
 								html += "<td id='level_td'>" + list[i].level
 										+ "</td>";
 								html += "<td>" + list[i].accountName + "</td>";
+								html += "<td>" + list[i].accountNumber + "</td>";
 								html += "<td>" + list[i].evidenceLocation
 										+ "</td>";
 								html += "<td>" + list[i].statusDesc + "</td>";
 								html += "<td>" + list[i].businessJustification
 										+ "</td>";
 								html += "<td>" + list[i].remoteUser + "</td>";
-								html += "<td>" + getSmpFormatDateByLong(list[i].recordTime,false)
-										+ "</td>";
+								//html += "<td>" + getSmpFormatDateByLong(list[i].recordTime,false) + "</td>";
 								html += "<td style='text-align:center'>";
 								html += "<p class='ibm-button-link-alternate'>"
 								//html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
@@ -189,9 +187,3 @@
 		window.location.href = url;
 	}
 </script>
-
-
-
-
-
-
