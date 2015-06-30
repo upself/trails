@@ -21,6 +21,9 @@
 			<result type="tiles">tiles.search.home</result>
 		</action>
 
+		<action name="accountJson" method="accountJson" class="searchAccountAction" />
+
+
 	</package>
 
 </struts>
