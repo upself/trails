@@ -8,21 +8,21 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
-			summary="Sortable Priority ISV history table">
+			summary="Priority ISV history table">
 			<caption>
                 <em>Priority ISV History</em>
                 </caption>
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote Users</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
+					<th scope="col"><span>Manufacturer Name</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Level</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>CNDB Name</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>CNDB ID</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Status</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Remote Users</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_history_list">
