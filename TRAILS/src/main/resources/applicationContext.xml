@@ -49,6 +49,7 @@
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
 	<bean id="navigationPreparer" class="com.ibm.tap.trails.navigation.NavigationPreparer" />
+	<bean id="v17eNavigationPreparer" class="com.ibm.tap.trails.navigation.V17eNavigationPreparer" />
 	<bean id="searchService" class="com.ibm.asset.trails.service.impl.SearchServiceImpl" />
 
 	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
