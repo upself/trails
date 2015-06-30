@@ -170,11 +170,11 @@
 								html += "<td>" + list[i].remoteUser + "</td>";
 								//html += "<td>" + getSmpFormatDateByLong(list[i].recordTime,false) + "</td>";
 								html += "<td style='text-align:center'>";
-								html += "<p class='ibm-button-link-alternate'>"
+								html += "<p class='ibm-button-link-alternate'>";
 								//html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 									//	+ list[i].id + "\")'>Update</a>";
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
-										+ list[i].id + "\"); return false;'>View history</a></p>"
+										+ list[i].id + "\"); return false;'>View history</a></p>";
 								html += "</tr>";
 							}
 						}
