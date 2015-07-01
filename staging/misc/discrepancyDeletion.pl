@@ -51,20 +51,11 @@ my ($swlparId,$swlparName,$installedswId,$swId,	$swName,$customerId,$actNumber,$
 my ($swlparIdf,$swlparNamef,$installedswIdf,$swIdf,	$swNamef,$customerIdf,$actNumberf,$hostAndswf)=@_;
 my $timeDate;
 my @row;
-
-if ( $test_flag eq "TESTING" ) {
-	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TEST_DB";
-	$trails_user     = "donnie";
-	$trails_password = "Zum49tip";
-}
-else {
-	$SCHEMA          = "EAADMIN.";
-	$trails_db       = "dbi:DB2:TRAILSPD";
-	$trails_user     = "eaadmin";
-	$trails_password = "may2012a";
-}
-
+my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
+$SCHEMA          = "EAADMIN.";
+$trails_db       = "dbi:DB2:" . $cfg->getProperty('trails.name');;
+$trails_user     = $cfg->getProperty('trails.user');
+$trails_password =  $cfg->getProperty('trails.password');
 open LOG, ">>$logFile"; 
 
 # Connect to the softaudit database
