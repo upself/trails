@@ -91,7 +91,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		
 	@PUT
 	@Path("/isv")
-	@Consumes("application/json") 
+	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg addPriorityISVSoftware(PriorityISVSoftwareDisplay addISV,
 			@Context HttpServletRequest request) {
@@ -166,7 +166,17 @@ public class PriorityISVSoftwareServiceEndpoint {
 			addISVSW.setEvidenceLocation(evidenceLocation);
 			addISVSW.setStatus(status);
 			addISVSW.setBusinessJustification(businessJustification);
-			addISVSW.setRemoteUser(request.getRemoteUser());
+			if(null != request.getRemoteUser()){
+			  addISVSW.setRemoteUser(request.getRemoteUser());
+			}
+			else{
+				if(null!=addISV.getRemoteUser()){
+				  addISVSW.setRemoteUser(addISV.getRemoteUser());
+				}
+				else{
+					addISVSW.setRemoteUser("");	
+				}
+			}
 			addISVSW.setRecordTime(new Date());
 			this.priorityISVSoftwareService.addPriorityISVSoftware(addISVSW);
 			return WSMsg.successMessage("The Priority ISV has been added successfully.");
@@ -175,7 +185,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 
 	@PUT
 	@Path("/isv/{id}")
-	@Consumes("application/json") 
+	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg updatePriorityISVSoftware(@PathParam("id") Long id,
 			PriorityISVSoftwareDisplay updateISV,
@@ -255,7 +265,17 @@ public class PriorityISVSoftwareServiceEndpoint {
 			updateISVSW.setEvidenceLocation(evidenceLocation);
 			updateISVSW.setStatus(status);
 			updateISVSW.setBusinessJustification(businessJustification);
-			updateISVSW.setRemoteUser(request.getRemoteUser());
+			if(null!=request.getRemoteUser()){
+				updateISVSW.setRemoteUser(request.getRemoteUser());
+			}
+			else{
+				if(null!=updateISV.getRemoteUser()){
+					updateISVSW.setRemoteUser(updateISV.getRemoteUser());
+				}
+				else{
+					updateISVSW.setRemoteUser("");
+				}
+			}
 			updateISVSW.setRecordTime(new Date());
 			this.priorityISVSoftwareService.updatePriorityISVSoftware(updateISVSW);
 			return WSMsg.successMessage("The Priority ISV has been updated successfully.");
