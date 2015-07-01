@@ -18,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -108,6 +109,69 @@ public class PriorityISVSoftwareServiceEndpoint {
 	    return WSMsg.successMessage("The Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+".",results);
 	  }
 	}
+	
+	
+	@GET
+	@Path("/isv")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg getPriorityISVSoftwareDisplaysByUniqueKeys(@QueryParam("manufacturerId") Long manufacturerId
+			                                              , @QueryParam("level") String level
+			                                              , @QueryParam("customerId") Long customerId){
+	  
+	  if(null == level || "".equals(level.trim())) {//GLOBAL or ACCOUNT
+			return WSMsg.failMessage("Level is required!");
+	  }
+	  else{
+		 if("ACCOUNT".equals(level.trim().toUpperCase()) && (null == customerId)){//If level is ACCOUNT, then the customer id value is needed
+		     return WSMsg.failMessage("Customer Id is required!");  	   
+		  }	
+	  }
+	  
+	  if(null == manufacturerId){
+		  return WSMsg.failMessage("Manufacturer Id is required!");
+	  }
+		
+	  PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
+	  
+	  if (null != dbPISVSW) {
+		  PriorityISVSoftwareDisplay returnISV = new PriorityISVSoftwareDisplay();
+		  returnISV.setId(dbPISVSW.getId());
+		  returnISV.setLevel(dbPISVSW.getLevel().trim().toUpperCase());
+		  if(dbPISVSW.getAccount()!=null){
+			 returnISV.setCustomerId(dbPISVSW.getAccount().getId());
+			 returnISV.setAccountName(dbPISVSW.getAccount().getName());
+			 returnISV.setAccountNumber(dbPISVSW.getAccount().getAccount());
+		  }
+		  returnISV.setManufacturerId(dbPISVSW.getManufacturer().getId());
+		  returnISV.setManufacturerName(dbPISVSW.getManufacturer().getManufacturerName());
+		  returnISV.setEvidenceLocation(dbPISVSW.getEvidenceLocation());
+		  returnISV.setBusinessJustification(dbPISVSW.getBusinessJustification());
+		  returnISV.setRemoteUser(dbPISVSW.getRemoteUser());
+		  returnISV.setStatusId(dbPISVSW.getStatus().getId());
+		  returnISV.setStatusDesc(dbPISVSW.getStatus().getDescription());
+		  returnISV.setRecordTime(dbPISVSW.getRecordTime());
+		  
+		  return WSMsg.successMessage("Priority ISV Software exists.",returnISV);
+		}
+	  else{
+		  if(null == customerId){
+			  return WSMsg
+					.failMessage(WSMsg.NOT_FOUND,"Priority ISV Software doesn't exist for [Level = "
+							+ level
+							+ ", Manufacturer Id = "
+							+ manufacturerId + "]");
+			}
+		  else{
+			  return WSMsg
+						.failMessage(WSMsg.NOT_FOUND,"Priority ISV Software doesn't existed for [Level = "
+								+ level
+								+ ", Customer Id = "
+								+customerId
+								+ ", Manufacturer Id = "
+								+ manufacturerId + "]");
+		  }
+	  }
+	}
 		
 	@PUT
 	@Path("/isv")
@@ -180,7 +244,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		  }
 		} else {
 			PriorityISVSoftware addISVSW = new PriorityISVSoftware();
-			addISVSW.setLevel(level);
+			addISVSW.setLevel(level.trim().toUpperCase());
 			addISVSW.setAccount(customer);
 			addISVSW.setManufacturer(manufacturer);
 			addISVSW.setEvidenceLocation(evidenceLocation);
@@ -279,7 +343,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		} else {
 			PriorityISVSoftware updateISVSW = new PriorityISVSoftware();
 			updateISVSW.setId(id);
-			updateISVSW.setLevel(level);
+			updateISVSW.setLevel(level.trim().toUpperCase());
 			updateISVSW.setAccount(customer);
 			updateISVSW.setManufacturer(manufacturer);
 			updateISVSW.setEvidenceLocation(evidenceLocation);
