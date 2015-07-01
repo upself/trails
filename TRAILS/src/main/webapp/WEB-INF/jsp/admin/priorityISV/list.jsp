@@ -35,7 +35,7 @@
 				<tr>
 					<th scope="col"><span>Manufacturer name</span><span class="ibm-icon"></span></th>
 					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Account Name</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>CNDB Name</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Account Number</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Status</span><span class="ibm-icon"></span></a></th>
@@ -160,8 +160,8 @@
 										+ "</a></td>";
 								html += "<td id='level_td'>" + list[i].level
 										+ "</td>";
-								html += "<td>" + list[i].accountName + "</td>";
-								html += "<td>" + list[i].accountNumber + "</td>";
+								html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
+								html += "<td>" + (list[i].accountNumber == null ? "" : list[i].accountNumber) + "</td>";
 								html += "<td>" + list[i].evidenceLocation
 										+ "</td>";
 								html += "<td>" + list[i].statusDesc + "</td>";
