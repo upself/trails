@@ -41,15 +41,21 @@ sub recon {
     my $validation = new Recon::Validation();
     $validation->customer( $customer );
     $validation->hardware( $self->hardware );
+    
+    dlog("Reconing hardware configuration data...");
 
     if ( $validation->isValidCustomer == 0 || $validation->isValidHardware == 0 || $validation->hardwareLparCount == 0 )
         $self->closeAlert(0);
+        dlog("Invalid hardware.");
         return;
     }
     
     my $machineType=$self->findMachineType( $self->hardware->machineTypeId );
     
+    dlog("Found machine type: $machineType");
+    
     if ( $machineType eq "WORKSTATION" ) {
+		dlog("WORKSTATION doesn't need any config data filled.");
 		$self->closeAlert(0);
 		return;
 	}
@@ -57,6 +63,7 @@ sub recon {
 	my $letsopen = 0; # the AlertHardwareCfgData should be open in the end
     
     if (( $machineType eq "SERVER" ) || ( $machineType eq "AS/400" )) {
+		dlog("SERVER or AS/400, checking attributes...");
 		$letsopen = 1 if (( not defined $processorManufacturer ) || ( $processorManufacturer =~ /^\s*$/ ));
 		$letsopen = 1 if (( not defined $mastProcessorType ) || ( $mastProcessorType =~ /^\s*$/ ));
 		$letsopen = 1 if (( not defined $processorModel ) || ( $processorModel =~ /^\s*$/ ));
@@ -65,6 +72,7 @@ sub recon {
 		$letsopen = 1 if (( not defined $processorCount ) || ( $processorCount <= 0 ));
 		$letsopen = 1 if (( not defined $nbrOfChipsMax ) || ( $nbrOfChipsMax <= 0 ));
 	} elsif ( $machineType eq "MAINFRAME" ) {
+		dlog("MAINFRAME, checking attributes...");
 		$letsopen = 1 if (( not defined $cpuMIPS ) || ( $cpuMIPS <= 0 ));
 		$letsopen = 1 if (( not defined $cpuMSU ) || ( $cpuMSU <= 0 ));
 		$letsopen = 1 if (( not defined $cpuGartnerMIPS ) || ( $cpuGartnerMIPS <= 0 ));
@@ -75,6 +83,7 @@ sub recon {
 	} elsif ( $letsopen == 0 ) {
 		$self->closeAlert(1);
 	}
+	dlog("Reconing HW config data done.");
 }
 
 sub findMachineType {
