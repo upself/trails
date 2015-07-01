@@ -44,7 +44,7 @@ sub recon {
     
     dlog("Reconing hardware configuration data...");
 
-    if ( $validation->isValidCustomer == 0 || $validation->isValidHardware == 0 || $validation->hardwareLparCount == 0 )
+    if ( $validation->isValidCustomer == 0 || $validation->isValidHardware == 0 || $self->hardwareLparCount == 0 ) {
         $self->closeAlert(0);
         dlog("Invalid hardware.");
         return;
@@ -64,18 +64,18 @@ sub recon {
     
     if (( $machineType eq "SERVER" ) || ( $machineType eq "AS/400" )) {
 		dlog("SERVER or AS/400, checking attributes...");
-		$letsopen = 1 if (( not defined $processorManufacturer ) || ( $processorManufacturer =~ /^\s*$/ ));
-		$letsopen = 1 if (( not defined $mastProcessorType ) || ( $mastProcessorType =~ /^\s*$/ ));
-		$letsopen = 1 if (( not defined $processorModel ) || ( $processorModel =~ /^\s*$/ ));
-		$letsopen = 1 if (( not defined $nbrCoresPerChip ) || ( $nbrCoresPerChip <= 0 ));
-		$letsopen = 1 if (( not defined $chips ) || ( $chips <= 0 ));
-		$letsopen = 1 if (( not defined $processorCount ) || ( $processorCount <= 0 ));
-		$letsopen = 1 if (( not defined $nbrOfChipsMax ) || ( $nbrOfChipsMax <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->processorManufacturer ) || ( $self->hardware->processorManufacturer =~ /^\s*$/ ));
+		$letsopen = 1 if (( not defined $self->hardware->mastProcessorType ) || ( $self->hardware->mastProcessorType =~ /^\s*$/ ));
+		$letsopen = 1 if (( not defined $self->hardware->processorModel ) || ( $self->hardware->processorModel =~ /^\s*$/ ));
+		$letsopen = 1 if (( not defined $self->hardware->nbrCoresPerChip ) || ( $self->hardware->nbrCoresPerChip <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->chips ) || ( $self->hardware->chips <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->processorCount ) || ( $self->hardware->processorCount <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->nbrOfChipsMax ) || ( $self->hardware->nbrOfChipsMax <= 0 ));
 	} elsif ( $machineType eq "MAINFRAME" ) {
 		dlog("MAINFRAME, checking attributes...");
-		$letsopen = 1 if (( not defined $cpuMIPS ) || ( $cpuMIPS <= 0 ));
-		$letsopen = 1 if (( not defined $cpuMSU ) || ( $cpuMSU <= 0 ));
-		$letsopen = 1 if (( not defined $cpuGartnerMIPS ) || ( $cpuGartnerMIPS <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->cpuMIPS ) || ( $self->hardware->cpuMIPS <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->cpuMSU ) || ( $self->hardware->cpuMSU <= 0 ));
+		$letsopen = 1 if (( not defined $self->hardware->cpuGartnerMIPS ) || ( $self->hardware->cpuGartnerMIPS <= 0 ));
 	}
 	
 	if ( $letsopen == 1 ) {
@@ -87,7 +87,9 @@ sub recon {
 }
 
 sub findMachineType {
-	my ( $self, $machineTypeId ) = shift;
+	my ( $self, $machineTypeId ) = @_;
+	
+	dlog ("Machine type ID: $machineTypeId");
 	
 	my $machType;
 	
