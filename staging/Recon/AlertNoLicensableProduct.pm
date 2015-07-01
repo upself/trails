@@ -149,7 +149,7 @@ sub openAlert {
 	$alert->comment('Auto Open');
 	$alert->save( $self->connection );
 	
-	Recon::CauseCode::updateCCtable($alert->id, 11, $self->connection );
+	Recon::CauseCode::updateCCtable($alert->id, "NOLP", $self->connection );
 
 	my $softwareLparAlert = new Recon::OM::AlertSoftwareLparNew();
 	$softwareLparAlert->id( $alert->id );
@@ -190,7 +190,7 @@ sub closeAlert {
 	$alert->open(0);
 	$alert->save( $self->connection ) if $save == 1;
 	
-	Recon::CauseCode::updateCCtable($alert->id, 11, $self->connection ) if ( $save == 1 );
+	Recon::CauseCode::updateCCtable($alert->id, "NOLP", $self->connection ) if ( $save == 1 );
 
 	my $softwareLparAlert = new Recon::OM::AlertSoftwareLparNew();
 	$softwareLparAlert->id( $alert->id );

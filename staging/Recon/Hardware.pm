@@ -4,6 +4,7 @@ use strict;
 use Base::Utils;
 use Carp qw( croak );
 use Recon::AlertHardware;
+use Recon::AlertHardwareCfgData;
 use Recon::Delegate::ReconDelegate;
 
 sub new {
@@ -154,6 +155,9 @@ sub recon {
 
     my $alert = Recon::AlertHardware->new($self->connection, $self->hardware);
     $alert->recon;
+    
+    my $alertcfg = Recon::AlertHardwareCfgData->new($self->connection, $self->hardware);
+    $alertcfg->recon;
     
     $self->recon0101;
 }
