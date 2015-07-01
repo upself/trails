@@ -22,4 +22,6 @@ public interface AccountService {
 	public Sector getSector(Long id);
 
 	public Account getAccountByAccountNumber(Long accountNumber);
+	
+	public Account getAccountByCustomerNameAndAccountNumber(String customerName, Long accountNumber);
 }
