@@ -109,6 +109,16 @@ sub getData {
             next;
         }
 
+        if ( !defined $machineTypeMap->{ $rec{machineType} } ) {
+            dlog('Machine type is not defined in BRAVO');
+            next;
+        }
+        
+        if (  $rec{lparStatus} ne 'ACTIVE'  && $rec{lparStatus} ne 'INACTIVE'  && $rec{lparStatus} ne 'HWCOUNT' ){
+            dlog(' Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
+            $rec{lparStatus} = 'ACTIVE';
+        }
+
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
