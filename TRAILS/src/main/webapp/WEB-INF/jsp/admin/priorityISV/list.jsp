@@ -185,4 +185,4 @@
 		window.location.href = url; 
 	}
 </script>
-<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a>
+<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
