@@ -398,10 +398,25 @@ public class NonInstanceServiceEndpoint {
 
 		lcsError.setFillForegroundColor(HSSFColor.RED.index);
 		lcsError.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		lcsError.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		lcsError.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		lcsError.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		lcsError.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
 		lcsNormal.setFillForegroundColor(HSSFColor.WHITE.index);
 		lcsNormal.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		lcsNormal.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		lcsNormal.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		lcsNormal.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		lcsNormal.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
 		lcsMessage.setFillForegroundColor(HSSFColor.YELLOW.index);
 		lcsMessage.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		lcsMessage.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		lcsMessage.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		lcsMessage.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		lcsMessage.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+
 
 		for (liRow = sheet.rowIterator(); liRow.hasNext();) {
 			row = (HSSFRow) liRow.next();
@@ -477,15 +492,20 @@ public class NonInstanceServiceEndpoint {
 		switch (cell.getColumnIndex()) {
 		case 0: { // Software Name
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
-				throw new Exception("Software Name is not a string.");
+				throw new Exception("Software component is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
-				throw new Exception("Software Name is required.");
+				throw new Exception("Software component is required.");
 			} else {
 				List<Software> swlist = nonInstanceService
 						.findSoftwareBySoftwareName(cell
 								.getRichStringCellValue().getString().trim());
-				ni.setSoftware(swlist.get(0));
+				if(null == swlist || swlist.size() == 0){
+					throw new Exception("Software component doesn't exist");
+				}else{
+					ni.setSoftware(swlist.get(0));
+				}
+				
 			}
 
 			break;
@@ -511,10 +531,14 @@ public class NonInstanceServiceEndpoint {
 		}
 		case 2: { // RESTRICTION
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
-				throw new Exception("RESTRICTION is not a string.");
+				throw new Exception("Restriction is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
-				throw new Exception("RESTRICTION is required.");
+				throw new Exception("Restriction is required.");
+			} else if(!cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("Account")
+					&& !cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("Machine")
+					&& !cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("LPAR")){
+				throw new Exception("Restriction must be one of 'Account','Machine','LPAR'.");
 			} else {
 				ni.setRestriction(cell.getRichStringCellValue().getString()
 						.trim());
@@ -524,10 +548,10 @@ public class NonInstanceServiceEndpoint {
 		}
 		case 3: { // CAPACITY_TYPE
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
-				throw new Exception("CAPACITY TYPE is not a string.");
+				throw new Exception("Non Instance capacity type is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
-				throw new Exception("CAPACITY TYPE is required.");
+				throw new Exception("Non Instance capacity type is required.");
 			} else {
 				List<CapacityType> cplist = nonInstanceService
 						.findCapacityTypeByDesc(cell.getRichStringCellValue()
@@ -535,7 +559,7 @@ public class NonInstanceServiceEndpoint {
 				if (cplist != null) {
 					ni.setCapacityType(cplist.get(0));
 				} else {
-					throw new Exception("CAPACITY TYPE doesn't exist.");
+					throw new Exception("Non Instance capacity type doesn't exist.");
 				}
 			}
 
@@ -543,14 +567,17 @@ public class NonInstanceServiceEndpoint {
 		}
 		case 4: { // BASE ONLY
 			if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
-				throw new Exception("BASE ONLY is not a string.");
+				throw new Exception("Non Instance based only is not a string.");
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
-				throw new Exception("BASE ONLY is required.");
-			} else {
+				throw new Exception("Non Instance based only is required.");
+			} else if(!cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("Y")
+					&& !cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("N")){
+				throw new Exception("Non Instance based only must be 'Y' or 'N'");
+			} else{
 				String baseOnly = cell.getRichStringCellValue().getString()
 						.trim();
-				if (baseOnly.equalsIgnoreCase("YES")) {
+				if (baseOnly.equalsIgnoreCase("Y")) {
 					ni.setBaseOnly(1);
 				} else {
 					ni.setBaseOnly(0);
@@ -565,6 +592,9 @@ public class NonInstanceServiceEndpoint {
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
 				throw new Exception("STATUS is required.");
+			} else if(!cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("ACTIVE")
+					&& !cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("INACTIVE")){
+				throw new Exception("Status must be 'ACTIVE' or 'INACTIVE'");
 			} else {
 				List<com.ibm.asset.trails.domain.Status> statusList = nonInstanceService
 						.findStatusByDesc(cell.getRichStringCellValue()
