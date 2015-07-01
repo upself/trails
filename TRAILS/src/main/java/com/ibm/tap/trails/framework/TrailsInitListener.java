@@ -11,7 +11,7 @@ import javax.servlet.ServletContextListener;
 public class TrailsInitListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
-		String props = "/opt/trails/conf/trails.properties";
+		String props = "C:\\personal\\software\\Trails_props\\trails.properties";
 		
 		String classPathRoot = PropertiesLoaderSupport.class.getResource("")
 				.getPath();
