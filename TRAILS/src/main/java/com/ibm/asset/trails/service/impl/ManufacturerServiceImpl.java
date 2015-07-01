@@ -17,4 +17,10 @@ public class ManufacturerServiceImpl implements ManufacturerService{
 	public Manufacturer findManufacturerById(Long id) {
 		return this.manufacturerDAO.findById(id);
 	}
+
+	@Override
+	public Manufacturer findManufacturerByName(String name) {
+		// TODO Auto-generated method stub
+		return manufacturerDAO.findManufacturerByName(name);
+	}
 }

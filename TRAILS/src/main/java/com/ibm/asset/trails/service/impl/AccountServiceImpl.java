@@ -90,4 +90,24 @@ public class AccountServiceImpl implements AccountService {
         }
         return result;
     }
+
+	@Override
+	public Account getAccountByCustomerNameAndAccountNumber(
+			String customerName, Long accountNumber) {
+		// TODO Auto-generated method stub
+		 @SuppressWarnings("unchecked")
+	        List<Account> results = getEntityManager()
+	                .createNamedQuery("accountByCustomerNameAndAccountNumber")
+	                .setParameter("customerName", customerName)
+	                .setParameter("accountNumber", accountNumber).getResultList();
+	        Account result;
+	        if (results == null || results.isEmpty()) {
+	            result = null;
+	        } else {
+	            result = results.get(0);
+	        }
+	        return result;
+	}
+    
+    
 }

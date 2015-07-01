@@ -1,23 +1,38 @@
 package com.ibm.asset.trails.ws;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 
 import java.util.Date;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.Account;
@@ -25,10 +40,12 @@ import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.PriorityISVSoftware;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareDisplay;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareHDisplay;
+import com.ibm.asset.trails.domain.Status;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ManufacturerService;
 import com.ibm.asset.trails.service.PriorityISVSoftwareService;
 import com.ibm.asset.trails.service.ReportService;
+import com.ibm.asset.trails.service.StatusService;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/priorityISV")
@@ -45,6 +62,9 @@ public class PriorityISVSoftwareServiceEndpoint {
 	
 	@Autowired
 	private ReportService reportService;
+	
+	@Autowired
+	private StatusService statusService;
 
 	@GET
 	@Path("/isv/{id}")
@@ -299,5 +319,319 @@ public class PriorityISVSoftwareServiceEndpoint {
 				"attachment; filename=priorityISVSWReport.xls");
 
 		return responseBuilder.build();
+	}
+	
+	@POST
+	@Path("/isv/upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/vnd.ms-excel")
+	public Response uploadFile(List<Attachment> attachments,
+			@Context HttpServletRequest request) {
+		ByteArrayOutputStream bos = null;
+		File f = null;
+		FileInputStream fin = null;
+		Boolean error = false;
+		for (Attachment attr : attachments) {
+			DataHandler handler = attr.getDataHandler();
+			try {
+				InputStream stream = handler.getInputStream();
+				MultivaluedMap<String, String> map = attr.getHeaders();
+				String filename = getFileName(map);
+				String extension = filename
+						.substring(filename.lastIndexOf('.'));
+				if (!(extension.toLowerCase().equals(".xls")
+						|| extension.toLowerCase().equals(".cvs") || extension
+						.toLowerCase().equals(".xlsx"))) {
+					error = true;
+				}
+				f = new File("/tmp/" + filename);
+				OutputStream out = new FileOutputStream(f);
+				int read = 0;
+				byte[] bytes = new byte[1024];
+				while ((read = stream.read(bytes)) != -1) {
+					out.write(bytes, 0, read);
+				}
+				stream.close();
+				out.flush();
+				out.close();
+				if (f.exists()) {
+					fin = new FileInputStream(f);
+				} else {
+					error = true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (!error) {
+			try {
+				bos = parserUpload(fin, request);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (fin != null)
+						fin.close();
+					if (f != null)
+						f.delete();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		} else {
+			try {
+				bos = new ByteArrayOutputStream();
+				PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,
+						"UTF-8"), true);
+				pw.println("SEEMS YOU ARE LOADING A FILE WITH NOT ACCEPTABLE FORMAT!");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		ResponseBuilder responseBuilder = Response.ok((Object) bos
+				.toByteArray());
+		responseBuilder.type("application/vnd.ms-excel; charset=UTF-8");
+		responseBuilder.header("Content-Disposition",
+				"attachment; filename=results.xls;");
+		return responseBuilder.build();
+	}
+
+	private String getFileName(MultivaluedMap<String, String> header) {
+		String[] contentDisposition = header.getFirst("Content-Disposition")
+				.split(";");
+		for (String filename : contentDisposition) {
+			if ((filename.trim().startsWith("filename"))) {
+				String[] name = filename.split("=");
+				String exactFileName = name[1].trim().replaceAll("\"", "");
+				return exactFileName;
+			}
+		}
+		return "unknown";
+	}
+
+	public ByteArrayOutputStream parserUpload(FileInputStream fileinput,
+			HttpServletRequest request) throws IOException {
+		HSSFWorkbook wb = new HSSFWorkbook(fileinput);
+		HSSFSheet sheet = wb.getSheetAt(0);
+		Iterator<Row> liRow = null;
+		HSSFRow row = null;
+		PriorityISVSoftware priorityISV = null;
+		boolean error = false;
+		StringBuffer lsbErrorMessage = null;
+		HSSFCellStyle lcsError = wb.createCellStyle();
+		HSSFCellStyle lcsNormal = wb.createCellStyle();
+		HSSFCellStyle lcsMessage = wb.createCellStyle();
+		HSSFCell cell = null;
+		boolean lbHeaderRow = false;
+
+		lcsError.setFillForegroundColor(HSSFColor.RED.index);
+		lcsError.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		lcsNormal.setFillForegroundColor(HSSFColor.WHITE.index);
+		lcsNormal.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		lcsMessage.setFillForegroundColor(HSSFColor.YELLOW.index);
+		lcsMessage.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+		for (liRow = sheet.rowIterator(); liRow.hasNext();) {
+			row = (HSSFRow) liRow.next();
+			error = false;
+			lbHeaderRow = false;
+			lsbErrorMessage = new StringBuffer();
+			
+			//deal with row
+			if(row.getRowNum() == 0){
+				lbHeaderRow  = true;
+			}else{
+				//parse data row into priorityISV
+				String errorMessage = "";
+				try{
+					Map<PriorityISVSoftware, String> psMap = parseRow(row);
+					
+					priorityISV = psMap.entrySet().iterator().next().getKey();
+					errorMessage = psMap.entrySet().iterator().next().getValue();
+				
+				}catch(Exception e){
+					e.printStackTrace();
+					errorMessage += e.getMessage();
+				}
+				
+				
+				if(null != errorMessage && !"".equals(errorMessage)){
+					lsbErrorMessage.append(errorMessage);
+					error = true;
+				}
+			}
+
+			//deal with result
+			if (!lbHeaderRow) {
+				if (error) {
+					cell = row.createCell(7);
+					cell.setCellStyle(lcsError);
+					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage.toString()));
+				} else if (priorityISV.getLevel() != null
+						&& priorityISV.getManufacturer() != null) {
+					priorityISV.setRemoteUser(request.getRemoteUser());
+					priorityISV.setRecordTime(new Date());
+					
+					PriorityISVSoftware tempPriorityISV = null;
+					if(null == priorityISV.getAccount()){
+						tempPriorityISV = priorityISVSoftwareService
+								.findPriorityISVSoftwareByUniqueKeys(priorityISV
+										.getLevel(), priorityISV.getManufacturer()
+										.getId(), null);
+					}else{
+						tempPriorityISV = priorityISVSoftwareService
+								.findPriorityISVSoftwareByUniqueKeys(priorityISV
+										.getLevel(), priorityISV.getManufacturer()
+										.getId(), priorityISV.getAccount().getId());
+					}
+					
+					if (tempPriorityISV != null) {
+						priorityISV.setId(tempPriorityISV.getId());
+						priorityISVSoftwareService
+								.updatePriorityISVSoftware(priorityISV);
+					} else {
+						priorityISVSoftwareService
+								.addPriorityISVSoftware(priorityISV);
+					}
+					cell = row.createCell(7);
+					cell.setCellStyle(lcsMessage);
+					cell.setCellValue(new StringBuffer("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
+				}
+			}
+		}
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		wb.write(bos);
+
+		return bos;
+	}
+
+	private Map<PriorityISVSoftware, String> parseRow(HSSFRow row) {
+		// TODO Auto-generated method stub
+		
+		Map<PriorityISVSoftware, String> resultMap = new HashMap<PriorityISVSoftware, String>();
+		
+		int nullFlag = 0;
+		String errorMsg = "";
+		
+		String level = null;
+		String cndbName = null;
+		Long cndbId = null;
+		
+		PriorityISVSoftware priorityISV  = new PriorityISVSoftware();
+		
+		
+		//Manufacturer
+		HSSFCell mfCell = row.getCell(0);
+		if(null == mfCell){
+			errorMsg += "Manufacturer Name is required. ";
+			nullFlag++;
+		}else if (mfCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+			errorMsg += "Manufacturer Name is required a string. ";
+		}else{
+			Manufacturer manufacturer = manufacturerService
+					.findManufacturerByName(mfCell.getRichStringCellValue()
+							.getString().trim());
+			if (null == manufacturer) {
+				errorMsg += "Manufacturer doesn't exist. ";
+			} else {
+				priorityISV.setManufacturer(manufacturer);
+			}
+		}
+		
+		// Level
+		HSSFCell levelCell = row.getCell(1);
+		if(null == levelCell){
+			errorMsg += "Level is required. ";
+			nullFlag++;
+		}else if (levelCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+			errorMsg += "Level is required a string. ";
+		}else{
+			level = levelCell.getRichStringCellValue().getString().trim();
+			priorityISV.setLevel(level);
+		}
+		
+		if(null != level && !level.equalsIgnoreCase("GLOBAL")){
+			//cndb name
+			HSSFCell cndbNameCell = row.getCell(2);
+			if(null == cndbNameCell){
+				errorMsg += "CNDB Name is required. ";
+				nullFlag++;
+			}else if (cndbNameCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+				errorMsg += "CNDB Name is required a string. ";
+			}else{
+				cndbName = cndbNameCell.getRichStringCellValue().getString().trim();
+			}
+			
+			//cndbId
+			HSSFCell cndbIdCell = row.getCell(3);
+			if(null == cndbIdCell){
+				errorMsg += "CNDB ID is required. ";
+				nullFlag++;
+			}else if (cndbIdCell.getCellType() != HSSFCell.CELL_TYPE_NUMERIC){
+				errorMsg += "CNDB ID is required a numeric. ";
+			}else{
+				cndbId = (new Double(cndbIdCell.getNumericCellValue())).longValue();
+			}
+		}else{
+			nullFlag+=2;
+		}
+		
+		// Evidence location
+		HSSFCell eviCell = row.getCell(4);
+		if(null == eviCell){
+			errorMsg += "Evidence location is required. ";
+			nullFlag++;
+		}else if (eviCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+			errorMsg += "Evidence location is required a string. ";
+		}else{
+			priorityISV.setEvidenceLocation(eviCell.getRichStringCellValue().getString().trim());
+		}
+		
+		// STATUS
+		HSSFCell statusCell = row.getCell(5);
+		if(null == statusCell){
+			errorMsg += "Status is required. ";
+			nullFlag++;
+		}else if (statusCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+			errorMsg += "Status is required a string. ";
+		}else{
+			Status st = statusService.findStatusByDesc(statusCell.getRichStringCellValue().getString().trim());
+			if(null == st){
+				errorMsg += "Status doesn't exist. ";
+			}else{
+				priorityISV.setStatus(st);
+			}
+		}
+		
+		// Business justification
+		HSSFCell busCell = row.getCell(6);
+		if(null == busCell){
+			errorMsg += "Business justification is required. ";
+			nullFlag++;
+		}else if (busCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
+			errorMsg += "Business justification is required a string. ";
+		}else{
+			priorityISV.setBusinessJustification(busCell.getRichStringCellValue().getString().trim());
+		}
+		
+		
+		if(null != priorityISV.getLevel() && priorityISV.getLevel().equalsIgnoreCase("account")){
+			Account account = accountService.getAccountByCustomerNameAndAccountNumber(cndbName, cndbId);
+			if(null != account){
+				priorityISV.setAccount(account);
+			}else{
+				errorMsg += "Account doesn't exist. ";
+			}
+		}
+		
+		if(nullFlag == 7){
+			errorMsg = "No other data need to deal with";
+		}
+		
+		resultMap.put(priorityISV, errorMsg);
+		
+		return resultMap;
 	}
 }
