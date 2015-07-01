@@ -91,7 +91,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		
 	@PUT
 	@Path("/isv")
-	@Consumes("application/json") 
+	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg addPriorityISVSoftware(PriorityISVSoftwareDisplay addISV,
 			@Context HttpServletRequest request) {
@@ -102,6 +102,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		 String evidenceLocation = addISV.getEvidenceLocation();
 		 Long statusId = addISV.getStatusId();
 		 String businessJustification = addISV.getBusinessJustification();
+		 Account customer = null;
 		
 		//validation
 		if (null == level || "".equals(level.trim())) {//GLOBAL or ACCOUNT
@@ -123,10 +124,12 @@ public class PriorityISVSoftwareServiceEndpoint {
 			return WSMsg.failMessage("Business Justification is required!");
 		}
 		
-		Account customer = this.accountService.getAccount(customerId);
-		if(customer == null){
-		  return WSMsg.failMessage("No Customer has been found for Customer Id: "+customerId+"!");	
-		}
+        if("ACCOUNT".equals(level.trim().toUpperCase())){
+			customer = this.accountService.getAccount(customerId);
+			if(null == customer){
+			  return WSMsg.failMessage("No Customer has been found for Customer Id: "+customerId+"!");	
+			}
+        }
 		
 		Manufacturer manufacturer = this.manufacturerService.findManufacturerById(manufacturerId);
 		if(manufacturer == null){
@@ -139,13 +142,22 @@ public class PriorityISVSoftwareServiceEndpoint {
 		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
-			return WSMsg
+		  if(null == customerId){
+			  return WSMsg
 					.failMessage("Priority ISV Software has already existed for [Level = "
 							+ level
-							+ ", Customer Id = "
-							+customerId
 							+ ", Manufacturer Id = "
 							+ manufacturerId + "]");
+			}
+		  else{
+			  return WSMsg
+						.failMessage("Priority ISV Software has already existed for [Level = "
+								+ level
+								+ ", Customer Id = "
+								+customerId
+								+ ", Manufacturer Id = "
+								+ manufacturerId + "]");
+		  }
 		} else {
 			PriorityISVSoftware addISVSW = new PriorityISVSoftware();
 			addISVSW.setLevel(level);
@@ -154,7 +166,17 @@ public class PriorityISVSoftwareServiceEndpoint {
 			addISVSW.setEvidenceLocation(evidenceLocation);
 			addISVSW.setStatus(status);
 			addISVSW.setBusinessJustification(businessJustification);
-			addISVSW.setRemoteUser(request.getRemoteUser());
+			if(null != request.getRemoteUser()){
+			  addISVSW.setRemoteUser(request.getRemoteUser());
+			}
+			else{
+				if(null!=addISV.getRemoteUser()){
+				  addISVSW.setRemoteUser(addISV.getRemoteUser());
+				}
+				else{
+					addISVSW.setRemoteUser("");	
+				}
+			}
 			addISVSW.setRecordTime(new Date());
 			this.priorityISVSoftwareService.addPriorityISVSoftware(addISVSW);
 			return WSMsg.successMessage("The Priority ISV has been added successfully.");
@@ -163,7 +185,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 
 	@PUT
 	@Path("/isv/{id}")
-	@Consumes("application/json") 
+	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg updatePriorityISVSoftware(@PathParam("id") Long id,
 			PriorityISVSoftwareDisplay updateISV,
@@ -175,6 +197,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		 String evidenceLocation = updateISV.getEvidenceLocation();
 		 Long statusId = updateISV.getStatusId();
 		 String businessJustification = updateISV.getBusinessJustification();
+		 Account customer = null;
 		
 		//validation
 		if (null == level || "".equals(level.trim())) {//GLOBAL or ACCOUNT
@@ -199,9 +222,11 @@ public class PriorityISVSoftwareServiceEndpoint {
 			return WSMsg.failMessage("Business Justification is required!");
 		}
 		
-		Account customer = this.accountService.getAccount(customerId);
-		if(customer == null){
-		  return WSMsg.failMessage("No Customer has been found for Customer Id: "+customerId+"!");	
+		if("ACCOUNT".equals(level.trim().toUpperCase())){
+			customer = this.accountService.getAccount(customerId);
+			if(null == customer){
+			  return WSMsg.failMessage("No Customer has been found for Customer Id: "+customerId+"!");	
+			}
 		}
 		
 		Manufacturer manufacturer = this.manufacturerService.findManufacturerById(manufacturerId);
@@ -215,13 +240,22 @@ public class PriorityISVSoftwareServiceEndpoint {
 		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
-			return WSMsg
-					.failMessage("Priority ISV Software has already existed for [Level = "
-							+ level
-							+ ", Customer Id = "
-							+customerId
-							+ ", Manufacturer Id = "
-							+ manufacturerId + "]");
+			if(null == customerId){
+				return WSMsg
+						.failMessage("Priority ISV Software has already existed for [Level = "
+								+ level
+								+ ", Manufacturer Id = "
+								+ manufacturerId + "]");
+			}
+			else{
+				return WSMsg
+						.failMessage("Priority ISV Software has already existed for [Level = "
+								+ level
+								+ ", Customer Id = "
+								+customerId
+								+ ", Manufacturer Id = "
+								+ manufacturerId + "]");
+			}
 		} else {
 			PriorityISVSoftware updateISVSW = new PriorityISVSoftware();
 			updateISVSW.setId(id);
@@ -231,7 +265,17 @@ public class PriorityISVSoftwareServiceEndpoint {
 			updateISVSW.setEvidenceLocation(evidenceLocation);
 			updateISVSW.setStatus(status);
 			updateISVSW.setBusinessJustification(businessJustification);
-			updateISVSW.setRemoteUser(request.getRemoteUser());
+			if(null!=request.getRemoteUser()){
+				updateISVSW.setRemoteUser(request.getRemoteUser());
+			}
+			else{
+				if(null!=updateISV.getRemoteUser()){
+					updateISVSW.setRemoteUser(updateISV.getRemoteUser());
+				}
+				else{
+					updateISVSW.setRemoteUser("");
+				}
+			}
 			updateISVSW.setRecordTime(new Date());
 			this.priorityISVSoftwareService.updatePriorityISVSoftware(updateISVSW);
 			return WSMsg.successMessage("The Priority ISV has been updated successfully.");
