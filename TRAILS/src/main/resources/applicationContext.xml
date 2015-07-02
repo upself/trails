@@ -32,9 +32,14 @@
 		<property name="locations">
 			<list>
 				<value>
-					file:C:\\personal\\software\\Trails_props\\hibernate.properties
+					file:/opt/trails/conf/hibernate.properties
 				</value>
-				<value>file:C:\\personal\\software\\Trails_props\\trails.properties
+				<value>file:/opt/trails/conf/trails.properties
+				</value>
+				<value>
+					file:/opt/trails/conf/hibernateDST1185.properties
+				</value>
+				<value>file:/opt/trails/conf/trailsDST1185.properties
 				</value>
 			</list>
 		</property>
