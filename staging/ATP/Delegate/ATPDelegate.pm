@@ -89,7 +89,7 @@ sub getData {
 			next;
 		}
 		
-		fixLparStatus(\%rec)
+		fixLparStatus(\%rec);
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
