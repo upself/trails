@@ -5,7 +5,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
 <style>
-.ui-autocomplete-loading {
+.ui-autocomplete-loading, .isv-submiting {
 	background: white
 		url("${pageContext.request.contextPath}/images/ui-anim_basic_16x16.gif")
 		right center no-repeat;
@@ -20,6 +20,14 @@
 
 * html .ui-autocomplete {
 	height: 200px;
+}
+
+.no-close .ui-dialog-titlebar-close {
+	display: none
+}
+
+#progressbar .ui-progressbar-value {
+	background-color: #ccc;
 }
 </style>
 <script type="text/javascript">
@@ -123,19 +131,7 @@
 		$("#btnSubmit").click(function() {
 			resetErrors();
 			if (validateEmpty()) {
-				jQuery.ajax({
-					type : 'put',
-					xhrFields : {
-						withCredentials : false
-					},
-					url : "http://localhost:8080/greeting",
-					data : {
-						"ts" : "rr"
-					},
-					success : function(data) {
-						alert(data);
-					}
-				});
+				callRestApi();
 			}
 
 			return false;
@@ -145,14 +141,63 @@
 
 	function callRestApi() {
 
-		var obj = {
-			"customerId" : "intNumber",
-			"manufacturerId" : "intNumber",
-			"evidenceLocation" : "string",
-			"statusId" : "intNumber",
-			"businessJustification" : "string"
-		};
+		var obj = "{\"level\":\"" + $("#level").val() + "\",\"customerId\":\""
+				+ $("#customerId").val() + "\",\"manufacturerId\":\""
+				+ $("#manufacturerId").val() + "\",\"evidenceLocation\":\""
+				+ $("#evidenceLocation").val() + "\",\"statusId\":\""
+				+ $("#status").val() + "\",\"businessJustification\":\""
+				+ $("#businessJustification").val() + "\"}";
 
+		var urlRequest = "${pageContext.request.contextPath}/ws/priorityISV/isv";
+
+		jQuery.ajax({
+			cache : true,
+			async : false,
+			method : 'PUT',
+			url : urlRequest,
+			contentType : "application/json",
+			data : obj,
+			beforeSend : function() {
+				$("#dialog").dialog({
+					dialogClass : 'no-close',
+					closeOnEscape : false,
+					modal : true,
+					width : 500,
+					open : function(event, ui) {
+						$("#progressbar").progressbar({
+							value : false
+						});
+					}
+				});
+			},
+			headers : {
+				"Access-Control-Allow-Headers" : "Content-Type"
+			},
+			success : function(data) {
+				submitEnded(data.msg);
+			},
+			error : function(jqXHR, status, error) {
+				submitEnded(status + ":" + error);
+			}
+		});
+
+	}
+
+	function submitEnded(message) {
+		var urlSuccess = "${pageContext.request.contextPath}/admin/priorityISV/list.htm";
+
+		$("#progressbar").progressbar("disable");
+		$("#dialog").text(message + " Click OK redirect to list page.");
+		$("#dialog").dialog({
+			title : "Done",
+			modal : true,
+			buttons : {
+				Ok : function() {
+					$(this).dialog("close");
+					window.location.href = urlSuccess;
+				}
+			}
+		});
 	}
 
 	function resetErrors() {
@@ -214,8 +259,8 @@
 		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>
-					<span class="ibm-item-note">(e.g., Account, Global.)</span></label> <span><select
-					id="level" name="level" onchange="levelChanged()">
+				</label> <span><select id="level" name="level"
+					onchange="levelChanged()">
 						<option selected="selected" value="">Select one</option>
 						<option value="account">Account</option>
 						<option value="global">Global</option>
@@ -246,6 +291,14 @@
 			</p>
 
 			<p>
+				<label for="status">Status:<span class="ibm-required">*</span>
+				</label> <span><select id="status" name="status">
+						<option value="2" selected="selected">ACTIVE</option>
+						<option value="1">INACTIVE</option>
+				</select></span>
+			</p>
+
+			<p>
 				<label for="businessJustification">Business Justification:<span
 					class="ibm-required">*</span></label> <span><input type="text"
 					value="" size="40" id="businessJustification"
@@ -268,5 +321,8 @@
 			</div>
 		</form>
 	</div>
+</div>
+<div id="dialog" title="Submitting Priority ISV">
+	<div id="progressbar"></div>
 </div>
 <!-- END PRIORITY ISV ADD -->

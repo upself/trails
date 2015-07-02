@@ -25,10 +25,12 @@ public class PriorityISVAction extends AccountBaseAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -1366278014947818495L;
-	
+
 	private Long priorityISVSoftwareId;
 
 	private ManufacturerService manufacturerService;
+
+	private long id;
 
 	@UserRole(userRole = UserRoleType.READER)
 	public String reader() throws Exception {
@@ -40,7 +42,6 @@ public class PriorityISVAction extends AccountBaseAction {
 		return SUCCESS;
 	}
 
-
 	@UserRole(userRole = UserRoleType.READER)
 	public String getManufacturerByNameJson() throws IOException {
 		String str = ServletActionContext.getRequest().getParameter("q");
@@ -50,7 +51,7 @@ public class PriorityISVAction extends AccountBaseAction {
 		}
 		str = "%" + str + "%";
 		str = str.toUpperCase();
-		
+
 		List<Manufacturer> list = manufacturerService.findByNameLike(str);
 
 		PrintWriter writer = ServletActionContext.getResponse().getWriter();
@@ -81,6 +82,7 @@ public class PriorityISVAction extends AccountBaseAction {
 
 	public void setManufacturerService(ManufacturerService manufacturerService) {
 		this.manufacturerService = manufacturerService;
+	}
 
 	public Long getPriorityISVSoftwareId() {
 		return priorityISVSoftwareId;
@@ -89,6 +91,14 @@ public class PriorityISVAction extends AccountBaseAction {
 	public void setPriorityISVSoftwareId(Long priorityISVSoftwareId) {
 		this.priorityISVSoftwareId = priorityISVSoftwareId;
 
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }
