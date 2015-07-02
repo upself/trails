@@ -54,10 +54,13 @@ public class V17eNavigationPreparer implements ViewPreparer {
 								.equals("/admin/alertTypeCauseMapping/map.htm") ? "/admin/alertTypeCauseMapping/listAlertType.htm"
 								: testRequestUrl));
 		testRequestUrl = testRequestUrl
-				.equals("/admin/nonInstancebasedSW/upload.htm") ? "/admin/nonInstancebasedSW/list.htm"
+				.equals("/admin/nonInstancebasedSW/history.htm") ? "/admin/nonInstancebasedSW/list.htm"
 				: (testRequestUrl
 						.equals("/admin/nonInstancebasedSW/manage.htm") ? "/admin/nonInstancebasedSW/list.htm"
 						: testRequestUrl);
+		testRequestUrl = testRequestUrl
+				.equals("/admin/priorityISV/history.htm") ? "/admin/priorityISV/list.htm"
+				: testRequestUrl;
 
 		// We want to start with the levelOne attribute
 		Attribute levelOne = aContext.getAttribute("levelOne");
