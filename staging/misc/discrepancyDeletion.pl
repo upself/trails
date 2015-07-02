@@ -53,7 +53,6 @@ my ($swlparIdf,$swlparNamef,$installedswIdf,$swIdf,	$swNamef,$customerIdf,$actNu
 my $timeDate;
 my @row;
 my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
-$SCHEMA          = "EAADMIN.";
 $trails_db       = "dbi:DB2:" . $cfg->getProperty('trails.name');;
 $trails_user     = $cfg->getProperty('trails.user');
 $trails_password =  $cfg->getProperty('trails.password');
