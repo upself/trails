@@ -109,7 +109,7 @@ sub getData {
             next;
         }
 
-        if (  $rec{lparStatus} ne 'ACTIVE'  && $rec{lparStatus} ne 'INACTIVE'  && $rec{lparStatus} ne 'HWCOUNT' ){
+        if ( $rec{hardwareStatus} eq 'ACTIVE' &&  ($rec{lparStatus} ne 'ACTIVE'  && $rec{lparStatus} ne 'INACTIVE'  && $rec{lparStatus} ne 'HWCOUNT')){
             dlog(' Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
             $rec{lparStatus} = 'ACTIVE';
         }
