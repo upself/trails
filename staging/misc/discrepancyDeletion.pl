@@ -25,6 +25,7 @@
 
 $| = 1;
 #use strict;
+use lib '/opt/staging/v2';
 use Getopt::Std;
 
 use DBI;
