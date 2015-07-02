@@ -106,7 +106,12 @@
 		<property name="nonInstanceService" ref="nonInstanceServiceImpl" />
 	</bean>
 
-	<bean id="priorityISVAction" class="com.ibm.asset.trails.action.PriorityISVAction" />
+
+	<bean id="manufacturerServiceImpl"
+		class="com.ibm.asset.trails.service.impl.ManufacturerServiceImpl" />
+	<bean id="priorityISVAction" class="com.ibm.asset.trails.action.PriorityISVAction">
+		<property name="manufacturerService" ref="manufacturerServiceImpl" />
+	</bean>
 
 	<bean id="dbdeterminativeService"
 		class="com.ibm.asset.trails.service.impl.DatabaseDeterminativeServiceImpl">

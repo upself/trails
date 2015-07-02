@@ -122,24 +122,31 @@
 			<result name="success" type="tiles">tiles.admin.priorityISV.add
 			</result>
 		</action>
-		
+
 		<action name="update" method="admin" class="priorityISVAction">
 			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">tiles.admin.priorityISV.update
 			</result>
 		</action>
-		
+
 		<action name="history" method="admin" class="priorityISVAction">
 			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">tiles.admin.priorityISV.history
 			</result>
 		</action>
+
+
+		<action name="manufacturer" method="getManufacturerByNameJson"
+			class="priorityISVAction" />
+
+
 		
 		<action name="upload" method="admin" class="priorityISVAction">
 			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">tiles.admin.priorityISV.upload
 			</result>
 		</action>
+
 	</package>
 
 

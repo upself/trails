@@ -13,11 +13,9 @@ import javax.persistence.Table;
 @Table(name = "MANUFACTURER")
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
-	@NamedQuery(name = "listManufacturerName", query = "SELECT m.manufacturerName FROM Manufacturer m ORDER BY manufacturerName"),
-	@NamedQuery(name = "manufacturerByName", query = "FROM Manufacturer m where UCASE(m.manufacturerName) = :name"),
-	@NamedQuery(name = "manufacturerByNameLike", query = "FROM Manufacturer m where UCASE(m.manufacturerName) like :name")
-})
-
+		@NamedQuery(name = "listManufacturerName", query = "SELECT m.manufacturerName FROM Manufacturer m ORDER BY manufacturerName"),
+		@NamedQuery(name = "manufacturerByName", query = "FROM Manufacturer m where UCASE(m.manufacturerName) = :name"),
+		@NamedQuery(name = "manufacturerByNameLike", query = "FROM Manufacturer m where UCASE(m.manufacturerName) like :name") })
 public class Manufacturer extends KbDefinition implements Serializable {
 
 	private static final long serialVersionUID = -417163770297864632L;
@@ -26,11 +24,22 @@ public class Manufacturer extends KbDefinition implements Serializable {
 	@Column(name = "NAME")
 	private String manufacturerName;
 
+	@Column(name = "WEBSITE")
+	private String website;
+
 	public String getManufacturerName() {
 		return manufacturerName;
 	}
 
 	public void setManufacturerName(String manufacturerName) {
 		this.manufacturerName = manufacturerName;
+	}
+
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+
+	public String getWebsite() {
+		return website;
 	}
 }
