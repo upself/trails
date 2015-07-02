@@ -613,7 +613,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 			errorMsg += "Level is required a string. ";
 		}else{
 			level = levelCell.getRichStringCellValue().getString().trim();
-			priorityISV.setLevel(level);
+			priorityISV.setLevel(level.toUpperCase());
 		}
 		
 		if(null != level && !level.equalsIgnoreCase("GLOBAL")){
