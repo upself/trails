@@ -161,7 +161,7 @@
 								html += "<td id='level_td'>" + list[i].level
 										+ "</td>";
 								html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
-								html += "<td>" + (list[i].customerId == null ? "" : list[i].customerId) + "</td>"
+								html += "<td>" + list[i].customerId == null ? "" : list[i].customerId) + "</td>"
 								html += "<td>" + list[i].evidenceLocation
 										+ "</td>";
 								html += "<td>" + list[i].statusDesc + "</td>";
@@ -187,3 +187,8 @@
 		window.location.href = url;
 	}
 </script>
+			<div  style="float: right">
+				<p class="ibm-button-link-alternate">
+					<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
+				</p>
+			</div>
