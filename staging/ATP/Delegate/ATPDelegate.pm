@@ -85,7 +85,7 @@ sub getData {
         dlog('Result set uppercased');
         logRec( 'dlog', \%rec );
 
-		if(checkRecord(\%rec) == 1 || checkCustomerNumberMap($customerNumberMap) == 1 || checkMachineTypeMap($machineTypeMap)){
+		if(checkRecord(\%rec) == 1 || checkCustomerNumberMap($customerNumberMap,$accountNumberMap,\%rec) == 1 || checkMachineTypeMap($machineTypeMap,\%rec)){
 			next;
 		}
 		
@@ -266,13 +266,13 @@ sub getData {
 sub checkRecord{
 		my ($rec) = @_;
 	        ###We can't have a blank serial
-        if ( ( !defined $rec{serial} ) || ( $rec{serial} eq '' ) ) {
+        if ( ( !defined $rec->{serial} ) || ( $rec->{serial} eq '' ) ) {
             dlog('Serial is missing');
             return 1;
         }
 
         ###We can't have a blank country
-        if ( ( !defined $rec{country} ) || ( $rec{country} eq '' ) ) {
+        if ( ( !defined $rec->{country} ) || ( $rec->{country} eq '' ) ) {
             dlog('Country is missing');
             return 1;
         }
@@ -281,18 +281,18 @@ sub checkRecord{
 }
 
 sub checkCustomerNumberMap{
-	my ($customerNumberMap) = @_;
+	my ($customerNumberMap,$accountNumberMap,$rec) = @_;
     ###We don't want stuff thats not in our customer number map
-    if ( (!exists $customerNumberMap->{ $rec{customerNumber} }) && (!exists $accountNumberMap->{ $rec{customerNumber} })) {
+    if ( (!exists $customerNumberMap->{ $rec->{customerNumber} }) && (!exists $accountNumberMap->{ $rec->{customerNumber} })) {
         dlog('Customer number does not map to cndb customer');
         return 1;
     }
 }
 
 sub checkmachineTypeMap{
-	my ($machineTypeMap) = @_;
+	my ($machineTypeMap,$rec) = @_;
     ###We don't want stuff thats not in our machine type map
-    if ( !defined $machineTypeMap->{ $rec{machineType} } ) {
+    if ( !defined $machineTypeMap->{ $rec->{machineType} } ) {
         dlog('Machine type is not defined in BRAVO');
         return 1;
     }
@@ -301,9 +301,9 @@ sub checkmachineTypeMap{
 sub fixLparStatus{
 	
 	my ($rec) = @_;
-    if ( $rec{hardwareStatus} eq 'ACTIVE' &&  ($rec{lparStatus} ne 'ACTIVE'  && $rec{lparStatus} ne 'HWCOUNT')){
+    if ( $rec->{hardwareStatus} eq 'ACTIVE' &&  ($rec->{lparStatus} ne 'ACTIVE'  && $rec->{lparStatus} ne 'HWCOUNT')){
         dlog(' Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
-        $rec{lparStatus} = 'ACTIVE';
+        $rec->{lparStatus} = 'ACTIVE';
     }
 }
 
