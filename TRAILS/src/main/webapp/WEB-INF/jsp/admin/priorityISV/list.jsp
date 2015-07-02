@@ -17,9 +17,9 @@
 			<div style="width: 30%; float: left">
 				View as Level:
 				<select id="selectLevel">
-					<option value="all">all</option>
-					<option value="global">global</option>
-					<option value="account">account</option>
+					<option value="all">ALL</option>
+					<option value="global">GLOBAL</option>
+					<option value="account">ACCOUNT</option>
 				</select>
 			</div>
 			<div  style="float: right">
