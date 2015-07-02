@@ -192,8 +192,3 @@
 		window.location.href = url;
 	}
 </script>
-			<div  style="float: left">
-				<p class="ibm-button-link-alternate">
-					<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
-				</p>
-			</div>
