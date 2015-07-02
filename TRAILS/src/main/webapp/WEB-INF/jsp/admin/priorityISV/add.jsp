@@ -29,12 +29,26 @@
 
 	$(function() {
 
-		var requestUri = "${pageContext.request.contextPath}/search/accountJson.htm";
+		$("#level").change(function() {
+			var levelVal = $("#level").val();
+			if (levelVal == 'account') {
+				$('#inputAccount').css("display", "block");
+			} else {
+				$('#inputAccount').css("display", "none");
+			}
+		});
+
+		var searchAccountJsonURI = "${pageContext.request.contextPath}/search/accountJson.htm";
 		$("#account").autocomplete(
 				{
+					change : function(event, ui) {
+						if (ui.item == null) {
+							$("#customerId").val('');
+						}
+					},
 					source : function(request, response) {
 						$.ajax({
-							url : requestUri,
+							url : searchAccountJsonURI,
 							dataType : "json",
 							data : {
 								q : request.term
@@ -61,20 +75,143 @@
 					},
 					minLength : 3,
 					select : function(event, ui) {
-						alert(ui.item ? "Selected: " + ui.item.label
-								+ " value:" + ui.item.value + " id:"
-								+ ui.item.id : "Nothing selected, input was "
-								+ this.value);
+						$("#customerId").val(ui.item.id);
 					}
 				});
+
+		var manufacturerJsonURI = "${pageContext.request.contextPath}/admin/priorityISV/manufacturer.htm";
+		$("#manufacturer").autocomplete(
+				{
+					change : function(event, ui) {
+						if (ui.item == null) {
+							$("#manufacturerId").val('');
+						}
+					},
+					source : function(request, response) {
+						$.ajax({
+							url : manufacturerJsonURI,
+							dataType : "json",
+							data : {
+								q : request.term
+							},
+							success : function(data) {
+								if (isArray(data)) {
+									var result = new Array()
+									for (i = 0; i < data.length; i++) {
+										var obj = {
+											"id" : data[i].id,
+											"label" : data[i].manufacturerName
+													+ "-" + data[i].website,
+											"value" : data[i].manufacturerName
+													+ "-" + data[i].website,
+										};
+										result.push(obj);
+									}
+									response(result);
+								} else {
+									response(data);
+								}
+							}
+						});
+					},
+					minLength : 3,
+					select : function(event, ui) {
+						$("#manufacturerId").val(ui.item.id);
+					}
+				});
+
+		$("#btnSubmit").click(function() {
+			resetErrors();
+			if (validateEmpty()) {
+				jQuery.ajax({
+					type : 'put',
+					xhrFields : {
+						withCredentials : false
+					},
+					url : "http://localhost:8080/greeting",
+					data : {
+						"ts" : "rr"
+					},
+					success : function(data) {
+						alert(data);
+					}
+				});
+			}
+
+			return false;
+		});
+
 	});
+
+	function callRestApi() {
+
+		var obj = {
+			"customerId" : "intNumber",
+			"manufacturerId" : "intNumber",
+			"evidenceLocation" : "string",
+			"statusId" : "intNumber",
+			"businessJustification" : "string"
+		};
+
+	}
+
+	function resetErrors() {
+		$("#levelError").css("display", "none");
+		$("#accountError").css("display", "none");
+		$("#manufacturerError").css("display", "none");
+		$("#evidenceLocationError").css("display", "none");
+		$("#businessJustificationError").css("display", "none");
+	}
+
+	function validateEmpty() {
+		var passed = true;
+		var isLevelGoodForAccount = false;
+		if ($("#level").val() == null || $("#level").val() == '') {
+			$("#levelError").text("Please select a level");
+			$("#levelError").css("display", "block");
+			passed = false;
+		} else {
+			if ($("#level").val() == 'account') {
+				isLevelGoodForAccount = true;
+			}
+		}
+
+		if (isLevelGoodForAccount
+				&& ($("#customerId").val() == null || $("#customerId").val() == '')) {
+			$("#accountError").text("Please chose a valid account.");
+			$("#accountError").css("display", "block");
+		}
+
+		if ($("#evidenceLocation").val() == null
+				|| $("#evidenceLocation").val() == '') {
+			$("#evidenceLocationError").text("Please enter evidence location.");
+			$("#evidenceLocationError").css("display", "block");
+			passed = false;
+		}
+
+		if ($("#manufacturerId").val() == null
+				|| $("#manufacturerId").val() == '') {
+			$("#manufacturerError").text("Please select a valid manufacturer.");
+			$("#manufacturerError").css("display", "block");
+			passed = false;
+		}
+
+		if ($("#businessJustification").val() == null
+				|| $("#businessJustification").val() == '') {
+			$("#businessJustificationError").text(
+					"Please enter business justification.");
+			$("#businessJustificationError").css("display", "block");
+			passed = false;
+		}
+
+		return passed;
+	}
 </script>
 
 <div class="ibm-container">
 	<div class="ibm-container-body">
 		<h2>Add new priority ISV item.</h2>
-		<form method="post" enctype="multipart/form-data"
-			class="ibm-column-form" action="[test]">
+		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>
 					<span class="ibm-item-note">(e.g., Account, Global.)</span></label> <span><select
@@ -82,31 +219,38 @@
 						<option selected="selected" value="">Select one</option>
 						<option value="account">Account</option>
 						<option value="global">Global</option>
-				</select></span>
+				</select></span><span class="ibm-error-link" style="display: none" id="levelError"></span>
 			</p>
 
-			<p>
+			<p id="inputAccount" style="display: none">
 				<label for="account">Account: <span class="ibm-required">*</span></label>
-				<input id="account" size="40">
+				<span><input id="account" size="40"></span><span
+					class="ibm-error-link" id="accountError" style="display: none"></span>
+				<input type="hidden" id="customerId" />
 			</p>
 
 			<p>
 				<label for="manufacturer">Manufacturer:<span
-					class="ibm-required">*</span></label> <span><input type="text"
-					value="" size="40" id="manufacturer" name="manufacturer" /></span>
+					class="ibm-required">*</span></label> <span><input size="40"
+					id="manufacturer" name="manufacturer" /></span><span
+					class="ibm-error-link" id="manufacturerError" style="display: none"></span><input
+					type="hidden" id="manufacturerId" />
 			</p>
 
 			<p>
 				<label for="evidenceLocation">Evidence location:<span
 					class="ibm-required">*</span></label> <span><input type="text"
 					value="" size="40" id="evidenceLocation" name="evidenceLocation" /></span>
+				<span class="ibm-error-link" id="evidenceLocationError"
+					style="display: none"></span>
 			</p>
 
 			<p>
 				<label for="businessJustification">Business Justification:<span
 					class="ibm-required">*</span></label> <span><input type="text"
 					value="" size="40" id="businessJustification"
-					name="businessJustification" /></span>
+					name="businessJustification" /></span><span class="ibm-error-link"
+					id="businessJustificationError" style="display: none"></span>
 			</p>
 
 			<div class="ibm-alternate-rule">
@@ -118,8 +262,8 @@
 			</div>
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="submit" class="ibm-btn-arrow-pri" name="ibm-submit"
-						value="Submit" />
+					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
+						value="Submit" id="btnSubmit" />
 				</p>
 			</div>
 		</form>
