@@ -8,5 +8,9 @@ public interface ManufacturerService {
 
 	public Manufacturer findManufacturerById(Long id);
 
+
 	public List<Manufacturer> findByNameLike(String name);
+
+	public Manufacturer findManufacturerByName(String name);
+
 }

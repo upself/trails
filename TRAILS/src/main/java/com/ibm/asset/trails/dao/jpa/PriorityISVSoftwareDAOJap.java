@@ -70,13 +70,22 @@ public class PriorityISVSoftwareDAOJap extends
 	@SuppressWarnings("unchecked")
 	public PriorityISVSoftware findPriorityISVSoftwareByUniqueKeys(
 			String level, Long manufacturerId, Long customerId) {
-		
-		List<PriorityISVSoftware> results = entityManager
-	                .createNamedQuery("findPriorityISVSoftwareByUniqueKeys")
+		List<PriorityISVSoftware> results;
+		 
+		if(customerId == null){
+	       results = entityManager
+		                .createNamedQuery("findPriorityISVSoftwareByUniqueKeys2")
+		                .setParameter("level", level)
+		                .setParameter("manufacturerId", manufacturerId).getResultList();
+		}
+		else{
+		   results = entityManager
+	                .createNamedQuery("findPriorityISVSoftwareByUniqueKeys1")
 	                .setParameter("level", level)
 	                .setParameter("manufacturerId", manufacturerId)
 	                .setParameter("customerId", customerId).getResultList();
-	        
+		}
+		
 		    PriorityISVSoftware result;
 	        if (results == null || results.isEmpty()) {
 	            result = null;

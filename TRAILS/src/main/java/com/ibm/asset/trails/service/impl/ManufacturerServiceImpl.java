@@ -19,8 +19,16 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		return this.manufacturerDAO.findById(id);
 	}
 
+
 	public List<Manufacturer> findByNameLike(String name) {
 		return this.manufacturerDAO.findByNameLike(name);
+	}
+
+
+	@Override
+	public Manufacturer findManufacturerByName(String name) {
+		// TODO Auto-generated method stub
+		return manufacturerDAO.findManufacturerByName(name);
 	}
 
 }

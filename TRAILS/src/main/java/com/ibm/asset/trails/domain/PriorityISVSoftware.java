@@ -16,8 +16,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PRIORITY_ISV_SW")
-@NamedQueries({@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys", query = "from PriorityISVSoftware pISVSW where pISVSW.level = :level and pISVSW.manufacturer.id = :manufacturerId and pISVSW.account.id = :customerId") 
-})
+@NamedQueries({@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys1", query = "from PriorityISVSoftware pISVSW where UCASE(pISVSW.level) = :level and pISVSW.manufacturer.id = :manufacturerId and pISVSW.account.id = :customerId") 
+              ,@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys2", query = "from PriorityISVSoftware pISVSW where UCASE(pISVSW.level) = :level and pISVSW.manufacturer.id = :manufacturerId")})
 
 public class PriorityISVSoftware extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1570160658765275811L;
@@ -30,18 +30,18 @@ public class PriorityISVSoftware extends AbstractDomainEntity {
 	@Column(name = "LEVEL", length=8, nullable = false)
 	private String level;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CUSTOMER_ID", nullable = true)
 	private Account account;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MANUFACTURER_ID", nullable = false)
 	private Manufacturer manufacturer;
 
 	@Column(name = "EVIDENCE_LOCATION", nullable = false)
 	private String evidenceLocation;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "STATUS_ID", nullable = false)
 	private Status status;
 	

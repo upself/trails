@@ -135,8 +135,17 @@
 			</result>
 		</action>
 
+
 		<action name="manufacturer" method="getManufacturerByNameJson"
 			class="priorityISVAction" />
+
+
+		
+		<action name="upload" method="admin" class="priorityISVAction">
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="tiles">tiles.admin.priorityISV.upload
+			</result>
+		</action>
 
 	</package>
 

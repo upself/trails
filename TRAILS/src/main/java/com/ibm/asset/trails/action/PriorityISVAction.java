@@ -25,6 +25,8 @@ public class PriorityISVAction extends AccountBaseAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -1366278014947818495L;
+	
+	private Long priorityISVSoftwareId;
 
 	private ManufacturerService manufacturerService;
 
@@ -37,6 +39,7 @@ public class PriorityISVAction extends AccountBaseAction {
 	public String admin() throws Exception {
 		return SUCCESS;
 	}
+
 
 	@UserRole(userRole = UserRoleType.READER)
 	public String getManufacturerByNameJson() throws IOException {
@@ -78,6 +81,14 @@ public class PriorityISVAction extends AccountBaseAction {
 
 	public void setManufacturerService(ManufacturerService manufacturerService) {
 		this.manufacturerService = manufacturerService;
+
+	public Long getPriorityISVSoftwareId() {
+		return priorityISVSoftwareId;
+	}
+
+	public void setPriorityISVSoftwareId(Long priorityISVSoftwareId) {
+		this.priorityISVSoftwareId = priorityISVSoftwareId;
+
 	}
 
 }
