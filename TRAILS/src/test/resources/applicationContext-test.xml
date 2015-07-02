@@ -103,7 +103,8 @@
 		</property>
 	</bean>
 	<bean id="priorityISVSoftwareService" class="com.ibm.asset.trails.service.impl.PriorityISVSoftwareServiceImpl" />
-    
+    <bean id="statusService" class="com.ibm.asset.trails.service.impl.StatusServiceImpl" />
+   
     <!--web services -->
 	<import resource="applicationContext-test-ws.xml" />
 </beans>
