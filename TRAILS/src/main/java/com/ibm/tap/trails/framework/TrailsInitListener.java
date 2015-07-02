@@ -11,12 +11,12 @@ import javax.servlet.ServletContextListener;
 public class TrailsInitListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
-		String props = "C:\\personal\\software\\Trails_props\\trails.properties";
+		String props = "/opt/trails/conf/trails.properties";
 		
 		String classPathRoot = PropertiesLoaderSupport.class.getResource("")
 				.getPath();
 		if (classPathRoot.indexOf("dst1185") != -1) {
-			props = "C:\\personal\\software\\Trails_props\\trailsDST1185.properties";
+			props = "/opt/trails/conf/trailsDST1185.properties";
 		}
 
 		Properties propsFromFile = new Properties();

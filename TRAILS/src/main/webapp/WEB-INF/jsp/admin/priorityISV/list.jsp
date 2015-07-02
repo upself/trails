@@ -17,9 +17,9 @@
 			<div style="width: 30%; float: left">
 				View as Level:
 				<select id="selectLevel">
-					<option value="all">ALL</option>
-					<option value="global">GLOBAL</option>
-					<option value="account">ACCOUNT</option>
+					<option value="all">all</option>
+					<option value="global">global</option>
+					<option value="account">account</option>
 				</select>
 			</div>
 			<div  style="float: right">
@@ -36,7 +36,7 @@
 					<th scope="col"><span>Manufacturer name</span><span class="ibm-icon"></span></th>
 					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>CNDB Name</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>CNDB ID</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Account Number</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
 					<th scope="col"><span>Status</span><span class="ibm-icon"></span></a></th>
 					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
@@ -49,12 +49,17 @@
 			<tbody id="priority_isv_list" />
 		</table>
 	</div>
+<<<<<<< HEAD
 			<div  style="float: left">
 				<p class="ibm-button-link-alternate">
 					<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
 				</p>
 			</div>
 </div> 
+=======
+</div>
+
+>>>>>>> parent of d464091... Merge remote-tracking branch 'origin/Story_19971_New' into Epic_19462
 <script>
 
 	Date.prototype.format = function(format) {
@@ -165,7 +170,7 @@
 								html += "<td id='level_td'>" + list[i].level
 										+ "</td>";
 								html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
-								html += "<td>" + (list[i].customerId == null ? "" : list[i].customerId) + "</td>"
+								html += "<td>" + (list[i].accountNumber == null ? "" : list[i].accountNumber) + "</td>";
 								html += "<td>" + list[i].evidenceLocation
 										+ "</td>";
 								html += "<td>" + list[i].statusDesc + "</td>";
@@ -189,5 +194,4 @@
 		window.location.href = url; 
 	}
 </script>
-</script>
-
+<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
