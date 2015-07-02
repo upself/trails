@@ -54,8 +54,7 @@
 					<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
 				</p>
 			</div>
-</div>
- 
+</div> 
 <script>
 
 	Date.prototype.format = function(format) {
