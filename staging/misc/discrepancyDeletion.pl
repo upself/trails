@@ -27,7 +27,7 @@ $| = 1;
 #use strict;
 use lib '/opt/staging/v2';
 use Getopt::Std;
-
+use Config::Properties::Simple;
 use DBI;
 use Base::Utils;
 use DBD::DB2::Constants;
