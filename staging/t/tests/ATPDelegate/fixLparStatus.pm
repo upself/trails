@@ -1,4 +1,3 @@
-
 package ATPDelegate::fixLparStatus;
 
 use Test::More;
@@ -12,44 +11,28 @@ sub startup : Tests(startup => 1) {
     use_ok $test->class;
 }
 
-sub offline_test_1 : Tests(5) {
+sub offline_test_1 : Tests(6) {
 	my $test  = shift;
 	my $class = $test->class;
+    can_ok $class,'fixLparStatus';
+    my $object = {};
+    bless $object,$class;	
+	my $status;
 	
-    my %record = (
-    "hardwareStatus" => "HWCOUNT",
-    "lparStatus" => "ACTIVE",
-    );
-    $class->fixLparStatus(\%record);
-	is($record{lparStatus},'ACTIVE', "test offline, physical box=hwcount, lpar status is  active");
+    $status = $object->fixLparStatus('HWCOUNT','ACTIVE');
+	is($status,'ACTIVE', "test offline, physical box=hwcount, lpar status is  active");
 
-    %record = (
-    "hardwareStatus" => "HWCOUNT",
-    "lparStatus" => "INACTIVE",
-    );
-    $class->fixLparStatus(\%record);
-	is($record{lparStatus},'INACTIVE', "test offline, physical box=hwcount, lpar status is inactive");
+    $status = $object->fixLparStatus('HWCOUNT','INACTIVE');
+	is($status,'INACTIVE', "test offline, physical box=hwcount, lpar status is inactive");
 
-    %record = (
-    "hardwareStatus" => "ACTIVE",
-    "lparStatus" => "ACTIVE",
-    );
-    $class->fixLparStatus(\%record);
-	is($record{lparStatus},'ACTIVE', "test offline, physical box=active, lpar status is active");
+    $status = $object->fixLparStatus('ACTIVE','ACTIVE');
+	is($status,'ACTIVE', "test offline, physical box=active, lpar status is active");
 
-    %record = (
-    "hardwareStatus" => "ACTIVE",
-    "lparStatus" => "RANDOM",
-    );
-    $class->fixLparStatus(\%record);
-	is($record{lparStatus},'ACTIVE', "test offline, physical box=active, lpar status is invalid");
+    $status = $object->fixLparStatus('ACTIVE','RANDOM');
+	is($status,'ACTIVE', "test offline, physical box=active, lpar status is invalid");
 
-    %record = (
-    "hardwareStatus" => "ACTIVE",
-    "lparStatus" => "HWCOUNT",
-    );
-    $class->fixLparStatus(\%record);
-	is($record{lparStatus},'HWCOUNT', "test offline, physical box=active, lpar status is hwcounth");
+    $status = $object->fixLparStatus('ACTIVE','HWCOUNT');
+	is($status,'HWCOUNT', "test offline, physical box=active, lpar status is hwcount");
 
 }
 1;

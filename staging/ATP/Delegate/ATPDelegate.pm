@@ -85,7 +85,7 @@ sub getData {
         dlog('Result set uppercased');
         logRec( 'dlog', \%rec );
 
-		if(checkRecord(\%rec) == 1 || checkCustomerNumberMap($customerNumberMap,$accountNumberMap,\%rec) == 1 || checkMachineTypeMap($machineTypeMap,\%rec)){
+		if($self->checkRecord(\%rec) == 1 || $self->checkCustomerNumberMap($customerNumberMap,$accountNumberMap,\%rec) == 1 || $self->checkMachineTypeMap($machineTypeMap,\%rec)){
 			next;
 		}
 		
@@ -264,7 +264,7 @@ sub getData {
     return ( \%hardwareList, \%hardwareLparList, \%effProcList );
 }
 sub checkRecord{
-		my ($rec) = @_;
+		my ($self,$rec) = @_;
 	        ###We can't have a blank serial
         if ( ( !defined $rec->{serial} ) || ( $rec->{serial} eq '' ) ) {
             dlog('Serial is missing');
@@ -281,7 +281,7 @@ sub checkRecord{
 }
 
 sub checkCustomerNumberMap{
-	my ($customerNumberMap,$accountNumberMap,$rec) = @_;
+	my ($self,$customerNumberMap,$accountNumberMap,$rec) = @_;
     ###We don't want stuff thats not in our customer number map
     if ( (!exists $customerNumberMap->{ $rec->{customerNumber} }) && (!exists $accountNumberMap->{ $rec->{customerNumber} })) {
         dlog('Customer number does not map to cndb customer');
@@ -290,7 +290,7 @@ sub checkCustomerNumberMap{
 }
 
 sub checkmachineTypeMap{
-	my ($machineTypeMap,$rec) = @_;
+	my ($self,$machineTypeMap,$rec) = @_;
     ###We don't want stuff thats not in our machine type map
     if ( !defined $machineTypeMap->{ $rec->{machineType} } ) {
         dlog('Machine type is not defined in BRAVO');
@@ -300,11 +300,12 @@ sub checkmachineTypeMap{
 
 sub fixLparStatus{
 	
-	my ($rec) = @_;
-    if ( $rec->{hardwareStatus} eq 'ACTIVE' &&  ($rec->{lparStatus} ne 'ACTIVE'  && $rec->{lparStatus} ne 'HWCOUNT')){
-        dlog(' Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
-        $rec->{lparStatus} = 'ACTIVE';
+	my ($self,$hwstatus , $lparStatus) = @_;
+    if ( ($hwstatus eq 'ACTIVE') && ($lparStatus ne 'ACTIVE')  && ($lparStatus ne 'HWCOUNT')){
+        dlog('Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
+        $lparStatus='ACTIVE';
     }
+    return $lparStatus;
 }
 
 sub queryATPData {
