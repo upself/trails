@@ -259,9 +259,8 @@
 			<item value="Non Instance based SW upload" link="/admin/nonInstancebasedSW/upload.htm" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="Adde" link="/admin/priorityISV/add.htm" />
-			<item value="Update" link="/admin/priorityISV/update.htm" />
-			<item value="Import" link="/admin/priorityISV/upload.htm" />
+			<item value="Priority ISV SW manage" link="/admin/priorityISV/add.htm" />
+			<item value="Priority ISV SW upload" link="/admin/priorityISV/upload.htm" />
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
