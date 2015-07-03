@@ -89,7 +89,7 @@ sub getData {
 			next;
 		}
 		
-		$rec{lparStatus}=fixLparStatus($rec{hardwareStatus},$rec{lparStatus});
+		$rec{lparStatus}=self->fixLparStatus($rec{hardwareStatus},$rec{lparStatus});
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
