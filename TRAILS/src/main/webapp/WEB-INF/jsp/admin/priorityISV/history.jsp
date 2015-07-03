@@ -14,15 +14,15 @@
                 </caption>
 			<thead>
 				<tr>
-					<th scope="col"><span>Manufacturer Name</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Level</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>CNDB Name</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>CNDB ID</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Status</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Remote Users</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_history_list">
