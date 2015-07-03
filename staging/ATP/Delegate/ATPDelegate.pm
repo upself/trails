@@ -302,7 +302,7 @@ sub fixLparStatus{
 	
 	my ($self,$hwstatus , $lparStatus) = @_;
     if ( ($hwstatus eq 'ACTIVE') && ($lparStatus ne 'ACTIVE')  && ($lparStatus ne 'HWCOUNT')){
-        dlog('Lpar defined to other value than ACTIVE, INACTIVE, HWCOUNT. Fixing to ACTIVE');
+        dlog('HWstatus is ACTIVE and Lpar defined to other value than ACTIVE, HWCOUNT. Fixing to ACTIVE');
         $lparStatus='ACTIVE';
     }
     return $lparStatus;
