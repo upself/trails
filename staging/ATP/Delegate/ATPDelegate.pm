@@ -89,7 +89,7 @@ sub getData {
 			next;
 		}
 		
-		fixLparStatus(\%rec);
+		$rec{lparStatus}=fixLparStatus($rec{hardwareStatus},$rec{lparStatus});
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
@@ -289,7 +289,7 @@ sub checkCustomerNumberMap{
     }
 }
 
-sub checkmachineTypeMap{
+sub checkMachineTypeMap{
 	my ($self,$machineTypeMap,$rec) = @_;
     ###We don't want stuff thats not in our machine type map
     if ( !defined $machineTypeMap->{ $rec->{machineType} } ) {
