@@ -6,12 +6,18 @@ import org.springframework.stereotype.Repository;
 
 import com.ibm.asset.trails.dao.ManufacturerDAO;
 import com.ibm.asset.trails.domain.Manufacturer;
-import com.ibm.asset.trails.domain.Status;
 
 @Repository
 public class ManufacturerDAOJap extends
 		AbstractGenericEntityDAOJpa<Manufacturer, Long> implements
 		ManufacturerDAO {
+
+	@SuppressWarnings("unchecked")
+	public List<Manufacturer> findByNameLike(String name) {
+		return (List<Manufacturer>) entityManager
+				.createNamedQuery("manufacturerByNameLike")
+				.setParameter("name", name).getResultList();
+	}
 
 	@Override
 	public Manufacturer findManufacturerByName(String name) {
@@ -26,5 +32,6 @@ public class ManufacturerDAOJap extends
 		}
 
 		return list.get(0);
+
 	}
 }
