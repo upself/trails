@@ -1437,7 +1437,7 @@
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV" />
+		<put-attribute name="contentTitle" value="Priority ISV SW" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/list.jsp" />
 		<put-attribute name="description" value="Priority ISV" />
