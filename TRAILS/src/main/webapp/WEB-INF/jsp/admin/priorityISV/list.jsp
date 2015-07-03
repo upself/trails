@@ -8,13 +8,8 @@
 
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<div style="float: right">
-			<p class='ibm-button-link-alternate'>
-				<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add</a>
-			</p>
-		</div>
-		<div style="width: 100%; float: left">
-			<div style="width: 30%; float: left">
+		<div style="height:180px;width: 100%; float: left">
+			<div style="line-height:150px;width:30%;float: left">
 				View as Level:
 				<select id="selectLevel">
 					<option value="all">ALL</option>
@@ -22,40 +17,46 @@
 					<option value="account">ACCOUNT</option>
 				</select>
 			</div>
-			<div  style="float: right">
-				<p class="ibm-button-link-alternate">
-					<a class="ibm-btn-small" id="download" href="#">Download Report</a>
-				</p>
-			</div>
+			<div style="float: right">
+				<div style="width:200px">
+					<p class='ibm-button-link' style="font-size:15px">
+						<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add Priority ISV SW</a>
+					</p>
+				</div>
+				<div style="width:200px">
+					<p class="ibm-button-link" style="font-size:15px">
+						<a class="ibm-btn-small" id="download" href="#">Export Priority ISV SW</a>
+					</p>
+				</div>
+				<div style="width:200px">
+					<p class="ibm-button-link" style="font-size:15px">
+						<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import Priority ISV SW</a> 
+					</p>
+				</div>
+			</div>	
 		</div>
 		<br><br>
 		<table id="isvTable" cellspacing="0" cellpadding="0" border="0"
 			class="ibm-data-table ibm-sortable-table" summary="Priority ISV list">
 			<thead>
 				<tr>
-					<th scope="col"><span>Manufacturer name</span><span class="ibm-icon"></span></th>
-					<th id="level_th"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>CNDB Name</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>CNDB ID</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Evidence Location</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Business Justification</span><span class="ibm-icon"></span></th>
-					<th scope="col"><span>Remote User</span><span class="ibm-icon"></span></th>
-					<!-- 
-					 -->
-					<th scope="col"><span>Record Time</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer Name</span><span class="ibm-icon"></span></th>
+					<th id="level_th" class="ibm-sort"><a href="#sort">Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB Name</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB ID</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Evidence Location</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></th>
+					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_list" />
 		</table>
 	</div>
-			<div  style="float: left">
-				<p class="ibm-button-link-alternate">
-					<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import ISV</a> 
-				</p>
-			</div>	
-</div>
 
+</div>
 <script>
 
 	Date.prototype.format = function(format) {
@@ -158,11 +159,14 @@
 							var list = data.dataList;
 							for (var i = 0; i < list.length; i++) {
 								html += "<tr>";
+								//html += "<td>" 
+								//		+ list[i].manufacturerName
+								//		+ "</td>";
 								html += "<td><a href='${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 										+ list[i].id
 										+ "'>"
 										+ list[i].manufacturerName
-										+ "</a></td>";
+										+ "</a></td>";		
 								html += "<td id='level_td'>" + list[i].level
 										+ "</td>";
 								html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
@@ -175,12 +179,12 @@
 								html += "<td>" + list[i].remoteUser + "</td>";
 								html += "<td>" + getSmpFormatDateByLong(list[i].recordTime,false) + "</td>";
 								html += "<td style='text-align:center'>";
-								html += "<p class='ibm-button-link-alternate'>"
-								//html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
-									//	+ list[i].id + "\")'>Update</a>";
+								html += "<p class='ibm-button-link-alternate'>";
+								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
+									+ list[i].id + "\")'>Update</a>";
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
-										+ list[i].id + "\"); return false;'>View history</a></p>"
-								html += "</tr>";
+										+ list[i].id + "\"); return false;'>View history</a></p>";
+								html += "</tr>"; 
 							}
 						}
 						$("#priority_isv_list").html(html);
@@ -189,6 +193,6 @@
 	}
 
 	function openLink(url) {
-		window.location.href = url;
+		window.location.href = url; 
 	}
 </script>
