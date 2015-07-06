@@ -60,7 +60,9 @@ public class V17eNavigationPreparer implements ViewPreparer {
 						: testRequestUrl);
 		testRequestUrl = testRequestUrl
 				.equals("/admin/priorityISV/history.htm") ? "/admin/priorityISV/list.htm"
-				: testRequestUrl;
+				: (testRequestUrl
+						.equals("/admin/priorityISV/update.htm") ? "/admin/priorityISV/list.htm"
+						: testRequestUrl);
 
 		// We want to start with the levelOne attribute
 		Attribute levelOne = aContext.getAttribute("levelOne");
