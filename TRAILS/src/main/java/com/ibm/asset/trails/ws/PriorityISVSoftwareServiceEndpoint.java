@@ -611,12 +611,15 @@ public class PriorityISVSoftwareServiceEndpoint {
 			nullFlag++;
 		}else if (levelCell.getCellType() != HSSFCell.CELL_TYPE_STRING){
 			errorMsg += "Level is required a string. ";
-		}else{
+		}else if(!levelCell.getRichStringCellValue().getString().trim().equalsIgnoreCase("GLOBAL")
+				&& !levelCell.getRichStringCellValue().getString().trim().equalsIgnoreCase("ACCOUNT")){
+			errorMsg += "Level must be 'GLOBAL' or 'ACCOUNT'. ";
+		}else {
 			level = levelCell.getRichStringCellValue().getString().trim();
 			priorityISV.setLevel(level.toUpperCase());
 		}
 		
-		if(null != level && !level.equalsIgnoreCase("GLOBAL")){
+		if(null != level && !"".equals(level) && !level.equalsIgnoreCase("GLOBAL")){
 			//cndb name
 			HSSFCell cndbNameCell = row.getCell(2);
 			if(null == cndbNameCell){
