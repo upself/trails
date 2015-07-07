@@ -137,6 +137,12 @@
 			return false;
 		});
 
+		$("#btnCancel")
+				.click(
+						function() {
+							window.location.href = "${pageContext.request.contextPath}/admin/priorityISV/list.htm";
+						});
+
 	});
 
 	function callRestApi() {
@@ -316,7 +322,9 @@
 			<div class="ibm-buttons-row">
 				<p>
 					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
-						value="Submit" id="btnSubmit" />
+						value="Submit" id="btnSubmit" /> <input type="button"
+						class="ibm-btn-arrow-pri" name="ibm-cancel" value="Cancel"
+						id="btnCancel" />
 				</p>
 			</div>
 		</form>
