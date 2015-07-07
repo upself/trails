@@ -315,10 +315,6 @@
 			<div class="ibm-alternate-rule">
 				<hr>
 			</div>
-			<p>Description to be added here.</p>
-			<div class="ibm-rule">
-				<hr>
-			</div>
 			<div class="ibm-buttons-row">
 				<p>
 					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
