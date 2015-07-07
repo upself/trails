@@ -10,7 +10,6 @@ use Recon::LicensingInstalledSoftware;
 use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
 use Config::Properties::Simple;
-use Test::JSON;
 use Try::Tiny;
 
 sub new {
