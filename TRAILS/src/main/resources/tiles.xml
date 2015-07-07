@@ -263,9 +263,9 @@
 			<item value="Non Instance based SW upload" link="/admin/nonInstancebasedSW/upload.htm" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="Adde" link="/admin/priorityISV/add.htm" />
-			<item value="Update" link="/admin/priorityISV/update.htm" />
-			<item value="Import" link="/admin/priorityISV/upload.htm" />
+			<item value="View" link="/admin/priorityISV/list.htm" />
+			<item value="Add" link="/admin/priorityISV/add.htm" />
+			<item value="Upload" link="/admin/priorityISV/upload.htm" />
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
@@ -1438,7 +1438,7 @@
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV" />
+		<put-attribute name="contentTitle" value="Priority ISV SW" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/list.jsp" />
 		<put-attribute name="description" value="Priority ISV" />
@@ -1452,7 +1452,7 @@
 		<put-attribute name="description" value="Priority ISV Add" />
 		<put-attribute name="keywords" value="Priority ISV Add" />
 	</definition>
-	
+
 	<definition name="tiles.admin.priorityISV.update" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV Update" />
 		<put-attribute name="content" type="template"
@@ -1460,23 +1460,22 @@
 		<put-attribute name="description" value="Priority ISV Update" />
 		<put-attribute name="keywords" value="Priority ISV Update" />
 	</definition>
-
 	<definition name="tiles.admin.priorityISV.history" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV History" />
-		<put-attribute name="content" type="template" 
+		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/history.jsp" />
 		<put-attribute name="description" value="Priority ISV History" />
 		<put-attribute name="keywords" value="Priority ISV History" />
 	</definition>
-	
+
 	<definition name="tiles.admin.priorityISV.upload" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV Upload" />
-		<put-attribute name="content" type="template" 
+		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/upload.jsp" />
 		<put-attribute name="description" value="Priority ISV Upload" />
 		<put-attribute name="keywords" value="Priority ISV Upload" />
 	</definition>
-	
+
 	<definition name="tiles.account.exception.lparZEROPROC"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="headInsert" type="template"

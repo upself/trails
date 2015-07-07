@@ -31,6 +31,13 @@ import com.ibm.tap.trails.framework.UserSession;
  */
 public class V17eNavigationPreparer implements ViewPreparer {
 
+	private static final String ADMIN_PRIORITY_ISV_LIST_HTM = "/admin/priorityISV/list.htm";
+	private static final String ADMIN_PRIORITY_ISV_HISTORY_HTM = "/admin/priorityISV/history.htm";
+	private static final String ADMIN_PRIORITY_ISV_UPDATE_HTM = "/admin/priorityISV/update.htm";
+	private static final String ADMIN_NON_INSTANCEBASED_SW_MANAGE_HTM = "/admin/nonInstancebasedSW/manage.htm";
+	private static final String ADMIN_NON_INSTANCEBASED_SW_LIST_HTM = "/admin/nonInstancebasedSW/list.htm";
+	private static final String ADMIN_NON_INSTANCEBASED_SW_HISTORY_HTM = "/admin/nonInstancebasedSW/history.htm";
+
 	public void execute(TilesRequestContext tContext, AttributeContext aContext)
 			throws PreparerException {
 
@@ -53,14 +60,15 @@ public class V17eNavigationPreparer implements ViewPreparer {
 						: (testRequestUrl
 								.equals("/admin/alertTypeCauseMapping/map.htm") ? "/admin/alertTypeCauseMapping/listAlertType.htm"
 								: testRequestUrl));
-		testRequestUrl = testRequestUrl
-				.equals("/admin/nonInstancebasedSW/history.htm") ? "/admin/nonInstancebasedSW/list.htm"
-				: (testRequestUrl
-						.equals("/admin/nonInstancebasedSW/manage.htm") ? "/admin/nonInstancebasedSW/list.htm"
-						: testRequestUrl);
-		testRequestUrl = testRequestUrl
-				.equals("/admin/priorityISV/history.htm") ? "/admin/priorityISV/list.htm"
-				: testRequestUrl;
+
+		if (testRequestUrl.equals(ADMIN_NON_INSTANCEBASED_SW_HISTORY_HTM)) {
+			testRequestUrl = ADMIN_NON_INSTANCEBASED_SW_LIST_HTM;
+		} else if (testRequestUrl.equals(ADMIN_NON_INSTANCEBASED_SW_MANAGE_HTM)) {
+			testRequestUrl = ADMIN_NON_INSTANCEBASED_SW_LIST_HTM;
+		} else if (testRequestUrl.equals(ADMIN_PRIORITY_ISV_HISTORY_HTM)
+				|| testRequestUrl.equals(ADMIN_PRIORITY_ISV_UPDATE_HTM)) {
+			testRequestUrl = ADMIN_PRIORITY_ISV_LIST_HTM;
+		}
 
 		// We want to start with the levelOne attribute
 		Attribute levelOne = aContext.getAttribute("levelOne");
