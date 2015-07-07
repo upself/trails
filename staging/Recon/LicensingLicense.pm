@@ -272,61 +272,6 @@ sub queryPotentialInstalledSoftwares {
     return ( 'potentialInstalledSoftwares', $query, \@fields );
 }
 
-sub getScheduleFScope {
-	my $self=shift;
-	my $custId=shift;
-	my $softName=shift;
-	my $hwOwner=shift;
-	my $hSerial=shift;
-	my $hMachineTypeId=shift;
-	my $slName=shift;
-	
-	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
-	my $scopeToReturn=undef;
-	
-	$self->connection->prepareSqlQueryAndFields(
-		$self->queryScheduleFScope() );
-	my $sth = $self->connection->sql->{ScheduleFScope};
-	my %recc;
-	$sth->bind_columns( map { \$recc{$_} }
-		  @{ $self->connection->sql->{ScheduleFScopeFields} } );
-	$sth->execute( $custId, $softName );
-	
-#	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
-	
-	while ( $sth->fetchrow_arrayref ) {
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
-			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
-			return undef;
-		}
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=3;
-		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
-			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
-			return undef;
-		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=2;
-		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
-			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
-			return undef;
-		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
-			$scopeToReturn=$recc{scopeName};
-			$prioFound=1;
-		}
-		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
-	}
-	
-	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound");
-	
-	return ( $scopeToReturn, $prioFound );
-}
-
 sub getLicenseAllocationsData {
     my $self = shift;
     dlog("begin getLicenseAllocationsData");
@@ -364,7 +309,7 @@ sub getLicenseAllocationsData {
 #        $lav->scopeName( $rec{scopeName} );
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
         
-       	my ( $scopename_temp, undef ) = getScheduleFScope( 	$self,
+       	my ( $scopename_temp, undef ) = Recon::Delegate::ReconDelegate->getScheduleFScope( 	$self->connection,
 															$rec{slCustomerId}, # customer ID from SW LPAR
 															$rec{swName}, # software name
 															$rec{hOwner}, # hardware owner ID
@@ -372,6 +317,8 @@ sub getLicenseAllocationsData {
 															$rec{mtType}, #machine type
 															$rec{slName} #hostname
 															  );
+
+
 															  
 		$lav->scopeName ( $scopename_temp );
 
@@ -382,42 +329,6 @@ sub getLicenseAllocationsData {
 
     dlog("end getLicenseAllocationsData");
     $self->licenseAllocationData( \%data );
-}
-
-sub queryScheduleFScope {
-	# this needs to be updated if there ever is a level other than HOSTNAME HWBOX HWOWNER PRODUCT, that does not alphabetically
-	# fit into the correct priority-spot
-	my @fields = qw(
-	  hwOwner
-	  hSerial
-	  hMachineTypeId
-	  hostname
-	  level
-	  scopeName
-	);
-	my $query = '
-	  select
-	    sf.hw_owner,
-	    sf.serial,
-	    mt.id,
-	    sf.hostname,
-	    sf.level,
-	    s.name
-	  from schedule_f sf
-	    left outer join scope s
-	      on sf.scope_id = s.id
-	    left outer join machine_type mt
-	      on mt.name = sf.machine_type
-	  where
-	    sf.customer_id = ?
-	  and
-	    sf.software_name = ?
-	  and
-	    sf.status_id = 2
-	  with ur
-	';
-	return('ScheduleFScope', $query, \@fields );
-	
 }
 
 sub queryLicenseAllocationsData {
