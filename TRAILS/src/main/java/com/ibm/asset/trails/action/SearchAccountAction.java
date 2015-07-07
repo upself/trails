@@ -1,9 +1,12 @@
 package com.ibm.asset.trails.action;
 
+import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.google.gson.Gson;
 import com.ibm.asset.trails.domain.AccountSearch;
 import com.ibm.asset.trails.form.SearchAccount;
 import com.ibm.asset.trails.service.SearchService;
@@ -37,7 +40,7 @@ public class SearchAccountAction extends BaseAction implements SearchAction {
 	public String execute() {
 		return SUCCESS;
 	}
-	
+
 	@UserRole(userRole = UserRoleType.READER)
 	public String home() {
 		return SUCCESS;
@@ -52,6 +55,27 @@ public class SearchAccountAction extends BaseAction implements SearchAction {
 				getSearchAccount().isNameSearch(),
 				getSearchAccount().isAccountNumberSearch()));
 		return Action.SUCCESS;
+	}
+
+	@SkipValidation
+	@UserRole(userRole = UserRoleType.READER)
+	public String accountJson() throws Exception {
+		String str = ServletActionContext.getRequest().getParameter("q");
+		if (str == null || str == "") {
+			return com.opensymphony.xwork2.Action.NONE;
+		}
+		PrintWriter writer = ServletActionContext.getResponse().getWriter();
+
+		List<AccountSearch> result = getSearchService().searchAccounts(str,
+				false, true, true);
+		if (result != null && result.size() > 0) {
+			Gson gson = new Gson();
+			writer.write(gson.toJson(result));
+		} else {
+			writer.write("{}");
+		}
+
+		return com.opensymphony.xwork2.Action.NONE;
 	}
 
 	public List<AccountSearch> getAccountSearch() {
@@ -77,4 +101,5 @@ public class SearchAccountAction extends BaseAction implements SearchAction {
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
 	}
+
 }

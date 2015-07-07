@@ -22,7 +22,8 @@ import org.hibernate.annotations.Formula;
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
         @NamedQuery(name = "accountDetails", query = "FROM Account A JOIN FETCH A.department JOIN FETCH A.industry LEFT OUTER JOIN FETCH A.dpe LEFT OUTER JOIN FETCH A.softwareContact JOIN FETCH A.accountType LEFT OUTER JOIN FETCH A.countryCode WHERE A.id = :customerId"),
-        @NamedQuery(name = "accountByAccountNumber", query = "FROM Account WHERE account = :accountNumber") })
+        @NamedQuery(name = "accountByAccountNumber", query = "FROM Account WHERE account = :accountNumber"),
+        @NamedQuery(name = "accountByCustomerNameAndAccountNumber", query = "FROM Account WHERE name= :customerName and account = :accountNumber")})
 public class Account {
 
     @Id
