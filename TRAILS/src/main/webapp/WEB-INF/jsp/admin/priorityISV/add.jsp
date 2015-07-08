@@ -31,6 +31,8 @@
 }
 </style>
 <script type="text/javascript">
+	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
+
 	function isArray(obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	}
@@ -147,6 +149,11 @@
 
 	function callRestApi() {
 
+		if ($("#level").val() == 'global') {
+			$("#customerId").val('');
+			$("#account").val('');
+		}
+
 		var obj = "{\"level\":\"" + $("#level").val() + "\",\"customerId\":\""
 				+ $("#customerId").val() + "\",\"manufacturerId\":\""
 				+ $("#manufacturerId").val() + "\",\"evidenceLocation\":\""
@@ -164,6 +171,7 @@
 			contentType : "application/json",
 			data : obj,
 			beforeSend : function() {
+				$("#dialog").html(loadingMsg);
 				$("#dialog").dialog({
 					dialogClass : 'no-close',
 					closeOnEscape : false,
@@ -173,14 +181,16 @@
 						$("#progressbar").progressbar({
 							value : false
 						});
-					}
+					},
+					title : 'Submitting',
+					buttons : {}
 				});
 			},
 			headers : {
 				"Access-Control-Allow-Headers" : "Content-Type"
 			},
 			success : function(data) {
-				submitEnded(data.msg);
+				submitEnded(data);
 			},
 			error : function(jqXHR, status, error) {
 				submitEnded(status + ":" + error);
@@ -189,21 +199,51 @@
 
 	}
 
-	function submitEnded(message) {
+	function initPage() {
+
+		$("#level").val('');
+		$('#inputAccount').css("display", "none");
+		$("#account").val('');
+		$("#customerId").val('');
+
+		$("#manufacturerId").val('');
+		$("#manufacturer").val('');
+		$("#dialog").dialog("close");
+
+	}
+
+	function submitEnded(data) {
+
+		var message = data.msg;
 		var urlSuccess = "${pageContext.request.contextPath}/admin/priorityISV/list.htm";
 
 		$("#progressbar").progressbar("disable");
-		$("#dialog").text(message + " Click OK redirect to list page.");
-		$("#dialog").dialog({
-			title : "Done",
-			modal : true,
-			buttons : {
-				Ok : function() {
-					$(this).dialog("close");
-					window.location.href = urlSuccess;
+
+		if (data.status == '200') {
+			$("#dialog").text(message + " Click OK redirect to list page.");
+			$("#dialog").dialog({
+				title : "Done",
+				modal : true,
+				buttons : {
+					Ok : function() {
+						$("#dialog").dialog("close");
+						window.location.href = urlSuccess;
+					}
 				}
-			}
-		});
+			});
+		} else {
+			$("#dialog").text(message);
+			$("#dialog").dialog({
+				title : "Oops",
+				modal : true,
+				buttons : {
+					Ok : function() {
+						$("#dialog").dialog("close");
+						initPage();
+					}
+				}
+			});
+		}
 	}
 
 	function resetErrors() {
@@ -326,7 +366,5 @@
 		</form>
 	</div>
 </div>
-<div id="dialog" title="Submitting Priority ISV">
-	<div id="progressbar"></div>
-</div>
+<div id="dialog"></div>
 <!-- END PRIORITY ISV ADD -->
