@@ -65,6 +65,12 @@ public class ShowWorkspace extends AccountReportBaseAction {
         //clear the identify to avoid it to existing when refresh workspace page
         getUserSession().setSchedulefDefValResult(null);
         
+        //defect 27747
+        if(getReconWorkspaceService().getProcWarnMsg()!=null){
+        	addActionError(getReconWorkspaceService().getProcWarnMsg());   
+        	getReconWorkspaceService().setProcWarnMsg(null);
+        }
+        
         return SUCCESS;
     }
 
