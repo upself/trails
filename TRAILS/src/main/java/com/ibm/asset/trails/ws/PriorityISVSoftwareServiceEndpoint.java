@@ -223,7 +223,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
 		status.setId(statusId);
 
-		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
+		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
 		  if(null == customerId){
@@ -321,7 +321,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
 		status.setId(statusId);
 			
-		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
+		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
 			if(null == customerId){
