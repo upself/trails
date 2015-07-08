@@ -3,7 +3,6 @@
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script src="${pageContext.request.contextPath}/js/jquery.js"
 	type="text/javascript"></script>
-<div style="font-size: 22px; display: inline">Upload&nbsp;</div>
 <p class="confidential">IBM Confidential</p>
 <br />
 <p>
@@ -28,6 +27,5 @@
 		* Select a file : <input id="uploadedFile_id" type="file"
 			name="uploadedFile" size="50" class="ibm-btn-small"/>
 	</p>
-
-	<input  name="ibm-submit" type="submit" value="Upload It"  class="ibm-btn-pri" />
 </form>
+<input  name="ibm-submit" type="submit" value="Upload It" onclick="$('#myForm').submit();" class="ibm-btn-pri" />
