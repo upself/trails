@@ -158,7 +158,7 @@ public class ReportServiceImpl implements ReportService {
 			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
 	private final String PRIORITY_ISV_SW_REPORT_NAME = "Priority ISV Software report";
 	private final String[] PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS = {
-			"Manufacturer name", "Level", "CNDB name", "CNDB ID", "Evidence location", "Status", "Business justification", "Remote User", "Record Time"};
+			"Manufacturer Name", "Level", "CNDB Name", "CNDB ID", "Evidence Location", "Status", "Business Justification", "Remote User", "Record Time"};
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired

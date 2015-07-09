@@ -103,7 +103,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 	  List<PriorityISVSoftwareHDisplay> results = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId);
 	  
 	  if(results == null){
-		return WSMsg.failMessage("No Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+"!");
+		return WSMsg.failMessage("No Priority ISV Software History Data has been found");
 	  }
 	  else{
 	    return WSMsg.successMessage("The Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+".",results);
