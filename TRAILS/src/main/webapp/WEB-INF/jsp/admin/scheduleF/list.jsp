@@ -1,7 +1,6 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
@@ -311,7 +310,7 @@ table.gridtable td {
 	cellspacing="1" cellpadding="0" requestURI="list.htm" defaultsort="1"
 	export="true">
 	<display:setProperty name="export.excel.filename"
-		value="SheduleF_View.xls" />
+		value="ScheduleF_View.xls" />
 	<display:column property="softwareName" sortProperty="SF.softwareName"
 		title="Software name" sortable="true"
 		href="/TRAILS/admin/scheduleF/manage.htm" paramProperty="id"
