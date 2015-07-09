@@ -49,12 +49,13 @@
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th> 
+					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_list" />
 		</table>
 	</div>
+
 </div>
 <script>
 
