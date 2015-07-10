@@ -9,6 +9,7 @@ package com.ibm.asset.swkbt.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -34,8 +35,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "SoftwareKnowledgeBase")
 @XmlRootElement(name = "SoftwareKnowledgeBase")
-public class SoftwareKnowledgeBase extends SwkbType {
+public class SoftwareKnowledgeBase {
+	
+	@XmlAttribute
+	protected String databaseInstanceName;
+
+	public String getDatabaseInstanceName() {
+		return databaseInstanceName;
+	}
+
+	public void setDatabaseInstanceName(String databaseInstanceName) {
+		this.databaseInstanceName = databaseInstanceName;
+	}
 
 }
