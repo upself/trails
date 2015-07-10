@@ -1446,19 +1446,19 @@
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.add" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV Add" />
+		<put-attribute name="contentTitle" value="Priority ISV SW Add" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/add.jsp" />
-		<put-attribute name="description" value="Priority ISV Add" />
-		<put-attribute name="keywords" value="Priority ISV Add" />
+		<put-attribute name="description" value="Priority ISV SW Add" />
+		<put-attribute name="keywords" value="Priority ISV SW Add" />
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.update" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV Update" />
+		<put-attribute name="contentTitle" value="Priority ISV SW Update" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/update.jsp" />
-		<put-attribute name="description" value="Priority ISV Update" />
-		<put-attribute name="keywords" value="Priority ISV Update" />
+		<put-attribute name="description" value="Priority ISV SW Update" />
+		<put-attribute name="keywords" value="Priority ISV SW Update" />
 	</definition>
 	<definition name="tiles.admin.priorityISV.history" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV History" />
