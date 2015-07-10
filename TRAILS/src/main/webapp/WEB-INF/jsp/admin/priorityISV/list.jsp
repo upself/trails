@@ -19,18 +19,18 @@
 			</div>
 			<div style="float: right">
 				<div style="width:200px">
-					<p class='ibm-button-link' style="font-size:15px">
+					<p class='ibm-button-link'>
 						<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add Priority ISV SW</a>
 					</p>
 				</div>
 				<div style="width:200px">
-					<p class="ibm-button-link" style="font-size:15px">
+					<p class="ibm-button-link">
 						<a class="ibm-btn-small" id="download" href="#">Export Priority ISV SW</a>
 					</p>
 				</div>
 				<div style="width:200px">
-					<p class="ibm-button-link" style="font-size:15px">
-						<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import Priority ISV SW</a> 
+					<p class="ibm-button-link">
+						<a class="ibm-btn-small" href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import Priority ISV SW</a> 
 					</p>
 				</div>
 			</div>	
@@ -183,7 +183,7 @@
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 									+ list[i].id + "\")'>Update</a>";
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
-										+ list[i].id + "\"); return false;'>View history</a></p>";
+										+ list[i].id + "\"); return false;'>View History</a></p>";
 								html += "</tr>"; 
 							}
 						}
