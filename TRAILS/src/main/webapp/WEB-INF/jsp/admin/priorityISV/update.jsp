@@ -334,7 +334,7 @@
 <div id="dialog"></div>
 <div class="ibm-container">
 	<div class="ibm-container-body">
-		<h2>Update priority ISV item.</h2>
+		<h2>Update priority ISV SW item</h2>
 		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>
