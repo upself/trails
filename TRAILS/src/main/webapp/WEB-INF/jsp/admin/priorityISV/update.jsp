@@ -114,9 +114,9 @@
 										var obj = {
 											"id" : data[i].id,
 											"label" : data[i].manufacturerName
-													+ "-" + data[i].website,
+													+ "(" + data[i].definitionSource + ")",
 											"value" : data[i].manufacturerName
-													+ "-" + data[i].website,
+													+ "(" + data[i].definitionSource + ")",
 										};
 										result.push(obj);
 									}

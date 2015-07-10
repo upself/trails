@@ -68,7 +68,7 @@ public class PriorityISVAction extends AccountBaseAction {
 							JsonObject obj = new JsonObject();
 							obj.addProperty("id", src.getId());
 							obj.addProperty("name", src.getManufacturerName());
-							obj.addProperty("website", src.getWebsite());
+							obj.addProperty("definitionSource", src.getDefinitionSource());
 
 							return obj;
 						}
