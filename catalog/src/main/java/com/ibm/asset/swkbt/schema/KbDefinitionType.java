@@ -207,27 +207,6 @@ public class KbDefinitionType extends SoftwareKnowledgeBase {
 	}
 
 	/**
-	 * Gets the value of the definitionSource property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getDefinitionSource() {
-		return definitionSource;
-	}
-
-	/**
-	 * Sets the value of the definitionSource property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setDefinitionSource(String value) {
-		this.definitionSource = value;
-	}
-
-	/**
 	 * Gets the value of the deleted property.
 	 * 
 	 * @return possible object is {@link Boolean }
