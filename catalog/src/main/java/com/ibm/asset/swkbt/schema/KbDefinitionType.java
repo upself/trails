@@ -51,7 +51,7 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "KbDefinitionType")
-public class KbDefinitionType {
+public class KbDefinitionType extends SoftwareKnowledgeBase {
 
 	@XmlAttribute
 	protected Boolean active;
