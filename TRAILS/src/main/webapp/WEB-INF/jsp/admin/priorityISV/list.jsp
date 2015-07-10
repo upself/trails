@@ -20,7 +20,7 @@
 			<div style="float: right">
 				<div style="width:200px">
 					<p class='ibm-button-link'>
-						<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add Priority ISV SW</a>
+						<a class="ibm-btn-small" href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" id="addPriorityISV">Add Priority ISV SW</a>
 					</p>
 				</div>
 				<div style="width:200px">
