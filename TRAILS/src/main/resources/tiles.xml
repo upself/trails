@@ -36,10 +36,6 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/updatePvuMap.htm"
 				icon="false" />
 		</put-list-attribute>
-		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="Add" link="/admin/priorityISV/add.htm" icon="false" />
-			<item value="Update" link="/admin/priorityISV/update.htm" icon="false" />
-		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
 			<item value="Accounts" link="/search/accounts.htm" icon="false" />
@@ -259,13 +255,14 @@
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/nonInstancebasedSW/list.htm">
-			<item value="Non Instance based SW manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" />
-			<item value="Non Instance based SW upload" link="/admin/nonInstancebasedSW/upload.htm" />
+		    <item value="View" link="/admin/nonInstancebasedSW/list.htm" icon="NonInstanceList"/>
+			<item value="Non Instance based SW Manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" icon="NonInstanceManage"/>
+			<item value="Non Instance based SW Upload" link="/admin/nonInstancebasedSW/upload.htm" icon="NonInstanceUpload"/>
 		</put-list-attribute>
 		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="View" link="/admin/priorityISV/list.htm" />
-			<item value="Add" link="/admin/priorityISV/add.htm" />
-			<item value="Upload" link="/admin/priorityISV/upload.htm" />
+			<item value="View" link="/admin/priorityISV/list.htm" icon="priorityISVList"/>
+			<item value="Priority ISV SW Manage" link="/admin/priorityISV/add.htm" icon="priorityISVAdd"/>
+			<item value="Priority ISV SW Upload" link="/admin/priorityISV/upload.htm" icon="priorityISVUpload"/>
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">

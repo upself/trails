@@ -21,6 +21,7 @@ import org.apache.tiles.context.TilesRequestContext;
 import org.apache.tiles.preparer.PreparerException;
 import org.apache.tiles.preparer.ViewPreparer;
 
+import com.ibm.tap.trails.annotation.UserRoleType;
 import com.ibm.tap.trails.framework.UserSession;
 
 /**
@@ -47,7 +48,7 @@ public class V17eNavigationPreparer implements ViewPreparer {
 		HttpSession session = s.getSession();
 		UserSession user = (UserSession) session
 				.getAttribute(UserSession.USER_SESSION);
-
+		       
 		String testRequestUrl = (String) s
 				.getAttribute("javax.servlet.forward.servlet_path") == null ? s
 				.getRequestURI().replaceFirst(s.getContextPath(), "")
@@ -120,17 +121,49 @@ public class V17eNavigationPreparer implements ViewPreparer {
 								smThree.setTooltip("");
 							}
 
-							levelThreeVector.add(smThree);
+							if (smThree.getIcon().equals("account")) {
+								if (user.getAccount() != null) {
+									levelThreeVector.add(smThree);
+								}
+							} else if (smThree.getIcon().equalsIgnoreCase(
+									"scheduleFManage")) {
+								if (user.getAccount() != null
+										&& smThree.getTooltip().length() > 0) {
+									levelThreeVector.add(smThree);
+								}
+							} else if (smThree.getIcon().equalsIgnoreCase(
+									"NonInstanceManage") || smThree.getIcon().equalsIgnoreCase(
+											"NonInstanceUpload") || smThree.getIcon().equalsIgnoreCase(
+													"priorityISVAdd") || smThree.getIcon().equalsIgnoreCase(
+															"priorityISVUpload")){
+								 if (s.isUserInRole(UserRoleType.ADMIN.getRoleName()) || s.isUserInRole(UserRoleType.EDITOR.getRoleName())){
+									 levelThreeVector.add(smThree);
+								 }
+							} else {
+								levelThreeVector.add(smThree);
+							}
 
 						}
 					}
 
-					levelTwoMap.put(smTwo, levelThreeVector);
+					if (smTwo.getIcon().equals("account")) {
+						if (user.getAccount() != null) {
+							levelTwoMap.put(smTwo, levelThreeVector);
+						}
+					} else {
+						levelTwoMap.put(smTwo, levelThreeVector);
+					}
 
 				}
 			}
 
-			levelOneMap.put(sm, levelTwoMap);
+			if (sm.getIcon().equals("account")) {
+				if (user.getAccount() != null) {
+					levelOneMap.put(sm, levelTwoMap);
+				}
+			} else {
+				levelOneMap.put(sm, levelTwoMap);
+			}
 
 		}
 
