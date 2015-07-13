@@ -19,17 +19,17 @@ use Recon::Delegate::ReconLicenseValidation;
 use CNDB::Delegate::CNDBDelegate;
 
 sub new {
-    my ( $class, $connection, $license ) = @_;
-    my $self = {
-                 _connection            => $connection,
-                 _license               => $license,
-                 _licenseAllocationData => undef,
-                 _accountPoolChildren   => undef,
-                 _licSwMap              => undef
-    };
-    bless $self, $class;
+	my ( $class, $connection, $license ) = @_;
+	my $self = {
+		_connection            => $connection,
+		_license               => $license,
+		_licenseAllocationData => undef,
+		_accountPoolChildren   => undef,
+		_licSwMap              => undef
+	};
+	bless $self, $class;
 
-    $self->validate;
+	$self->validate;
 
     return $self;
 }
@@ -37,11 +37,11 @@ sub new {
 sub validate {
     my $self = shift;
 
-    croak 'Connection is undefined'
-        unless defined $self->connection;
+	croak 'Connection is undefined'
+	  unless defined $self->connection;
 
-    croak 'License is undefined'
-        unless defined $self->license;
+	croak 'License is undefined'
+	  unless defined $self->license;
 }
 
 sub recon {
@@ -55,10 +55,13 @@ sub recon {
     ###Alert expired maint.
     $self->alertLogicExpiredMaint;
 
-    ###Get necessary data
-    $self->getLicenseAllocationsData;
-    $self->accountPoolChildren(
-                  CNDB::Delegate::CNDBDelegate->getAccountPoolChildren( $self->connection, $self->customer->id ) );
+	###Get necessary data
+	$self->getLicenseAllocationsData;
+	$self->accountPoolChildren(
+		CNDB::Delegate::CNDBDelegate->getAccountPoolChildren(
+			$self->connection, $self->customer->id
+		)
+	);
 
     my $licSwMap = new BRAVO::OM::LicenseSoftwareMap();
     $licSwMap->licenseId( $self->license->id );
@@ -75,22 +78,23 @@ sub recon {
     $validation->connection( $self->connection );
     $validation->validate;
 
-    if ( defined $validation->deleteQueue ) {
-        foreach my $licenseId ( keys %{ $validation->deleteQueue } ) {
-            my $recon = new Recon::OM::ReconLicense();
-            $recon->licenseId( $self->license->id );
-            $recon->action('UPDATE');
-            $recon->getByBizKey( $self->connection );
-            $recon->delete( $self->connection );
-        }
-    }
+	if ( defined $validation->deleteQueue ) {
+		foreach my $licenseId ( keys %{ $validation->deleteQueue } ) {
+			my $recon = new Recon::OM::ReconLicense();
+			$recon->licenseId( $self->license->id );
+			$recon->action('UPDATE');
+			$recon->getByBizKey( $self->connection );
+			$recon->delete( $self->connection );
+		}
+	}
 
-    if ( defined $validation->reconcilesToBreak ) {
-        foreach my $reconcileId ( keys %{ $validation->reconcilesToBreak } ) {
-            dlog("reconcileId=$reconcileId");
-            Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection, $reconcileId );
-        }
-    }
+	if ( defined $validation->reconcilesToBreak ) {
+		foreach my $reconcileId ( keys %{ $validation->reconcilesToBreak } ) {
+			dlog("reconcileId=$reconcileId");
+			Recon::Delegate::ReconDelegate->breakReconcileById(
+				$self->connection, $reconcileId );
+		}
+	}
 
     if ( $validation->isValid == 0 ) {
         dlog("License is not valid, returning");
@@ -224,18 +228,20 @@ sub getPotentialInstalledSoftwares {
 
     my @ids = ();
 
-    $self->connection->prepareSqlQueryAndFields( $self->queryPotentialInstalledSoftwares() );
-    my $sth = $self->connection->sql->{potentialInstalledSoftwares};
-    my %rec;
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{potentialInstalledSoftwaresFields} } );
-    $sth->execute( $customerId, $self->licSwMap->softwareId );
-    while ( $sth->fetchrow_arrayref ) {
-        logRec( 'dlog', \%rec );
-        dlog( $rec{isId} );
-        ###Add inst sw id to list.
-        push @ids, $rec{isId};
-    }
-    $sth->finish;
+	$self->connection->prepareSqlQueryAndFields(
+		$self->queryPotentialInstalledSoftwares() );
+	my $sth = $self->connection->sql->{potentialInstalledSoftwares};
+	my %rec;
+	$sth->bind_columns( map { \$rec{$_} }
+		  @{ $self->connection->sql->{potentialInstalledSoftwaresFields} } );
+	$sth->execute( $customerId, $self->licSwMap->softwareId );
+	while ( $sth->fetchrow_arrayref ) {
+		logRec( 'dlog', \%rec );
+		dlog( $rec{isId} );
+		###Add inst sw id to list.
+		push @ids, $rec{isId};
+	}
+	$sth->finish;
 
     dlog("end getPotentialInstalledSoftwares");
     return @ids;
@@ -308,6 +314,7 @@ sub getLicenseAllocationsData {
         $lav->mtType( $rec{mtType} );
 #        $lav->scopeName( $rec{scopeName} );
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
+        $lav->guid( $rec{guid} );
         
        	my ( $scopename_temp, undef ) = Recon::Delegate::ReconDelegate->getScheduleFScope( 	$self->connection,
 															$rec{slCustomerId}, # customer ID from SW LPAR
@@ -332,36 +339,37 @@ sub getLicenseAllocationsData {
 }
 
 sub queryLicenseAllocationsData {
-    my @fields = qw(
-        rId
-        lrmId
-        lrmCapType
-        lrmUsedQuantity
-        machineLevel
-        expireAge
-        rtName
-        rtIsManual
-        isId
-        isSoftwareId
-        slCustomerId
-        slName
-        swName
-        hId
-        hSerial
-        hProcessorCount
-        hCpuMIPS
-        hCpuGartnerMIPS
-        hCpuMSU
-        hOwner
-        hServerType
-        hlName
-        hlPartMIPS
-        hlPartGartnerMIPS
-        hlPartMSU
-        mtType
-        slComplianceMgmt
-    );
-    my $query = '
+	my @fields = qw(
+	  rId
+	  lrmId
+	  lrmCapType
+	  lrmUsedQuantity
+	  machineLevel
+	  expireAge
+	  rtName
+	  rtIsManual
+	  isId
+	  isSoftwareId
+	  slCustomerId
+	  slName
+	  swName
+	  hId
+	  hSerial
+	  hProcessorCount
+	  hCpuMIPS
+	  hCpuGartnerMIPS
+	  hCpuMSU
+	  hOwner
+	  hServerType
+	  hlName
+	  hlPartMIPS
+	  hlPartGartnerMIPS
+	  hlPartMSU
+	  mtType
+	  slComplianceMgmt
+	  guid
+	);
+	my $query = '
         select
             r.id
             ,ul.id
@@ -390,6 +398,7 @@ sub queryLicenseAllocationsData {
             ,hl.part_msu
             ,mt.type
             ,c.sw_compliance_mgmt
+            ,kbd.guid
         from
         	used_license ul
         	join license l on l.id = ul.license_id
@@ -404,11 +413,12 @@ sub queryLicenseAllocationsData {
             join hardware_lpar hl on hl.id = hsc.hardware_lpar_id
             join hardware h on h.id = hl.hardware_id
             join machine_type mt on mt.id = h.machine_type_id
+            join kb_definition kbd on kbd.id = is.software_id
         where
             ul.license_id = ?
         with ur
     ';
-    return ( 'licenseAllocationsData', $query, \@fields );
+	return ( 'licenseAllocationsData', $query, \@fields );
 }
 
 sub alertLogicExpiredMaint {

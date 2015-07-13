@@ -14,6 +14,7 @@ sub new {
         ,_expireAge => undef
         ,_quantity => undef
         ,_pool => undef
+        ,_extSrcId => undef
         ,_capType => undef
         ,_licenseType => undef
         ,_usedQuantity => undef
@@ -170,6 +171,12 @@ sub pool {
     return $self->{_pool};
 }
 
+sub extSrcId {
+    my $self = shift;
+    $self->{_extSrcId} = shift if scalar @_ == 1;
+    return $self->{_extSrcId};
+}
+
 sub capType {
     my $self = shift;
     $self->{_capType} = shift if scalar @_ == 1;
@@ -241,6 +248,11 @@ sub toString {
     $s .= "pool=";
     if (defined $self->{_pool}) {
         $s .= $self->{_pool};
+    }
+    $s .= ",";
+    $s .= "extSrcId=";
+    if (defined $self->{_extSrcId}) {
+        $s .= $self->{_extSrcId};
     }
     $s .= ",";
     $s .= "capType=";
