@@ -32,48 +32,15 @@
 }
 </style>
 <script type="text/javascript">
+	var loadingMsg = "<p id=\"dialogmsg\">Loading in progress, please wait a while.</p><div id=\"progressbar\"></div>";
+
 	function isArray(obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	}
 
 	$(function() {
-		$("#dialog").dialog({
-			dialogClass : 'no-close',
-			closeOnEscape : false,
-			modal : true,
-			width : 500,
-			open : function(event, ui) {
-				$("#progressbar").progressbar({
-					value : false
-				});
-			}
-		});
 
-		var urlRequest = "${pageContext.request.contextPath}/ws/priorityISV/isv/<s:property value='id' />";
-		jQuery.ajax({
-			url : urlRequest,
-			method : "GET",
-			success : function(result) {
-				var level = result.data.level.toLowerCase();
-				$("#level").val(level);
-				if (level == 'account') {
-					$('#inputAccount').css("display", "block");
-					$("#account").val(
-							result.data.accountNumber + "-"
-									+ result.data.accountName);
-					$("#customerId").val(result.data.customerId);
-				}
-
-				$("#manufacturerId").val(result.data.manufacturerId);
-				$("#manufacturer").val(result.data.manufacturerName);
-				$("#evidenceLocation").val(result.data.evidenceLocation);
-				$("#status").val(result.data.statusId);
-				$("#businessJustification").val(
-						result.data.businessJustification);
-				$("#dialog").dialog("close");
-			}
-
-		});
+		initPage();
 
 		$("#level").change(function() {
 			var levelVal = $("#level").val();
@@ -147,9 +114,9 @@
 										var obj = {
 											"id" : data[i].id,
 											"label" : data[i].manufacturerName
-													+ "-" + data[i].website,
+													+ "-" + data[i].definitionSource,
 											"value" : data[i].manufacturerName
-													+ "-" + data[i].website,
+													+ "-" + data[i].definitionSource,
 										};
 										result.push(obj);
 									}
@@ -183,7 +150,55 @@
 
 	});
 
+	function initPage() {
+		$("#dialog").html(loadingMsg);
+		$("#dialog").dialog({
+			dialogClass : 'no-close',
+			closeOnEscape : false,
+			modal : true,
+			width : 500,
+			open : function(event, ui) {
+				$("#progressbar").progressbar({
+					value : false
+				});
+			},
+			title : "Loading",
+			buttons : {}
+		});
+
+		var urlRequest = "${pageContext.request.contextPath}/ws/priorityISV/isv/<s:property value='id' />";
+		jQuery.ajax({
+			url : urlRequest,
+			method : "GET",
+			success : function(result) {
+				var level = result.data.level.toLowerCase();
+				$("#level").val(level);
+				if (level == 'account') {
+					$('#inputAccount').css("display", "block");
+					$("#account").val(
+							result.data.accountNumber + "-"
+									+ result.data.accountName);
+					$("#customerId").val(result.data.customerId);
+				}
+
+				$("#manufacturerId").val(result.data.manufacturerId);
+				$("#manufacturer").val(result.data.manufacturerName);
+				$("#evidenceLocation").val(result.data.evidenceLocation);
+				$("#status").val(result.data.statusId);
+				$("#businessJustification").val(
+						result.data.businessJustification);
+				$("#dialog").dialog("close");
+			}
+
+		});
+	}
+
 	function callRestApi() {
+
+		if ($("#level").val() == 'global') {
+			$("#customerId").val('');
+			$("#account").val('');
+		}
 
 		var obj = "{\"level\":\"" + $("#level").val() + "\",\"customerId\":\""
 				+ $("#customerId").val() + "\",\"manufacturerId\":\""
@@ -220,7 +235,7 @@
 				"Access-Control-Allow-Headers" : "Content-Type"
 			},
 			success : function(data) {
-				submitEnded(data.msg);
+				submitEnded(data);
 			},
 			error : function(jqXHR, status, error) {
 				submitEnded(status + ":" + error);
@@ -229,21 +244,39 @@
 
 	}
 
-	function submitEnded(message) {
+	function submitEnded(data) {
+
+		var message = data.msg;
 		var urlSuccess = "${pageContext.request.contextPath}/admin/priorityISV/list.htm";
 
 		$("#progressbar").progressbar("disable");
-		$("#dialog").text(message + " Click OK redirect to list page.");
-		$("#dialog").dialog({
-			title : "Done",
-			modal : true,
-			buttons : {
-				Ok : function() {
-					$("#dialog").dialog("close");
-					window.location.href = urlSuccess;
+
+		if (data.status == '200') {
+			$("#dialog").text(message + " Click OK redirect to list page.");
+			$("#dialog").dialog({
+				title : "Done",
+				modal : true,
+				buttons : {
+					Ok : function() {
+						$("#dialog").dialog("close");
+						window.location.href = urlSuccess;
+					}
 				}
-			}
-		});
+			});
+		} else {
+			$("#dialog").text(message);
+			$("#dialog").dialog({
+				title : "Done",
+				modal : true,
+				buttons : {
+					Ok : function() {
+						$("#dialog").dialog("close");
+						initPage();
+					}
+				}
+			});
+		}
+
 	}
 
 	function resetErrors() {
@@ -298,13 +331,10 @@
 		return passed;
 	}
 </script>
-<div id="dialog" title="Loading priority ISV">
-	<p id="dialogmsg">Loading in progress, please wait a while.</p>
-	<div id="progressbar"></div>
-</div>
+<div id="dialog"></div>
 <div class="ibm-container">
 	<div class="ibm-container-body">
-		<h2>Update priority ISV item.</h2>
+		<h2>Update priority ISV SW item</h2>
 		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>

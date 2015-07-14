@@ -103,7 +103,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 	  List<PriorityISVSoftwareHDisplay> results = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId);
 	  
 	  if(results == null){
-		return WSMsg.failMessage("No Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+"!");
+		return WSMsg.failMessage("No Priority ISV Software History Data has been found");
 	  }
 	  else{
 	    return WSMsg.successMessage("The Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+".",results);
@@ -223,7 +223,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
 		status.setId(statusId);
 
-		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
+		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
 		  if(null == customerId){
@@ -321,7 +321,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		com.ibm.asset.trails.domain.Status status = new com.ibm.asset.trails.domain.Status();
 		status.setId(statusId);
 			
-		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId); 
+		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
 			if(null == customerId){

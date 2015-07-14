@@ -8,7 +8,7 @@
 <br />
 <p>
 	Use <a href="/TRAILS/template/priorityISVUploadTemplate.xls">this
-		form</a> to upload Non Priority ISV. After you have
+		form</a> to upload Priority ISV SW. After you have
 	selected a file on your local machine, click on Submit to begin the
 	upload. After the file loads, you will receive a download dialog box.
 	This download will contain the data that you have uploaded. Rows that

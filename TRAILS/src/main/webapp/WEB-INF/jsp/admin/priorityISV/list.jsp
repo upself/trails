@@ -19,18 +19,18 @@
 			</div>
 			<div style="float: right">
 				<div style="width:200px">
-					<p class='ibm-button-link' style="font-size:15px">
-						<a href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" class="ibm-btn-small" id="addPriorityISV">Add Priority ISV SW</a>
+					<p class='ibm-button-link'>
+						<a class="ibm-btn-small" href="javascript:void(0)" onclick="openLink('${pageContext.request.contextPath}/admin/priorityISV/add.htm')" id="addPriorityISV">Add Priority ISV SW</a>
 					</p>
 				</div>
 				<div style="width:200px">
-					<p class="ibm-button-link" style="font-size:15px">
+					<p class="ibm-button-link">
 						<a class="ibm-btn-small" id="download" href="#">Export Priority ISV SW</a>
 					</p>
 				</div>
 				<div style="width:200px">
-					<p class="ibm-button-link" style="font-size:15px">
-						<a href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import Priority ISV SW</a> 
+					<p class="ibm-button-link">
+						<a class="ibm-btn-small" href="${pageContext.request.contextPath}/admin/priorityISV/upload.htm">Import Priority ISV SW</a> 
 					</p>
 				</div>
 			</div>	
@@ -49,12 +49,13 @@
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th> 
+					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_list" />
 		</table>
 	</div>
+
 </div>
 <script>
 
@@ -182,7 +183,7 @@
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 									+ list[i].id + "\")'>Update</a>";
 								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
-										+ list[i].id + "\"); return false;'>View history</a></p>";
+										+ list[i].id + "\"); return false;'>View History</a></p>";
 								html += "</tr>"; 
 							}
 						}

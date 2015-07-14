@@ -36,10 +36,6 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/updatePvuMap.htm"
 				icon="false" />
 		</put-list-attribute>
-		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="Add" link="/admin/priorityISV/add.htm" icon="false" />
-			<item value="Update" link="/admin/priorityISV/update.htm" icon="false" />
-		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
 			<item value="Accounts" link="/search/accounts.htm" icon="false" />
@@ -259,13 +255,14 @@
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/nonInstancebasedSW/list.htm">
-			<item value="Non Instance based SW manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" />
-			<item value="Non Instance based SW upload" link="/admin/nonInstancebasedSW/upload.htm" />
+		    <item value="View" link="/admin/nonInstancebasedSW/list.htm" icon="NonInstanceList"/>
+			<item value="Non Instance based SW Manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" icon="NonInstanceManage"/>
+			<item value="Non Instance based SW Upload" link="/admin/nonInstancebasedSW/upload.htm" icon="NonInstanceUpload"/>
 		</put-list-attribute>
 		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="View" link="/admin/priorityISV/list.htm" />
-			<item value="Add" link="/admin/priorityISV/add.htm" />
-			<item value="Upload" link="/admin/priorityISV/upload.htm" />
+			<item value="View" link="/admin/priorityISV/list.htm" icon="priorityISVList"/>
+			<item value="Priority ISV SW Manage" link="/admin/priorityISV/add.htm" icon="priorityISVAdd"/>
+			<item value="Priority ISV SW Upload" link="/admin/priorityISV/upload.htm" icon="priorityISVUpload"/>
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
@@ -1446,19 +1443,19 @@
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.add" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV Add" />
+		<put-attribute name="contentTitle" value="Priority ISV SW Add" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/add.jsp" />
-		<put-attribute name="description" value="Priority ISV Add" />
-		<put-attribute name="keywords" value="Priority ISV Add" />
+		<put-attribute name="description" value="Priority ISV SW Add" />
+		<put-attribute name="keywords" value="Priority ISV SW Add" />
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.update" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV Update" />
+		<put-attribute name="contentTitle" value="Priority ISV SW Update" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/update.jsp" />
-		<put-attribute name="description" value="Priority ISV Update" />
-		<put-attribute name="keywords" value="Priority ISV Update" />
+		<put-attribute name="description" value="Priority ISV SW Update" />
+		<put-attribute name="keywords" value="Priority ISV SW Update" />
 	</definition>
 	<definition name="tiles.admin.priorityISV.history" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV History" />
@@ -1469,11 +1466,11 @@
 	</definition>
 
 	<definition name="tiles.admin.priorityISV.upload" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV Upload" />
+		<put-attribute name="contentTitle" value="Priority ISV SW Upload" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/upload.jsp" />
-		<put-attribute name="description" value="Priority ISV Upload" />
-		<put-attribute name="keywords" value="Priority ISV Upload" />
+		<put-attribute name="description" value="Priority ISV SW Upload" />
+		<put-attribute name="keywords" value="Priority ISV SW Upload" />
 	</definition>
 
 	<definition name="tiles.account.exception.lparZEROPROC"
