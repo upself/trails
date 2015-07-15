@@ -1458,7 +1458,7 @@
 		<put-attribute name="keywords" value="Priority ISV SW Update" />
 	</definition>
 	<definition name="tiles.admin.priorityISV.history" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Priority ISV History" />
+		<put-attribute name="contentTitle" value="Priority ISV SW History" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/priorityISV/history.jsp" />
 		<put-attribute name="description" value="Priority ISV History" />
