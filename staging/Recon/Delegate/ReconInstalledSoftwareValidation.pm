@@ -428,6 +428,13 @@ sub validateCustomerOwnedAndManaged {
 		dlog("A different reconcile type than automatic CUSTOCUSTM, so invalid.");
 		return 0;
 	}
+
+	if ($self->installedSoftwareReconData->rTypeId ==
+	$self->reconcileTypeMap->{'Customer owned and customer managed'})
+	{
+		dlog("reconciled as customer owned and customer managed, but scheduleF scope doesn't allow that");
+		return 0;
+	}
 	
 	return 1;
 }
@@ -454,6 +461,13 @@ sub validateIBMOwned3rdManaged {
 		dlog("A different reconcile type than automatic IBMO3RDM, so invalid.");
 		return 0;
 	}
+
+	if ($self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'})
+	{
+		dlog("reconciled as IBM owned, managed by 3rd party, but scheduleF scope doesn't allow that");
+		return 0;
+	}
 	
 	return 1;
 }
@@ -467,7 +481,7 @@ sub validateCustomerOwned3rdManaged {
 		&& (defined $self->customer->swComplianceMgmt)
 	    && ($self->customer->swComplianceMgmt eq 'YES'))
     {
-		dlog("scheduleF scope is CUSTO3RDM");
+		dlog("scheduleF scope is CUSTO3RDM, compliance mgmt YES");
 		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
 		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} );
@@ -480,6 +494,13 @@ sub validateCustomerOwned3rdManaged {
 		}
 	   
 		dlog("A different reconcile type than automatic CUSTO3RDM, so invalid.");
+		return 0;
+	}
+	
+	if ($self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'})
+	{
+		dlog("reconciled as customer owned, managed by 3rd party, but scheduleF scope doesn't allow that");
 		return 0;
 	}
 	
@@ -508,6 +529,13 @@ sub validateIBMOwnedIBMManagedCons {
 		dlog("A different reconcile type than automatic IBMOIBMMSWCO, so invalid.");
 		return 0;
 	}
+
+	if ($self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'})
+	{
+		dlog("reconciled as IBM owned, IBM managed SW consumption based, but ScheduleF doesn't allow that");
+		return 0;
+	}
 	
 	return 1;
 }
@@ -521,7 +549,7 @@ sub validateCustOwnedIBMManagedCons {
 		&& (defined $self->customer->swComplianceMgmt)
 	    && ($self->customer->swComplianceMgmt eq 'YES'))
     {
-		dlog("scheduleF scope is CUSTOIBMMSWCO");
+		dlog("scheduleF scope is CUSTOIBMMSWCO, compliance managed YES");
 		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
 		dlog( "reconcile map id "
 		  . $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} );
@@ -534,6 +562,13 @@ sub validateCustOwnedIBMManagedCons {
 		}
 	   
 		dlog("A different reconcile type than automatic CUSTOIBMMSWCO, so invalid.");
+		return 0;
+	}
+	
+	if ($self->installedSoftwareReconData->rTypeId ==
+		$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'})
+	{
+		dlog("reconciled as Customer owned, IBM managed SW consumption based, ScheduleF scope doesn't allow that");
 		return 0;
 	}
 	
