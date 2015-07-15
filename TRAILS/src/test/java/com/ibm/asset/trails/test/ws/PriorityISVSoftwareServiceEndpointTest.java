@@ -23,6 +23,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	    assertTrue(null!=results && results.size()>=0);
 	}
 	
-    @Test
+    //@Test
 	@SuppressWarnings({"resource"})
 	public void testGetAllPriorityISVSoftwareDisplaysByHttpMode() {
 		int httpStatusCode = -1;
@@ -270,6 +271,61 @@ public class PriorityISVSoftwareServiceEndpointTest {
 		assertTrue(httpStatusCode == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.SUCCESS));
 	}
 	
+	@Test
+	public void tesCrossLevelPriorityISVSoftwareByHttpMode(){
+		int httpStatusCode = -1;
+		int httpStatusCode2 = -1;
+		WSMsg returnWSMsgObj = null;
+		String appStatusCode = "";
+		
+		try {
+			@SuppressWarnings("resource")
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPut httpPut = new HttpPut(RESTFUL_SERVICE_ROOT_URL+"/priorityISV/isv");
+			httpPut.addHeader("ACCEPT", MediaType.APPLICATION_JSON);
+			
+			JSONObject addJSONObject = this.buildAddISVJSONObject();
+			String addJSONObjectString = addJSONObject.toString();
+			System.out.println("Add ISV Object JSON String: "+addJSONObjectString);
+			
+			StringEntity se = new StringEntity(addJSONObjectString);
+			se.setContentType(MediaType.APPLICATION_JSON);
+					
+			httpPut.setEntity(se);
+			HttpResponse response = httpClient.execute(httpPut);
+			StatusLine statusLine = response.getStatusLine();
+			httpStatusCode = statusLine.getStatusCode();
+			
+			
+			@SuppressWarnings("resource")
+			HttpClient httpClient2 = new DefaultHttpClient();
+			HttpPut httpPut2 = new HttpPut(RESTFUL_SERVICE_ROOT_URL+"/priorityISV/isv");
+			httpPut2.addHeader("ACCEPT", MediaType.APPLICATION_JSON);
+			JSONObject addGLBJSONObject = this.buildGlobalISVJSONObject();
+			String addGLBJSONObjectString = addGLBJSONObject.toString();
+			System.out.println("Add ISV Object JSON String: "+addGLBJSONObjectString);
+			
+			StringEntity se2 = new StringEntity(addGLBJSONObjectString);
+			se2.setContentType(MediaType.APPLICATION_JSON);
+					
+			httpPut2.setEntity(se2);
+			HttpResponse response2 = httpClient2.execute(httpPut2);
+			StatusLine statusLine2 = response2.getStatusLine();
+			httpStatusCode2 = statusLine2.getStatusCode();
+			if(httpStatusCode == 200){
+			returnWSMsgObj = this.generateReturnWSMsgObject(response2.getEntity());
+			appStatusCode = returnWSMsgObj.getStatus();
+			}
+            
+		  } 
+		catch (Exception e) {
+			System.out.println("Exception: "+e.getMessage());
+		}
+		System.out.println("Add Crossing level Priority ISV SW Object failed message : "+returnWSMsgObj.getMsg());
+		assertTrue(httpStatusCode == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.FAIL));
+		assertTrue(returnWSMsgObj.getMsg().equals("Priority ISV Software has already existed for [Level = GLOBAL, Customer Id = null, Manufacturer Id = 18]"));
+	}
+	
 	private WSMsg generateReturnWSMsgObject(HttpEntity entity) throws IllegalStateException, IOException, JSONException{
 		String responseEntityString="";  
         String responseLineString="";
@@ -305,6 +361,17 @@ public class PriorityISVSoftwareServiceEndpointTest {
 		addJSONObject.put("businessJustification", "TDD Testing for Add");
 		addJSONObject.put("remoteUser", "TDD Testing User");
 		return addJSONObject;
+	}
+	
+	private JSONObject buildGlobalISVJSONObject() throws JSONException{
+		JSONObject GLBJSONObject = new JSONObject();
+		GLBJSONObject.put("level", "GLOBAL");//Please change this value based on actual situation
+		GLBJSONObject.put("manufacturerId", 18);//Please change this value based on actual situation
+		GLBJSONObject.put("evidenceLocation", "TDD Testing for crossing level Add");
+		GLBJSONObject.put("statusId", 2);
+		GLBJSONObject.put("businessJustification", "TDD Testing for crossing level Add");
+		GLBJSONObject.put("remoteUser", "TDD Testing User");
+		return GLBJSONObject;
 	}
 	
 	private JSONObject buildUpdateISVJSONObject() throws JSONException{
