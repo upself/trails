@@ -187,9 +187,6 @@ sub toString {
 
 sub save {
     my($self, $connection) = @_;
-    if (!defined $self->remoteUser) {
-        $self->remoteUser = "STAGING";
-    }
     ilog("saving: ".$self->toString());
     if( ! defined $self->id ) {
         $connection->prepareSqlQuery($self->queryInsert());
