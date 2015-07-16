@@ -74,6 +74,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	
 	//Story 26012
 	private List<String> ScheduleFValResult;
+	
+	//defect 27747
+	private String procWarnMsg;
+	
+	public String getProcWarnMsg() {
+		return procWarnMsg;
+	}
+
+	public void setProcWarnMsg(String procWarnMsg) {
+		this.procWarnMsg = procWarnMsg;
+	}
 
 	public void setScheduleFValResult(String result) {
 		if(result!=null){
@@ -829,8 +840,20 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		if (!coveredByRules && !cacualted) {
 			VSoftwareLpar lVSoftwareLpar = vSwLparDAO.findById(pAlertUnlicensedSw.getInstalledSoftware().getSoftwareLpar().getId());
 
-			if(lsPer.equalsIgnoreCase("PROCESSOR")){
-				liLicensesNeeded = lVSoftwareLpar.getHardwareLpar().getHardwareLparEff().getProcessorCount().intValue() * liMaxLicenses;
+				//fix defect 27747
+				if(lsPer.equalsIgnoreCase("PROCESSOR")){
+					if(lVSoftwareLpar.getHardwareLpar()!=null 
+							&& lVSoftwareLpar.getHardwareLpar().getHardwareLparEff()!=null
+							&& lVSoftwareLpar.getHardwareLpar().getHardwareLparEff().getProcessorCount()!=null 
+							&& lVSoftwareLpar.getHardwareLpar().getHardwareLparEff().getProcessorCount().intValue()>0
+							&& lVSoftwareLpar.getHardwareLpar().getHardwareLparEff().getStatus().equalsIgnoreCase("ACTIVE")){
+						liLicensesNeeded = lVSoftwareLpar.getHardwareLpar()
+								.getHardwareLparEff()
+								.getProcessorCount()
+								.intValue() * liMaxLicenses;
+					}else{
+						setProcWarnMsg("LPAR proc must be active and greater than zero when closing Alerts Per Processor.");
+					}
 			} else {
 				if(lVSoftwareLpar.getHardwareLpar().getHardware().getProcessorCount() == null){
 					liLicensesNeeded = 0 * liMaxLicenses;

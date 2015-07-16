@@ -153,6 +153,12 @@ public class ReportServiceImpl implements ReportService {
 	private final String CAUSE_CODE_SUMMARY_REPORT_NAME = "Cause Code Summary Report";
 	private final String[] CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS = {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
+	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
+	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
+			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
+	private final String PRIORITY_ISV_SW_REPORT_NAME = "Priority ISV Software report";
+	private final String[] PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS = {
+			"Manufacturer name", "Level", "CNDB name", "CNDB ID", "Evidence location", "Status", "Business justification", "Remote User", "Record Time"};
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -1346,6 +1352,40 @@ public class ReportServiceImpl implements ReportService {
 		}
 		lsrReport.close();
 	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getPriorityISVSWReport(PrintWriter pPrintWriter) {
+		printHeader(PRIORITY_ISV_SW_REPORT_NAME, null,
+				PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS, pPrintWriter);
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate())
+				.createSQLQuery(
+						"SELECT mf.NAME, isv.LEVEL, case when isv.LEVEL = 'GLOBAL' then 'ALL' else cus.CUSTOMER_NAME end as CUSTOMER_NAME, cus.ACCOUNT_NUMBER, isv.EVIDENCE_LOCATION, st.DESCRIPTION, isv.BUSINESS_JUSTIFICATION,isv.REMOTE_USER, isv.RECORD_TIME from EAADMIN.PRIORITY_ISV_SW isv inner join EAADMIN.MANUFACTURER mf on isv.MANUFACTURER_ID = mf.ID inner join EAADMIN.STATUS st on isv.STATUS_ID = st.ID left outer join EAADMIN.CUSTOMER cus on isv.CUSTOMER_ID = cus.CUSTOMER_ID")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+		
+		lsrReport.close();
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		printHeader(NON_INSTANCE_REPORT_NAME, null,
+				NON_INSTANCE_REPORT_COLUMN_HEADERS, pPrintWriter);
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate())
+				.createSQLQuery(
+						"SELECT sw.SOFTWARE_NAME, mf.NAME, non.RESTRICTION, ct.DESCRIPTION as ctDesc, CASE non.BASE_ONLY WHEN 1 THEN 'Y' ELSE 'N' END, st.DESCRIPTION as stDesc, non.REMOTE_USER, non.RECORD_TIME FROM EAADMIN.NON_INSTANCE non, EAADMIN.SOFTWARE sw, EAADMIN.MANUFACTURER mf, EAADMIN.CAPACITY_TYPE ct, EAADMIN.STATUS st WHERE non.SOFTWARE_ID = sw.SOFTWARE_ID AND non.MANUFACTURER_ID = mf.ID AND non.CAPACITY_TYPE_CODE = ct.CODE AND non.STATUS_ID = st.ID")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+		
+		lsrReport.close();
+	}
 
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
@@ -1441,5 +1481,10 @@ public class ReportServiceImpl implements ReportService {
 			e.printStackTrace();
 		}
 		return dbdeterminativeService.getEntityManager();
+	}
+
+	public void getNonInstanceBasedSW(PrintWriter pPrintWriter) {
+		// TODO Auto-generated method stub
+		
 	}
 }

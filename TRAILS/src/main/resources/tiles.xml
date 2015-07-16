@@ -23,6 +23,10 @@
 			<item value="PVU Mapping" link="/admin/pvuMapping/listPvu.htm"
 				icon="false" />
 			<item value="Cause code" link="/admin/alertCause/list.htm" icon="false" />
+			<item value="Non Instance based SW" link="/admin/nonInstancebasedSW/list.htm"
+				icon="false" />
+			<item value="Priority ISV SW" link="/admin/priorityISV/list.htm"
+				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/scheduleF/showUpload.htm">
 			<item value="View" link="/admin/scheduleF/list.htm" icon="scheduleFList" />
@@ -31,6 +35,10 @@
 		<put-list-attribute name="/admin/pvuMapping/listPvu.htm">
 			<item value="PVU Mapping" link="/admin/pvuMapping/updatePvuMap.htm"
 				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/priorityISV/list.htm">
+			<item value="Add" link="/admin/priorityISV/add.htm" icon="false" />
+			<item value="Update" link="/admin/priorityISV/update.htm" icon="false" />
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
@@ -217,6 +225,197 @@
 			value="/WEB-INF/jsp/layouts/cssPopupLayout.jsp" />
 		<put-attribute name="content" type="template" value="" />
 	</definition>
+
+	<!-- V17E support -->
+	<definition name="tiles.v17e.navigation" template="/WEB-INF/jsp/layouts/v17eNavigation.jsp"
+		preparer="v17eNavigationPreparer">
+		<put-list-attribute name="levelOne">
+			<item value="TRAILS home" link="/" icon="false" />
+			<item value="Search" link="/search/home.htm" icon="false" />
+			<item value="Reports" link="/reports/home.htm" icon="false" />
+			<item value="Account" link="/account/home.htm" icon="account" />
+			<item value="Administration" link="/admin/home.htm" icon="false" />
+			<item value="Help" link="/help/home.htm" icon="false" />
+			<item value="Asset home" link="http://tap.raleigh.ibm.com/"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/home.htm">
+			<item value="Schedule F" link="/admin/scheduleF/showUpload.htm"
+				icon="false" />
+			<item value="PVU Mapping" link="/admin/pvuMapping/listPvu.htm"
+				icon="false" />
+			<item value="Cause code" link="/admin/alertCause/list.htm" icon="false" />
+			<item value="Non Instance based SW" link="/admin/nonInstancebasedSW/list.htm"
+				icon="false" />
+			<item value="Priority ISV SW" link="/admin/priorityISV/list.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/scheduleF/showUpload.htm">
+			<item value="View" link="/admin/scheduleF/list.htm" icon="scheduleFList" />
+			<item value="Manage" link="/admin/scheduleF/manage.htm" icon="scheduleFManage" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/pvuMapping/listPvu.htm">
+			<item value="PVU Mapping" link="/admin/pvuMapping/updatePvuMap.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/nonInstancebasedSW/list.htm">
+			<item value="Non Instance based SW manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" />
+			<item value="Non Instance based SW upload" link="/admin/nonInstancebasedSW/upload.htm" />
+		</put-list-attribute>
+		<put-list-attribute name="/admin/priorityISV/list.htm">
+			<item value="View" link="/admin/priorityISV/list.htm" />
+			<item value="Add" link="/admin/priorityISV/add.htm" />
+			<item value="Upload" link="/admin/priorityISV/upload.htm" />
+		</put-list-attribute>
+
+		<put-list-attribute name="/search/home.htm">
+			<item value="Accounts" link="/search/accounts.htm" icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/account/home.htm">
+			<item value="Alerts" link="/account/alerts/home.htm" icon="account" />
+			<item value="Cause codes" link="/account/causecodes/home.htm"
+				icon="account" />
+			<item value="Data exceptions" link="/account/exceptions/home.htm"
+				icon="account" />
+			<item value="License baseline" link="/account/license/license.htm"
+				icon="account" />
+			<item value="Reconciliation" link="/account/recon/home.htm"
+				icon="account" />
+			<item value="Reports" link="/account/reports/home.htm" icon="account" />
+		</put-list-attribute>
+		<put-list-attribute name="/account/alerts/home.htm">
+			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
+			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
+				icon="account" />
+			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
+				icon="account" />
+			<item value="SW LPAR w/o HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
+				icon="account" />
+			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
+				icon="account" />
+			<item value="Unlicensed IBM SW" link="/account/alerts/alertUnlicensedIbmSw.htm"
+				icon="account" />
+			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
+				icon="account" />
+			<!-- CPA - Commenting out code because we are not ready for this new alert 
+				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
+				icon="account" /> -->
+		</put-list-attribute>
+		<put-list-attribute name="/account/exceptions/home.htm">
+			<item value="Overview" link="/account/exceptions/overview.htm"
+				icon="account" />
+			<item value="SW LPAR NO PROCESSOR" link="/account/exceptions/lparZEROPROC.htm"
+				icon="account" />
+			<item value="SW LPAR INVALID SCANTIME" link="/account/exceptions/lparNULLTIME.htm"
+				icon="account" />
+			<item value="SW LPAR NO OS" link="/account/exceptions/lparNOOS.htm"
+				icon="account" />
+			<item value="SW LPAR NO SOFTWARE" link="/account/exceptions/lparNOSW.htm"
+				icon="account" />
+			<item value="SW LPAR NO LICENSABLE PRODUCTS" link="/account/exceptions/lparNOLP.htm"
+				icon="account" />
+			<item value="SW LPAR NO CUSTOMER" link="/account/exceptions/lparNOCUST.htm"
+				icon="account" />
+			<item value="HW BOX NO PROCESSOR" link="/account/exceptions/lparHWNPRC.htm"
+				icon="account" />
+			<item value="HW BOX NO CHIP" link="/account/exceptions/lparHWNCHP.htm"
+				icon="account" />
+			<item value="HW LPAR NO PROCESSOR TYPE" link="/account/exceptions/lparNPRCTYP.htm"
+				icon="account" />
+			<item value="HW LPAR NO CPU MODEL" link="/account/exceptions/lparNCPMDL.htm"
+				icon="account" />
+		</put-list-attribute>
+		<put-list-attribute name="/account/license/license.htm">
+			<item value="License details" link="/account/license/licenseDetails.htm"
+				icon="account" />
+		</put-list-attribute>
+		<put-list-attribute name="/account/recon/home.htm">
+			<item value="Workspace settings" link="/account/recon/settings.htm"
+				icon="account" />
+			<item value="Workspace" link="/account/recon/workspace.htm"
+				icon="account" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/home.htm">
+			<item value="Alerts" link="/reports/alerts/home.htm" icon="false" />
+			<item value="Operational metrics" link="/reports/operational/home.htm"
+				icon="false" />
+			<item value="Aging red alerts" link="/reports/alertRedAging/home.htm"
+				icon="false" />
+			<item value="Data exceptions" link="/reports/dataExceptions/home.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/alerts/home.htm">
+			<item value="Geography" link="/reports/alerts/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/alerts/region.htm" icon="false" />
+			<item value="Country code" link="/reports/alerts/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/alerts/sector.htm" icon="false" />
+			<item value="Department" link="/reports/alerts/department.htm"
+				icon="false" />
+			<item value="Account" link="/reports/alerts/account.htm" icon="false" />
+			<item value="Pending customer decision" link="/reports/alerts/pendingCustomerDecision.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/operational/home.htm">
+			<item value="Geography" link="/reports/operational/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/operational/region.htm"
+				icon="false" />
+			<item value="Country code" link="/reports/operational/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/operational/sector.htm"
+				icon="false" />
+			<item value="Department" link="/reports/operational/department.htm"
+				icon="false" />
+			<item value="Account by name" link="/reports/operational/accountByName.htm"
+				icon="false" />
+			<item value="Account by number" link="/reports/operational/accountByNumber.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/alertRedAging/home.htm">
+			<item value="Geography" link="/reports/alertRedAging/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/alertRedAging/region.htm"
+				icon="false" />
+			<item value="Country code" link="/reports/alertRedAging/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/alertRedAging/sector.htm"
+				icon="false" />
+			<item value="Department" link="/reports/alertRedAging/department.htm"
+				icon="false" />
+			<item value="Account" link="/reports/alertRedAging/account.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/dataExceptions/home.htm">
+			<item value="Geography" link="/reports/dataExceptions/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/dataExceptions/region.htm"
+				icon="false" />
+			<item value="Country code" link="/reports/dataExceptions/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/dataExceptions/sector.htm"
+				icon="false" />
+			<item value="Department" link="/reports/dataExceptions/department.htm"
+				icon="false" />
+			<item value="Account" link="/reports/dataExceptions/account.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/help/home.htm">
+			<item value="User Guide" link="/help/userGuide.htm" icon="false" />
+			<item value="FAQ" link="/help/faq.htm" icon="false" />
+			<item value="On page reference" link="/help/onPageRef.htm" icon="false" />
+		</put-list-attribute>
+	</definition>
+	<definition name="tiles.v17e.w3OneColumnLayout"
+		template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="contentSidebar" type="template"
+			value="" />
+		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+	</definition>
+
 
 	<definition name="tiles.home" extends="tiles.w3TwoColumnLayout">
 		<put-attribute name="content" type="template"
@@ -1189,6 +1388,92 @@
 			value="/WEB-INF/jsp/admin/pvuMapping/pvuUpdtSuss.jsp" />
 		<put-attribute name="description" value="TRAILS PVU mapping success" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping success" />
+	</definition>
+
+	<definition name="tiles.admin.nonInstancebasedSW.list"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/list.jsp" />
+		<put-attribute name="contentSidebar" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/nonInstanceSidebar.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+
+	<definition name="tiles.admin.nonInstancebasedSW.history"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW history" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/history.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+
+	<definition name="tiles.admin.nonInstancebasedSW.manage"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+
+	<definition name="tiles.admin.nonInstancebasedSW.update"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/manage.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+
+	<definition name="tiles.admin.nonInstancebasedSW.upload"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Non Instance based SW upload" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/nonInstancebasedSW/upload.jsp" />
+		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
+		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
+	</definition>
+
+	<definition name="tiles.admin.priorityISV.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Priority ISV SW" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/priorityISV/list.jsp" />
+		<put-attribute name="description" value="Priority ISV" />
+		<put-attribute name="keywords" value="Priority ISV" />
+	</definition>
+
+	<definition name="tiles.admin.priorityISV.add" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Priority ISV Add" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/priorityISV/add.jsp" />
+		<put-attribute name="description" value="Priority ISV Add" />
+		<put-attribute name="keywords" value="Priority ISV Add" />
+	</definition>
+
+	<definition name="tiles.admin.priorityISV.update" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Priority ISV Update" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/priorityISV/update.jsp" />
+		<put-attribute name="description" value="Priority ISV Update" />
+		<put-attribute name="keywords" value="Priority ISV Update" />
+	</definition>
+	<definition name="tiles.admin.priorityISV.history" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Priority ISV History" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/priorityISV/history.jsp" />
+		<put-attribute name="description" value="Priority ISV History" />
+		<put-attribute name="keywords" value="Priority ISV History" />
+	</definition>
+
+	<definition name="tiles.admin.priorityISV.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Priority ISV Upload" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/priorityISV/upload.jsp" />
+		<put-attribute name="description" value="Priority ISV Upload" />
+		<put-attribute name="keywords" value="Priority ISV Upload" />
 	</definition>
 
 	<definition name="tiles.account.exception.lparZEROPROC"

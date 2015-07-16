@@ -85,30 +85,11 @@ sub getData {
         dlog('Result set uppercased');
         logRec( 'dlog', \%rec );
 
-        ###We can't have a blank serial
-        if ( ( !defined $rec{serial} ) || ( $rec{serial} eq '' ) ) {
-            dlog('Serial is missing');
-            next;
-        }
-
-        ###We can't have a blank country
-        if ( ( !defined $rec{country} ) || ( $rec{country} eq '' ) ) {
-            dlog('Country is missing');
-            next;
-        }
-
-        ###We don't want stuff thats not in our customer number map
-        if ( (!exists $customerNumberMap->{ $rec{customerNumber} }) && (!exists $accountNumberMap->{ $rec{customerNumber} })) {
-            dlog('Customer number does not map to cndb customer');
-            next;
-        }
-
-        ###We don't want stuff thats not in our machine type map
-        if ( !defined $machineTypeMap->{ $rec{machineType} } ) {
-            dlog('Machine type is not defined in BRAVO');
-            next;
-        }
-
+		if($self->checkRecord(\%rec) == 1 || $self->checkCustomerNumberMap($customerNumberMap,$accountNumberMap,\%rec) == 1 || $self->checkMachineTypeMap($machineTypeMap,\%rec)){
+			next;
+		}
+		
+		$rec{lparStatus}=$self->fixLparStatus($rec{hardwareStatus},$rec{lparStatus});
         my $hwCustomerId;
         my $hwLparCustomerId;
         my $newProcessorCount;
@@ -281,6 +262,50 @@ sub getData {
 
 ###Return the lists
     return ( \%hardwareList, \%hardwareLparList, \%effProcList );
+}
+sub checkRecord{
+		my ($self,$rec) = @_;
+	        ###We can't have a blank serial
+        if ( ( !defined $rec->{serial} ) || ( $rec->{serial} eq '' ) ) {
+            dlog('Serial is missing');
+            return 1;
+        }
+
+        ###We can't have a blank country
+        if ( ( !defined $rec->{country} ) || ( $rec->{country} eq '' ) ) {
+            dlog('Country is missing');
+            return 1;
+        }
+
+        return 0;
+}
+
+sub checkCustomerNumberMap{
+	my ($self,$customerNumberMap,$accountNumberMap,$rec) = @_;
+    ###We don't want stuff thats not in our customer number map
+    if ( (!exists $customerNumberMap->{ $rec->{customerNumber} }) && (!exists $accountNumberMap->{ $rec->{customerNumber} })) {
+        dlog('Customer number does not map to cndb customer');
+        return 1;
+    }
+}
+
+sub checkMachineTypeMap{
+	my ($self,$machineTypeMap,$rec) = @_;
+    ###We don't want stuff thats not in our machine type map
+    if ( !defined $machineTypeMap->{ $rec->{machineType} } ) {
+        dlog('Machine type is not defined in BRAVO');
+        return 1;
+    }
+}
+
+sub fixLparStatus{
+	
+	my ($self,$hwstatus , $lparStatus) = @_;
+    if ( ($hwstatus eq 'ACTIVE') && ($lparStatus ne 'ACTIVE')  && ($lparStatus ne 'HWCOUNT')){
+        dlog('HWstatus is ACTIVE and Lpar defined to other value than ACTIVE, HWCOUNT. Fixing to ACTIVE');
+        $lparStatus='ACTIVE';
+    }
+    return $lparStatus;
 }
 
 sub queryATPData {
