@@ -314,7 +314,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 			
 		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
-		if (null != dbPISVSW) {	
+		if (null != dbPISVSW && !id.equals(dbPISVSW.getId())) {	
 				return WSMsg
 						.failMessage("Priority ISV Software has already existed for [Level = "
 								+ level
