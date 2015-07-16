@@ -10,7 +10,7 @@
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
 			summary="Priority ISV history table">
 			<caption>
-                <em>Priority ISV History</em>
+                <em>Priority ISV SW History</em>
                 </caption>
 			<thead>
 				<tr>
