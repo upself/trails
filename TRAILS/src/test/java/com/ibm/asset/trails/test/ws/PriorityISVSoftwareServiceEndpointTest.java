@@ -275,8 +275,12 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	public void tesCrossLevelPriorityISVSoftwareByHttpMode(){
 		int httpStatusCode = -1;
 		int httpStatusCode2 = -1;
+		int httpStatusCode3 = -1;
+		int httpStatusCode4 = -1;
 		WSMsg returnWSMsgObj = null;
 		String appStatusCode = "";
+		WSMsg returnWSMsgObj2 = null;
+		String appStatusCode2 = "";
 		
 		try {
 			@SuppressWarnings("resource")
@@ -312,18 +316,60 @@ public class PriorityISVSoftwareServiceEndpointTest {
 			HttpResponse response2 = httpClient2.execute(httpPut2);
 			StatusLine statusLine2 = response2.getStatusLine();
 			httpStatusCode2 = statusLine2.getStatusCode();
-			if(httpStatusCode == 200){
+			if(httpStatusCode2 == 200){
 			returnWSMsgObj = this.generateReturnWSMsgObject(response2.getEntity());
 			appStatusCode = returnWSMsgObj.getStatus();
 			}
             
+			@SuppressWarnings("resource")
+			HttpClient httpClient3 = new DefaultHttpClient();
+			HttpPut httpPut3 = new HttpPut(RESTFUL_SERVICE_ROOT_URL+"/priorityISV/isv");
+			httpPut3.addHeader("ACCEPT", MediaType.APPLICATION_JSON);
+			
+			JSONObject addJSONObject3 = this.buildGlobalISVJSONObject2();
+			String addJSONObjectString3 = addJSONObject3.toString();
+			System.out.println("Add ISV Object JSON String: "+addJSONObjectString3);
+			
+			StringEntity se3 = new StringEntity(addJSONObjectString3);
+			se3.setContentType(MediaType.APPLICATION_JSON);
+					
+			httpPut3.setEntity(se3);
+			HttpResponse response3 = httpClient3.execute(httpPut3);
+			StatusLine statusLine3 = response3.getStatusLine();
+			httpStatusCode3 = statusLine3.getStatusCode();
+			
+			
+			@SuppressWarnings("resource")
+			HttpClient httpClient4 = new DefaultHttpClient();
+			HttpPut httpPut4 = new HttpPut(RESTFUL_SERVICE_ROOT_URL+"/priorityISV/isv");
+			httpPut4.addHeader("ACCEPT", MediaType.APPLICATION_JSON);
+			JSONObject addGLBJSONObject4 = this.buildAccISVJSONObject();
+			String addGLBJSONObjectString4 = addGLBJSONObject4.toString();
+			System.out.println("Add ISV Object JSON String: "+addGLBJSONObjectString4);
+			
+			StringEntity se4 = new StringEntity(addGLBJSONObjectString4);
+			se4.setContentType(MediaType.APPLICATION_JSON);
+					
+			httpPut4.setEntity(se4);
+			HttpResponse response4 = httpClient4.execute(httpPut4);
+			StatusLine statusLine4 = response4.getStatusLine();
+			httpStatusCode4 = statusLine4.getStatusCode();
+			if(httpStatusCode4 == 200){
+			returnWSMsgObj2 = this.generateReturnWSMsgObject(response4.getEntity());
+			appStatusCode2 = returnWSMsgObj2.getStatus();
+			}
+			
 		  } 
 		catch (Exception e) {
 			System.out.println("Exception: "+e.getMessage());
 		}
 		System.out.println("Add Crossing level Priority ISV SW Object failed message : "+returnWSMsgObj.getMsg());
-		assertTrue(httpStatusCode == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.FAIL));
+		assertTrue(httpStatusCode2 == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.FAIL));
 		assertTrue(returnWSMsgObj.getMsg().equals("Priority ISV Software has already existed for [Level = GLOBAL, Customer Id = null, Manufacturer Id = 18]"));
+		System.out.println("Add Crossing level Priority ISV SW Object failed message : "+returnWSMsgObj2.getMsg());
+		assertTrue(httpStatusCode4 == 200 && appStatusCode2!=null && appStatusCode2.trim().equals(WSMsg.FAIL));
+		assertTrue(returnWSMsgObj2.getMsg().equals("Priority ISV Software has already existed for [Level = ACCOUNT, Customer Id = 2541, Manufacturer Id = 21]"));
+	
 	}
 	
 	private WSMsg generateReturnWSMsgObject(HttpEntity entity) throws IllegalStateException, IOException, JSONException{
@@ -372,6 +418,29 @@ public class PriorityISVSoftwareServiceEndpointTest {
 		GLBJSONObject.put("businessJustification", "TDD Testing for crossing level Add");
 		GLBJSONObject.put("remoteUser", "TDD Testing User");
 		return GLBJSONObject;
+	}
+	
+	private JSONObject buildGlobalISVJSONObject2() throws JSONException{
+		JSONObject GLBJSONObject = new JSONObject();
+		GLBJSONObject.put("level", "GLOBAL");//Please change this value based on actual situation
+		GLBJSONObject.put("manufacturerId", 21);//Please change this value based on actual situation
+		GLBJSONObject.put("evidenceLocation", "TDD Testing for crossing level Add");
+		GLBJSONObject.put("statusId", 2);
+		GLBJSONObject.put("businessJustification", "TDD Testing for crossing level Add");
+		GLBJSONObject.put("remoteUser", "TDD Testing User");
+		return GLBJSONObject;
+	}
+	
+	private JSONObject buildAccISVJSONObject() throws JSONException{
+		JSONObject dupJSONObject = new JSONObject();
+		dupJSONObject.put("level", "ACCOUNT");
+		dupJSONObject.put("customerId", 2541);
+		dupJSONObject.put("manufacturerId", 21);
+		dupJSONObject.put("evidenceLocation", "TDD Testing for Update");
+		dupJSONObject.put("statusId", 2);
+		dupJSONObject.put("businessJustification", "TDD Testing for Update");
+		dupJSONObject.put("remoteUser", "TDD Testing User");
+		return dupJSONObject;
 	}
 	
 	private JSONObject buildUpdateISVJSONObject() throws JSONException{
