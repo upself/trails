@@ -149,13 +149,13 @@ sub recon {
 	}
 	elsif ( $validation->validationCode == 1 ) {
 		dlog("Installed software is not reconciled");
-		my ( $returnCode, $scarletInstalledSoftware ) = $self->reconcile;
+		my ( $returnCode, $scarletInstalledSoftware ) = $self->reconcile; # myyysha - this sometimes returns ( 1, undef )
 
 		if ( $returnCode == 1 ) {
 			$self->closeAlertUnlicensedSoftware(1);
 
 			$scarletInstalledSoftware->tryToReconcile(
-				$self->installedSoftware );
+				$self->installedSoftware ) if ( defined $scarletInstalledSoftware ); # added by myyysha - some reconciles do not init scarlet class
 		}
 		elsif ( $returnCode == 2 ) {
 			return $returnCode;
