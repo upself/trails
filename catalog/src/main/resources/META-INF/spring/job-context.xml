@@ -17,7 +17,10 @@
 
 	<batch:job id="swkbtLoadJob" job-repository="jobRepository">
 	 
-	    <batch:split id="splitsteps"  task-executor="taskExecutor" next="loadStep0">
+	    <batch:split id="splitsteps"  task-executor="taskExecutor" next="loadStep10">
+	        <batch:flow>
+				<batch:step id="splitStep10" parent="split10.master" />
+			</batch:flow>
 	        <batch:flow>
 				<batch:step id="splitStep0" parent="split0.master" />
 			</batch:flow>
@@ -47,6 +50,8 @@
 			</batch:flow>
 	    </batch:split>
 	    
+	    <batch:step id="loadStep10" parent="load10.master" next="loadStep0"/> 
+	        
 	    <batch:step id="loadStep0" parent="load0.master" next="loadStep1"/> 
 	    
 	    <batch:step id="loadStep1" parent="load1.master" next="loadStep2"/> 
@@ -197,9 +202,14 @@
 	<bean id="domainWriter"
 		class="com.ibm.asset.trails.batch.swkbt.writer.TrailsSwkbtWriter"
 		scope="step">
+		<property name="source" value="#{stepExecutionContext[sourceKeyName]}" />
 	</bean>
 	
-
+	<bean id="swkbtSourceWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtSourceWriter"
+		scope="step">
+	</bean>
+	
 	<bean id="licensableReader"
 		class="org.springframework.batch.item.database.JdbcPagingItemReader"
 		scope="step">
@@ -718,6 +728,7 @@
 			</batch:listeners>
 		</batch:tasklet>
 	</batch:step>
+	<batch:step id="split10" parent="split" />
 	<batch:step id="split0" parent="split" />
 	<batch:step id="split1" parent="split" />
 	<batch:step id="split2" parent="split" />
@@ -735,6 +746,13 @@
 				commit-interval="1000" />
 		</batch:tasklet>
 	</batch:step>
+	<batch:step id="loadSource" abstract="true">
+		<batch:tasklet transaction-manager="jobTransactionManager">
+			<batch:chunk reader="canonicalReader2" writer="swkbtSourceWriter"
+				commit-interval="1000" />
+		</batch:tasklet>
+	</batch:step>
+	<batch:step id="load10" parent="loadSource" />
 	<batch:step id="load0" parent="load" />
 	<batch:step id="load1" parent="load" />
 	<batch:step id="load2" parent="load" />
@@ -746,6 +764,12 @@
 	<batch:step id="load8" parent="load" />
 
 	<!-- Split Step masters -->
+	<batch:step id="split10.master">
+		<batch:partition step="split10" partitioner="partitioner10">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+	
 	<batch:step id="split0.master">
 		<batch:partition step="split0" partitioner="partitioner0">
 			<batch:handler grid-size="10" task-executor="taskExecutor" />
@@ -801,6 +825,12 @@
 	</batch:step>
 
 	<!-- Load Step masters -->
+	<batch:step id="load10.master">
+		<batch:partition step="load10" partitioner="loadPartitioner10">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+	
 	<batch:step id="load0.master">
 		<batch:partition step="load0" partitioner="loadPartitioner0">
 			<batch:handler grid-size="10" task-executor="taskExecutor" />
@@ -856,6 +886,11 @@
 	</batch:step>
 
 	<!-- Split Partitioners -->
+	<bean id="partitioner10"  scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList10" />
+	</bean>
+	
 	<bean id="partitioner0"  scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList0" />
@@ -902,6 +937,12 @@
 	</bean>
 
 	<!-- Load step partitioners -->
+	<bean id="loadPartitioner10" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources"  value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList10" />
+	</bean>
+	
 	<bean id="loadPartitioner0" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
 		<property name="resources"  value="${loadPartitionerResources}" />

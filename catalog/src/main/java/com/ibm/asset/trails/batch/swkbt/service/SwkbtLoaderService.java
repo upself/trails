@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface SwkbtLoaderService<E> {
 
-	public void batchUpdate(List<? extends E> items)
+	public void batchUpdate(List<? extends E> items,String source)
 			throws IllegalArgumentException, SecurityException,
 			IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException;

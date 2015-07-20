@@ -124,7 +124,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 	public MainframeVersionService mainframeVersionService;
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void batchUpdate(List<? extends E> items)
+	public void batchUpdate(List<? extends E> items, String source)
 			throws IllegalArgumentException, SecurityException,
 			IllegalAccessException, InvocationTargetException,
 			NoSuchMethodException {
@@ -132,6 +132,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 		for (E item : items) {
 			getClass().getMethod("save", item.getClass()).invoke(this, item);
 			logger.debug("Saved " + item.toString());
+			System.out.print("here we come source "+source);
 		}
 		aliasService.flush();
 	}

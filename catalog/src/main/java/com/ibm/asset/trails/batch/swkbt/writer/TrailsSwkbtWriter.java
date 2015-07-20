@@ -6,13 +6,18 @@ import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ibm.asset.swkbt.schema.ManufacturerType;
 import com.ibm.asset.trails.batch.swkbt.service.SwkbtLoaderService;
 
 public class TrailsSwkbtWriter<E> implements ItemWriter<E> {
+	
+	private String source = "source";
 	private static final Logger logger = Logger
 			.getLogger(TrailsSwkbtWriter.class);
 
+	public void setSource(String source) {
+		this.source = source;
+	}
+	
 	@Autowired
 	private SwkbtLoaderService<E> swkbtLoaderService;
 
@@ -20,7 +25,7 @@ public class TrailsSwkbtWriter<E> implements ItemWriter<E> {
 		logger.debug("Ready to write from TrailsSwkbtWriter -- " + items.size());
 
 		
-		swkbtLoaderService.batchUpdate(items);
+		swkbtLoaderService.batchUpdate(items,source);
 	}
 
 	public void setSwkbtLoaderService(SwkbtLoaderService<E> swkbtLoaderService) {
