@@ -38,12 +38,11 @@ public class SwkbtSourceWriter<E> implements ItemWriter<E>,StepExecutionListener
 	        ExecutionContext stepContext = this.stepExecution.getExecutionContext();
 	        stepContext.put(SOURCE_KEY_NAME,definitionSource);
 	        logger.debug("Saving deinifiontSource --" + definitionSource);
-	    	System.out.print("***************here comes Definitionsource "+definitionSource);
+	    	//System.out.print("***************here comes Definitionsource "+definitionSource);
 	}
 	
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		ExecutionContext executionContext = stepExecution.getExecutionContext();
-			
+		// TODO Auto-generated method stub
 		return null;
 	}
 

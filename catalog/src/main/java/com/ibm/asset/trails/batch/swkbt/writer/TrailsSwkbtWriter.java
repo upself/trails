@@ -25,8 +25,6 @@ public class TrailsSwkbtWriter<E> implements ItemWriter<E>,StepExecutionListener
 
 	public void write(List<? extends E> items) throws Exception {
 		logger.debug("Ready to write from TrailsSwkbtWriter -- " + items.size());
-
-		
 		swkbtLoaderService.batchUpdate(items,source);
 	}
 
@@ -38,7 +36,7 @@ public class TrailsSwkbtWriter<E> implements ItemWriter<E>,StepExecutionListener
 		    JobExecution jobExecution = stepExecution.getJobExecution();
 	        ExecutionContext jobContext = jobExecution.getExecutionContext();
 	        this.source = (String) jobContext.get("sourceName");
-	
+	        logger.debug("Get Definition Source from TrailsSwkbtWriter -- " + source);
 	}
 
 	public ExitStatus afterStep(StepExecution stepExecution) {

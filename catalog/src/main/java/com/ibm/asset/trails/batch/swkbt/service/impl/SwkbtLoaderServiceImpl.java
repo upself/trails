@@ -132,7 +132,7 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 		for (E item : items) {
 			getClass().getMethod("save", item.getClass()).invoke(this, item);
 			logger.debug("Saved " + item.toString());
-			System.out.print("here we come source "+source);
+		//	System.out.print("here we come source "+source);
 		}
 		aliasService.flush();
 	}
