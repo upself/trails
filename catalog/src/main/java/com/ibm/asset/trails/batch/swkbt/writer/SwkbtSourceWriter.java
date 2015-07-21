@@ -14,9 +14,9 @@ import com.ibm.asset.swkbt.schema.SwkbType;
 public class SwkbtSourceWriter<E> implements ItemWriter<E>,StepExecutionListener { 
 	private static final Logger logger = Logger
 			.getLogger(SwkbtSourceWriter.class);
-
+    private StepExecution stepExecution;
     private String definitionSource;
-	private String sourceKeyName = "sourceKeyName";
+	private String SOURCE_KEY_NAME = "sourceName";
 
 	public void write(List<? extends E> items) throws Exception {
 		logger.debug("Ready to write from SwkbtSourceWriter -- " + items.size()); 
@@ -33,23 +33,21 @@ public class SwkbtSourceWriter<E> implements ItemWriter<E>,StepExecutionListener
 	        } else if( xmlEntity.getDatabaseInstanceName().contains("z/OS")){
             	definitionSource = "TADZ";
 	        } else {
-	        	definitionSource = "UNKNOW";
+	        	definitionSource = "UNKNOWN";
 	        }
+	        ExecutionContext stepContext = this.stepExecution.getExecutionContext();
+	        stepContext.put(SOURCE_KEY_NAME,definitionSource);
 	        logger.debug("Saving deinifiontSource --" + definitionSource);
+	    	System.out.print("***************here comes Definitionsource "+definitionSource);
 	}
 	
 	public ExitStatus afterStep(StepExecution stepExecution) {
 		ExecutionContext executionContext = stepExecution.getExecutionContext();
-		
-			executionContext.putString(sourceKeyName,definitionSource);
-			logger.debug("Writing Definition Source to ExecutionContext -- " + definitionSource);
-			System.out.print("***************here comes Definitionsource "+definitionSource);
-		
+			
 		return null;
 	}
 
 	public void beforeStep(StepExecution stepExecution) {
-		// TODO Auto-generated method stub
-		
+		this.stepExecution = stepExecution;
 	}
 }
