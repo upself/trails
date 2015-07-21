@@ -227,7 +227,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 
 		if (null != dbPISVSW) {
 			  return WSMsg
-						.failMessage("Priority ISV Software has already existed for [Level = "
+						.failMessage("Priority ISV Software already exists for [Level = "
 								+ level
 								+ ", Customer Id = "
 								+customerId
@@ -316,7 +316,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 
 		if (null != dbPISVSW && !id.equals(dbPISVSW.getId())) {	
 				return WSMsg
-						.failMessage("Priority ISV Software has already existed for [Level = "
+						.failMessage("Priority ISV Software already exists for [Level = "
 								+ level
 								+ ", Customer Id = "
 								+customerId
