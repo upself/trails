@@ -32,6 +32,7 @@ public abstract class KbDefinitionServiceImpl<E extends KbDefinition, X extends 
 		existing.setCustomField3(xmlEntity.getCustomField3());
 		existing.setDataInput(xmlEntity.getDataInput());
 		existing.setDefinitionSource(xmlEntity.getDefinitionSource());
+		System.out.print("**********" + xmlEntity.getDefinitionSource() +"***********");
 		existing.setDeleted(xmlEntity.isDeleted());
 		existing.setDescription(xmlEntity.getDescription());
 		existing.setExternalId(xmlEntity.getExternalId());
