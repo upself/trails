@@ -4,8 +4,11 @@ package com.ibm.asset.trails.batch.swkbt.service.impl;
 import org.apache.log4j.Logger;
 
 
+
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,6 +133,14 @@ public class SwkbtLoaderServiceImpl<E> implements SwkbtLoaderService<E> {
 			NoSuchMethodException {
 		logger.debug("Starting batchUpDate");
 		for (E item : items) {
+			 Class<? extends Object> c = item.getClass();
+		        Method[] methods = c.getMethods();
+		        for (Method method : methods) {
+		            if(method.getName().equals("setDefinitionSource")){
+		            	method.invoke(item,source);
+		                break;
+		            }
+		        }
 			getClass().getMethod("save", item.getClass()).invoke(this, item);
 			logger.debug("Saved " + item.toString());
 		//	System.out.print("here we come source "+source);

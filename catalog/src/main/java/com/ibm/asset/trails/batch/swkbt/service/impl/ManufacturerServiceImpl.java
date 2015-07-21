@@ -46,6 +46,8 @@ public class ManufacturerServiceImpl extends
 		existing = super.update(existing, xmlEntity);
 		existing.setName(xmlEntity.getName());
 		existing.setWebsite(xmlEntity.getWebsite());
+		System.out.print("**********" + xmlEntity.getDefinitionSource() +"***********");
+		existing.setDefinitionSource(xmlEntity.getDefinitionSource());
 		Set<Alias> aliases = aliasService.findFromXmlObjectSet(xmlEntity
 				.getAliasAndAdditional());
 		existing.getAlias().retainAll(aliases);
