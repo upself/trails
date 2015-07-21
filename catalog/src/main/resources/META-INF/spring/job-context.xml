@@ -731,9 +731,7 @@
 		scope="step">
 		<property name="resources" value="${resourceLinsener}" />
 	</bean>
-		<bean id="dataSourceListener"
-		class="com.ibm.asset.trails.batch.swkbt.listener.DataSourceListener"
-		scope="step" />
+	
 
 <bean id="promotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
     <property name="keys" value="sourceName"/>
