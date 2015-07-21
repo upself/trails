@@ -136,7 +136,7 @@ public class V17eNavigationPreparer implements ViewPreparer {
 											"NonInstanceUpload") || smThree.getIcon().equalsIgnoreCase(
 													"priorityISVAdd") || smThree.getIcon().equalsIgnoreCase(
 															"priorityISVUpload")){
-								 if (s.isUserInRole(UserRoleType.ADMIN.getRoleName()) || s.isUserInRole(UserRoleType.EDITOR.getRoleName())){
+								 if (s.isUserInRole(UserRoleType.ADMIN.getRoleName())){
 									 levelThreeVector.add(smThree);
 								 }
 							} else {
