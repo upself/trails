@@ -77,6 +77,11 @@ public class PriorityISVSoftwareDAOJap extends
 		                .createNamedQuery("findPriorityISVSoftwareByUniqueKeys2")
 		                .setParameter("level", level)
 		                .setParameter("manufacturerId", manufacturerId).getResultList();
+	       if (results == null || results.isEmpty()){
+	    	   results = entityManager
+		                .createNamedQuery("findPriorityISVSoftwareBymanufacturerId")
+		                .setParameter("manufacturerId", manufacturerId).getResultList();
+	       }
 		}
 		else{
 		   results = entityManager
@@ -84,6 +89,12 @@ public class PriorityISVSoftwareDAOJap extends
 	                .setParameter("level", level)
 	                .setParameter("manufacturerId", manufacturerId)
 	                .setParameter("customerId", customerId).getResultList();
+		   if (results == null || results.isEmpty()){
+	    	   results = entityManager
+		                .createNamedQuery("findPriorityISVSoftwareByUniqueKeys2")
+		                .setParameter("level", "GLOBAL")
+		                .setParameter("manufacturerId", manufacturerId).getResultList();
+	       }
 		}
 		
 		    PriorityISVSoftware result;

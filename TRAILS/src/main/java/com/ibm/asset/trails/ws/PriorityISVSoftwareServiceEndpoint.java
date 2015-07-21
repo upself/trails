@@ -226,22 +226,13 @@ public class PriorityISVSoftwareServiceEndpoint {
 		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
 		if (null != dbPISVSW) {
-		  if(null == customerId){
 			  return WSMsg
-					.failMessage("Priority ISV Software has already existed for [Level = "
-							+ level
-							+ ", Manufacturer Id = "
-							+ manufacturerId + "]");
-			}
-		  else{
-			  return WSMsg
-						.failMessage("Priority ISV Software has already existed for [Level = "
+						.failMessage("Priority ISV Software already exists for [Level = "
 								+ level
 								+ ", Customer Id = "
 								+customerId
 								+ ", Manufacturer Id = "
-								+ manufacturerId + "]");
-		  }
+								+ manufacturerId + "]");		  
 		} else {
 			PriorityISVSoftware addISVSW = new PriorityISVSoftware();
 			addISVSW.setLevel(level.trim().toUpperCase());
@@ -323,23 +314,14 @@ public class PriorityISVSoftwareServiceEndpoint {
 			
 		PriorityISVSoftware dbPISVSW = this.priorityISVSoftwareService.findPriorityISVSoftwareByUniqueKeys(level.trim().toUpperCase(), manufacturerId, customerId); 
 
-		if (null != dbPISVSW) {
-			if(null == customerId){
+		if (null != dbPISVSW && !id.equals(dbPISVSW.getId())) {	
 				return WSMsg
-						.failMessage("Priority ISV Software has already existed for [Level = "
-								+ level
-								+ ", Manufacturer Id = "
-								+ manufacturerId + "]");
-			}
-			else{
-				return WSMsg
-						.failMessage("Priority ISV Software has already existed for [Level = "
+						.failMessage("Priority ISV Software already exists for [Level = "
 								+ level
 								+ ", Customer Id = "
 								+customerId
 								+ ", Manufacturer Id = "
 								+ manufacturerId + "]");
-			}
 		} else {
 			PriorityISVSoftware updateISVSW = new PriorityISVSoftware();
 			updateISVSW.setId(id);
