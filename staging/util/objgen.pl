@@ -14,6 +14,7 @@ my $index;
 my $s;
 my $package;
 my $class;
+my $remoteUserFlag;
 my $table;
 my %props = ();
 my %meths = ();
@@ -31,6 +32,10 @@ sub handle_start {
         $package = $attrs{"package"};
         $class   = $attrs{"name"};
         $table   = $attrs{"sql-name"};
+        $remoteUserFlag = 0;
+        if($class eq "ManualQueue"){
+        	$remoteUserFlag = 1;
+        }
     }
     elsif ( $elem eq "property" ) {
         $index++;
@@ -274,7 +279,7 @@ EOL
     foreach my $i ( sort { $a <=> $b } keys %props ) {
         my $prop = $props{$i}->{"name"};
         next if $prop eq "id";
-        next if $prop eq "remoteUser";
+        next if (($prop eq "remoteUser") && ($remoteUserFlag == 0)) ;
         next if (( $prop eq "recordTime" ) && ( $class!~ /^Alert.*History$/ ));
         next if (( $prop eq "creationTime" ) && ( $class!~ /^Alert.*History$/ ));
         my $sqlName = $props{$i}->{"sql-name"};
@@ -317,7 +322,7 @@ EOL
             my $sqlKey  = $props{$i}->{"sql-key"};
             next if $sqlName eq "null";
             next if $sqlKey  eq "true";
-            next if $prop    eq "remoteUser";
+            next if (($prop eq "remoteUser") && ($remoteUserFlag == 0)) ;
             next if (( $prop    eq "recordTime" ) && ( $class!~ /^Alert.*History$/ ));
             $prop = $prop . "->id" if $type eq "object";
             my $s = "\$self->$prop";
@@ -398,7 +403,7 @@ EOL
         my $sqlName = $props{$i}->{"sql-name"};
         next if $sqlName eq "null";
         my $s = "?";
-        if ( $prop eq "remoteUser" ) {
+        if (( $prop eq "remoteUser") && ($remoteUserFlag == 0)) {
             die "ERROR: remoteUser property must have a default value specified!!\n"
               if $default eq 'undef';
             $s = "\\\'" . $default . "\\\'";
@@ -441,7 +446,7 @@ EOL
             next if $sqlName eq "null";
             next if $sqlKey  eq "true";
             my $s = "$sqlName = ?";
-            if ( $prop eq "remoteUser" ) {
+            if ( ($prop eq "remoteUser" ) && ($remoteUserFlag == 0)) {
                 die "ERROR: remoteUser property must have a default value specified!!\n"
                   if $default eq 'undef';
                 $s = "$sqlName = \\\'" . $default . "\\\'";
@@ -820,3 +825,4 @@ EOL
 print "\n1;\n";
 
 exit 0; 
+
