@@ -4,9 +4,9 @@ use strict;
 use Base::Utils;
 
 sub updateCCtable {
-	my ( $alertid, $alerttype, $connection) = @_;
+	my ( $alertid, $alertcode, $connection) = @_;
 	
-	if ( GetByAlert ( $alertid, $alerttype, $connection ) ) {
+	if ( GetByAlert ( $alertid, $alertcode, $connection ) ) {
 		# alert ID + alerttype combination already found, nothing added
 		return 0;
 		
@@ -17,7 +17,7 @@ sub updateCCtable {
 		my $id;
 	
 		$sth->bind_columns( \$id );
-		$sth->execute( $alerttype, $alertid );
+		$sth->execute( $alertcode, $alertid );
 		$sth->fetchrow_arrayref;
 		$sth->finish;
 		
@@ -29,7 +29,7 @@ sub updateCCtable {
 }
 
 sub GetByAlert {
-	my ( $alertid, $alerttype, $connection ) = @_;
+	my ( $alertid, $alertcode, $connection ) = @_;
 	
 	$connection->prepareSqlQuery(queryGetByAlert());
 	
@@ -37,7 +37,7 @@ sub GetByAlert {
 	my $id;
 	
 	$sth->bind_columns( \$id );
-	$sth->execute( $alerttype, $alertid );
+	$sth->execute( $alertcode, $alertid );
 	$sth->fetchrow_arrayref;
 	$sth->finish;
 	
@@ -49,13 +49,13 @@ sub GetByAlert {
 sub queryGetByAlert {
 	my $query = '
 		select
-			id
+			cc.id
 		from
-			cause_code
+			cause_code cc join alert_type at on cc.alert_type_id = at.id
 		where
-			alert_type_id = ?
+			at.code = ?
 			and
-			alert_id = ?
+			cc.alert_id = ?
 		with ur
 		';
 	return ( 'GetCCbyAlert', $query );
@@ -78,7 +78,7 @@ sub queryInsertCC {
             record_time,
             remote_user
         ) values (
-            ?,
+            ( select id from alert_type where code = ? ),
             ?,
             1,
             null,

@@ -95,7 +95,7 @@ sub openAlert {
 	 $alert->comment('Auto Open');
 	 $alert->save( $self->connection );
 	 
-	 Recon::CauseCode::updateCCtable( $alert->id, $alert->alertTypeId, $self->connection ); # updating CC table
+	 Recon::CauseCode::updateCCtable( $alert->id, "HW_LPAR", $self->connection ); # updating CC table
 	 
 	 if(!defined $alertId){
 	  my $alertHwLpar =  new Recon::OM::AlertHardwareLparNew();
@@ -155,7 +155,7 @@ sub closeAlert {
 	$alert->comment('Auto close');
 	$alert->save( $self->connection );
 	
-	Recon::CauseCode::updateCCtable( $alert->id, $alert->alertTypeId, $self->connection ); # updating CC table
+	Recon::CauseCode::updateCCtable( $alert->id, "HW_LPAR", $self->connection ); # updating CC table
     
 }
 

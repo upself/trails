@@ -73,7 +73,7 @@ sub openAlert {
     $alert->open(1);
     $alert->save( $self->connection );
     
-    Recon::CauseCode::updateCCtable( $alert->id, 5, $self->connection);
+    Recon::CauseCode::updateCCtable( $alert->id, "SW_LPAR", $self->connection);
 }
 
 sub closeAlert {
@@ -97,7 +97,7 @@ sub closeAlert {
     $alert->open(0);
     $alert->save( $self->connection ) if $save == 1;
     
-    Recon::CauseCode::updateCCtable( $alert->id, 5, $self->connection) if ( $save == 1 );
+    Recon::CauseCode::updateCCtable( $alert->id, "SW_LPAR", $self->connection) if ( $save == 1 );
 }
 
 sub recordHistory {

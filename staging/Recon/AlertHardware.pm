@@ -101,7 +101,7 @@ sub openAlert {
     $alert->open(1);
     $alert->save( $self->connection );
     
-    Recon::CauseCode::updateCCtable( $alert->id, 3, $self->connection ); # updating CC table, 3 = hardware w/o HW LPAR
+    Recon::CauseCode::updateCCtable( $alert->id, "HARDWARE", $self->connection ); # updating CC table, 3 = hardware w/o HW LPAR
 }
 
 sub closeAlert {
@@ -125,7 +125,7 @@ sub closeAlert {
     $alert->open(0);
     $alert->save( $self->connection ) if $save == 1;
     
-    Recon::CauseCode::updateCCtable( $alert->id, 3, $self->connection ) if ( $save == 1 ); # updating CC table, 3 = hardware w/o HW LPAR
+    Recon::CauseCode::updateCCtable( $alert->id, "HARDWARE", $self->connection ) if ( $save == 1 ); # updating CC table, 3 = hardware w/o HW LPAR
 }
 
 sub recordHistory {
