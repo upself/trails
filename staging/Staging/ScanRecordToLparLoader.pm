@@ -1687,6 +1687,7 @@ sub updateStats {
     ###SR
 
 }
+
 ###TODO make sure everything is caps from source
 sub getCustomerId {
 	my ( $self, $sr ) = @_;
@@ -1694,16 +1695,7 @@ sub getCustomerId {
 	dlog("Start getCustomerId method");
 
 	my $acceptFlag = 0;
-	if (   $sr->bankAccountId == 180
-		|| $sr->bankAccountId == 406
-		|| $sr->bankAccountId == 410
-		|| $sr->bankAccountId == 5
-		|| $sr->bankAccountId == 740
-		|| $sr->bankAccountId == 738
-		|| $sr->bankAccountId == 853
-		|| $sr->bankAccountId == 920 
-		|| $sr->bankAccountId == 1305
-		|| $sr->bankAccountId == 1401 )
+	if ( $self->bankAccountIsSWDiscrepancy($sr) )
 	{
 		$acceptFlag = 1;
 	}
@@ -2012,6 +2004,17 @@ sub getCustomerId {
 
 	dlog('ATP NEED UPDATE');
 	return 999999;
+}
+
+sub bankAccountIsSWDiscrepancy{
+	
+    my ( $self, $scanRecord ) = @_;
+    my $ret = 0;
+    if ( $scanRecord->bankAccountId == 406)
+	{
+		$ret = 1;
+	}
+	return $ret;
 }
 
 sub maps {
