@@ -94,19 +94,9 @@ import javax.xml.namespace.QName;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SwkbType", propOrder = { "platforms", "definitionSources",
-		"kbIdentity", "identityLinks", "additional" })
+@XmlType(name = "SwkbType")
 public class SwkbType {
 
-	@XmlElement(name = "Platforms", required = true)
-	protected Platforms platforms;
-	@XmlElement(name = "DefinitionSources")
-	protected DefinitionSources definitionSources;
-	@XmlElement(name = "KbIdentity", required = true)
-	protected List<KbIdentityType> kbIdentity;
-	@XmlElement(name = "IdentityLinks")
-	protected IdentityLinks identityLinks;
-	protected AdditionalStructureType additional;
 	@XmlAttribute
 	protected String contact;
 	@XmlAttribute
@@ -142,119 +132,6 @@ public class SwkbType {
 	@XmlAnyAttribute
 	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Gets the value of the platforms property.
-	 * 
-	 * @return possible object is {@link Platforms }
-	 * 
-	 */
-	public Platforms getPlatforms() {
-		return platforms;
-	}
-
-	/**
-	 * Sets the value of the platforms property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link Platforms }
-	 * 
-	 */
-	public void setPlatforms(Platforms value) {
-		this.platforms = value;
-	}
-
-	/**
-	 * Gets the value of the definitionSources property.
-	 * 
-	 * @return possible object is {@link DefinitionSources }
-	 * 
-	 */
-	public DefinitionSources getDefinitionSources() {
-		return definitionSources;
-	}
-
-	/**
-	 * Sets the value of the definitionSources property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link DefinitionSources }
-	 * 
-	 */
-	public void setDefinitionSources(DefinitionSources value) {
-		this.definitionSources = value;
-	}
-
-	/**
-	 * Gets the value of the kbIdentity property.
-	 * 
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a
-	 * snapshot. Therefore any modification you make to the returned list will
-	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the kbIdentity property.
-	 * 
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getKbIdentity().add(newItem);
-	 * </pre>
-	 * 
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list
-	 * {@link KbIdentityType }
-	 * 
-	 * 
-	 */
-	public List<KbIdentityType> getKbIdentity() {
-		if (kbIdentity == null) {
-			kbIdentity = new ArrayList<KbIdentityType>();
-		}
-		return this.kbIdentity;
-	}
-
-	/**
-	 * Gets the value of the identityLinks property.
-	 * 
-	 * @return possible object is {@link IdentityLinks }
-	 * 
-	 */
-	public IdentityLinks getIdentityLinks() {
-		return identityLinks;
-	}
-
-	/**
-	 * Sets the value of the identityLinks property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link IdentityLinks }
-	 * 
-	 */
-	public void setIdentityLinks(IdentityLinks value) {
-		this.identityLinks = value;
-	}
-
-	/**
-	 * Gets the value of the additional property.
-	 * 
-	 * @return possible object is {@link AdditionalStructureType }
-	 * 
-	 */
-	public AdditionalStructureType getAdditional() {
-		return additional;
-	}
-
-	/**
-	 * Sets the value of the additional property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link AdditionalStructureType }
-	 * 
-	 */
-	public void setAdditional(AdditionalStructureType value) {
-		this.additional = value;
-	}
 
 	/**
 	 * Gets the value of the contact property.

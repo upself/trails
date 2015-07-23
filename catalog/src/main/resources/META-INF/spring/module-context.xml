@@ -40,6 +40,7 @@ org.springframework.core.task.SyncTaskExecutor
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
 			<list>
+			<value>SoftwareKnowledgeBase</value>
 				<value>alias</value>
 				<value>Platform</value>
 				<value>file</value>
@@ -66,7 +67,16 @@ org.springframework.core.task.SyncTaskExecutor
 			</list>
 		</property>
 	</bean>
-
+	
+	<bean id="canonicalElementList10"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list>
+				<value>SoftwareKnowledgeBase</value>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="canonicalElementList0"
 		class="org.springframework.beans.factory.config.ListFactoryBean">
 		<property name="sourceList">
