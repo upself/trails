@@ -63,7 +63,7 @@
 						html += "<td>" + list[i].manufacturerName + "</td>";
 						html += "<td>" + list[i].level + "</td>";
 						html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
-						html += "<td>" + (list[i].customerId == null ? "" : list[i].customerId) + "</td>";
+						html += "<td>" + (list[i].accountNumber == null ? "" : list[i].accountNumber) + "</td>";
 						html += "<td>" + list[i].evidenceLocation + "</td>";
 						html += "<td>" + list[i].statusDesc + "</td>";
 						html += "<td>" + list[i].businessJustification+ "</td>";
