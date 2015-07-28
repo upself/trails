@@ -3076,7 +3076,7 @@ sub openAlertUnlicensedSoftware {
 		$alert->save( $self->connection );
 	}
 	
-	Recon::CauseCode::updateCCtable ( $alert->id, 17, $self->connection);
+	Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
 
 	dlog("end openAlertUnlicensedSoftware");
 }
