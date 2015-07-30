@@ -58,6 +58,26 @@ public class ReconWorkspace implements Serializable {
 	
 	private String pid;
 	
+	private String scope;
+	
+	private String assetName;
+	
+	public String getAssetName() {
+		return assetName;
+	}
+
+	public void setAssetName(String assetName) {
+		this.assetName = assetName;
+	}
+
+	public String getScope() {
+		return scope;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
 	public String getPid() {
 		return pid;
 	}

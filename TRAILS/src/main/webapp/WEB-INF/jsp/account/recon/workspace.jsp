@@ -274,6 +274,9 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
+			<!-- fake code -->
+			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
+				value="%{#attr.row.assetName}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
@@ -364,6 +367,8 @@
 			sortProperty="hle.processorCount" sortable="true" />
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
+		<!-- fake code -->
+		<display:column property="scope" title="Scope" sortProperty="scope" sortable="true"/>
 		<display:column sortProperty="sw.softwareName" title="Software"
 			sortable="true">
 			<a
