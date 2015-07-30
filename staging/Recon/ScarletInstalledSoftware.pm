@@ -151,6 +151,7 @@ sub httpGetScarletGuids {
  if ( $response->is_success ) {
   my $json = new JSON;
   try {
+   local $SIG{__DIE__};# No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
    $scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
    dlog( 'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
