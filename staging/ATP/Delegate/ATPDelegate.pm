@@ -123,7 +123,7 @@ sub getData {
         $hardware->serial( $rec{serial} );
         $hardware->customerNumber( $rec{customerNumber} );
         $hardware->owner( $rec{owner} );
-        $hardware->hardwareStatus( $rec{hardwareStatus} );
+        $hardware->hardwareStatus( $self->hardwareStatusLogic($rec{hardwareStatus}) );
         $hardware->country( $rec{country} );
         $hardware->status( $rec{status} );
         $hardware->updateDate( $rec{hwDate} );
@@ -636,6 +636,16 @@ sub cpuIflLogic {
          }
         }
         return 0;
+}
+
+sub hardwareStatusLogic {
+	my ( $self, $hardwareStatus) = @_;
+	
+	if( $hardwareStatus eq 'ACTIVE' || $hardwareStatus eq 'HWCOUNT' || $hardwareStatus eq 'UNLOC8D' || $hardwareStatus eq 'RMVDLPAR' || $hardwareStatus eq 'INACTIVE' ) {
+		return $hardwareStatus;	
+	}
+	
+	return 'ACTIVE';
 }
 
 1;
