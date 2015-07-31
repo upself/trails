@@ -255,7 +255,7 @@ public class VSoftwareLparDAOJpa extends
 			if(sf!=null){
 				rw.setScope(sf.getScope().getDescription());
 			}else{
-				rw.setScope("");
+				rw.setScope("Not specified");
 			}
 		}
 	}

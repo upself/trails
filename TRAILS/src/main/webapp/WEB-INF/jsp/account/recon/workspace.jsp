@@ -188,6 +188,7 @@
 				}, 1000);
 
 	}
+	
 </script>
 
 <s:url id="freepool" action="licenseFreePool"
@@ -258,8 +259,12 @@
 		requestURI="workspace.htm">
 		<display:caption media="html">Reconciliation results</display:caption>
 		<display:column title="">
-			<s:checkbox name="list[%{#attr.row_rowNum-1}].selected"
-				theme="simple" id="action" />
+			<s:if test="#attr.row.scope eq 'Not specified'">
+				<s:checkbox name="list[%{#attr.row_rowNum-1}].selected" theme="simple" id="action" disabled="true"/>
+			</s:if>
+			<s:else>
+				<s:checkbox name="list[%{#attr.row_rowNum-1}].selected" theme="simple" id="action" />
+			</s:else>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].installedSoftwareId"
 				value="%{#attr.row.installedSoftwareId}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].alertAgeI"
@@ -277,6 +282,7 @@
 			<!-- fake code -->
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
 				value="%{#attr.row.assetName}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].scope" value="%{#attr.row.scope}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
