@@ -365,10 +365,10 @@ public class PriorityISVSoftwareServiceEndpointTest {
 		}
 		System.out.println("Add Crossing level Priority ISV SW Object failed message : "+returnWSMsgObj.getMsg());
 		assertTrue(httpStatusCode2 == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.FAIL));
-		assertTrue(returnWSMsgObj.getMsg().equals("Priority ISV Software has already existed for [Level = GLOBAL, Customer Id = null, Manufacturer Id = 18]"));
+		assertTrue(returnWSMsgObj.getMsg().equals("Priority ISV Software already exists for [Level = GLOBAL, Customer Id = null, Manufacturer Id = 18]"));
 		System.out.println("Add Crossing level Priority ISV SW Object failed message : "+returnWSMsgObj2.getMsg());
 		assertTrue(httpStatusCode4 == 200 && appStatusCode2!=null && appStatusCode2.trim().equals(WSMsg.FAIL));
-		assertTrue(returnWSMsgObj2.getMsg().equals("Priority ISV Software has already existed for [Level = ACCOUNT, Customer Id = 2541, Manufacturer Id = 21]"));
+		assertTrue(returnWSMsgObj2.getMsg().equals("Priority ISV Software already exists for [Level = ACCOUNT, Customer Id = 2541, Manufacturer Id = 21]"));
 	
 	}
 	
