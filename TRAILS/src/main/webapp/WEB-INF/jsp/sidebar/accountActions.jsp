@@ -1,26 +1,33 @@
 <%@taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="sx" uri="/struts-dojo-tags"%>
 <sx:head />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+   $(document).ready(function(){
+		$("#alertSummary").load("${pageContext.request.contextPath}/account/alert/summary.htm?type=ALERT");
+   });
+</script>
+
 <s:url id="alertUrl" namespace="/account/alert" action="summary" />
 <div class="callout">
 	<h2 class="bar-green-med-light">
 		<span class="style3">Account alerts</span>
 	</h2>
-	<sx:div href="%{#alertUrl}?type=ALERT" cssClass="table-wrap"
-		delay="200" loadingText="Loading..." showLoadingText="true">
-	</sx:div>
+	<div id="alertSummary" class="table-wrap"></div>
 	<br /> <br />
 	<h2 class="bar-green-med-light">
 		<span class="style3">Account exceptions</span>
 	</h2>
     Please use data exception reports on the left navigation
-	<!--<sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
-</sx:div>  -->
+	<sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
+</sx:div> 
 	<br /> <br />
 </div>
 <br />
 <br />
-
+<div>
 <h2 class="bar-green-med-light">
 	<span class="style3">Account reports</span>
 </h2>
