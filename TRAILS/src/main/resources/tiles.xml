@@ -64,6 +64,10 @@
 				icon="account" />
 			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
+<!-- 			////////////////////////////////////////////////////////////////////////////// -->
+			<item value="SOM 3: SW Instances with Defined Contract Scope"
+				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
+<!-- 			//////////////////////////////////////////////////////////////////////////////				 -->
 			<item value="Unlicensed IBM SW" link="/account/alerts/alertUnlicensedIbmSw.htm"
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
@@ -294,6 +298,10 @@
 				icon="account" />
 			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
+<!-- 			////////////////////////////////////////////////////////////////////////////// -->
+			<item value="SOM 3: SW Instances with Defined Contract Scope"
+				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
+<!-- 			//////////////////////////////////////////////////////////////////////////////				 -->
 			<item value="Unlicensed IBM SW" link="/account/alerts/alertUnlicensedIbmSw.htm"
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
@@ -474,6 +482,14 @@
 		<put-attribute name="keywords" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 	</definition>
 
+	<definition name="tiles.alerts.alertHardwareConfigCNDBID.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM 3: SW Instances with Defined Contract Scope" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/alerts/alertWithDefinedContractScope.jsp" />
+		<put-attribute name="description" value="SOM 3: SW Instances with Defined Contract Scope" />
+		<put-attribute name="keywords" value="SOM 3: SW Instances with Defined Contract Scope" />
+	</definition>
+	
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareList.jsp" />
