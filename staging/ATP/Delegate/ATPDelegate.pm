@@ -641,7 +641,7 @@ sub cpuIflLogic {
 sub hardwareStatusLogic {
 	my ( $self, $hardwareStatus) = @_;
 	
-	if( $hardwareStatus eq 'ACTIVE' || $hardwareStatus eq 'HWCOUNT' || $hardwareStatus eq 'UNLOC8D' || $hardwareStatus eq 'RMVDLPAR' || $hardwareStatus eq 'INACTIVE' ) {
+	if( $hardwareStatus eq 'ACTIVE' || $hardwareStatus eq 'HWCOUNT' || $hardwareStatus eq 'UNLOC8D' || $hardwareStatus eq 'RMVDLPAR' || $hardwareStatus eq 'INACTIVE' || $hardwareStatus eq 'UNLOCATD' ) {
 		return $hardwareStatus;	
 	}
 	
