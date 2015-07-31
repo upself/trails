@@ -59,6 +59,9 @@
 
 	<bean id="alertExpiredMaintService"
 		class="com.ibm.asset.trails.service.impl.AlertExpiredMaintServiceImpl" />
+	
+	<bean id="alertHardwareConfigCNDBIDService"
+		class="com.ibm.asset.trails.service.impl.AlertHardwareConfigCNDBIDServiceImpl" />
 
 	<bean id="alertHardwareService"
 		class="com.ibm.asset.trails.service.impl.AlertHardwareServiceImpl" />
@@ -304,6 +307,12 @@
 	<bean id="accountAlertExpiredScan" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
 		<property name="alertService" ref="alertExpiredScanService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+	
+	<bean id="accountAlertHardwareConfigCNDBID" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertHardwareConfigCNDBIDService" />
 		<property name="accountService" ref="accountService" />
 	</bean>
 

@@ -54,6 +54,8 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -282,6 +284,8 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -460,6 +464,14 @@
 			value="/WEB-INF/jsp/account/alerts/browseAll.jsp" />
 		<put-attribute name="description" value="TRAILS browse all alerts" />
 		<put-attribute name="keywords" value="TRAILS browse all alerts" />
+	</definition>
+	
+	<definition name="tiles.alerts.alertHardwareConfigCNDBID.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/alerts/alertHardwareConfigCNDBIDList.jsp" />
+		<put-attribute name="description" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
+		<put-attribute name="keywords" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 	</definition>
 
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
