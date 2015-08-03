@@ -21,7 +21,9 @@
 		<span class="style3">Account exceptions</span>
 	</h2>
     Please use data exception reports on the left navigation
+    <!-- 
 	<sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
+     -->
 </sx:div> 
 	<br /> <br />
 </div>
