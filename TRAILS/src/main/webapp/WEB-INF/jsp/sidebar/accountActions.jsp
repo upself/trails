@@ -1,6 +1,4 @@
 <%@taglib prefix="s" uri="/struts-tags"%>
-<%@ taglib prefix="sx" uri="/struts-dojo-tags"%>
-<sx:head />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
 
@@ -23,8 +21,8 @@
     Please use data exception reports on the left navigation
     <!-- 
 	<sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
-     -->
 </sx:div> 
+     -->
 	<br /> <br />
 </div>
 <br />
