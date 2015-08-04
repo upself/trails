@@ -28,6 +28,8 @@ import javax.persistence.Table;
 @Cacheable
 public abstract class AlertView {
 
+	public static final String hardwarecfgdataType = "HWCFGDTA";
+	
 	public static final String hardwareType = "HARDWARE";
 
 	public static final String hardwareLparType = "HARDWARE_LPAR";

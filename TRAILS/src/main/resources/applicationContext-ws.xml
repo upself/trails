@@ -8,18 +8,26 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint"/>
 	<bean id="priorityISVSoftwareServiceEndpoint" class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint"/>	
+	<bean id="alertHardwareCfgDataServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint"/>	
+	
+	<bean id="hibernateMapper" class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
+ 
+   
 	
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>
 			<ref bean="nonInstanceServiceEndpoint"/>
 			<ref bean="priorityISVSoftwareServiceEndpoint"/>
+			<ref bean="alertHardwareCfgDataServiceEndpoint"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
           <entry key="json" value="application/json"/>
           <entry key="xml" value="application/xml"/>
         </jaxrs:extensionMappings>
         <jaxrs:providers>
-			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
+			<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+        		<property name="mapper" ref="hibernateMapper" />
+    		</bean>
 			<bean class="com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider" />
 		</jaxrs:providers>
 	</jaxrs:server>
