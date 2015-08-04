@@ -59,6 +59,11 @@
 @media only screen and (min-width: 1200px) {
 
 }
+
+.nobreak{
+	word-break: keep-all;
+	white-space:nowrap;
+}
 </style>
 <script type="text/javascript">
 	ibmweb.config.set({

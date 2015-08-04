@@ -159,6 +159,15 @@ public class ReportServiceImpl implements ReportService {
 	private final String PRIORITY_ISV_SW_REPORT_NAME = "Priority ISV Software report";
 	private final String[] PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS = {
 			"Manufacturer Name", "Level", "CNDB Name", "CNDB ID", "Evidence Location", "Status", "Business Justification", "Remote User", "Record Time"};
+	
+	private final String ALERT_HARDWARE_CFGDATA_REPORT_NAME = "SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED";
+	private final String[] ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS = {"Status",
+			"Serial", "Machine type", "Asset type", "Processor Manufacturer", "Mast Processor Type", 
+			"Processor Model", "NBR Cores Per Chip", "HW Chips", "HW Processor Count", "NBR Of Chips Max",
+			"CPU Gartner MIPS", "CPU IBM LSPR MIPS", "CPU MSU", "Create date/time","Age",
+			"Assignee", "Assignee comments", "Assigned date/time",
+			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
+			"CC change person", "Internal ID" };
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -1385,6 +1394,63 @@ public class ReportServiceImpl implements ReportService {
 		}
 		
 		lsrReport.close();
+	}
+	
+	
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getAlertHardwareCfgDataReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception{
+		// TODO Auto-generated method stub
+		StringBuffer sb = new StringBuffer("SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
+		sb.append(" ").append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
+		.append(" ").append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
+		.append(" ").append("VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,AC.name as ac_name,")
+		.append(" ").append("CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id")
+		.append(" ").append("FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC")
+		.append(" ").append("WHERE VA.Customer_Id = :customerId AND VA.Type = 'HWCFGDTA' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id")
+		.append(" ").append("and VA.id=CC.alert_id and CC.alert_type_id=37 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC");
+		
+		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
+				.createSQLQuery(sb.toString())
+				.setLong("customerId", pAccount.getId())
+				.scroll(ScrollMode.FORWARD_ONLY);
+		
+		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config CNDBID Report");
+		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccount(),
+				ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS, sheet);
+		int i = 3;
+		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert Hardware Config CNDBID Report"+k);
+				i = 1;
+			}
+			HSSFRow row = sheet.createRow((int) i);
+			outputData(lsrReport.get(), row);
+			i++;
+		}
+		// lsrReport.close();
+
+		@SuppressWarnings("unchecked")
+		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
+				.createNamedQuery("getValidCauseCodesByAlertTypeId")
+				.setParameter("alertTypeId", new Long(37)).getResultList()
+				.iterator();
+		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
+		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
+		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+		int j = 1;
+		while (vCauseCodeSummary.hasNext()) {
+			HSSFRow row = sheet_2.createRow((int) j);
+			outputData(vCauseCodeSummary.next(), row);
+			j++;
+		}
+		phwb.write(pOutputStream);
+	
 	}
 
 	private String outputData(Object[] poaData, HSSFRow rowct) {
