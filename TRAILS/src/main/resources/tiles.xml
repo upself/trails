@@ -62,10 +62,6 @@
 				icon="account" />
 			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
-<!-- 			////////////////////////////////////////////////////////////////////////////// -->
-			<item value="SOM 3: SW Instances with Defined Contract Scope"
-				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
-<!-- 			//////////////////////////////////////////////////////////////////////////////				 -->
 			<item value="Unlicensed IBM SW" link="/account/alerts/alertUnlicensedIbmSw.htm"
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
