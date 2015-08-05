@@ -54,8 +54,6 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -68,6 +66,8 @@
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
 				icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -284,8 +284,6 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -298,6 +296,8 @@
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
 				icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->

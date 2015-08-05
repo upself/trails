@@ -47,18 +47,17 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
-			summary="Sortable Non Instance based SW table">
+		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable Non Instance based SW table">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Serial</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>MachineType</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Create date</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Age(days)</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Assignee</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="#sort"><span>Comments</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak">Assign/Unassign</th>
+					<th scope="col" class="ibm-sort nobreak">Status</th>
+					<th scope="col" class="ibm-sort nobreak">Serial</th>
+					<th scope="col" class="ibm-sort nobreak">MachineType</th>
+					<th scope="col" class="ibm-sort nobreak">Create date</th>
+					<th scope="col" class="ibm-sort nobreak">Age(days)</th>
+					<th scope="col" class="ibm-sort nobreak">Assignee</th>
+					<th scope="col" class="ibm-sort nobreak">Comments</th>
 				</tr>
 			</thead>
 			<tbody id="tb">
