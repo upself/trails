@@ -53,7 +53,7 @@ ibmweb.config.set({pagetitle: "<tmp:insertAttribute name='contentTitle' />" });
 </head>
 
 
-<body id="ibm-com" class="ibm-type">
+<body id="ibm-com">
 	<div id="ibm-top" class="ibm-popup">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
