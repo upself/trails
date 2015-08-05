@@ -54,8 +54,6 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -68,6 +66,8 @@
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
 				icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -284,8 +284,6 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
 			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
@@ -294,14 +292,12 @@
 				icon="account" />
 			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
-<!-- 			////////////////////////////////////////////////////////////////////////////// -->
-			<item value="SOM 3: SW Instances with Defined Contract Scope"
-				link="/account/alerts/alertHardwareConfigCNDBID.htm" icon="account"/>
-<!-- 			//////////////////////////////////////////////////////////////////////////////				 -->
 			<item value="Unlicensed IBM SW" link="/account/alerts/alertUnlicensedIbmSw.htm"
 				icon="account" />
 			<item value="Unlicensed ISV SW" link="/account/alerts/alertUnlicensedIsvSw.htm"
 				icon="account" />
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -412,13 +408,21 @@
 			<item value="On page reference" link="/help/onPageRef.htm" icon="false" />
 		</put-list-attribute>
 	</definition>
-	<definition name="tiles.v17e.w3OneColumnLayout"
-		template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
+	<definition name="tiles.v17e.w3OneColumnLayout" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
 		<put-attribute name="content" type="template" value="" />
 		<put-attribute name="contentSidebar" type="template"
 			value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+	</definition>
+	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+	</definition>
+	
+	<definition name="tiles.alerts.history.v17e.popup" extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS alert hardware config cndb id history" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/alerts/v17eAlertHistoryPopup.jsp" />
 	</definition>
 
 
@@ -470,22 +474,14 @@
 		<put-attribute name="keywords" value="TRAILS browse all alerts" />
 	</definition>
 	
-	<definition name="tiles.alerts.alertHardwareConfigCNDBID.list" extends="tiles.v17e.w3OneColumnLayout">
+	<definition name="tiles.alerts.alertHardwareCfgData.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertHardwareConfigCNDBIDList.jsp" />
+			value="/WEB-INF/jsp/alerts/alertHardwareCfgDataList.jsp" />
 		<put-attribute name="description" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 		<put-attribute name="keywords" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 	</definition>
 
-	<definition name="tiles.alerts.alertHardwareConfigCNDBID.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM 3: SW Instances with Defined Contract Scope" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertWithDefinedContractScope.jsp" />
-		<put-attribute name="description" value="SOM 3: SW Instances with Defined Contract Scope" />
-		<put-attribute name="keywords" value="SOM 3: SW Instances with Defined Contract Scope" />
-	</definition>
-	
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareList.jsp" />
