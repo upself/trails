@@ -20,13 +20,11 @@ import com.ibm.ea.bravo.discrepancy.DelegateDiscrepancy;
 import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.batch.IBatch;
 import com.ibm.ea.bravo.framework.common.Constants;
-import com.ibm.ea.bravo.framework.common.FTPUtil;
+import com.ibm.ea.bravo.framework.common.SFTPUtil;
 import com.ibm.ea.bravo.framework.email.DelegateEmail;
 import com.ibm.ea.bravo.software.DelegateSoftware;
-//Change Bravo to use Software View instead of Product Object Start
-//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.bravo.framework.properties.DelegateProperties;
 import com.ibm.ea.sigbank.Software;
-//Change Bravo to use Software View instead of Product Object End
 import com.ibm.ea.utils.EaUtils;
 import com.ibm.ea.utils.PoiUtils;
 
@@ -48,10 +46,7 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 	private HttpServletRequest request;
 
 	// setup some caching
-	//Change Bravo to use Software View instead of Product Object Start
-    //private Map<String, Product> softwares = new HashMap<String, Product>();
     private Map<String, Software> softwares = new HashMap<String, Software>();
-    //Change Bravo to use Software View instead of Product Object End
 
     private Map<String, Account> accounts = new HashMap<String, Account>();
 
@@ -156,10 +151,7 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 
 			// validate softwareName
 			logger.debug("softwareName=" + softwareName);
-			//Change Bravo to use Software View instead of Product Object Start
-			//Product software = getSoftware(softwareName);
 			Software software = getSoftware(softwareName);
-			//Change Bravo to use Software View instead of Product Object End
 			if (software == null) {
 				logger.error("row " + row + " invalid software: "
 						+ softwareName);
@@ -237,6 +229,18 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 
 		// ftp loaderFile
 		int ftpAttempts = 0;
+		String FTP_HOST = DelegateProperties.getProperty(Constants.APP_PROPERTIES, "ftpHost");
+		String FTP_USER = DelegateProperties.getProperty(Constants.APP_PROPERTIES, "ftpUser");
+		String FTP_PASSWORD = DelegateProperties.getProperty(Constants.APP_PROPERTIES, "ftpPassword");
+		
+		if(FTP_HOST == null || FTP_HOST.equals("") 
+			|| FTP_USER == null || FTP_USER.equals("")
+			|| FTP_PASSWORD == null || FTP_PASSWORD.equals(""))
+		{
+			logger.error("login info is not filled, please check host, user and password for ftp");
+			return;
+		}
+		
 		while (ftpAttempts < Constants.MAX_FTP_ATTEMPTS) {
 
 			if (ftpAttempts > 0) {
@@ -247,8 +251,8 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 
 			ftpAttempts++;
 
-			success = FTPUtil.ftpFileAsci(Constants.FTP_HOST,
-					Constants.FTP_ID_ANONYMOUS, this.remoteUser, this.dir,
+			success = SFTPUtil.sftpFileAsci(FTP_HOST,
+					FTP_USER,FTP_PASSWORD, this.dir,
 					loaderFile, Constants.FTP_DIR_MANUAL);
 
 			if (!success) {
@@ -269,25 +273,6 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 
 		logger.debug("SoftwareDiscrepancy.execute - end");
 	}
-
-	//Change Bravo to use Software View instead of Product Object Start
-	/*private Product getSoftware(String softwareName) {
-		Product software = null;
-
-		// check the cache first
-		software = (Product) softwares.get(softwareName);
-
-		// if not in the cache, try the database
-		if (software == null) {
-			software = DelegateSoftware.getSoftware(softwareName);
-
-			// if the account was in the database, save it in the cache
-			if (software != null)
-				softwares.put(softwareName, software);
-		}
-
-		return software;
-	}*/
 	
 	private Software getSoftware(String softwareName) {
 		Software software = null;
