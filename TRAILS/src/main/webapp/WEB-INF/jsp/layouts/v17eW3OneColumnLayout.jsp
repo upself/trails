@@ -59,6 +59,14 @@
 @media only screen and (min-width: 1200px) {
 
 }
+
+.nobreak{
+	word-break: keep-all;
+	white-space:nowrap;
+}
+.alert-go{
+	color: #66CD00;
+}
 </style>
 <script type="text/javascript">
 	ibmweb.config.set({
@@ -95,7 +103,7 @@
 </head>
 
 
-<body id="ibm-com" class="ibm-type">
+<body id="ibm-com">
 	<div id="ibm-top">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
