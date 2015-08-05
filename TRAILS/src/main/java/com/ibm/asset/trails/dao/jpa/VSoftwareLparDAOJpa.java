@@ -3,6 +3,9 @@ package com.ibm.asset.trails.dao.jpa;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
@@ -17,6 +20,7 @@ import com.ibm.asset.trails.dao.VSoftwareLparDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.ReconSetting;
 import com.ibm.asset.trails.domain.ReconWorkspace;
+import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.VSoftwareLpar;
 import com.ibm.tap.trails.framework.DisplayTagList;
 
@@ -187,6 +191,8 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("hl.serverType").as("lparServerType"))
 				.add(Projections.property("h.shared").as("shared"))
 				.add(Projections.property("mt.type").as("assetType"))
+				//story 30027
+				.add(Projections.property("mt.name").as("assetName"))
 				.add(Projections.property("h.hardwareStatus").as("hardwareStatus"))
 				.add(Projections.property("hl.lparStatus").as("lparStatus"))
 				.add(Projections.property("processorCount").as("processorCount"))
@@ -212,7 +218,8 @@ public class VSoftwareLparDAOJpa extends
 		}
 
 		ArrayList<ReconWorkspace> list = new ArrayList<ReconWorkspace>();
-
+		
+		
 		ScrollableResults itemCursor = criteria.scroll();
 		itemCursor.beforeFirst();
 		if (itemCursor.next()) {
@@ -238,5 +245,91 @@ public class VSoftwareLparDAOJpa extends
 			data.setFullListSize(0);
 			itemCursor.close();
 		}
+		
+		addSchedulef2List(account,data.getList());
 	}
+	
+	//story 30027
+	private void addSchedulef2List(Account account, List<ReconWorkspace> list){
+		for(ReconWorkspace rw:list){
+			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getHostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial());
+			if(sf!=null){
+				rw.setScope(sf.getScope().getDescription());
+			}else{
+				rw.setScope("Not specified");
+			}
+		}
+	}
+	
+	private EntityManager em;
+
+	@PersistenceContext(unitName = "trailspd")
+	public void setEntityManager(EntityManager em) {
+		this.em = em;
+	}
+
+	private EntityManager getEntityManager() {
+		return em;
+	}
+	private ScheduleF getScheduleFItem(Account account, String swname,
+			String hostName, String hwOwner, String machineType, String serial) {
+	
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createQuery(
+						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
+				.setParameter("account", account)
+				.setParameter("swname", swname).getResultList();
+
+
+		if (results == null || results.isEmpty()) {
+			return null;
+		}
+
+		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
+
+		for (ScheduleF sf : results) {
+			String level = sf.getLevel();
+			if ("HOSTNAME".equals(level)) {
+				hostNameLevel.add(sf);
+			} else if ("HWBOX".equals(level)) {
+				hwboxLevel.add(sf);
+			} else if ("HWOWNER".equals(level)) {
+				hwOwnerLevel.add(sf);
+			} else {
+				proudctLevel.add(sf);
+			}
+		}
+
+		for (ScheduleF sf : hostNameLevel) {
+			if (sf.getHostname().equals(hostName)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : hwboxLevel) {
+			if (sf.getSerial().equals(serial)
+					&& sf.getMachineType().equals(machineType)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : hwOwnerLevel) {
+			if (sf.getHwOwner().equals(hwOwner)) {
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : proudctLevel) {
+			if (sf.getSoftwareName().equals(swname)) {
+				return sf;
+			}
+		}
+
+		return null;
+	}
+	
 }
