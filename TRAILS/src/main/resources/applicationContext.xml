@@ -63,9 +63,6 @@
 	<bean id="alertHardwareConfigCNDBIDService"
 		class="com.ibm.asset.trails.service.impl.AlertHardwareConfigCNDBIDServiceImpl" />
 
-	<bean id="alertWithDefinedContractScopeService"
-		class="com.ibm.asset.trails.service.impl.alertWithDefinedContractScopeServiceImpl" />
-		
 	<bean id="alertHardwareService"
 		class="com.ibm.asset.trails.service.impl.AlertHardwareServiceImpl" />
 
