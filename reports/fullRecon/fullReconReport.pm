@@ -71,13 +71,16 @@ sub start() {
     
     system("zip -j " . $self->tmpDir .'/'. $self->regionName . ".zip $regionDataFile");
     move($self->tmpDir .'/'. $self->regionName . ".zip",$self->gsaPath .'/'. $self->regionName . ".zip");
+    
+    ilog("fullReconRecort.pm ends for ".$self->regionName);
+    
     unlink($regionDataFile);
 	unlink($regionFile);
 	unlink($sqlFile);
 	unlink($self->tmpDir . $self->regionName . ".zip");
 	system( "db2 terminated" );
 	
-	ilog("fullReconRecort.pm ends");
+	
 
 }
 

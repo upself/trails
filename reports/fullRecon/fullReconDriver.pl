@@ -30,8 +30,6 @@ die "Usage: $0 -r <region name> -c <customer_id> -t <number of customers> -d <de
 my $mode;
 $mode = checkParameters($opt_r);
 
-ilog("Starting full recon report driver : $opt_r $opt_t $opt_c ");
-
 my $databaseName = 'trailsrp';
 my $children           =0;
 my $maxChildren        = 100;
@@ -47,6 +45,8 @@ else {
 	logging_level('info');
 }
 logfile($logFilePath);
+
+ilog("Starting full recon report driver : $opt_r $opt_t $opt_c ");
 
 if($mode eq "fullMode") {
 	%regionHashList	= %allRegionHashList;
