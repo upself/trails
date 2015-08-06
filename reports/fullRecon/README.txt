@@ -24,7 +24,7 @@ examples
 	perl /opt/report/bin/fullRecon/fullReconDriver.pl -r US_IMT -c 11111
 		test use - driver generates report for one specific customer from specific region
 		
-	perl /opt/report/bin/fullRecon/fullReconDriver.pl -r US_IMT -c 3
+	perl /opt/report/bin/fullRecon/fullReconDriver.pl -r US_IMT -t 3
 		test use - driver generates report for number of ramdoly picked customers from region
 		
 		

@@ -26,7 +26,7 @@ my $logFilePath   = $fileDirectory.'/logs/fullReconReportLogTest.txt';
 
 
 use vars qw ($opt_r $opt_t $opt_c $opt_d);
-die "Usage: $0 -r <region name> -c <customer_id> -t <number of customers> -d <debug mode>" if !getopts("r:t:c:d:");
+die "Usage: $0 -r <region name> -c <customer_id> -t <number of customers> -d <debug mode>" if !getopts("r:t:c:d");
 my $mode;
 $mode = checkParameters($opt_r);
 
@@ -39,6 +39,14 @@ my %children           = ();
 my $trailsrpConnection = Database::Connection->new($databaseName);
 my %allRegionHashList = fillAllRegionsHash($trailsrpConnection);
 my %regionHashList;
+
+if (defined $opt_d) {
+	logging_level('debug');
+}
+else {
+	logging_level('info');
+}
+logfile($logFilePath);
 
 if($mode eq "fullMode") {
 	%regionHashList	= %allRegionHashList;
@@ -54,14 +62,6 @@ elsif( $mode eq "regionMode" ) {
 else {
 	die "wrong parametres";
 }
-
-if (defined $opt_d) {
-	logging_level('debug');
-}
-else {
-	logging_level('info');
-}
-logfile($logFilePath);
 
 $trailsrpConnection->disconnect();
 daemonize();
