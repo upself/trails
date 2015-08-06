@@ -69,14 +69,14 @@ public class ReportServiceImpl implements ReportService {
 			"CC owner", "CC change date", "CC change person", "Internal ID" };
 	private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
-			"Alert status", "Alert opened", "Alert duration", "SW LPAR name",
+			"Alert status", "Alert opened", "Alert duration", "Alert type", "SW LPAR name",
 			"HW LPAR name", "SW_EXT_ID", "HW_EXT_ID","SW_TI_ID", "HW_TI_ID",
 			"HW serial", "HW machine type","Cross account level","CPU Model","CHASSIS ID","Cloud Name",
 			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction",
 			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
 			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
-			"NBR of Chips Max", "Hardware IFL", "Shared processor", "CPU IBM LSPR MIPS", "CPU Gartner MIPS",
-			"CPU MSU", "Part IBM LSPR MIPS", "Part Gartner MIPS", "Part MSU",
+			"NBR of Chips Max", "Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS", "CPU Gartner MIPS",
+			"CPU MSU", "Part IBM LPAR MIPS", "Part Gartner MIPS", "Part MSU",
 			"SHARED", "Hardware Status", "Lpar Status",
 			"Physical HW processor count", "Physical chips",
 			"Effective processor count","Effective threads","PVU/core",
@@ -515,6 +515,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ", case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) "
 				+ "else days(aus.record_time) - days(aus.creation_time) "
 				+ "end "
+				+ ",aus.type"
 				+ ",sl.name as swLparName "
 				+ ",hl.name as hwLparName"
 				+ ",cast(sl.ext_id as varchar(8)) as SW_EXT_ID"
