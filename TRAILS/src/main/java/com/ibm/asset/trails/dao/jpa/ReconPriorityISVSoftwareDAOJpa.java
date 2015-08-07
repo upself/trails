@@ -8,7 +8,7 @@ import com.ibm.asset.trails.dao.ReconPriorityISVSoftwareDAO;
 import com.ibm.asset.trails.domain.ReconPriorityISVSoftware;
 
 @Repository
-public class ReconPriorityISVSoftwareDAOJap extends
+public class ReconPriorityISVSoftwareDAOJpa extends
 		AbstractGenericEntityDAOJpa<ReconPriorityISVSoftware, Long> implements
 		ReconPriorityISVSoftwareDAO {
 

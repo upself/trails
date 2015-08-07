@@ -191,6 +191,16 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 			    Manufacturer newManufacturer = newPISVSW.getManufacturer();
 			    Status newStatus = newPISVSW.getStatus();
 			    
+			    //If the status of priority ISV SW is 'INACTIVE', then we don't need to add the recon priority ISV SW record
+			    if(null!=oldStatus
+				  &&null!=newStatus
+				  &&null!=oldStatus.getId()
+				  &&null!=newStatus.getId()
+				  &&oldStatus.getId().longValue()==newStatus.getId().longValue()
+				  &&oldStatus.getId().longValue()==1){//1 = INACTIVE
+					  return false;
+				}
+			    
 			    if(null!=oldLevel
 			     &&null!=newLevel
 			     &&!oldLevel.trim().equalsIgnoreCase(newLevel.trim())){
