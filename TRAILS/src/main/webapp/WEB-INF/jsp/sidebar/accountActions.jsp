@@ -13,7 +13,7 @@
 	<h2 class="bar-green-med-light">
 		<span class="style3">Account alerts</span>
 	</h2>
-	<div id="alertSummary" class="table-wrap"></div>
+	<div id="alertSummary" class="table-wrap">Loading...</div>
 	<br /> <br />
 	<h2 class="bar-green-med-light">
 		<span class="style3">Account exceptions</span>
