@@ -6,6 +6,8 @@
  */
 package com.ibm.ea.bravo.framework.common;
 
+import com.ibm.ea.bravo.framework.properties.DelegateProperties;
+
 /**
  * @author Thomas
  * 
@@ -64,7 +66,7 @@ public class Constants {
 	public static final String FTP_HOST = "tap.raleigh.ibm.com";
 	public static final String FTP_DIR_TLCMZ = "mf_scan/";
 	public static final String FTP_DIR_DORANA = "dorana/";
-	public static final String FTP_DIR_MANUAL = "manual";
+	public static final String FTP_DIR_MANUAL = "/var/ftp/manual";
 	public static final String FTP_ID = "USERNAMEHERE";
 	public static final String FTP_PW = "PASSWORDHERE";
 	public static final String FTP_ID_ANONYMOUS = "anonymous";
