@@ -73,6 +73,10 @@
 		<action name="alertHardwareHistory" class="alertHardwareHistory">
 			<result type="tiles">tiles.alerts.history.popup</result>
 		</action>
+		
+		<action name="alertHardwareCfgDataHistory" method="excuteV17e" class="alertHardwareCfgDataHistory">
+			<result type="tiles">tiles.alerts.history.v17e.popup</result>
+		</action>
 
 		<action name="alertHardwareLparHistory" class="alertHardwareLparHistory">
 			<result type="tiles">tiles.alerts.history.popup</result>
