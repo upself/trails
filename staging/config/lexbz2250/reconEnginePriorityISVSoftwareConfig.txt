@@ -1,0 +1,3 @@
+server=lexbz2250
+debugLevel=error
+sleepPeriod=10800
