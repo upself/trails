@@ -94,4 +94,6 @@ sleep $SLEEP
 sleep $SLEEP
 ./scanSoftwareItemToStaging.pl stop
 sleep $SLEEP
+./reconEnginePriorityISVSoftware.pl stop
+sleep $SLEEP
 exit 0
