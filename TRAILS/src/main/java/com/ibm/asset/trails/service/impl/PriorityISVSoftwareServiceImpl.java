@@ -169,6 +169,15 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 		   //, then only add the Global level into the Recon Priority ISV Queue
 		   insertReconPriorityISVSW(newPISVSW, newPISVSW.getRemoteUser());
 		}
+		else if(oldLevel.equals(LEVEL_ACCOUNT)
+		     && newLevel.equals(LEVEL_ACCOUNT) 
+		     && oldPISVSW.getAccount()!=null
+		     && newPISVSW.getAccount()!=null
+		     && oldPISVSW.getAccount().getId().longValue()!=newPISVSW.getAccount().getId().longValue()){
+			 //support account value changed case
+			 insertReconPriorityISVSW(oldPISVSW, newPISVSW.getRemoteUser());
+			 insertReconPriorityISVSW(newPISVSW, newPISVSW.getRemoteUser());
+		}
 		else{
 		  //If only the status has been changed, then only add the old scope into Recon Priority ISV Queue
 		  insertReconPriorityISVSW(oldPISVSW, newPISVSW.getRemoteUser());	
