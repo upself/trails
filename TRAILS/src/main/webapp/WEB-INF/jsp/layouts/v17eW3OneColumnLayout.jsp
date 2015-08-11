@@ -67,6 +67,13 @@
 .alert-go{
 	color: #66CD00;
 }
+.alert-stop{
+	color: red;
+}
+.orange-med{
+	color: #FFC125;
+}
+
 </style>
 <script type="text/javascript">
 	ibmweb.config.set({
