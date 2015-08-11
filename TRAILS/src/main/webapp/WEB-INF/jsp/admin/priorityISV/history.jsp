@@ -68,7 +68,7 @@
 						html += "<td>" + list[i].statusDesc + "</td>";
 						html += "<td>" + list[i].businessJustification+ "</td>";
 						html += "<td>" + list[i].remoteUser + "</td>";
-						html += "<td>" + formatDate(new Date(list[i].recordTime)) + "</td>";
+						html += "<td>" + list[i].recordTime + "</td>";
 						html += "</tr>";
 					}
 				}
