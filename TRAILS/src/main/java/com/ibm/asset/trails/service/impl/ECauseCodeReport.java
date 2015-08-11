@@ -11,7 +11,8 @@ public enum ECauseCodeReport
 	HARDWARE("HW w/o HW LPAR alert report", 3, 9, 10, 11, 12, 13, 14, 15),
 	HW_LPAR("HW LPAR w/o SW LPAR alert report", 4, 10, 11, 12, 13, 14, 15, 16),
 	SW_LPAR("SW LPAR w/o HW LPAR alert report", 5, 8, 9, 10, 11, 12, 13, 14),
-	EXP_SCAN("Outdated SW LPAR alert report", 6, 8, 9, 10, 11, 12, 13, 14);
+	EXP_SCAN("Outdated SW LPAR alert report", 6, 8, 9, 10, 11, 12, 13, 14), 
+	SOM1B("SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED",37,19,20,21,22,23,24,25);
 
 	private String reportName;
 	private int colCauseCode;
