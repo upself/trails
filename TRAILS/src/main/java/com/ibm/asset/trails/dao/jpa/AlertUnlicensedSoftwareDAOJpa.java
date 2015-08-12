@@ -187,7 +187,7 @@ public class AlertUnlicensedSoftwareDAOJpa extends
 
 	@SuppressWarnings("unchecked")
 	public List<Long> findAffectedAlertList(List<Long> alertIds) {
-		return entityManager.createNamedQuery("alertUnlicensedSwListSelected")
+		return entityManager.createNamedQuery("alertUnlicensedSwListSelectedScoped")
 				.setParameter("alertUnlicensedSwIdList", alertIds)
 				.getResultList();
 	}
@@ -195,7 +195,7 @@ public class AlertUnlicensedSoftwareDAOJpa extends
 	@SuppressWarnings("unchecked")
 	public List<Long> findAffectedAlertList(Account pAccount,
 			List<Long> llSoftwareId) {
-		return entityManager.createNamedQuery("alertUnlicensedSwListAll")
+		return entityManager.createNamedQuery("alertUnlicensedSwListAllScoped")
 				.setParameter("account", pAccount)
 				.setParameter("softwareIdList", llSoftwareId).getResultList();
 	}
