@@ -6,7 +6,7 @@
 		<h6>IBM Confidential</h6>
 		<p>This page displays hardware without critical configuration data populated. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
 		<div style="text-align:right">
-			<a href="${pageContext.request.contextPath}/ws/alertHardwareCfgData/download/${accountId}">Download SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED alert report</a>
+			<a href="${pageContext.request.contextPath}/ws/alertHardwareCfgData/download/${accountId}">Download SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE alert report</a>
 		</div>
 	</div>
 	

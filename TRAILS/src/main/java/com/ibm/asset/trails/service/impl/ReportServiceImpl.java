@@ -1453,6 +1453,14 @@ public class ReportServiceImpl implements ReportService {
 	
 	}
 
+	@Override
+	public void getAlertWithDefinedContractScopeReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
 		StringBuffer lsbData = new StringBuffer();
