@@ -294,6 +294,8 @@
 				value="%{#attr.row.lparStatus}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].processorCount"
 				value="%{#attr.row.processorCount}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].osType"
+				value="%{#attr.row.osType}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareProcessorCount"
 				value="%{#attr.row.hardwareProcessorCount}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hwLparEffProcessorCount"

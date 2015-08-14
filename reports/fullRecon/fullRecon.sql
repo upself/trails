@@ -32,6 +32,7 @@ where rul2.used_license_id = ul.id and sl2.customer_id != sl.customer_id fetch f
 ,hl.SPLA 
 ,hl.VIRTUAL_FLAG 
 ,hl.VIRTUAL_MOBILITY_RESTRICTION 
+,hl.OS_TYPE
 ,hl.SYSPLEX 
 ,hl.CLUSTER_TYPE 
 ,hl.BACKUPMETHOD 

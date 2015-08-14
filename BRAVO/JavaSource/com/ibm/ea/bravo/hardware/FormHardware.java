@@ -25,8 +25,8 @@ import com.ibm.ea.utils.EaUtils;
 /**
  * @author denglers
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class FormHardware extends FormBase {
 	/**
@@ -37,9 +37,9 @@ public class FormHardware extends FormBase {
 	private String lparName;
 
 	private String machineType;
-	
+
 	private String assetType;
-	
+
 	private String serial;
 
 	private String country;
@@ -65,56 +65,65 @@ public class FormHardware extends FormBase {
 	private String techImageId;
 
 	private Integer processorCount;
-	
+
 	private Integer processorCountEff;
-	
+
 	private Integer chips;
-	
+
 	private String serverType;
-	
+
 	private String owner;
-	
+
 	private String mastProcessorType;
-	
+
 	private String processorManufacturer;
-	
+
 	private String processorModel;
-	
+
 	private BigDecimal nbrCoresPerChip;
-	
+
 	private BigDecimal nbrOfChipsMax;
-	
+
 	private String shared;
-	
+
 	private Integer cpuMIPS;
-	
+
 	private BigDecimal cpuGartnerMIPS;
-	
+
 	private Integer cpuMSU;
-	
+
 	private Integer partMIPS;
 
 	private BigDecimal partGartnerMIPS;
-	
+
 	private Integer partMSU;
-	
+
 	private BigDecimal effectiveThreads;
-	
+
 	private String lparStatus;
-	
+
 	private String lparStatusIcon;
-	
+
 	private String hardwareStatus;
-	
+
 	private String sysplex;
-	
+
 	private String spla;
-	
+
 	private String internetIccFlag;
-	
+
 	private Integer cpuIfl;
-	
-	
+
+	private String os_type;
+
+	public String getOs_type() {
+		return os_type;
+	}
+
+	public void setOs_type(String os_type) {
+		this.os_type = os_type;
+	}
+
 	public Integer getCpuIfl() {
 		return cpuIfl;
 	}
@@ -122,7 +131,7 @@ public class FormHardware extends FormBase {
 	public void setCpuIfl(Integer cpuIfl) {
 		this.cpuIfl = cpuIfl;
 	}
-	
+
 	public String getServerType() {
 		return serverType;
 	}
@@ -134,11 +143,11 @@ public class FormHardware extends FormBase {
 	public Integer getCpuMIPS() {
 		return cpuMIPS;
 	}
-	
+
 	public void setCpuMIPS(Integer cpuMIPS) {
 		this.cpuMIPS = cpuMIPS;
 	}
-	
+
 	public BigDecimal getCpuGartnerMIPS() {
 		return cpuGartnerMIPS;
 	}
@@ -150,7 +159,7 @@ public class FormHardware extends FormBase {
 	public Integer getCpuMSU() {
 		return cpuMSU;
 	}
-	
+
 	public void setCpuMSU(Integer cpuMSU) {
 		this.cpuMSU = cpuMSU;
 	}
@@ -158,7 +167,7 @@ public class FormHardware extends FormBase {
 	public Integer getPartMIPS() {
 		return partMIPS;
 	}
-	
+
 	public void setPartMIPS(Integer partMIPS) {
 		this.partMIPS = partMIPS;
 	}
@@ -194,51 +203,51 @@ public class FormHardware extends FormBase {
 	public void setChips(Integer chips) {
 		this.chips = chips;
 	}
-	
+
 	public String getLparStatus() {
 		return lparStatus;
 	}
-	
+
 	public void setLparStatus(String lparStatus) {
 		this.lparStatus = lparStatus;
 	}
-	
+
 	public String getLparStatusIcon() {
 		return lparStatusIcon;
 	}
-	
+
 	public void setLparStatusIcon(String lparStatusIcon) {
 		this.lparStatusIcon = lparStatusIcon;
 	}
-	
+
 	public String getHardwareStatus() {
 		return hardwareStatus;
 	}
-	
+
 	public void setHardwareStatus(String hardwareStatus) {
 		this.hardwareStatus = hardwareStatus;
 	}
-	
+
 	public String getSysplex() {
 		return sysplex;
 	}
-	
+
 	public void setSysplex(String sysplex) {
 		this.sysplex = sysplex;
 	}
-	
+
 	public String getSpla() {
 		return spla;
 	}
-	
+
 	public void setSpla(String spla) {
 		this.spla = spla;
 	}
-	
+
 	public String getInternetIccFlag() {
 		return internetIccFlag;
 	}
-	
+
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
 	}
@@ -300,6 +309,7 @@ public class FormHardware extends FormBase {
 			this.sysplex = hardwareLpar.getSysplex();
 			this.spla = hardwareLpar.getSpla();
 			this.internetIccFlag = hardwareLpar.getInternetIccFlag();
+			this.os_type = hardwareLpar.getOs_type();
 			if (hardwareLpar.getHardware() != null) {
 				this.hardware = hardwareLpar.getHardware();
 				this.machineType = hardwareLpar.getHardware().getMachineType()
@@ -310,21 +320,31 @@ public class FormHardware extends FormBase {
 				this.country = hardwareLpar.getHardware().getCountry();
 				this.processorCount = hardwareLpar.getHardware()
 						.getProcessorCount();
-				if(hardwareLpar.getHardwareLparEff() !=null) {this.processorCountEff = hardwareLpar.getHardwareLparEff().getProcessorCount();}
+				if (hardwareLpar.getHardwareLparEff() != null) {
+					this.processorCountEff = hardwareLpar.getHardwareLparEff()
+							.getProcessorCount();
+				}
 				this.chips = hardwareLpar.getHardware().getChips();
 				this.owner = hardwareLpar.getHardware().getOwner();
 				this.serverType = hardwareLpar.getServerType();
-				this.mastProcessorType = hardwareLpar.getHardware().getMastProcessorType();
-				this.processorManufacturer = hardwareLpar.getHardware().getProcessorManufacturer();
-				this.processorModel = hardwareLpar.getHardware().getProcessorModel();
-				this.nbrCoresPerChip = hardwareLpar.getHardware().getNbrCoresPerChip();
-				this.nbrOfChipsMax = hardwareLpar.getHardware().getNbrOfChipsMax();
+				this.mastProcessorType = hardwareLpar.getHardware()
+						.getMastProcessorType();
+				this.processorManufacturer = hardwareLpar.getHardware()
+						.getProcessorManufacturer();
+				this.processorModel = hardwareLpar.getHardware()
+						.getProcessorModel();
+				this.nbrCoresPerChip = hardwareLpar.getHardware()
+						.getNbrCoresPerChip();
+				this.nbrOfChipsMax = hardwareLpar.getHardware()
+						.getNbrOfChipsMax();
 				this.shared = hardwareLpar.getHardware().getShared();
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
-				this.cpuGartnerMIPS = hardwareLpar.getHardware().getCpuGartnerMIPS();
+				this.cpuGartnerMIPS = hardwareLpar.getHardware()
+						.getCpuGartnerMIPS();
 				this.cpuMSU = hardwareLpar.getHardware().getCpuMSU();
 				this.effectiveThreads = hardwareLpar.getEffectiveThreads();
-				this.hardwareStatus = hardwareLpar.getHardware().getHardwareStatus();
+				this.hardwareStatus = hardwareLpar.getHardware()
+						.getHardwareStatus();
 				this.cpuIfl = hardwareLpar.getHardware().getCpuIfl();
 			}
 
@@ -379,9 +399,7 @@ public class FormHardware extends FormBase {
 
 		// comment is required
 		if (EaUtils.isBlank(this.comment)) {
-			errors
-					.add(Constants.COMMENT, new ActionMessage(
-							Constants.REQUIRED));
+			errors.add(Constants.COMMENT, new ActionMessage(Constants.REQUIRED));
 		} else if (this.comment.length() > Constants.MAX_COMMENT_LENGTH) {
 			errors.add(Constants.COMMENT, new ActionMessage(
 					Constants.LENGTH_MAX_255));
@@ -542,7 +560,7 @@ public class FormHardware extends FormBase {
 	public void setMachineType(String machineType) {
 		this.machineType = machineType;
 	}
-	
+
 	/**
 	 * @return the assetType
 	 */
@@ -551,7 +569,8 @@ public class FormHardware extends FormBase {
 	}
 
 	/**
-	 * @param assetType the assetType to set
+	 * @param assetType
+	 *            the assetType to set
 	 */
 	public void setAssetType(String assetType) {
 		this.assetType = assetType;
@@ -601,7 +620,7 @@ public class FormHardware extends FormBase {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 	public String getOwner() {
 		return this.owner;
 	}
@@ -633,7 +652,7 @@ public class FormHardware extends FormBase {
 	public void setProcessorCount(Integer processorCount) {
 		this.processorCount = processorCount;
 	}
-	
+
 	public Integer getProcessorCountEff() {
 		return processorCountEff;
 	}
@@ -641,7 +660,7 @@ public class FormHardware extends FormBase {
 	public void setProcessorCountEff(Integer processorCountEff) {
 		this.processorCountEff = processorCountEff;
 	}
-	
+
 	public String getMastProcessorType() {
 		return mastProcessorType;
 	}
@@ -649,7 +668,7 @@ public class FormHardware extends FormBase {
 	public void setMastProcessorType(String mastProcessorType) {
 		this.mastProcessorType = mastProcessorType;
 	}
-	
+
 	public String getProcessorManufacturer() {
 		return processorManufacturer;
 	}
@@ -657,7 +676,7 @@ public class FormHardware extends FormBase {
 	public void setProcessorManufacturer(String processorManufacturer) {
 		this.processorManufacturer = processorManufacturer;
 	}
-	
+
 	public String getProcessorModel() {
 		return processorModel;
 	}
@@ -665,7 +684,7 @@ public class FormHardware extends FormBase {
 	public void setProcessorModel(String processorModel) {
 		this.processorModel = processorModel;
 	}
-	
+
 	public BigDecimal getNbrCoresPerChip() {
 		return nbrCoresPerChip;
 	}
@@ -673,7 +692,7 @@ public class FormHardware extends FormBase {
 	public void setNbrCoresPerChip(BigDecimal nbrCoresPerChip) {
 		this.nbrCoresPerChip = nbrCoresPerChip;
 	}
-	
+
 	public BigDecimal getNbrOfChipsMax() {
 		return nbrOfChipsMax;
 	}
@@ -681,7 +700,7 @@ public class FormHardware extends FormBase {
 	public void setNbrOfChipsMax(BigDecimal nbrOfChipsMax) {
 		this.nbrOfChipsMax = nbrOfChipsMax;
 	}
-	
+
 	public String getShared() {
 		return shared;
 	}
