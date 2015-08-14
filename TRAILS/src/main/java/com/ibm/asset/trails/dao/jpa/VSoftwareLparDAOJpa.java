@@ -241,13 +241,14 @@ public class VSoftwareLparDAOJpa extends
 			itemCursor.last();
 			data.setFullListSize(itemCursor.getRowNumber() + 1);
 			itemCursor.close();
+			
+			addSchedulef2List(account,data.getList());
 		} else {
 			data.setList(null);
 			data.setFullListSize(0);
 			itemCursor.close();
 		}
 		
-		addSchedulef2List(account,data.getList());
 	}
 	
 	//story 30027
