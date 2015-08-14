@@ -8,7 +8,7 @@
 	<display:column property="name" title="Sector" group="1"
 		href="account.htm?geographyId=${geography.id}&regionId=${region.id}&countryCodeId=${countryCode.id}"
 		paramId="sectorId" paramProperty="id" />
-	<display:column property="alertNameWithCount" title="Alert(#)" />
+	<display:column property="alertNameWithCount" title="Software Operational Metrics (Alert #)" />
 	<display:column property="assignedCount" title="Assigned #"
 		total="true" format="{0,number,0}" />
 	<display:column property="greenSum" title="Green(0-45)" total="true"
