@@ -146,7 +146,7 @@ sub getData {
         $hardware->cloudName( $rec{cloudName} );
         $hardware->chassisId( $rec{chassisId} );
         $hardware->cpuIFL( $self->cpuIflLogic($rec{cpuIFL}) );
-        
+        $hardware->osType( $rec{osType} );
 
         
         dlog( $hardware->toString );
@@ -358,7 +358,8 @@ sub queryATPData {
             cappedLpar
             virtualFlag
             nbrFreeProcessorCores
-            cpuIFL)
+            cpuIFL
+            osType)
     );
     my $query = '
         select
@@ -418,7 +419,8 @@ sub queryATPData {
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
-			,CPU_IFL		
+			,CPU_IFL
+			,ENVT
         from
             atpprod.bravo
     ';
@@ -485,7 +487,8 @@ sub queryATPDeltaData {
             cappedLpar
             virtualFlag
             nbrFreeProcessorCores
-            cpuIFL)
+            cpuIFL
+            osType)
     );
     my $query = '
         select
@@ -546,6 +549,7 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
 			,CPU_IFL
+			,ENVT
         from
             atpprod.bravo
         where  
