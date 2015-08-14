@@ -467,7 +467,7 @@ my $lineCount = 2;
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'} );
 		$heartbeat->write( $lineCount, 5,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-		$heartbeat->write( $lineCount, 6, $osVersion . "\f" );
+		$heartbeat->write_string( $lineCount, 6, $osVersion );
 		$heartbeat->write( $lineCount, 7,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'osMinorVers'} );
 		$heartbeat->write( $lineCount, 8,
@@ -574,8 +574,7 @@ sub createSoftwareSheet {
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
 			$software->write( $lineCount, 4,
 				$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-			$software->write( $lineCount, 5,
-				$osVersion . "\f" );
+			$software->write_string( $lineCount, 5,$osVersion);
 			$software->write( $lineCount, 6,
 				$bravoSoftware->{$accountNumber}->{$hostname}
 				  ->{'processorCount'} );
@@ -706,8 +705,7 @@ sub createSoftwareSheet {
 					  ->{'scantime'} );
 				$software->write( $lineCount, 4,
 					$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-				$software->write( $lineCount, 5,
-					$osVersion . "\f");
+				$software->write_string( $lineCount, 5,$osVersion);
 				$software->write( $lineCount, 6,
 					$bravoSoftware->{$accountNumber}->{$hostname}
 					  ->{'processorCount'} );
