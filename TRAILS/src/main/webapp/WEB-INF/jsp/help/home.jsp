@@ -1,5 +1,5 @@
 <%@taglib prefix="s" uri="/struts-tags"%>
-<h1 class="oneline">Help</h1><div style="font-size:22px; display:inline">&nbsp;resources</div><br>
+<h3>Resources</h3>
 <!-- User Guides -->
 
 <s:url id="userGuide" action="userGuide" namespace="/help"
@@ -28,6 +28,12 @@
 	<s:text name="help.link.oprs.text" />
 </s:a>
 <br />
+
+<br />
+<h3>Git hash:</h3>
+<s:set var="varGit" value="gitHash" />
+<s:property value="varGit" />
+
 <!--
 <br />
 <s:url id="admin" action="admin" namespace="/help" includeContext="true"

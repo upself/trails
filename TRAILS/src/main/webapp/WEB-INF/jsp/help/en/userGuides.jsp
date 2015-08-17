@@ -1,4 +1,4 @@
-<!-- start help doc -->
+<%@taglib prefix="s" uri="/struts-tags"%>
 
 <script type="text/javascript">
 function openUserGuide(url){
@@ -13,7 +13,6 @@ function openUserGuide(url){
 </script>
 
 
-	<h1>TRAILS Help User Guides:</h1>
 	<br />
 	<div class="hrule-dots"></div>
 	<br />

@@ -427,6 +427,9 @@
 	</bean>
 
 	<bean id="helpAction" scope="prototype" class="com.ibm.ea.common.help.HelpAction">
+		<property name="gitHash">
+			<value>${git_hash}</value>
+		</property>
 	</bean>
 
 	<bean id="licenseAction" scope="prototype"

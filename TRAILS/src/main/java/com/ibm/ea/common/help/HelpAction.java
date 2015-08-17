@@ -26,7 +26,9 @@ public class HelpAction extends BaseActionWithSession implements Preparable,
 	private HttpServletResponse response;
 
 	private String request_locale;
-
+	
+	private String gitHash;
+	
 	@UserRole(userRole = UserRoleType.READER)
 	public void prepare() {
 
@@ -119,4 +121,13 @@ public class HelpAction extends BaseActionWithSession implements Preparable,
 		this.request_locale = request_locale;
 	}
 
+	public String getGitHash() {
+		return gitHash;
+	}
+
+	public void setGitHash(String gitHash) {
+		this.gitHash = gitHash;
+	}
+	
+	
 }
