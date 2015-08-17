@@ -5,40 +5,44 @@
 
 <tiles-definitions>
 
-	<definition name="tiles.help.userGuide" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.help.userGuide" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/help/en/userGuides.html" />
+			value="/WEB-INF/jsp/help/en/userGuides.jsp" />
 		<put-attribute name="description" value="TRAILS help user guide" />
 		<put-attribute name="keywords" value="TRAILS help user guide" />
+		<put-attribute name="contentTitle" value="TRAILS help user guide" />
 	</definition>
 
-<definition name="tiles.help.faq" extends="tiles.w3OneColumnLayout">
+<definition name="tiles.help.faq" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/help/en/frequentlyAskedQuestions.html" />
+			value="/WEB-INF/jsp/help/en/frequentlyAskedQuestions.jsp" />
 		<put-attribute name="description" value="TRAILS help faq" />
 		<put-attribute name="keywords" value="TRAILS help faq" />
+		<put-attribute name="contentTitle" value="TRAILS help faq" />
 	</definition>
 
-		<definition name="tiles.help.admin" extends="tiles.w3OneColumnLayout">
+		<definition name="tiles.help.admin" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/help/en/administrationHelp.html" />
+			value="/WEB-INF/jsp/help/en/administrationHelp.jsp" />
 		<put-attribute name="description" value="TRAILS help admin" />
 		<put-attribute name="keywords" value="TRAILS help admin" />
+		<put-attribute name="contentTitle" value="TRAILS help admin" />
 	</definition>
 
-	<definition name="tiles.help.onPageRef" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.help.onPageRef" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/help/languageForm.jsp" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/help/en/onPageReferences.html" />
+			value="/WEB-INF/jsp/help/en/onPageReferences.jsp" />
 		<put-attribute name="description" value="TRAILS help on page reference" />
 		<put-attribute name="keywords" value="TRAILS help on page reference" />
+		<put-attribute name="contentTitle" value="TRAILS help on page reference" />
 	</definition>
 
 </tiles-definitions>

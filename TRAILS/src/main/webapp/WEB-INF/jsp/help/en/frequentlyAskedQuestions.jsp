@@ -1,8 +1,4 @@
 <!-- start help doc -->
-	
-<h1>TRAILS FAQs</h1>
-
-<p />
 
 <p><a href="#_What_is_TRAILS">What is TRAILS?</a></p>
 
