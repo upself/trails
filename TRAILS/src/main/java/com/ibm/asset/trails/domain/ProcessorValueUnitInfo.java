@@ -4,10 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.junit.Ignore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "PVU_INFO")
@@ -19,6 +24,7 @@ public class ProcessorValueUnitInfo {
     private Long               id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "PVU_ID", nullable = false)
     private ProcessorValueUnit processorValueUnit;
 

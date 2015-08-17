@@ -1,10 +1,6 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<h1>Update PVU mapping result.</h1>
-<p class="confidential">IBM Confidential</p>
-<br />
-
 <s:if test="addCollection.size!=0||removeCollection.size!=0">
 
     <p>Your modification has been successful. See details below.
@@ -17,7 +13,7 @@
     <br />
     <s:if test="addCollection.size!=0">
         <p>Added mapping(s):</p>
-        <display:table name="addCollection" class="basic-table" id="id"
+        <display:table name="addCollection" class="ibm-data-table ibm-alternating" id="id"
             decorator="org.displaytag.decorator.TotalTableDecorator"
             cellspacing="1" cellpadding="0">
             <display:column title="Processor brand">${pvu.processorBrand}</display:column>
@@ -30,7 +26,7 @@
     <br />
     <s:if test="removeCollection.size!=0">
         <p>Removed mapping(s):</p>
-        <display:table name="removeCollection" class="basic-table" 
+        <display:table name="removeCollection" class="ibm-data-table ibm-alternating" 
             id="id" summary="remove Collection"
             decorator="org.displaytag.decorator.TotalTableDecorator"
             cellspacing="1" cellpadding="0">

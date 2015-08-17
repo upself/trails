@@ -77,7 +77,6 @@ function getAvailableProcessorModels(value)
   var poststr = "processorBrand="+encodeURIComponent($("#asset_processor_brand_select").val())
                +"&pvuId="+encodeURI(${pvu.id}) + "&machineTypeId=" +
                encodeURI($("#machineTypeSelect").val());
-  
   xmlhttp.onreadystatechange=stateChanged;  
   xmlhttp.open("POST","${pageContext.request.contextPath}/admin/pvuMapping/getAvailableProcessorModels.htm",true);
   xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -189,7 +188,6 @@ $(document).ready(function() {
    
    $('#button_remove').click(function(event) {
      event.preventDefault();
-     
      var mafSelected = $('#asset_processor_brand_select>option:selected');
      var modSelected = $('#mapped_model_select>option:selected');
       

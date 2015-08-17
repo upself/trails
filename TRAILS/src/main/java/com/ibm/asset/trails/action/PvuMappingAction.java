@@ -50,7 +50,7 @@ public class PvuMappingAction extends BaseAction implements Preparable {
 		if (pvuId != null) {
 			pvu = pvuService.findWithInfo(pvuId);
 		}
-		if (machineTypeId != null) {
+		if (machineTypeId != null && !"".equals(machineTypeId)) {
 			machineType = pvuService.selectMachineTypeDetailsById(Long
 					.valueOf(machineTypeId));
 		}
