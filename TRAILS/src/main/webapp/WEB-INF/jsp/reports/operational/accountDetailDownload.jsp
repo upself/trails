@@ -9,7 +9,7 @@
 	<display:setProperty name="export.excel.filename"
 		value="alertOperationalAccount.xls"/>
 	<!--<display:caption media="excel">${account.account} - ${account.name} - ${account.accountType.name} - IBM confidential</display:caption> -->
-	<display:column property="alertNameWithCount" title="Software Operational Metrics (Alert #)" />
+	<display:column property="alertNameWithCount" title="Software Operational Metrics(Alert #)" />
 	<display:column property="greenSum" title="Green(0-45)" total="true"
 		format="{0,number,0}" />
 	<display:column property="yellowSum" title="Yellow(46-90)" total="true"

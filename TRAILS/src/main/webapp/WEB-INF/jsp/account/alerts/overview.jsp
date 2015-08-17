@@ -13,7 +13,7 @@
 <display:table name="data.list" class="basic-table"
    summary="Account Alerts Overview"
 	decorator="org.displaytag.decorator.TotalTableDecorator" cellspacing="1" cellpadding="0">
-	<display:column property="alertName" title="Software Operational Metrics (Alert #)" />
+	<display:column property="alertName" title="Software Operational Metrics" />
 	<display:column property="assignedCount" title="Assigned #"
 		total="true" format="{0,number,0}" />
 	<display:column property="greenSum" title="Green(0-45)" total="true"
