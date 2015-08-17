@@ -9,6 +9,7 @@
 	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint"/>
 	<bean id="priorityISVSoftwareServiceEndpoint" class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint"/>	
 	<bean id="alertHardwareCfgDataServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint"/>	
+	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin"/>
 	
 	<bean id="hibernateMapper" class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
  
@@ -19,6 +20,7 @@
 			<ref bean="nonInstanceServiceEndpoint"/>
 			<ref bean="priorityISVSoftwareServiceEndpoint"/>
 			<ref bean="alertHardwareCfgDataServiceEndpoint"/>
+			<ref bean="AdminCauseCodeServiceEndpoin"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
           <entry key="json" value="application/json"/>
