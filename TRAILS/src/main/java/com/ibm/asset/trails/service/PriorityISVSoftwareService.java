@@ -12,6 +12,7 @@ public interface PriorityISVSoftwareService {
 	public void updatePriorityISVSoftware(PriorityISVSoftware priorityISVSoftware);
 	public void addPriorityISVSoftware(PriorityISVSoftware priorityISVSoftware);
 	public PriorityISVSoftware findPriorityISVSoftwareByUniqueKeys(String level, Long manufacturerId, Long customerId);
-	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays();
+	public Long total();
+	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize);
 	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(Long priorityISVSoftwareId);
 }

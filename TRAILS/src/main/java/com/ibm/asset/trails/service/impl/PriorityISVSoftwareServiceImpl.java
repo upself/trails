@@ -133,9 +133,17 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 		return this.priorityISVSoftwareDAO.findPriorityISVSoftwareByUniqueKeys(level, manufacturerId, customerId);
 	}
 
+
 	@Override
-	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays() {
-	  return this.priorityISVSoftwareDAO.getAllPriorityISVSoftwareDisplays();
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public Long total() {
+		// TODO Auto-generated method stub
+		 return this.priorityISVSoftwareDAO.total();
+	}
+
+	@Override
+	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer pageIndex, Integer pageSize) {
+	  return this.priorityISVSoftwareDAO.getAllPriorityISVSoftwareDisplays(pageIndex,pageSize);
 	}
 
 	@Override

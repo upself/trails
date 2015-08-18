@@ -16,7 +16,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PRIORITY_ISV_SW")
-@NamedQueries({@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys1", query = "from PriorityISVSoftware pISVSW where UCASE(pISVSW.level) = :level and pISVSW.manufacturer.id = :manufacturerId and pISVSW.account.id = :customerId and pISVSW.status.description = 'ACTIVE' order by pISVSW.manufacturer.id asc") 
+@NamedQueries({@NamedQuery(name = "findPriorityISVTotal", query = "SELECT COUNT(*) FROM PriorityISVSoftware")
+			  ,@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys1", query = "from PriorityISVSoftware pISVSW where UCASE(pISVSW.level) = :level and pISVSW.manufacturer.id = :manufacturerId and pISVSW.account.id = :customerId and pISVSW.status.description = 'ACTIVE' order by pISVSW.manufacturer.id asc") 
               ,@NamedQuery(name = "findPriorityISVSoftwareByUniqueKeys2", query = "from PriorityISVSoftware pISVSW where UCASE(pISVSW.level) = :level and pISVSW.manufacturer.id = :manufacturerId and pISVSW.status.description = 'ACTIVE' order by pISVSW.manufacturer.id asc")
               ,@NamedQuery(name = "findPriorityISVSoftwareBymanufacturerId", query = "from PriorityISVSoftware pISVSW where  pISVSW.manufacturer.id = :manufacturerId and pISVSW.status.description = 'ACTIVE' order by pISVSW.manufacturer.id asc")})
 

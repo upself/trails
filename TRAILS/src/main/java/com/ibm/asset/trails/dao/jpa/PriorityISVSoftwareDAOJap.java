@@ -106,8 +106,16 @@ public class PriorityISVSoftwareDAOJap extends
 	        return result;
 	    }
 
+	
 	@Override
-	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays() {
+	public Long total() {
+		// TODO Auto-generated method stub
+		Long total = (Long)entityManager.createNamedQuery("findPriorityISVTotal").getSingleResult();
+		return total;
+	}
+
+	@Override
+	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize) {
         	
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PriorityISVSoftwareDisplay> q = cb.createQuery(PriorityISVSoftwareDisplay.class);
@@ -135,7 +143,7 @@ public class PriorityISVSoftwareDAOJap extends
 				priorityISVSoftware.get(PriorityISVSoftware_.recordTime).alias("recordTime"));
 		
 		TypedQuery<PriorityISVSoftwareDisplay> typedQuery = entityManager.createQuery(q);
-		List<PriorityISVSoftwareDisplay> results = typedQuery.getResultList();
+		List<PriorityISVSoftwareDisplay> results = typedQuery.setFirstResult(startIndex).setMaxResults(pageSize).getResultList();
 
 		if(null != results && !results.isEmpty()){
 			return results;

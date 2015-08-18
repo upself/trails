@@ -72,7 +72,7 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testGetAllPriorityISVSoftwareDisplays(){
-	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays();
+	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays(0,10);
 	   
 		List<PriorityISVSoftwareDisplay> results =  (List<PriorityISVSoftwareDisplay>) wsMsg.getDataList();
 	    if(null!=results){
