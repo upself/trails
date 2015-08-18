@@ -11,6 +11,7 @@ use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
 use Config::Properties::Simple;
 use Try::Tiny;
+use Log::Log4perl;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
@@ -133,7 +134,7 @@ sub existInScarlet {
 sub httpGetScarletGuids {
  my ( $self, $swcmLicenseId, $guid ) = @_;
 
- my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');    
+ my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
  dlog("GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId");
  my $uri = URI->new($scarletGuidsApi);
  $uri->query_form(
@@ -151,6 +152,8 @@ sub httpGetScarletGuids {
  if ( $response->is_success ) {
   my $json = new JSON;
   try {
+
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
    $scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
    dlog( 'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
@@ -284,6 +287,7 @@ sub tryToReconcile {
     not $installedSoftware->validateScheduleFScope( $self->scheduleFScopeName )
      )
    {
+    $self->info( 'NO_SCHEDULE_F:' . $installedSoftware->toString );
     next;
    }
    dlog("ScheduleF defined and matched");
@@ -292,6 +296,8 @@ sub tryToReconcile {
      $installedSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
 
+   $self->info( 'SUCCESS:' . $reconcile->toString );
+
    foreach my $ulId ( @{ $self->usedLicenses } ) {
     $installedSoftware->createReconcileUsedLicenseMap( $reconcile, $ulId );
    }
@@ -299,7 +305,33 @@ sub tryToReconcile {
    $installedSoftware->closeAlertUnlicensedSoftware(1);
 
   }
+  else {
+   $self->info( 'VALIDATE_FAIL:' . $installedSoftware->toString );    
+  }
  }
+
+}
+
+my $logger = undef;
+
+sub initLogger {
+ Log::Log4perl::init_and_watch( '/opt/staging/v2/conf/scarletConf.txt', 10 );
+ $logger = Log::Log4perl->get_logger('scarlet');
+}
+
+sub info() {
+ my $msg = shift;
+
+ my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+   localtime();
+ my $dt = sprintf(
+  "%04d-%02d-%02d %02d:%02d:%02d",
+  $year + 1900,
+  $mon + 1, $mday, $hour, $min, $sec
+ );
+
+ initLogger if ( !defined $logger );
+ $logger->info( "[$dt]" . $msg );
 
 }
 
