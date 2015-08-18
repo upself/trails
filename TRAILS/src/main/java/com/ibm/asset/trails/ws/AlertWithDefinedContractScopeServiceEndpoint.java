@@ -84,7 +84,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 	@POST
 	@Path("/assign/ids")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg assignAlertHardwareConfigCNDBIDList(@FormParam("comments") String comments,
+	public WSMsg assignAlertWithDefinedContractScopeList(@FormParam("comments") String comments,
 			@FormParam("assignIds") String assignIds,
 			@Context HttpServletRequest request){
 		try{
@@ -103,7 +103,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 	@POST
 	@Path("/assign/all")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg assignAllAlertHardwareConfigCNDBIDList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
+	public WSMsg assignAlertWithDefinedContractScopeList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
 			@Context HttpServletRequest request){
 		try{
 			Account account = accountService.getAccount(accountId);
@@ -122,7 +122,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 	@POST
 	@Path("/unassign/ids")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg unassignAlertHardwareConfigCNDBIDList(@FormParam("unassignIds") String unassignIds, @FormParam("comments") String comments,
+	public WSMsg unassignAlertWithDefinedContractScopeList(@FormParam("unassignIds") String unassignIds, @FormParam("comments") String comments,
 			@Context HttpServletRequest request){
 		try{
 			List<Long> unassignList = new ArrayList<Long>();
@@ -140,7 +140,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 	@POST
 	@Path("/unassign/all")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg unassignAllAlertHardwareConfigCNDBIDList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
+	public WSMsg unassignAlertWithDefinedContractScopeList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
 			@Context HttpServletRequest request){
 		try{
 			Account account = accountService.getAccount(accountId);
@@ -168,8 +168,8 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			Account account = accountService.getAccount(accountId);
 			
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfigCNDBID.xls");
-			reportService.getAlertHardwareCfgDataReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
+			response.setHeader("Content-Disposition","attachment; filename=alertWithDefinedContractScope.xls");
+			reportService.getAlertWithDefinedContractScopeReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
 			
 		}catch(Exception e){
 			e.printStackTrace();
