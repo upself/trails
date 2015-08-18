@@ -3,7 +3,9 @@ package com.ibm.asset.trails.ws;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -12,9 +14,9 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.ProcessorValueUnit;
+import com.ibm.asset.trails.domain.ProcessorValueUnitDisplay;
 import com.ibm.asset.trails.domain.ProcessorValueUnitInfo;
 import com.ibm.asset.trails.service.PvuService;
-import com.ibm.asset.trails.service.impl.ProcessorValueUnitDisplay;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/pvu")
@@ -65,6 +67,10 @@ public class PvuMappingServiceEndpoint {
 		}
 	}
 	
+	@PUT
+	@Path("/update/{id}")
+	@Consumes(MediaType.APPLICATION_JSON) 
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg updatePvu(){
 		return null;
 	}

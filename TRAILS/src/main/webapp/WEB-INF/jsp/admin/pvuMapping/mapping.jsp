@@ -25,6 +25,32 @@ brand/model of software group.</h3>
 <h3>Wait, refreshing machine type list.</h3>
 </div>
 <br />
+<script type="text/javascript">
+$('#button_remove').click(function(event) {
+    event.preventDefault();
+    var mafSelected = $('#asset_processor_brand_select>option:selected');
+    var modSelected = $('#mapped_model_select>option:selected');
+     
+    if(mafSelected.length==0||modSelected.length==0){
+       alert('Select one or more mapped asset machine models to remove.'); 
+       return;
+    }
+    modSelected.remove().appendTo('#free_model_select').sort();
+    setTimeout(removeSelection,0);
+    return;     
+  });
+  
+  
+  $("#button_add").click(function(event) {
+      event.preventDefault();   
+      var resSelected=$('#free_model_select>option:selected');
+      if(resSelected.length==0){
+         alert('Select one or more free processor models to map.');
+      }
+      resSelected.remove().appendTo('#mapped_model_select');
+      return;
+  }); 
+</script>
 <s:form action="updatePvuMap" method="post" namespace="/admin/pvuMapping" theme="simple">
 
 	<s:hidden name="pvuId" id="pvu_id"></s:hidden>
@@ -51,18 +77,19 @@ brand/model of software group.</h3>
 		
 		
 			<div class="map_seprator">
-				<span class="button-gray"> 
-					<input type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;" id="button_add" /> 
+				<span> 
+				<p class="ibm-button-link-alternate">
+					<a href="#" id="button_add" class="ibm-btn-small">&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;</a><br>
+					<a href="#" id="button_remove" class="ibm-btn-small">&lt;&lt;Remove</a>
+				</p>
 					<br />
 					<br />
-					<input type="button" value="&lt;&lt;Remove" id="button_remove" /> 
 				</span>
 			</div>
 		
 		
 			<div class="map_result_title">
 				<div class="label">Mapped asset machine model</div> 
-			    <div class="date">
 			    <!-- 
 			     <label for="mapped_model_hide_select">mapped model select hide</label>
 			    <label for="mapped_model_select">mapped model select</label>
@@ -70,9 +97,8 @@ brand/model of software group.</h3>
 				    <s:select name="selectedProcessorModels" list="selectedProcessorModels" 
 					cssClass="map_items" id="mapped_model_select" size="10" multiple="true">
 					</s:select>		
-				</div>
 			</div>
-			<div style="float:left">
+			<div style="float:right">
 				<br/>
 				<br/>
 					<input value="Submit" id="submit_button" name="ibm-submit" class="ibm-btn-pri" type="submit">
@@ -80,12 +106,10 @@ brand/model of software group.</h3>
 				<br/>
 			</div>
 </s:form>
-<br />
-<br />
-<div class="hrule-dots">
-<br />
+<div class="ibm-rule">
 </div>
 
+<!-- 
 <script type="text/javascript">
 var url = "${pageContext.request.contextPath}/ws/pvu/getPvuById/<s:property value='pvuId'/>";
 $
@@ -121,6 +145,7 @@ $
 </script>
 
 	<div class="ibm-col-1-1">
+	<br>
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
 			summary="Sortable PVU Mapping">
 			<thead>
@@ -135,9 +160,22 @@ $
 				</tr>
 			</thead>
 			<tbody id="processor_info_list">
-				
 			</tbody>
 		</table>
 	</div>
-
-
+ -->
+<div>
+<br>
+	<display:table name="pvu.processorValueUnitInfo" class="ibm-data-table ibm-sortable-table" summary="PVU mapping"
+		id="id" decorator="org.displaytag.decorator.TotalTableDecorator"
+		cellspacing="1" cellpadding="0">
+		<display:column property="processorArchitecture"
+			title="Processor architecture" />
+		<display:column property="serverVendor" title="Server vendor" />
+		<display:column property="serverBrand" title="Server brand" />
+		<display:column property="processorVendor" title="Processor vendor" />
+		<display:column property="processorType" title="Processor type" />
+		<display:column property="valueUnitsPerCore" title="PVUs per core" />
+		<display:column property="status" title="Status" />
+	</display:table>
+</div>

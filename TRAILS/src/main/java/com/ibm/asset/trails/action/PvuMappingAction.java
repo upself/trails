@@ -58,7 +58,7 @@ public class PvuMappingAction extends BaseAction implements Preparable {
 
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String doListPvu() {
-		setPvuArrayList(getPvuService().getPvuList());
+		//setPvuArrayList(getPvuService().getPvuList());
 		return SUCCESS;
 	}
 

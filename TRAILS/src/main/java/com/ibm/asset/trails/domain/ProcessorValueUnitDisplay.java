@@ -1,4 +1,4 @@
-package com.ibm.asset.trails.service.impl;
+package com.ibm.asset.trails.domain;
 
 
 public class ProcessorValueUnitDisplay {
