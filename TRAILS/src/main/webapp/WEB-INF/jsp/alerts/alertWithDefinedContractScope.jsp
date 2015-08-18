@@ -87,7 +87,7 @@ function goPage(pageNo){
 	params['pageSize'] = pageSize;
 	params['sort'] = 'alertAge';
 	params['dir'] = 'desc';
-	var url =  "${pageContext.request.contextPath}/ws/alertHardwareCfgData/search";
+	var url =  "${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/search";
 	$.ajax({
 		url: url,
 		data: params,
@@ -107,12 +107,12 @@ function goPage(pageNo){
 					html += "<tr>";
 					html += "<td><input value='"+wsMsg.data.list[i].tableId+"' type='checkbox'></td>";
 					html += "<td>" + wsMsg.data.list[i].alertStatus + "</td>";
-					html += "<td><a href='javascript:void()' onclick='popupHardwareCfgData();return false;'>" + wsMsg.data.list[i].hardware.serial + "</a></td>";
+					html += "<td><a href='javascript:void()' onclick='popupAlertWithDefinedContractScope();return false;'>" + wsMsg.data.list[i].hardware.serial + "</a></td>";
 					html += "<td>" + wsMsg.data.list[i].hardware.machineType.type + "</td>";
 					html += "<td>" + wsMsg.data.list[i].creationTime + "</td>";
 					html += "<td>" + wsMsg.data.list[i].alertAge + "</td>";
 					html += "<td>" + wsMsg.data.list[i].remoteUser + "</td>";
-					html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertHardwareCfgDataHistory.htm?id="+wsMsg.data.list[i].tableId+"\");return false;'>View</a></td>";
+					html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertWithDefinedContractScope.htm?id="+wsMsg.data.list[i].tableId+"\");return false;'>View</a></td>";
 					html += "</tr>";
 				}
 				$('#tb').html(html);
@@ -134,7 +134,7 @@ function goPage(pageNo){
 function assignComments(type){
 	
 	var comments = $('#comments').val();
-	var url = '${pageContext.request.contextPath}/ws/alertHardwareCfgData/';
+	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
 	var params = {};
 	
 	//validate comments
@@ -179,7 +179,7 @@ function assignComments(type){
 function unassignComments(type){
 	
 	var comments = $('#comments').val();
-	var url = '${pageContext.request.contextPath}/ws/alertHardwareCfgData/';
+	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
 	var params = {};
 	
 	//validate comments
@@ -246,7 +246,7 @@ function assignOrNot(url,params){
 	});
 }
 
-function popupHardwareCfgData() {
+function popupAlertWithDefinedContractScope() {
 	newWin=window.open('//${bravoServerName}/BRAVO/account/view.do?accountId=${accountId}','popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 	newWin.focus(); 
 	void(0);

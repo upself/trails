@@ -325,16 +325,6 @@
 		<property name="alertService" ref="alertWithDefinedContractScopeService" />
 		<property name="accountService" ref="accountService" />
 	</bean>
-	<bean id="accountAlertWithDefinedContractScope" scope="prototype"
-		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
-		<property name="alertService" ref="alertWithDefinedContractScopeService" />
-		<property name="accountService" ref="accountService" />
-	</bean>
-	<bean id="accountAlertWithDefinedContractScope" scope="prototype"
-		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
-		<property name="alertService" ref="alertWithDefinedContractScopeService" />
-		<property name="accountService" ref="accountService" />
-	</bean>
 
 	<bean id="accountAlertHardware" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
