@@ -249,6 +249,8 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 		
 		List<NonInstanceH> list = getEntityManager().createQuery(hql)
 		.setParameter("nonInstanceId", nonInstanceId)
+		.setFirstResult(startIndex)
+		.setMaxResults(pageSize)
 		.getResultList();
 		
 		return list;

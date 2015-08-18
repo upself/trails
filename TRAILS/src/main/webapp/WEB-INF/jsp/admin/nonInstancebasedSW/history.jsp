@@ -41,7 +41,6 @@ function searchData(){
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/noninstance/history/<s:property value='nonInstanceId' />",
 			type: "GET",
-			params: $("#searchForm").serialize(),
 			success: function(result, pageIndex){
 				var html = '';
 				var list = result.data.list;
