@@ -12,6 +12,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "PVU")
 @org.hibernate.annotations.Entity(mutable = false)
@@ -33,6 +35,7 @@ public class ProcessorValueUnit {
 	private List<ProcessorValueUnitInfo> processorValueUnitInfo;
 
 	@OneToMany(mappedBy = "processorValueUnit")
+	@JsonIgnore
 	private List<PvuMap> pvuMap;
 
 	public Long getId() {

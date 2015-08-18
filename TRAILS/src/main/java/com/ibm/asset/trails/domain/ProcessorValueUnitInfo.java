@@ -23,7 +23,7 @@ public class ProcessorValueUnitInfo {
     @Column(name = "ID")
     private Long               id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "PVU_ID", nullable = false)
     private ProcessorValueUnit processorValueUnit;

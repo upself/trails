@@ -1,7 +1,9 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-
+<!-- show loading -->
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.showLoading.js"></script>
+<link href="${pageContext.request.contextPath}/css/showLoading.css" rel="stylesheet" type="text/css" />
 <br />
 <p>Below lists the unique processor brands and models as taken from
 the software group website located <a
@@ -29,12 +31,9 @@ $
 					var list = data.dataList;
 					for (var i = 0; i < list.length; i++) {
 						html += "<tr>";
-						//html += "<td>" 
-						//		+ list[i].manufacturerName
-						//		+ "</td>";
-						html += "<td><a href='${pageContext.request.contextPath}/admin/pvuMapping/updatePvuMap.htm?pvuId="
-								+ list[i].id
-								+ "'>"
+						html += "<td><a href='${pageContext.request.contextPath}/admin/pvuMapping/updatePvuMap.htm?pvuId=" + list[i].id 
+								//+ "&processorBrand="+list[i].processorBrand+"&processorModel="+list[i].processorModel
+								+"'>"
 								+ list[i].processorBrand
 								+ "</a></td>";		
 						html += "<td id='level_td'>" + list[i].processorModel
@@ -57,7 +56,6 @@ $
 				</tr>
 			</thead>
 			<tbody id="pvu_list">
-				
 			</tbody>
 		</table>
 	</div>

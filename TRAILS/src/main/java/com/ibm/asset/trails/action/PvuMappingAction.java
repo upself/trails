@@ -45,6 +45,16 @@ public class PvuMappingAction extends BaseAction implements Preparable {
 	private String machineTypeId;
 
 	private MachineType machineType;
+	
+//	private String processorBrand;
+//
+//	public String getProcessorBrand() {
+//		return processorBrand;
+//	}
+//
+//	public void setProcessorBrand(String processorBrand) {
+//		this.processorBrand = processorBrand;
+//	}
 
 	public void prepare() throws Exception {
 		if (pvuId != null) {

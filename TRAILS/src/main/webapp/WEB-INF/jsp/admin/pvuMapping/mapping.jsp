@@ -122,11 +122,11 @@ $
 			},
 			success : function(data) {
 				var html = '';
-				if (data.status == 400) {
+				if (data.data.status == 400) {
 					html += "<tr><td colspan='7'>" + data.msg
 							+ "</td></tr>"
 				} else {
-					var list = data.dataList;
+					var list = data.data.processorValueUnitInfo;
 					for (var i = 0; i < list.length; i++) {
 						html += "<tr>";
 						html += "<td>" + list[i].processorArchitecture + "</td>";		
