@@ -43,10 +43,12 @@ import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
 import com.ibm.asset.trails.domain.NonInstanceDisplay;
+import com.ibm.asset.trails.domain.NonInstanceH;
 import com.ibm.asset.trails.domain.NonInstanceHDisplay;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.service.NonInstanceService;
 import com.ibm.asset.trails.service.ReportService;
+import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/noninstance")
@@ -59,16 +61,32 @@ public class NonInstanceServiceEndpoint {
 	@Autowired
 	private NonInstanceDAO nonInstanceDAO;
 
-	@GET
+	@POST
 	@Path("/search")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg search(@QueryParam("softwareName") String softwareName,
-			@QueryParam("manufacturerName") String manufacturerName,
-			@QueryParam("restriction") String restriction,
-			@QueryParam("capacityCode") Integer capacityCode,
-			@QueryParam("baseOnly") Integer baseOnly,
-			@QueryParam("statusId") Long statusId) {
+	public WSMsg search(
+			@FormParam("softwareName") String softwareName,
+			@FormParam("manufacturerName") String manufacturerName,
+			@FormParam("restriction") String restriction,
+			@FormParam("capacityCode") String capacityCodeStr,
+			@FormParam("baseOnly") String baseOnlyStr,
+			@FormParam("statusId") String statusIdStr,
+			@FormParam("currentPage") Integer currentPage,
+			@FormParam("pageSize") Integer pageSize) {
 
+		Integer capacityCode = null;
+		Integer baseOnly  = null;
+		Long statusId = null;
+		if(null != capacityCodeStr && !"".equals(capacityCodeStr)){
+			capacityCode = Integer.valueOf(capacityCodeStr);
+		}
+		if(null != baseOnlyStr && !"".equals(baseOnlyStr)){
+			baseOnly = Integer.valueOf(baseOnlyStr);
+		}
+		if(null != statusIdStr && !"".equals(statusIdStr)){
+			statusId = Long.valueOf(statusIdStr);
+		}
+		
 		NonInstanceDisplay searchObj = new NonInstanceDisplay();
 		searchObj.setSoftwareName(softwareName);
 		searchObj.setManufacturerName(manufacturerName);
@@ -77,29 +95,43 @@ public class NonInstanceServiceEndpoint {
 		searchObj.setBaseOnly(baseOnly);
 		searchObj.setStatusId(statusId);
 
-		List<NonInstanceDisplay> nonList = nonInstanceService
-				.findNonInstanceDisplays(searchObj);
-
-		if (null == nonList || nonList.size() <= 0) {
-			return WSMsg.failMessage("No data found");
-		} else {
-			return WSMsg.successMessage("", nonList);
+		List<NonInstance> nonList = null;
+		int startIndex = (currentPage-1) * pageSize;
+		Long total = nonInstanceService.total(searchObj);
+		if(total > 0){
+			nonList = nonInstanceService.findNonInstances(searchObj,startIndex,pageSize);
 		}
+			
+
+		Pagination page = new Pagination();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(nonList);
+		return WSMsg.successMessage("SUCCESS", page);
 	}
 
 	@GET
 	@Path("/history/{nonInstanceId}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg history(@PathParam("nonInstanceId") Long nonInstanceId) {
+	public WSMsg history(@PathParam("nonInstanceId") Long nonInstanceId,
+			@QueryParam("currentPage") Integer currentPage,
+			@QueryParam("pageSize") Integer pageSize) {
 
-		List<NonInstanceHDisplay> nonHList = nonInstanceService
-				.findNonInstanceHDisplays(nonInstanceId);
-
-		if (null == nonHList || nonHList.size() == 0) {
-			return WSMsg.failMessage("No data found");
-		} else {
-			return WSMsg.successMessage("", nonHList);
+		List<NonInstanceH> nonHList = null;
+		int startIndex = (currentPage-1) * pageSize;
+		Long total = nonInstanceService.totalHistory(nonInstanceId);
+		if(total > 0){
+			nonHList = nonInstanceService.findNonInstanceHs(nonInstanceId,startIndex,pageSize);
 		}
+		
+
+		Pagination page = new Pagination();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(nonHList);
+		return WSMsg.successMessage("SUCCESS", page);
 
 	}
 
