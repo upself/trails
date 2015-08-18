@@ -24,6 +24,7 @@ use Recon::SoftwareLpar;
 use Recon::InventoryInstalledSoftware;
 use Recon::InventoryLicense;
 use Recon::CustomerSoftware;
+use Recon::Queue;
 
 sub new {
     my ( $class, $customerId, $date, $poolRunning ) = @_;
@@ -148,22 +149,21 @@ sub recon {
                     my $rc = $recon->recon;
 
                     ###Remove recon job from queue.
+
+                    my $reconInstalledSoftware = new Recon::OM::ReconInstalledSoftware();
+                    $reconInstalledSoftware->id($id);
+                    $reconInstalledSoftware->delete( $self->connection );
+
                     if ( $rc == 2 ) {
 						my $softwareLpar = new BRAVO::OM::SoftwareLpar();
 						$softwareLpar->id( $installedSoftware->softwareLparId );
 						$softwareLpar->getById ( $self->connection );
-						
-                        my $reconInstalledSoftware = new Recon::OM::ReconInstalledSoftware();
-                        $reconInstalledSoftware->id($id);
-                        $reconInstalledSoftware->installedSoftwareId( $installedSoftware->id );
-                        $reconInstalledSoftware->customerId ( $softwareLpar->customerId );
-                        $reconInstalledSoftware->action('LICENSING');
-                        $reconInstalledSoftware->save( $self->connection );
-                    } else {
-                        my $reconInstalledSoftware = new Recon::OM::ReconInstalledSoftware();
-                        $reconInstalledSoftware->id($id);
-                        $reconInstalledSoftware->delete( $self->connection );
-					}
+
+						my $queue =
+							Recon::Queue->new( $self->connection, $installedSoftware,
+							$softwareLpar, 'LICENSING' );
+						$queue->add;
+                    }
                 }
                 elsif ( $table eq 'RECON_LICENSE' ) {
 
