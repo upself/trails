@@ -249,7 +249,7 @@
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.serverType}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
-													value="${lpar.hardwareLpar.os_type}" /> </font></td>
+													value="${hardware.os_type}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.processorCountEff}" /> </font></td>
 											<td><font class="orange-dark">
