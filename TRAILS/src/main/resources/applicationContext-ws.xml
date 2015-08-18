@@ -20,6 +20,7 @@
 			<ref bean="nonInstanceServiceEndpoint"/>
 			<ref bean="priorityISVSoftwareServiceEndpoint"/>
 			<ref bean="alertHardwareCfgDataServiceEndpoint"/>
+			<ref bean="alertWithDefinedContractScopeServiceEndpoint"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
           <entry key="json" value="application/json"/>

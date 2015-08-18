@@ -1,4 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
@@ -64,71 +65,51 @@
 				
 			</tbody>
 		</table>
-		<span class="ibm-spinner-large" id="loading" style="display:none"></span>
-		<p class="ibm-table-navigation" id="paginationBar"></p>
+		<p class="ibm-table-navigation" id="pagebar"></p>
 		
 	</div>
 </div>
 <script>
-var total;
-var pageSize;
-var currentPage;
-var accountId = '${accountId}'
-
 $(function(){
-	pageSize = 20;
-	goPage(1);
+	searchData();
 });
 
-function goPage(pageNo){
+function searchData(){
 	var params = {};
-	params['accountId'] = accountId;
-	params['currentPage'] = pageNo;
-	params['pageSize'] = pageSize;
+	params['accountId'] = '${accountId}';
 	params['sort'] = 'alertAge';
 	params['dir'] = 'desc';
-	var url =  "${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/search";
-	$.ajax({
-		url: url,
-		data: params,
-		type: 'POST',
-		dataType: 'json',
-		beforeSend: function(){
-			$('#tb').html('');
-			$('#paginationBar').html('');
-			showLoading();
-		},
-		success: function(wsMsg){
-			if(wsMsg.status != '200'){
-				alert(wsMsg.msg);
-			}else{
+	
+	$("#pagebar").v17ePagination('destroy').v17ePagination({
+		showInfo: true,
+		showPageSizes: true,
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/search",
+			type: "POST",
+			params: params,
+			success: function(result, pageIndex){
 				var html = '';
-				for(var i = 0; i < wsMsg.data.list.length; i++){
-					html += "<tr>";
-					html += "<td><input value='"+wsMsg.data.list[i].tableId+"' type='checkbox'></td>";
-					html += "<td>" + wsMsg.data.list[i].alertStatus + "</td>";
-					html += "<td><a href='javascript:void()' onclick='popupAlertWithDefinedContractScope();return false;'>" + wsMsg.data.list[i].hardware.serial + "</a></td>";
-					html += "<td>" + wsMsg.data.list[i].hardware.machineType.type + "</td>";
-					html += "<td>" + wsMsg.data.list[i].creationTime + "</td>";
-					html += "<td>" + wsMsg.data.list[i].alertAge + "</td>";
-					html += "<td>" + wsMsg.data.list[i].remoteUser + "</td>";
-					html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertWithDefinedContractScope.htm?id="+wsMsg.data.list[i].tableId+"\");return false;'>View</a></td>";
-					html += "</tr>";
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
+						html += "<tr>";
+						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
+						html += "<td>" + list[i].alertStatus + "</td>";
+						html += "<td><a href='javascript:void()' onclick='popupAlertWithDefinedContractScope();return false;'>" + list[i].hardware.serial + "</a></td>";
+						html += "<td>" + list[i].hardware.machineType.type + "</td>";
+						html += "<td>" + list[i].creationTime + "</td>";
+						html += "<td>" + list[i].alertAge + "</td>";
+						html += "<td>" + list[i].remoteUser + "</td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertWithDefinedContractScope.htm?id=" + list[i].tableId+"\");return false;'>View</a></td>";
+						html += "</tr>";
+					}
 				}
-				$('#tb').html(html);
-				total = wsMsg.data.total;
-				pageSize = wsMsg.data.pageSize;
-				currentPage = wsMsg.data.currentPage;
-				refreshPaginationBar();
+				$("#tb").html(html);
 			}
-		},
-		error: function(response,status,error){
-			alert(error);
-		},
-		complete: function(){
-			hideLoading();
 		}
-	});
+	}); 
 }
 
 function assignComments(type){
@@ -227,11 +208,6 @@ function assignOrNot(url,params){
 		data: params,
 		type: 'POST',
 		dataType: 'json',
-		beforeSend: function(){
-			$('#tb').html('');
-			$('#paginationBar').html('');
-			showLoading();
-		},
 		success: function(wsMsg){
 			if(wsMsg.status != '200'){
 				alert(wsMsg.msg);
@@ -241,7 +217,7 @@ function assignOrNot(url,params){
 			alert(error);
 		},
 		complete: function(){
-			goPage(currentPage);
+			searchData();
 		}
 	});
 }
@@ -255,77 +231,6 @@ function popupAlertWithDefinedContractScope() {
 function displayPopUp(page) {
 	
 	window.open(page, 'PopUpWindow', 'left=200,top=180,resizable=yes,scrollbars=yes,width=840,height=500');
-}
-function goPrePage(){
-	if(currentPage == 1){
-		alert('The first page ');
-		return;
-	}else{
-		goPage(currentPage - 1);
-	}
-}
-
-function goNextPage(){
-	if(currentPage * pageSize > total){
-		alert('The last page ');
-		return;
-	}else{
-		goPage(currentPage + 1);
-	}
-	
-}
-
-function changePageSize(ps){
-	pageSize = ps;
-	goPage(currentPage);
-}
-
-function refreshPaginationBar(){
-	var html = "";
-	
-	//ibm primary navigation
-	html +="<span class='ibm-primary-navigation'>";
-	html += "<strong>" + ((currentPage-1) * pageSize + 1) + '-' + (currentPage * pageSize) + "</strong> of <strong>" + total + "</strong> results ";
-	if(currentPage <= 1){
-		html += "<span class='ibm-table-navigation-links'> | <a class='ibm-forward-em-link' href='javascript:void(0)' onclick='goNextPage()'>Next</a></span>";
-	}else if(currentPage >1 && currentPage * pageSize < total){
-		html += "<span class='ibm-table-navigation-links'> | <a class='ibm-forward-em-link' href='javascript:void(0)' onclick='goPrePage()'>Pre</a>";
-		html += " | <a class='ibm-forward-em-link' href='javascript:void(0)' onclick='goNextPage()'>Next</a></span>"
-	}else if(currentPage * pageSize >= total){
-		html += "<span class='ibm-table-navigation-links'> | <a class='ibm-forward-em-link' href='javascript:void(0)' onclick='goPrePage()'>Pre</a></span>";
-	}else{
-		html += "<span class='ibm-table-navigation-links'>Initilization pagination bar failed</span>";
-	}
-	html +="</span>"
-
-	//ibm secondary navigation
-	html += "<span class='ibm-secondary-navigation'>";
-	html += "<span>Results per page: </span> <strong>" + pageSize + "</strong>";
-	if(pageSize == 20){
-		html += "<span class='ibm-table-navigation-links'> | <a href='#' onclick='changePageSize(50); return false;'>50</a>";
-		html += " | <a href='#' onclick='changePageSize(100); return false;'>100</a></span>";
-	}
-	
-	if(pageSize == 50){
-		html += "<span class='ibm-table-navigation-links'> | <a href='#' onclick='changePageSize(20); return false;'>20</a>";
-		html += " | <a href='#' onclick='changePageSize(100); return false;'>100</a></span>";
-	}
-	
-	if(pageSize == 100){
-		html += "<span class='ibm-table-navigation-links'> | <a href='#' onclick='changePageSize(20); return false;'>20</a>";
-		html += " | <a href='#' onclick='changePageSize(50); return false;'>50</a></span>";
-	}
-	html += "</span>";
-	
-	$('#paginationBar').html(html);
-}
-
-function showLoading(){
-	$('#loading').show();
-}
-
-function hideLoading(){
-	$('#loading').hide();
 }
 
 function toggleSelects(type){
