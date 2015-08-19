@@ -3,7 +3,7 @@
 <script type="text/javascript">
 function openUserGuide(url){
     if(url==""||url ==  null){
-     url = "//tap.raleigh.ibm.com/helpdocs/trails/en/trails_userguide_en.pdf";
+     url = "http://tap.raleigh.ibm.com/helpdocs/trails/en/trails_userguide_en.pdf";
     }
     if(confirm('Open the user guide in new window?')){
         window.open (url, "UserGuide", "scrollbars,resizable");
