@@ -93,12 +93,12 @@ sub getIBMISVprio {
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
 						and
 							status_id = 2";
-	my $conn = $self->connection;
+	$conn = $self->connection;
 	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
-	my $sth = $conn->sql->{ISVquery};
-	$sth->execute ( $manu_id, $cust_id );
-	my ($result) = $sth->fetchrow_array;
-	$sth->finish;
+	my $sth2 = $conn->sql->{ISVquery};
+	$sth2->execute ( $manu_id, $cust_id );
+	($result) = $sth2->fetchrow_array;
+	$sth2->finish;
 
 	return "ISVPRIO" if ( ( defined $result ) && ( $result == 1 ) );
 	return "ISVNOPRIO";
