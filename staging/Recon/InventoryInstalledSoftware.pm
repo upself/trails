@@ -153,6 +153,7 @@ sub getInstalledSoftwareReconData {
 #		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 #		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
+		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
 		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 #		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
@@ -164,6 +165,11 @@ sub getInstalledSoftwareReconData {
 
 
 #		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
+
+		$installedSoftwareReconData->expectedAlertType (
+					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
+																	$installedSoftwareReconData->sMfgId,
+																	$installedSoftwareReconData->cId ) );
 
 	}
 
@@ -187,6 +193,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  sName
 	  sStatus
 	  sLevel
+	  sMfgId
 	  sMfg
 	  rId
 	);
@@ -205,6 +212,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.software_name
             ,s.status
             ,s.level
+            ,m.id
             ,m.name
             ,r.id
         from
@@ -260,14 +268,7 @@ sub closeAlertUnlicensedSoftware {
 	$oldAlert->remoteUser( $alert->remoteUser );
 	$oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-	}
-	else {
-		$alert->type('ISV');
-	}
+	$alert->type($self->installedSoftwareReconData->expectedAlertType);
 	$alert->comments('Auto Close');
 	$alert->open(0);
 
@@ -276,10 +277,10 @@ sub closeAlertUnlicensedSoftware {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
+#		elsif ( $oldAlert->type ne $alert->type ) {
+#			$alert->save( $self->connection );
+#			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+#		}
 		Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
 	}
 	elsif ( $createNew == 1 ) {

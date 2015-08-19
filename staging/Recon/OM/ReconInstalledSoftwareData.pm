@@ -40,6 +40,7 @@ sub new {
         ,_sPriority => undef
         ,_sLevel => undef
         ,_sVendorMgd => undef
+        ,_sMfgId => undef
         ,_sMfg => undef
         ,_scName => undef
         ,_scParent => undef
@@ -56,6 +57,7 @@ sub new {
         ,_licsToRecon => undef
         ,_scopeName => undef
         ,_scheduleFlevel => undef
+        ,_expectedAlertType => undef
     };
     bless $self, $class;
     return $self;
@@ -615,6 +617,12 @@ sub sVendorMgd {
     return $self->{_sVendorMgd};
 }
 
+sub sMfgId {
+    my $self = shift;
+    $self->{_sMfgId} = shift if scalar @_ == 1;
+    return $self->{_sMfgId};
+}
+
 sub sMfg {
     my $self = shift;
     $self->{_sMfg} = shift if scalar @_ == 1;
@@ -709,6 +717,12 @@ sub scheduleFlevel {
     my $self = shift;
     $self->{_scheduleFlevel} = shift if scalar @_ == 1;
     return $self->{_scheduleFlevel};
+}
+
+sub expectedAlertType {
+    my $self = shift;
+    $self->{_expectedAlertType} = shift if scalar @_ == 1;
+    return $self->{_expectedAlertType};
 }
 
 sub toString {
@@ -884,6 +898,11 @@ sub toString {
         $s .= $self->{_sVendorMgd};
     }
     $s .= ",";
+    $s .= "sMfgId=";
+    if (defined $self->{_sMfgId}) {
+        $s .= $self->{_sMfgId};
+    }
+    $s .= ",";
     $s .= "sMfg=";
     if (defined $self->{_sMfg}) {
         $s .= $self->{_sMfg};
@@ -962,6 +981,11 @@ sub toString {
     $s .= "scheduleFlevel=";
     if (defined $self->{_scheduleFlevel}) {
         $s .= $self->{_scheduleFlevel};
+    }
+    $s .= ",";
+    $s .= "expectedAlertType=";
+    if (defined $self->{_expectedAlertType}) {
+        $s .= $self->{_expectedAlertType};
     }
     $s .= ",";
     chop $s;

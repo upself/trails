@@ -68,6 +68,42 @@ sub getAllocationMethodologyMap {
 	return \%data;
 }
 
+sub getIBMISVprio {
+	my ( $self, $conn, $manu_id, $cust_id ) = @_;
+	
+	# reading whether SW manufacturer is considered an IBM brand
+		
+	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ?";
+	
+	$conn->prepareSqlQuery( 'IBMquery', $IBMquery );
+	my $sth = $conn->sql->{ISVquery};
+	$sth->execute ( $manu_id );
+	my ($result) = $sth->fetchrow_array;
+	$sth->finish;
+	
+	return "IBM" if ( ( defined $result ) && ( $result == 1 ) );
+	
+	# reading whether SW manufacturer is considered priority (account or global level)
+	
+	my $ISVquery = "select 1 from priority_isw_sv
+						where
+							manufacturer_id = ?
+						and
+							( ( level = 'GLOBAL' and customer_id = null )
+							or ( level = 'ACCOUNT' and customer_id = ? ) )
+						and
+							status_id = 2";
+	my $conn = $self->connection;
+	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
+	my $sth = $conn->sql->{ISVquery};
+	$sth->execute ( $manu_id, $cust_id );
+	my ($result) = $sth->fetchrow_array;
+	$sth->finish;
+
+	return "ISVPRIO" if ( ( defined $result ) && ( $result == 1 ) );
+	return "ISVNOPRIO";
+}
+
 sub getScheduleFScope {
 	my $self=shift;
 	my $connection=shift;

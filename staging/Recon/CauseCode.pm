@@ -3,6 +3,40 @@ package Recon::CauseCode;
 use strict;
 use Base::Utils;
 
+sub resetCCcode {
+	my ( $alertid, $alertcode, $connection) = @_;
+	
+	my $oldId=GetByAlert ( $alertid, $alertcode, $connection );
+	
+	if ( $oldId > 0 ) {
+		$connection->prepareSqlQuery(queryResetCC());
+		
+		my $sth=$connection->sql->{resetCC};
+		my $oldId;
+	
+		$sth->execute( $oldId );
+		$sth->finish;
+		
+		return $oldId;
+		
+	} else {
+		$connection->prepareSqlQuery(queryInsertCC());
+
+		my $sth=$connection->sql->{insertCC};
+		my $id;
+	
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertcode, $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
+		
+		# returns ID of the row in the cause_code table
+		
+		return $id;
+
+	}
+}
+
 sub updateCCtable {
 	my ( $alertid, $alertcode, $connection) = @_;
 	
@@ -61,7 +95,19 @@ sub queryGetByAlert {
 	return ( 'GetCCbyAlert', $query );
 }
 
-
+sub queryResetCC {
+    my $query = '
+        update cause_code
+			set
+			alert_cause_id = 1,
+			owner = null,
+			record_time = null, 
+			remote_user = null,
+			target_date = null
+		where id = ?
+    ';
+    return ('resetCC', $query);
+}
 
 sub queryInsertCC {
     my $query = '
