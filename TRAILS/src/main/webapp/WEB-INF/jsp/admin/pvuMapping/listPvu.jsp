@@ -13,6 +13,9 @@ and/or view further details.</p>
 <br />
 <br />
 <script type="text/javascript">
+$(document).ready(function(){
+	$(".loading").showLoading();
+});
 var url = "${pageContext.request.contextPath}/ws/pvu/getAll";
 $
 		.ajax({
@@ -42,6 +45,7 @@ $
 					}
 				}
 				$("#pvu_list").html(html);
+				$(".loading").hideLoading();
 			}
 		});
 </script>
@@ -56,6 +60,8 @@ $
 				</tr>
 			</thead>
 			<tbody id="pvu_list">
+			<tr class="loading">
+			</tr>
 			</tbody>
 		</table>
 	</div>
