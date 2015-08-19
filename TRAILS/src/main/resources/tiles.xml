@@ -1622,7 +1622,8 @@
 	<definition name="tiles.account.exception.assigment.Swlpar.result"
 		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
 
-	<definition name="tiles.admin.alertCause.list" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.admin.alertCause.list" extends="tiles.v17e.w3OneColumnLayout">
+	<put-attribute name="contentTitle" value="Cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/list.jsp" />
 		<put-attribute name="description" value="TRAILS alert cause list" />
