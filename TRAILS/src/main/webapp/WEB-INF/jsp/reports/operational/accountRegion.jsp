@@ -14,7 +14,7 @@
 	<display:column property="countryCodeName" title="Country code" />
 	<display:column property="sectorName" title="Sector" />
 	<display:column property="accountTypeName" title="Account type" />
-	<display:column property="alertNameWithCount" title="Alert(#)" />
+	<display:column property="alertNameWithCount" title="Software Operational Metrics(Alert #)" />
 	<display:column property="greenSum" title="Green(0-45)" total="true"
 		format="{0,number,0}" />
 	<display:column property="yellowSum" title="Yellow(46-90)" total="true"

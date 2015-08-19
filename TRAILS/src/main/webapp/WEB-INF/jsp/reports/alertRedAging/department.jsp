@@ -19,7 +19,7 @@
 		</s:else>
 	</display:column>
 	<display:column property="name" title="Department" media="excel" />
-	<display:column property="alertName" title="Alert" />
+	<display:column property="alertName" title="Software Operational Metrics" />
 	<display:column property="red91Sum" title="Red(91-120)" total="true"
 		format="{0,number,0}" />
 	<display:column property="red121Sum" title="Red(121-150)" total="true"
