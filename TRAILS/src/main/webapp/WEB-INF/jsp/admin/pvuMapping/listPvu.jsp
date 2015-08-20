@@ -4,7 +4,7 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.showLoading.js"></script>
 <link href="${pageContext.request.contextPath}/css/showLoading.css" rel="stylesheet" type="text/css" />
-<p>IBM Confidential</p>
+<p style="font-weight:bold">IBM Confidential</p>
 <br />
 <p>Below lists the unique processor brands and models as taken from
 the software group website located <a

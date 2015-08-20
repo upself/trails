@@ -1,6 +1,6 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<p>IBM Confidential</p>
+<p style="font-weight:bold">IBM Confidential</p>
 <s:if test="addCollection.size!=0||removeCollection.size!=0">
 
     <p>Your modification has been successful. See details below.
