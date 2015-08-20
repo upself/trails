@@ -24,6 +24,7 @@ $
 			dataType : 'json',
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				alert(textStatus);
+				$(".loading").hideLoading();
 			},
 			success : function(data) {
 				var html = '';
