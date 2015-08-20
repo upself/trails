@@ -2284,6 +2284,7 @@ sub getInstalledSoftwareReconData {
     
     if ( not defined $scopename_temp ) {
 		$installedSoftwareReconData->expectedAlertType ( "SCOPE" );
+		dlog("Expected alert for unlicensed SW is type SCOPE... no ScheduleF scope found.");
 	} else {
 		$installedSoftwareReconData->expectedAlertType (
 					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
@@ -3041,6 +3042,7 @@ sub openAlertUnlicensedSoftware {
 			Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);
 		}
 		elsif ( $oldAlert->type ne $alert->type ) {
+			dlog("Alert type has changed, creating a new history record and resetting the cause code.");
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 			Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);

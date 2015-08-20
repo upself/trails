@@ -71,6 +71,8 @@ sub getAllocationMethodologyMap {
 sub getIBMISVprio {
 	my ( $self, $conn, $manu_id, $cust_id ) = @_;
 	
+	dlog("Detecting expected alert type IBM / ISVPRIO / ISVNOPRIO...");
+	
 	# reading whether SW manufacturer is considered an IBM brand
 		
 	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ?";
@@ -81,11 +83,14 @@ sub getIBMISVprio {
 	my ($result) = $sth->fetchrow_array;
 	$sth->finish;
 	
-	return "IBM" if ( ( defined $result ) && ( $result == 1 ) );
+	if ( ( defined $result ) && ( $result == 1 ) ) {
+		dlog("SW manufacturer found in the table IBM_BRAND.");
+		return "IBM";
+	}
 	
 	# reading whether SW manufacturer is considered priority (account or global level)
 	
-	my $ISVquery = "select 1 from priority_isw_sv
+	my $ISVquery = "select 1 from priority_isv_sw
 						where
 							manufacturer_id = ?
 						and
@@ -93,14 +98,18 @@ sub getIBMISVprio {
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
 						and
 							status_id = 2";
-	$conn = $self->connection;
+	
 	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
 	my $sth2 = $conn->sql->{ISVquery};
 	$sth2->execute ( $manu_id, $cust_id );
 	($result) = $sth2->fetchrow_array;
 	$sth2->finish;
 
-	return "ISVPRIO" if ( ( defined $result ) && ( $result == 1 ) );
+	if ( ( defined $result ) && ( $result == 1 ) ) {
+		dlog("SW manufacturer found as being priority one.");
+		return "ISVPRIO";
+	}
+	dlog("SW manufacturer not found in IBM brand table nor among the priority ISV manufacturers.");
 	return "ISVNOPRIO";
 }
 

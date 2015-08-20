@@ -12,7 +12,6 @@ sub resetCCcode {
 		$connection->prepareSqlQuery(queryResetCC());
 		
 		my $sth=$connection->sql->{resetCC};
-		my $oldId;
 	
 		$sth->execute( $oldId );
 		$sth->finish;
