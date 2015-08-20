@@ -53,11 +53,13 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 	@POST
 	@Path("/search")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg getAlertHardwareCfgDataList(@FormParam("accountId") Long accountId,
+	public WSMsg getAlertWithDefinedContractScopeList(@FormParam("accountId") Long accountId,
 			@FormParam("currentPage") Integer currentPage,
 			@FormParam("pageSize") Integer pageSize,
 			@FormParam("sort") String sort,
 			@FormParam("dir") String dir){
+		
+		System.out.println("getAlertWithDefinedContractScopeList run");
 		
 		if(null == accountId){
 			return WSMsg.failMessage("Account ID is required");
@@ -66,10 +68,28 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			if(null == account){
 				return WSMsg.failMessage("Account doesn't exist");
 			}else{
-				int startIndex = (currentPage-1) * pageSize;
+				int startIndex = 99999;
+				try {
+					startIndex = (currentPage-1) * pageSize;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 				Long total = alertService.total(account);
-				List list = alertService.paginatedList(account, startIndex, pageSize, sort, dir);
+				System.out.println("total is : " + total);
+				System.out.println("account is : " + account.getAccountStr());
+				System.out.println("startIndex is : " + startIndex); 
+				System.out.println("pageSize is : " + pageSize); 
+				System.out.println("sort is : " + sort);
+				System.out.println("dir is : " + dir);
+				
+				
+				List<?> list = alertService.paginatedList(account, startIndex, pageSize, sort, dir);
+				
+				for (int i = 0; i < list.size(); i++) {
+					System.out.println("List entry number " + i
+							+ list.get(i).toString());
+				}
 				
 				Pagination page = new Pagination();
 				page.setPageSize(pageSize.longValue());
@@ -168,7 +188,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			Account account = accountService.getAccount(accountId);
 			
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertWithDefinedContractScope.xls");
+			response.setHeader("Content-Disposition","attachment; filename=alertContractScopeCNDBID.xls");
 			reportService.getAlertWithDefinedContractScopeReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
 			
 		}catch(Exception e){
