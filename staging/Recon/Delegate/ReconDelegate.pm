@@ -76,7 +76,7 @@ sub getIBMISVprio {
 	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ?";
 	
 	$conn->prepareSqlQuery( 'IBMquery', $IBMquery );
-	my $sth = $conn->sql->{ISVquery};
+	my $sth = $conn->sql->{IBMquery};
 	$sth->execute ( $manu_id );
 	my ($result) = $sth->fetchrow_array;
 	$sth->finish;
