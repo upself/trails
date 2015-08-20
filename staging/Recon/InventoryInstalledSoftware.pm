@@ -304,63 +304,6 @@ sub recordAlertUnlicensedSoftwareHistory {
 	$history->save( $self->connection );
 }
 
-sub openAlertUnlicensedSoftware {
-	my $self = shift;
-	my $CCalertType=0;
-	dlog("begin openAlertUnlicensedSoftware");
-
-	###Instantiate alert object.
-	my $alert = new Recon::OM::AlertUnlicensedSoftware();
-
-	###Retrieve alert by installed software.
-	$alert->installedSoftwareId( $self->installedSoftware->id );
-	$alert->getByBizKey( $self->connection );
-	dlog( "alert=" . $alert->toString() );
-
-	my $oldAlert = new Recon::OM::AlertUnlicensedSoftware();
-	$oldAlert->id( $alert->id );
-	$oldAlert->installedSoftwareId( $alert->installedSoftwareId );
-	$oldAlert->comments( $alert->comments );
-	$oldAlert->type( $alert->type );
-	$oldAlert->open( $alert->open );
-	$oldAlert->creationTime( $alert->creationTime );
-	$oldAlert->remoteUser( $alert->remoteUser );
-	$oldAlert->recordTime( $alert->recordTime );
-
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-		$CCalertType=7;
-	}
-	else {
-		$alert->type('ISV');
-		$CCalertType=8;
-	}
-	$alert->comments('Auto Open');
-	$alert->open(1);
-
-	if ( defined $alert->id ) {
-		if ( $oldAlert->open == 0 ) {
-			$alert->creationTime( currentTimeStamp() );
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
-	}
-	else {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
-	}
-	
-	Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
-
-	dlog("end openAlertUnlicensedSoftware");
-}
-
 sub queueSoftwareCategory { # puts all the installed software, who's category parent 
 							# is the software just considered invalid, into queue
 	my $self=shift;

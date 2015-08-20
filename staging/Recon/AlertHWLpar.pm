@@ -95,7 +95,7 @@ sub openAlert {
 	 $alert->comment('Auto Open');
 	 $alert->save( $self->connection );
 	 
-	 Recon::CauseCode::updateCCtable( $alert->id, "HW_LPAR", $self->connection ); # updating CC table
+	 Recon::CauseCode::resetCCcode( $alert->id, "HW_LPAR", $self->connection ); # updating CC table
 	 
 	 if(!defined $alertId){
 	  my $alertHwLpar =  new Recon::OM::AlertHardwareLparNew();

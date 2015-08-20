@@ -130,7 +130,7 @@ sub openAlert {
 	$alert->open(1);
 	$alert->save( $self->connection );
 	
-	Recon::CauseCode::updateCCtable( $alert->id, "EXP_SCAN", $self->connection );
+	Recon::CauseCode::resetCCcode( $alert->id, "EXP_SCAN", $self->connection );
 
 	ilog('OpenAlert method of AlertExpiredScan complete');
 }

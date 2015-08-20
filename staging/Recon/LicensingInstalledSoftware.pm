@@ -3049,7 +3049,7 @@ sub openAlertUnlicensedSoftware {
 	else {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
-		Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
+		Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);
 	}
 
 	dlog("end openAlertUnlicensedSoftware");
