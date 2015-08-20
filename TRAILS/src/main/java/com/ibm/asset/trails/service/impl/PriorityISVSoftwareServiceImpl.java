@@ -140,6 +140,13 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 		// TODO Auto-generated method stub
 		 return this.priorityISVSoftwareDAO.total();
 	}
+	
+	@Override
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public Long totalHistory(Long priorityISVSoftwareId) {
+		// TODO Auto-generated method stub
+		 return this.priorityISVSoftwareDAO.totalHistory(priorityISVSoftwareId);
+	}
 
 	@Override
 	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer pageIndex, Integer pageSize) {
@@ -148,8 +155,8 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 
 	@Override
 	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(
-			Long priorityISVSoftwareId) {
-	   return this.priorityISVSoftwareHDAO.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId);
+			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize) {
+	   return this.priorityISVSoftwareHDAO.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId, startIndex, pageSize);
 	}
 	
 	private void insertRelatedReconPriorityISVSWs(String operation, PriorityISVSoftware oldPISVSW,PriorityISVSoftware newPISVSW){

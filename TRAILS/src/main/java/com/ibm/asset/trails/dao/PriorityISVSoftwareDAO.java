@@ -10,5 +10,6 @@ public interface PriorityISVSoftwareDAO extends
 	public PriorityISVSoftwareDisplay findPriorityISVSoftwareDisplayById(Long id);
 	public PriorityISVSoftware findPriorityISVSoftwareByUniqueKeys(String level, Long manufacturerId, Long customerId);
 	public Long total();
+	public Long totalHistory(Long priorityISVSoftwareId);
 	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize);
 }

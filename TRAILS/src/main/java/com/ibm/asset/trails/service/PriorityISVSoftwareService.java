@@ -13,6 +13,7 @@ public interface PriorityISVSoftwareService {
 	public void addPriorityISVSoftware(PriorityISVSoftware priorityISVSoftware);
 	public PriorityISVSoftware findPriorityISVSoftwareByUniqueKeys(String level, Long manufacturerId, Long customerId);
 	public Long total();
+	public Long totalHistory(Long priorityISVSoftwareId);
 	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize);
-	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(Long priorityISVSoftwareId);
+	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(Long priorityISVSoftwareId,Integer startIndex, Integer pageSize);
 }

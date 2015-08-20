@@ -35,7 +35,7 @@ $(function(){
 });
 
 function searchData(){
-	$("#pagebar").v17ePagination('destroy').v17ePagination({
+	$("#pagebar").v17ePagination({
 		showInfo: true,
 		showPageSizes: true,
 		remote: {
