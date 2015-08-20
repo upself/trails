@@ -1,8 +1,0 @@
-log4perl.logger.scarlet=INFO, LOGFILE
-    
-log4perl.appender.LOGFILE=Log::Log4perl::Appender::File
-log4perl.appender.LOGFILE.filename=file.log
-log4perl.appender.LOGFILE.mode=append
-    
-log4perl.appender.LOGFILE.layout=PatternLayout
-log4perl.appender.LOGFILE.layout.ConversionPattern=%m%n

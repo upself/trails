@@ -12,6 +12,10 @@ use BRAVO::OM::InstalledSoftware;
 use Config::Properties::Simple;
 use Try::Tiny;
 use Log::Log4perl;
+use Log::Log4perl::Level;
+use Log::Log4perl::Layout;
+use Log::Log4perl::Appender;
+use Log::Dispatch::FileRotate;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
@@ -28,7 +32,9 @@ sub new {
   _scheduleFScopeName => $scheduleFScopeName,
   _config             => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
-  )
+
+  ),
+  _cachedParentGuids => {}
  };
  bless $self, $class;
 }
@@ -87,6 +93,12 @@ sub config {
  return $self->{_config};
 }
 
+sub cachedParentGuids {
+ my $self = shift;
+ $self->{_cachedParentGuids} = shift if scalar @_ == 1;
+ return $self->{_cachedParentGuids};
+}
+
 sub appendData {
 
  my ( $self, $freePoollData, $licenseId, $usedLicenseId ) = @_;
@@ -112,35 +124,8 @@ sub appendData {
  push @{ $self->usedLicenses }, $usedLicenseId;
 }
 
-sub existInScarlet {
- my ( $self, $extSrcId, $guid ) = @_;
-
- my $swcmLicenseId = undef;
- if ( $extSrcId =~ /SWCM_(\d*)/ ) {
-  $swcmLicenseId = $1;
- }
- else {
-  return 0;
- }
-
- my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
- foreach my $id ( @{$scarletGuids} ) {
-  return 1 if ( $id eq $guid );
- }
-
- return 0;
-}
-
 sub httpGetScarletGuids {
- my ( $self, $swcmLicenseId, $guid ) = @_;
-
- my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
- dlog("GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId");
- my $uri = URI->new($scarletGuidsApi);
- $uri->query_form(
-  'componentGuid' => $guid,
-  'licenseId'     => $swcmLicenseId
- );
+ my ( $self, $uri, $member ) = @_;
 
  my $ua = LWP::UserAgent->new;
  $ua->timeout(10);
@@ -152,11 +137,9 @@ sub httpGetScarletGuids {
  if ( $response->is_success ) {
   my $json = new JSON;
   try {
-
    local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
-   $scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
-   dlog( 'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
+   $scarletGuids = $jsObj->{$member} if ( defined $jsObj->{$member} );
     }
     catch { wlog('bad json format.') };
  }
@@ -165,6 +148,41 @@ sub httpGetScarletGuids {
  }
 
  return $scarletGuids;
+}
+
+sub existInScarlet {
+ my ( $self, $extSrcId, $guid ) = @_;
+
+ my $swcmLicenseId = undef;
+ if ( $extSrcId =~ /SWCM_(\d*)/ ) {
+  $swcmLicenseId = $1;
+ }
+ else {
+  return 0;
+ }
+
+ my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
+ my $uri             = URI->new($scarletGuidsApi);
+ $uri->query_form(
+  'componentGuid' => $guid,
+  'licenseId'     => $swcmLicenseId
+ );
+ my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
+
+ foreach my $id ( @{$scarletGuids} ) {
+  next if ( $id eq $guid );
+
+  $self->guids->{$id} = 1;
+  dlog( 'guid=' . $id );
+ }
+
+ $self->traverseUp( keys %{ $self->guids } );
+
+ foreach my $id ( keys %{ $self->guids } ) {
+  return 1 if ( $id eq $guid );
+ }
+
+ return 0;
 }
 
 sub setUpGuidsFromScarlet {
@@ -183,15 +201,57 @@ sub setUpGuidsFromScarlet {
    next;
   }
 
-  my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
+  my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
+  my $uri             = URI->new($scarletGuidsApi);
+  $uri->query_form(
+   'componentGuid' => $guid,
+   'licenseId'     => $swcmLicenseId
+  );
+  my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
 
+  dlog("GET $uri");
+  dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
    next if ( $id eq $guid );
 
    $self->guids->{$id} = 1;
    dlog( 'guid=' . $id );
   }
+ }
 
+ $self->traverseUp( [ keys %{ $self->guids } ] );
+
+}
+
+sub traverseUp {
+ my ( $self, $guids ) = @_;
+
+ if ( !defined $guids || scalar @{$guids} <= 0 ) {
+  return;
+ }
+
+ my $scarletGuidsApi = $self->config->getProperty('scarlet.guids.parents');
+
+ foreach my $id ( @{$guids} ) {
+
+  ###avoid duplicate request to scarlet.
+  next
+    if ( $self->cachedParentGuids->{$id} );
+
+  $self->cachedParentGuids->{$id} = 1;
+
+  my $uri = URI->new("$scarletGuidsApi/$id/parents");
+
+  my $scarletParentsGuids = $self->httpGetScarletGuids( $uri, 'parents' );
+
+  $self->traverseUp($scarletParentsGuids);
+
+  dlog("GET $uri");
+  dlog( scalar @{$scarletParentsGuids} . ' guid(s) found' );    
+  foreach my $id ( @{$scarletParentsGuids} ) {
+   $self->guids->{$id} = 1;
+   dlog( 'parentGuid=' . $id );
+  }
  }
 }
 
@@ -269,6 +329,10 @@ sub tryToReconcile {
 
  dlog( scalar @isIds . ' matched installed software found' );
 
+ if ( scalar @isIds == 0 ) {
+  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $installedSoftware->toString );
+ }
+
  foreach my $isId (@isIds) {
   my $is = new BRAVO::OM::InstalledSoftware();
   $is->id($isId);
@@ -296,7 +360,7 @@ sub tryToReconcile {
      $installedSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
 
-   $self->info( 'SUCCESS:' . $reconcile->toString );
+   $self->info( 'SUCCESS:' . $reconcile );
 
    foreach my $ulId ( @{ $self->usedLicenses } ) {
     $installedSoftware->createReconcileUsedLicenseMap( $reconcile, $ulId );
@@ -306,21 +370,33 @@ sub tryToReconcile {
 
   }
   else {
-   $self->info( 'VALIDATE_FAIL:' . $installedSoftware->toString );    
+   $self->info( 'VALIDATE_FAIL:' . $installedSoftware->toString );
   }
  }
 
 }
 
-my $logger = undef;
+my $sLog = undef;
 
 sub initLogger {
- Log::Log4perl::init_and_watch( '/opt/staging/v2/conf/scarletConf.txt', 10 );
- $logger = Log::Log4perl->get_logger('scarlet');
+ $sLog = Log::Log4perl->get_logger('scarlet');
+ my $layout = Log::Log4perl::Layout::PatternLayout->new("%m%n");
+
+ my $appender = Log::Log4perl::Appender->new(
+  "Log::Dispatch::FileRotate",
+  filename => '/var/staging/logs/Scarlet/scarlet.log',
+  mode     => 'append',
+  size     => 10000000,
+  max      => 100
+ );
+
+ $appender->layout($layout);
+ $sLog->add_appender($appender);
+ $sLog->level($INFO);
 }
 
 sub info() {
- my $msg = shift;
+ my ( $self, $msg ) = @_;
 
  my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
    localtime();
@@ -330,8 +406,8 @@ sub info() {
   $mon + 1, $mday, $hour, $min, $sec
  );
 
- initLogger if ( !defined $logger );
- $logger->info( "[$dt]" . $msg );
+ initLogger if ( !defined $sLog );
+ $sLog->info( "[$dt]" . $msg );
 
 }
 

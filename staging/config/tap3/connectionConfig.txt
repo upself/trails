@@ -43,4 +43,5 @@ gui.trails.server.password=Gr0wl3rs
 hme.tap3.hostname=tap3.raleigh.ibm.com
 hme.tap3.user=trails
 hme.tap3.password=Gr0wl3rs
-scarlet.guids=http://lexbz180075.cloud.dst.ibm.com:13080/guids
+scarlet.guids=http://prodpcrdsherlk3.w3-969.ibm.com:9100/guids
+scarlet.guids.parents=http://prodpcrdsherlk3.w3-969.ibm.com:9300/guids
