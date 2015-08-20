@@ -10,8 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.junit.Ignore;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
