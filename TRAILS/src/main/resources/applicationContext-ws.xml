@@ -10,11 +10,8 @@
 	<bean id="priorityISVSoftwareServiceEndpoint" class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint"/>	
 	<bean id="alertHardwareCfgDataServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint"/>	
 	<bean id="alertWithDefinedContractScopeServiceEndpoint" class="com.ibm.asset.trails.ws.AlertWithDefinedContractScopeServiceEndpoint"/>
-	
 	<bean id="hibernateMapper" class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
  
-   
-	
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>
 			<ref bean="nonInstanceServiceEndpoint"/>
