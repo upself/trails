@@ -5,9 +5,9 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays hardware without critical configuration data populated. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
+		<p>This page displays number of active auditable software instances on active software scans where contract scope is not defined in Schedule F section of TRAILS. Assigment of these alerts can be performed in the reconciliation workspace</p>
 		<div style="text-align:right">
-			<a href="${pageContext.request.contextPath}/ws/alertHardwareCfgData/download/${accountId}">Download SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE alert report</a>
+			<a href="${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/download/${accountId}">Download SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE alert report</a>
 		</div>
 	</div>
 	
@@ -25,14 +25,14 @@
 				</span>
 			</p>
 			
-			<div class="ibm-columns">
-				<div class="ibm-col-1-1" style="text-align:right">
-					<input type="submit" value="Assign/Update" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(0)" />
-					<input type="submit" value="Unassign" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(0)" />
-					<input type="submit" value="Assign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(1)" />
-					<input type="submit" value="Unassign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(1)" />
-				</div>
-			</div>
+<!-- 			<div class="ibm-columns"> -->
+<!-- 				<div class="ibm-col-1-1" style="text-align:right"> -->
+<!-- 					<input type="submit" value="assign/update" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assigncomments(0)" /> -->
+<!-- 					<input type="submit" value="unassign" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassigncomments(0)" /> -->
+<!-- 					<input type="submit" value="assign all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assigncomments(1)" /> -->
+<!-- 					<input type="submit" value="unassign all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassigncomments(1)" /> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
 		</form>
 		<div class="ibm-rule">
 			<hr />
@@ -51,14 +51,11 @@
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable Non Instance based SW table">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort nobreak">Assign/Unassign</th>
-					<th scope="col" class="ibm-sort nobreak">Status</th>
-					<th scope="col" class="ibm-sort nobreak">Serial</th>
-					<th scope="col" class="ibm-sort nobreak">MachineType</th>
-					<th scope="col" class="ibm-sort nobreak">Create date</th>
-					<th scope="col" class="ibm-sort nobreak">Age(days)</th>
-					<th scope="col" class="ibm-sort nobreak">Assignee</th>
-					<th scope="col" class="ibm-sort nobreak">Comments</th>
+					<th scope="col" class="ibm-sort nobreak">Oldest alert status</th>
+					<th scope="col" class="ibm-sort nobreak">Installed component</th>
+					<th scope="col" class="ibm-sort nobreak">Number of instances</th>
+					<th scope="col" class="ibm-sort nobreak">Date loaded</th>
+					<th scope="col" class="ibm-sort nobreak">Oldest alert age</th>
 				</tr>
 			</thead>
 			<tbody id="tb">
@@ -91,18 +88,17 @@ function searchData(){
 				var html = '';
 				var list = result.data.list;
 				if(null == list || list == undefined || list.length == 0){
-					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
+					html += "<tr><td colspan='5' align='center'>No data found</td></tr>"
 				}else{
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
-						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
+// 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td><a href='javascript:void()' onclick='popupAlertWithDefinedContractScope();return false;'>" + list[i].hardware.serial + "</a></td>";
-						html += "<td>" + list[i].hardware.machineType.type + "</td>";
+						html += "<td>" + list[i].softwareItemName + "</td>";
+						html += "<td>" + list[i].alertCount + "</td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
-						html += "<td>" + list[i].remoteUser + "</td>";
-						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertWithDefinedContractScope.htm?id=" + list[i].tableId+"\");return false;'>View</a></td>";
+// 						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertWithDefinedContractScope.htm?id=" + list[i].tableId+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
 				}
@@ -112,128 +108,122 @@ function searchData(){
 	}); 
 }
 
-function assignComments(type){
+// function assignComments(type){
 	
-	var comments = $('#comments').val();
-	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
-	var params = {};
+// 	var comments = $('#comments').val();
+// 	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
+// 	var params = {};
 	
-	//validate comments
-	if(comments.trim() == ''){
-		alert('Please input comments.');
-		return;
-	}
+// 	//validate comments
+// 	if(comments.trim() == ''){
+// 		alert('Please input comments.');
+// 		return;
+// 	}
 	
-	if(comments.trim().length > 255){
-		alert('Comments must be less than 255 characters');
-		return;
-	}
+// 	if(comments.trim().length > 255){
+// 		alert('Comments must be less than 255 characters');
+// 		return;
+// 	}
 	
-	if(type == 1){
-		//assign all
-		url +=  'assign/all';
-		params['comments'] = comments;
-		params['accountId'] = accountId;
-	}
+// 	if(type == 1){
+// 		//assign all
+// 		url +=  'assign/all';
+// 		params['comments'] = comments;
+// 		params['accountId'] = accountId;
+// 	}
 	
-	if(type == 0){
-		//not assign all
-		url += 'assign/ids'
-		if($('#tb input:checked').length <= 0){
-			alert('Please select at least one column of data to assign comments ');
-			return;
-		}else{
-			var assignIds = '';
-			$('#tb input:checked').each(function(){
-				assignIds += $(this).val() + ',';
-			});
-			assignIds = assignIds.substring(0,assignIds.length - 1);
+// 	if(type == 0){
+// 		//not assign all
+// 		url += 'assign/ids'
+// 		if($('#tb input:checked').length <= 0){
+// 			alert('Please select at least one column of data to assign comments ');
+// 			return;
+// 		}else{
+// 			var assignIds = '';
+// 			$('#tb input:checked').each(function(){
+// 				assignIds += $(this).val() + ',';
+// 			});
+// 			assignIds = assignIds.substring(0,assignIds.length - 1);
 			
-			params['comments'] = comments;
-			params['assignIds'] = assignIds;
-		}
-	}
+// 			params['comments'] = comments;
+// 			params['assignIds'] = assignIds;
+// 		}
+// 	}
 	
-	assignOrNot(url,params);
-}
+// 	assignOrNot(url,params);
+// }
 
-function unassignComments(type){
+// function unassignComments(type){
 	
-	var comments = $('#comments').val();
-	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
-	var params = {};
+// 	var comments = $('#comments').val();
+// 	var url = '${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/';
+// 	var params = {};
 	
-	//validate comments
-	if(comments.trim() == ''){
-		alert('Please input comments.');
-		return;
-	}
+// 	//validate comments
+// 	if(comments.trim() == ''){
+// 		alert('Please input comments.');
+// 		return;
+// 	}
 	
-	if(comments.trim().length > 255){
-		alert('Comments must be less than 255 characters');
-		return;
-	}
+// 	if(comments.trim().length > 255){
+// 		alert('Comments must be less than 255 characters');
+// 		return;
+// 	}
 	
-	if(type == 1){
-		//assign all
-		url +=  'unassign/all';
-		params['comments'] = comments;
-		params['accountId'] = accountId;
-	}
+// 	if(type == 1){
+// 		//assign all
+// 		url +=  'unassign/all';
+// 		params['comments'] = comments;
+// 		params['accountId'] = accountId;
+// 	}
 	
-	if(type == 0){
-		//not assign all
-		url += 'unassign/ids'
-		if($('#tb input:checked').length <= 0){
-			alert('Please select at least one column of data to unassign comments ');
-			return;
-		}else{
-			var unassignIds = '';
-			$('#tb input:checked').each(function(){
-				unassignIds += $(this).val() + ',';
-			});
-			unassignIds = unassignIds.substring(0,unassignIds.length - 1);
+// 	if(type == 0){
+// 		//not assign all
+// 		url += 'unassign/ids'
+// 		if($('#tb input:checked').length <= 0){
+// 			alert('Please select at least one column of data to unassign comments ');
+// 			return;
+// 		}else{
+// 			var unassignIds = '';
+// 			$('#tb input:checked').each(function(){
+// 				unassignIds += $(this).val() + ',';
+// 			});
+// 			unassignIds = unassignIds.substring(0,unassignIds.length - 1);
 
-			params['comments'] = comments;
-			params['unassignIds'] = unassignIds;
-		}
-	}
+// 			params['comments'] = comments;
+// 			params['unassignIds'] = unassignIds;
+// 		}
+// 	}
 	
-	assignOrNot(url,params);
-}
+// 	assignOrNot(url,params);
+// }
 
-function assignOrNot(url,params){
-	$.ajax({
-		url: url,
-		data: params,
-		type: 'POST',
-		dataType: 'json',
-		success: function(wsMsg){
-			if(wsMsg.status != '200'){
-				alert(wsMsg.msg);
-			}
-		},
-		error: function(response,status,error){
-			alert(error);
-		},
-		complete: function(){
-			searchData();
-		}
-	});
-}
-
-function popupAlertWithDefinedContractScope() {
-	newWin=window.open('//${bravoServerName}/BRAVO/account/view.do?accountId=${accountId}','popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
-	newWin.focus(); 
-	void(0);
-}
+// function assignOrNot(url,params){
+// 	$.ajax({
+// 		url: url,
+// 		data: params,
+// 		type: 'POST',
+// 		dataType: 'json',
+// 		success: function(wsMsg){
+// 			if(wsMsg.status != '200'){
+// 				alert(wsMsg.msg);
+// 			}
+// 		},
+// 		error: function(response,status,error){
+// 			alert(error);
+// 		},
+// 		complete: function(){
+// 			searchData();
+// 		}
+// 	});
+// }
 
 function displayPopUp(page) {
 	
 	window.open(page, 'PopUpWindow', 'left=200,top=180,resizable=yes,scrollbars=yes,width=840,height=500');
 }
 
-function toggleSelects(type){
-	$("#tb input[type='checkbox']").prop("checked", type); 
-}
+// function toggleSelects(type){
+// 	$("#tb input[type='checkbox']").prop("checked", type); 
+// }
 </script>

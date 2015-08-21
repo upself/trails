@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
@@ -1462,33 +1463,57 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getAlertWithDefinedContractScopeReport(Account pAccount,
 			String remoteUser, String lsName, HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 		// TODO Auto-generated method stub
-		StringBuffer sb = new StringBuffer("SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
-		sb.append(" ").append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
-		.append(" ").append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
-		.append(" ").append("VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,AC.name as ac_name,")
-		.append(" ").append("CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id")
-		.append(" ").append("FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC")
-		.append(" ").append("WHERE VA.Customer_Id = :customerId AND VA.Type = 'HWCFGDTA' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id")
-		.append(" ").append("and VA.id=CC.alert_id and CC.alert_type_id=37 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC");
+		StringBuffer sb = new StringBuffer("SELECT " +
+				"CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, " +
+				"sl.name, " +
+				"sw.software_name, " +
+				"VA.Creation_Time, " +
+				"VA.Alert_Age, " +
+				"VA.Remote_User, " +
+				"VA.Comments, " +
+				"VA.Record_Time, " +
+				"AC.name as ac_name, " +
+				"CC.target_date, " +
+				"CC.owner as cc_owner, " +
+				"CC.record_time as cc_record_time, " +
+				"CC.remote_user as cc_remote_user, " +
+				"CC.id as cc_id " +
+
+				"FROM EAADMIN.V_Alerts VA " +
+					"join EAADMIN.ALERT_UNLICENSED_SW AUS on AUS.id = VA.Fk_id " +
+					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = AUS.installed_software_id " +
+					"join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id " +
+					"join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id " +
+					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
+					"join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id " +
+
+				"WHERE VA.Customer_Id = :customerId AND  VA.Type = 'UNDEFINED_SCOPE' AND VA.Open = 1 " +
+
+			 "ORDER BY sl.name ASC");
+		
+		System.out.println("StringBuffer sb : " + sb);
+		
+		System.out.println("customerId: " + pAccount.getId());
 		
 		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(sb.toString())
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		
-		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config CNDBID Report");
-		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccount(),
-				ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS, sheet);
+		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope CNDBID Report");
+		printHeader(ALERT_WITH_DEFINED_SCOPE_REPORT_NAME, pAccount.getAccount(),
+				ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
             if (i>65535){
                 k++;
-				sheet = phwb.createSheet("Alert Hardware Config CNDBID Report"+k);
+				sheet = phwb.createSheet("Alert Contract Scope CNDBID Report"+k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -1496,11 +1521,26 @@ public class ReportServiceImpl implements ReportService {
 			i++;
 		}
 		// lsrReport.close();
-
+		
+//		@SuppressWarnings("unchecked")
+//		Iterator<Object[]> getAlertTypeCode = getEntityManager()
+//				.createNamedQuery("getAlertTypeByCode")
+//				.setParameter("code", "SWISCOPE")
+//				.getResultList()
+//				.iterator();
+//		
+//		Object whatever = null;
+//		while (getAlertTypeCode.hasNext()) {
+//			whatever = getAlertTypeCode.next();
+//		}
+//
+//		
+//		System.out.println("whatever : " + whatever);
+			
 		@SuppressWarnings("unchecked")
 		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
 				.createNamedQuery("getValidCauseCodesByAlertTypeId")
-				.setParameter("alertTypeId", new Long(37)).getResultList()
+				.setParameter("alertTypeId", new Long(17)).getResultList()
 				.iterator();
 		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
 		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
@@ -1514,23 +1554,7 @@ public class ReportServiceImpl implements ReportService {
 		phwb.write(pOutputStream);
 	
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
 		StringBuffer lsbData = new StringBuffer();

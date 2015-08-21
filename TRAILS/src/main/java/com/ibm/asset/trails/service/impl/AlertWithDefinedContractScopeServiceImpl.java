@@ -25,8 +25,10 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                         .append(super.translateSort(psSort, psDir)).toString(),
                 DisplayAlertUnlicensedSw.class);
 
+        System.out.println("lQuery : " + lQuery);
+        
         lQuery.setParameter("accountId", pAccount.getId());
-        lQuery.setParameter("type", "SCOPE");
+        lQuery.setParameter("type", "UNDEFINED_SCOPE");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         return (ArrayList) lQuery.getResultList();
