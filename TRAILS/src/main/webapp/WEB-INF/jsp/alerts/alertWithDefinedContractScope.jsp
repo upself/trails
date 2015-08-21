@@ -6,24 +6,26 @@
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
 		<p>This page displays number of active auditable software instances on active software scans where contract scope is not defined in Schedule F section of TRAILS. Assigment of these alerts can be performed in the reconciliation workspace</p>
+		
 		<div style="text-align:right">
 			<a href="${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/download/${accountId}">Download SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE alert report</a>
 		</div>
+		<br />
 	</div>
 	
-	<div class="ibm-col-1-1">
-		<div class="ibm-rule">
-				<hr />
-		</div>
-		<form onsubmit="return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
-			<p>
-				<label for="commons">
-					Comments:<span class="ibm-required">*</span>
-				</label> 
-                <span>
-					<textarea id="comments" cols="38" rows="7" name="message"></textarea>
-				</span>
-			</p>
+<!-- 	<div class="ibm-col-1-1"> -->
+<!-- 		<div class="ibm-rule"> -->
+<!-- 				<hr /> -->
+<!-- 		</div> -->
+<!-- 		<form onsubmit="return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post"> -->
+<!-- 			<p> -->
+<!-- 				<label for="commons"> -->
+<%-- 					Comments:<span class="ibm-required">*</span> --%>
+<!-- 				</label>  -->
+<%--                 <span> --%>
+<!-- 					<textarea id="comments" cols="38" rows="7" name="message"></textarea> -->
+<%-- 				</span> --%>
+<!-- 			</p> -->
 			
 <!-- 			<div class="ibm-columns"> -->
 <!-- 				<div class="ibm-col-1-1" style="text-align:right"> -->
@@ -33,18 +35,18 @@
 <!-- 					<input type="submit" value="unassign all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassigncomments(1)" /> -->
 <!-- 				</div> -->
 <!-- 			</div> -->
-		</form>
-		<div class="ibm-rule">
-			<hr />
-		</div>
+<!-- 		</form> -->
+<!-- 		<div class="ibm-rule"> -->
+<!-- 			<hr /> -->
+<!-- 		</div> -->
 		
-		<div class="ibm-columns">
-			<div class="ibm-col-1-1" style="text-align:right">
-				<input type="submit" value="Select all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(true)" />
-				<input type="submit" value="Unselect all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(false)" />
-			</div>
-		</div>
-	</div>
+<!-- 		<div class="ibm-columns"> -->
+<!-- 			<div class="ibm-col-1-1" style="text-align:right"> -->
+<!-- 				<input type="submit" value="Select all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(true)" /> -->
+<!-- 				<input type="submit" value="Unselect all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(false)" /> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
