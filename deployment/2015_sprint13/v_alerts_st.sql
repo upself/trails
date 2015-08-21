@@ -253,7 +253,7 @@ case when aus.type = 'IBM' then 'UNLICENSED_IBM_SW'
 	 when aus.type = 'ISVPRIO' then 'UNLICENSED_ISV_PRIO_SW'
 	else 'UNLICENSED_ISV_NOPRIO_SW' end ,
 case when aus.type = 'IBM' then 'SOM4a: IBM SW Instances Reviewed'
-	 when aus.type = 'SCOPE' then 'SOM 3: SW Instances with Defined Contract Scope'
+	 when aus.type = 'SCOPE' then 'SOM3: SW Instances with Defined Contract Scope'
 	 when aus.type = 'ISVPRIO' then 'SOM4b: Priority ISV SW Instances Reviewed'
 	else 'SOM4c: ISV SW Instances Reviewed' end ,
 at.name,
