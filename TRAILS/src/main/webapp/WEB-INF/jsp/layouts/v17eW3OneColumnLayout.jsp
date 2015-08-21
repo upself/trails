@@ -152,7 +152,7 @@
 							<div class="ibm-columns">
 								<div class="ibm-col-1-1"  style="margin-left:-20px">
 									<br>
-									<h6><tmp:insertAttribute name="contentTitle" /></h6>
+									<h1><tmp:insertAttribute name="contentTitle" /></h1>
 								</div>
 							</div>
 						</div>
