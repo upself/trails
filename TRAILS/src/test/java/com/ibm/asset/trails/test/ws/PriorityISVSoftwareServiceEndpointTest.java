@@ -39,6 +39,7 @@ import com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareDisplay;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareHDisplay;
 import com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint;
+import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -71,14 +72,15 @@ public class PriorityISVSoftwareServiceEndpointTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testGetAllPriorityISVSoftwareDisplays(){
-	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays();
+	public void testGetOnePageOfPriorityISVSoftwareDisplays(){
+	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays(1,10);
 	   
-		List<PriorityISVSoftwareDisplay> results =  (List<PriorityISVSoftwareDisplay>) wsMsg.getDataList();
-	    if(null!=results){
-	    	System.out.println("Total Priority ISV Software Record Count: "+results.size());
+		Pagination page = (Pagination) wsMsg.getData();
+	    if(null!=page){
+	    	System.out.println("Get one page of PriorityISVSoftware List, current page is  "+page.getCurrentPage()+", pagaSize is "+page.getPageSize()+", total is "+page.getTotal()+";");
+	    	assertTrue(1 ==page.getCurrentPage() && 10 == page.getPageSize());
 	    }
-	    assertTrue(null!=results && results.size()>=0);
+	    assertTrue(null != page);
 	}
 	
     //@Test
@@ -157,15 +159,16 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	//@Test
 	@SuppressWarnings("unchecked")
 	public void tesGetPriorityISVSoftwareHDisplaysByISVSoftwareId(){
+		
 		Long isvId = new Long(10);//Please change this value based on actual situation
-	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getPriorityISVSoftwareHDisplaysByISVSoftwareId(isvId);
-	   
-		List<PriorityISVSoftwareHDisplay> results =  (List<PriorityISVSoftwareHDisplay>) wsMsg.getDataList();
-	    if(null!=results){
-	    	System.out.println("There are "+results.size()+" Priority ISV Software History Records found for Priority ISV id: "+isvId.intValue()+"");
-	    }
-	    
-	    assertTrue(null!=results && results.size()>=0);
+		WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getPriorityISVSoftwareHDisplaysByISVSoftwareId(isvId,1,10);
+		   
+		Pagination page = (Pagination) wsMsg.getData();
+		if(null!=page){
+		    System.out.println("Get one page of PriorityISVSoftware History List, current page is  "+page.getCurrentPage()+", pagaSize is "+page.getPageSize()+", total is "+page.getTotal()+";");
+		    assertTrue(1 ==page.getCurrentPage() && 10 == page.getPageSize());
+		}
+		assertTrue(null != page);
 	}
 	
 	//@Test
@@ -271,7 +274,7 @@ public class PriorityISVSoftwareServiceEndpointTest {
 		assertTrue(httpStatusCode == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.SUCCESS));
 	}
 	
-	@Test
+	//@Test
 	public void tesCrossLevelPriorityISVSoftwareByHttpMode(){
 		int httpStatusCode = -1;
 		int httpStatusCode2 = -1;

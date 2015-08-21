@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PRIORITY_ISV_SW_H")
+@NamedQueries({@NamedQuery(name = "findPriorityISVHTotalById", query = "SELECT COUNT(*) FROM PriorityISVSoftwareH WHERE priorityISVSoftwareId = :priorityISVSoftwareId")})
 public class PriorityISVSoftwareH extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1570160658765275811L;
 

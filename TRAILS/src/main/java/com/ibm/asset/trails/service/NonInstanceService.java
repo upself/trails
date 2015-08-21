@@ -1,13 +1,9 @@
 package com.ibm.asset.trails.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import com.ibm.asset.trails.domain.NonInstanceH;
 import com.ibm.asset.trails.domain.Status;
-
 import com.ibm.asset.trails.domain.CapacityType;
 import com.ibm.asset.trails.domain.Manufacturer;
 import com.ibm.asset.trails.domain.NonInstance;
@@ -18,8 +14,10 @@ import com.ibm.asset.trails.domain.Software;
 public interface NonInstanceService {
 	
 	public NonInstanceDisplay findNonInstanceDisplayById(Long Id);
-	public List<NonInstanceDisplay> findNonInstanceDisplays(NonInstanceDisplay nonInstanceDisplay);
-	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId);
+	public Long total(NonInstanceDisplay nonInstanceDisplay);
+	public Long totalHistory(Long nonInstanceId);
+	public List<NonInstance> findNonInstances(NonInstanceDisplay nonInstanceDisplay,Integer startIndex, Integer pageSize);
+	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize);
 	
 	public void updateNonInstance(NonInstance nonInstance);
 	public void saveNonInstance(NonInstance nonInstance);

@@ -29,7 +29,7 @@ public class PriorityISVSoftwareHDAOJap extends
 
 	@Override
 	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(
-			Long priorityISVSoftwareId) {
+			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize) {
 		
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PriorityISVSoftwareHDisplay> q = cb.createQuery(PriorityISVSoftwareHDisplay.class);
@@ -60,7 +60,7 @@ public class PriorityISVSoftwareHDAOJap extends
 				priorityISVSoftwareH.get(PriorityISVSoftwareH_.recordTime).alias("recordTime"));
 		
 		TypedQuery<PriorityISVSoftwareHDisplay> typedQuery = entityManager.createQuery(q);
-		List<PriorityISVSoftwareHDisplay> results = typedQuery.getResultList();
+		List<PriorityISVSoftwareHDisplay> results = typedQuery.setFirstResult(startIndex).setMaxResults(pageSize).getResultList();
 
 		if(null != results && !results.isEmpty()){
 			return results;

@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 
@@ -32,9 +33,15 @@ import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
 
+
+
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
 
 
 import com.ibm.asset.trails.domain.CapacityType;
@@ -95,13 +102,16 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 		}
 	}
 
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstanceDisplay> findNonInstanceDisplays(
-			NonInstanceDisplay nonInstanceDisplay) {
+	@Override
+	public Long total(NonInstanceDisplay nonInstanceDisplay) {
 		// TODO Auto-generated method stub
-		String hql = "select new com.ibm.asset.trails.domain.NonInstanceDisplay(non.id, non.software.softwareId, non.software.softwareName, "
-				+ "non.manufacturer.manufacturerName, non.restriction, non.capacityType.code, non.capacityType.description, "
-				+ "non.baseOnly, non.status.id, non.status.description, non.remoteUser, non.recordTime) from NonInstance as non where 1=1";
+		String hql = "Select COUNT(*) From NonInstance non "
+				+ " Join non.software "
+				+ " Join non.manufacturer"
+				+ " Join non.capacityType"
+				+ " Join non.status"
+				+ " Where 1=1";
+		
 		if(nonInstanceDisplay.getId() != null){
 			hql += " and non.id = " + nonInstanceDisplay.getId();
 		}
@@ -147,26 +157,104 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 			hql += " and UCASE(non.remoteUser) like UCASE('%" + nonInstanceDisplay.getRemoteUser() + "%')";
 		}
 		
-		List<NonInstanceDisplay> list =  getEntityManager().createQuery(hql).getResultList();
+		Long total =  (Long)getEntityManager().createQuery(hql).getSingleResult();
+
+
+		return total;
+	}
+
+
+	@Override
+	public Long totalHistory(Long nonInstanceId) {
+		// TODO Auto-generated method stub		
+		Long total =  (Long)getEntityManager()
+				.createNamedQuery("nonInstanceHTotalById")
+				.setParameter("nonInstanceId", nonInstanceId)
+				.getSingleResult();
+
+		return total;
+	}
+
+
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<NonInstance> findNonInstances(
+			NonInstanceDisplay nonInstanceDisplay, Integer startIndex, Integer pageSize) {
+		// TODO Auto-generated method stub
+		String hql = "From NonInstance non "
+				+ " Join Fetch non.software "
+				+ " Join Fetch non.manufacturer"
+				+ " Join Fetch non.capacityType"
+				+ " Join Fetch non.status"
+				+ " Where 1=1";
+		
+		if(nonInstanceDisplay.getId() != null){
+			hql += " and non.id = " + nonInstanceDisplay.getId();
+		}
+		
+		if(nonInstanceDisplay.getSoftwareId() != null){
+			hql += " and non.software.softwareId = " + nonInstanceDisplay.getSoftwareId();
+		}
+		
+		if(nonInstanceDisplay.getSoftwareName() != null && !"".equals(nonInstanceDisplay.getSoftwareName())){
+			hql += " and UCASE(non.software.softwareName) like UCASE('%" + nonInstanceDisplay.getSoftwareName() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getManufacturerName() != null && !"".equals(nonInstanceDisplay.getManufacturerName())){
+			hql += " and UCASE(non.manufacturer.manufacturerName) like UCASE('%" + nonInstanceDisplay.getManufacturerName() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getRestriction() != null && !"".equals(nonInstanceDisplay.getRestriction())){
+			hql += " and UCASE(non.restriction) like UCASE('%" + nonInstanceDisplay.getRestriction() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getCapacityCode() != null){
+			hql += " and non.capacityType.code = " + nonInstanceDisplay.getCapacityCode();
+		}
+		
+		if(nonInstanceDisplay.getCapacityDesc() != null  && !"".equals(nonInstanceDisplay.getCapacityDesc())){
+			hql += " and UCASE(non.capacityType.description) like UCASE('%" + nonInstanceDisplay.getCapacityDesc() + "%')";
+		}
+		
+		
+		if(nonInstanceDisplay.getBaseOnly() != null){
+			hql += " and non.baseOnly =" + nonInstanceDisplay.getBaseOnly();
+		}
+		
+		if(nonInstanceDisplay.getStatusId() != null){
+			hql += " and non.status.id =" + nonInstanceDisplay.getStatusId();
+		}
+		
+		if(nonInstanceDisplay.getStatusDesc() != null && !"".equals(nonInstanceDisplay.getStatusDesc())){
+			hql += " and UCASE(non.status.description) like UCASE('%" + nonInstanceDisplay.getStatusDesc() + "%')";
+		}
+		
+		if(nonInstanceDisplay.getRemoteUser() != null && !"".equals(nonInstanceDisplay.getRemoteUser())){
+			hql += " and UCASE(non.remoteUser) like UCASE('%" + nonInstanceDisplay.getRemoteUser() + "%')";
+		}
+		
+		List<NonInstance> list =  getEntityManager().createQuery(hql).setFirstResult(startIndex).setMaxResults(pageSize).getResultList();
 
 		return list;
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstanceHDisplay> findNonInstanceHDisplays(Long nonInstanceId) {
-		// TODO Auto-generated method stub
-		String hql = "select new com.ibm.asset.trails.domain.NonInstanceHDisplay(non.id,non.nonInstanceId, "
-				+ "non.software.softwareId, non.software.softwareName, "
-				+ "non.manufacturer.manufacturerName, non.restriction, non.capacityType.code, "
-				+ "non.capacityType.description, non.baseOnly, non.status.id, non.status.description,"
-				+ "non.remoteUser, non.recordTime) from NonInstanceH as non where nonInstanceId = " + nonInstanceId;
+	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize) {
 		
-		hql += " order by non.recordTime desc";
-		List<NonInstanceHDisplay> list =  getEntityManager().createQuery(hql).getResultList();
-
+		String hql = "From NonInstanceH non "
+				+ " Join Fetch non.software "
+				+ " Join Fetch non.manufacturer"
+				+ " Join Fetch non.capacityType"
+				+ " Join Fetch non.status"
+				+ " Where non.nonInstanceId = :nonInstanceId";
+		
+		List<NonInstanceH> list = getEntityManager().createQuery(hql)
+		.setParameter("nonInstanceId", nonInstanceId)
+		.setFirstResult(startIndex)
+		.setMaxResults(pageSize)
+		.getResultList();
+		
 		return list;
 	}
-	
 	
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)

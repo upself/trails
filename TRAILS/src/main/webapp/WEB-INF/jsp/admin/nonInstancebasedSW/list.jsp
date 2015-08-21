@@ -1,9 +1,10 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
+		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
 			<p>
 				<label style="width:30%" for="softwareName_id">
 					Software component:<span class="ibm-required">*</span>
@@ -89,18 +90,16 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
+		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Sortable Non Instance based SW table">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Software component</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Restriction</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Non Instance based only</span><span
-							class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Non Instance capacity type</span><span class="ibm-icon"></span></a>
-					</th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col">Software component</th>
+					<th scope="col">Manufacturer</th>
+					<th scope="col">Restriction</th>
+					<th scope="col">Non Instance based only</th>
+					<th scope="col">Non Instance capacity type</th>
+					<th scope="col">Status</th>
 					<th scope="col" style="min-width:180px; text-align:center">Operation</th>
 				</tr>
 			</thead>
@@ -108,6 +107,7 @@
 				
 			</tbody>
 		</table>
+		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 </div>
 
@@ -131,73 +131,47 @@ $(function(){
 });
 
 function searchData(){
-	var softwareName = $("#softwareName_id").val();
-	var manufacturerName = $("#manufacturerName_id").val();
-	var restriction = $("#restriction_id").val();
-	var baseOnly = $("#baseOnly_id").val();
-	var capacityCode = $("#capacityCode_id").val();
-	var statusId = $("#statusId_id").val();
-
-
-	var searchParam = "?";
-	searchParam += "softwareName=" + softwareName;
-	searchParam += "&manufacturerName=" + manufacturerName;
-	searchParam += "&restriction=" + restriction;
-	if(baseOnly != ''){
-		searchParam += "&baseOnly=" + baseOnly;
-	}
-	if(capacityCode != ''){
-		searchParam += "&capacityCode=" + capacityCode;
-	}
-	
-	if(statusId != ''){
-		searchParam += "&statusId=" + statusId;
-	}
-
-	var url =  "${pageContext.request.contextPath}/ws/noninstance/search" + searchParam;
-
-	$.ajax({
-		url: url,
-		type: "GET",
-		dataType:'json',
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-	            alert(textStatus);
-	    },
-		success:function(data){
-			var html = '';
-			if(data.status != 200){
-				html += "<tr><td colspan='7'>"+data.msg+"</td></tr>"
-			}else{
-				var list = data.dataList;
-				for(var i = 0; i < list.length; i++){
-					html += "<tr>";
-					html += "<td><input type='hidden' value='" + list[i].id + "'>" + list[i].softwareName + "</td>";
-					html += "<td>" + list[i].manufacturerName + "</td>";
-					html += "<td>" + list[i].restriction + "</td>";
-					if(list[i].baseOnly == 1){
-						html += "<td>Y</td>";
-					}else{
-						html += "<td>N</td>";
+	$("#pagebar").v17ePagination('destroy').v17ePagination({
+		showInfo: true,
+		showPageSizes: true,
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/noninstance/search",
+			type: "POST",
+			params: $("#searchForm").serialize(),
+			success: function(result, pageIndex){
+				var html = '';
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='7' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
+						html += "<tr>";
+						html += "<td><input type='hidden' value='" + list[i].id + "'>" + list[i].software.softwareName + "</td>";
+						html += "<td>" + list[i].manufacturer.manufacturerName + "</td>";
+						html += "<td>" + list[i].restriction + "</td>";
+						if(list[i].baseOnly == 1){
+							html += "<td>Y</td>";
+						}else{
+							html += "<td>N</td>";
+						}
+						html += "<td>" + list[i].capacityType.description +"</td>";
+						html += "<td>" + list[i].status.description + "</td>";
+						html += "<td style='text-align:center'>";
+						<s:if test='#admin eq 1'>
+							html += "<p class='ibm-button-link-alternate'>"
+							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
+							html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
+						</s:if>
+							
+						<s:if test='#admin eq 0'>
+							html += "<a class='ibm-btn-small' href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
+						</s:if>
+							
+						html += "</tr>";
 					}
-					html += "<td>" + list[i].capacityDesc +"</td>";
-					html += "<td>" + list[i].statusDesc + "</td>";
-					html += "<td style='text-align:center'>";
-					<s:if test='#admin eq 1'>
-						html += "<p class='ibm-button-link-alternate'>"
-						html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
-						html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
-						/* html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"'>Update</a>&nbsp;|&nbsp;";
-						html += "<a href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>"; */
-					</s:if>
-					
-					<s:if test='#admin eq 0'>
-						html += "<a class='ibm-btn-small' href='${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"'>View history</a></td>";
-					</s:if>
-					
-					html += "</tr>";
 				}
+				$("#non_instance_list").html(html);
 			}
-			$("#non_instance_list").html(html);
 		}
 	}); 
 };
