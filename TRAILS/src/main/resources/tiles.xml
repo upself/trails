@@ -1623,21 +1623,23 @@
 		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
 
 	<definition name="tiles.admin.alertCause.list" extends="tiles.v17e.w3OneColumnLayout">
-	<put-attribute name="contentTitle" value="Cause code" />
+	    <put-attribute name="contentTitle" value="Cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/list.jsp" />
 		<put-attribute name="description" value="TRAILS alert cause list" />
 		<put-attribute name="keywords" value="TRAILS alert cause list" />
 	</definition>
 
-	<definition name="tiles.admin.alertCause.add" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.admin.alertCause.add" extends="tiles.v17e.w3OneColumnLayout">
+	<put-attribute name="contentTitle" value="Add  cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/add.jsp" />
 		<put-attribute name="description" value="TRAILS add alert causes" />
 		<put-attribute name="keywords" value="TRAILS add alert causes" />
 	</definition>
 
-	<definition name="tiles.admin.alertCause.manage" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.admin.alertCause.manage" extends="tiles.v17e.w3OneColumnLayout">
+	<put-attribute name="contentTitle" value="Edit  cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/manage.jsp" />
 		<put-attribute name="description" value="TRAILS manage alert causes" />

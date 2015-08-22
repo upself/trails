@@ -5,7 +5,7 @@
 	<s:fielderror />
 </s:if>
 
-<p class="confidential">IBM Confidential</p>
+<p><em>IBM Confidential</em></p>
 <br />
 <p>Below is a list of the cause codes in the application. Press one
 	of the links to edit the cause code details. You can also add a new
@@ -37,8 +37,9 @@
 				</tr>
 			</thead>
 			<tbody id="cause_code_list" />
-			<span class="ibm-spinner-large" id="loading" style="display:none"></span>
 		</table>
+		<span class="ibm-spinner-large" id="loading" style="display:none"></span>
+		<span class="ibm-error-link" id="causeTypeError" style="display: none"></span>
 	</div>
 
 </div>
@@ -56,11 +57,11 @@ function searchData() {
 				type : "GET",
 				dataType : 'json',
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert(textStatus);
+				/*	alert(textStatus); */
+					$("#causeTypeError").text(textStatus);
+			        $("#causeTypeError").css("display", "block");
 				},
 				beforeSend: function(){
-					$('#tb').html('');
-					$('#paginationBar').html('');
 					showLoading();
 				},
 				success : function(data) {
@@ -74,7 +75,7 @@ function searchData() {
 							html += "<tr>";
 							html += "<td>" + list[i].pk.alertType.name
 									+ "</td>";
-							html += "<td><a href='${pageContext.request.contextPath}/admin//alertCause/edit.htm?alertCauseId="
+							html += "<td><a href='${pageContext.request.contextPath}/admin/alertCause/edit.htm?alertCauseId="
 								+ list[i].pk.alertCause.id
 								+ "&alertTypeId="
 								+ list[i].pk.alertType.id
@@ -90,6 +91,7 @@ function searchData() {
 				},
 				complete: function(){
 					hideLoading();
+					$("#causeTypeError").css("display", "none");
 				}
 			});
 }

@@ -55,7 +55,7 @@ public class V17eNavigationPreparer implements ViewPreparer {
 				: (String) s.getAttribute("javax.servlet.forward.servlet_path");
 		testRequestUrl = testRequestUrl.equals("/admin/scheduleF/save.htm") ? "/admin/scheduleF/manage.htm"
 				: (testRequestUrl.equals("/admin/alertCause/add.htm")
-						|| testRequestUrl.equals("/admin/alertCause/save.htm")
+						|| testRequestUrl.equals("/admin/alertCause/save.htm")|| testRequestUrl.equals("/admin/alertCause/edit.htm")
 						|| testRequestUrl
 								.equals("/admin/alertCause/update.htm") ? "/admin/alertCause/list.htm"
 						: (testRequestUrl

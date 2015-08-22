@@ -47,7 +47,6 @@ public class DataExceptionCauseAction extends BaseActionWithSession implements
 	@SkipValidation
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String add() {
-		initAddPageParameters();
 		return Action.SUCCESS;
 	}
 
