@@ -19,7 +19,7 @@ use Log::Dispatch::FileRotate;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $scheduleFScopeName )
+  $scheduleFScopeName, $hardwareId )
    = @_;
  my $self = {
   _connection         => Database::Connection->new('trails'),
@@ -30,6 +30,7 @@ sub new {
   _machineLevel       => $machineLevel,
   _allocMethodId      => $allocMethodId,
   _scheduleFScopeName => $scheduleFScopeName,
+  _hardwareId         => $hardwareId,
   _config             => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
 
@@ -97,6 +98,12 @@ sub cachedParentGuids {
  my $self = shift;
  $self->{_cachedParentGuids} = shift if scalar @_ == 1;
  return $self->{_cachedParentGuids};
+}
+
+sub hardwareId {
+ my $self = shift;
+ $self->{_hardwareId} = shift if scalar @_ == 1;
+ return $self->{_hardwareId};
 }
 
 sub appendData {
@@ -247,7 +254,7 @@ sub traverseUp {
   $self->traverseUp($scarletParentsGuids);
 
   dlog("GET $uri");
-  dlog( scalar @{$scarletParentsGuids} . ' guid(s) found' );    
+  dlog( scalar @{$scarletParentsGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletParentsGuids} ) {
    $self->guids->{$id} = 1;
    dlog( 'parentGuid=' . $id );
@@ -302,16 +309,39 @@ sub tryToReconcile {
   }
  }
 
- my $query = ' select is . id from alert_unlicensed_sw aus,
-			  installed_software is,
-			  kb_definition kbd where aus . installed_software_id = is . id
-			  and is . software_id      = kbd . id
-			  and aus . open            = 1
-			  and is . software_lpar_id =
-			      ' . $installedSoftware->softwareLparId . '
-			  and is . id != ' . $installedSoftware->id . '
-			  and kbd
-			  . guid in(' . $guids . ') with ur ';
+ my $query = undef;
+ if ( $self->machineLevel == 1 ) {
+  $query = 'select is.id
+from
+alert_unlicensed_sw aus, 
+installed_software is,
+kb_definition kbd,
+hw_sw_composite hsc, 
+hardware_lpar hl,
+hardware h
+where aus.installed_software_id = is.id
+and is.software_id = kbd.id
+and is.software_lpar_id = hsc.software_lpar_id
+and hsc.hardware_lpar_id = hl.id
+and hl.hardware_id = h.id
+and aus.open = 1
+and h.id =  ?
+and is.id <> ?
+and kbd.guid in (' . $guids . ')';
+ }
+ else {
+  $query = ' select is.id 
+from 
+alert_unlicensed_sw aus,
+installed_software is,
+kb_definition kbd 
+where aus.installed_software_id = is.id
+and is.software_id = kbd.id
+and aus.open= 1
+and is.software_lpar_id =?
+and is.id != ?
+and kbd.guid in(' . $guids . ') with ur ';
+ }
 
  dlog( ' getInstalledSoftwareIdQuery = ' . $query );
 
@@ -319,7 +349,14 @@ sub tryToReconcile {
  $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
  my $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
  $sth->bind_columns( \$installedSwId );
- $sth->execute();
+
+ if ( $self->machineLevel == 1 ) {
+  $sth->execute( $self->hardwareId, $installedSoftware->id );
+ }
+ else {
+  $sth->execute( $installedSoftware->softwareLparId, $installedSoftware->id )
+    ;    
+ }
 
  my @isIds;
  while ( $sth->fetchrow_arrayref ) {
