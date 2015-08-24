@@ -177,7 +177,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=alertContractScopeCNDBID.xls");
+					"attachment; filename=alertContractScope" + account.getAccount() + ".xls");
 			reportService.getAlertWithDefinedContractScopeReport(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream());

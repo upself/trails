@@ -1485,8 +1485,7 @@ public class ReportServiceImpl implements ReportService {
 				"CC.id as cc_id " +
 
 				"FROM EAADMIN.V_Alerts VA " +
-					"join EAADMIN.ALERT_UNLICENSED_SW AUS on AUS.id = VA.Fk_id " +
-					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = AUS.installed_software_id " +
+					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id " +
 					"join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id " +
 					"join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id " +
 					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
@@ -1505,7 +1504,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		
-		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope CNDBID Report");
+		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report");
 		printHeader(ALERT_WITH_DEFINED_SCOPE_REPORT_NAME, pAccount.getAccount(),
 				ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
@@ -1513,7 +1512,7 @@ public class ReportServiceImpl implements ReportService {
 			int k = 1;
             if (i>65535){
                 k++;
-				sheet = phwb.createSheet("Alert Contract Scope CNDBID Report"+k);
+				sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report"+k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
