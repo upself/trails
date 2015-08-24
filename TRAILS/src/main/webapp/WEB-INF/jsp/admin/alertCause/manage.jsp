@@ -24,6 +24,10 @@
 						function() {
 							window.location.href = "${pageContext.request.contextPath}/admin/alertCause/list.htm";
 						});
+		$("#responsibility").change(function() {
+			var id = $(this).children(":selected").attr("id");
+			$("#responsibilityId").val(id);
+		});
 	});
 
 	function initRespList() {
@@ -42,7 +46,10 @@
 				var list = data.dataList;
 				for (var i = 0; i < list.length; i++) {
 					$('#responsibility').append(
-							$("<option></option>").attr("value", list[i].name)
+							$("<option></option>").attr({
+								"value" : list[i].name,
+								"id" : list[i].id
+							})
 									.text(list[i].name));
 				}
 			},
