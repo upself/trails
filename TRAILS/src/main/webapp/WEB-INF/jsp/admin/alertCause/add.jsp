@@ -221,6 +221,7 @@
 	}
 </script>
 <p class="confidential">IBM Confidential</p>
+<br/>
 <div id="dialog"></div>
 <div class="ibm-container">
 	<div class="ibm-container-body">
