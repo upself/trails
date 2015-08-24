@@ -20,10 +20,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "ALERT_UNLICENSED_SW")
 @NamedQueries({
         @NamedQuery(name = "alertUnlicensedSwTotalByAccountAndTypeScoped", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND AUS.type = :type AND AUS.open = 1"),
-        @NamedQuery(name = "alertUnlicensedSwListSelectedScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.id IN (:alertUnlicensedSwIdList)"),
-        @NamedQuery(name = "alertUnlicensedSwListAllScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.account = :account AND AUS.installedSoftware.software.softwareId IN (:softwareIdList)"),
-        @NamedQuery(name = "alertUnlicensedSwListByIdScoped", query = "FROM AlertUnlicensedSw WHERE id IN (:idList) ORDER BY creationTime"),
-        @NamedQuery(name = "alertUnlicensedSwListByOwnerScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.account = :account AND AUS.installedSoftware.software.softwareId IN (:softwareIdList) AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.owner = :owner") })
+//        @NamedQuery(name = "alertUnlicensedSwListSelectedScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.id IN (:alertUnlicensedSwIdList)"),
+//        @NamedQuery(name = "alertUnlicensedSwListAllScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.account = :account AND AUS.installedSoftware.software.softwareId IN (:softwareIdList)"),
+//        @NamedQuery(name = "alertUnlicensedSwListByIdScoped", query = "FROM AlertUnlicensedSw WHERE id IN (:idList) ORDER BY creationTime"),
+//        @NamedQuery(name = "alertUnlicensedSwListByOwnerScoped", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.account = :account AND AUS.installedSoftware.software.softwareId IN (:softwareIdList) AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.owner = :owner")
+        })
 public class AlertWithDefinedContractScope extends AbstractDomainEntity {
     private static final long serialVersionUID = 483944361386206605L;
 

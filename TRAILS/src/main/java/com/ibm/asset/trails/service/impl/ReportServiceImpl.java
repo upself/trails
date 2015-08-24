@@ -1485,8 +1485,7 @@ public class ReportServiceImpl implements ReportService {
 				"CC.id as cc_id " +
 
 				"FROM EAADMIN.V_Alerts VA " +
-					"join EAADMIN.ALERT_UNLICENSED_SW AUS on AUS.id = VA.Fk_id " +
-					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = AUS.installed_software_id " +
+					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id " +
 					"join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id " +
 					"join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id " +
 					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
@@ -1495,10 +1494,6 @@ public class ReportServiceImpl implements ReportService {
 				"WHERE VA.Customer_Id = :customerId AND  VA.Type = 'UNDEFINED_SCOPE' AND VA.Open = 1 " +
 
 			 "ORDER BY sl.name ASC");
-		
-		System.out.println("StringBuffer sb : " + sb);
-		
-		System.out.println("customerId: " + pAccount.getId());
 		
 		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(sb.toString())
@@ -1521,6 +1516,9 @@ public class ReportServiceImpl implements ReportService {
 			i++;
 		}
 		// lsrReport.close();
+		
+		
+		//WIP to solve hardcoded number values usage for vCauseCodeSummary- ".setParameter("alertTypeId", new Long(17)).getResultList()" 
 		
 //		@SuppressWarnings("unchecked")
 //		Iterator<Object[]> getAlertTypeCode = getEntityManager()
