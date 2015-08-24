@@ -1495,10 +1495,6 @@ public class ReportServiceImpl implements ReportService {
 
 			 "ORDER BY sl.name ASC");
 		
-		System.out.println("StringBuffer sb : " + sb);
-		
-		System.out.println("customerId: " + pAccount.getId());
-		
 		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(sb.toString())
 				.setLong("customerId", pAccount.getId())
@@ -1520,6 +1516,9 @@ public class ReportServiceImpl implements ReportService {
 			i++;
 		}
 		// lsrReport.close();
+		
+		
+		//WIP to solve hardcoded number values usage for vCauseCodeSummary- ".setParameter("alertTypeId", new Long(17)).getResultList()" 
 		
 //		@SuppressWarnings("unchecked")
 //		Iterator<Object[]> getAlertTypeCode = getEntityManager()
