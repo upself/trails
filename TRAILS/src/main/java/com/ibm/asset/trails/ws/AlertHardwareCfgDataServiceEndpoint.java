@@ -168,7 +168,7 @@ public class AlertHardwareCfgDataServiceEndpoint {
 			Account account = accountService.getAccount(accountId);
 			
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfigCNDBID.xls");
+			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfig" + account.getAccount() + ".xls");
 			reportService.getAlertHardwareCfgDataReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
 			
 		}catch(Exception e){
