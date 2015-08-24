@@ -83,7 +83,7 @@ public class AdminCauseCodeServiceEndpoin {
 			AlertTypeCause atcause,
 			@Context HttpServletRequest request) {
 		Long alertCauseId = atcause.getPk().getAlertCause().getId();
-		String alertCauseName =  atcause.getPk().getAlertCause().getName();
+		String alertCauseName =  atcause.getPk().getAlertCause().getName().trim();
 		Long responsibilityId = atcause.getPk().getAlertCause().getAlertCauseResponsibility().getId();
 		Long alertTypeId = atcause.getPk().getAlertType().getId();
 		String alertTypeCauseStatus = atcause.getStatus();
