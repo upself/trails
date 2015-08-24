@@ -618,7 +618,7 @@ sub validateMachineTypeMatch {
 
 sub validateLicenseSoftwareMap {
 	my ( $self, $swMapSoftwareId, $isManual, $isSoftwareId, $reconcileId,
-		$licenseId, $extSrcId, $guid )
+		$licenseId, $extSrcId,$isId )
 	  = @_;
 
 	my $scarletIs =
@@ -627,7 +627,7 @@ sub validateLicenseSoftwareMap {
 	if ( defined $swMapSoftwareId ) {
 		if ( $isManual == 0 ) {
 			if ( $isSoftwareId != $swMapSoftwareId
-				&& not $scarletIs->existInScarlet( $extSrcId, $guid )
+				&& not $scarletIs->existInScarlet( $extSrcId,$isId )
 			  )    
 			{
 				dlog("isSoftwareId=$isSoftwareId");

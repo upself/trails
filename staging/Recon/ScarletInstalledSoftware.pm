@@ -158,8 +158,9 @@ sub httpGetScarletGuids {
 }
 
 sub existInScarlet {
- my ( $self, $extSrcId, $guid ) = @_;
+ my ( $self, $extSrcId, $isId ) = @_;
 
+ dlog("existInScarlet extSrcId=$extSrcId");
  my $swcmLicenseId = undef;
  if ( $extSrcId =~ /SWCM_(\d*)/ ) {
   $swcmLicenseId = $1;
@@ -170,26 +171,26 @@ sub existInScarlet {
 
  my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
  my $uri             = URI->new($scarletGuidsApi);
- $uri->query_form(
-  'componentGuid' => $guid,
-  'licenseId'     => $swcmLicenseId
- );
+ dlog($uri);
+ $uri->query_form( 'licenseId' => $swcmLicenseId );
+
  my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
 
+ my $guid = $self->getGuiIdByInstalledSoftwareId($isId);
+ dlog( 'This guid=' . $guid );
+     
  foreach my $id ( @{$scarletGuids} ) {
-  next if ( $id eq $guid );
+  return 1 if ( $id eq $guid );
 
   $self->guids->{$id} = 1;
   dlog( 'guid=' . $id );
  }
 
- $self->traverseUp( keys %{ $self->guids } );
+ $self->traverseUp( [ keys %{ $self->guids } ] );
 
- foreach my $id ( keys %{ $self->guids } ) {
-  return 1 if ( $id eq $guid );
- }
+ return 1 if ( $self->guids->{$guid} );
 
- return 0;
+   return 0;
 }
 
 sub setUpGuidsFromScarlet {
@@ -286,9 +287,14 @@ sub getGuiIdByInstalledSoftwareId {
 
 sub tryToReconcile {
 
- my ( $self, $installedSoftware ) = @_;
+ my ( $self, $isObj ) = @_;
 
- $self->setUpGuidsFromScarlet( $installedSoftware->id );
+ if ( $self->reconcileTypeId != 5 ) {
+  $self->info( 'NOT_AUTO:' . $isObj->toString );
+  return;
+ }
+
+ $self->setUpGuidsFromScarlet( $isObj->id );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {
@@ -351,11 +357,10 @@ and kbd.guid in(' . $guids . ') with ur ';
  $sth->bind_columns( \$installedSwId );
 
  if ( $self->machineLevel == 1 ) {
-  $sth->execute( $self->hardwareId, $installedSoftware->id );
+  $sth->execute( $self->hardwareId, $isObj->id );
  }
  else {
-  $sth->execute( $installedSoftware->softwareLparId, $installedSoftware->id )
-    ;    
+  $sth->execute( $isObj->softwareLparId, $isObj->id );
  }
 
  my @isIds;
@@ -367,7 +372,7 @@ and kbd.guid in(' . $guids . ') with ur ';
  dlog( scalar @isIds . ' matched installed software found' );
 
  if ( scalar @isIds == 0 ) {
-  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $installedSoftware->toString );
+  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $isObj->toString );
  }
 
  foreach my $isId (@isIds) {
@@ -375,39 +380,43 @@ and kbd.guid in(' . $guids . ') with ur ';
   $is->id($isId);
   $is->getById( $self->connection );
 
-  my $installedSoftware =
+  my $licensingInstalledSoftware =
     new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
 
   ###reuse the validate of installed software to check if it's in scope.
-  my $validation = $installedSoftware->validateScope();
+  my $validation = $licensingInstalledSoftware->validateScope();
 
   #validate code 1, in scope installed software without any reconcile.
   if ( $validation->validationCode == 1 ) {
 
    if (
-    not $installedSoftware->validateScheduleFScope( $self->scheduleFScopeName )
+    not $licensingInstalledSoftware->validateScheduleFScope(
+     $self->scheduleFScopeName
+    )
      )
    {
-    $self->info( 'NO_SCHEDULE_F:' . $installedSoftware->toString );
+    $self->info(
+     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
    }
    dlog("ScheduleF defined and matched");
 
    my $reconcile =
-     $installedSoftware->createReconcile( $self->reconcileTypeId,
+     $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
 
-   $self->info( 'SUCCESS:' . $reconcile );
+   $self->info( 'SUCCESS:' . $reconcile . ' ref ' . $isObj->toString );
 
    foreach my $ulId ( @{ $self->usedLicenses } ) {
-    $installedSoftware->createReconcileUsedLicenseMap( $reconcile, $ulId );
+    $licensingInstalledSoftware->createReconcileUsedLicenseMap( $reconcile,
+     $ulId );
    }
 
-   $installedSoftware->closeAlertUnlicensedSoftware(1);
+   $licensingInstalledSoftware->closeAlertUnlicensedSoftware(1);
 
   }
   else {
-   $self->info( 'VALIDATE_FAIL:' . $installedSoftware->toString );
+   $self->info( 'VALIDATE_FAIL:' . $is->toString . ' ref ' . $isObj->toString );
   }
  }
 
