@@ -150,9 +150,9 @@
 					<div id="ibm-leadspace-head" class="ibm-alternate">
 						<div id="ibm-leadspace-body">
 							<div class="ibm-columns">
-								<div class="ibm-col-1-1">
+								<div class="ibm-col-1-1"  style="margin-left:-20px">
 									<br>
-									<h6><tmp:insertAttribute name="contentTitle" /></h6>
+									<h1><tmp:insertAttribute name="contentTitle" /></h1>
 								</div>
 							</div>
 						</div>

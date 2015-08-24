@@ -1386,26 +1386,38 @@
 		<put-attribute name="description" value="TRAILS manage schedule F" />
 		<put-attribute name="keywords" value="TRAILS manage schedule F" />
 	</definition>
-
+<!-- 
 	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.w3OneColumnLayout">
+ -->
+ 	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.v17e.w3OneColumnLayout">
+ 	<put-attribute name="contentTitle" value="PVU mapping" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/listPvu.jsp" />
 		<put-attribute name="description" value="TRAILS PVU list" />
 		<put-attribute name="keywords" value="TRAILS PVU list" />
 	</definition>
-
-	<definition name="tiles.admin.pvuMapping.mappingPvu"
-		extends="tiles.w3OneColumnLayout">
+<!-- 
+	<definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.w3OneColumnLayout">
+ -->
+ 	<definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.v17e.w3OneColumnLayout">
+ 	<put-attribute name="contentTitle" value="PVU mapping" />
+		<!-- 
 		<put-attribute name="headInsert" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/mappingHead.jsp" />
+		 -->
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/mapping.jsp" />
 		<put-attribute name="description" value="TRAILS PVU mapping" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping" />
 	</definition>
-
+	
+	<!-- 
 	<definition name="tiles.admin.pvuMapping.updateSuccess"
 		extends="tiles.w3OneColumnLayout">
+	 -->
+	 	<definition name="tiles.admin.pvuMapping.updateSuccess"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Update PVU mapping result" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/pvuUpdtSuss.jsp" />
 		<put-attribute name="description" value="TRAILS PVU mapping success" />
