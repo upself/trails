@@ -4,9 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -20,7 +18,6 @@ import com.ibm.asset.trails.domain.AlertCause;
 import com.ibm.asset.trails.domain.AlertCauseResponsibility;
 import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.domain.AlertTypeCause;
-import com.ibm.asset.trails.domain.PriorityISVSoftwareDisplay;
 import com.ibm.asset.trails.service.AlertCauseResponsibilityService;
 import com.ibm.asset.trails.service.AlertTypeCauseService;
 import com.ibm.asset.trails.service.DataExceptionCauseService;
@@ -92,19 +89,19 @@ public class AdminCauseCodeServiceEndpoin {
 		String alertTypeCauseStatus = atcause.getStatus();
 		if (alertCauseId == null || alertCauseId == 0) {
 
-			if (null == alertCauseName || "".equals(alertCauseName.trim())) {
+			if (null == alertCauseName || "".equals(alertCauseName)) {
 				return WSMsg.failMessage("Name is required");
 			}
 
 			AlertCause alertCause = alertCauseService
-					.findByName(alertCauseName.trim());
+					.findByName(alertCauseName);
 			AlertCauseResponsibility alertCauseResponsibility = alertCauseResponsibilityService
 					.findById(responsibilityId);
 			if (alertCause == null
 					|| !alertCause.getAlertCauseResponsibility().equals(
 							alertCauseResponsibility)) {
 				alertCause = new AlertCause();
-				alertCause.setName(alertCauseName.trim());
+				alertCause.setName(alertCauseName);
 				alertCause.setShowInGui(true);
 				alertCause
 						.setAlertCauseResponsibility(alertCauseResponsibility);
@@ -139,7 +136,7 @@ public class AdminCauseCodeServiceEndpoin {
 							+ alertCause.getId().toString() + "]");
 		} else {
 
-			if (alertCauseName == null || "".equals(alertCauseName.trim())) {
+			if (alertCauseName == null || "".equals(alertCauseName)) {
 				return WSMsg.failMessage("Name is required");
 			}
 
@@ -148,15 +145,15 @@ public class AdminCauseCodeServiceEndpoin {
 					.findById(responsibilityId);
 
 			boolean changed = false;
-			if (!alertCause.getName().equalsIgnoreCase(alertCauseName.trim())
+			if (!alertCause.getName().equalsIgnoreCase(alertCauseName)
 					|| !alertCause.getAlertCauseResponsibility().equals(
 							alertCauseResponsibility)) {
 
 				AlertCause exists = alertCauseService.findByNameResposibility(
-						alertCauseName.trim(), alertCauseResponsibility);
+						alertCauseName, alertCauseResponsibility);
 
 				if (exists == null) {
-					alertCause.setName(alertCauseName.trim());
+					alertCause.setName(alertCauseName);
 					alertCause
 							.setAlertCauseResponsibility(alertCauseResponsibility);
 					alertCauseService.update(alertCause);
