@@ -220,7 +220,7 @@
 		$('#loading').hide();
 	}
 </script>
-<p class="confidential">IBM Confidential</p>
+<p style="font-weight:bold">IBM Confidential</p> 
 <br/>
 <div id="dialog"></div>
 <div class="ibm-container">

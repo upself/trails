@@ -5,7 +5,7 @@
 	<s:fielderror />
 </s:if>
 
-<p class="confidential">IBM Confidential</p>
+<p style="font-weight:bold">IBM Confidential</p> 
 <br />
 <p>Below is a list of the cause codes in the application. Press one
 	of the links to edit the cause code details. You can also add a new
@@ -27,8 +27,6 @@
 				</div>
 			</div>
 		</div>
-		<br>
-		<br>
 		<table id="alertcauseTable" cellspacing="0" cellpadding="0" border="0"
 			class="ibm-data-table ibm-sortable-table" summary="Cause Code list">
 			<thead>
