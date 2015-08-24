@@ -1420,7 +1420,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		
-		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config CNDBID Report");
+		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config "+ pAccount.getAccount() +" Report");
 		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccount(),
 				ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
@@ -1428,7 +1428,7 @@ public class ReportServiceImpl implements ReportService {
 			int k = 1;
             if (i>65535){
                 k++;
-				sheet = phwb.createSheet("Alert Hardware Config CNDBID Report"+k);
+				sheet = phwb.createSheet("Alert Hardware Config " + pAccount.getAccount() + " Report"+k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
