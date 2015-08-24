@@ -16,7 +16,7 @@
 
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<div style="height: 180px; width: 100%; float: left">
+		<div style="height: 80px; width: 100%; float: left">
 			<div style="float: right">
 				<div style="width: 200px">
 					<p class='ibm-button-link'>
