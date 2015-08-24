@@ -91,7 +91,7 @@ function searchData(){
 				var html = '';
 				var list = result.data.list;
 				if(null == list || list == undefined || list.length == 0){
-					html += "<tr><td colspan='7' align='center'>No data found</td></tr>"
+					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
 				}else{
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
