@@ -487,19 +487,11 @@
 	</definition>
 	
 	<definition name="tiles.alerts.alertWithDefinedContractScope.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+		<put-attribute name="contentTitle" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertWithDefinedContractScope.jsp" />
-		<put-attribute name="description" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
-		<put-attribute name="keywords" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
-	</definition>
-	
-	<definition name="tiles.alerts.alertWithDefinedContractScope.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertWithDefinedContractScope.jsp" />
-		<put-attribute name="description" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
-		<put-attribute name="keywords" value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+		<put-attribute name="description" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+		<put-attribute name="keywords" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
 	</definition>
 
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
