@@ -374,28 +374,6 @@ sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (s
 	return ( 'queryInsSwByParentProduct', $query, \@fields );
 }
 
-sub ibmArray {
-	my $self = shift;
-
-	my @ibmArray = (
-		'IBM',
-		'IBM_ITD',
-		'IBM FileNet',
-		'IBM Tivoli',
-		'Informix',
-		'Rational Software Corporation',
-		'Ascential Software',
-		'IBM WebSphere',
-		'Digital CandleWebSphere',
-		'IBM Rational',
-		'Lotus',
-		'Candle',
-		'Tivoli'
-	);
-
-	return @ibmArray;
-}
-
 sub connection {
 	my $self = shift;
 	$self->{_connection} = shift if scalar @_ == 1;
