@@ -49,7 +49,7 @@ public class DataExceptionTypeDaoJpa extends
 					.setParameter("account", accountId)
 					.setHint("org.hibernate.cacheable", Boolean.TRUE)
 					.getResultList();
-			
+
 			// test to try out when the query is reverted back
 			
 //			System.out.println("result before: " + result);
