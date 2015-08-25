@@ -43,10 +43,20 @@ public class DataExceptionTypeDaoJpa extends
 		} else {
 			result = entityManager
 					.createQuery(
-							"select new map('ALERT' as type, a.type as code, a.displayName as name, count(a.id) as total) from AlertView a where a.account.id = :account and a.open = 1 group by 1, a.type, a.displayName order by count(a.id) desc")
+							"select new map('ALERT' as type, a.type as code, a.displayName as name, count(a.id) as total) from AlertView a where a.displayName not like ('%SOM%') and a.account.id = :account and a.open = 1 group by 1, a.type, a.displayName order by count(a.id) desc")
 					.setParameter("account", accountId)
 					.setHint("org.hibernate.cacheable", Boolean.TRUE)
 					.getResultList();
+			
+			System.out.println("result before: " + result);
+			for (int i = 0; i < result.size(); i++) {
+				System.out.println("result.get(i).contains(\"SOM\") " + i + " " + result.get(i).get("name").contains("SOM"));
+				if (result.get(i).get("name").contains("SOM")) {
+					result.remove(i);
+				}
+			}
+			System.out.println("result after : " + result);
+			
 		}
 		return result;
 	}
