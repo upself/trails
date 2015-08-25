@@ -217,7 +217,7 @@ sub validate {
 			$licenseAllocationView->rId,
 			$self->license->id,
 			$self->license->extSrcId,
-			$licenseAllocationView->guid
+			$licenseAllocationView->isId
 		);
 		$rValid *= $self->validateMaintenanceExpiration(
 			$licenseAllocationView->mtType,

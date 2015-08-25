@@ -77,7 +77,8 @@ sub setUp {
 
  #Get correspond pvu value under specific processor brand/model.
  my $processorCount = 0;
- if ( $self->installedSoftwareReconData->hProcCount > 0 ) {
+ if ( defined $self->installedSoftwareReconData->hProcCount &&
+      $self->installedSoftwareReconData->hProcCount > 0 ) {
   $processorCount = $self->installedSoftwareReconData->hProcCount;
  }
 
