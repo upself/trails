@@ -1491,8 +1491,9 @@ public class ReportServiceImpl implements ReportService {
 					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
 					"join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id " +
 
-				"WHERE VA.Customer_Id = :customerId AND  VA.Type = 'UNDEFINED_SCOPE' AND VA.Open = 1 " +
-
+				"WHERE VA.Customer_Id = :customerId AND " +
+				"VA.Type = 'UNDEFINED_SCOPE' AND " +
+				"VA.Open = 1 and CC.alert_type_id=17 " +
 			 "ORDER BY sl.name ASC");
 		
 		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
