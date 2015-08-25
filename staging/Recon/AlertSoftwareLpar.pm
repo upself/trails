@@ -73,7 +73,7 @@ sub openAlert {
     $alert->open(1);
     $alert->save( $self->connection );
     
-    Recon::CauseCode::updateCCtable( $alert->id, "SW_LPAR", $self->connection);
+    Recon::CauseCode::resetCCcode( $alert->id, "SW_LPAR", $self->connection);
 }
 
 sub closeAlert {

@@ -2222,6 +2222,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
+		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
 		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
@@ -2280,6 +2281,16 @@ sub getInstalledSoftwareReconData {
 															  
     $installedSoftwareReconData->scopeName ( $scopename_temp );
     $installedSoftwareReconData->scheduleFlevel ( $priofound_temp ); # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
+    
+    if ( not defined $scopename_temp ) {
+		$installedSoftwareReconData->expectedAlertType ( "SCOPE" );
+		dlog("Expected alert for unlicensed SW is type SCOPE... no ScheduleF scope found.");
+	} else {
+		$installedSoftwareReconData->expectedAlertType (
+					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
+																	$installedSoftwareReconData->sMfgId,
+																	$installedSoftwareReconData->cId ) );
+	}
 
 	###Execute extended query of all inst sw for this lpar if in category,
 	###a parent of a bundle, or a child in a bundle.
@@ -2440,6 +2451,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  sPriority
 	  sLevel
 	  sVendorMgd
+	  sMfgId
 	  sMfg
 	  scName
 	  bpId
@@ -2486,6 +2498,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.priority
             ,s.level
             ,s.vendor_managed
+            ,m.id
             ,m.name
             ,sc.software_category_name
             ,bp.id
@@ -2591,14 +2604,7 @@ sub closeAlertUnlicensedSoftware {
 	$oldAlert->remoteUser( $alert->remoteUser );
 	$oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-	}
-	else {
-		$alert->type('ISV');
-	}
+	$alert->type( $self->installedSoftwareReconData->expectedAlertType );
 	$alert->comments('Auto Close');
 	$alert->open(0);
 
@@ -2620,28 +2626,6 @@ sub closeAlertUnlicensedSoftware {
 	}	
 
 	dlog("end closeAlertUnlicensedSoftware");
-}
-
-sub ibmArray {
-	my $self = shift;
-
-	my @ibmArray = (
-		'IBM',
-		'IBM_ITD',
-		'IBM FileNet',
-		'IBM Tivoli',
-		'Informix',
-		'Rational Software Corporation',
-		'Ascential Software',
-		'IBM WebSphere',
-		'Digital CandleWebSphere',
-		'IBM Rational',
-		'Lotus',
-		'Candle',
-		'Tivoli'
-	);
-
-	return @ibmArray;
 }
 
 sub addChildrenToQueue {
@@ -3026,7 +3010,6 @@ sub recordAlertUnlicensedSoftwareHistory {
 
 sub openAlertUnlicensedSoftware {
 	my $self = shift;
-	my $CCalertType=0;
 	dlog("begin openAlertUnlicensedSoftware");
 
 	###Instantiate alert object.
@@ -3047,16 +3030,7 @@ sub openAlertUnlicensedSoftware {
 	$oldAlert->remoteUser( $alert->remoteUser );
 	$oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-		$CCalertType=7;
-	}
-	else {
-		$alert->type('ISV');
-		$CCalertType=8;
-	}
+	$alert->type( $self->installedSoftwareReconData->expectedAlertType );
 	$alert->comments('Auto Open');
 	$alert->open(1);
 
@@ -3065,18 +3039,20 @@ sub openAlertUnlicensedSoftware {
 			$alert->creationTime( currentTimeStamp() );
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+			Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);
 		}
 		elsif ( $oldAlert->type ne $alert->type ) {
+			dlog("Alert type has changed, creating a new history record and resetting the cause code.");
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+			Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);
 		}
 	}
 	else {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
+		Recon::CauseCode::resetCCcode ( $alert->id, "NOLIC", $self->connection);
 	}
-	
-	Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
 
 	dlog("end openAlertUnlicensedSoftware");
 }

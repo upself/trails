@@ -153,6 +153,7 @@ sub getInstalledSoftwareReconData {
 #		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 #		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
+		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
 		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 #		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
@@ -164,6 +165,11 @@ sub getInstalledSoftwareReconData {
 
 
 #		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
+
+		$installedSoftwareReconData->expectedAlertType (
+					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
+																	$installedSoftwareReconData->sMfgId,
+																	$installedSoftwareReconData->cId ) );
 
 	}
 
@@ -187,6 +193,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  sName
 	  sStatus
 	  sLevel
+	  sMfgId
 	  sMfg
 	  rId
 	);
@@ -205,6 +212,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.software_name
             ,s.status
             ,s.level
+            ,m.id
             ,m.name
             ,r.id
         from
@@ -260,14 +268,7 @@ sub closeAlertUnlicensedSoftware {
 	$oldAlert->remoteUser( $alert->remoteUser );
 	$oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-	}
-	else {
-		$alert->type('ISV');
-	}
+	$alert->type($self->installedSoftwareReconData->expectedAlertType);
 	$alert->comments('Auto Close');
 	$alert->open(0);
 
@@ -276,10 +277,10 @@ sub closeAlertUnlicensedSoftware {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
+#		elsif ( $oldAlert->type ne $alert->type ) {
+#			$alert->save( $self->connection );
+#			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+#		}
 		Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
 	}
 	elsif ( $createNew == 1 ) {
@@ -301,63 +302,6 @@ sub recordAlertUnlicensedSoftwareHistory {
 	$history->open( $alert->open );
 	$history->recordTime( $alert->recordTime );
 	$history->save( $self->connection );
-}
-
-sub openAlertUnlicensedSoftware {
-	my $self = shift;
-	my $CCalertType=0;
-	dlog("begin openAlertUnlicensedSoftware");
-
-	###Instantiate alert object.
-	my $alert = new Recon::OM::AlertUnlicensedSoftware();
-
-	###Retrieve alert by installed software.
-	$alert->installedSoftwareId( $self->installedSoftware->id );
-	$alert->getByBizKey( $self->connection );
-	dlog( "alert=" . $alert->toString() );
-
-	my $oldAlert = new Recon::OM::AlertUnlicensedSoftware();
-	$oldAlert->id( $alert->id );
-	$oldAlert->installedSoftwareId( $alert->installedSoftwareId );
-	$oldAlert->comments( $alert->comments );
-	$oldAlert->type( $alert->type );
-	$oldAlert->open( $alert->open );
-	$oldAlert->creationTime( $alert->creationTime );
-	$oldAlert->remoteUser( $alert->remoteUser );
-	$oldAlert->recordTime( $alert->recordTime );
-
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-		$CCalertType=7;
-	}
-	else {
-		$alert->type('ISV');
-		$CCalertType=8;
-	}
-	$alert->comments('Auto Open');
-	$alert->open(1);
-
-	if ( defined $alert->id ) {
-		if ( $oldAlert->open == 0 ) {
-			$alert->creationTime( currentTimeStamp() );
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-		}
-	}
-	else {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
-	}
-	
-	Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
-
-	dlog("end openAlertUnlicensedSoftware");
 }
 
 sub queueSoftwareCategory { # puts all the installed software, who's category parent 
@@ -428,28 +372,6 @@ sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (s
     ';
 
 	return ( 'queryInsSwByParentProduct', $query, \@fields );
-}
-
-sub ibmArray {
-	my $self = shift;
-
-	my @ibmArray = (
-		'IBM',
-		'IBM_ITD',
-		'IBM FileNet',
-		'IBM Tivoli',
-		'Informix',
-		'Rational Software Corporation',
-		'Ascential Software',
-		'IBM WebSphere',
-		'Digital CandleWebSphere',
-		'IBM Rational',
-		'Lotus',
-		'Candle',
-		'Tivoli'
-	);
-
-	return @ibmArray;
 }
 
 sub connection {
