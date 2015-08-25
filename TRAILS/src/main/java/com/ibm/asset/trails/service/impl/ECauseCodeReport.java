@@ -13,7 +13,7 @@ public enum ECauseCodeReport
 	SW_LPAR("SW LPAR w/o HW LPAR alert report", 5, -1, -1, -1, 8, 9, 10, 11, 12, 13, 14),
 	EXP_SCAN("Outdated SW LPAR alert report", 6, -1, -1, -1,  8, 9, 10, 11, 12, 13, 14), 
 	SOM1B("SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED", 37, -1, -1, -1, 19, 20, 21, 22, 23, 24, 25),
-	SOM3("SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", 17, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+	SOM3("SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", 57, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
 	private String reportName;
 	private long alertTypeId;
