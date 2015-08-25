@@ -32,10 +32,10 @@ public class AlertWithDefinedContractScopeServiceImpl extends
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         
-        List<?> temp = lQuery.getResultList();
-        for (int i = 0; i < temp.size(); i++) {
-        	System.out.println("lQuery : " + lQuery.getResultList().get(i).toString());
-		}
+//        List<?> temp = lQuery.getResultList();
+//        for (int i = 0; i < temp.size(); i++) {
+//        	System.out.println("lQuery : " + lQuery.getResultList().get(i).toString());
+//		}
         
         return (ArrayList) lQuery.getResultList();
     }
@@ -59,10 +59,10 @@ public class AlertWithDefinedContractScopeServiceImpl extends
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Long total(Account account) {
         Query lQuery = super.getEntityManager().createNamedQuery(
-                "alertUnlicensedSwTotalByAccountAndTypeScoped");
+                "alertUnlicensedSwTotalByAccountAndType");
 
         lQuery.setParameter("account", account);
-        lQuery.setParameter("type", "UNDEFINED_SCOPE");
+        lQuery.setParameter("type", "SCOPE");
 
         return ((Long) lQuery.getSingleResult());
     }
@@ -73,7 +73,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 "alertUnlicensedSwTotalByRemoteUser");
 
         lQuery.setParameter("remoteUser", remoteUser);
-        lQuery.setParameter("type", "UNDEFINED_SCOPE");
+        lQuery.setParameter("type", "SCOPE");
 
         return ((Long) lQuery.getSingleResult());
     }
