@@ -18,10 +18,17 @@ sub new {
   _reconcilesToBreak          => undef,
   _deleteQueue                => undef,
   _poolParentCustomers        => undef,
-  _valueUnitsPerCore          => undef
+  _valueUnitsPerCore          => undef,
+  _scarletAllocation          => 0
  };
  bless $self, $class;
  return $self;
+}
+
+sub scarletAllocation {
+ my $self = shift;
+ $self->{_scarletAllocation} = shift if scalar @_ == 1;
+ return $self->{_scarletAllocation};
 }
 
 sub customer {
@@ -659,7 +666,8 @@ sub validateLicenseAllocation {
    ###Validate license software map
    $validation->validateLicenseSoftwareMap( $rec{sId}, 0,
     $self->installedSoftware->softwareId,
-    undef, undef,$rec{extSrcId},$self->installedSoftware->id );
+    $rec{reconcileId}, undef, $self->installedSoftware->id );
+   $self->scarletAllocation(1) if ( $validation->scarletAllocation ); 
 
    ###Validate try and buy
    $validation->validateTryAndBuy( $rec{tryAndBuy}, $rec{capType}, undef, 0 );
@@ -832,7 +840,7 @@ sub validateLicenseAllocation {
 	  }
   }  	
  }
- 
+
  if ( $self->installedSoftwareReconData->rTypeId ==
  $self->reconcileTypeMap->{'Manual license allocation'} ) {
    dlog("reconciled as manual license allocation");
@@ -847,7 +855,7 @@ sub validateLicenseAllocation {
   $sth->bind_columns( map { \$rec{$_} }
      @{ $self->connection->sql->{validateLicenseAllocationFields} } );
   $sth->execute( $self->installedSoftware->id );
-  
+
   while ( $sth->fetchrow_arrayref ) {
    logRec( 'dlog', \%rec );
    
@@ -856,8 +864,8 @@ sub validateLicenseAllocation {
 					
    ###Validate license status
    $validation->validateLicense( $rec{licenseStatus}, undef );
-	}
-   return 0 if ( $validation->validationCode == 0 );
+  }
+  return 0 if ( $validation->validationCode == 0 );
  }
 
  return 1;
@@ -876,6 +884,7 @@ sub queryValidateLicenseAllocation {
    capType
    licenseType
    machineLevel
+   reconcileId
    tryAndBuy
    expireDate
    pool
@@ -898,6 +907,7 @@ sub queryValidateLicenseAllocation {
             ,l.cap_type
             ,l.lic_type
             ,r.machine_level
+            ,r.id
             ,l.try_and_buy
             ,l.expire_date
             ,l.pool

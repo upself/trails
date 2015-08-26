@@ -77,8 +77,9 @@ sub setUp {
 
  #Get correspond pvu value under specific processor brand/model.
  my $processorCount = 0;
- if ( defined $self->installedSoftwareReconData->hProcCount &&
-      $self->installedSoftwareReconData->hProcCount > 0 ) {
+ if ( defined $self->installedSoftwareReconData->hProcCount
+  && $self->installedSoftwareReconData->hProcCount > 0 )
+ {
   $processorCount = $self->installedSoftwareReconData->hProcCount;
  }
 
@@ -135,6 +136,26 @@ sub recon {
  if ( $validation->isValid == 1 ) {
   dlog("Installed software is reconciled and valid, closing alert");
   $self->closeAlertUnlicensedSoftware(1);
+
+  my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+
+  #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
+  if (
+   $self->installedSoftwareReconData->rTypeId ==    
+   $reconcileTypeMap->{'Automatic license allocation'}
+   && not $validation->scarletAllocation
+    )
+  {
+   dlog("Perform scarlet allocation");
+   my $scarletIs = new Recon::ScarletInstalledSoftware();
+   $scarletIs->scheduleFScopeName(
+    $self->installedSoftwareReconData->scopeName );
+   $scarletIs->hardwareId( $self->installedSoftwareReconData->hId );
+   $scarletIs->initByReconcileId( $self->installedSoftwareReconData->rId );
+
+   $scarletIs->tryToReconcile( $self->installedSoftware );
+  }
+
   dlog("returning to caller");
   return 1;
  }
@@ -317,7 +338,7 @@ sub reconcile {
    $reconcileTypeId, $machineLevel, $allocMethodId,
    $self->installedSoftwareReconData->scopeName,
    $self->installedSoftwareReconData->hId
-  );    
+  );
 
   foreach my $lId ( keys %{$licsToAllocate} ) {
    dlog(
@@ -988,7 +1009,7 @@ sub getFreePoolData {
   if ( $licView->pool == 0 ) {
    ###License is not poolable, must equal customer
    if ( $licView->cId != $self->customer->id ) {
-    dlog( "License is not poolable and does not equal the customer id" );
+    dlog("License is not poolable and does not equal the customer id");
     $validation->validationCode(0);
    }
   }
@@ -2852,7 +2873,8 @@ sub createReconcile {
  $reconcile->reconcileTypeId($reconcileTypeId);
  $reconcile->installedSoftwareId( $self->installedSoftware->id );
  $reconcile->parentInstalledSoftwareId($parentInstalledSoftwareId);
- $reconcile->allocationMethodologyId($allocMethodId) if defined($allocMethodId);
+ $reconcile->allocationMethodologyId($allocMethodId)
+   if defined($allocMethodId);
  $reconcile->machineLevel($machineLevel);
  $reconcile->comments('AUTO RECON');
  $reconcile->save( $self->connection );
