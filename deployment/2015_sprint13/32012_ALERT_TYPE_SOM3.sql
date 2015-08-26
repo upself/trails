@@ -1,2 +1,2 @@
-INSERT INTO "EAADMIN"."ALERT_TYPE" (NAME,CODE) VALUES ('SOM3: SW Instances with Defined Contract Scope','SWINSWCS');
-INSERT INTO "EAADMIN"."ALERT_TYPE_CAUSE" (ALERT_TYPE_ID,ALERT_CAUSE_ID,STATUS) VALUES ((select id from eaadmin.alert_type where code = 'SWINSWCS'),1,'ACTIVE');
+INSERT INTO "EAADMIN"."ALERT_TYPE" (NAME,CODE) VALUES ('SOM3: SW Instances with Defined Contract Scope','SWISCOPE');
+INSERT INTO "EAADMIN"."ALERT_TYPE_CAUSE" (ALERT_TYPE_ID,ALERT_CAUSE_ID,STATUS) VALUES ((select id from eaadmin.alert_type where code = 'SWISCOPE'),1,'ACTIVE');
