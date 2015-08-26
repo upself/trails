@@ -11,10 +11,15 @@ use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
 use Config::Properties::Simple;
 use Try::Tiny;
+use Log::Log4perl;
+use Log::Log4perl::Level;
+use Log::Log4perl::Layout;
+use Log::Log4perl::Appender;
+use Log::Dispatch::FileRotate;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $scheduleFScopeName )
+  $scheduleFScopeName, $hardwareId )
    = @_;
  my $self = {
   _connection         => Database::Connection->new('trails'),
@@ -25,9 +30,12 @@ sub new {
   _machineLevel       => $machineLevel,
   _allocMethodId      => $allocMethodId,
   _scheduleFScopeName => $scheduleFScopeName,
+  _hardwareId         => $hardwareId,
   _config             => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
-  )
+
+  ),
+  _cachedParentGuids => {}
  };
  bless $self, $class;
 }
@@ -86,6 +94,18 @@ sub config {
  return $self->{_config};
 }
 
+sub cachedParentGuids {
+ my $self = shift;
+ $self->{_cachedParentGuids} = shift if scalar @_ == 1;
+ return $self->{_cachedParentGuids};
+}
+
+sub hardwareId {
+ my $self = shift;
+ $self->{_hardwareId} = shift if scalar @_ == 1;
+ return $self->{_hardwareId};
+}
+
 sub appendData {
 
  my ( $self, $freePoollData, $licenseId, $usedLicenseId ) = @_;
@@ -111,35 +131,8 @@ sub appendData {
  push @{ $self->usedLicenses }, $usedLicenseId;
 }
 
-sub existInScarlet {
- my ( $self, $extSrcId, $guid ) = @_;
-
- my $swcmLicenseId = undef;
- if ( $extSrcId =~ /SWCM_(\d*)/ ) {
-  $swcmLicenseId = $1;
- }
- else {
-  return 0;
- }
-
- my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
- foreach my $id ( @{$scarletGuids} ) {
-  return 1 if ( $id eq $guid );
- }
-
- return 0;
-}
-
 sub httpGetScarletGuids {
- my ( $self, $swcmLicenseId, $guid ) = @_;
-
- my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');    
- dlog("GET $scarletGuidsApi?componentGuid=$guid&licenseId=$swcmLicenseId");
- my $uri = URI->new($scarletGuidsApi);
- $uri->query_form(
-  'componentGuid' => $guid,
-  'licenseId'     => $swcmLicenseId
- );
+ my ( $self, $uri, $member ) = @_;
 
  my $ua = LWP::UserAgent->new;
  $ua->timeout(10);
@@ -151,9 +144,9 @@ sub httpGetScarletGuids {
  if ( $response->is_success ) {
   my $json = new JSON;
   try {
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
-   $scarletGuids = $jsObj->{'guids'} if ( defined $jsObj->{'guids'} );
-   dlog( 'extra ' . scalar @{$scarletGuids} . ' guid found in scarlet' );
+   $scarletGuids = $jsObj->{$member} if ( defined $jsObj->{$member} );
     }
     catch { wlog('bad json format.') };
  }
@@ -162,6 +155,42 @@ sub httpGetScarletGuids {
  }
 
  return $scarletGuids;
+}
+
+sub existInScarlet {
+ my ( $self, $extSrcId, $isId ) = @_;
+
+ dlog("existInScarlet extSrcId=$extSrcId");
+ my $swcmLicenseId = undef;
+ if ( $extSrcId =~ /SWCM_(\d*)/ ) {
+  $swcmLicenseId = $1;
+ }
+ else {
+  return 0;
+ }
+
+ my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
+ my $uri             = URI->new($scarletGuidsApi);
+ dlog($uri);
+ $uri->query_form( 'licenseId' => $swcmLicenseId );
+
+ my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
+
+ my $guid = $self->getGuiIdByInstalledSoftwareId($isId);
+ dlog( 'This guid=' . $guid );
+     
+ foreach my $id ( @{$scarletGuids} ) {
+  return 1 if ( $id eq $guid );
+
+  $self->guids->{$id} = 1;
+  dlog( 'guid=' . $id );
+ }
+
+ $self->traverseUp( [ keys %{ $self->guids } ] );
+
+ return 1 if ( $self->guids->{$guid} );
+
+   return 0;
 }
 
 sub setUpGuidsFromScarlet {
@@ -180,15 +209,57 @@ sub setUpGuidsFromScarlet {
    next;
   }
 
-  my $scarletGuids = $self->httpGetScarletGuids( $swcmLicenseId, $guid );
+  my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
+  my $uri             = URI->new($scarletGuidsApi);
+  $uri->query_form(
+   'componentGuid' => $guid,
+   'licenseId'     => $swcmLicenseId
+  );
+  my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
 
+  dlog("GET $uri");
+  dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
    next if ( $id eq $guid );
 
    $self->guids->{$id} = 1;
    dlog( 'guid=' . $id );
   }
+ }
 
+ $self->traverseUp( [ keys %{ $self->guids } ] );
+
+}
+
+sub traverseUp {
+ my ( $self, $guids ) = @_;
+
+ if ( !defined $guids || scalar @{$guids} <= 0 ) {
+  return;
+ }
+
+ my $scarletGuidsApi = $self->config->getProperty('scarlet.guids.parents');
+
+ foreach my $id ( @{$guids} ) {
+
+  ###avoid duplicate request to scarlet.
+  next
+    if ( $self->cachedParentGuids->{$id} );
+
+  $self->cachedParentGuids->{$id} = 1;
+
+  my $uri = URI->new("$scarletGuidsApi/$id/parents");
+
+  my $scarletParentsGuids = $self->httpGetScarletGuids( $uri, 'parents' );
+
+  $self->traverseUp($scarletParentsGuids);
+
+  dlog("GET $uri");
+  dlog( scalar @{$scarletParentsGuids} . ' guid(s) found' );
+  foreach my $id ( @{$scarletParentsGuids} ) {
+   $self->guids->{$id} = 1;
+   dlog( 'parentGuid=' . $id );
+  }
  }
 }
 
@@ -216,9 +287,14 @@ sub getGuiIdByInstalledSoftwareId {
 
 sub tryToReconcile {
 
- my ( $self, $installedSoftware ) = @_;
+ my ( $self, $isObj ) = @_;
 
- $self->setUpGuidsFromScarlet( $installedSoftware->id );
+ if ( $self->reconcileTypeId != 5 ) {
+  $self->info( 'NOT_AUTO:' . $isObj->toString );
+  return;
+ }
+
+ $self->setUpGuidsFromScarlet( $isObj->id );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {
@@ -239,16 +315,39 @@ sub tryToReconcile {
   }
  }
 
- my $query = ' select is . id from alert_unlicensed_sw aus,
-			  installed_software is,
-			  kb_definition kbd where aus . installed_software_id = is . id
-			  and is . software_id      = kbd . id
-			  and aus . open            = 1
-			  and is . software_lpar_id =
-			      ' . $installedSoftware->softwareLparId . '
-			  and is . id != ' . $installedSoftware->id . '
-			  and kbd
-			  . guid in(' . $guids . ') with ur ';
+ my $query = undef;
+ if ( $self->machineLevel == 1 ) {
+  $query = 'select is.id
+from
+alert_unlicensed_sw aus, 
+installed_software is,
+kb_definition kbd,
+hw_sw_composite hsc, 
+hardware_lpar hl,
+hardware h
+where aus.installed_software_id = is.id
+and is.software_id = kbd.id
+and is.software_lpar_id = hsc.software_lpar_id
+and hsc.hardware_lpar_id = hl.id
+and hl.hardware_id = h.id
+and aus.open = 1
+and h.id =  ?
+and is.id <> ?
+and kbd.guid in (' . $guids . ')';
+ }
+ else {
+  $query = ' select is.id 
+from 
+alert_unlicensed_sw aus,
+installed_software is,
+kb_definition kbd 
+where aus.installed_software_id = is.id
+and is.software_id = kbd.id
+and aus.open= 1
+and is.software_lpar_id =?
+and is.id != ?
+and kbd.guid in(' . $guids . ') with ur ';
+ }
 
  dlog( ' getInstalledSoftwareIdQuery = ' . $query );
 
@@ -256,7 +355,13 @@ sub tryToReconcile {
  $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
  my $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
  $sth->bind_columns( \$installedSwId );
- $sth->execute();
+
+ if ( $self->machineLevel == 1 ) {
+  $sth->execute( $self->hardwareId, $isObj->id );
+ }
+ else {
+  $sth->execute( $isObj->softwareLparId, $isObj->id );
+ }
 
  my @isIds;
  while ( $sth->fetchrow_arrayref ) {
@@ -266,40 +371,89 @@ sub tryToReconcile {
 
  dlog( scalar @isIds . ' matched installed software found' );
 
+ if ( scalar @isIds == 0 ) {
+  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $isObj->toString );
+ }
+
  foreach my $isId (@isIds) {
   my $is = new BRAVO::OM::InstalledSoftware();
   $is->id($isId);
   $is->getById( $self->connection );
 
-  my $installedSoftware =
+  my $licensingInstalledSoftware =
     new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
 
   ###reuse the validate of installed software to check if it's in scope.
-  my $validation = $installedSoftware->validateScope();
+  my $validation = $licensingInstalledSoftware->validateScope();
 
   #validate code 1, in scope installed software without any reconcile.
   if ( $validation->validationCode == 1 ) {
 
    if (
-    not $installedSoftware->validateScheduleFScope( $self->scheduleFScopeName )
+    not $licensingInstalledSoftware->validateScheduleFScope(
+     $self->scheduleFScopeName
+    )
      )
    {
+    $self->info(
+     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
    }
    dlog("ScheduleF defined and matched");
 
    my $reconcile =
-     $installedSoftware->createReconcile( $self->reconcileTypeId,
+     $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
 
+   $self->info( 'SUCCESS:' . $reconcile . ' ref ' . $isObj->toString );
+
    foreach my $ulId ( @{ $self->usedLicenses } ) {
-    $installedSoftware->createReconcileUsedLicenseMap( $reconcile, $ulId );
+    $licensingInstalledSoftware->createReconcileUsedLicenseMap( $reconcile,
+     $ulId );
    }
 
-   $installedSoftware->closeAlertUnlicensedSoftware(1);
+   $licensingInstalledSoftware->closeAlertUnlicensedSoftware(1);
 
   }
+  else {
+   $self->info( 'VALIDATE_FAIL:' . $is->toString . ' ref ' . $isObj->toString );
+  }
  }
+
+}
+
+my $sLog = undef;
+
+sub initLogger {
+ $sLog = Log::Log4perl->get_logger('scarlet');
+ my $layout = Log::Log4perl::Layout::PatternLayout->new("%m%n");
+
+ my $appender = Log::Log4perl::Appender->new(
+  "Log::Dispatch::FileRotate",
+  filename => '/var/staging/logs/Scarlet/scarlet.log',
+  mode     => 'append',
+  size     => 10000000,
+  max      => 100
+ );
+
+ $appender->layout($layout);
+ $sLog->add_appender($appender);
+ $sLog->level($INFO);
+}
+
+sub info() {
+ my ( $self, $msg ) = @_;
+
+ my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+   localtime();
+ my $dt = sprintf(
+  "%04d-%02d-%02d %02d:%02d:%02d",
+  $year + 1900,
+  $mon + 1, $mday, $hour, $min, $sec
+ );
+
+ initLogger if ( !defined $sLog );
+ $sLog->info( "[$dt]" . $msg );
 
 }
 

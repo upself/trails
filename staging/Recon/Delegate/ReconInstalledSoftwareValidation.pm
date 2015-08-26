@@ -659,7 +659,7 @@ sub validateLicenseAllocation {
    ###Validate license software map
    $validation->validateLicenseSoftwareMap( $rec{sId}, 0,
     $self->installedSoftware->softwareId,
-    undef, undef );
+    undef, undef,$rec{extSrcId},$self->installedSoftware->id );
 
    ###Validate try and buy
    $validation->validateTryAndBuy( $rec{tryAndBuy}, $rec{capType}, undef, 0 );
@@ -882,6 +882,7 @@ sub queryValidateLicenseAllocation {
    ibmOwned
    licenseStatus
    licEnvironment
+   extSrcId
    sId
  );
  my $query = '
@@ -903,6 +904,7 @@ sub queryValidateLicenseAllocation {
             ,l.ibm_owned
             ,l.status
             ,l.environment
+            ,l.ext_src_id
             ,lsm.software_id
         from
             reconcile r
