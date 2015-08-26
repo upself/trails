@@ -140,16 +140,12 @@ sub recon {
   my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
 
   #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
-  if (
-   $self->installedSoftwareReconData->rTypeId ==    
+  if ( $self->installedSoftwareReconData->rTypeId ==
    $reconcileTypeMap->{'Automatic license allocation'}
-   && not $validation->scarletAllocation
-    )
+   && not $validation->scarletAllocation )
   {
    dlog("Perform scarlet allocation");
    my $scarletIs = new Recon::ScarletInstalledSoftware();
-   $scarletIs->scheduleFScopeName(
-    $self->installedSoftwareReconData->scopeName );
    $scarletIs->hardwareId( $self->installedSoftwareReconData->hId );
    $scarletIs->initByReconcileId( $self->installedSoftwareReconData->rId );
 
@@ -269,24 +265,7 @@ sub getSoftwareLpar {
 }
 
 sub validateScheduleFScope {
- my ( $self, $scarletScheduleFScopeName ) = @_;
-
- if (
-     ( not defined $self->installedSoftwareReconData->scopeName )
-  || ( $self->installedSoftwareReconData->scopeName eq "" )
-  || (
-   $self->installedSoftwareReconData->scopeName ne $scarletScheduleFScopeName )
-   )
- {
-  ilog("No ScheduleF defined or not match for scarlet product");
-  return 0;
- }
-
- return 1;
-}
-
-sub reconcile {
- my $self = shift;
+ my ($self) = @_;
 
  if (( not defined $self->installedSoftwareReconData->scopeName )
   || ( $self->installedSoftwareReconData->scopeName eq "" ) )
@@ -294,6 +273,13 @@ sub reconcile {
   ilog("No ScheduleF defined, no auto-reconciliation will be performed!");
   return 0;
  }
+ return 1;
+}
+
+sub reconcile {
+ my $self = shift;
+
+ return 0 if $self->validateScheduleFScope == 0;
 
  return 1 if $self->attemptVendorManaged == 1;
  return 1 if $self->attemptSoftwareCategory == 1;
@@ -336,8 +322,7 @@ sub reconcile {
 
   my $scarletInstalledSw = new Recon::ScarletInstalledSoftware(
    $reconcileTypeId, $machineLevel, $allocMethodId,
-   $self->installedSoftwareReconData->scopeName,
-   $self->installedSoftwareReconData->hId
+   $self->installedSoftwareReconData->hId    
   );
 
   foreach my $lId ( keys %{$licsToAllocate} ) {

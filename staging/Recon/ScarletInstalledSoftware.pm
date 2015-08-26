@@ -19,19 +19,18 @@ use Log::Dispatch::FileRotate;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $scheduleFScopeName, $hardwareId )
+  $hardwareId )    
    = @_;
  my $self = {
-  _connection         => Database::Connection->new('trails'),
-  _extSrcIds          => [],
-  _guids              => {},
-  _usedLicenses       => [],
-  _reconcileTypeId    => $reconcileTypeId,
-  _machineLevel       => $machineLevel,
-  _allocMethodId      => $allocMethodId,
-  _scheduleFScopeName => $scheduleFScopeName,
-  _hardwareId         => $hardwareId,
-  _config             => Config::Properties::Simple->new(
+  _connection      => Database::Connection->new('trails'),
+  _extSrcIds       => [],
+  _guids           => {},
+  _usedLicenses    => [],
+  _reconcileTypeId => $reconcileTypeId,
+  _machineLevel    => $machineLevel,
+  _allocMethodId   => $allocMethodId,
+  _hardwareId      => $hardwareId,
+  _config          => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
 
   ),
@@ -80,12 +79,6 @@ sub allocMethodId {
  my $self = shift;
  $self->{_allocMethodId} = shift if scalar @_ == 1;
  return $self->{_allocMethodId};
-}
-
-sub scheduleFScopeName {
- my $self = shift;
- $self->{_scheduleFScopeName} = shift if scalar @_ == 1;
- return $self->{_scheduleFScopeName};
 }
 
 sub config {
@@ -193,8 +186,8 @@ and rul.reconcile_id = ?
   $self->reconcileTypeId($rTypeId);
   $self->machineLevel($mLevel);
 
-  push $self->usedLicenses, $ulId;
-  push $self->extSrcIds,    $extSrcId;
+  push @{ $self->usedLicenses }, $ulId;
+  push @{ $self->extSrcIds },    $extSrcId;
  }
  $sth->finish;
 }
@@ -205,7 +198,7 @@ sub existInScarlet {
  dlog("existInScarlet reconcileId=$reconcileId,isId=$isId");
 
  $self->initByReconcileId($reconcileId);
- $self->setUpGuidsFromScarlet( $isId, 0 );
+ my $guid = $self->setUpGuidsFromScarlet( $isId, 0 );
 
  return 1 if ( $self->guids->{$guid} );
 
@@ -216,8 +209,7 @@ sub setUpGuidsFromScarlet {
 
  my ( $self, $installedSoftwareId, $excludeSelf ) = @_;
 
- my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId)
-   if ($excludeSelf);
+ my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
  foreach my $extSrcId ( @{ $self->extSrcIds } ) {
   my $swcmLicenseId = undef;
@@ -246,6 +238,7 @@ sub setUpGuidsFromScarlet {
 
  $self->traverseUp( [ keys %{ $self->guids } ] );
 
+ return $guid;
 }
 
 sub traverseUp {
@@ -311,7 +304,7 @@ sub tryToReconcile {
   return;
  }
 
- #set up guids exclude guid of $isObj. 
+ #set up guids exclude guid of $isObj.
  $self->setUpGuidsFromScarlet( $isObj->id, 1 );
 
  my $foundQty = scalar keys %{ $self->guids };
@@ -407,12 +400,7 @@ and kbd.guid in(' . $guids . ') with ur ';
   #validate code 1, in scope installed software without any reconcile.
   if ( $validation->validationCode == 1 ) {
 
-   if (
-    not $licensingInstalledSoftware->validateScheduleFScope(
-     $self->scheduleFScopeName
-    )
-     )
-   {
+   if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
     $self->info(
      'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
