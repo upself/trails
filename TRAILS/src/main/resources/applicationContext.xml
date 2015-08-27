@@ -65,7 +65,9 @@
 	
 	<bean id="alertWithDefinedContractScopeService"
 		class="com.ibm.asset.trails.service.impl.AlertWithDefinedContractScopeServiceImpl" />	
-		
+	
+	<bean id="alertIbmSwInstancesReviewedService"
+		class="com.ibm.asset.trails.service.impl.AlertIbmSwInstancesReviewedServiceImpl" />			
 
 	<bean id="alertHardwareService"
 		class="com.ibm.asset.trails.service.impl.AlertHardwareServiceImpl" />
@@ -323,6 +325,12 @@
 	<bean id="accountAlertWithDefinedContractScope" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
 		<property name="alertService" ref="alertWithDefinedContractScopeService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+	
+	<bean id="accountAlertIbmSwInstancesReviewed" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertIbmSwInstancesReviewedService" />
 		<property name="accountService" ref="accountService" />
 	</bean>
 
