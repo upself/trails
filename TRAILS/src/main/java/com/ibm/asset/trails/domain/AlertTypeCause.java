@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name = "getByATCTypeCauseId", query = "from AlertTypeCause atc where atc.pk.alertType.id=:alertTypeId and atc.pk.alertCause.id=:alertCauseId"),
 	@NamedQuery(name = "getValidCauseCodesByAlertTypeId", query = "select atc.pk.alertType.name, atc.pk.alertCause.name, atc.pk.alertCause.alertCauseResponsibility.name from AlertTypeCause atc where atc.pk.alertType.id=:alertTypeId and atc.status='ACTIVE' order by atc.pk.alertCause.name asc"),
-	@NamedQuery(name = "findActiveAlertCauseByNameAndTypeId", query = "select atc.pk.alertCause from AlertTypeCause atc where atc.status = 'ACTIVE' and upper(atc.pk.alertCause.name) = :alertCauseName and atc.pk.alertType.id = :alertTypeId"), 
+	@NamedQuery(name = "findActiveAlertCauseByNameAndTypeId", query = "select atc.pk.alertCause from AlertTypeCause atc where atc.status = 'ACTIVE' and upper(atc.pk.alertCause.name) = :alertCauseName and atc.pk.alertType.id = :alertTypeId") 
 	}) 
 public class AlertTypeCause extends AbstractDomainEntity {
 
