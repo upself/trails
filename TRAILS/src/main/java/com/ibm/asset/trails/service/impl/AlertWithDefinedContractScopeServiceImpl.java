@@ -28,14 +28,9 @@ public class AlertWithDefinedContractScopeServiceImpl extends
         
         
         lQuery.setParameter("accountId", pAccount.getId());
-        lQuery.setParameter("type", "UNDEFINED_SCOPE");
+        lQuery.setParameter("type", "SWISCOPE");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
-        
-//        List<?> temp = lQuery.getResultList();
-//        for (int i = 0; i < temp.size(); i++) {
-//        	System.out.println("lQuery : " + lQuery.getResultList().get(i).toString());
-//		}
         
         return (ArrayList) lQuery.getResultList();
     }
