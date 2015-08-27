@@ -13,6 +13,7 @@
 		class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint" />
 	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
 	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
+	<bean id="alertIbmSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIbmSwInstancesReviewedServiceEndpoint" />
 
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
@@ -26,6 +27,7 @@
 			<ref bean="alertHardwareCfgDataServiceEndpoint" />
 			<ref bean="pvuMappingServiceEndpoint" />
 			<ref bean="AdminCauseCodeServiceEndpoin" />
+			<ref bean="alertIbmSwInstancesReviewed" />
 
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
