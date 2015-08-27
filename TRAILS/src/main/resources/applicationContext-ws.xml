@@ -13,7 +13,7 @@
 		class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint" />
 	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
 	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
-
+	<bean id="alertWithDefinedContractScopeServiceEndpoint" class="com.ibm.asset.trails.ws.AlertWithDefinedContractScopeServiceEndpoint"/>
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
 
@@ -26,7 +26,7 @@
 			<ref bean="alertHardwareCfgDataServiceEndpoint" />
 			<ref bean="pvuMappingServiceEndpoint" />
 			<ref bean="AdminCauseCodeServiceEndpoin" />
-
+			<ref bean="alertWithDefinedContractScopeServiceEndpoint"/>
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
 			<entry key="json" value="application/json" />
