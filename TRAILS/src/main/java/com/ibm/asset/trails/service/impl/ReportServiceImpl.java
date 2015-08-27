@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.DataExceptionTypeEnum;
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.service.DatabaseDeterminativeService;
 import com.ibm.asset.trails.service.ReportService;
 
@@ -168,6 +170,13 @@ public class ReportServiceImpl implements ReportService {
 			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
+	
+	private final String ALERT_WITH_DEFINED_SCOPE_REPORT_NAME = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
+	private final String[] ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS = {"Status",
+			"Hostname", "Installed SW component", "Create date/time", "Age", "Assignee", 
+			"Assignee comments", "Assigned date/time", "Cause Code (CC)", "CC target date", "CC owner",
+			"CC change date", "CC change person", "Internal ID"};
+	
 	private DatabaseDeterminativeService dbdeterminativeService;
 	
 	@Autowired
@@ -1442,6 +1451,91 @@ public class ReportServiceImpl implements ReportService {
 				.createNamedQuery("getValidCauseCodesByAlertTypeId")
 				.setParameter("alertTypeId", new Long(37)).getResultList()
 				.iterator();
+		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
+		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
+		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+		int j = 1;
+		while (vCauseCodeSummary.hasNext()) {
+			HSSFRow row = sheet_2.createRow((int) j);
+			outputData(vCauseCodeSummary.next(), row);
+			j++;
+		}
+		phwb.write(pOutputStream);
+	
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getAlertWithDefinedContractScopeReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
+
+		//This is a replacement value for previously hardcoded values of Alert_type.IDs,
+		// now you can just specify the Alert_type code, no matter what the ID # is
+		AlertType alertType = (AlertType) getEntityManager()
+				.createNamedQuery("getAlertTypeByCode")
+				.setParameter("code", "SWISCOPE")
+				.getSingleResult();
+		
+		StringBuffer sb = new StringBuffer("SELECT " +
+				"CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, " +
+				"sl.name, " +
+				"sw.software_name, " +
+				"VA.Creation_Time, " +
+				"VA.Alert_Age, " +
+				"VA.Remote_User, " +
+				"VA.Comments, " +
+				"VA.Record_Time, " +
+				"AC.name as ac_name, " +
+				"CC.target_date, " +
+				"CC.owner as cc_owner, " +
+				"CC.record_time as cc_record_time, " +
+				"CC.remote_user as cc_remote_user, " +
+				"CC.id as cc_id " +
+
+				"FROM EAADMIN.V_Alerts VA " +
+					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id " +
+					"join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id " +
+					"join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id " +
+					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
+					"join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id " +
+					"join EAADMIN.alert_type AT on AT.id = CC.alert_type_id " +
+				"WHERE VA.Customer_Id = :customerId " +
+				"AND VA.Type = :type " +
+				"AND VA.Open = 1 " +
+				"AND AT.code = :code " +
+			 "ORDER BY sl.name ASC");
+		
+		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
+				.createSQLQuery(sb.toString())
+				.setLong("customerId", pAccount.getId())
+				.setParameter("type", "SWISCOPE")
+				.setParameter("code", "SWISCOPE")
+				.scroll(ScrollMode.FORWARD_ONLY);
+		
+		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report");
+		printHeader(ALERT_WITH_DEFINED_SCOPE_REPORT_NAME, pAccount.getAccount(),
+				ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS, sheet);
+		int i = 3;
+		while (lsrReport.next()) {
+			int k = 1;
+            if (i>65535){
+                k++;
+				sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report"+k);
+				i = 1;
+			}
+			HSSFRow row = sheet.createRow((int) i);
+			outputData(lsrReport.get(), row);
+			i++;
+		}
+		// lsrReport.close();
+		
+		@SuppressWarnings("unchecked")
+		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
+				.createNamedQuery("getValidCauseCodesByAlertTypeId")
+				.setParameter("alertTypeId", alertType.getId()).getResultList()
+				.iterator();
+		
 		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
 		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
 		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);

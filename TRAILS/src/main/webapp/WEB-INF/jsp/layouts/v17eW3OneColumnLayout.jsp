@@ -67,6 +67,7 @@
 .alert-go{
 	color: #66CD00;
 }
+
 .alert-stop{
 	color: red;
 }

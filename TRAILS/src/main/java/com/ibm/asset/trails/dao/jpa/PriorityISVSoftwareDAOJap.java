@@ -113,7 +113,7 @@ public class PriorityISVSoftwareDAOJap extends
 		Long total = (Long)entityManager.createNamedQuery("findPriorityISVTotal").getSingleResult();
 		return total;
 	}
-	
+
 	@Override
 	public Long totalHistory(Long priorityISVSoftwareId) {
 		// TODO Auto-generated method stub

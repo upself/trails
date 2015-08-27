@@ -72,9 +72,9 @@ public class PriorityISVSoftwareServiceEndpointTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+
 	public void testGetOnePageOfPriorityISVSoftwareDisplays(){
 	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays(1,10);
-	   
 		Pagination page = (Pagination) wsMsg.getData();
 	    if(null!=page){
 	    	System.out.println("Get one page of PriorityISVSoftware List, current page is  "+page.getCurrentPage()+", pagaSize is "+page.getPageSize()+", total is "+page.getTotal()+";");
