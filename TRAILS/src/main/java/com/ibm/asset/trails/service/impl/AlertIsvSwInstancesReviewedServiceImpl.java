@@ -54,21 +54,25 @@ public class AlertIsvSwInstancesReviewedServiceImpl extends
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Long total(Account account) {
         Query lQuery = super.getEntityManager().createNamedQuery(
-                "alertUnlicensedSwTotalByAccountAndType");
+                "alertUnlicensedSwTotalByAccountAndType2");
 
         lQuery.setParameter("account", account);
         lQuery.setParameter("type", "ISVNOPRIO");
-
+        //type2 only until recon will not process all isv
+        lQuery.setParameter("type2", "ISV");
+        
         return ((Long) lQuery.getSingleResult());
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Long total(String remoteUser) {
         Query lQuery = super.getEntityManager().createNamedQuery(
-                "alertUnlicensedSwTotalByRemoteUserAndType");
+                "alertUnlicensedSwTotalByRemoteUserAndType2");
 
         lQuery.setParameter("remoteUser", remoteUser);
         lQuery.setParameter("type", "ISVNOPRIO");
+        //type2 only until recon will not process all isv
+        lQuery.setParameter("type2", "ISV");
 
         return ((Long) lQuery.getSingleResult());
     }

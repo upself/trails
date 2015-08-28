@@ -19,7 +19,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name = "ALERT_UNLICENSED_SW")
 @NamedQueries({
-        @NamedQuery(name = "alertUnlicensedSwTotalByAccountAndType", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND AUS.type = :type AND AUS.open = 1"),
+    	@NamedQuery(name = "alertUnlicensedSwTotalByAccountAndType2", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND ( AUS.type = :type OR AUS.type = :type2 ) AND AUS.open = 1"),
+        @NamedQuery(name = "alertUnlicensedSwTotalByRemoteUserAndType2", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.remoteUser = :remoteUser AND ( AUS.type = :type OR AUS.type = :type2 ) AND AUS.open = 1"),
+
+		@NamedQuery(name = "alertUnlicensedSwTotalByAccountAndType", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND AUS.type = :type  AND AUS.open = 1"),
         @NamedQuery(name = "alertUnlicensedSwTotalByRemoteUserAndType", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.remoteUser = :remoteUser AND AUS.type = :type AND AUS.open = 1"),
         @NamedQuery(name = "alertUnlicensedSwListSelected", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.id IN (:alertUnlicensedSwIdList)"),
         @NamedQuery(name = "alertUnlicensedSwListAll", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.account = :account AND AUS.installedSoftware.software.softwareId IN (:softwareIdList)"),

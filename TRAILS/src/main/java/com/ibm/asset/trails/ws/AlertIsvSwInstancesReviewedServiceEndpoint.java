@@ -90,9 +90,9 @@ public class AlertIsvSwInstancesReviewedServiceEndpoint {
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
 					"attachment; filename=Isv" + account.getAccount() + ".xls");
-			reportService.getAlertWithDefinedContractScopeReport(account,
+			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream());
+					response.getOutputStream(),"SWISVNPR","SWISVNPR","SOM4c: ISV SW INSTANCES REVIEWED");
 
 		} catch (Exception e) {
 			e.printStackTrace();

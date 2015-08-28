@@ -90,9 +90,9 @@ public class AlertIbmSwInstancesReviewedServiceEndpoint {
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
 					"attachment; filename=IBM" + account.getAccount() + ".xls");
-			reportService.getAlertWithDefinedContractScopeReport(account,
+			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream());
+					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED");
 
 		} catch (Exception e) {
 			e.printStackTrace();
