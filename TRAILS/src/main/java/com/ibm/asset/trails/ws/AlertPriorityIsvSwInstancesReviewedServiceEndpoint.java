@@ -92,7 +92,7 @@ public class AlertPriorityIsvSwInstancesReviewedServiceEndpoint {
 					"attachment; filename=PrioISV" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWISVPR","SWISVPR","SOM4b: PRIORITY ISV SW INSTANCES REVIEWED");
+					response.getOutputStream(),"SWISVPR","SWISVPR","SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", "PrioISV");
 
 		} catch (Exception e) {
 			e.printStackTrace();

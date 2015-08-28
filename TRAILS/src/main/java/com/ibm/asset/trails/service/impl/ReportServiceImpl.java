@@ -183,42 +183,31 @@ public class ReportServiceImpl implements ReportService {
 			"Assignee comments", "Assigned date/time", "Cause Code (CC)",
 			"CC target date", "CC owner", "CC change date", "CC change person",
 			"Internal ID" };
-	
-	private final String[] UNLICENSED_GROUP_COLUMN_HEADERS= {
-			"Status", "Hostname", "Installed SW component", "Create date/time",
-			"Age", "Assignee", "Assignee comments", "Assigned date/time",
+
+	private final String[] UNLICENSED_GROUP_COLUMN_HEADERS = { "Status",
+			"Hostname", "Installed SW component", "Create date/time", "Age",
+			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
-	
-	private final String unlicensedAlertQuery = "SELECT "
-					+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
-					+ "sl.name, "
-					+ "sw.software_name, "
-					+ "VA.Creation_Time, "
-					+ "VA.Alert_Age, "
-					+ "VA.Remote_User, "
-					+ "VA.Comments, "
-					+ "VA.Record_Time, "
-					+ "AC.name as ac_name, "
-					+ "CC.target_date, "
-					+ "CC.owner as cc_owner, "
-					+ "CC.record_time as cc_record_time, "
-					+ "CC.remote_user as cc_remote_user, "
-					+ "CC.id as cc_id "
-					+
 
-					"FROM EAADMIN.V_Alerts VA "
-					+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
-					+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
-					+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
-					+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
-					+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
-					+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
-					+ "WHERE VA.Customer_Id = :customerId "
-					+ "AND VA.Type = :type " 
-					+ "AND VA.Open = 1 "
-					+ "AND AT.code in ( 'NOLIC', :code )"
-					+ "ORDER BY sl.name ASC";
+	private final String unlicensedAlertQuery = "SELECT "
+			+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
+			+ "sl.name, " + "sw.software_name, " + "VA.Creation_Time, "
+			+ "VA.Alert_Age, " + "VA.Remote_User, " + "VA.Comments, "
+			+ "VA.Record_Time, " + "AC.name as ac_name, " + "CC.target_date, "
+			+ "CC.owner as cc_owner, " + "CC.record_time as cc_record_time, "
+			+ "CC.remote_user as cc_remote_user, " + "CC.id as cc_id " +
+
+			"FROM EAADMIN.V_Alerts VA "
+			+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
+			+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
+			+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
+			+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
+			+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
+			+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
+			+ "WHERE VA.Customer_Id = :customerId " + "AND VA.Type = :type "
+			+ "AND VA.Open = 1 " + "AND AT.code in ( 'NOLIC', :code )"
+			+ "ORDER BY sl.name ASC";
 
 	private DatabaseDeterminativeService dbdeterminativeService;
 
@@ -1468,14 +1457,14 @@ public class ReportServiceImpl implements ReportService {
 		phwb.write(pOutputStream);
 
 	}
-	
-	
+
 	// SOM3 + SOM4a + SOM4b + SOM4c
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertUnlicensed(Account pAccount,
-			String remoteUser, String lsName, HSSFWorkbook phwb,
-			OutputStream pOutputStream, String type, String code, String name) throws HibernateException, Exception {
+	public void getAlertUnlicensed(Account pAccount, String remoteUser,
+			String lsName, HSSFWorkbook phwb, OutputStream pOutputStream,
+			String type, String code, String reportName, String sheetName)
+			throws HibernateException, Exception {
 
 		AlertType alertType = (AlertType) getEntityManager()
 				.createNamedQuery("getAlertTypeByCode")
@@ -1486,14 +1475,12 @@ public class ReportServiceImpl implements ReportService {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(sb.toString())
 				.setLong("customerId", pAccount.getId())
-				.setParameter("type", type)
-				.setParameter("code", code)
+				.setParameter("type", type).setParameter("code", code)
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope "
+		HSSFSheet sheet = phwb.createSheet(sheetName + " "
 				+ pAccount.getAccount() + " Report");
-		printHeader(name,
-				pAccount.getAccount(),
+		printHeader(reportName, pAccount.getAccount(),
 				UNLICENSED_GROUP_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -1529,8 +1516,7 @@ public class ReportServiceImpl implements ReportService {
 
 	}
 
-	
-	//output
+	// output
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
 		StringBuffer lsbData = new StringBuffer();

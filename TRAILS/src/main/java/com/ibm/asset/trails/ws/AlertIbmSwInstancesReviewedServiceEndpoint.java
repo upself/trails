@@ -92,7 +92,7 @@ public class AlertIbmSwInstancesReviewedServiceEndpoint {
 					"attachment; filename=IBM" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED");
+					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED", "IBM");
 
 		} catch (Exception e) {
 			e.printStackTrace();

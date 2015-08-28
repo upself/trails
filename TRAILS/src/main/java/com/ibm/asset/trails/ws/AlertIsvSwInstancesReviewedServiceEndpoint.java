@@ -92,7 +92,7 @@ public class AlertIsvSwInstancesReviewedServiceEndpoint {
 					"attachment; filename=Isv" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWISVNPR","SWISVNPR","SOM4c: ISV SW INSTANCES REVIEWED");
+					response.getOutputStream(),"SWISVNPR","SWISVNPR","SOM4c: ISV SW INSTANCES REVIEWED", "ISV");
 
 		} catch (Exception e) {
 			e.printStackTrace();

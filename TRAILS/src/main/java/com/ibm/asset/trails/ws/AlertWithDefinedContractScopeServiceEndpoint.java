@@ -93,7 +93,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 					"attachment; filename=alertContractScope" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE");
+					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "Alert Contract Scope");
 
 		} catch (Exception e) {
 			e.printStackTrace();
