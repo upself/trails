@@ -14,7 +14,8 @@
 	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
 	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
 	<bean id="alertIbmSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIbmSwInstancesReviewedServiceEndpoint" />
-
+	<bean id="alertPriorityIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertPriorityIsvSwInstancesReviewedServiceEndpoint" />
+	<bean id="alertIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
 
@@ -28,6 +29,8 @@
 			<ref bean="pvuMappingServiceEndpoint" />
 			<ref bean="AdminCauseCodeServiceEndpoin" />
 			<ref bean="alertIbmSwInstancesReviewed" />
+			<ref bean="alertPriorityIsvSwInstancesReviewed" />
+			<ref bean="alertIsvSwInstancesReviewed" />
 
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>

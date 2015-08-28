@@ -45,7 +45,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 DisplayAlertUnlicensedSw.class);
 
         lQuery.setParameter("remoteUser", psRemoteUser);
-        lQuery.setParameter("type", "UNDEFINED_SCOPE");
+        lQuery.setParameter("type", "SWISCOPE");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         return (ArrayList) lQuery.getResultList();

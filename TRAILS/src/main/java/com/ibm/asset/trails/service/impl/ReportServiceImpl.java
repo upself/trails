@@ -64,53 +64,59 @@ public class ReportServiceImpl implements ReportService {
 			"BIOS SERIAL", "OS NAME", "ASSIGNEE", "COMMENT" };
 	private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_HWLPAR_COLUMN_HEADERS = {
 			"DATA EXCEPTION TYPE", "HOST NAME", "SERIAL", "CREATION TIME",
-			"PHYSICAL HW PROCESSOR COUNT", "HW EXT ID", "HW CHIPS", "ASSIGNEE", "COMMENT" };
+			"PHYSICAL HW PROCESSOR COUNT", "HW EXT ID", "HW CHIPS", "ASSIGNEE",
+			"COMMENT" };
 	private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
-			"Status", "Hostname", "Installed SW product name", "Number of instances",
-			"Create date/time", "Age", "Cause Code (CC)", "CC target date",
-			"CC owner", "CC change date", "CC change person", "Internal ID" };
+			"Status", "Hostname", "Installed SW product name",
+			"Number of instances", "Create date/time", "Age",
+			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
+			"CC change person", "Internal ID" };
 	private final String FREE_LICENSE_POOL_REPORT_NAME = "Free license pool report";
 	private final String[] FULL_RECONCILIATION_REPORT_COLUMN_HEADERS = {
-			"Alert status", "Alert opened", "Alert duration", "Alert type", "SW LPAR name",
-			"HW LPAR name", "SW_EXT_ID", "HW_EXT_ID","SW_TI_ID", "HW_TI_ID",
-			"HW serial", "HW machine type","Cross account level","CPU Model","CHASSIS ID","Cloud Name",
-			"Owner", "Country", "Asset type","Server type","SPLA","Virtual Flag","Virtual Mobility restriction","OS type",
-			"SysPlex","Cluster type","Backup method", "Internet ACC Flag","Capped LPAR", "Processor Type",
-			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
-			"NBR of Chips Max", "Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS", "CPU Gartner MIPS",
-			"CPU MSU", "Part IBM LPAR MIPS", "Part Gartner MIPS", "Part MSU",
-			"SHARED", "Hardware Status", "Lpar Status",
-			"Physical HW processor count", "Physical chips",
-			"Effective processor count","Effective threads","PVU/core",
-			"Primary Component","PID", "SW Owner", "Alert assignee",
+			"Alert status", "Alert opened", "Alert duration", "Alert type",
+			"SW LPAR name", "HW LPAR name", "SW_EXT_ID", "HW_EXT_ID",
+			"SW_TI_ID", "HW_TI_ID", "HW serial", "HW machine type",
+			"Cross account level", "CPU Model", "CHASSIS ID", "Cloud Name",
+			"Owner", "Country", "Asset type", "Server type", "SPLA",
+			"Virtual Flag", "Virtual Mobility restriction", "OS type",
+			"SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
+			"Capped LPAR", "Processor Type", "Processor Manufacturer",
+			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
+			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
+			"CPU Gartner MIPS", "CPU MSU", "Part IBM LPAR MIPS",
+			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
+			"Lpar Status", "Physical HW processor count", "Physical chips",
+			"Effective processor count", "Effective threads", "PVU/core",
+			"Primary Component", "PID", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
-			"Inst SW validation status", "Reconciliation action", "Allocation methodology", 
-			"Reconciliation user", "Reconciliation date/time",
-			"Reconciliation comments", "Reconciliation parent product",
-			"License account number", "License Name",
-			"Catalog match", "License product name", "Version",
-			"Capacity type","Environment", "Quantity used", "Machine level",
+			"Inst SW validation status", "Reconciliation action",
+			"Allocation methodology", "Reconciliation user",
+			"Reconciliation date/time", "Reconciliation comments",
+			"Reconciliation parent product", "License account number",
+			"License Name", "Catalog match", "License product name", "Version",
+			"Capacity type", "Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
 			"License serial number", "License owner", "SWCM ID",
 			"License last updated" };
 	private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
 	private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
-			"Machine type", "Hostname", "Asset type", "Server type", "SPLA", "SysPlex",
-			"Internet ACC Flag", "Processor Type", "Processor Manufacturer",
-			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
-			"SHARED", "Hardware Status", "Lpar Status", "Composite" };
+			"Machine type", "Hostname", "Asset type", "Server type", "SPLA",
+			"SysPlex", "Internet ACC Flag", "Processor Type",
+			"Processor Manufacturer", "Processor Model", "NBR Cores per Chip",
+			"NBR of Chips Max", "SHARED", "Hardware Status", "Lpar Status",
+			"Composite" };
 	private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
 	private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
 			"Software product name", "Manufacturer", "Vendor managed",
-			"Hostname", "Bios serial", "Effective processor count", "Chips", "Scan time",
-			"Composite", "Serial", "Machine type", "Asset type" };
+			"Hostname", "Bios serial", "Effective processor count", "Chips",
+			"Scan time", "Composite", "Serial", "Machine type", "Asset type" };
 	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
 	private final String[] LICENSE_COLUMN_HEADERS = { "Primary Component",
-			"Catalog match", "License Name", "Software product PID", "Capacity type",
-			"Environment","Total qty", "Available qty", "Expiration date", "PO number",
-			"Serial number", "License owner", "SWCM ID", "Pool",
-			"Record date/time" };
+			"Catalog match", "License Name", "Software product PID",
+			"Capacity type", "Environment", "Total qty", "Available qty",
+			"Expiration date", "PO number", "Serial number", "License owner",
+			"SWCM ID", "Pool", "Record date/time" };
 	private final String NON_WORKSTATION_ACCOUNTS_REPORT_NAME = "Non-workstation accounts with workstations report";
 	private final String[] NON_WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
 			"Account #", "Account name", "Account type", "Geography", "Region",
@@ -120,15 +126,16 @@ public class ReportServiceImpl implements ReportService {
 			"Create date/time", "Recon date/time", "Recon user" };
 	private final String PENDING_CUSTOMER_DECISION_DETAIL_REPORT_NAME = "Customer owned and IBM managed detail report";
 	private final String[] PENDING_CUSTOMER_DECISION_SUMMARY_COLUMN_HEADERS = {
-			"Primary Component", "Action performed", "Total",
-			"0 - 45 days", "46 - 90 days", "91 - 120 days", "121 - 180 days",
+			"Primary Component", "Action performed", "Total", "0 - 45 days",
+			"46 - 90 days", "91 - 120 days", "121 - 180 days",
 			"181 - 365 days", "Over 365 days" };
 	private final String PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME = "Customer owned and IBM managed summary report";
 	private final String[] RECONCILIATION_SUMMARY_COLUMN_HEADERS = {
 			"Primary Component", "Installed instances",
 			"Installed instances covered by entitlement",
 			"Installed instances not covered by entitlement",
-			"Unassigned license pool count", "Unassigned license pool type", "Schedule F scope" };
+			"Unassigned license pool count", "Unassigned license pool type",
+			"Schedule F scope" };
 	private final String RECONCILIATION_SUMMARY_REPORT_NAME = "Reconciliation summary report";
 	private final String[] SOFTWARE_COMPLIANCE_SUMMARY_COLUMN_HEADERS = {
 			"Primary Component", "Installed instances",
@@ -138,8 +145,8 @@ public class ReportServiceImpl implements ReportService {
 			"Assigned license pool count" };
 	private final String SOFTWARE_COMPLIANCE_SUMMARY_REPORT_NAME = "Software compliance summary report";
 	private final String[] SOFTWARE_LPAR_BASELINE_COLUMN_HEADERS = {
-			"Hostname", "Bios serial", "Effective processor count", "Scan time",
-			"Composite", "Serial", "Machine type", "Asset type" };
+			"Hostname", "Bios serial", "Effective processor count",
+			"Scan time", "Composite", "Serial", "Machine type", "Asset type" };
 	private final String SOFTWARE_LPAR_BASELINE_REPORT_NAME = "Software LPAR baseline report";
 	private final String[] SOFTWARE_VARIANCE_REPORT_COLUMN_HEADERS = {
 			"Primary Component", "Installed instances", "Scope software title" };
@@ -157,36 +164,65 @@ public class ReportServiceImpl implements ReportService {
 			"Alert", "Count", "Color", "Cause Code", "Responsibility" };
 	private final String NON_INSTANCE_REPORT_NAME = "Non Instance based Software report";
 	private final String[] NON_INSTANCE_REPORT_COLUMN_HEADERS = {
-			"Software component", "Manufacturer", "Restriction", "Non Instance capacity type", "Non Instance based only", "Status", "Remote User", "Record Time" };
+			"Software component", "Manufacturer", "Restriction",
+			"Non Instance capacity type", "Non Instance based only", "Status",
+			"Remote User", "Record Time" };
 	private final String PRIORITY_ISV_SW_REPORT_NAME = "Priority ISV Software report";
 	private final String[] PRIORITY_ISV_SW_REPORT_COLUMN_HEADERS = {
-			"Manufacturer Name", "Level", "CNDB Name", "CNDB ID", "Evidence Location", "Status", "Business Justification", "Remote User", "Record Time"};
-	
+			"Manufacturer Name", "Level", "CNDB Name", "CNDB ID",
+			"Evidence Location", "Status", "Business Justification",
+			"Remote User", "Record Time" };
+
 	private final String ALERT_HARDWARE_CFGDATA_REPORT_NAME = "SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED";
-	private final String[] ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS = {"Status",
-			"Serial", "Machine type", "Asset type", "Processor Manufacturer", "Mast Processor Type", 
-			"Processor Model", "NBR Cores Per Chip", "HW Chips", "HW Processor Count", "NBR Of Chips Max",
-			"CPU Gartner MIPS", "CPU IBM LSPR MIPS", "CPU MSU", "Create date/time","Age",
-			"Assignee", "Assignee comments", "Assigned date/time",
+	private final String[] ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS = {
+			"Status", "Serial", "Machine type", "Asset type",
+			"Processor Manufacturer", "Mast Processor Type", "Processor Model",
+			"NBR Cores Per Chip", "HW Chips", "HW Processor Count",
+			"NBR Of Chips Max", "CPU Gartner MIPS", "CPU IBM LSPR MIPS",
+			"CPU MSU", "Create date/time", "Age", "Assignee",
+			"Assignee comments", "Assigned date/time", "Cause Code (CC)",
+			"CC target date", "CC owner", "CC change date", "CC change person",
+			"Internal ID" };
+
+	private final String SOM3_ALERT_WITH_DEFINED_SCOPE_REPORT_NAME = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
+	private final String[] SOM3_ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS = {
+			"Status", "Hostname", "Installed SW component", "Create date/time",
+			"Age", "Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
-	
-	private final String ALERT_WITH_DEFINED_SCOPE_REPORT_NAME = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
-	private final String[] ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS = {"Status",
-			"Hostname", "Installed SW component", "Create date/time", "Age", "Assignee", 
-			"Assignee comments", "Assigned date/time", "Cause Code (CC)", "CC target date", "CC owner",
-			"CC change date", "CC change person", "Internal ID"};
-	
+
+	private final String SOM4A_IBM_SW_INSTANCES_REVIEWED_REPORT_NAME = "SOM4a: IBM SW INSTANCES REVIEWED";
+	private final String[] SOM4A_IBM_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS = {
+			"Status", "Hostname", "Installed SW component", "Create date/time",
+			"Age", "Assignee", "Assignee comments", "Assigned date/time",
+			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
+			"CC change person", "Internal ID" };
+
+	private final String SOM4B_PRIORITY_ISV_SW_INSTANCES_REVIEWED_REPORT_NAME = "SOM4b: PRIORITY ISV SW INSTANCES REVIEWED";
+	private final String[] SOM4B_PRIORITY_ISV_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS = {
+			"Status", "Hostname", "Installed SW component", "Create date/time",
+			"Age", "Assignee", "Assignee comments", "Assigned date/time",
+			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
+			"CC change person", "Internal ID" };
+
+	private final String SOM4C_ISV_SW_INSTANCES_REVIEWED_REPORT_NAME = "SOM4c: ISV SW INSTANCES REVIEWED";
+	private final String[] SOM4C_ISV_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS = {
+			"Status", "Hostname", "Installed SW component", "Create date/time",
+			"Age", "Assignee", "Assignee comments", "Assigned date/time",
+			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
+			"CC change person", "Internal ID" };
+
 	private DatabaseDeterminativeService dbdeterminativeService;
-	
+
 	@Autowired
 	public ReportServiceImpl(DatabaseDeterminativeService dbdeterminativeService) {
 		this.dbdeterminativeService = dbdeterminativeService;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertExpiredMaintReport(Account pAccount, String remoteUser, String lsName,  
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getAlertExpiredMaintReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -204,13 +240,13 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertExpiredScanReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
-			OutputStream pOutputStream) throws HibernateException, Exception {
+	public void getAlertExpiredScanReport(Account pAccount, String remoteUser,
+			String lsName, HSSFWorkbook phwb, OutputStream pOutputStream)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
 				.setLong("customerId", pAccount.getId())
-				.setString("type", "EXPIRED_SCAN")
-				.setInteger("alertTypeId", 6)
+				.setString("type", "EXPIRED_SCAN").setInteger("alertTypeId", 6)
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert Outdated Swlpar Report");
 		printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccount(),
@@ -218,9 +254,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert Outdated SWLpar Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert Outdated SWLpar Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -246,8 +282,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertHardwareLparReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
-			OutputStream pOutputStream) throws HibernateException, Exception {
+	public void getAlertHardwareLparReport(Account pAccount, String remoteUser,
+			String lsName, HSSFWorkbook phwb, OutputStream pOutputStream)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -260,9 +297,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert HWLpar Report Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert HWLpar Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -289,8 +326,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertHardwareReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
-			OutputStream pOutputStream) throws HibernateException, Exception {
+	public void getAlertHardwareReport(Account pAccount, String remoteUser,
+			String lsName, HSSFWorkbook phwb, OutputStream pOutputStream)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -303,9 +341,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert HW Report Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert HW Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -332,14 +370,14 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertSoftwareLparReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb,
-			OutputStream pOutputStream) throws HibernateException, Exception {
+	public void getAlertSoftwareLparReport(Account pAccount, String remoteUser,
+			String lsName, HSSFWorkbook phwb, OutputStream pOutputStream)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_SW_LPAR)
 				.setLong("customerId", pAccount.getId())
 				.setString("type", "SOFTWARE_LPAR")
-				.setInteger("alertTypeId", 5)
-				.scroll(ScrollMode.FORWARD_ONLY);
+				.setInteger("alertTypeId", 5).scroll(ScrollMode.FORWARD_ONLY);
 
 		HSSFSheet sheet = phwb.createSheet("Alert SwLpar Report");
 		printHeader(ALERT_SOFTWARE_LPAR_REPORT_NAME, pAccount.getAccount(),
@@ -347,9 +385,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert SWLpar Report Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert SWLpar Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -376,9 +414,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAccountDataExceptionReport(Account pAccount, String remoteUser, String lsName, 
-			String pAlertCode, PrintWriter pPrintWriter)
-			throws HibernateException, Exception {
+	public void getAccountDataExceptionReport(Account pAccount,
+			String remoteUser, String lsName, String pAlertCode,
+			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		String sql_query_data_exception = null;
 		String[] header_of_data_exception = null;
 		for (DataExceptionTypeEnum l : DataExceptionTypeEnum.values()) {
@@ -409,9 +447,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertUnlicensedIbmSwReport(Account pAccount, String remoteUser, String lsName, 
-			HSSFWorkbook phwb, OutputStream pOutputStream)
-			throws HibernateException, Exception {
+	public void getAlertUnlicensedIbmSwReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_UNLICENSED_SW)
 				.setLong("customerId", pAccount.getId())
@@ -423,9 +461,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert UIBM SW Report Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert UIBM SW Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -452,9 +490,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getAlertUnlicensedIsvSwReport(Account pAccount, String remoteUser, String lsName, 
-			HSSFWorkbook phwb, OutputStream pOutputStream)
-			throws HibernateException, Exception {
+	public void getAlertUnlicensedIsvSwReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).createSQLQuery(SQL_QUERY_UNLICENSED_SW)
 				.setLong("customerId", pAccount.getId())
@@ -466,9 +504,9 @@ public class ReportServiceImpl implements ReportService {
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert UISV SW Report Sheet"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert UISV SW Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -495,8 +533,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getFreeLicensePoolReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getFreeLicensePoolReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).getNamedQuery("freePoolReport")
 				.setLong("account", pAccount.getAccount())
@@ -511,18 +550,16 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getFullReconciliationReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter,
+	public void getFullReconciliationReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbIBMO3rdMSearchChecked,
-			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMO3rdMSearchChecked, boolean pbCustO3rdMSearchChecked,
 			boolean pbIBMOibmMSWCOSearchChecked,
 			boolean pbCustOibmMSWCOSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
-			boolean pbSelectAllChecked)
-			throws HibernateException, Exception {
+			boolean pbSelectAllChecked) throws HibernateException, Exception {
 		String lsBaseSelectClauseOne = "select "
 				+ "CASE WHEN AUS.Open = 0 THEN 'Blue' "
 				+ "WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 90 THEN 'Red' "
@@ -590,16 +627,16 @@ public class ReportServiceImpl implements ReportService {
 				+ "when h.nbr_cores_per_chip > 0  then 'MULTI-CORE' else '' end) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
 				+ ",instS.software_name as primaryComponent "
 				+ ",instS.PID as pid ";
-		
+
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
-                + "where sf.customer_id = :customerId "
-                + "and sf.status_id=2 "
-                + "and sf.software_name = instS.software_name "
-                + "and ( ( sf.level = 'PRODUCT' ) "
-                + "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
-                + "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
-                + "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
-                + "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
+				+ "where sf.customer_id = :customerId "
+				+ "and sf.status_id=2 "
+				+ "and sf.software_name = instS.software_name "
+				+ "and ( ( sf.level = 'PRODUCT' ) "
+				+ "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
+				+ "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
+				+ "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
+				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
 		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner ";
 		String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
 				+ ",aus.comments as alertAssComments "
@@ -619,8 +656,8 @@ public class ReportServiceImpl implements ReportService {
 				+ ",l.prod_name as licProdName "
 				+ ",l.version as licVersion "
 				+ ",CONCAT(CONCAT(RTRIM(CHAR(L.Cap_Type)), '-'), CT.Description) "
-				+ ",l.environment as licEnvironment "
-				+ ",ul.used_quantity " + ",case when r.id is null then '' "
+				+ ",l.environment as licEnvironment " + ",ul.used_quantity "
+				+ ",case when r.id is null then '' "
 				+ "when r.machine_level = 0 then 'No' " + "else 'Yes' end "
 				+ ", REPLACE(RTRIM(CHAR(DATE(L.Expire_Date), USA)), '/', '-') "
 				+ ",l.po_number " + ",l.cpu_serial "
@@ -642,7 +679,7 @@ public class ReportServiceImpl implements ReportService {
 				+ "inner join eaadmin.installed_software is on "
 				+ "sl.id = is.software_lpar_id "
 				+ "inner join eaadmin.software instS on "
-				+ "is.software_id = instS.software_id "				
+				+ "is.software_id = instS.software_id "
 				+ "inner join eaadmin.manufacturer instSwMan on "
 				+ "instS.manufacturer_id = instSwMan.id "
 				+ "inner join eaadmin.discrepancy_type dt on "
@@ -676,114 +713,74 @@ public class ReportServiceImpl implements ReportService {
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
 				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) ";
-//				+ "and (sf.id in (select ssf.id  "
-//                + " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instS.software_name = ssf.SOFTWARE_NAME  order by "
-//                + " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
-//                + " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
-//                + "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
-//                + "  4 END END END "
-//                + " fetch first 1 row only ) )";
+		// + "and (sf.id in (select ssf.id  "
+		// +
+		// " from schedule_f ssf where  sl.customer_id =  ssf.customer_id and instS.software_name = ssf.SOFTWARE_NAME  order by "
+		// +
+		// " CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = sl.name THEN 1 ELSE "
+		// +
+		// " CASE WHEN  ssf.level='HWBOX' and ssf.serial = h.serial and ssf.machine_type = mt.name THEN 2 ELSE "
+		// +
+		// "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = h.owner THEN 3 ELSE "
+		// + "  4 END END END "
+		// + " fetch first 1 row only ) )";
 		String lsBaseWhereClauseb = "where "
 				+ "sl.customer_id = :customerId "
 				+ "and hl.customer_id = :customerId "
-				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) "
-				;
+				+ "and (aus.open = 1 or (aus.open = 0 and is.id = r.installed_software_id)) ";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
 		ScrollableResults lsrReport = null;
 
-// ------- BUGFIX --------
+		// ------- BUGFIX --------
 		lsbSql.append(
-							lsBaseSelectClauseOne + lsBaseSelectClauseTwo
-									+ lsBaseSelectClauseFour + lsBaseFromClause)
-							.append(lsBaseWhereClausea);
-// --------------------------		
-/*		if (pbCustomerOwnedCustomerManagedSearchChecked
-				|| pbCustomerOwnedIBMManagedSearchChecked
-				|| pbIBMOwnedIBMManagedSearchChecked
-				|| pbIBMO3rdMSearchChecked
-				|| pbCustO3rdMSearchChecked
-				|| pbIBMOibmMSWCOSearchChecked
-				|| pbCustOibmMSWCOSearchChecked
-				|| pbSelectAllChecked) {
-			lsbSql.append(
-					lsBaseSelectClauseOne + lsBaseSelectClauseTwo
-							+ lsBaseSelectClauseFour + lsBaseFromClause)
-					.append("inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instS.software_name = sf.SOFTWARE_NAME inner join EAADMIN.Scope scp on SF.scope_id=scp.id ")
-					.append(lsBaseWhereClausea);
-			if (pbSelectAllChecked) {				
-					lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
-					pbTitlesNotSpecifiedInContractScopeSearchChecked = true;
-			} else {
-
-				if (pbCustomerOwnedCustomerManagedSearchChecked) {
-					lsbScopeSql.append("1");
-				}
-				if (pbCustomerOwnedIBMManagedSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 2");
-					} else {
-						lsbScopeSql.append("2");
-					}
-				}
-				if (pbIBMOwnedIBMManagedSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 3");
-					} else {
-						lsbScopeSql.append("3");
-					}
-				}
-				if (pbIBMO3rdMSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 4");
-					} else {
-						lsbScopeSql.append("4");
-					}
-				}
-				if (pbCustO3rdMSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 5");
-					} else {
-						lsbScopeSql.append("5");
-					}
-				}
-				if (pbIBMOibmMSWCOSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 6");
-					} else {
-						lsbScopeSql.append("6");
-					}
-				}
-				if (pbCustOibmMSWCOSearchChecked) {
-					if (lsbScopeSql.length() > 0) {
-						lsbScopeSql.append(", 7");
-					} else {
-						lsbScopeSql.append("7");
-					}
-				}
-			}
-			lsbSql.append(" AND SF.Scope_Id IN (")
-			.append(lsbScopeSql)
-			.append(") ")
-			.append(" AND SF.STATUS_ID = 2 ")
-			.append(" and (\r\n"
-					+ "  sf.level = 'PRODUCT'\r\n"
-					+ " or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n"
-					+ " or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n"
-					+ " or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n"
-					+ " )")
-			.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
-					: "");
-		}
-		if (pbTitlesNotSpecifiedInContractScopeSearchChecked) {
-			lsbSql.append(
-					lsBaseSelectClauseOne + lsBaseSelectClauseThree
-							+ lsBaseSelectClauseFour + lsBaseFromClause)
-					.append(" ")
-					.append(lsBaseWhereClauseb)
-					.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instS.software_name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') ");
-		}
-*/
+				lsBaseSelectClauseOne + lsBaseSelectClauseTwo
+						+ lsBaseSelectClauseFour + lsBaseFromClause).append(
+				lsBaseWhereClausea);
+		// --------------------------
+		/*
+		 * if (pbCustomerOwnedCustomerManagedSearchChecked ||
+		 * pbCustomerOwnedIBMManagedSearchChecked ||
+		 * pbIBMOwnedIBMManagedSearchChecked || pbIBMO3rdMSearchChecked ||
+		 * pbCustO3rdMSearchChecked || pbIBMOibmMSWCOSearchChecked ||
+		 * pbCustOibmMSWCOSearchChecked || pbSelectAllChecked) { lsbSql.append(
+		 * lsBaseSelectClauseOne + lsBaseSelectClauseTwo +
+		 * lsBaseSelectClauseFour + lsBaseFromClause) .append(
+		 * "inner join EAADMIN.Schedule_F SF on sf.customer_id = sl.customer_id and instS.software_name = sf.SOFTWARE_NAME inner join EAADMIN.Scope scp on SF.scope_id=scp.id "
+		 * ) .append(lsBaseWhereClausea); if (pbSelectAllChecked) {
+		 * lsbScopeSql.append("1, 2, 3, 4, 5, 6, 7");
+		 * pbTitlesNotSpecifiedInContractScopeSearchChecked = true; } else {
+		 * 
+		 * if (pbCustomerOwnedCustomerManagedSearchChecked) {
+		 * lsbScopeSql.append("1"); } if
+		 * (pbCustomerOwnedIBMManagedSearchChecked) { if (lsbScopeSql.length() >
+		 * 0) { lsbScopeSql.append(", 2"); } else { lsbScopeSql.append("2"); } }
+		 * if (pbIBMOwnedIBMManagedSearchChecked) { if (lsbScopeSql.length() >
+		 * 0) { lsbScopeSql.append(", 3"); } else { lsbScopeSql.append("3"); } }
+		 * if (pbIBMO3rdMSearchChecked) { if (lsbScopeSql.length() > 0) {
+		 * lsbScopeSql.append(", 4"); } else { lsbScopeSql.append("4"); } } if
+		 * (pbCustO3rdMSearchChecked) { if (lsbScopeSql.length() > 0) {
+		 * lsbScopeSql.append(", 5"); } else { lsbScopeSql.append("5"); } } if
+		 * (pbIBMOibmMSWCOSearchChecked) { if (lsbScopeSql.length() > 0) {
+		 * lsbScopeSql.append(", 6"); } else { lsbScopeSql.append("6"); } } if
+		 * (pbCustOibmMSWCOSearchChecked) { if (lsbScopeSql.length() > 0) {
+		 * lsbScopeSql.append(", 7"); } else { lsbScopeSql.append("7"); } } }
+		 * lsbSql.append(" AND SF.Scope_Id IN (") .append(lsbScopeSql)
+		 * .append(") ") .append(" AND SF.STATUS_ID = 2 ") .append(" and (\r\n"
+		 * + "  sf.level = 'PRODUCT'\r\n" +
+		 * " or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n"
+		 * +
+		 * " or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n"
+		 * + " or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n"
+		 * + " )") .append(pbTitlesNotSpecifiedInContractScopeSearchChecked ?
+		 * "UNION " : ""); } if
+		 * (pbTitlesNotSpecifiedInContractScopeSearchChecked) { lsbSql.append(
+		 * lsBaseSelectClauseOne + lsBaseSelectClauseThree +
+		 * lsBaseSelectClauseFour + lsBaseFromClause) .append(" ")
+		 * .append(lsBaseWhereClauseb) .append(
+		 * " AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status S3 WHERE SF.Customer_Id = :customerId AND SF.SOFTWARE_NAME = instS.software_name AND S3.Id = SF.Status_Id AND S3.Description = 'ACTIVE') "
+		 * ); }
+		 */
 		lsbSql.append("ORDER BY 4");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())
@@ -799,8 +796,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getHardwareBaselineReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getHardwareBaselineReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -817,45 +815,43 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getInstalledSoftwareBaselineReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter,
+	public void getInstalledSoftwareBaselineReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbIBMO3rdMSearchChecked,
-			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMO3rdMSearchChecked, boolean pbCustO3rdMSearchChecked,
 			boolean pbIBMOibmMSWCOSearchChecked,
 			boolean pbCustOibmMSWCOSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
-			boolean pbSelectAllChecked)
-			throws HibernateException, Exception {
+			boolean pbSelectAllChecked) throws HibernateException, Exception {
 		String lsBaseSelectAndFromClause = "SELECT S.software_name AS SI_Name "
-												+ ", M.Name AS M_Name "
-												+ ", CASE S.VENDOR_MANAGED WHEN 1 THEN 'Yes' ELSE 'No' END "
-												+ ", SL.Name AS SL_Name "
-												+ ", SL.Bios_Serial "
-												+ ", COALESCE (hle.Processor_Count,0) "
-												+ ", H.Chips "
-												+ ", SL.ScanTime "
-												+ ", CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) "
-											+ "WHEN 0 THEN 'No' ELSE 'Yes' END "
-												+ ", H.Serial "
-												+ ", MT.Name AS MT_Name"
-												+ ", MT.Type "
-											+ "FROM EAADMIN.software S "
-												+ ", EAADMIN.Manufacturer M "
-												+ ", EAADMIN.Software_Lpar SL "
-												+ ", EAADMIN.Installed_Software IS "
-													+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id "
-													+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
-													+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
-													+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
-													+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
-												+ ", (SELECT SL2.Customer_Id, S2.software_id, S2.Software_Category_Id, MIN(S2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2 "
-																																					+ ", EAADMIN.software S2 "
-																																					+ ", EAADMIN.Product_Info PI2 "
-																																					+ ", EAADMIN.Installed_Software IS2 "
-																																				+ " WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND S2.software_id = IS2.Software_Id AND S2.level = 'LICENSABLE' AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, S2.software_id, S2.Software_Category_Id) AS TEMP ";
+				+ ", M.Name AS M_Name "
+				+ ", CASE S.VENDOR_MANAGED WHEN 1 THEN 'Yes' ELSE 'No' END "
+				+ ", SL.Name AS SL_Name "
+				+ ", SL.Bios_Serial "
+				+ ", COALESCE (hle.Processor_Count,0) "
+				+ ", H.Chips "
+				+ ", SL.ScanTime "
+				+ ", CASE LENGTH(RTRIM(COALESCE(CHAR(HSC.Id), ''))) "
+				+ "WHEN 0 THEN 'No' ELSE 'Yes' END "
+				+ ", H.Serial "
+				+ ", MT.Name AS MT_Name"
+				+ ", MT.Type "
+				+ "FROM EAADMIN.software S "
+				+ ", EAADMIN.Manufacturer M "
+				+ ", EAADMIN.Software_Lpar SL "
+				+ ", EAADMIN.Installed_Software IS "
+				+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = IS.Software_Lpar_Id "
+				+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
+				+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
+				+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
+				+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
+				+ ", (SELECT SL2.Customer_Id, S2.software_id, S2.Software_Category_Id, MIN(S2.Priority) AS Priority FROM EAADMIN.Software_Lpar SL2 "
+				+ ", EAADMIN.software S2 "
+				+ ", EAADMIN.Product_Info PI2 "
+				+ ", EAADMIN.Installed_Software IS2 "
+				+ " WHERE SL2.Customer_Id = :customerId AND SL2.Status = 'ACTIVE' AND SL2.Id = IS2.Software_Lpar_Id AND S2.software_id = IS2.Software_Id AND S2.level = 'LICENSABLE' AND IS2.Discrepancy_Type_Id IN (1, 2, 4) AND IS2.Status = 'ACTIVE' GROUP BY SL2.Customer_Id, S2.software_id, S2.Software_Category_Id) AS TEMP ";
 		String lsBaseWhereClause = "WHERE S.software_id = IS.Software_Id and S.level = 'LICENSABLE' AND M.Id = S.Manufacturer_Id AND SL.Customer_Id = TEMP.Customer_Id AND SL.Status = 'ACTIVE' AND SL.Id = IS.Software_Lpar_Id AND IS.Discrepancy_Type_Id IN (1, 2, 4) AND IS.Status = 'ACTIVE' AND TEMP.software_Id = S.software_id AND TEMP.Software_Category_Id = S.Software_Category_Id AND TEMP.Priority = S.Priority ";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
@@ -865,16 +861,12 @@ public class ReportServiceImpl implements ReportService {
 				&& pbCustomerOwnedIBMManagedSearchChecked
 				&& pbIBMOwnedIBMManagedSearchChecked
 				&& pbTitlesNotSpecifiedInContractScopeSearchChecked
-				&& pbIBMO3rdMSearchChecked
-				&& pbCustO3rdMSearchChecked
-				&& pbIBMOibmMSWCOSearchChecked
-				&& pbCustOibmMSWCOSearchChecked)
-				|| pbSelectAllChecked)) {
+				&& pbIBMO3rdMSearchChecked && pbCustO3rdMSearchChecked
+				&& pbIBMOibmMSWCOSearchChecked && pbCustOibmMSWCOSearchChecked) || pbSelectAllChecked)) {
 			if (pbCustomerOwnedCustomerManagedSearchChecked
 					|| pbCustomerOwnedIBMManagedSearchChecked
 					|| pbIBMOwnedIBMManagedSearchChecked
-					|| pbIBMO3rdMSearchChecked
-					|| pbCustO3rdMSearchChecked
+					|| pbIBMO3rdMSearchChecked || pbCustO3rdMSearchChecked
 					|| pbIBMOibmMSWCOSearchChecked
 					|| pbCustOibmMSWCOSearchChecked) {
 				lsbSql.append(lsBaseSelectAndFromClause)
@@ -924,17 +916,17 @@ public class ReportServiceImpl implements ReportService {
 					} else {
 						lsbScopeSql.append("7");
 					}
-			}
+				}
 				lsbSql.append(
-						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = S.software_id AND " 
-								+"(sf.id in (select ssf.id  "
-					                  + " from schedule_f ssf where  ol.customer_id =  ssf.customer_id and S.software_id = ssf.software_id order by "
-					                  + "  CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = SL.name THEN 1 ELSE "
-					                  + "  CASE WHEN  ssf.level='HWBOX' and ssf.serial = H.serial and ssf.machine_type = mt.name THEN 2 ELSE"
-					                 +  "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = H.owner THEN 3 ELSE"
-					                 +  "   4 END END END "
-					            + "fetch first 1 row only ) )"
-						+"AND SF.Scope_Id IN (")
+						" AND SF.Customer_Id = SL.Customer_Id AND SF.Software_Id = S.software_id AND "
+								+ "(sf.id in (select ssf.id  "
+								+ " from schedule_f ssf where  ol.customer_id =  ssf.customer_id and S.software_id = ssf.software_id order by "
+								+ "  CASE WHEN  ssf.level='HOSTNAME' and ssf.hostname = SL.name THEN 1 ELSE "
+								+ "  CASE WHEN  ssf.level='HWBOX' and ssf.serial = H.serial and ssf.machine_type = mt.name THEN 2 ELSE"
+								+ "  CASE WHEN ssf.level='HWOWNER' and  ssf.hw_owner = H.owner THEN 3 ELSE"
+								+ "   4 END END END "
+								+ "fetch first 1 row only ) )"
+								+ "AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
 						.append(") ")
 						.append(pbTitlesNotSpecifiedInContractScopeSearchChecked ? "UNION "
@@ -944,14 +936,13 @@ public class ReportServiceImpl implements ReportService {
 				lsbSql.append(lsBaseSelectAndFromClause)
 						.append(" ")
 						.append(lsBaseWhereClause)
-						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status ST WHERE SF.Customer_Id = :customerId AND SF.Software_Id = S.software_id AND ST.Id = SF.Status_Id AND ST.Description = 'ACTIVE'" +
-								" AND (\r\n" + 
-								"  sf.level = 'PRODUCT'\r\n" + 
-								" or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n" + 
-								" or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n" + 
-								" or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n" + 
-								" )" +
-								") ");
+						.append(" AND NOT EXISTS (SELECT SF.Software_Id FROM EAADMIN.Schedule_F SF, EAADMIN.Status ST WHERE SF.Customer_Id = :customerId AND SF.Software_Id = S.software_id AND ST.Id = SF.Status_Id AND ST.Description = 'ACTIVE'"
+								+ " AND (\r\n"
+								+ "  sf.level = 'PRODUCT'\r\n"
+								+ " or (( sf.hostname = sl.name ) and ( sf.level = 'HOSTNAME' )) \r\n"
+								+ " or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) \r\n"
+								+ " or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) \r\n"
+								+ " )" + ") ");
 			}
 		} else {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
@@ -973,18 +964,16 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getLicenseBaselineReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter,
+	public void getLicenseBaselineReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbIBMO3rdMSearchChecked,
-			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMO3rdMSearchChecked, boolean pbCustO3rdMSearchChecked,
 			boolean pbIBMOibmMSWCOSearchChecked,
 			boolean pbCustOibmMSWCOSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
-			boolean pbSelectAllChecked)
-			throws HibernateException, Exception {
+			boolean pbSelectAllChecked) throws HibernateException, Exception {
 		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID as swproPID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
 		StringBuffer lsbSql = new StringBuffer();
@@ -995,16 +984,12 @@ public class ReportServiceImpl implements ReportService {
 				&& pbCustomerOwnedIBMManagedSearchChecked
 				&& pbIBMOwnedIBMManagedSearchChecked
 				&& pbTitlesNotSpecifiedInContractScopeSearchChecked
-				&& pbIBMO3rdMSearchChecked
-				&& pbCustO3rdMSearchChecked
-				&& pbIBMOibmMSWCOSearchChecked
-				&& pbCustOibmMSWCOSearchChecked)
-				|| pbSelectAllChecked)) {
+				&& pbIBMO3rdMSearchChecked && pbCustO3rdMSearchChecked
+				&& pbIBMOibmMSWCOSearchChecked && pbCustOibmMSWCOSearchChecked) || pbSelectAllChecked)) {
 			if (pbCustomerOwnedCustomerManagedSearchChecked
 					|| pbCustomerOwnedIBMManagedSearchChecked
 					|| pbIBMOwnedIBMManagedSearchChecked
-					|| pbIBMO3rdMSearchChecked
-					|| pbCustO3rdMSearchChecked
+					|| pbIBMO3rdMSearchChecked || pbCustO3rdMSearchChecked
 					|| pbIBMOibmMSWCOSearchChecked
 					|| pbCustOibmMSWCOSearchChecked) {
 				lsbSql.append(lsBaseSelectAndFromClause)
@@ -1054,7 +1039,7 @@ public class ReportServiceImpl implements ReportService {
 					} else {
 						lsbScopeSql.append("7");
 					}
-			}
+				}
 				lsbSql.append(
 						" AND SF.Customer_Id = L.Customer_Id AND SF.Software_Id = S.software_id AND SF.Scope_Id IN (")
 						.append(lsbScopeSql)
@@ -1088,8 +1073,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getNonWorkstationAccountsReport(String remoteUser, String lsName,  PrintWriter pPrintWriter)
-			throws HibernateException, Exception {
+	public void getNonWorkstationAccountsReport(String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1105,8 +1091,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionDetailReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getPendingCustomerDecisionDetailReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1124,8 +1111,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionSummaryReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getPendingCustomerDecisionSummaryReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1143,97 +1131,98 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getReconciliationSummaryReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getReconciliationSummaryReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
-				.createSQLQuery("select   "
-						+"							COALESCE (det.software_name,lic.software_name) "
-						+"							,COALESCE(count(det.isw_id),0)  "
-						+"							,COALESCE ((count(det.isw_id) - sum(det.open)),0)  "
-						+"							,COALESCE (sum(det.open),0)  "
-						+"							,COALESCE(lic.free,0) "
-						+"							,COALESCE(lic.pool_type,'') "
-						+"							,COALESCE(det.swOwner,'') "
-						+"						from   "
-						+"						  "
-						+"							(select  "
-						+"								sw.software_name as software_name  "
-						+"								,sw.software_id as software_id  "
-						+"								,isw.id as isw_id  "
-						+"								,AUS.Open as open  "
-						+"								,COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id where sf.customer_id = :customerId and sf.status_id=2 and sf.software_name = sw.software_name and ( ( sf.level = 'PRODUCT' ) or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner  "
-						+"							from  "
-						+"								eaadmin.software_lpar sl  "
-						+"								join eaadmin.installed_software isw on (sl.id = isw.software_lpar_id)  "
-						+"								join eaadmin.alert_unlicensed_sw aus on (isw.id = aus.installed_software_id)  "
-						+"								join eaadmin.hw_sw_composite hwsw on (sl.id = hwsw.software_lpar_id)  "
-						+"								join eaadmin.hardware_lpar hl on (hwsw.hardware_lpar_id = hl.id and sl.customer_id = hl.customer_id)  "
-						+"								join eaadmin.hardware h on (hl.hardware_id = h.id)  "
-						+"								join eaadmin.machine_type mt on (h.machine_type_id = mt.id)  "
-						+"								join eaadmin.software sw on (sw.software_id = isw.software_id)  "
-						+"						  "
-						+"							where  "
-						+"								(exists (select 1 from eaadmin.reconcile r where isw.id = r.installed_software_id) or (aus.open  = 1))  "
-						+"										and sl.customer_id = :customerId  "
-						+"							) det  "
-						+"						  "
-						+"							full outer join  "
-						+"							(   select "
-						+"								l.software_id software_id "
-						+"								,quantity.quantity - l.used free "
-						+"								,l.pool_type pool_type "
-						+"								,quantity.software_name software_name "
-						+"								from "
-						+"									( select "
-						+"										lsm.software_id as software_id  "
-						+"										,COALESCE (sum(l.quantity),0) as quantity "
-						+"										,sw.software_name as software_name "
-						+"										from "
-						+"											eaadmin.license l  "
-						+"											join eaadmin.license_sw_map lsm on (l.id = lsm.license_id and l.status = 'ACTIVE')  "
-						+"											join eaadmin.software sw on ( sw.software_id = lsm.software_id ) "
-						+"										where l.customer_id= :customerId "
-						+"										group by lsm.software_id,sw.software_name "
-						+"									) quantity "
-						+"									join ( "
-						+"										select "
-						+"											lsm.software_id as software_id "
-						+"											,(RTRIM(CAST(ct.code AS CHAR(8) )) || ' - ' || ct.description ) as pool_type  "
-						+"											,COALESCE (sum(ul.used_quantity),0) used  "
-						+"										from "
-						+"											eaadmin.license l  "
-						+"											join eaadmin.license_sw_map lsm on (l.id = lsm.license_id and l.status = 'ACTIVE')  "
-						+"											left outer join eaadmin.used_license ul on (l.id = ul.license_id)  "
-						+"											left outer join eaadmin.capacity_type ct on (l.cap_type = ct.code)  "
-						+"										where l.customer_id= :customerId "
-						+"										group by lsm.software_id,ct.code,ct.description "
-						+"									) l on (l.software_id = quantity.software_id) "
-						+"						 	 "
-						+"								) lic on ( det.software_id = lic.software_id )  "
-						+"						group by  "
-						+"						det.software_name "
-						+"						,lic.software_name "
-						+"						,det.swOwner "
-						+"						,lic.pool_type "
-						+"						,lic.free "
-						+"						order by 1  "
-						+"						with ur ")
+				.createSQLQuery(
+						"select   "
+								+ "							COALESCE (det.software_name,lic.software_name) "
+								+ "							,COALESCE(count(det.isw_id),0)  "
+								+ "							,COALESCE ((count(det.isw_id) - sum(det.open)),0)  "
+								+ "							,COALESCE (sum(det.open),0)  "
+								+ "							,COALESCE(lic.free,0) "
+								+ "							,COALESCE(lic.pool_type,'') "
+								+ "							,COALESCE(det.swOwner,'') "
+								+ "						from   "
+								+ "						  "
+								+ "							(select  "
+								+ "								sw.software_name as software_name  "
+								+ "								,sw.software_id as software_id  "
+								+ "								,isw.id as isw_id  "
+								+ "								,AUS.Open as open  "
+								+ "								,COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id where sf.customer_id = :customerId and sf.status_id=2 and sf.software_name = sw.software_name and ( ( sf.level = 'PRODUCT' ) or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner  "
+								+ "							from  "
+								+ "								eaadmin.software_lpar sl  "
+								+ "								join eaadmin.installed_software isw on (sl.id = isw.software_lpar_id)  "
+								+ "								join eaadmin.alert_unlicensed_sw aus on (isw.id = aus.installed_software_id)  "
+								+ "								join eaadmin.hw_sw_composite hwsw on (sl.id = hwsw.software_lpar_id)  "
+								+ "								join eaadmin.hardware_lpar hl on (hwsw.hardware_lpar_id = hl.id and sl.customer_id = hl.customer_id)  "
+								+ "								join eaadmin.hardware h on (hl.hardware_id = h.id)  "
+								+ "								join eaadmin.machine_type mt on (h.machine_type_id = mt.id)  "
+								+ "								join eaadmin.software sw on (sw.software_id = isw.software_id)  "
+								+ "						  "
+								+ "							where  "
+								+ "								(exists (select 1 from eaadmin.reconcile r where isw.id = r.installed_software_id) or (aus.open  = 1))  "
+								+ "										and sl.customer_id = :customerId  "
+								+ "							) det  "
+								+ "						  "
+								+ "							full outer join  "
+								+ "							(   select "
+								+ "								l.software_id software_id "
+								+ "								,quantity.quantity - l.used free "
+								+ "								,l.pool_type pool_type "
+								+ "								,quantity.software_name software_name "
+								+ "								from "
+								+ "									( select "
+								+ "										lsm.software_id as software_id  "
+								+ "										,COALESCE (sum(l.quantity),0) as quantity "
+								+ "										,sw.software_name as software_name "
+								+ "										from "
+								+ "											eaadmin.license l  "
+								+ "											join eaadmin.license_sw_map lsm on (l.id = lsm.license_id and l.status = 'ACTIVE')  "
+								+ "											join eaadmin.software sw on ( sw.software_id = lsm.software_id ) "
+								+ "										where l.customer_id= :customerId "
+								+ "										group by lsm.software_id,sw.software_name "
+								+ "									) quantity "
+								+ "									join ( "
+								+ "										select "
+								+ "											lsm.software_id as software_id "
+								+ "											,(RTRIM(CAST(ct.code AS CHAR(8) )) || ' - ' || ct.description ) as pool_type  "
+								+ "											,COALESCE (sum(ul.used_quantity),0) used  "
+								+ "										from "
+								+ "											eaadmin.license l  "
+								+ "											join eaadmin.license_sw_map lsm on (l.id = lsm.license_id and l.status = 'ACTIVE')  "
+								+ "											left outer join eaadmin.used_license ul on (l.id = ul.license_id)  "
+								+ "											left outer join eaadmin.capacity_type ct on (l.cap_type = ct.code)  "
+								+ "										where l.customer_id= :customerId "
+								+ "										group by lsm.software_id,ct.code,ct.description "
+								+ "									) l on (l.software_id = quantity.software_id) "
+								+ "						 	 "
+								+ "								) lic on ( det.software_id = lic.software_id )  "
+								+ "						group by  "
+								+ "						det.software_name "
+								+ "						,lic.software_name "
+								+ "						,det.swOwner "
+								+ "						,lic.pool_type " + "						,lic.free "
+								+ "						order by 1  " + "						with ur ")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
 		printHeader(RECONCILIATION_SUMMARY_REPORT_NAME, pAccount.getAccount(),
 				RECONCILIATION_SUMMARY_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
-			pPrintWriter.println(outputReconciliationSummaryData(
-					lsrReport.get()));
+			pPrintWriter.println(outputReconciliationSummaryData(lsrReport
+					.get()));
 		}
 		lsrReport.close();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getCauseCodeSummaryReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getCauseCodeSummaryReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1250,27 +1239,25 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareComplianceSummaryReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter,
+	public void getSoftwareComplianceSummaryReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter,
 			boolean pbCustomerOwnedCustomerManagedSearchChecked,
 			boolean pbCustomerOwnedIBMManagedSearchChecked,
 			boolean pbIBMOwnedIBMManagedSearchChecked,
-			boolean pbIBMO3rdMSearchChecked,
-			boolean pbCustO3rdMSearchChecked,
+			boolean pbIBMO3rdMSearchChecked, boolean pbCustO3rdMSearchChecked,
 			boolean pbIBMOibmMSWCOSearchChecked,
 			boolean pbCustOibmMSWCOSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
-			boolean pbSelectAllChecked)
-			throws HibernateException, Exception {
-		if (pbSelectAllChecked){
-			 pbCustomerOwnedCustomerManagedSearchChecked = true;
-			 pbCustomerOwnedIBMManagedSearchChecked= true;
-			 pbIBMOwnedIBMManagedSearchChecked= true;
-			 pbIBMO3rdMSearchChecked= true;
-			 pbCustO3rdMSearchChecked= true;
-			 pbIBMOibmMSWCOSearchChecked= true;
-			 pbCustOibmMSWCOSearchChecked= true;
-			 pbTitlesNotSpecifiedInContractScopeSearchChecked= true;
+			boolean pbSelectAllChecked) throws HibernateException, Exception {
+		if (pbSelectAllChecked) {
+			pbCustomerOwnedCustomerManagedSearchChecked = true;
+			pbCustomerOwnedIBMManagedSearchChecked = true;
+			pbIBMOwnedIBMManagedSearchChecked = true;
+			pbIBMO3rdMSearchChecked = true;
+			pbCustO3rdMSearchChecked = true;
+			pbIBMOibmMSWCOSearchChecked = true;
+			pbCustOibmMSWCOSearchChecked = true;
+			pbTitlesNotSpecifiedInContractScopeSearchChecked = true;
 		}
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
@@ -1306,8 +1293,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareLparBaselineReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getSoftwareLparBaselineReport(Account pAccount,
+			String remoteUser, String lsName, PrintWriter pPrintWriter)
+			throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1319,14 +1307,14 @@ public class ReportServiceImpl implements ReportService {
 								+ ", H.Serial"
 								+ ", MT.Name AS MT_Name"
 								+ ", MT.Type "
-						+ "FROM EAADMIN.Software_Lpar SL "
-							+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = SL.Id "
-							+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
-							+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
-							+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
-							+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
-						+ " WHERE SL.Customer_Id = :customerId AND SL.Status = 'ACTIVE' "
-						+ " ORDER BY SL.Name ASC")
+								+ "FROM EAADMIN.Software_Lpar SL "
+								+ "LEFT OUTER JOIN EAADMIN.HW_SW_Composite HSC ON HSC.Software_Lpar_Id = SL.Id "
+								+ "LEFT OUTER JOIN EAADMIN.Hardware_Lpar HL ON HL.Id = HSC.Hardware_Lpar_Id "
+								+ "LEFT OUTER JOIN EAADMIN.Hardware H ON H.Id = HL.Hardware_Id "
+								+ "LEFT OUTER JOIN EAADMIN.Machine_Type MT ON MT.Id = H.Machine_Type_Id "
+								+ "LEFT OUTER JOIN EAADMIN.Hardware_lpar_eff hle on ( hle.hardware_lpar_id=hl.id and hle.status = 'ACTIVE' )"
+								+ " WHERE SL.Customer_Id = :customerId AND SL.Status = 'ACTIVE' "
+								+ " ORDER BY SL.Name ASC")
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
@@ -1339,8 +1327,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getSoftwareVarianceReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception {
+	public void getSoftwareVarianceReport(Account pAccount, String remoteUser,
+			String lsName, PrintWriter pPrintWriter) throws HibernateException,
+			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1357,8 +1346,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getWorkstationAccountsReport( String remoteUser, String lsName,  PrintWriter pPrintWriter)
-			throws HibernateException, Exception {
+	public void getWorkstationAccountsReport(String remoteUser, String lsName,
+			PrintWriter pPrintWriter) throws HibernateException, Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate())
 				.createSQLQuery(
@@ -1372,7 +1361,7 @@ public class ReportServiceImpl implements ReportService {
 		}
 		lsrReport.close();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getPriorityISVSWReport(PrintWriter pPrintWriter) {
@@ -1386,10 +1375,10 @@ public class ReportServiceImpl implements ReportService {
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}
-		
+
 		lsrReport.close();
 	}
-	
+
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
 		// TODO Auto-generated method stub
@@ -1403,41 +1392,49 @@ public class ReportServiceImpl implements ReportService {
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}
-		
+
 		lsrReport.close();
 	}
-	
-	
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getAlertHardwareCfgDataReport(Account pAccount,
 			String remoteUser, String lsName, HSSFWorkbook phwb,
-			OutputStream pOutputStream) throws HibernateException, Exception{
+			OutputStream pOutputStream) throws HibernateException, Exception {
 		// TODO Auto-generated method stub
-		StringBuffer sb = new StringBuffer("SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
-		sb.append(" ").append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
-		.append(" ").append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
-		.append(" ").append("VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,AC.name as ac_name,")
-		.append(" ").append("CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id")
-		.append(" ").append("FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC")
-		.append(" ").append("WHERE VA.Customer_Id = :customerId AND VA.Type = 'HWCFGDTA' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id")
-		.append(" ").append("and VA.id=CC.alert_id and CC.alert_type_id=37 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC");
-		
-		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
-				.createSQLQuery(sb.toString())
+		StringBuffer sb = new StringBuffer(
+				"SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
+		sb.append(" ")
+				.append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
+				.append(" ")
+				.append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
+				.append(" ")
+				.append("VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time,AC.name as ac_name,")
+				.append(" ")
+				.append("CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id")
+				.append(" ")
+				.append("FROM EAADMIN.V_Alerts VA, EAADMIN.Hardware H, EAADMIN.Machine_Type MT, EAADMIN.cause_code CC, EAADMIN.alert_cause AC")
+				.append(" ")
+				.append("WHERE VA.Customer_Id = :customerId AND VA.Type = 'HWCFGDTA' AND VA.Open = 1 AND H.Id = VA.FK_Id AND MT.Id = H.Machine_Type_Id")
+				.append(" ")
+				.append("and VA.id=CC.alert_id and CC.alert_type_id=37 and CC.alert_cause_id=AC.id ORDER BY H.Serial ASC");
+
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate()).createSQLQuery(sb.toString())
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
-		
-		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config "+ pAccount.getAccount() +" Report");
+
+		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config "
+				+ pAccount.getAccount() + " Report");
 		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccount(),
 				ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert Hardware Config " + pAccount.getAccount() + " Report"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert Hardware Config "
+						+ pAccount.getAccount() + " Report" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -1461,67 +1458,72 @@ public class ReportServiceImpl implements ReportService {
 			j++;
 		}
 		phwb.write(pOutputStream);
-	
+
 	}
 
+	// SOM3
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getAlertWithDefinedContractScopeReport(Account pAccount,
 			String remoteUser, String lsName, HSSFWorkbook phwb,
 			OutputStream pOutputStream) throws HibernateException, Exception {
 
-		//This is a replacement value for previously hardcoded values of Alert_type.IDs,
-		// now you can just specify the Alert_type code, no matter what the ID # is
+		// This is a replacement value for previously hardcoded values of
+		// Alert_type.IDs,
+		// now you can just specify the Alert_type code, no matter what the ID #
+		// is
 		AlertType alertType = (AlertType) getEntityManager()
 				.createNamedQuery("getAlertTypeByCode")
-				.setParameter("code", "SWISCOPE")
-				.getSingleResult();
-		
-		StringBuffer sb = new StringBuffer("SELECT " +
-				"CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, " +
-				"sl.name, " +
-				"sw.software_name, " +
-				"VA.Creation_Time, " +
-				"VA.Alert_Age, " +
-				"VA.Remote_User, " +
-				"VA.Comments, " +
-				"VA.Record_Time, " +
-				"AC.name as ac_name, " +
-				"CC.target_date, " +
-				"CC.owner as cc_owner, " +
-				"CC.record_time as cc_record_time, " +
-				"CC.remote_user as cc_remote_user, " +
-				"CC.id as cc_id " +
+				.setParameter("code", "SWISCOPE").getSingleResult();
 
-				"FROM EAADMIN.V_Alerts VA " +
-					"join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id " +
-					"join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id " +
-					"join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id " +
-					"join EAADMIN.cause_code CC on CC.alert_id = VA.id " +
-					"join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id " +
-					"join EAADMIN.alert_type AT on AT.id = CC.alert_type_id " +
-				"WHERE VA.Customer_Id = :customerId " +
-				"AND VA.Type = :type " +
-				"AND VA.Open = 1 " +
-				"AND AT.code = :code " +
-			 "ORDER BY sl.name ASC");
-		
-		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate())
-				.createSQLQuery(sb.toString())
+		StringBuffer sb = new StringBuffer(
+				"SELECT "
+						+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
+						+ "sl.name, "
+						+ "sw.software_name, "
+						+ "VA.Creation_Time, "
+						+ "VA.Alert_Age, "
+						+ "VA.Remote_User, "
+						+ "VA.Comments, "
+						+ "VA.Record_Time, "
+						+ "AC.name as ac_name, "
+						+ "CC.target_date, "
+						+ "CC.owner as cc_owner, "
+						+ "CC.record_time as cc_record_time, "
+						+ "CC.remote_user as cc_remote_user, "
+						+ "CC.id as cc_id "
+						+
+
+						"FROM EAADMIN.V_Alerts VA "
+						+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
+						+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
+						+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
+						+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
+						+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
+						+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
+						+ "WHERE VA.Customer_Id = :customerId "
+						+ "AND VA.Type = :type " + "AND VA.Open = 1 "
+						+ "AND AT.code = :code " + "ORDER BY sl.name ASC");
+
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate()).createSQLQuery(sb.toString())
 				.setLong("customerId", pAccount.getId())
 				.setParameter("type", "SWISCOPE")
 				.setParameter("code", "SWISCOPE")
 				.scroll(ScrollMode.FORWARD_ONLY);
-		
-		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report");
-		printHeader(ALERT_WITH_DEFINED_SCOPE_REPORT_NAME, pAccount.getAccount(),
-				ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS, sheet);
+
+		HSSFSheet sheet = phwb.createSheet("Alert Contract Scope "
+				+ pAccount.getAccount() + " Report");
+		printHeader(SOM3_ALERT_WITH_DEFINED_SCOPE_REPORT_NAME,
+				pAccount.getAccount(),
+				SOM3_ALERT_WITH_DEFINED_SCOPE_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
-            if (i>65535){
-                k++;
-				sheet = phwb.createSheet("Alert Contract Scope " + pAccount.getAccount() + " Report"+k);
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("Alert Contract Scope "
+						+ pAccount.getAccount() + " Report" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -1529,13 +1531,13 @@ public class ReportServiceImpl implements ReportService {
 			i++;
 		}
 		// lsrReport.close();
-		
+
 		@SuppressWarnings("unchecked")
 		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
 				.createNamedQuery("getValidCauseCodesByAlertTypeId")
 				.setParameter("alertTypeId", alertType.getId()).getResultList()
 				.iterator();
-		
+
 		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
 		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
 		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
@@ -1546,9 +1548,280 @@ public class ReportServiceImpl implements ReportService {
 			j++;
 		}
 		phwb.write(pOutputStream);
-	
+
 	}
 
+	// SOM4a
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getAlertIbmSwInstancesReviewedReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
+
+		// This is a replacement value for previously hardcoded values of
+		// Alert_type.IDs,
+		// now you can just specify the Alert_type code, no matter what the ID #
+		// is
+		AlertType alertType = (AlertType) getEntityManager()
+				.createNamedQuery("getAlertTypeByCode")
+				.setParameter("code", "SWIBM").getSingleResult();
+
+		StringBuffer sb = new StringBuffer(
+				"SELECT "
+						+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
+						+ "sl.name, "
+						+ "sw.software_name, "
+						+ "VA.Creation_Time, "
+						+ "VA.Alert_Age, "
+						+ "VA.Remote_User, "
+						+ "VA.Comments, "
+						+ "VA.Record_Time, "
+						+ "AC.name as ac_name, "
+						+ "CC.target_date, "
+						+ "CC.owner as cc_owner, "
+						+ "CC.record_time as cc_record_time, "
+						+ "CC.remote_user as cc_remote_user, "
+						+ "CC.id as cc_id "
+						+
+
+						"FROM EAADMIN.V_Alerts VA "
+						+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
+						+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
+						+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
+						+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
+						+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
+						+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
+						+ "WHERE VA.Customer_Id = :customerId "
+						+ "AND VA.Type = :type " + "AND VA.Open = 1 "
+						+ "AND AT.code = :code " + "ORDER BY sl.name ASC");
+
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate()).createSQLQuery(sb.toString())
+				.setLong("customerId", pAccount.getId())
+				.setParameter("type", "SWIBM").setParameter("code", "SWIBM")
+				.scroll(ScrollMode.FORWARD_ONLY);
+
+		HSSFSheet sheet = phwb.createSheet("IBM " + pAccount.getAccount()
+				+ " Report");
+		printHeader(SOM4A_IBM_SW_INSTANCES_REVIEWED_REPORT_NAME,
+				pAccount.getAccount(),
+				SOM4A_IBM_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS, sheet);
+		int i = 3;
+		while (lsrReport.next()) {
+			int k = 1;
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("IBM " + pAccount.getAccount()
+						+ " Report" + k);
+				i = 1;
+			}
+			HSSFRow row = sheet.createRow((int) i);
+			outputData(lsrReport.get(), row);
+			i++;
+		}
+		// lsrReport.close();
+
+		@SuppressWarnings("unchecked")
+		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
+				.createNamedQuery("getValidCauseCodesByAlertTypeId")
+				.setParameter("alertTypeId", alertType.getId()).getResultList()
+				.iterator();
+
+		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
+		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
+		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+		int j = 1;
+		while (vCauseCodeSummary.hasNext()) {
+			HSSFRow row = sheet_2.createRow((int) j);
+			outputData(vCauseCodeSummary.next(), row);
+			j++;
+		}
+		phwb.write(pOutputStream);
+
+	}
+	
+	
+	// SOM4b
+		@Override
+		@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+		public void getAlertPriorityIsvSwInstancesReviewedReport(Account pAccount,
+				String remoteUser, String lsName, HSSFWorkbook phwb,
+				OutputStream pOutputStream) throws HibernateException, Exception {
+
+			// This is a replacement value for previously hardcoded values of
+			// Alert_type.IDs,
+			// now you can just specify the Alert_type code, no matter what the ID #
+			// is
+			AlertType alertType = (AlertType) getEntityManager()
+					.createNamedQuery("getAlertTypeByCode")
+					.setParameter("code", "SWISVPR").getSingleResult();
+
+			StringBuffer sb = new StringBuffer(
+					"SELECT "
+							+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
+							+ "sl.name, "
+							+ "sw.software_name, "
+							+ "VA.Creation_Time, "
+							+ "VA.Alert_Age, "
+							+ "VA.Remote_User, "
+							+ "VA.Comments, "
+							+ "VA.Record_Time, "
+							+ "AC.name as ac_name, "
+							+ "CC.target_date, "
+							+ "CC.owner as cc_owner, "
+							+ "CC.record_time as cc_record_time, "
+							+ "CC.remote_user as cc_remote_user, "
+							+ "CC.id as cc_id "
+							+
+
+							"FROM EAADMIN.V_Alerts VA "
+							+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
+							+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
+							+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
+							+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
+							+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
+							+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
+							+ "WHERE VA.Customer_Id = :customerId "
+							+ "AND VA.Type = :type " + "AND VA.Open = 1 "
+							+ "AND AT.code = :code " + "ORDER BY sl.name ASC");
+
+			ScrollableResults lsrReport = ((Session) getEntityManager()
+					.getDelegate()).createSQLQuery(sb.toString())
+					.setLong("customerId", pAccount.getId())
+					.setParameter("type", "SWISVPR")
+					.setParameter("code", "SWISVPR")
+					.scroll(ScrollMode.FORWARD_ONLY);
+
+			HSSFSheet sheet = phwb.createSheet("PrioISV " + pAccount.getAccount()
+					+ " Report");
+			printHeader(SOM4B_PRIORITY_ISV_SW_INSTANCES_REVIEWED_REPORT_NAME, pAccount.getAccount(),
+					SOM4B_PRIORITY_ISV_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS, sheet);
+			int i = 3;
+			while (lsrReport.next()) {
+				int k = 1;
+				if (i > 65535) {
+					k++;
+					sheet = phwb.createSheet("PrioISV " + pAccount.getAccount()
+							+ " Report" + k);
+					i = 1;
+				}
+				HSSFRow row = sheet.createRow((int) i);
+				outputData(lsrReport.get(), row);
+				i++;
+			}
+			// lsrReport.close();
+
+			@SuppressWarnings("unchecked")
+			Iterator<Object[]> vCauseCodeSummary = getEntityManager()
+					.createNamedQuery("getValidCauseCodesByAlertTypeId")
+					.setParameter("alertTypeId", alertType.getId()).getResultList()
+					.iterator();
+
+			HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
+			HSSFRow rowhead0 = sheet_2.createRow((int) 0);
+			outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+			int j = 1;
+			while (vCauseCodeSummary.hasNext()) {
+				HSSFRow row = sheet_2.createRow((int) j);
+				outputData(vCauseCodeSummary.next(), row);
+				j++;
+			}
+			phwb.write(pOutputStream);
+
+		}
+	
+
+	// SOM4c
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getAlertIsvSwInstancesReviewedReport(Account pAccount,
+			String remoteUser, String lsName, HSSFWorkbook phwb,
+			OutputStream pOutputStream) throws HibernateException, Exception {
+
+		// This is a replacement value for previously hardcoded values of
+		// Alert_type.IDs,
+		// now you can just specify the Alert_type code, no matter what the ID #
+		// is
+		AlertType alertType = (AlertType) getEntityManager()
+				.createNamedQuery("getAlertTypeByCode")
+				.setParameter("code", "SWISVNPR").getSingleResult();
+
+		StringBuffer sb = new StringBuffer(
+				"SELECT "
+						+ "CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, "
+						+ "sl.name, "
+						+ "sw.software_name, "
+						+ "VA.Creation_Time, "
+						+ "VA.Alert_Age, "
+						+ "VA.Remote_User, "
+						+ "VA.Comments, "
+						+ "VA.Record_Time, "
+						+ "AC.name as ac_name, "
+						+ "CC.target_date, "
+						+ "CC.owner as cc_owner, "
+						+ "CC.record_time as cc_record_time, "
+						+ "CC.remote_user as cc_remote_user, "
+						+ "CC.id as cc_id "
+						+
+
+						"FROM EAADMIN.V_Alerts VA "
+						+ "join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id "
+						+ "join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id "
+						+ "join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id "
+						+ "join EAADMIN.cause_code CC on CC.alert_id = VA.id "
+						+ "join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id "
+						+ "join EAADMIN.alert_type AT on AT.id = CC.alert_type_id "
+						+ "WHERE VA.Customer_Id = :customerId "
+						+ "AND VA.Type = :type " + "AND VA.Open = 1 "
+						+ "AND AT.code = :code " + "ORDER BY sl.name ASC");
+
+		ScrollableResults lsrReport = ((Session) getEntityManager()
+				.getDelegate()).createSQLQuery(sb.toString())
+				.setLong("customerId", pAccount.getId())
+				.setParameter("type", "SWISVNPR")
+				.setParameter("code", "SWISVNPR")
+				.scroll(ScrollMode.FORWARD_ONLY);
+
+		HSSFSheet sheet = phwb.createSheet("ISV " + pAccount.getAccount()
+				+ " Report");
+		printHeader(SOM4C_ISV_SW_INSTANCES_REVIEWED_REPORT_NAME, pAccount.getAccount(),
+				SOM4C_ISV_SW_INSTANCES_REVIEWED_REPORT_COLUMN_HEADERS, sheet);
+		int i = 3;
+		while (lsrReport.next()) {
+			int k = 1;
+			if (i > 65535) {
+				k++;
+				sheet = phwb.createSheet("ISV " + pAccount.getAccount()
+						+ " Report" + k);
+				i = 1;
+			}
+			HSSFRow row = sheet.createRow((int) i);
+			outputData(lsrReport.get(), row);
+			i++;
+		}
+		// lsrReport.close();
+
+		@SuppressWarnings("unchecked")
+		Iterator<Object[]> vCauseCodeSummary = getEntityManager()
+				.createNamedQuery("getValidCauseCodesByAlertTypeId")
+				.setParameter("alertTypeId", alertType.getId()).getResultList()
+				.iterator();
+
+		HSSFSheet sheet_2 = phwb.createSheet("Valid Cause Codes");
+		HSSFRow rowhead0 = sheet_2.createRow((int) 0);
+		outputData(ALERT_VALID_CAUSE_CODE_HEADERS, rowhead0);
+		int j = 1;
+		while (vCauseCodeSummary.hasNext()) {
+			HSSFRow row = sheet_2.createRow((int) j);
+			outputData(vCauseCodeSummary.next(), row);
+			j++;
+		}
+		phwb.write(pOutputStream);
+
+	}
+
+	
+	//output
 	private String outputData(Object[] poaData, HSSFRow rowct) {
 
 		StringBuffer lsbData = new StringBuffer();
@@ -1565,15 +1838,15 @@ public class ReportServiceImpl implements ReportService {
 	private String outputData(Object[] poaData) {
 		StringBuffer lsbData = new StringBuffer();
 		String lsData = null;
-		
+
 		String regx = "^((-?\\d+.?\\d*)[Ee]{1}(-?\\d+))$";
 		Pattern pattern = Pattern.compile(regx);
 
 		for (int i = 0; poaData != null && i < poaData.length; i++) {
 			lsData = poaData[i] == null ? "" : poaData[i].toString();
-			if(pattern.matcher(lsData).matches()){
+			if (pattern.matcher(lsData).matches()) {
 				lsbData.append(i == 0 ? "" : "\t").append(lsData + "\f");
-			}else{
+			} else {
 				lsbData.append(i == 0 ? "" : "\t").append(lsData);
 			}
 		}
@@ -1631,7 +1904,7 @@ public class ReportServiceImpl implements ReportService {
 		pPrintWriter.println(outputData(loaReportHeader));
 		pPrintWriter.println(outputData(psaColumnHeader));
 	}
-	
+
 	private EntityManager getEntityManager() {
 		try {
 			dbdeterminativeService.setEntityManager();
@@ -1647,6 +1920,6 @@ public class ReportServiceImpl implements ReportService {
 
 	public void getNonInstanceBasedSW(PrintWriter pPrintWriter) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

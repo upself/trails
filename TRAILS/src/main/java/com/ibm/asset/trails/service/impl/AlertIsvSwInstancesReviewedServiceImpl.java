@@ -14,7 +14,7 @@ import com.ibm.asset.trails.domain.DisplayAlertUnlicensedSw;
 import com.ibm.asset.trails.service.AlertService;
 
 @Service
-public class AlertIbmSwInstancesReviewedServiceImpl extends
+public class AlertIsvSwInstancesReviewedServiceImpl extends
         BaseAlertUnlicensedSwServiceImpl implements AlertService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -28,7 +28,7 @@ public class AlertIbmSwInstancesReviewedServiceImpl extends
         
         
         lQuery.setParameter("accountId", pAccount.getId());
-        lQuery.setParameter("type", "SWIBM");
+        lQuery.setParameter("type", "SWISVNPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         
@@ -45,7 +45,7 @@ public class AlertIbmSwInstancesReviewedServiceImpl extends
                 DisplayAlertUnlicensedSw.class);
 
         lQuery.setParameter("remoteUser", psRemoteUser);
-        lQuery.setParameter("type", "SWIBM");
+        lQuery.setParameter("type", "SWISVNPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         return (ArrayList) lQuery.getResultList();
@@ -57,7 +57,7 @@ public class AlertIbmSwInstancesReviewedServiceImpl extends
                 "alertUnlicensedSwTotalByAccountAndType");
 
         lQuery.setParameter("account", account);
-        lQuery.setParameter("type", "IBM");
+        lQuery.setParameter("type", "ISVNOPRIO");
 
         return ((Long) lQuery.getSingleResult());
     }
@@ -68,7 +68,7 @@ public class AlertIbmSwInstancesReviewedServiceImpl extends
                 "alertUnlicensedSwTotalByRemoteUserAndType");
 
         lQuery.setParameter("remoteUser", remoteUser);
-        lQuery.setParameter("type", "IBM");
+        lQuery.setParameter("type", "ISVNOPRIO");
 
         return ((Long) lQuery.getSingleResult());
     }

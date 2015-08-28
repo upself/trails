@@ -27,10 +27,10 @@ import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
-@Path("/alertIbmSwInstancesReviewed")
-public class AlertIbmSwInstancesReviewedServiceEndpoint {
+@Path("/alertPriorityIsvSwInstancesReviewed")
+public class AlertPriorityIsvSwInstancesReviewedServiceEndpoint {
 	@Autowired
-	private @Qualifier("alertIbmSwInstancesReviewedService") AlertService alertService;
+	private @Qualifier("alertPriorityIsvSwInstancesReviewedService") AlertService alertService;
 
 	@Autowired
 	private AccountService accountService;
@@ -89,7 +89,7 @@ public class AlertIbmSwInstancesReviewedServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=IBM" + account.getAccount() + ".xls");
+					"attachment; filename=PrioISV" + account.getAccount() + ".xls");
 			reportService.getAlertWithDefinedContractScopeReport(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream());

@@ -120,4 +120,7 @@ public interface ReportService {
 	void getPriorityISVSWReport(PrintWriter pPrintWriter);
 	void getAlertHardwareCfgDataReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
 	void getAlertWithDefinedContractScopeReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
+	void getAlertIbmSwInstancesReviewedReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
+	void getAlertPriorityIsvSwInstancesReviewedReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
+	void getAlertIsvSwInstancesReviewedReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
 }

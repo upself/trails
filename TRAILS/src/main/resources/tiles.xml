@@ -72,6 +72,10 @@
 				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
 			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
 				link="/account/alerts/alertIbmSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" 
+				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM4c: ISV SW INSTANCES REVIEWED" 
+				link="/account/alerts/alertIsvSwInstancesReviewed.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -306,6 +310,10 @@
 				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
 			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
 				link="/account/alerts/alertIbmSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" 
+				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM4c: ISV SW INSTANCES REVIEWED" 
+				link="/account/alerts/alertIsvSwInstancesReviewed.htm" icon="account"/>
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -504,6 +512,22 @@
 			value="/WEB-INF/jsp/alerts/alertIbmSwInstancesReviewed.jsp" />
 		<put-attribute name="description" value="SOM4a: IBM SW INSTANCES REVIEWED" />
 		<put-attribute name="keywords" value="SOM4a: IBM SW INSTANCES REVIEWED" />
+	</definition>
+	
+	<definition name="tiles.alerts.alertPriorityIsvSwInstancesReviewed.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/alerts/alertPriorityIsvSwInstancesReviewed.jsp" />
+		<put-attribute name="description" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="keywords" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+	</definition>
+	
+	<definition name="tiles.alerts.alertIsvSwInstancesReviewed.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM4c: ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/alerts/alertIsvSwInstancesReviewed.jsp" />
+		<put-attribute name="description" value="SOM4c: ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="keywords" value="SOM4c: ISV SW INSTANCES REVIEWED" />
 	</definition>
 
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
