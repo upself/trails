@@ -14,7 +14,7 @@ import com.ibm.asset.trails.domain.DisplayAlertUnlicensedSw;
 import com.ibm.asset.trails.service.AlertService;
 
 @Service
-public class AlertWithDefinedContractScopeServiceImpl extends
+public class AlertIsvSwInstancesReviewedServiceImpl extends
         BaseAlertUnlicensedSwServiceImpl implements AlertService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -28,7 +28,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
         
         
         lQuery.setParameter("accountId", pAccount.getId());
-        lQuery.setParameter("type", "SWISCOPE");
+        lQuery.setParameter("type", "SWISVNPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         
@@ -45,7 +45,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 DisplayAlertUnlicensedSw.class);
 
         lQuery.setParameter("remoteUser", psRemoteUser);
-        lQuery.setParameter("type", "SWISCOPE");
+        lQuery.setParameter("type", "SWISVNPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         return (ArrayList) lQuery.getResultList();
@@ -54,21 +54,25 @@ public class AlertWithDefinedContractScopeServiceImpl extends
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Long total(Account account) {
         Query lQuery = super.getEntityManager().createNamedQuery(
-                "alertUnlicensedSwTotalByAccountAndType");
+                "alertUnlicensedSwTotalByAccountAndType2");
 
         lQuery.setParameter("account", account);
-        lQuery.setParameter("type", "SCOPE");
-
+        lQuery.setParameter("type", "ISVNOPRIO");
+        //type2 only until recon will not process all isv
+        lQuery.setParameter("type2", "ISV");
+        
         return ((Long) lQuery.getSingleResult());
     }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Long total(String remoteUser) {
         Query lQuery = super.getEntityManager().createNamedQuery(
-                "alertUnlicensedSwTotalByRemoteUserAndType");
+                "alertUnlicensedSwTotalByRemoteUserAndType2");
 
         lQuery.setParameter("remoteUser", remoteUser);
-        lQuery.setParameter("type", "SCOPE");
+        lQuery.setParameter("type", "ISVNOPRIO");
+        //type2 only until recon will not process all isv
+        lQuery.setParameter("type2", "ISV");
 
         return ((Long) lQuery.getSingleResult());
     }

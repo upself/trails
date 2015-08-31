@@ -14,7 +14,7 @@ import com.ibm.asset.trails.domain.DisplayAlertUnlicensedSw;
 import com.ibm.asset.trails.service.AlertService;
 
 @Service
-public class AlertWithDefinedContractScopeServiceImpl extends
+public class AlertPriorityIsvSwInstancesReviewedServiceImpl extends
         BaseAlertUnlicensedSwServiceImpl implements AlertService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
@@ -28,7 +28,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
         
         
         lQuery.setParameter("accountId", pAccount.getId());
-        lQuery.setParameter("type", "SWISCOPE");
+        lQuery.setParameter("type", "SWISVPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         
@@ -45,7 +45,7 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 DisplayAlertUnlicensedSw.class);
 
         lQuery.setParameter("remoteUser", psRemoteUser);
-        lQuery.setParameter("type", "SWISCOPE");
+        lQuery.setParameter("type", "SWISVPR");
         lQuery.setFirstResult(piStartIndex);
         lQuery.setMaxResults(piObjectsPerPage);
         return (ArrayList) lQuery.getResultList();
@@ -57,8 +57,10 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 "alertUnlicensedSwTotalByAccountAndType");
 
         lQuery.setParameter("account", account);
-        lQuery.setParameter("type", "SCOPE");
+        lQuery.setParameter("type", "ISVPRIO");
 
+        System.out.println("alertUnlicensedSwTotalByAccountAndType total: "
+				+ ((Long) lQuery.getSingleResult())); 
         return ((Long) lQuery.getSingleResult());
     }
 
@@ -68,8 +70,11 @@ public class AlertWithDefinedContractScopeServiceImpl extends
                 "alertUnlicensedSwTotalByRemoteUserAndType");
 
         lQuery.setParameter("remoteUser", remoteUser);
-        lQuery.setParameter("type", "SCOPE");
+        lQuery.setParameter("type", "ISVPRIO");
 
+        System.out.println("alertUnlicensedSwTotalByRemoteUserAndType total: "
+				+ ((Long) lQuery.getSingleResult())); 
+        
         return ((Long) lQuery.getSingleResult());
     }
 

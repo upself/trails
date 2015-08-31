@@ -27,10 +27,10 @@ import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
-@Path("/alertWithDefinedContractScope")
-public class AlertWithDefinedContractScopeServiceEndpoint {
+@Path("/alertPriorityIsvSwInstancesReviewed")
+public class AlertPriorityIsvSwInstancesReviewedServiceEndpoint {
 	@Autowired
-	private @Qualifier("alertWithDefinedContractScopeService") AlertService alertService;
+	private @Qualifier("alertPriorityIsvSwInstancesReviewedService") AlertService alertService;
 
 	@Autowired
 	private AccountService accountService;
@@ -75,8 +75,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			}
 		}
 	}
-
-
+	
 	@GET
 	@Path("/download/{accountId}")
 	public Response download(@PathParam("accountId") Long accountId,
@@ -90,10 +89,10 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=alertContractScope" + account.getAccount() + ".xls");
+					"attachment; filename=PrioISV" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "Alert Contract Scope");
+					response.getOutputStream(),"SWISVPR","SWISVPR","SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", "PrioISV");
 
 		} catch (Exception e) {
 			e.printStackTrace();

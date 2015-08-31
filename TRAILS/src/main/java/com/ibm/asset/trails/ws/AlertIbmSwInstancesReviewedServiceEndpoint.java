@@ -27,10 +27,10 @@ import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
-@Path("/alertWithDefinedContractScope")
-public class AlertWithDefinedContractScopeServiceEndpoint {
+@Path("/alertIbmSwInstancesReviewed")
+public class AlertIbmSwInstancesReviewedServiceEndpoint {
 	@Autowired
-	private @Qualifier("alertWithDefinedContractScopeService") AlertService alertService;
+	private @Qualifier("alertIbmSwInstancesReviewedService") AlertService alertService;
 
 	@Autowired
 	private AccountService accountService;
@@ -75,8 +75,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			}
 		}
 	}
-
-
+	
 	@GET
 	@Path("/download/{accountId}")
 	public Response download(@PathParam("accountId") Long accountId,
@@ -90,10 +89,10 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=alertContractScope" + account.getAccount() + ".xls");
+					"attachment; filename=IBM" + account.getAccount() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
-					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "Alert Contract Scope");
+					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED", "IBM");
 
 		} catch (Exception e) {
 			e.printStackTrace();

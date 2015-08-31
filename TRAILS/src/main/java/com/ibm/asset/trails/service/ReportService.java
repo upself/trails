@@ -119,5 +119,8 @@ public interface ReportService {
 	void getNonInstanceBasedSWReport(PrintWriter pPrintWriter);
 	void getPriorityISVSWReport(PrintWriter pPrintWriter);
 	void getAlertHardwareCfgDataReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
-	void getAlertWithDefinedContractScopeReport(Account pAccount, String remoteUser, String lsName,  HSSFWorkbook phwb, OutputStream pOutputStream)throws HibernateException, Exception;
+
+	void getAlertUnlicensed(Account pAccount, String remoteUser, String lsName,
+			HSSFWorkbook phwb, OutputStream pOutputStream, String type,
+			String code, String reportName, String sheetName ) throws HibernateException, Exception;
 }
