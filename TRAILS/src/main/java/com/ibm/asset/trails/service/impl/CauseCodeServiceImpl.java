@@ -180,7 +180,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						} else {
 							long alertTypeId = list.get(0).getAlertType()
 									.getId();
-							if (alertTypeId != colIndexes.getAlertTypeId()) {
+							if (alertTypeId != colIndexes.getAlertTypeId()
+							 && alertTypeId != 17//Bypass alert type id value validation for the existing alert type id 17(NOLIC=UNLICENSED SW) Cause Code DB Record		
+							   ) {
 								buildErrorMsg(errorMsg,
 										colIndexes.getColInternalId(),
 										"Internal ID",
