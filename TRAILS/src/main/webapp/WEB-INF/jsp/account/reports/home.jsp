@@ -31,12 +31,6 @@
 	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.xls?name=alertExpiredScan">Outdated SW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIbmSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIbmSw">Unlicensed IBM SW alert</a>
-</span>
-<span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIsvSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIsvSw">Unlicensed ISV SW alert</a>
-</span>
-<span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionDetail<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionDetail">Pending customer decision reconciled detail alert</a>
 </span>
 <span class="download-link">
