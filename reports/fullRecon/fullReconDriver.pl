@@ -24,6 +24,9 @@ my $finalDir = $cfg->reportDeliveryFolder('fullRecon');
 
 my $logFilePath   = $fileDirectory.'/logs/fullReconReportLogTest.txt';
 
+my %childrenHash = ();
+my $children;
+
 
 use vars qw ($opt_r $opt_t $opt_c $opt_d);
 die "Usage: $0 -r <region name> -c <customer_id> -t <number of customers> -d <debug mode>" if !getopts("r:t:c:d");
@@ -88,6 +91,8 @@ sub newChild {
   	exit;
   }
   else {
+  	$children++;
+  	$childrenHash{$pid} = 1;
   	return;
   }
 
@@ -104,9 +109,23 @@ sub spawnChildren {
  	$regionName = $regionHashList{$key};
 	newChild($regionId, $regionName );
  }
-
-
+ 
+ while ( $children > 0 ) {
+            sleep;
+ }
 }
+
+sub REAPER {
+    my $kid;
+    while ( ( $kid = waitpid( -1, &WNOHANG ) ) > 0 ) {
+        warn("child $kid terminated -- status $?");
+        $children--;
+        delete $childrenHash{$kid};
+    }
+    $SIG{CHLD} = \&REAPER;
+	
+}
+
 sub daemonize {
  my $pid = fork;
  defined($pid) or die "Cannot start daemon: $!";
