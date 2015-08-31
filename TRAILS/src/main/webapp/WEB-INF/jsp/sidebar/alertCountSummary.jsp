@@ -37,9 +37,13 @@
 				<s:url id="alertUrl" namespace="/account/alerts"
 					action="alertIbmSwInstancesReviewed" includeParams="none" />
 			</s:if>
-			<s:if test="code == 'SWISVNPR'">
+			<s:if test="code == 'SWISVPR'">
 				<s:url id="alertUrl" namespace="/account/alerts"
 					action="alertPriorityIsvSwInstancesReviewed" includeParams="none" />
+			</s:if>
+			<s:if test="code == 'SWISVNPR'">
+				<s:url id="alertUrl" namespace="/account/alerts"
+					action="alertIsvSwInstancesReviewed" includeParams="none" />
 			</s:if>
 			<s:if test="code == 'HWCFGDTA'">
 				<s:url id="alertUrl" namespace="/account/alerts"
