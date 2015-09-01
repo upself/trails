@@ -19,19 +19,18 @@ use Log::Dispatch::FileRotate;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $scheduleFScopeName, $hardwareId )
+  $hardwareId )    
    = @_;
  my $self = {
-  _connection         => Database::Connection->new('trails'),
-  _extSrcIds          => [],
-  _guids              => {},
-  _usedLicenses       => [],
-  _reconcileTypeId    => $reconcileTypeId,
-  _machineLevel       => $machineLevel,
-  _allocMethodId      => $allocMethodId,
-  _scheduleFScopeName => $scheduleFScopeName,
-  _hardwareId         => $hardwareId,
-  _config             => Config::Properties::Simple->new(
+  _connection      => Database::Connection->new('trails'),
+  _extSrcIds       => [],
+  _guids           => {},
+  _usedLicenses    => [],
+  _reconcileTypeId => $reconcileTypeId,
+  _machineLevel    => $machineLevel,
+  _allocMethodId   => $allocMethodId,
+  _hardwareId      => $hardwareId,
+  _config          => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
 
   ),
@@ -80,12 +79,6 @@ sub allocMethodId {
  my $self = shift;
  $self->{_allocMethodId} = shift if scalar @_ == 1;
  return $self->{_allocMethodId};
-}
-
-sub scheduleFScopeName {
- my $self = shift;
- $self->{_scheduleFScopeName} = shift if scalar @_ == 1;
- return $self->{_scheduleFScopeName};
 }
 
 sub config {
@@ -157,45 +150,64 @@ sub httpGetScarletGuids {
  return $scarletGuids;
 }
 
+sub initByReconcileId {
+ my ( $self, $reconcileId ) = @_;
+
+ #set up extSrcIds
+ my $query = '
+select 
+r.reconcile_type_id,
+r.machine_level,
+r.allocation_methodology_id,
+ul.id, 
+l.ext_src_id  
+from 
+RECONCILE r,RECONCILE_USED_LICENSE rul, USED_LICENSE ul, LICENSE l
+where
+r.id = rul.reconcile_id
+and rul.used_license_id = ul.id
+and l.id = ul.license_id
+and rul.reconcile_id = ?
+ ';
+
+ dlog( 'getExtSrcIdsQuery=' . $query );
+ my $rTypeId;
+ my $mLevel;
+ my $allMthdId;
+ my $ulId;
+ my $extSrcId;
+ $self->connection->prepareSqlQuery( 'getExtSrcIdsQuery', $query );
+ my $sth = $self->connection->sql->{getExtSrcIdsQuery};
+ $sth->bind_columns( \$rTypeId, \$mLevel, \$allMthdId, \$ulId, \$extSrcId );
+ $sth->execute($reconcileId);
+
+ while ( $sth->fetchrow_arrayref ) {
+  $self->allocMethodId($allMthdId);
+  $self->reconcileTypeId($rTypeId);
+  $self->machineLevel($mLevel);
+
+  push @{ $self->usedLicenses }, $ulId;
+  push @{ $self->extSrcIds },    $extSrcId;
+ }
+ $sth->finish;
+}
+
 sub existInScarlet {
- my ( $self, $extSrcId, $isId ) = @_;
+ my ( $self, $reconcileId, $isId ) = @_;
 
- dlog("existInScarlet extSrcId=$extSrcId");
- my $swcmLicenseId = undef;
- if ( $extSrcId =~ /SWCM_(\d*)/ ) {
-  $swcmLicenseId = $1;
- }
- else {
-  return 0;
- }
+ dlog("existInScarlet reconcileId=$reconcileId,isId=$isId");
 
- my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
- my $uri             = URI->new($scarletGuidsApi);
- dlog($uri);
- $uri->query_form( 'licenseId' => $swcmLicenseId );
-
- my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
-
- my $guid = $self->getGuiIdByInstalledSoftwareId($isId);
- dlog( 'This guid=' . $guid );
-     
- foreach my $id ( @{$scarletGuids} ) {
-  return 1 if ( $id eq $guid );
-
-  $self->guids->{$id} = 1;
-  dlog( 'guid=' . $id );
- }
-
- $self->traverseUp( [ keys %{ $self->guids } ] );
+ $self->initByReconcileId($reconcileId);
+ my $guid = $self->setUpGuidsFromScarlet( $isId, 0 );
 
  return 1 if ( $self->guids->{$guid} );
 
-   return 0;
+ return 0;
 }
 
 sub setUpGuidsFromScarlet {
 
- my ( $self, $installedSoftwareId ) = @_;
+ my ( $self, $installedSoftwareId, $excludeSelf ) = @_;
 
  my $guid = $self->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
@@ -211,16 +223,13 @@ sub setUpGuidsFromScarlet {
 
   my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
   my $uri             = URI->new($scarletGuidsApi);
-  $uri->query_form(
-   'componentGuid' => $guid,
-   'licenseId'     => $swcmLicenseId
-  );
+  $uri->query_form( 'licenseId' => $swcmLicenseId );
   my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
 
   dlog("GET $uri");
   dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
-   next if ( $id eq $guid );
+   next if ( $excludeSelf && ( $id eq $guid ) );
 
    $self->guids->{$id} = 1;
    dlog( 'guid=' . $id );
@@ -229,6 +238,7 @@ sub setUpGuidsFromScarlet {
 
  $self->traverseUp( [ keys %{ $self->guids } ] );
 
+ return $guid;
 }
 
 sub traverseUp {
@@ -294,7 +304,8 @@ sub tryToReconcile {
   return;
  }
 
- $self->setUpGuidsFromScarlet( $isObj->id );
+ #set up guids exclude guid of $isObj.
+ $self->setUpGuidsFromScarlet( $isObj->id, 1 );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {
@@ -389,12 +400,7 @@ and kbd.guid in(' . $guids . ') with ur ';
   #validate code 1, in scope installed software without any reconcile.
   if ( $validation->validationCode == 1 ) {
 
-   if (
-    not $licensingInstalledSoftware->validateScheduleFScope(
-     $self->scheduleFScopeName
-    )
-     )
-   {
+   if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
     $self->info(
      'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
