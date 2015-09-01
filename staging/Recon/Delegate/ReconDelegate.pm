@@ -94,7 +94,7 @@ sub getIBMISVprio {
 						where
 							manufacturer_id = ?
 						and
-							( ( level = 'GLOBAL' and customer_id = null )
+							( ( level = 'GLOBAL' and customer_id is null )
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
 						and
 							status_id = 2";
