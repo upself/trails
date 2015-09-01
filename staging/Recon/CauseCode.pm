@@ -13,7 +13,7 @@ sub resetCCcode {
 		
 		my $sth=$connection->sql->{resetCC};
 	
-		$sth->execute( $oldId );
+		$sth->execute( $alertcode, $oldId );
 		$sth->finish;
 		
 		return $oldId;
@@ -64,20 +64,50 @@ sub updateCCtable {
 sub GetByAlert {
 	my ( $alertid, $alertcode, $connection ) = @_;
 	
-	$connection->prepareSqlQuery(queryGetByAlert());
+	if ( $alertcode =~ '^SWI' ) {
+		$connection->prepareSqlQuery(queryGetBySWIAlert());
 	
-	my $sth=$connection->sql->{GetCCbyAlert};
-	my $id;
+		my $sth=$connection->sql->{GetCCbySWIAlert};
+		my $id;
 	
-	$sth->bind_columns( \$id );
-	$sth->execute( $alertcode, $alertid );
-	$sth->fetchrow_arrayref;
-	$sth->finish;
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
 	
-	return $id if ( defined $id );
+		return $id if ( defined $id );
+	} else {
+		$connection->prepareSqlQuery(queryGetByAlert());
+	
+		my $sth=$connection->sql->{GetCCbyAlert};
+		my $id;
+	
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertcode, $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
+	
+		return $id if ( defined $id );
+	}
 	
 	return 0;
 }
+
+sub queryGetBySWIAlert {
+	my $query = '
+		select
+			cc.id
+		from
+			cause_code cc join alert_type at on cc.alert_type_id = at.id
+		where
+			(( at.code like \'SWI%\' ) or ( at.code = \'NOLIC\' ))
+			and
+			cc.alert_id = ?
+		with ur
+		';
+	return ( 'GetCCbySWIAlert', $query );
+}
+
 
 sub queryGetByAlert {
 	my $query = '
@@ -98,6 +128,7 @@ sub queryResetCC {
     my $query = '
         update cause_code
 			set
+			alert_type_id = ( select id from alert_type where code = ? ),
 			alert_cause_id = 1,
 			owner = null,
 			record_time = null, 

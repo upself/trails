@@ -2114,12 +2114,11 @@ from
 }
 
 sub getInstalledSoftwareReconData {
-	my $self = shift;
+ my $self = shift;
 
-	dlog("begin getInstalledSoftwareReconData");
+ dlog("begin getInstalledSoftwareReconData");
 
-	my $installedSoftwareReconData =
-	  new Recon::OM::ReconInstalledSoftwareData();
+ my $installedSoftwareReconData = new Recon::OM::ReconInstalledSoftwareData();
 
 	###Execute base query and populate data.
 	$self->connection->prepareSqlQueryAndFields(
@@ -2163,6 +2162,7 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
+		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
 		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
@@ -2170,179 +2170,179 @@ sub getInstalledSoftwareReconData {
 		$installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
 		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
-		$installedSoftwareReconData->rIsManual ( $rec{rIsManual} );
+  $installedSoftwareReconData->rIsManual( $rec{rIsManual} );
 
+  $installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
-		$installedSoftwareReconData->processorCount( $rec{slProcCount} );
+  ###If recon is defined and it is machine level set processor count to hardware processor count
+  ###No matter if it is 0 or not
+  if ( defined $installedSoftwareReconData->rId ) {
+   if ( $installedSoftwareReconData->rMachineLevel == 1 ) {
+    if ( !defined $rec{hProcCount} ) {
+     $installedSoftwareReconData->processorCount(0);
+    }
+    else {
+     $installedSoftwareReconData->processorCount( $rec{hProcCount} );
+    }
+   }
+  }
 
-		###If recon is defined and it is machine level set processor count to hardware processor count
-		###No matter if it is 0 or not
-		if ( defined $installedSoftwareReconData->rId ) {
-			if ( $installedSoftwareReconData->rMachineLevel == 1 ) {
-				if ( !defined $rec{hProcCount} ) {
-					$installedSoftwareReconData->processorCount(0);
-				}
-				else {
-					$installedSoftwareReconData->processorCount(
-						$rec{hProcCount} );
-				}
-			}
-		}
+  ###The bundle parent logic
+  if ( defined $rec{bpId} ) {
 
-		###The bundle parent logic
-		if ( defined $rec{bpId} ) {
+   if ( !defined $installedSoftwareReconData->bpIds ) {
+    $installedSoftwareReconData->bpIds( {} );
+   }
+   $installedSoftwareReconData->bpIds->{ $rec{bpId} }++;
+  }
 
-			if ( !defined $installedSoftwareReconData->bpIds ) {
-				$installedSoftwareReconData->bpIds( {} );
-			}
-			$installedSoftwareReconData->bpIds->{ $rec{bpId} }++;
-		}
+  ###The bundle children logic
+  if ( defined $rec{bcSwId} ) {
+   if ( !defined $installedSoftwareReconData->bcSwIds ) {
+    $installedSoftwareReconData->bcSwIds( {} );
+   }
+   $installedSoftwareReconData->bcSwIds->{ $rec{bcSwId} }++;
+  }
+ }
+ $sth->finish;
 
-		###The bundle children logic
-		if ( defined $rec{bcSwId} ) {
-			if ( !defined $installedSoftwareReconData->bcSwIds ) {
-				$installedSoftwareReconData->bcSwIds( {} );
-			}
-			$installedSoftwareReconData->bcSwIds->{ $rec{bcSwId} }++;
-		}
-	}
-	$sth->finish;
+ ###Reading new scope from scheduleF, procedure added by Michal Gross
 	
-	###Reading new scope from scheduleF, procedure added by Michal Gross
-	
-	my ( $scopename_temp, $priofound_temp ) = Recon::Delegate::ReconDelegate->getScheduleFScope( $self->connection,
-																$installedSoftwareReconData->cId, # customer ID
-																$installedSoftwareReconData->sName, # software name
-																$installedSoftwareReconData->hOwner, # hardware owner ID
-																$installedSoftwareReconData->hSerial, # hardware serial
-																$installedSoftwareReconData->hMachineTypeId, #machine type
-																$installedSoftwareReconData->slName #hostname
-															  );
-															  
-    $installedSoftwareReconData->scopeName ( $scopename_temp );
-    $installedSoftwareReconData->scheduleFlevel ( $priofound_temp ); # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
+ my ( $scopename_temp, $priofound_temp ) =
+   Recon::Delegate::ReconDelegate->getScheduleFScope(
+  $self->connection,
+  $installedSoftwareReconData->cId,               # customer ID
+  $installedSoftwareReconData->sName,             # software name
+  $installedSoftwareReconData->hOwner,            # hardware owner ID
+  $installedSoftwareReconData->hSerial,           # hardware serial
+  $installedSoftwareReconData->hMachineTypeId,    #machine type
+  $installedSoftwareReconData->slName             #hostname
+   );
 
-	###Execute extended query of all inst sw for this lpar if in category,
-	###a parent of a bundle, or a child in a bundle.
-	if (   $installedSoftwareReconData->scName ne 'UNKNOWN'
-		|| defined $installedSoftwareReconData->bpIds
-		|| defined $installedSoftwareReconData->bcSwIds )
-	{
-		dlog("getting extended data");
-
-		$self->connection->prepareSqlQueryAndFields(
-			$self->queryReconInstalledSoftwareExtendedData() );
-		my $sth = $self->connection->sql->{reconInstalledSoftwareExtendedData};
-		my %rec;
-		$sth->bind_columns(
-			map { \$rec{$_} } @{
-				$self->connection->sql
-				  ->{reconInstalledSoftwareExtendedDataFields}
-			  }
-		);
-		$sth->execute(
-			$self->installedSoftware->softwareLparId,
-			$self->installedSoftware->softwareId
-		);
-		my $tempCategoryInstSwId;
-		my $tempCategoryPriority;
-		my $tempBundleInstSwId;
-
-		while ( $sth->fetchrow_arrayref ) {
-
-			###Perform category logic unless i am UNKNOWN.
-			if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
-
-				###Does this inst sw match my category?
-				if ( $rec{scName} eq $installedSoftwareReconData->scName ) {
-					dlog("matches category");
-
-					###Is it a higher priority than me?
-					if ( $rec{sPriority} <
-						$installedSoftwareReconData->sPriority )
-					{
-						dlog("is higher priority");
-
-						###Is it higher priority than previous found?
-						if ( defined $tempCategoryInstSwId ) {
-							dlog("found previous");
-
-							if ( $rec{sPriority} < $tempCategoryPriority ) {
-								dlog("higher than previous, setting parent");
-
-								$tempCategoryInstSwId = $rec{instSwId};
-								$tempCategoryPriority = $rec{sPriority};
-							}
-						}
-						else {
-							dlog("no previous, setting parent");
-
-							$tempCategoryInstSwId = $rec{instSwId};
-							$tempCategoryPriority = $rec{sPriority};
-						}
-					}
-					else {
-						dlog("it is lower priority than me");
-
-						###Add as software category child.
-						if ( !defined $installedSoftwareReconData->scChildren )
-						{
-							$installedSoftwareReconData->scChildren( {} );
-						}
-						$installedSoftwareReconData->scChildren
-						  ->{ $rec{instSwId} }++;
-					}
-				}
-			}
-
-			###Perform bundle parent logic if i am parent of a bundle.
-			if ( defined $installedSoftwareReconData->bpIds ) {
-
-				###Is this inst sw in a bundle?
-				if ( defined $rec{bSwId} ) {
-					dlog("in bundle");
-
-					###Am i parent of this inst sw's bundle?
-					if ( $rec{bSwId} == $self->installedSoftware->softwareId ) {
-						dlog("i am parent to this inst sw");
-						if ( !defined $installedSoftwareReconData->bChildren ) {
-							$installedSoftwareReconData->bChildren( {} );
-						}
-						$installedSoftwareReconData->bChildren
-						  ->{ $rec{instSwId} }++;
-					}
-				}
-			}
-
-			###Perform bundle child logic if i am in a bundle.
-			if ( defined $installedSoftwareReconData->bcSwIds ) {
-				dlog("performing bundle child logic");
-
-				###Is this inst sw my parent?
-				foreach
-				  my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } )
-				{
-					if ( $rec{sId} == $bcSwId ) {
-						dlog("matches bundle, setting parent");
-						$tempBundleInstSwId = $rec{instSwId};
-					}
-				}
-			}
-		}
-		$sth->finish;
-
-		###Set the category parent if found.
-		$installedSoftwareReconData->scParent($tempCategoryInstSwId)
-		  if defined $tempCategoryInstSwId;
-
-		###Set the bunlde parent if found.
-		$installedSoftwareReconData->bParent($tempBundleInstSwId)
-		  if defined $tempBundleInstSwId;
+ $installedSoftwareReconData->scopeName($scopename_temp);
+ $installedSoftwareReconData->scheduleFlevel($priofound_temp)
+   ;    # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
+    
+    if ( not defined $scopename_temp ) {
+		$installedSoftwareReconData->expectedAlertType ( "SCOPE" );
+		dlog("Expected alert for unlicensed SW is type SCOPE... no ScheduleF scope found.");
+	} else {
+		$installedSoftwareReconData->expectedAlertType (
+					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
+																	$installedSoftwareReconData->sMfgId,
+																	$installedSoftwareReconData->cId ) );
 	}
 
-	dlog("end getInstalledSoftwareReconData");
+ ###Execute extended query of all inst sw for this lpar if in category,
+ ###a parent of a bundle, or a child in a bundle.
+ if ($installedSoftwareReconData->scName ne 'UNKNOWN'
+  || defined $installedSoftwareReconData->bpIds
+  || defined $installedSoftwareReconData->bcSwIds )
+ {
+  dlog("getting extended data");
 
-	$self->installedSoftwareReconData($installedSoftwareReconData);
+  $self->connection->prepareSqlQueryAndFields(
+   $self->queryReconInstalledSoftwareExtendedData() );
+  my $sth = $self->connection->sql->{reconInstalledSoftwareExtendedData};
+  my %rec;
+  $sth->bind_columns( map { \$rec{$_} }
+     @{ $self->connection->sql->{reconInstalledSoftwareExtendedDataFields} } );
+  $sth->execute(
+   $self->installedSoftware->softwareLparId,
+   $self->installedSoftware->softwareId
+  );
+  my $tempCategoryInstSwId;
+  my $tempCategoryPriority;
+  my $tempBundleInstSwId;
+
+  while ( $sth->fetchrow_arrayref ) {
+
+   ###Perform category logic unless i am UNKNOWN.
+   if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
+
+    ###Does this inst sw match my category?
+    if ( $rec{scName} eq $installedSoftwareReconData->scName ) {
+     dlog("matches category");
+
+     ###Is it a higher priority than me?
+     if ( $rec{sPriority} < $installedSoftwareReconData->sPriority ) {
+      dlog("is higher priority");
+
+      ###Is it higher priority than previous found?
+      if ( defined $tempCategoryInstSwId ) {
+       dlog("found previous");
+
+       if ( $rec{sPriority} < $tempCategoryPriority ) {
+        dlog("higher than previous, setting parent");
+
+        $tempCategoryInstSwId = $rec{instSwId};
+        $tempCategoryPriority = $rec{sPriority};
+       }
+      }
+      else {
+       dlog("no previous, setting parent");
+
+       $tempCategoryInstSwId = $rec{instSwId};
+       $tempCategoryPriority = $rec{sPriority};
+      }
+     }
+     else {
+      dlog("it is lower priority than me");
+
+      ###Add as software category child.
+      if ( !defined $installedSoftwareReconData->scChildren ) {
+       $installedSoftwareReconData->scChildren( {} );
+      }
+      $installedSoftwareReconData->scChildren->{ $rec{instSwId} }++;
+     }
+    }
+   }
+
+   ###Perform bundle parent logic if i am parent of a bundle.
+   if ( defined $installedSoftwareReconData->bpIds ) {
+
+    ###Is this inst sw in a bundle?
+    if ( defined $rec{bSwId} ) {
+     dlog("in bundle");
+
+     ###Am i parent of this inst sw's bundle?
+     if ( $rec{bSwId} == $self->installedSoftware->softwareId ) {
+      dlog("i am parent to this inst sw");
+      if ( !defined $installedSoftwareReconData->bChildren ) {
+       $installedSoftwareReconData->bChildren( {} );
+      }
+      $installedSoftwareReconData->bChildren->{ $rec{instSwId} }++;
+     }
+    }
+   }
+
+   ###Perform bundle child logic if i am in a bundle.
+   if ( defined $installedSoftwareReconData->bcSwIds ) {
+    dlog("performing bundle child logic");
+
+    ###Is this inst sw my parent?
+    foreach my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } ) {
+     if ( $rec{sId} == $bcSwId ) {
+      dlog("matches bundle, setting parent");
+      $tempBundleInstSwId = $rec{instSwId};
+     }
+    }
+   }
+  }
+  $sth->finish;
+
+  ###Set the category parent if found.
+  $installedSoftwareReconData->scParent($tempCategoryInstSwId)
+    if defined $tempCategoryInstSwId;
+
+  ###Set the bunlde parent if found.
+  $installedSoftwareReconData->bParent($tempBundleInstSwId)
+    if defined $tempBundleInstSwId;
+ }
+
+ dlog("end getInstalledSoftwareReconData");
+
+ $self->installedSoftwareReconData($installedSoftwareReconData);
 }
 
 sub queryReconInstalledSoftwareBaseData {
@@ -2381,6 +2381,7 @@ sub queryReconInstalledSoftwareBaseData {
 	  sPriority
 	  sLevel
 	  sVendorMgd
+	  sMfgId
 	  sMfg
 	  scName
 	  bpId
@@ -2427,6 +2428,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.priority
             ,s.level
             ,s.vendor_managed
+            ,m.id
             ,m.name
             ,sc.software_category_name
             ,bp.id
@@ -2511,78 +2513,51 @@ sub queryReconInstalledSoftwareExtendedData {
 }
 
 sub closeAlertUnlicensedSoftware {
-	my ( $self, $createNew ) = @_;
-	dlog("begin closeAlertUnlicensedSoftware");
+ my ( $self, $createNew ) = @_;
+ dlog("begin closeAlertUnlicensedSoftware");
 
-	###Instantiate alert object.
-	my $alert = new Recon::OM::AlertUnlicensedSoftware();
+ ###Instantiate alert object.
+ my $alert = new Recon::OM::AlertUnlicensedSoftware();
 
-	###Retrieve alert by installed software.
-	$alert->installedSoftwareId( $self->installedSoftware->id );
-	$alert->getByBizKey( $self->connection );
-	dlog( "alert=" . $alert->toString() );
+ ###Retrieve alert by installed software.
+ $alert->installedSoftwareId( $self->installedSoftware->id );
+ $alert->getByBizKey( $self->connection );
+ dlog( "alert=" . $alert->toString() );
 
-	my $oldAlert = new Recon::OM::AlertUnlicensedSoftware();
-	$oldAlert->id( $alert->id );
-	$oldAlert->installedSoftwareId( $alert->installedSoftwareId );
-	$oldAlert->comments( $alert->comments );
-	$oldAlert->type( $alert->type );
-	$oldAlert->open( $alert->open );
-	$oldAlert->creationTime( $alert->creationTime );
-	$oldAlert->remoteUser( $alert->remoteUser );
-	$oldAlert->recordTime( $alert->recordTime );
+ my $oldAlert = new Recon::OM::AlertUnlicensedSoftware();
+ $oldAlert->id( $alert->id );
+ $oldAlert->installedSoftwareId( $alert->installedSoftwareId );
+ $oldAlert->comments( $alert->comments );
+ $oldAlert->type( $alert->type );
+ $oldAlert->open( $alert->open );
+ $oldAlert->creationTime( $alert->creationTime );
+ $oldAlert->remoteUser( $alert->remoteUser );
+ $oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
+ $alert->type( $self->installedSoftwareReconData->expectedAlertType );
+ $alert->comments('Auto Close');
+ $alert->open(0);
+
+	if ( defined $alert->id ) {
+		if ( $oldAlert->open == 1 ) {
+			$alert->save( $self->connection );
+			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+		}
+		elsif ( $oldAlert->type ne $alert->type ) {
+			$alert->save( $self->connection );
+			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+		}
 	}
-	else {
-		$alert->type('ISV');
-	}
-	$alert->comments('Auto Close');
-	$alert->open(0);
+	elsif ( $createNew == 1 ) {
+		$alert->creationTime( currentTimeStamp() );
+		$alert->save( $self->connection );
+	}	
+	Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+	Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+	Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+	Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 
- if ( defined $alert->id ) {
-  if ( $oldAlert->open == 1 ) {
-   $alert->save( $self->connection );
-   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-  }
-  elsif ( $oldAlert->type ne $alert->type ) {
-   $alert->save( $self->connection );
-   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-  }
-  Recon::CauseCode::updateCCtable( $alert->id, "NOLIC", $self->connection );
- }
- elsif ( $createNew == 1 ) {
-  $alert->creationTime( currentTimeStamp() );
-  $alert->save( $self->connection );
-  Recon::CauseCode::updateCCtable( $alert->id, "NOLIC", $self->connection );
- }
-
- dlog("end closeAlertUnlicensedSoftware");
-}
-
-sub ibmArray {
- my $self = shift;
-
- my @ibmArray = (
-  'IBM',
-  'IBM_ITD',
-  'IBM FileNet',
-  'IBM Tivoli',
-  'Informix',
-  'Rational Software Corporation',
-  'Ascential Software',
-  'IBM WebSphere',
-  'Digital CandleWebSphere',
-  'IBM Rational',
-  'Lotus',
-  'Candle',
-  'Tivoli'
- );
-
- return @ibmArray;
+	dlog("end closeAlertUnlicensedSoftware");
 }
 
 sub addChildrenToQueue {
@@ -2705,15 +2680,18 @@ sub fetchMechineLevelServerType {
  return 'DEVELOPMENT';
 }
 
-sub queueSoftwareCategory { # puts all the installed software, who's category parent 
-							# is the software just considered invalid, into queue
-	my $self=shift;
-	my $swId=shift;
-	
-	dlog("Checking for installed SW ID $swId to be used as software category parent");
-	
-	 #Prepare the query.
-	$self->connection->prepareSqlQueryAndFields( $self->queryInsSwByParentProduct() );
+sub queueSoftwareCategory
+{    # puts all the installed software, who's category parent
+     # is the software just considered invalid, into queue
+ my $self = shift;
+ my $swId = shift;
+
+ dlog(
+  "Checking for installed SW ID $swId to be used as software category parent");
+
+ #Prepare the query.
+ $self->connection->prepareSqlQueryAndFields(
+  $self->queryInsSwByParentProduct() );
 
  #Acquire the statement handle.
  my $sth = $self->connection->sql->{queryInsSwByParentProduct};
@@ -2740,7 +2718,8 @@ sub queueSoftwareCategory { # puts all the installed software, who's category pa
   $childSwLpar->id( $childInstSw->softwareLparId );
   $childSwLpar->getById( $self->connection );
 
-  my $queue = Recon::Queue->new( $self->connection, $childInstSw, $childSwLpar );
+  my $queue =
+    Recon::Queue->new( $self->connection, $childInstSw, $childSwLpar );
   $queue->add;
 
   $total++;
@@ -2755,12 +2734,13 @@ sub queueSoftwareCategory { # puts all the installed software, who's category pa
 
 }
 
-sub queryInsSwByParentProduct { # taking in 4 (included with), 7 (bundled), 8 (software category)
-	my @fields = qw(
-	  isId
-	);
-	
-	my $query = '
+sub queryInsSwByParentProduct
+{    # taking in 4 (included with), 7 (bundled), 8 (software category)
+ my @fields = qw(
+   isId
+ );
+
+ my $query = '
     select 
       r.installed_software_id
     from
@@ -2797,19 +2777,20 @@ sub queryProductionHwlparCount {
 }
 
 sub queryExistingMachineLevelRecon {
-	my $self=shift;
-	my $scope=shift;
-	
-	dlog("Searching for machinelevel recon accross all customers, IBMOIBMM") if (( defined $scope ) && ( $scope eq "IBMOIBMM" ));
-	
-	my @fields = qw(
-	  reconcileId
-	  reconcileTypeId
-	  licenseId
-	  licenseEnvironment
-	  usedQuantity
-	);
-	my $query = '
+ my $self  = shift;
+ my $scope = shift;
+
+ dlog("Searching for machinelevel recon accross all customers, IBMOIBMM")
+   if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
+
+ my @fields = qw(
+   reconcileId
+   reconcileTypeId
+   licenseId
+   licenseEnvironment
+   usedQuantity
+ );
+ my $query = '
         select
             r.id
             ,r.reconcile_type_id
@@ -2833,8 +2814,10 @@ sub queryExistingMachineLevelRecon {
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
             and is.software_id = ?';
-$query.='   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))' if (( not defined $scope ) || ( $scope ne "IBMOIBMM" ));
-$query.='   and h.id = hl.hardware_id
+ $query .=
+'   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
+   if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
+ $query .= '   and h.id = hl.hardware_id
             and hsc.software_lpar_id = sl.id
             and hsc.hardware_lpar_id = hl.id
             and sl.id = is.software_lpar_id
@@ -2853,9 +2836,10 @@ $query.='   and h.id = hl.hardware_id
 }
 
 sub createReconcile {
-	my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId, $allocMethodId ) =
-	  @_;
-	dlog("begin createReconcile");
+ my ( $self, $reconcileTypeId, $machineLevel, $parentInstalledSoftwareId,
+  $allocMethodId )
+   = @_;
+ dlog("begin createReconcile");
 
  ###Instantiate reconcile object.
  my $reconcile = new Recon::OM::Reconcile();
@@ -2967,7 +2951,6 @@ sub recordAlertUnlicensedSoftwareHistory {
 
 sub openAlertUnlicensedSoftware {
 	my $self = shift;
-	my $CCalertType=0;
 	dlog("begin openAlertUnlicensedSoftware");
 
  ###Instantiate alert object.
@@ -2988,38 +2971,46 @@ sub openAlertUnlicensedSoftware {
  $oldAlert->remoteUser( $alert->remoteUser );
  $oldAlert->recordTime( $alert->recordTime );
 
-	if ( grep { $_ eq $self->installedSoftwareReconData->sMfg }
-		$self->ibmArray )
-	{
-		$alert->type('IBM');
-		$CCalertType=7;
+ $alert->type( $self->installedSoftwareReconData->expectedAlertType );
+ $alert->comments('Auto Open');
+ $alert->open(1);
+
+	if ( defined $alert->id ) {
+		if ( $oldAlert->open == 0 ) {
+			$alert->creationTime( currentTimeStamp() );
+			$alert->save( $self->connection );
+			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+			
+			Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+			Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+			Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+			Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
+		}
+		elsif ( $oldAlert->type ne $alert->type ) {
+			$alert->save( $self->connection );
+			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+
+			if (( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' )) { # when changing from ISVPRIO to ISVNOPRIO or vice versa,
+																			# cause code shouldn't be reset
+				dlog("Alert type has changed, creating a new history record and resetting the cause code.");
+				Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+				Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
+			}
+		}
 	}
 	else {
-		$alert->type('ISV');
-		$CCalertType=8;
+		$alert->creationTime( currentTimeStamp() );
+		$alert->save( $self->connection );
+		
+		Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+		Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 	}
-	$alert->comments('Auto Open');
-	$alert->open(1);
 
- if ( defined $alert->id ) {
-  if ( $oldAlert->open == 0 ) {
-   $alert->creationTime( currentTimeStamp() );
-   $alert->save( $self->connection );
-   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-  }
-  elsif ( $oldAlert->type ne $alert->type ) {
-   $alert->save( $self->connection );
-   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-  }
- }
- else {
-  $alert->creationTime( currentTimeStamp() );
-  $alert->save( $self->connection );
- }
-
- Recon::CauseCode::updateCCtable( $alert->id, "NOLIC", $self->connection );
-
-	dlog("end openAlertUnlicensedSoftware");
+ dlog("end openAlertUnlicensedSoftware");
 }
 
 sub connection {
