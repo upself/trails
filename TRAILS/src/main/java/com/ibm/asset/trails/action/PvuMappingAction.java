@@ -45,12 +45,22 @@ public class PvuMappingAction extends BaseAction implements Preparable {
 	private String machineTypeId;
 
 	private MachineType machineType;
+	
+//	private String processorBrand;
+//
+//	public String getProcessorBrand() {
+//		return processorBrand;
+//	}
+//
+//	public void setProcessorBrand(String processorBrand) {
+//		this.processorBrand = processorBrand;
+//	}
 
 	public void prepare() throws Exception {
 		if (pvuId != null) {
 			pvu = pvuService.findWithInfo(pvuId);
 		}
-		if (machineTypeId != null) {
+		if (machineTypeId != null && !"".equals(machineTypeId)) {
 			machineType = pvuService.selectMachineTypeDetailsById(Long
 					.valueOf(machineTypeId));
 		}
@@ -58,7 +68,7 @@ public class PvuMappingAction extends BaseAction implements Preparable {
 
 	@UserRole(userRole = UserRoleType.ADMIN)
 	public String doListPvu() {
-		setPvuArrayList(getPvuService().getPvuList());
+		//setPvuArrayList(getPvuService().getPvuList());
 		return SUCCESS;
 	}
 

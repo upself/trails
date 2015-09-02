@@ -345,6 +345,7 @@ sub doDelta {
         $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
         $hardwareLpar->cappedLpar( $rec{cappedLpar} );
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
+        $hardwareLpar->osType( $rec{osType} );
 
         dlog( $hardwareLpar->toString );
         $action = 0 ;
@@ -365,7 +366,8 @@ sub doDelta {
                      $action = 10**6 + $action if ( $hardwareLpar->partMSU ne $self->hardwareLpar->{$lparKey}->partMSU ); 
                      $action = 10**7 + $action if ( $hardwareLpar->partGartnerMIPS ne $self->hardwareLpar->{$lparKey}->partGartnerMIPS ); 
                      $action = 10**8 + $action if ( $hardwareLpar->serverType ne $self->hardwareLpar->{$lparKey}->serverType );
-                     $action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads ); 
+                     $action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads );
+                     $action = 10**11 + $action if ( $hardwareLpar->osType ne $self->hardwareLpar->{$lparKey}->osType ); 
 
                 if ( $hardwareLpar->action eq '0' ) {                    	                	           	
                     ###Set lpar to update if it is complete              

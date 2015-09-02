@@ -59,6 +59,21 @@
 
 	<bean id="alertExpiredMaintService"
 		class="com.ibm.asset.trails.service.impl.AlertExpiredMaintServiceImpl" />
+	
+	<bean id="alertHardwareCfgDataService"
+		class="com.ibm.asset.trails.service.impl.AlertHardwareCfgDataServiceImpl" />
+	
+	<bean id="alertWithDefinedContractScopeService"
+		class="com.ibm.asset.trails.service.impl.AlertWithDefinedContractScopeServiceImpl" />	
+	
+	<bean id="alertIbmSwInstancesReviewedService"
+		class="com.ibm.asset.trails.service.impl.AlertIbmSwInstancesReviewedServiceImpl" />
+		
+	<bean id="alertPriorityIsvSwInstancesReviewedService"
+		class="com.ibm.asset.trails.service.impl.AlertPriorityIsvSwInstancesReviewedServiceImpl" />
+		
+	<bean id="alertIsvSwInstancesReviewedService"
+		class="com.ibm.asset.trails.service.impl.AlertIsvSwInstancesReviewedServiceImpl" />	
 
 	<bean id="alertHardwareService"
 		class="com.ibm.asset.trails.service.impl.AlertHardwareServiceImpl" />
@@ -306,6 +321,36 @@
 		<property name="alertService" ref="alertExpiredScanService" />
 		<property name="accountService" ref="accountService" />
 	</bean>
+	
+	<bean id="accountAlertHardwareCfgData" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertHardwareCfgDataService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+	
+	<bean id="accountAlertWithDefinedContractScope" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertWithDefinedContractScopeService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+	
+	<bean id="accountAlertIbmSwInstancesReviewed" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertIbmSwInstancesReviewedService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+	
+	<bean id="accountAlertPriorityIsvSwInstancesReviewed" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertPriorityIsvSwInstancesReviewedService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
+
+	<bean id="accountAlertIsvSwInstancesReviewed" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
+		<property name="alertService" ref="alertIsvSwInstancesReviewedService" />
+		<property name="accountService" ref="accountService" />
+	</bean>
 
 	<bean id="accountAlertHardware" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertAssignment" parent="bravoServerName">
@@ -351,6 +396,11 @@
 	<bean id="alertHardwareHistory" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertHistory">
 		<property name="alertService" ref="alertHardwareService" />
+	</bean>
+	
+	<bean id="alertHardwareCfgDataHistory" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertHistory">
+		<property name="alertService" ref="alertHardwareCfgDataService" />
 	</bean>
 
 	<bean id="alertHardwareLparHistory" scope="prototype"
@@ -413,6 +463,9 @@
 	</bean>
 
 	<bean id="helpAction" scope="prototype" class="com.ibm.ea.common.help.HelpAction">
+		<property name="gitHash">
+			<value>${git_hash}</value>
+		</property>
 	</bean>
 
 	<bean id="licenseAction" scope="prototype"

@@ -1,64 +1,53 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<!-- show loading -->
-<script src="${pageContext.request.contextPath}/js/jquery.showLoading.js"></script>
-<link href="${pageContext.request.contextPath}/css/showLoading.css" rel="stylesheet" type="text/css" />
-
+<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
+		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Priority ISV history table">
 			<caption>
                 <em>Priority ISV SW History</em>
                 </caption>
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
+					<th scope="col">Manufacturer Name</th>
+					<th scope="col">Level</th>
+					<th scope="col">CNDB Name</th>
+					<th scope="col">CNDB ID</th>
+					<th scope="col">Evidence Location</th>
+					<th scope="col">Status</th>
+					<th scope="col">Business Justification</th>
+					<th scope="col">Remote User</th>
+					<th scope="col">Record Time</th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_history_list">
-			<tr class="loading"></tr>
 			</tbody>
 		</table>
+		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 </div>
 <script>
-	
-	$(function() {
-		searchData();
-	});
+$(function(){
+	searchData();
+});
 
-	function searchData() {
-		$(".loading").showLoading();
-		$.ajax({
-			url : "${pageContext.request.contextPath}/ws/priorityISV/isvh/<s:property value='priorityISVSoftwareId'/>",
-			type : "GET",
-			dataType : 'json',
-
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				var html = "<tr><td colspan='9'>" + "Error happend when querying the data, please contact system admin."
-				+ "</td></tr>"
-				$("#priority_isv_history_list").html(html);
-				$(".loading").hideLoading();
-			},
-			
-			success : function(data) {
+function searchData(){
+	$("#pagebar").v17ePagination({
+		showInfo: true,
+		showPageSizes: true,
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/priorityISV/isvh/<s:property value='priorityISVSoftwareId'/>",
+			type: "GET",
+			success: function(result, pageIndex){
 				var html = '';
-				if (data.status != 200) {
-					html += "<tr><td colspan='9'>" + data.msg
-							+ "</td></tr>"
-				} else {
-					var list = data.dataList;
-					for (var i = 0; i < list.length; i++) {
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='9' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td>" + list[i].manufacturerName + "</td>";
 						html += "<td>" + list[i].level + "</td>";
@@ -68,37 +57,13 @@
 						html += "<td>" + list[i].statusDesc + "</td>";
 						html += "<td>" + list[i].businessJustification+ "</td>";
 						html += "<td>" + list[i].remoteUser + "</td>";
-						html += "<td>" + formatDate(new Date(list[i].recordTime)) + "</td>";
+						html += "<td>" + list[i].recordTime + "</td>";
 						html += "</tr>";
 					}
 				}
 				$("#priority_isv_history_list").html(html);
-				$(".loading").hideLoading();
-			},
-			
-			complete : function(XMLHttpRequest, textStatus) {
-				$(".loading").hideLoading();
 			}
-		});
-	};
-
-	function formatDate(inputdate) {
-		var year = inputdate.getFullYear();
-		var month = inputdate.getMonth() + 1;
-		month = appendZero(month);
-		var date = inputdate.getDate();
-		date = appendZero(date);
-		var hour = inputdate.getHours();
-		hour = appendZero(hour);
-		var minute = inputdate.getMinutes();
-		minute = appendZero(minute);
-		var second = inputdate.getSeconds();
-		second = appendZero(second);
-		return year + "-" + month + "-" + date + " " + hour + ":" + minute
-				+ ":" + second;
-	}
-	
-	function appendZero(number){
-		return number > 9 ? number : "0" + number;
-	}
+		}
+	});
+};
 </script>

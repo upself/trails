@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertUnlicensedSw;
+import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
 import com.ibm.asset.trails.domain.CauseCode;
 import com.ibm.asset.trails.domain.CauseCodeHistory;
 import com.ibm.asset.trails.service.AccountService;
@@ -60,6 +62,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	private final static String STEP2_LABEL = "VALIDATE";
 	private final static String STEP3_LABEL = "PERSISTE";
+	
+	private static final String SOM3_REPORT_NAME = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
 
 	@Autowired
 	private AccountService accountService;
@@ -176,7 +180,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						} else {
 							long alertTypeId = list.get(0).getAlertType()
 									.getId();
-							if (alertTypeId != colIndexes.getAlertTypeId()) {
+							if (alertTypeId != colIndexes.getAlertTypeId()
+							 && alertTypeId != 17//Bypass alert type id value validation for the existing alert type id 17(NOLIC=UNLICENSED SW) Cause Code DB Record		
+							   ) {
 								buildErrorMsg(errorMsg,
 										colIndexes.getColInternalId(),
 										"Internal ID",
@@ -411,7 +417,19 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
-
+			
+			if(colIndexes.getColAssigneeComments()!=-1){
+				HSSFCell assigneeCommentsCell = row.getCell(colIndexes.getColAssigneeComments());
+	
+				String assigneeComments = "";
+				if (assigneeCommentsCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				  assigneeComments = assigneeCommentsCell.getStringCellValue();
+				} 
+				
+			    if(assigneeComments!=null&&!"".equals(assigneeComments.trim())){
+			      updateAssigneeComments(causeCode.getAlertId(), assigneeComments.trim(), colIndexes.getReportName().trim(),remoteUser);
+			    }
+			}
 		}
 
 	}
@@ -451,7 +469,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			return false;
 		}
 
-		return dbValue.equals(cellValue);
+		return dbValue.trim().equals(cellValue.trim());
 	}
 
 	private void buildErrorMsg(StringBuffer result, int columnNo,
@@ -555,5 +573,50 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				.createNamedQuery("getCauseCodeById")
 				.setParameter("id", causeCodeId).getResultList();
 		return causeCode;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateAssigneeComments(long alertId, String assigneeComments, String reportName, String remoteUser){
+	   if(reportName!=null&& !"".equals(reportName.trim())){
+    	  if(reportName.equalsIgnoreCase(SOM3_REPORT_NAME)){
+    	     List<AlertUnlicensedSw> ausList = null;
+    			try {
+    				ausList = getEntityManager()
+    						.createNamedQuery("alertUnlicensedSwListById")
+    						.setParameter("idList",
+    								alertId)
+    						.getResultList();
+    			} catch (Exception e) {
+    				log.error(e.getMessage(), e);
+    			}
+    			
+    		  if(ausList.size() >= 1){
+    			 AlertUnlicensedSw ausInDB = ausList.get(0);
+    			 String assigneeCommentsInDB = ausInDB.getComments();
+    			 if(!strCompare(assigneeCommentsInDB,assigneeComments)){
+    			 
+	    			 AlertUnlicensedSwH ausHistory = new AlertUnlicensedSwH();
+	    			 ausHistory.setAlertUnlicensedSw(ausInDB);
+	    			 ausHistory.setComments(ausInDB.getComments());
+	    			 ausHistory.setRemoteUser(ausInDB.getRemoteUser());
+	    			 ausHistory.setCreationTime(ausInDB.getCreationTime());
+	    			 ausHistory.setRecordTime(ausInDB.getRecordTime());
+	    			 ausHistory.setOpen(ausInDB.isOpen());
+	    			 
+	    			 ausInDB.setComments(assigneeComments);
+	    			 ausInDB.setRemoteUser(remoteUser);
+	    			 ausInDB.setRecordTime(new Date());
+	    			 
+	    			 try{
+						getEntityManager().persist(ausHistory);
+						getEntityManager().persist(ausInDB);
+						getEntityManager().flush();
+	    			  } catch (Exception e) {
+	    					log.error(e.getMessage(), e);
+	    			 }
+    			 }
+    		  }
+    	  } 
+       }			
 	}
 }

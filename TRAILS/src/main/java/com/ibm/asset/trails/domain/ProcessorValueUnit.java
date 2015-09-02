@@ -5,11 +5,14 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "PVU")
@@ -32,6 +35,7 @@ public class ProcessorValueUnit {
 	private List<ProcessorValueUnitInfo> processorValueUnitInfo;
 
 	@OneToMany(mappedBy = "processorValueUnit")
+	@JsonIgnore
 	private List<PvuMap> pvuMap;
 
 	public Long getId() {

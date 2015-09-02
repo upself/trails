@@ -17,8 +17,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "ALERT_CAUSE")
+@org.hibernate.annotations.Entity
 @NamedQueries({
 		@NamedQuery(name = "findAlertCauseByName", query = "FROM AlertCause WHERE upper(name) = :name and showInGui = 1"),
 		@NamedQuery(name = "findAlertCauseByNameAndResponsibility", query = "FROM AlertCause WHERE upper(name) = :name and alertCauseResponsibility = :responsibility and showInGui = 1"),
@@ -43,7 +46,8 @@ public class AlertCause {
 	@ManyToOne
 	@JoinColumn(name = "ALERT_CAUSE_RESPONSIBILITY_ID")
 	private AlertCauseResponsibility alertCauseResponsibility;
-
+	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.alertCause", cascade = CascadeType.PERSIST)
 	private Set<AlertTypeCause> alertTypeCauses = new HashSet<AlertTypeCause>();
 

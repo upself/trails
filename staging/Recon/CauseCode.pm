@@ -3,6 +3,39 @@ package Recon::CauseCode;
 use strict;
 use Base::Utils;
 
+sub resetCCcode {
+	my ( $alertid, $alertcode, $connection) = @_;
+	
+	my $oldId=GetByAlert ( $alertid, $alertcode, $connection );
+	
+	if ( $oldId > 0 ) {
+		$connection->prepareSqlQuery(queryResetCC());
+		
+		my $sth=$connection->sql->{resetCC};
+	
+		$sth->execute( $alertcode, $oldId );
+		$sth->finish;
+		
+		return $oldId;
+		
+	} else {
+		$connection->prepareSqlQuery(queryInsertCC());
+
+		my $sth=$connection->sql->{insertCC};
+		my $id;
+	
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertcode, $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
+		
+		# returns ID of the row in the cause_code table
+		
+		return $id;
+
+	}
+}
+
 sub updateCCtable {
 	my ( $alertid, $alertcode, $connection) = @_;
 	
@@ -31,20 +64,50 @@ sub updateCCtable {
 sub GetByAlert {
 	my ( $alertid, $alertcode, $connection ) = @_;
 	
-	$connection->prepareSqlQuery(queryGetByAlert());
+	if ( $alertcode =~ '^SWI' ) {
+		$connection->prepareSqlQuery(queryGetBySWIAlert());
 	
-	my $sth=$connection->sql->{GetCCbyAlert};
-	my $id;
+		my $sth=$connection->sql->{GetCCbySWIAlert};
+		my $id;
 	
-	$sth->bind_columns( \$id );
-	$sth->execute( $alertcode, $alertid );
-	$sth->fetchrow_arrayref;
-	$sth->finish;
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
 	
-	return $id if ( defined $id );
+		return $id if ( defined $id );
+	} else {
+		$connection->prepareSqlQuery(queryGetByAlert());
+	
+		my $sth=$connection->sql->{GetCCbyAlert};
+		my $id;
+	
+		$sth->bind_columns( \$id );
+		$sth->execute( $alertcode, $alertid );
+		$sth->fetchrow_arrayref;
+		$sth->finish;
+	
+		return $id if ( defined $id );
+	}
 	
 	return 0;
 }
+
+sub queryGetBySWIAlert {
+	my $query = '
+		select
+			cc.id
+		from
+			cause_code cc join alert_type at on cc.alert_type_id = at.id
+		where
+			(( at.code like \'SWI%\' ) or ( at.code = \'NOLIC\' ))
+			and
+			cc.alert_id = ?
+		with ur
+		';
+	return ( 'GetCCbySWIAlert', $query );
+}
+
 
 sub queryGetByAlert {
 	my $query = '
@@ -61,7 +124,20 @@ sub queryGetByAlert {
 	return ( 'GetCCbyAlert', $query );
 }
 
-
+sub queryResetCC {
+    my $query = '
+        update cause_code
+			set
+			alert_type_id = ( select id from alert_type where code = ? ),
+			alert_cause_id = 1,
+			owner = null,
+			record_time = null, 
+			remote_user = null,
+			target_date = null
+		where id = ?
+    ';
+    return ('resetCC', $query);
+}
 
 sub queryInsertCC {
     my $query = '

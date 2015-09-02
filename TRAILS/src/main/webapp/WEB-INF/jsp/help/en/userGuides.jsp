@@ -1,9 +1,9 @@
-<!-- start help doc -->
+<%@taglib prefix="s" uri="/struts-tags"%>
 
 <script type="text/javascript">
 function openUserGuide(url){
     if(url==""||url ==  null){
-     url = "//tap.raleigh.ibm.com/helpdocs/trails/en/trails_userguide_en.pdf";
+     url = "http://tap.raleigh.ibm.com/helpdocs/trails/en/trails_userguide_en.pdf";
     }
     if(confirm('Open the user guide in new window?')){
         window.open (url, "UserGuide", "scrollbars,resizable");
@@ -13,7 +13,6 @@ function openUserGuide(url){
 </script>
 
 
-	<h1>TRAILS Help User Guides:</h1>
 	<br />
 	<div class="hrule-dots"></div>
 	<br />

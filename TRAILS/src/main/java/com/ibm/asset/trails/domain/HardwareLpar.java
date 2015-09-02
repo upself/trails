@@ -30,7 +30,7 @@ public class HardwareLpar {
 
 	@Column(name = "EXT_ID")
 	private String extId;
-	
+
 	@Column(name = "TECH_IMAGE_ID")
 	private String techImgId;
 
@@ -56,10 +56,13 @@ public class HardwareLpar {
 	@Column(name = "SERVER_TYPE")
 	private String serverType;
 
+	@Column(name = "OS_TYPE")
+	private String osType;
+
 	@Column(name = "EFFECTIVE_THREADS")
 	private BigDecimal effectiveThreads;
-	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy="hardwareLpar")
+
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "hardwareLpar")
 	private HardwareLparEff hardwareLparEff;
 
 	public HardwareLparEff getHardwareLparEff() {
@@ -240,6 +243,14 @@ public class HardwareLpar {
 
 	public void setInternetIccFlag(String internetIccFlag) {
 		this.internetIccFlag = internetIccFlag;
+	}
+
+	public String getOsType() {
+		return osType;
+	}
+
+	public void setOsType(String osType) {
+		this.osType = osType;
 	}
 
 	public BigDecimal getEffectiveThreads() {

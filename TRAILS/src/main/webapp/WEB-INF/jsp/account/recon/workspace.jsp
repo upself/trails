@@ -188,6 +188,7 @@
 				}, 1000);
 
 	}
+	
 </script>
 
 <s:url id="freepool" action="licenseFreePool"
@@ -258,8 +259,13 @@
 		requestURI="workspace.htm">
 		<display:caption media="html">Reconciliation results</display:caption>
 		<display:column title="">
-			<s:checkbox name="list[%{#attr.row_rowNum-1}].selected"
-				theme="simple" id="action" />
+		<!-- story 30027 -->
+			<s:if test="#attr.row.scope eq 'Not specified'">
+				<s:checkbox name="list[%{#attr.row_rowNum-1}].selected" theme="simple" id="action" disabled="true"/>
+			</s:if>
+			<s:else>
+				<s:checkbox name="list[%{#attr.row_rowNum-1}].selected" theme="simple" id="action" />
+			</s:else>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].installedSoftwareId"
 				value="%{#attr.row.installedSoftwareId}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].alertAgeI"
@@ -274,6 +280,10 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
+			<!-- story_30027 -->
+			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
+				value="%{#attr.row.assetName}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].scope" value="%{#attr.row.scope}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
@@ -284,6 +294,8 @@
 				value="%{#attr.row.lparStatus}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].processorCount"
 				value="%{#attr.row.processorCount}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].osType"
+				value="%{#attr.row.osType}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hardwareProcessorCount"
 				value="%{#attr.row.hardwareProcessorCount}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hwLparEffProcessorCount"
@@ -364,6 +376,8 @@
 			sortProperty="hle.processorCount" sortable="true" />
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
+			<!-- story 30027 -->
+		<display:column property="scope" title="Scope" sortProperty="scope" sortable="true"/>
 		<display:column sortProperty="sw.softwareName" title="Software"
 			sortable="true">
 			<a

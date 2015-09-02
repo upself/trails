@@ -1,8 +1,4 @@
 <!-- start help doc -->
-	
-<h1>TRAILS FAQs</h1>
-
-<p />
 
 <p><a href="#_What_is_TRAILS">What is TRAILS?</a></p>
 
@@ -45,8 +41,8 @@ on TRAILS?</a></p>
 
 <p />
 
-<h3><a name="_What_is_TRAILS"></a>What is TRAILS?</h3>
-
+<h3><a name="_What_is_TRAILS"></a>&nbsp;</h3>
+<p><h3>What is TRAILS?</h3></p>
 <p>The Reconciliation And Inventory of Licensed Software
 (TRAILS) tool is a Web-based asset management tool that compares installed
 software to software licenses to manage software license compliance. TRAILS 4.0
@@ -54,21 +50,24 @@ provides a continuous reconciliation engine that shows the current software
 license management posture for each in-scope account, through an alert-based
 variance management system.</p>
 
-<h3><a name="_Where_did_the"></a>Where did the data in TRAILS come from?</h3>
+<h3><a name="_Where_did_the"></a>&nbsp;</h3>
+<h3>Where did the data in TRAILS come from?</h3>
 
 <p>Account information comes directly from the asset management
 Customer Number Database (CNDB). Installed software data and hardware data is
 provided through a load from BRAVO. License data is provided through a load
 from SoftReq and/or SWCM. </p>
 
-<h3><a name="_How_is_data"></a>How is data loaded into TRAILS?</h3>
+<h3><a name="_How_is_data"></a>&nbsp;</h3>
+<h3>How is data loaded into TRAILS?</h3>
 
 <p>All account and asset data is automatically fed in to the
 system from CNDB, BRAVO, SoftReq, and SWCM. This happens through continuous
 delta loads from the source systems within a 24 hour turnaround of a change.
 This loading process generates the alerts for an account.</p>
 
-<h3><a name="_What_are_Alerts"></a>What are Alerts?</h3>
+<h3><a name="_What_are_Alerts"></a>&nbsp;</h3>
+<h3>What are Alerts?</h3>
 
 <p>TRAILS 4.0 is an alert-based variance management system. An
 alert in TRAILS is a flagged variance between the account's current data and desired
@@ -115,7 +114,8 @@ tracked variances.</p>
 
 <p />
 
-<h3><a name="_How_is_the"></a>How is the age of the alert calculated?</h3>
+<h3><a name="_How_is_the"></a>&nbsp;</h3>
+<h3>How is the age of the alert calculated?</h3>
 
 <p>For the HW w/o HW LPAR, HW LPAR w/o SW LPAR, and SW LPAR w/o
 HW LPAR alert types, the age of the alert is calculated using the date that the
@@ -133,7 +133,8 @@ age is calculated from the date of expiration.</p>
 
 <p />
 
-<h3><a name="_How_is_asset"></a>How is asset management involved in the tool?</h3>
+<h3><a name="_How_is_asset"></a>&nbsp;</h3>
+<h3>How is asset management involved in the tool?</h3>
 
 <p>Asset management is responsible for monitoring the compliance
 management system and driving the closure of alerts generated for their accounts.
@@ -154,21 +155,24 @@ made in the source system </p>
 <p>- Evaluation and closure of all discrepancies to ensure good
 audit posture</p>
 
-<h3><a name="_How_can_I"></a>How can I access TRAILS? </h3>
+<h3><a name="_How_can_I"></a>&nbsp;</h3>
+<h3>How can I access TRAILS? </h3>
 
 <p>There are two types of access; read and administrative
 access. By default, the Asset Management community has read access. If you are
 outside this group and need either read or administrative access, contact your
 Asset Management Focal to request access on your behalf.  </p>
 
-<h3><a name="_Can_TRAILS_data"></a>Can TRAILS data be distributed externally? </h3>
+<h3><a name="_Can_TRAILS_data"></a>&nbsp;</h3>
+<h3>Can TRAILS data be distributed externally? </h3>
 
 <p>TRAILS data should only be provided to the appropriate
 members of the account teams and within the asset management group. If required
 per the customer contract, data can be provided to a customer after it has been
 approved by asset management and the account team lead.</p>
 
-<h3><a name="_Where_can_I"></a>Where can I go to obtain education on TRAILS? </h3>
+<h3><a name="_Where_can_I"></a>&nbsp;</h3>
+<h3>Where can I go to obtain education on TRAILS? </h3>
 
 <p>Education for TRAILS can be found on the home page of TRAILS
 under Help Documentation. Additionally, please see your asset management focal,

@@ -123,7 +123,7 @@ sub getData {
         $hardware->serial( $rec{serial} );
         $hardware->customerNumber( $rec{customerNumber} );
         $hardware->owner( $rec{owner} );
-        $hardware->hardwareStatus( $rec{hardwareStatus} );
+        $hardware->hardwareStatus( $self->hardwareStatusLogic($rec{hardwareStatus}) );
         $hardware->country( $rec{country} );
         $hardware->status( $rec{status} );
         $hardware->updateDate( $rec{hwDate} );
@@ -217,6 +217,7 @@ sub getData {
         $hardwareLpar->vMobilRestrict( $rec{vMobilRestrict} );
         $hardwareLpar->cappedLpar( $rec{cappedLpar} );
         $hardwareLpar->virtualFlag( $rec{virtualFlag} );
+        $hardwareLpar->osType( $rec{osType} );
            
         dlog( $hardwareLpar->toString );
 
@@ -358,7 +359,8 @@ sub queryATPData {
             cappedLpar
             virtualFlag
             nbrFreeProcessorCores
-            cpuIFL)
+            cpuIFL
+            osType)
     );
     my $query = '
         select
@@ -418,7 +420,8 @@ sub queryATPData {
 			,ltrim(rtrim(CAPPED_LPAR))
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
-			,CPU_IFL		
+			,CPU_IFL
+			,ENVT
         from
             atpprod.bravo
     ';
@@ -485,7 +488,8 @@ sub queryATPDeltaData {
             cappedLpar
             virtualFlag
             nbrFreeProcessorCores
-            cpuIFL)
+            cpuIFL
+            osType)
     );
     my $query = '
         select
@@ -546,6 +550,7 @@ sub queryATPDeltaData {
 			,ltrim(rtrim(VIRTUALFLAG))
 			,NBR_FREE_PROCESSOR_CORES
 			,CPU_IFL
+			,ENVT
         from
             atpprod.bravo
         where  
@@ -636,6 +641,16 @@ sub cpuIflLogic {
          }
         }
         return 0;
+}
+
+sub hardwareStatusLogic {
+	my ( $self, $hardwareStatus) = @_;
+	
+	if( $hardwareStatus eq 'ACTIVE' || $hardwareStatus eq 'HWCOUNT' || $hardwareStatus eq 'UNLOC8D' || $hardwareStatus eq 'RMVDLPAR' || $hardwareStatus eq 'INACTIVE' || $hardwareStatus eq 'UNLOCATD' ) {
+		return $hardwareStatus;	
+	}
+	
+	return 'ACTIVE';
 }
 
 1;

@@ -152,7 +152,7 @@ sub openAlert {
 	$alert->comment('Auto Open');
 	$alert->save( $self->connection );
 	
-	Recon::CauseCode::updateCCtable( $alert->id, "NOOS", $self->connection);
+	Recon::CauseCode::resetCCcode( $alert->id, "NOOS", $self->connection);
 
 	my $softwareLparAlert = new Recon::OM::AlertSoftwareLparNew();
 	$softwareLparAlert->id( $alert->id );

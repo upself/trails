@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.SoftwareDAO;
@@ -22,7 +23,7 @@ import com.ibm.asset.trails.service.ScheduleFService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED)
 public class ScheduleFServiceImplTest {
 	@Autowired
 	private ScheduleFService scheduleFService;
@@ -39,7 +40,7 @@ public class ScheduleFServiceImplTest {
 		System.out.println(softwareLs.get(0).getSoftwareName().toString());
 	}
 	
-	@Test
+	//@Test
 	public void testScheduleFfindScheduleFbyCustomerAndSoftware() {
 		Account account = accountService.getAccountByAccountNumber(35400L);
 		Software software = softwareDAO.getSoftwareDetails(218119L);

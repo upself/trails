@@ -72,8 +72,13 @@ public class AlertOperationalReport {
 		if (getAssetSum().doubleValue() == 0.0) {
 			return 0.0;
 		} else {
-			return Double.valueOf((getRedSum().doubleValue() / getAssetSum()
-					.doubleValue()) * 100);
+			if(getAlertName().equalsIgnoreCase("SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED")){
+				return Double.valueOf((1-(getRedSum().doubleValue() / getAssetSum().doubleValue())) * 100);
+			}else{
+				return Double.valueOf((getRedSum().doubleValue() / getAssetSum()
+						.doubleValue()) * 100);
+			}
+			
 		}
 	}
 

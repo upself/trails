@@ -31,12 +31,6 @@
 	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.xls?name=alertExpiredScan">Outdated SW LPAR alert</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIbmSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIbmSw">Unlicensed IBM SW alert</a>
-</span>
-<span class="download-link">
-	<a href="/TRAILS/report/download/alertUnlicensedIsvSw<s:property value="%{#attr.account.account}" />.xls?name=alertUnlicensedIsvSw">Unlicensed ISV SW alert</a>
-</span>
-<span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionDetail<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionDetail">Pending customer decision reconciled detail alert</a>
 </span>
 <span class="download-link">
@@ -51,6 +45,24 @@
 <sx:div href="%{#alertUrl}?type=DATA_EXCEPTION" cssClass="table-wrap" delay="200" loadingText="Loading..." showLoadingText="true"> 
 </sx:div>
 </div>
+
+<h2 class="bar-blue-med-light">SOM reports</h2><br />
+<span class="download-link">
+	<a href="/TRAILS/ws/alertHardwareCfgData/download/<s:property value="%{#attr.account.id}" />">SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertWithDefinedContractScope/download/<s:property value="%{#attr.account.id}" />">SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertIbmSwInstancesReviewed/download/<s:property value="%{#attr.account.id}" />">SOM4a: IBM SW INSTANCES REVIEWED</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertPriorityIsvSwInstancesReviewed/download/<s:property value="%{#attr.account.id}" />">SOM4b: PRIORITY ISV SW INSTANCES REVIEWED</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertIsvSwInstancesReviewed/download/<s:property value="%{#attr.account.id}" />">SOM4c: ISV SW INSTANCES REVIEWED</a>
+</span>
+
 
 <h2 class="bar-blue-med-light">Miscellaneous reports</h2><br />
 <span class="download-link">

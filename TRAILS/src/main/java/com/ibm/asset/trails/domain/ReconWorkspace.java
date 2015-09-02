@@ -55,9 +55,31 @@ public class ReconWorkspace implements Serializable {
 	private BigDecimal cpuGartnerMips;
 
 	private BigDecimal partGartnerMips;
-	
+
 	private String pid;
-	
+
+	private String osType;
+
+	private String scope;
+
+	private String assetName;
+
+	public String getAssetName() {
+		return assetName;
+	}
+
+	public void setAssetName(String assetName) {
+		this.assetName = assetName;
+	}
+
+	public String getScope() {
+		return scope;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
 	public String getPid() {
 		return pid;
 	}
@@ -183,11 +205,11 @@ public class ReconWorkspace implements Serializable {
 	private String shared;
 
 	private String lparServerType;
-	
+
 	private Integer cpuIFL;
 
 	private BigDecimal effectiveThreads;
-	
+
 	private Integer hwLparEffProcessorCount;
 	private String hwLparEffProcessorStatus;
 
@@ -473,7 +495,15 @@ public class ReconWorkspace implements Serializable {
 	public void setCpuIFL(Integer cpuIFL) {
 		this.cpuIFL = cpuIFL;
 	}
-	
+
+	public String getOsType() {
+		return osType;
+	}
+
+	public void setOsType(String osType) {
+		this.osType = osType;
+	}
+
 	public BigDecimal getEffectiveThreads() {
 		return effectiveThreads;
 	}

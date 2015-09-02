@@ -43,7 +43,6 @@ public class AlertAssignment extends AccountBaseAction {
                 getAlertService().paginatedList(getUserSession().getAccount(),
                         getStartIndex(), getData().getObjectsPerPage(),
                         getSort(), getDir()));
-
         getData().setFullListSize(
                 getAlertService().total(getUserSession().getAccount())
                         .intValue());

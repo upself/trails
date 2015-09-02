@@ -34,6 +34,7 @@
 	<property name="sPriority" type="scalar" equals="true" />
 	<property name="sLevel" type="scalar" equals="true" />
 	<property name="sVendorMgd" type="scalar" equals="true" />
+	<property name="sMfgId" type="scalar" />
 	<property name="sMfg" type="scalar" equals="true" />
 	<property name="scName" type="scalar" equals="true" />
 	<property name="scParent" type="scalar" equals="true" />
@@ -50,4 +51,5 @@
 	<property name="licsToRecon" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
 	<property name="scheduleFlevel" type="scalar" />
+	<property name="expectedAlertType" type="scalar" />
 </class>

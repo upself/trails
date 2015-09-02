@@ -133,6 +133,7 @@
 			<display:column property="partMsu" title="Part MSU" />
 			<display:column property="shared" title="Shared" />
 			<display:column property="hwLparEffProcessorCount" title="LPAR proc" />
+			<display:column property="osType" title="OS Type" />
 			<display:column property="sysplex" title="Sysplex" />
 			<display:column property="spla" title="SPLA" />
 			<display:column property="internetIccFlag" title="Internet Acc" />

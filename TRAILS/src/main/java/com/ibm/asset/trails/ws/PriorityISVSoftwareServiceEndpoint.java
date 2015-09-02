@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 
 import java.util.Date;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,6 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.Manufacturer;
+import com.ibm.asset.trails.domain.NonInstance;
+import com.ibm.asset.trails.domain.NonInstanceH;
 import com.ibm.asset.trails.domain.PriorityISVSoftware;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareDisplay;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareHDisplay;
@@ -47,6 +50,7 @@ import com.ibm.asset.trails.service.ManufacturerService;
 import com.ibm.asset.trails.service.PriorityISVSoftwareService;
 import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.service.StatusService;
+import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @Path("/priorityISV")
@@ -84,30 +88,46 @@ public class PriorityISVSoftwareServiceEndpoint {
 	@GET
 	@Path("/isv/all")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg getAllPriorityISVSoftwareDisplays(){
+	public WSMsg getAllPriorityISVSoftwareDisplays(@QueryParam("currentPage") Integer currentPage,
+			@QueryParam("pageSize") Integer pageSize){
+	
+
+		List<PriorityISVSoftwareDisplay> results = null;
+		int startIndex = (currentPage-1) * pageSize;
+		Long total = this.priorityISVSoftwareService.total();
+		if(total > 0){
+			results = this.priorityISVSoftwareService.getAllPriorityISVSoftwareDisplays(startIndex, pageSize);
+		}
 		
-	  List<PriorityISVSoftwareDisplay> results = this.priorityISVSoftwareService.getAllPriorityISVSoftwareDisplays();
-	  if(results == null){
-		return WSMsg.failMessage("No Priority ISV Software Data has been returned!");
-	  }
-	  else{
-	    return WSMsg.successMessage("All Priority ISV Software Data have been returned.",results);
-	  }
+		Pagination page = new Pagination();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(results);
+		return WSMsg.successMessage("SUCCESS", page);
 	}
 	
 	@GET
 	@Path("/isvh/{isvid}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg getPriorityISVSoftwareHDisplaysByISVSoftwareId(@PathParam("isvid") Long priorityISVSoftwareId){
+	public WSMsg getPriorityISVSoftwareHDisplaysByISVSoftwareId(@PathParam("isvid") Long priorityISVSoftwareId,
+			@QueryParam("currentPage") Integer currentPage,
+			@QueryParam("pageSize") Integer pageSize){
 		
-	  List<PriorityISVSoftwareHDisplay> results = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId);
-	  
-	  if(results == null){
-		return WSMsg.failMessage("No Priority ISV Software History Data has been found");
-	  }
-	  else{
-	    return WSMsg.successMessage("The Priority ISV Software History Data has been found for priorityISVSoftwareId = "+priorityISVSoftwareId+".",results);
-	  }
+		List<PriorityISVSoftwareHDisplay> priISVSwHList = null;
+		int startIndex = (currentPage-1) * pageSize;
+		Long total = this.priorityISVSoftwareService.totalHistory(priorityISVSoftwareId);
+		if(total > 0){
+			priISVSwHList = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId,startIndex,pageSize);
+		}
+		
+
+		Pagination page = new Pagination();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(priISVSwHList);
+		return WSMsg.successMessage("SUCCESS", page);
 	}
 	
 	

@@ -163,7 +163,7 @@ sub openAlert {
     $alert->open(1);
     $alert->save( $self->connection );
     
-    Recon::CauseCode::updateCCtable( $alert->id, "HWCFGDTA", $self->connection ); # updating CC table, HWCFGDTA
+    Recon::CauseCode::resetCCcode( $alert->id, "HWCFGDTA", $self->connection ); # updating CC table, HWCFGDTA
 }
 
 sub closeAlert {

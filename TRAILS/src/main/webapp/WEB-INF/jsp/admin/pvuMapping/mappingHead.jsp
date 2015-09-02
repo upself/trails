@@ -77,7 +77,6 @@ function getAvailableProcessorModels(value)
   var poststr = "processorBrand="+encodeURIComponent($("#asset_processor_brand_select").val())
                +"&pvuId="+encodeURI(${pvu.id}) + "&machineTypeId=" +
                encodeURI($("#machineTypeSelect").val());
-  
   xmlhttp.onreadystatechange=stateChanged;  
   xmlhttp.open("POST","${pageContext.request.contextPath}/admin/pvuMapping/getAvailableProcessorModels.htm",true);
   xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -186,33 +185,6 @@ $(document).ready(function() {
       }
    );
    
-   
-   $('#button_remove').click(function(event) {
-     event.preventDefault();
-     
-     var mafSelected = $('#asset_processor_brand_select>option:selected');
-     var modSelected = $('#mapped_model_select>option:selected');
-      
-     if(mafSelected.length==0||modSelected.length==0){
-        alert('Select one or more mapped asset machine models to remove.'); 
-        return;
-     }
-     modSelected.remove().appendTo('#free_model_select').sort();
-     setTimeout(removeSelection,0);
-     return;     
-   });
-   
-   
-   $("#button_add").click(function(event) {
-       event.preventDefault();   
-       var resSelected=$('#free_model_select>option:selected');
-       if(resSelected.length==0){
-          alert('Select one or more free processor models to map.');
-       }
-       resSelected.remove().appendTo('#mapped_model_select');
-       return;
-   }); 
- 
    $('#submit_button').click(function(){
       $("#mapped_model_select>option").each( function() {
          $(this).attr("selected", "selected");

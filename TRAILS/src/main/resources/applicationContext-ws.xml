@@ -4,22 +4,46 @@
 	xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
-    
+
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint"/>
-	<bean id="priorityISVSoftwareServiceEndpoint" class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint"/>	
-	
+	<bean id="nonInstanceServiceEndpoint" class="com.ibm.asset.trails.ws.NonInstanceServiceEndpoint" />
+	<bean id="priorityISVSoftwareServiceEndpoint"
+		class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint" />
+	<bean id="alertHardwareCfgDataServiceEndpoint"
+		class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint" />
+	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
+	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
+	<bean id="alertWithDefinedContractScopeServiceEndpoint" class="com.ibm.asset.trails.ws.AlertWithDefinedContractScopeServiceEndpoint"/>
+	<bean id="alertIbmSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIbmSwInstancesReviewedServiceEndpoint" />
+	<bean id="alertPriorityIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertPriorityIsvSwInstancesReviewedServiceEndpoint" />
+	<bean id="alertIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIsvSwInstancesReviewedServiceEndpoint" />
+	<bean id="hibernateMapper"
+		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
+
+
+
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>
-			<ref bean="nonInstanceServiceEndpoint"/>
-			<ref bean="priorityISVSoftwareServiceEndpoint"/>
+			<ref bean="nonInstanceServiceEndpoint" />
+			<ref bean="priorityISVSoftwareServiceEndpoint" />
+			<ref bean="alertHardwareCfgDataServiceEndpoint" />
+			<ref bean="pvuMappingServiceEndpoint" />
+			<ref bean="AdminCauseCodeServiceEndpoin" />
+			<ref bean="alertWithDefinedContractScopeServiceEndpoint"/>
+			<ref bean="alertIbmSwInstancesReviewed" />
+			<ref bean="alertPriorityIsvSwInstancesReviewed" />
+			<ref bean="alertIsvSwInstancesReviewed" />
+
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
-          <entry key="json" value="application/json"/>
-          <entry key="xml" value="application/xml"/>
-        </jaxrs:extensionMappings>
-        <jaxrs:providers>
-			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
+			<entry key="json" value="application/json" />
+			<entry key="xml" value="application/xml" />
+		</jaxrs:extensionMappings>
+		<jaxrs:providers>
+			<bean id="jacksonProvider"
+				class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+				<property name="mapper" ref="hibernateMapper" />
+			</bean>
 			<bean class="com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider" />
 		</jaxrs:providers>
 	</jaxrs:server>

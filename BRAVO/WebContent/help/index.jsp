@@ -23,6 +23,7 @@
 <meta name="Description" content="REPLACE" />
 
 <%@ page language="java"%>
+
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html"
 	prefix="html"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean"
@@ -38,6 +39,11 @@
 	title="w3" type="text/css" />
 <script src="//1.w3.s81c.com/common/js/dojo/w3.js"
 	type="text/javascript"></script>
+<%@page import="com.ibm.ea.bravo.framework.common.Constants,com.ibm.ea.bravo.framework.properties.DelegateProperties"%>
+<% request.setAttribute("git_hash", DelegateProperties.getProperty(Constants.APP_PROPERTIES, "git_hash")); %>
+
+
+
 
 
 </head>
@@ -96,6 +102,9 @@
 						<!-- User Guides -->
 						<a class="ibm-generic-link"
 							href="https://w3-connections.ibm.com/wikis/home?lang=en#!/wiki/AMTS/page/BRAVO" />Bravo wiki</a> <br />
+						<br />
+							<label id="git_hash_label">Git Hash: ${git_hash}</label>
+						<br />
 						<br />
 					</div>
 				</div>

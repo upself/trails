@@ -169,7 +169,7 @@ function keyup(type) {
 				</select>
 				</span>
 			</p>
-
+			<span class="ibm-spinner-large" id="loading" style="display:none"></span>
 			<div class="ibm-rule">
 				<hr />
 			</div>
@@ -194,12 +194,18 @@ function submitForm(){
 	        data: $('#myForm').serialize(),
 	        dataType:'json',
 	        async: false,
+	        beforeSend: function (XMLHttpRequest) {
+            	$("#loading").show();
+            },
 	        error: function(XMLHttpRequest, textStatus, errorThrown) {
 	            alert(textStatus);
 	        },
 	        success: function(data) {
 	            alert(data.msg);
-	        }
+	        },
+	        complete: function (XMLHttpRequest, textStatu) {
+            	$("#loading").hide();
+            }
 	    });
 	} 
 }

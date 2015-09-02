@@ -10,10 +10,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "NON_INSTANCE_H")
+@NamedQueries( {
+	@NamedQuery(name = "nonInstanceHTotalById", query = "SELECT COUNT(*) FROM NonInstanceH WHERE nonInstanceId = :nonInstanceId")})
 public class NonInstanceH extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1570160658765275811L;
 	

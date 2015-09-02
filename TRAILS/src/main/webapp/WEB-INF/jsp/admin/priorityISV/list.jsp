@@ -1,4 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <s:if test="hasErrors()">
 	<s:actionerror />
@@ -54,6 +55,7 @@
 			</thead>
 			<tbody id="priority_isv_list" />
 		</table>
+		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 
 </div>
@@ -141,55 +143,49 @@
 	}
 
 	function searchData() {
-		var url = "${pageContext.request.contextPath}/ws/priorityISV/isv/all";
-		$
-				.ajax({
-					url : url,
-					type : "GET",
-					dataType : 'json',
-					error : function(XMLHttpRequest, textStatus, errorThrown) {
-						alert(textStatus);
-					},
-					success : function(data) {
-						var html = '';
-						if (data.status == 400) {
-							html += "<tr><td colspan='7'>" + data.msg
-									+ "</td></tr>"
-						} else {
-							var list = data.dataList;
-							for (var i = 0; i < list.length; i++) {
-								html += "<tr>";
-								//html += "<td>" 
-								//		+ list[i].manufacturerName
-								//		+ "</td>";
-								html += "<td><a href='${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
-										+ list[i].id
-										+ "'>"
-										+ list[i].manufacturerName
-										+ "</a></td>";		
-								html += "<td id='level_td'>" + list[i].level
-										+ "</td>";
-								html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
-								html += "<td>" + (list[i].accountNumber == null ? "" : list[i].accountNumber) + "</td>"
-								html += "<td>" + list[i].evidenceLocation
-										+ "</td>";
-								html += "<td>" + list[i].statusDesc + "</td>";
-								html += "<td>" + list[i].businessJustification
-										+ "</td>";
-								html += "<td>" + list[i].remoteUser + "</td>";
-								html += "<td>" + getSmpFormatDateByLong(list[i].recordTime,false) + "</td>";
-								html += "<td style='text-align:center'>";
-								html += "<p class='ibm-button-link-alternate'>";
-								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
-									+ list[i].id + "\")'>Update</a>";
-								html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
-										+ list[i].id + "\"); return false;'>View History</a></p>";
-								html += "</tr>"; 
-							}
+		$("#pagebar").v17ePagination('destroy').v17ePagination({
+			showInfo: true,
+			showPageSizes: true,
+			remote: {
+				url: "${pageContext.request.contextPath}/ws/priorityISV/isv/all",
+				type: "GET",
+				success: function(result, pageIndex){
+					var html = '';
+					var list = result.data.list;
+					if(null == list || list == undefined || list.length == 0){
+						html += "<tr><td colspan='7' align='center'>No data found</td></tr>"
+					}else{
+						for(var i = 0; i < list.length; i++){
+							html += "<tr>";
+							html += "<td><a href='${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
+									+ list[i].id
+									+ "'>"
+									+ list[i].manufacturerName
+									+ "</a></td>";		
+							html += "<td id='level_td'>" + list[i].level
+									+ "</td>";
+							html += "<td>" + (list[i].accountName == null ? "ALL" : list[i].accountName) + "</td>";
+							html += "<td>" + (list[i].accountNumber == null ? "" : list[i].accountNumber) + "</td>"
+							html += "<td>" + list[i].evidenceLocation
+									+ "</td>";
+							html += "<td>" + list[i].statusDesc + "</td>";
+							html += "<td>" + list[i].businessJustification
+									+ "</td>";
+							html += "<td>" + list[i].remoteUser + "</td>";
+							html += "<td>" + list[i].recordTime + "</td>";
+							html += "<td style='text-align:center'>";
+							html += "<p class='ibm-button-link-alternate'>";
+							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
+								+ list[i].id + "\")'>Update</a>";
+							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="
+									+ list[i].id + "\"); return false;'>View History</a></p>";
+							html += "</tr>"; 
 						}
-						$("#priority_isv_list").html(html);
 					}
-				});
+					$("#priority_isv_list").html(html);
+				}
+			}
+		});
 	}
 
 	function openLink(url) {

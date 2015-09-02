@@ -19,8 +19,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "ALERT_TYPE")
+@org.hibernate.annotations.Entity
 @NamedQueries({
 		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT WHERE AT.id = :id"),
 		@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
@@ -40,7 +43,8 @@ public class AlertType extends AbstractDomainEntity {
 	@Basic
 	@Column(name = "CODE")
 	protected String code;
-
+	
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.alertType", cascade = CascadeType.ALL)
 	protected Set<AlertTypeCause> alertTypeCauses = new HashSet<AlertTypeCause>();
 
