@@ -235,10 +235,10 @@ and at.code='EXP_SCAN'
 union
 all
 select
-case when aus.type = 'IBM' then 'UNLICENSED_IBM_SW' || cast(aus.id as char(16))
-	 when aus.type = 'SCOPE' then 'UNDEFINED_SCOPE' || cast(aus.id as char(16))
-	 when aus.type = 'ISVPRIO' then 'UNLICENSED_ISV_PRIO_SW' || cast(aus.id as char(16))
-	else 'UNLICENSED_ISV_NOPRIO_SW' || cast(aus.id as char(16)) end ,
+case when aus.type = 'IBM' then 'SWIBM' || cast(aus.id as char(16))
+	 when aus.type = 'SCOPE' then 'SWISCOPE' || cast(aus.id as char(16))
+	 when aus.type = 'ISVPRIO' then 'SWISVPR' || cast(aus.id as char(16))
+	else 'SWISVNPR' || cast(aus.id as char(16)) end ,
 aus.id ,
 aus.installed_software_id ,
 sl.customer_id ,
@@ -248,10 +248,10 @@ days(current timestamp) - days(aus.creation_time) as ALERT_AGE ,
 aus.creation_time ,
 aus.record_time ,
 aus.open ,
-case when aus.type = 'IBM' then 'UNLICENSED_IBM_SW'
-	 when aus.type = 'SCOPE' then 'UNDEFINED_SCOPE'
-	 when aus.type = 'ISVPRIO' then 'UNLICENSED_ISV_PRIO_SW'
-	else 'UNLICENSED_ISV_NOPRIO_SW' end ,
+case when aus.type = 'IBM' then 'SWIBM'
+	 when aus.type = 'SCOPE' then 'SWISCOPE'
+	 when aus.type = 'ISVPRIO' then 'SWISVPR'
+	else 'SWISVNPR' end ,
 case when aus.type = 'IBM' then 'SOM4a: IBM SW Instances Reviewed'
 	 when aus.type = 'SCOPE' then 'SOM3: SW Instances with Defined Contract Scope'
 	 when aus.type = 'ISVPRIO' then 'SOM4b: Priority ISV SW Instances Reviewed'
@@ -283,8 +283,7 @@ and atc.alert_type_id=at.id
 and ac.id=atc.alert_cause_id
 and acr.id=ac.alert_cause_responsibility_id
 and cc.alert_cause_id=ac.id
-and at.code ='NOLIC'
-; 
+and at.code in ( 'NOLIC', 'SWISCOPE', 'SWIBM', 'SWISVPR', 'SWISVNPR' );
 
 
 GRANT CONTROL ON EAADMIN.V_ALERT_RED_AGING TO USER EAADMIN
