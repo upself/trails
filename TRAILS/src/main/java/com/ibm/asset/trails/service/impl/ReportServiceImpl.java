@@ -567,7 +567,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ", case when aus.open = 1 then DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) "
 				+ "else days(aus.record_time) - days(aus.creation_time) "
 				+ "END "
-				+ ",cast(aus.type as varchar(3))"
+				+ ",aus.type "
 				+ ",sl.name as swLparName "
 				+ ",hl.name as hwLparName"
 				+ ",cast(sl.ext_id as varchar(8)) as SW_EXT_ID"
