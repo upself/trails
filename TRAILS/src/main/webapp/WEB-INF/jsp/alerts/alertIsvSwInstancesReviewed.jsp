@@ -59,8 +59,7 @@ function searchData(){
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td>" + list[i].softwareItemName + "</td>";
-						html += "<td>" + list[i].alertCount + "</td>";
+						html += "<td><a href='${pageContext.request.contextPath}/account/recon/settingsSoftware.htm?productInfoName=" + list[i].softwareItemName + "'>"  + list[i].softwareItemName + "</a></td>";						html += "<td>" + list[i].alertCount + "</td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
 						html += "</tr>";
