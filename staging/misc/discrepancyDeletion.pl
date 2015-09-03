@@ -147,7 +147,7 @@ AND sl.status='ACTIVE'
 AND is.status='ACTIVE'
 AND cs.status ='ACTIVE'
 AND is.DISCREPANCY_TYPE_ID=2 
-AND (select count(*) from EAADMIN.INSTALLED_SOFTWARE where SOFTWARE_LPAR_ID=sl.ID and DISCREPANCY_TYPE_ID<>2 )=0
+AND (select count(*) from EAADMIN.INSTALLED_SOFTWARE where SOFTWARE_LPAR_ID=sl.ID and DISCREPANCY_TYPE_ID<>2 and status='ACTIVE' )=0
 AND cs.account_number =? 
 AND sl.name = ?
 with ur");
