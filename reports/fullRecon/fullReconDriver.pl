@@ -118,7 +118,7 @@ sub spawnChildren {
 sub REAPER {
     my $kid;
     while ( ( $kid = waitpid( -1, &WNOHANG ) ) > 0 ) {
-        warn("child $kid terminated -- status $?");
+        wlog("child $kid terminated -- status $?");
         $children--;
         delete $childrenHash{$kid};
     }
