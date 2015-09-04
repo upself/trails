@@ -132,7 +132,7 @@ function assignComments(type){
 		//assign all
 		url +=  'assign/all';
 		params['comments'] = comments;
-		params['accountId'] = accountId;
+		params['accountId'] = '${accountId}';
 	}
 	
 	if(type == 0){
@@ -177,7 +177,7 @@ function unassignComments(type){
 		//assign all
 		url +=  'unassign/all';
 		params['comments'] = comments;
-		params['accountId'] = accountId;
+		params['accountId'] = '${accountId}';
 	}
 	
 	if(type == 0){
