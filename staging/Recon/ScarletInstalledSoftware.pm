@@ -344,7 +344,7 @@ and hl.hardware_id = h.id
 and aus.open = 1
 and h.id =  ?
 and is.id <> ?
-and kbd.guid in (' . $guids . ')';
+and kbd.guid in (' . $guids . ') with ur ';
  }
  else {
   $query = ' select is.id 
