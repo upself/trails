@@ -75,7 +75,7 @@ sub getIBMISVprio {
 	
 	# reading whether SW manufacturer is considered an IBM brand
 		
-	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ?";
+	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ? with ur";
 	
 	$conn->prepareSqlQuery( 'IBMquery', $IBMquery );
 	my $sth = $conn->sql->{IBMquery};
@@ -97,7 +97,8 @@ sub getIBMISVprio {
 							( ( level = 'GLOBAL' and customer_id is null )
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
 						and
-							status_id = 2";
+							status_id = 2
+						with ur";
 	
 	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
 	my $sth2 = $conn->sql->{ISVquery};
