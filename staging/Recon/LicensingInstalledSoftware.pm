@@ -2542,20 +2542,31 @@ sub closeAlertUnlicensedSoftware {
 		if ( $oldAlert->open == 1 ) {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 		}
 		elsif ( $oldAlert->type ne $alert->type ) {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 		}
 	}
 	elsif ( $createNew == 1 ) {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
+
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 	}	
-	Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-	Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-	Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-	Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 
 	dlog("end closeAlertUnlicensedSoftware");
 }
