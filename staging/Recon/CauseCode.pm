@@ -64,7 +64,7 @@ sub updateCCtable {
 sub GetByAlert {
 	my ( $alertid, $alertcode, $connection ) = @_;
 	
-	if ( $alertcode =~ '^SWI' ) {
+	if (( $alertcode =~ '^SWI' ) || ( $alertcode eq 'NOLIC' )) {
 		$connection->prepareSqlQuery(queryGetBySWIAlert());
 	
 		my $sth=$connection->sql->{GetCCbySWIAlert};
