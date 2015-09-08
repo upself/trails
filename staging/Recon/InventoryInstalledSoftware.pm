@@ -269,6 +269,10 @@ sub closeAlertUnlicensedSoftware {
 	$oldAlert->recordTime( $alert->recordTime );
 
 	$alert->type($self->installedSoftwareReconData->expectedAlertType);
+	
+	$alert->type("ISVNOPRIO") unless defined ( $alert->type ); # for some reason, alert type can be undefined
+											# even though this value is filled by a function that never returns NULL :-/
+	
 	$alert->comments('Auto Close');
 	$alert->open(0);
 
@@ -281,12 +285,16 @@ sub closeAlertUnlicensedSoftware {
 #			$alert->save( $self->connection );
 #			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 #		}
-		Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 	}
 	elsif ( $createNew == 1 ) {
 		$alert->creationTime( currentTimeStamp() );
 		$alert->save( $self->connection );
-		Recon::CauseCode::updateCCtable ( $alert->id, "NOLIC", $self->connection);
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 	}	
 
 	dlog("end closeAlertUnlicensedSoftware");
