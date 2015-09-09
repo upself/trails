@@ -172,6 +172,8 @@ sub getInstalledSoftwareReconData {
 																	$installedSoftwareReconData->cId ) );
 
 	}
+	
+	$sth->finish();
 
 	dlog("end getInstalledSoftwareReconData - Inventory");
 
