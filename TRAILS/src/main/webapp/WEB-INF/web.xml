@@ -116,6 +116,7 @@
 			<url-pattern>/account/trailsreports/*</url-pattern>
 			<url-pattern>/report/*</url-pattern>
 			<url-pattern>/reports/*</url-pattern>
+			<url-pattern>/ws/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
