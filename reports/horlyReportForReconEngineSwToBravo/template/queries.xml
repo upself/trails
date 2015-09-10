@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application>
+	<connection name="trailsConnection">
+		<url>test trails url</url>
+		<user>test trails name</user>
+		<password>testtrailspassword</password>
+	</connection>
+
+	<connection name="stagingConnection">
+		<url>test</url>
+		<user>test</user>
+		<password>test</password>
+	</connection>
+
+	<queries>
+		<dbQuery name="querySummary" connection="trailsConnection">
+			<query><![CDATA[
+			select 
+				customer_id, 
+				customer_name, 
+				account_number  
+		    from customer with ur
+			]]></query>
+
+			<result>
+				<metadata type="long" name="customerId" sequence="1" />
+				<metadata type="string" name="customerName" sequence="2" />
+				<metadata type="long" name="accountNumber" sequence="3" />
+			</result>
+		</dbQuery>
+	</queries>
+</application>

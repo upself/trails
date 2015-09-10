@@ -2,12 +2,9 @@ package com.ibm.staging.recon;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,8 +12,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
+import com.ibm.cyclone.Metadata;
+import com.ibm.cyclone.component.CPTDBConnectionPool;
+import com.ibm.cyclone.component.CPTDBQuery;
 import com.ibm.staging.template.AccountDateQty;
 import com.ibm.staging.template.Customer;
 import com.ibm.staging.template.Result;
@@ -56,41 +55,28 @@ public class Summary {
 	}
 
 	private static void start(String path) {
-		Statement stmt = null;
-		Statement stagingStmt = null;
-		ResultSet rs = null;
-		Connection stagingConn = null, bravoConn = null;
 
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream(new File(path)));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		CPTDBConnectionPool pool = CPTDBConnectionPool.INSTANCE;
+		pool.setPath("template/queries.xml");
+		pool.execute();
 
 		try {
 			Result result = new Result();
 			Map parameter = result.getParameter();
 
-			Class.forName("COM.ibm.db2.jdbc.app.DB2Driver").newInstance();
+			bravoConn = trailsConnection.getConnection();
 
-			bravoConn = DriverManager.getConnection(
-					prop.getProperty("bravoDBUrl"),
-					prop.getProperty("brvaoDBUser"),
-					prop.getProperty("bravoDBPassword"));
-
-			stagingConn = DriverManager.getConnection(
-					prop.getProperty("stagingDBURL"),
-					prop.getProperty("stagingDBUser"),
-					prop.getProperty("stagingDBPassword"));
-			stagingStmt = stagingConn.createStatement();
-
-			stmt = bravoConn.createStatement();
+			stagingConn = stagingConnection.getConnection();
 
 			// summary
-			rs = stmt.executeQuery(queryCustomerCache);
+			CPTDBQuery query = new CPTDBQuery();
+			query.setConnection(bravoConn);
+			query.setQuery(queryCustomerCache);
+
+			Metadata d1 = new Metadata();
+			d1.type = "long";
+
+			rs = stmt.executeQuery();
 			while (rs.next()) {
 				Customer c = new Customer();
 				c.setCustomerId(rs.getLong(1));
