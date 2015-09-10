@@ -56,25 +56,16 @@ public class Summary {
 
 	private static void start(String path) {
 
-		CPTDBConnectionPool pool = CPTDBConnectionPool.INSTANCE;
-		pool.setPath("template/queries.xml");
-		pool.execute();
+		String queryPath = "template/queries.xml";
+		CPTDBConnectionPool.INSTANCE.setPath(queryPath);
 
 		try {
 			Result result = new Result();
 			Map parameter = result.getParameter();
 
-			bravoConn = trailsConnection.getConnection();
-
-			stagingConn = stagingConnection.getConnection();
-
 			// summary
-			CPTDBQuery query = new CPTDBQuery();
-			query.setConnection(bravoConn);
-			query.setQuery(queryCustomerCache);
-
-			Metadata d1 = new Metadata();
-			d1.type = "long";
+			CPTDBQuery query = new CPTDBQuery(queryPath, "trailsConnection");
+			query.execute();
 
 			rs = stmt.executeQuery();
 			while (rs.next()) {

@@ -94,12 +94,11 @@ public class CPTDBQuery extends AbstractXMLCPT {
 	protected String getElementName() {
 		return this.queryName;
 	}
-	
+
 	public static void main(String[] args) {
 		CPTDBConnectionPool pool = CPTDBConnectionPool.INSTANCE;
 		pool.setPath("template/queries.xml");
-		pool.execute();
-		
+
 		CPTDBQuery q = new CPTDBQuery("template/queries.xml", "querySummary");
 		q.execute();
 	}

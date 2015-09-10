@@ -20,6 +20,14 @@ public abstract class AbstractXMLCPT {
 
 	protected Element element;
 
+	public AbstractXMLCPT(String tagName) {
+		this.tagName = tagName;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	public AbstractXMLCPT(String tagName, String path) {
 		this.tagName = tagName;
 		this.path = path;
