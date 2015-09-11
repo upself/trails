@@ -9,27 +9,12 @@
 
 	<connection name="stagingConnection">
 		<driver>com.ibm.db2.jcc.DB2Driver</driver>
-		<url>jdbc:db2://dst20lp05.boulder.ibm.com:50000/staging</url>
+		<url>jdbc:db2://tap.raleigh.ibm.com:5102/staging</url>
 		<user>eaadmin</user>
 		<password>apr03db2</password>
 	</connection>
 
 
-	<dbQuery name="queryCustomerCache" connection="trailsConnection">
-		<query><![CDATA[
-			select 
-				customer_id, 
-				customer_name, 
-				account_number  
-		    from customer with ur
-			]]></query>
-
-		<result>
-			<metadata type="long" name="customerId" sequence="1" />
-			<metadata type="string" name="customerName" sequence="2" />
-			<metadata type="long" name="accountNumber" sequence="3" />
-		</result>
-	</dbQuery>
 
 	<dbQuery name="summaryFullQty" connection="trailsConnection">
 		<query><![CDATA[
@@ -50,7 +35,7 @@
 		</result>
 	</dbQuery>
 
-	<dbQuery name="p1List" connection="trailsConnection">
+	<dbQuery name="specialAccounts" connection="trailsConnection">
 		<query><![CDATA[
               select 
                 c.customer_id, 
@@ -62,7 +47,7 @@
                 v_recon_queue v, customer c 
               where 
                 v.customer_id  = c.customer_id 
-                and v.customer_id in ( 12476,9754) 
+                and v.customer_id in (12476,9754) 
               group by 
                 c.customer_id, c.account_number,c.customer_name,date(v.record_time) 
               order by date(v.record_time) 
@@ -77,7 +62,7 @@
 		</result>
 	</dbQuery>
 
-	<dbQuery name="p1TableQty" connection="trailsConnection">
+	<dbQuery name="p1FullVolumn" connection="trailsConnection">
 		<query><![CDATA[
                select 
                  v.table, 
@@ -150,7 +135,7 @@
 		</result>
 	</dbQuery>
 
-	<dbQuery name="queryP23" connection="trailsConnection">
+	<dbQuery name="queryP24" connection="trailsConnection">
 		<query><![CDATA[
                select v.table, count(*) from v_recon_queue v,customer c
 	           where v.customer_id = c.customer_id 
@@ -159,7 +144,8 @@
 	           group by v.table with ur
 			]]></query>
 		<result>
-			<metadata type="int" name="qty" sequence="1" />
+			<metadata type="string" name="tableName" sequence="1" />
+			<metadata type="int" name="qty" sequence="2" />
 		</result>
 	</dbQuery>
 
@@ -278,6 +264,22 @@
 	</dbQuery>
 
 
+	<dbQuery name="queryCustomerCache" connection="trailsConnection">
+		<query><![CDATA[
+			select 
+				customer_id, 
+				customer_name, 
+				account_number  
+		    from customer with ur
+			]]></query>
+
+		<result>
+			<metadata type="long" name="customerId" sequence="1" />
+			<metadata type="string" name="customerName" sequence="2" />
+			<metadata type="long" name="accountNumber" sequence="3" />
+		</result>
+	</dbQuery>
+
 	<dbQuery name="query71" connection="stagingConnection">
 		<query><![CDATA[
 		select a.customer_id  ,
@@ -298,8 +300,8 @@
 		   12335,12350,12476,12496,12508,12543,12999,13293,13331,13395,
 		   13444,13454,13457,13546,13561,13595,13651,13767,13775,13786,
 		   13792,13799,13816,13818,14015,14075,14172,14182,14292,14346,
-		   14373,14472,14501,14536,14543,14555,14939,14940,15167,15246,1
-		   5302,15323,15620,14046,4200)  
+		   14373,14472,14501,14536,14543,14555,14939,14940,15167,15246,
+		   15302,15323,15620,14046,4200)  
 		   and (  
 		      a.action != 'COMPLETE'  or b.action != 'COMPLETE'  or si.action in (1,2)  
 		  )  group by  
