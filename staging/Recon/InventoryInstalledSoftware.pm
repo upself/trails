@@ -270,7 +270,7 @@ sub closeAlertUnlicensedSoftware {
 	$oldAlert->remoteUser( $alert->remoteUser );
 	$oldAlert->recordTime( $alert->recordTime );
 
-	$alert->type($self->installedSoftwareReconData->expectedAlertType);
+	$alert->type($self->installedSoftwareReconData->expectedAlertType) unless defined ( $alert->type );
 	
 	$alert->type("ISVNOPRIO") unless defined ( $alert->type ); # for some reason, alert type can be undefined
 											# even though this value is filled by a function that never returns NULL :-/
