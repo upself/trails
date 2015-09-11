@@ -21,8 +21,8 @@ import com.ibm.cyclone.component.CPTDBQuery;
 
 public class ReconSummary {
 
-	private String templatePath = "files/mailTemplate.vm";
-	private String dbConfigPath = "files/queries.xml";
+	private String templatePath;
+	private String dbConfigPath;
 
 	public ReconSummary(String arg1, String arg2) {
 		templatePath = arg1;
@@ -30,8 +30,8 @@ public class ReconSummary {
 	}
 
 	public ReconSummary() {
-		templatePath = "files/mailTemplate.vm";
-		dbConfigPath = "files/queries.xml";
+		templatePath = "files/recon_summary_template.vm";
+		dbConfigPath = "files/db_config.xml";
 	}
 
 	@SuppressWarnings("unchecked")

@@ -3,7 +3,7 @@ Summary:
 Total Records in full queue:$summaryFullQty.get(0).qty
 Number of accounts in full queue:$summaryTotalCustomerQty.get(0).qty
 Number of running Threads: 
-#include("vms/reconEngineInventory.txt")
+#include("files/reconEngineInventory.txt")
 
 
 Priority 1: Special Accounts 
