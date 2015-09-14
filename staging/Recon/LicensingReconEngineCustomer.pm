@@ -178,6 +178,7 @@ sub queryReconQueueByCustomerId {
                     date(a.record_time) = date(b.record_time) and
                     a.id > b.id
             )
+         order by a.record_time
          fetch first 200 rows only with ur
     ';
     dlog("queryReconQueueByCustomerId=$query");
