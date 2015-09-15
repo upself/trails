@@ -16,19 +16,7 @@
 	<a href="/TRAILS/reports/alertRedAging/accountDetail.htm?d-49653-e=2&6578706f7274=1&accountId=<s:property value="%{#attr.account.id}" />">Aging red alerts</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/report/download/alertHardware<s:property value="%{#attr.account.account}" />.xls?name=alertHardware">HW w/o HW LPAR alert</a>
-</span>
-<span class="download-link">
-	<a href="/TRAILS/report/download/alertHardwareLpar<s:property value="%{#attr.account.account}" />.xls?name=alertHardwareLpar">HW LPAR w/o SW LPAR alert</a>
-</span>
-<span class="download-link">
-	<a href="/TRAILS/report/download/alertSoftwareLpar<s:property value="%{#attr.account.account}" />.xls?name=alertSoftwareLpar">SW LPAR w/o HW LPAR alert</a>
-</span>
-<span class="download-link">
 	<a href="/TRAILS/reports/operational/accountDetailDownload.htm?d-49653-e=2&6578706f7274=1&accountId=<s:property value="%{#attr.account.id}" />">Operational metrics</a>
-</span>
-<span class="download-link">
-	<a href="/TRAILS/report/download/alertExpiredScan<s:property value="%{#attr.account.account}" />.xls?name=alertExpiredScan">Outdated SW LPAR alert</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionDetail<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionDetail">Pending customer decision reconciled detail alert</a>
@@ -48,7 +36,19 @@
 
 <h2 class="bar-blue-med-light">SOM reports</h2><br />
 <span class="download-link">
+	<a href="/TRAILS/ws/alertHardware/download/<s:property value="%{#attr.account.id}" />">SOM1a: HW WITH HOSTNAME</a>
+</span>
+<span class="download-link">
 	<a href="/TRAILS/ws/alertHardwareCfgData/download/<s:property value="%{#attr.account.id}" />">SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertHardwareLpar/download/<s:property value="%{#attr.account.id}" />">SOM2a: HW LPAR WITH SW LPAR</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertSwLparWithHwLpar/download/<s:property value="%{#attr.account.id}" />">SOM2b: SW LPAR WITH HW LPAR</a>
+</span>
+<span class="download-link">
+	<a href="/TRAILS/ws/alertUnExpiredSWLpar/download/<s:property value="%{#attr.account.id}" />">SOM2c: UNEXPIRED SW LPAR</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/ws/alertWithDefinedContractScope/download/<s:property value="%{#attr.account.id}" />">SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE</a>
