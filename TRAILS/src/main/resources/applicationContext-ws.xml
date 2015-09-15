@@ -18,8 +18,10 @@
 	<bean id="alertPriorityIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertPriorityIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertHardwareServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareServiceEndpoint" />
-	<bean id="alertSwLparWithHwLparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />      
-	
+	<bean id="alertHardwarelparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwarelparServiceEndpoint" />
+	<bean id="alertUnExpiredSWLpar" class="com.ibm.asset.trails.ws.AlertUnExpiredSWLparServiceEndpoint" />
+	<bean id="alertSwLparWithHwLparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />
+	    
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
 
@@ -35,6 +37,8 @@
 			<ref bean="alertPriorityIsvSwInstancesReviewed" />
 			<ref bean="alertIsvSwInstancesReviewed" />
             <ref bean="alertHardwareServiceEndpoint" />
+            <ref bean="alertHardwarelparServiceEndpoint" />
+            <ref bean="alertUnExpiredSWLpar" />
             <ref bean="alertSwLparWithHwLparServiceEndpoint" />
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
