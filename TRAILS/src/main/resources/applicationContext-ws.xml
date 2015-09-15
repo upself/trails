@@ -11,6 +11,8 @@
 		class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint" />
 	<bean id="alertHardwareCfgDataServiceEndpoint"
 		class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint" />
+	<bean id="alertSwLparWithHwLparServiceEndpoint"
+		class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />
 	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
 	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
 	<bean id="alertWithDefinedContractScopeServiceEndpoint" class="com.ibm.asset.trails.ws.AlertWithDefinedContractScopeServiceEndpoint"/>
@@ -27,6 +29,7 @@
 			<ref bean="nonInstanceServiceEndpoint" />
 			<ref bean="priorityISVSoftwareServiceEndpoint" />
 			<ref bean="alertHardwareCfgDataServiceEndpoint" />
+			<ref bean="alertSwLparWithHwLparServiceEndpoint"/>
 			<ref bean="pvuMappingServiceEndpoint" />
 			<ref bean="AdminCauseCodeServiceEndpoin" />
 			<ref bean="alertWithDefinedContractScopeServiceEndpoint"/>

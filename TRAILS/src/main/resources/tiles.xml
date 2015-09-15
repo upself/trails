@@ -538,7 +538,7 @@
 	</definition>
 
 	<definition name="tiles.alerts.alertSoftwareLpar.list"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertSoftwareLparList.jsp" />
 		<put-attribute name="description" value="TRAILS alert software lpar" />
