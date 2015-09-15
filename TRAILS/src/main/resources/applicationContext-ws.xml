@@ -17,10 +17,10 @@
 	<bean id="alertIbmSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIbmSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertPriorityIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertPriorityIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIsvSwInstancesReviewedServiceEndpoint" />
+	<bean id="alertHardwareServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareServiceEndpoint" />
+	
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
-
-
 
 	<jaxrs:server id="jax-rs-server" address="/">
 		<jaxrs:serviceBeans>
@@ -33,7 +33,7 @@
 			<ref bean="alertIbmSwInstancesReviewed" />
 			<ref bean="alertPriorityIsvSwInstancesReviewed" />
 			<ref bean="alertIsvSwInstancesReviewed" />
-
+            <ref bean="alertHardwareServiceEndpoint" />
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
 			<entry key="json" value="application/json" />

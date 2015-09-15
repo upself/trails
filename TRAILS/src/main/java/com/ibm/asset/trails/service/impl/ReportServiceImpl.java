@@ -43,14 +43,14 @@ public class ReportServiceImpl implements ReportService {
 			"Create date/time", "Age", "Assignee", "Assignee comments",
 			"Assigned date/time", "Cause Code (CC)", "CC target date",
 			"CC owner", "CC change date", "CC change person", "Internal ID" };
-	private final String ALERT_HARDWARE_LPAR_REPORT_NAME = "HW LPAR w/o SW LPAR alert report";
+	private final String ALERT_HARDWARE_LPAR_REPORT_NAME = "SOM2a: HW LPAR WITH SW LPAR";
 	private final String[] ALERT_HARDWARE_REPORT_COLUMN_HEADERS = { "Status",
 			"Serial", "Machine type", "Asset type", "Create date/time", "Age",
 			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
-	private final String ALERT_HARDWARE_REPORT_NAME = "HW w/o HW LPAR alert report";
-	private final String ALERT_SOFTWARE_LPAR_REPORT_NAME = "SW LPAR w/o HW LPAR alert report";
+	private final String ALERT_HARDWARE_REPORT_NAME = "SOM1a: HW WITH HOSTNAME";
+	private final String ALERT_SOFTWARE_LPAR_REPORT_NAME = "SOM2b: SW LPAR WITH HW LPAR";
 	private final String[] ALERT_SW_LPAR_REPORT_COLUMN_HEADERS = { "Status",
 			"Hostname", "Bios serial", "Create date/time", "Age", "Assignee",
 			"Assignee comments", "Assigned date/time", "Cause Code (CC)",
