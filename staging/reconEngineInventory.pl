@@ -101,7 +101,7 @@ sub keepTicking {
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
-            if ( isCustomerRunning( $customerId ) == 1 ) {
+            if ( isCustomerRunning( $customerId, $date ) == 1 ) {
                 next;
             }
             else {
