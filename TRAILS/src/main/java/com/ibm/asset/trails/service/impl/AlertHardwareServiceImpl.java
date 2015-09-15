@@ -3,7 +3,6 @@ package com.ibm.asset.trails.service.impl;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -14,16 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertHardware;
-import com.ibm.asset.trails.domain.AlertHardwareCfgData;
 import com.ibm.asset.trails.domain.AlertHardwareH;
 import com.ibm.asset.trails.form.AlertHistoryReport;
-import com.ibm.asset.trails.form.AlertListForm;
 import com.ibm.asset.trails.service.AlertService;
 
 @Service
 public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 		AlertService {
 
+	@SuppressWarnings("rawtypes")
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public ArrayList paginatedList(Account account, int startIndex,
 			int objectsPerPage, String sort, String dir) {
@@ -38,6 +36,7 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 		return (ArrayList) q.getResultList();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public ArrayList paginatedList(String remoteUser, int startIndex,
 			int objectsPerPage, String sort, String dir) {
@@ -101,6 +100,7 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 		super.getEntityManager().persist(ahh);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public ArrayList getAlertHistory(Long id) {
 
