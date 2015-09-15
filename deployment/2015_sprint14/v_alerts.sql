@@ -80,7 +80,7 @@ ahc.creation_time ,
 ahc.record_time ,
 ahc.open ,
 'HWCFGDTA' ,
-'SOM1b: HW Box Critical Configuration Data Populated',
+'SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED',
 at.name,
 at.code,
 cc.target_date,
@@ -252,10 +252,10 @@ case when aus.type = 'IBM' then 'SWIBM'
 	 when aus.type = 'SCOPE' then 'SWISCOPE'
 	 when aus.type = 'ISVPRIO' then 'SWISVPR'
 	else 'SWISVNPR' end ,
-case when aus.type = 'IBM' then 'SOM4a: IBM SW Instances Reviewed'
-	 when aus.type = 'SCOPE' then 'SOM3: SW Instances with Defined Contract Scope'
-	 when aus.type = 'ISVPRIO' then 'SOM4b: Priority ISV SW Instances Reviewed'
-	else 'SOM4c: ISV SW Instances Reviewed' end ,
+case when aus.type = 'IBM' then 'SOM4a: IBM SW INSTANCES REVIEWED'
+	 when aus.type = 'SCOPE' then 'SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE'
+	 when aus.type = 'ISVPRIO' then 'SOM4b: PRIORITY ISV SW INSTANCES REVIEWED'
+	else 'SOM4c: ISV SW INSTANCES REVIEWED' end ,
 at.name,
 at.code,
 cc.target_date,

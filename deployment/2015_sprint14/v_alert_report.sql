@@ -79,7 +79,10 @@ case when days(current timestamp) - days(a.creation_time) between 46
 and 90 then 1 else 0 end as Yellow ,
 case when days(current timestamp) - days(a.creation_time) between 0
 and 45 then 1 else 0 end as Green ,
-case when a.type = 'IBM' then 'Unlicensed IBM SW' else 'Unlicensed ISV SW' end
+case when a.type = 'IBM' then 'SOM4a: IBM SW INSTANCES REVIEWED'
+	 when a.type = 'SCOPE' then 'SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE'
+	 when a.type = 'ISVPRIO' then 'SOM4b: PRIORITY ISV SW INSTANCES REVIEWED'
+	else 'SOM4c: ISV SW INSTANCES REVIEWED' end
 from EAADMIN.alert_unlicensed_sw a ,
 EAADMIN.installed_software b ,
 EAADMIN.software_lpar c
@@ -97,7 +100,7 @@ case when days(current timestamp) - days(a.creation_time) between 46
 and 90 then 1 else 0 end as yellow ,
 case when days(current timestamp) - days(a.creation_time) between 0
 and 45 then 1 else 0 end as green ,
-'SOM1b: HW Box Critical Configuration Data Populated'
+'SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED'
 from EAADMIN.alert_hardware_cfgdata a , EAADMIN.hardware b
 where a.hardware_id = b.id
 ;
