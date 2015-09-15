@@ -92,11 +92,15 @@ function searchData(){
 			params: params,
 			success: function(result, pageIndex){
 				var html = '';
+				var serial = '';
+				var osName = '';
 				var list = result.data.list;
 				if(null == list || list == undefined || list.length == 0){
 					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
 				}else{
 					for(var i = 0; i < list.length; i++){
+						if (list[i].softwareLpar.serial != null) { serial == list[i].softwareLpar.serial; };
+						if (list[i].softwareLpar.osName != null) { osNmae == list[i].softwareLpar.osName; };
 						html += "<tr>";
 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
@@ -104,8 +108,8 @@ function searchData(){
 						html += "<td>" +list[i].softwareLpar.scanTime + "</td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
-						html += "<td>" + list[i].softwareLpar.serial + "</td>";
-						html += "<td>" + list[i].softwareLpar.osName + "</td>";
+						html += "<td>" + serial + "</td>";
+						html += "<td>" + osName + "</td>";
 						html += "<td>" + list[i].remoteUser + "</td>";
 						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"alertSoftwareLparHistory.htm?id="+list[i].tableId+"\");return false;'>View</a></td>";
 						html += "</tr>";
@@ -212,6 +216,9 @@ function assignOrNot(url,params){
 		data: params,
 		type: 'POST',
 		dataType: 'json',
+		beforeSend: function(){
+			$("#pagebar").v17ePagination('showLoading');
+		}, 
 		success: function(wsMsg){
 			if(wsMsg.status != '200'){
 				alert(wsMsg.msg);
