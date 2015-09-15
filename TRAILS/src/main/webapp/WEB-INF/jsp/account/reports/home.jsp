@@ -45,7 +45,7 @@
 	<a href="/TRAILS/ws/alertHardwareLpar/download/<s:property value="%{#attr.account.id}" />">SOM2a: HW LPAR WITH SW LPAR</a>
 </span>
 <span class="download-link">
-	<a href="/TRAILS/ws/alertSoftwareLpar/download/<s:property value="%{#attr.account.id}" />">SOM2b: SW LPAR WITH HW LPAR</a>
+	<a href="/TRAILS/ws/alertSwLparWithHwLpar/download/<s:property value="%{#attr.account.id}" />">SOM2b: SW LPAR WITH HW LPAR</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/ws/alertUnExpiredSWLpar/download/<s:property value="%{#attr.account.id}" />">SOM2c: UNEXPIRED SW LPAR</a>
