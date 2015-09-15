@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertHardware;
+import com.ibm.asset.trails.domain.AlertHardwareCfgData;
 import com.ibm.asset.trails.domain.AlertHardwareH;
 import com.ibm.asset.trails.form.AlertHistoryReport;
 import com.ibm.asset.trails.form.AlertListForm;
@@ -72,28 +73,13 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void assign(List list, String remoteUser, String comments) {
+	public void assign(List<Long> list, String remoteUser, String comments) {
 
-		Iterator i = list.iterator();
-		while (i.hasNext()) {
-			AlertListForm alf = (AlertListForm) i.next();
-
-			if (!alf.isAssign()) {
-				if (!alf.isUnassign()) {
-					continue;
-				}
-			}
-
-			AlertHardware ah = super.getEntityManager().find(
-					AlertHardware.class, alf.getId());
+		for(Long id: list){
+			AlertHardware ah = super.getEntityManager().find(AlertHardware.class, id);
 			createHistory(ah);
 
-			if (alf.isUnassign()) {
-				ah.setRemoteUser("STAGING");
-			} else if (alf.isAssign()) {
-				ah.setRemoteUser(remoteUser);
-			}
-
+            ah.setRemoteUser(remoteUser);
 			ah.setComments(comments);
 			ah.setRecordTime(new Date());
 
@@ -104,7 +90,6 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 
 	private void createHistory(AlertHardware ah) {
 
-		// TODO May be good just to create a constructor
 		AlertHardwareH ahh = new AlertHardwareH();
 		ahh.setAlertHardware(ah);
 		ahh.setComments(ah.getComments());
@@ -161,12 +146,8 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 		}
 		llAlertHardwareIdList = lqSelectAlertHardwareIdList.getResultList();
 		for (BigInteger llAlertHardwareId : llAlertHardwareIdList) {
-			// lqUpdateAll.setParameter("alertHardwareIdList",
-			// Long.valueOf(llAlertHardwareId.longValue()));
-			// System.out.print("testing out result is "+
-			// Long.valueOf(llAlertHardwareId.toString()));
-			AlertHardware lahTemp = super.getEntityManager().find(
-					AlertHardware.class, llAlertHardwareId.longValue());
+		
+			AlertHardware lahTemp = super.getEntityManager().find(AlertHardware.class, llAlertHardwareId.longValue());
 			createHistory(lahTemp);
 
 			if (piMode == MODE_UNASSIGN) {
@@ -183,9 +164,17 @@ public class AlertHardwareServiceImpl extends BaseAlertServiceImpl implements
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void unassign(List<Long> findAffectedAlertUnlicensedSwList,
-			String remoteUser, String comments) {
-		// TODO Auto-generated method stub
+	public void unassign(List<Long> alertIds,String remoteUser, String comments) {
+		for(Long id: alertIds){
+		    AlertHardware ah = super.getEntityManager().find(AlertHardware.class, id);
+			
+			createHistory(ah);
+			ah.setRemoteUser("STAGING");
+			ah.setComments(comments);
+			ah.setRecordTime(new Date());
 
+			super.getEntityManager().merge(ah);
+			super.getEntityManager().flush();
+		}
 	}
 }
