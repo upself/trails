@@ -552,7 +552,7 @@
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="SOM2c: UNEXPIRED SW LPAR" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertExpiredScanList.jsp" />
+			value="/WEB-INF/jsp/alerts/alertUnExpiredSWLparList.jsp" />
 		<put-attribute name="description" value="SOM2c: UNEXPIRED SW LPAR" />
 		<put-attribute name="keywords" value="SOM2c: UNEXPIRED SW LPAR" />
 	</definition>

@@ -33,8 +33,11 @@ public class AlertAssignment extends AccountBaseAction {
     @Override
     @UserRole(userRole = UserRoleType.READER)
     public void prepare() {
+    	
         super.prepare();
 
+        //The following data set pre load logic doesn't need it any more due that currently we are using web serivce to get data now
+        /*
         if (getSort() == null) {
             setSort("alertAge");
         }
@@ -45,7 +48,7 @@ public class AlertAssignment extends AccountBaseAction {
                         getSort(), getDir()));
         getData().setFullListSize(
                 getAlertService().total(getUserSession().getAccount())
-                        .intValue());
+                        .intValue());*/
     }
 
     @Override
