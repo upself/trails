@@ -37,7 +37,7 @@ public class ReportServiceImpl implements ReportService {
 			"SWCM ID", "Create date/time", "Age", "Assignee",
 			"Assignee comments", "Assigned date/time" };
 	private final String ALERT_EXPIRED_MAINT_REPORT_NAME = "Expired maintenance alert report";
-	private final String ALERT_EXPIRED_SCAN_REPORT_NAME = "Outdated SW LPAR alert report";
+	private final String ALERT_EXPIRED_SCAN_REPORT_NAME = "SOM2c: UNEXPIRED SW LPAR";
 	private final String[] ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS = {
 			"Status", "Hostname", "Serial", "Machine type", "Asset type",
 			"Create date/time", "Age", "Assignee", "Assignee comments",
@@ -245,7 +245,8 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.setString("type", "EXPIRED_SCAN").setInteger("alertTypeId", 6)
 				.scroll(ScrollMode.FORWARD_ONLY);
-		HSSFSheet sheet = phwb.createSheet("Alert Outdated Swlpar Report");
+		HSSFSheet sheet = phwb.createSheet("Alert Unexpired SW Lpar "
+				+ pAccount.getAccount() + " Report");
 		printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccount(),
 				ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
@@ -253,7 +254,7 @@ public class ReportServiceImpl implements ReportService {
 			int k = 1;
 			if (i > 65535) {
 				k++;
-				sheet = phwb.createSheet("Alert Outdated SWLpar Sheet" + k);
+				sheet = phwb.createSheet("Alert Unexpired SW Lpar " + pAccount.getAccount() + " Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
