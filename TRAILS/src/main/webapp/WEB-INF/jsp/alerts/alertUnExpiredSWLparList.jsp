@@ -171,6 +171,7 @@ function doAssignOrNot(url,params){
 			if(wsMsg.status != '200'){
 				alert(wsMsg.msg);
 			}
+			$('#comments').val('');
 		},
 		error: function(response,status,error){
 			alert(error);
