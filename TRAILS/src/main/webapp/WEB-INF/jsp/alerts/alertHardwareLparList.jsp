@@ -207,7 +207,7 @@ function assignOrNot(url,params){
 		type: 'POST',
 		dataType: 'json',
 		beforeSend:function(){
-			$("#pagebar").v17ePagination('showloading');
+			$("#pagebar").v17ePagination('showLoading');
 		},
 		success: function(wsMsg){
 			if(wsMsg.status != '200'){
