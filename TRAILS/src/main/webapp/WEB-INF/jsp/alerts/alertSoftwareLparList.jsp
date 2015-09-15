@@ -99,8 +99,8 @@ function searchData(){
 					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
 				}else{
 					for(var i = 0; i < list.length; i++){
-						if (list[i].softwareLpar.serial != null) { serial == list[i].softwareLpar.serial; };
-						if (list[i].softwareLpar.osName != null) { osNmae == list[i].softwareLpar.osName; };
+						if (list[i].softwareLpar.serial != null) { serial = list[i].softwareLpar.serial; };
+						if (list[i].softwareLpar.osName != null) { osName = list[i].softwareLpar.osName; };
 						html += "<tr>";
 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
@@ -223,6 +223,7 @@ function assignOrNot(url,params){
 			if(wsMsg.status != '200'){
 				alert(wsMsg.msg);
 			}
+			$('#comments').val('');
 		},
 		error: function(response,status,error){
 			alert(error);
