@@ -7,7 +7,7 @@
 		<h6>IBM Confidential</h6>
 		<p>This page displays hardware lpars without an associated software lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
 		<div style="text-align:right">
-			<a href="${pageContext.request.contextPath}/ws/alerUnExpiredSWLpar/download/${accountId}">Download SOM2c: UNEXPIRED SW LPARalert report</a>
+			<a href="${pageContext.request.contextPath}/ws/alertUnExpiredSWLpar/download/${accountId}">Download SOM2c: UNEXPIRED SW LPARalert report</a>
 		</div>
 	</div>
 	
