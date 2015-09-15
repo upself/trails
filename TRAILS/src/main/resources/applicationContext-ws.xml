@@ -11,8 +11,6 @@
 		class="com.ibm.asset.trails.ws.PriorityISVSoftwareServiceEndpoint" />
 	<bean id="alertHardwareCfgDataServiceEndpoint"
 		class="com.ibm.asset.trails.ws.AlertHardwareCfgDataServiceEndpoint" />
-	<bean id="alertSwLparWithHwLparServiceEndpoint"
-		class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />
 	<bean id="pvuMappingServiceEndpoint" class="com.ibm.asset.trails.ws.PvuMappingServiceEndpoint" />
 	<bean id="AdminCauseCodeServiceEndpoin" class="com.ibm.asset.trails.ws.AdminCauseCodeServiceEndpoin" />
 	<bean id="alertWithDefinedContractScopeServiceEndpoint" class="com.ibm.asset.trails.ws.AlertWithDefinedContractScopeServiceEndpoint"/>
@@ -20,8 +18,6 @@
 	<bean id="alertPriorityIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertPriorityIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertIsvSwInstancesReviewed" class="com.ibm.asset.trails.ws.AlertIsvSwInstancesReviewedServiceEndpoint" />
 	<bean id="alertHardwareServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwareServiceEndpoint" />
-	<bean id="alertHardwarelparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwarelparServiceEndpoint" />
-	<bean id="alertUnExpiredSWLpar" class="com.ibm.asset.trails.ws.AlertUnExpiredSWLparServiceEndpoint" />
 	<bean id="alertSwLparWithHwLparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />      
 	
 	<bean id="hibernateMapper"
@@ -32,7 +28,6 @@
 			<ref bean="nonInstanceServiceEndpoint" />
 			<ref bean="priorityISVSoftwareServiceEndpoint" />
 			<ref bean="alertHardwareCfgDataServiceEndpoint" />
-			<ref bean="alertSwLparWithHwLparServiceEndpoint"/>
 			<ref bean="pvuMappingServiceEndpoint" />
 			<ref bean="AdminCauseCodeServiceEndpoin" />
 			<ref bean="alertWithDefinedContractScopeServiceEndpoint"/>
@@ -40,8 +35,6 @@
 			<ref bean="alertPriorityIsvSwInstancesReviewed" />
 			<ref bean="alertIsvSwInstancesReviewed" />
             <ref bean="alertHardwareServiceEndpoint" />
-            <ref bean="alertHardwarelparServiceEndpoint" />
-            <ref bean="alertUnExpiredSWLpar" />
             <ref bean="alertSwLparWithHwLparServiceEndpoint" />
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
