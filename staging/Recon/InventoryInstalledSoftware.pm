@@ -283,10 +283,10 @@ sub closeAlertUnlicensedSoftware {
 			$alert->save( $self->connection );
 			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 		}
-#		elsif ( $oldAlert->type ne $alert->type ) {
-#			$alert->save( $self->connection );
-#			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-#		}
+		elsif ( $oldAlert->type ne $alert->type ) {
+			$alert->save( $self->connection );
+			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+		}
 		Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
 		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
 		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
