@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,25 +36,21 @@ public class CPTDBQuery extends AbstractXMLCPT {
 	}
 
 	public void execute() {
+		ResultSet rs = null;
+		Statement stmt = null;
 
 		try {
 			parse();
-		} catch (ParserConfigurationException e1) {
-			e1.printStackTrace();
-		} catch (SAXException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 
-		try {
 			String connName = element.getAttribute("connection");
 			Connection connection = CPTDBConnectionPool.INSTANCE
 					.getConnection(connName);
 
 			String query = element.getElementsByTagName("query").item(0)
 					.getFirstChild().getNodeValue();
-			ResultSet rs = connection.createStatement().executeQuery(query);
+
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 
 			NodeList list = element.getElementsByTagName("metadata");
 			for (int i = 0; i < list.getLength(); i++) {
@@ -87,6 +84,25 @@ public class CPTDBQuery extends AbstractXMLCPT {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (ParserConfigurationException e1) {
+			e1.printStackTrace();
+		} catch (SAXException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.ibm.cyclone;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -35,61 +36,71 @@ public class ReconSummary {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void build() throws Exception {
-		Velocity.init();
-		CPTDBConnectionPool pool = CPTDBConnectionPool.INSTANCE;
-		pool.setPath(dbConfigPath);
+	private void build() {
+		StringWriter writer = null;
+		try {
+			Velocity.init();
+			CPTDBConnectionPool.INSTANCE.setPath(dbConfigPath);
 
-		Template template = Velocity.getTemplate(templatePath);
+			Template template = Velocity.getTemplate(templatePath);
 
-		VelocityContext context = new VelocityContext();
+			VelocityContext context = new VelocityContext();
 
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
 
-		Document doc = db.parse(new File(dbConfigPath));
-		Element root = doc.getDocumentElement();
+			Document doc = db.parse(new File(dbConfigPath));
+			Element root = doc.getDocumentElement();
 
-		NodeList nodeList = root.getElementsByTagName("dbQuery");
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Element e = (Element) nodeList.item(i);
+			NodeList nodeList = root.getElementsByTagName("dbQuery");
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Element e = (Element) nodeList.item(i);
 
-			String name = e.getAttribute("name");
-			CPTDBQuery cptDbQuery = new CPTDBQuery(dbConfigPath, name);
-			cptDbQuery.execute();
-			context.put(name, cptDbQuery.getResult());
+				String name = e.getAttribute("name");
+				CPTDBQuery cptDbQuery = new CPTDBQuery(dbConfigPath, name);
+				cptDbQuery.execute();
+				context.put(name, cptDbQuery.getResult());
+			}
+
+			Map<Long, Map<String, Object>> customerMap = new HashMap<Long, Map<String, Object>>();
+			for (Map<String, Object> c : (List<Map<String, Object>>) context
+					.get("queryCustomerCache")) {
+				customerMap.put((Long) c.get("customerId"), c);
+			}
+
+			for (Map<String, Object> c : (List<Map<String, Object>>) context
+					.get("query71")) {
+				Long cId = (Long) c.get("customerId");
+				Map<String, Object> custDesc = customerMap.get(cId);
+				c.put("accountNumber", custDesc.get("accountNumber"));
+				c.put("customerName", custDesc.get("customerName"));
+			}
+
+			writer = new StringWriter();
+			template.merge(context, writer);
+			System.out.println(writer.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			CPTDBConnectionPool.INSTANCE.closeConnections();
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-
-		Map<Long, Map<String, Object>> customerMap = new HashMap<Long, Map<String, Object>>();
-		for (Map<String, Object> c : (List<Map<String, Object>>) context
-				.get("queryCustomerCache")) {
-			customerMap.put((Long) c.get("customerId"), c);
-		}
-
-		for (Map<String, Object> c : (List<Map<String, Object>>) context
-				.get("query71")) {
-			Long cId = (Long) c.get("customerId");
-			Map<String, Object> custDesc = customerMap.get(cId);
-			c.put("accountNumber", custDesc.get("accountNumber"));
-			c.put("customerName", custDesc.get("customerName"));
-		}
-
-		StringWriter writer = new StringWriter();
-		template.merge(context, writer);
-		System.out.println(writer.toString());
 
 	}
 
 	public static void main(String[] args) {
 
-		try {
-			if (args.length == 2) {
-				new ReconSummary(args[0], args[1]).build();
-			} else {
-				new ReconSummary().build();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (args.length == 2) {
+			new ReconSummary(args[0], args[1]).build();
+		} else {
+			new ReconSummary().build();
 		}
 
 	}

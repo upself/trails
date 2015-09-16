@@ -2,8 +2,11 @@
 Summary: 
 Total Records in full queue:$summaryFullQty.get(0).qty
 Number of accounts in full queue:$summaryTotalCustomerQty.get(0).qty
-Number of running Threads: 
-#include("files/reconEngineInventory.txt")
+Number of running Threads for reconEngineInventory: 
+#include("files/threads-qty/reconInventoryThreadQty.txt")
+
+Number of running Threads for reconEngineLicensing: 
+#include("files/threads-qty/reconLicensingThreadQty.txt")
 
 
 Priority 1: Special Accounts 
@@ -50,12 +53,7 @@ $tableQty.tableName,$tableQty.qty
 Total Records in full queue(phase 0):$query61.get(0).qty
 Number of accounts in full queue(phase 0):$query62.get(0).qty
 Number of running Threads:
-Thu Sep 10 07:10:14 EDT 2015 , 104
-Thu Sep 10 07:20:13 EDT 2015 , 104
-Thu Sep 10 07:30:13 EDT 2015 , 82
-Thu Sep 10 07:40:13 EDT 2015 , 30
-Thu Sep 10 07:50:14 EDT 2015 , 21
-Thu Sep 10 08:00:13 EDT 2015 , 53
+#include("files/threads-qty/swToBravoThreadQty.txt")
 
 
 Priority 1: Special Accounts

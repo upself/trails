@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -75,5 +76,20 @@ public class CPTDBConnectionPool extends AbstractXMLCPT {
 	@Override
 	protected String getElementName() {
 		return this.name;
+	}
+
+	public void closeConnections() {
+		if (map != null && map.size() > 0) {
+			Set<String> keys = map.keySet();
+
+			for (String key : keys) {
+				Connection conn = map.get(key);
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
