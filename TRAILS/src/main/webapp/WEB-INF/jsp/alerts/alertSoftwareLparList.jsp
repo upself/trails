@@ -61,7 +61,6 @@
 					<th scope="col" class="ibm-sort nobreak">OS Name</th>
 					<th scope="col" class="ibm-sort nobreak">Assignee</th>
 					<th scope="col" class="ibm-sort nobreak">Comments</th>
-					<th scope="col" class="ibm-sort nobreak">Unassignee</th>
 				</tr>
 			</thead>
 			<tbody id="tb">
