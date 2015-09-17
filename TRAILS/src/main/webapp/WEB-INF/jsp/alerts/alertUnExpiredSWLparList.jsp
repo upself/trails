@@ -5,9 +5,9 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays hardware lpars without an associated software lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
+		<p>This page displays outdated scans. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
 		<div style="text-align:right">
-			<a href="${pageContext.request.contextPath}/ws/alertUnExpiredSWLpar/download/${accountId}">Download SOM2c: UNEXPIRED SW LPARalert report</a>
+			<a href="${pageContext.request.contextPath}/ws/alertUnExpiredSWLpar/download/${accountId}">Download SOM2c: UNEXPIRED SW LPAR alert report</a>
 		</div>
 	</div>
 	
@@ -72,6 +72,7 @@
 </div>
 <script>
 $(function(){
+	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
 	searchData();
 });
 
