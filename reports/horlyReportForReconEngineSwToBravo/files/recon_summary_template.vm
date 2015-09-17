@@ -1,14 +1,17 @@
 --- Recon Engine ---
 Summary: 
-Total Records in full queue:$summaryFullQty.get(0).qty
-Number of accounts in full queue:$summaryTotalCustomerQty.get(0).qty
-Number of running Threads for reconEngineInventory: 
+Total Records in inventory queue:$summaryInventoryQty.get(0).qty
+Number of accounts:$summaryInventoryCustomerQty.get(0).qty
+Threads quantity of reconEngineInventory: 
 #include("files/threads-qty/reconInventoryThreadQty.txt")
 
-Number of running Threads for reconEngineLicensing: 
+**********************************************************
+Total Records in licensing queue:$summaryLicensingQty.get(0).qty
+Number of accounts:$summaryLicensingCustomerQty.get(0).qty
+Threads quantity of reconEngineLicensing: 
 #include("files/threads-qty/reconLicensingThreadQty.txt")
 
-
+**********************************************************
 Priority 1: Special Accounts 
 #foreach ($account in $specialAccounts)
 $account.customerId,$account.accountNumber,$account.date,$account.qty,$account.customerName
@@ -40,6 +43,10 @@ $account.customerId,$account.accountNumber,$account.date,$account.qty,$account.c
 - Full volume for Priority 3: 
 #foreach ($tableQty  in $queryP34)
 $tableQty.tableName,$tableQty.qty
+#end
+- RECON_INSTALLED_SW details:
+#foreach ($tableQty  in $queryP44)
+$tableQty.customerName,$tableQty.action,$tableQty.qty
 #end
 
 Priority 4: 999999 Account 

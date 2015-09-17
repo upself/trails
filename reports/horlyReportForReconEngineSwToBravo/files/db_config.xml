@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <application>
 	<connection name="trailsConnection">
-		<driver>com.ibm.db2.jcc.DB2Driver</driver>
-		<url>jdbc:db2://dst20lp05.boulder.ibm.com:50000/trailspd</url>
+		<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver>
+		<url>jdbc:db2:trails</url>
 		<user>eaadmin</user>
-		<password>may2012a</password>
+		<password>Gr0wl3rs</password>
 	</connection>
 
 	<connection name="stagingConnection">
-		<driver>com.ibm.db2.jcc.DB2Driver</driver>
-		<url>jdbc:db2://tap.raleigh.ibm.com:5102/staging</url>
+		<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver>
+		<url>jdbc:db2:staging</url>
 		<user>eaadmin</user>
 		<password>apr03db2</password>
 	</connection>
 
 
 
-	<dbQuery name="summaryFullQty" connection="trailsConnection">
+	<dbQuery name="summaryInventoryQty" connection="trailsConnection">
 		<query><![CDATA[
-               select count(*) from v_recon_queue with ur
+               select count(*) from v_recon_inventory_queue with ur
+			]]></query>
+		<result>
+			<metadata type="int" name="qty" sequence="1" />
+		</result>
+	</dbQuery>
+
+	<dbQuery name="summaryInventoryCustomerQty" connection="trailsConnection">
+		<query><![CDATA[
+               select count(distinct customer_id) from v_recon_inventory_queue with ur
 			]]></query>
 		<result>
 			<metadata type="int" name="qty" sequence="1" />
@@ -26,9 +35,20 @@
 	</dbQuery>
 
 
-	<dbQuery name="summaryTotalCustomerQty" connection="trailsConnection">
+
+	<dbQuery name="summaryLicensingQty" connection="trailsConnection">
 		<query><![CDATA[
-               select count(distinct customer_id) from v_recon_queue with ur
+               select count(*) from v_recon_licensing_queue with ur
+			]]></query>
+		<result>
+			<metadata type="int" name="qty" sequence="1" />
+		</result>
+	</dbQuery>
+
+
+	<dbQuery name="summaryLicensingCustomerQty" connection="trailsConnection">
+		<query><![CDATA[
+               select count(distinct customer_id) from v_recon_licensing_queue with ur
 			]]></query>
 		<result>
 			<metadata type="int" name="qty" sequence="1" />
@@ -210,6 +230,25 @@
 		<result>
 			<metadata type="string" name="tableName" sequence="1" />
 			<metadata type="int" name="qty" sequence="2" />
+		</result>
+	</dbQuery>
+	
+	<dbQuery name="queryP44" connection="trailsConnection">
+		<query><![CDATA[
+               select c.customer_name, ris.action, count(*) 
+               from RECON_INSTALLED_SW ris, customer c
+               where
+                ris.customer_id = c.customer_id
+                and c.customer_type_id in (172, 173, 222, 224, 217) 
+               group by c.customer_name, ris.action 
+               order by c.customer_name, ris.action desc
+               fetch first 10 rows only
+               with ur
+			]]></query>
+		<result>
+			<metadata type="string" name="customerName" sequence="1" />
+			<metadata type="string" name="action" sequence="2" />
+			<metadata type="int" name="qty" sequence="3" />
 		</result>
 	</dbQuery>
 
