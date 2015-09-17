@@ -124,9 +124,9 @@
 			<role-name>com.ibm.tap.trails4</role-name>
 			<role-name>com.ibm.tap.bravo.user</role-name>
 		</auth-constraint>
- 	<!-- 	<user-data-constraint>
+ 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-		</user-data-constraint> -->
+		</user-data-constraint>
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
@@ -138,9 +138,9 @@
 		<auth-constraint>
 			<role-name>com.ibm.tap.trails4</role-name>
 		</auth-constraint>
- 	<!-- 	<user-data-constraint>
+ 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-		</user-data-constraint> -->
+		</user-data-constraint>
 	</security-constraint>
 	<login-config>
 		<auth-method>BASIC</auth-method>
