@@ -97,7 +97,7 @@ function searchData(){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td><a href='javascript:void()' onclick='popupHardwarelpar();return false;'>" + list[i].hardwareLpar.name + "</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupHardwarelpar(" + list[i].account.account + ",\"" +list[i].hardwareLpar.name+ "\"," + list[i].hardwareLpar.id + ");return false;'>" + list[i].hardwareLpar.name + "</a></td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
 						html += "<td>" + list[i].remoteUser + "</td>";
@@ -224,8 +224,8 @@ function assignOrNot(url,params){
 	});
 }
 
-function popupHardwarelpar() {
-	newWin=window.open('//${bravoServerName}/BRAVO/account/view.do?accountId=${accountId}','popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+function popupHardwarelpar(accountId, lparName, hwId) {
+	newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&hwId=' + hwId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 	newWin.focus(); 
 	void(0);
 }
