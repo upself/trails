@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.AlertHardwareCfgData;
 import com.ibm.asset.trails.domain.AlertSoftwareLpar;
 import com.ibm.asset.trails.domain.AlertSoftwareLparH;
 import com.ibm.asset.trails.form.AlertHistoryReport;
@@ -20,159 +21,157 @@ import com.ibm.asset.trails.service.AlertService;
 
 @Service
 public class AlertSoftwareLparServiceImpl extends BaseAlertServiceImpl
-        implements AlertService {
+		implements AlertService {
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList paginatedList(Account account, int startIndex,
-            int objectsPerPage, String sort, String dir) {
-        StringBuffer query = new StringBuffer(
-                "from AlertViewSoftwareLpar a join fetch a.softwareLpar where a.account = :account and a.open = 1 order by a.")
-                .append(sort).append(" ").append(dir);
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public ArrayList paginatedList(Account account, int startIndex,
+			int objectsPerPage, String sort, String dir) {
+		StringBuffer query = new StringBuffer(
+				"from AlertViewSoftwareLpar a join fetch a.softwareLpar s left join fetch s.softwareLparEff where a.account = :account and a.open = 1 order by a.")
+				.append(sort).append(" ").append(dir);
 
-        Query q = super.getEntityManager().createQuery(query.toString());
-        q.setParameter("account", account);
-        q.setFirstResult(startIndex);
-        q.setMaxResults(objectsPerPage);
-        return (ArrayList) q.getResultList();
-    }
+		Query q = super.getEntityManager().createQuery(query.toString());
+		q.setParameter("account", account);
+		q.setFirstResult(startIndex);
+		q.setMaxResults(objectsPerPage);
+		return (ArrayList) q.getResultList();
+	}
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList paginatedList(String remoteUser, int startIndex,
-            int objectsPerPage, String sort, String dir) {
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public ArrayList paginatedList(String remoteUser, int startIndex,
+			int objectsPerPage, String sort, String dir) {
 
-        StringBuffer query = new StringBuffer(
-                "from AlertViewSoftwareLpar a join fetch a.softwareLpar where a.remoteUser = :remoteUser and a.open = 1 ");
+		StringBuffer query = new StringBuffer(
+				"from AlertViewSoftwareLpar a join fetch a.softwareLpar where a.remoteUser = :remoteUser and a.open = 1 ");
 
-        query.append("order by a." + sort + " " + dir);
+		query.append("order by a." + sort + " " + dir);
 
-        Query q = super.getEntityManager().createQuery(query.toString());
-        q.setParameter("remoteUser", remoteUser);
-        q.setFirstResult(startIndex);
-        q.setMaxResults(objectsPerPage);
-        return (ArrayList) q.getResultList();
-    }
+		Query q = super.getEntityManager().createQuery(query.toString());
+		q.setParameter("remoteUser", remoteUser);
+		q.setFirstResult(startIndex);
+		q.setMaxResults(objectsPerPage);
+		return (ArrayList) q.getResultList();
+	}
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public Long total(Account account) {
-        Query q = super.getEntityManager().createNamedQuery(
-                "alertSoftwareLparTotalByAccount");
-        q.setParameter("account", account);
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public Long total(Account account) {
+		Query q = super.getEntityManager().createNamedQuery(
+				"alertSoftwareLparTotalByAccount");
+		q.setParameter("account", account);
 
-        return ((Long) q.getSingleResult());
-    }
+		return ((Long) q.getSingleResult());
+	}
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public Long total(String remoteUser) {
-        Query q = super.getEntityManager().createNamedQuery(
-                "alertSoftwareLparTotalByRemoteUser");
-        q.setParameter("remoteUser", remoteUser);
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public Long total(String remoteUser) {
+		Query q = super.getEntityManager().createNamedQuery(
+				"alertSoftwareLparTotalByRemoteUser");
+		q.setParameter("remoteUser", remoteUser);
 
-        return ((Long) q.getSingleResult());
-    }
+		return ((Long) q.getSingleResult());
+	}
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void assign(List list, String remoteUser, String comments) {
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void assign(List<Long> list, String remoteUser, String comments) {
 
-        Iterator i = list.iterator();
-        while (i.hasNext()) {
-            AlertListForm alf = (AlertListForm) i.next();
+		for (Long id : list) {
+			AlertSoftwareLpar alertSoftwareLpar = super.getEntityManager()
+					.find(AlertSoftwareLpar.class, id);
 
-            if (!alf.isAssign()) {
-                if (!alf.isUnassign()) {
-                    continue;
-                }
-            }
+			createHistory(alertSoftwareLpar);
+			alertSoftwareLpar.setRemoteUser(remoteUser);
+			alertSoftwareLpar.setComments(comments);
+			alertSoftwareLpar.setRecordTime(new Date());
 
-            AlertSoftwareLpar asl = super.getEntityManager().find(
-                    AlertSoftwareLpar.class, alf.getId());
-            createHistory(asl);
+			super.getEntityManager().merge(alertSoftwareLpar);
+			super.getEntityManager().flush();
+		}
+	}
 
-            if (alf.isUnassign()) {
-                asl.setRemoteUser("STAGING");
-            } else if (alf.isAssign()) {
-                asl.setRemoteUser(remoteUser);
-            }
-            asl.setComments(comments);
-            asl.setRecordTime(new Date());
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void unassign(List<Long> alertIds, String remoteUser, String comments) {
+		// TODO Auto-generated method stub
+		for (Long id : alertIds) {
+			AlertSoftwareLpar alertSoftwareLpar = super
+					.getEntityManager().find(AlertSoftwareLpar.class, id);
 
-            super.getEntityManager().merge(asl);
-            super.getEntityManager().flush();
-        }
-    }
+			createHistory(alertSoftwareLpar);
+			alertSoftwareLpar.setRemoteUser("STAGING");
+			alertSoftwareLpar.setComments(comments);
+			alertSoftwareLpar.setRecordTime(new Date());
 
-    private void createHistory(AlertSoftwareLpar asl) {
+			super.getEntityManager().merge(alertSoftwareLpar);
+			super.getEntityManager().flush();
+		}
+	}
 
-        // TODO May be good just to create a constructor
-        AlertSoftwareLparH aslh = new AlertSoftwareLparH();
-        aslh.setAlertSoftwareLpar(asl);
-        aslh.setComments(asl.getComments());
-        aslh.setCreationTime(asl.getCreationTime());
-        aslh.setOpen(asl.isOpen());
-        aslh.setRecordTime(asl.getRecordTime());
-        aslh.setRemoteUser(asl.getRemoteUser());
+	private void createHistory(AlertSoftwareLpar asl) {
 
-        super.getEntityManager().persist(aslh);
-    }
+		// TODO May be good just to create a constructor
+		AlertSoftwareLparH aslh = new AlertSoftwareLparH();
+		aslh.setAlertSoftwareLpar(asl);
+		aslh.setComments(asl.getComments());
+		aslh.setCreationTime(asl.getCreationTime());
+		aslh.setOpen(asl.isOpen());
+		aslh.setRecordTime(asl.getRecordTime());
+		aslh.setRemoteUser(asl.getRemoteUser());
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAlertHistory(Long id) {
+		super.getEntityManager().persist(aslh);
+	}
 
-        ArrayList<AlertHistoryReport> list = new ArrayList<AlertHistoryReport>();
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public ArrayList getAlertHistory(Long id) {
 
-        list.addAll(super.getEntityManager()
-                .createNamedQuery("alertSoftwareLparHistory")
-                .setParameter("id", id).getResultList());
+		ArrayList<AlertHistoryReport> list = new ArrayList<AlertHistoryReport>();
 
-        AlertSoftwareLpar asl = super.getEntityManager().find(
-                AlertSoftwareLpar.class, id);
-        AlertHistoryReport ahr = new AlertHistoryReport(asl.getComments(),
-                asl.getRemoteUser(), asl.getCreationTime(),
-                asl.getRecordTime(), asl.isOpen());
-        list.add(ahr);
+		list.addAll(super.getEntityManager()
+				.createNamedQuery("alertSoftwareLparHistory")
+				.setParameter("id", id).getResultList());
 
-        return list;
-    }
+		AlertSoftwareLpar asl = super.getEntityManager().find(
+				AlertSoftwareLpar.class, id);
+		AlertHistoryReport ahr = new AlertHistoryReport(asl.getComments(),
+				asl.getRemoteUser(), asl.getCreationTime(),
+				asl.getRecordTime(), asl.isOpen());
+		list.add(ahr);
 
-    @SuppressWarnings("unchecked")
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void updateAll(Account pAccount, String psRemoteUser,
-            String psComments, int piMode) {
-        Query lqUpdateAll = super
-                .getEntityManager()
-                .createQuery(
-                        new StringBuffer(
-                                "FROM AlertSoftwareLpar ASL JOIN FETCH ASL.softwareLpar SL WHERE ASL.open = 1 AND SL.account = :account")
-                                .append(piMode == MODE_UNASSIGN ? " AND ASL.remoteUser = :remoteUser"
-                                        : "").toString());
-        List<AlertSoftwareLpar> llAlertSoftwareLpar = null;
+		return list;
+	}
 
-        lqUpdateAll.setParameter("account", pAccount);
-        if (piMode == MODE_UNASSIGN) {
-            lqUpdateAll.setParameter("remoteUser", psRemoteUser);
-        }
-        llAlertSoftwareLpar = lqUpdateAll.getResultList();
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void updateAll(Account pAccount, String psRemoteUser,
+			String psComments, int piMode) {
+		Query lqUpdateAll = super
+				.getEntityManager()
+				.createQuery(
+						new StringBuffer(
+								"FROM AlertSoftwareLpar ASL JOIN FETCH ASL.softwareLpar SL WHERE ASL.open = 1 AND SL.account = :account")
+								.append(piMode == MODE_UNASSIGN ? " AND ASL.remoteUser = :remoteUser"
+										: "").toString());
+		List<AlertSoftwareLpar> llAlertSoftwareLpar = null;
 
-        for (AlertSoftwareLpar laslTemp : llAlertSoftwareLpar) {
-            createHistory(laslTemp);
+		lqUpdateAll.setParameter("account", pAccount);
+		if (piMode == MODE_UNASSIGN) {
+			lqUpdateAll.setParameter("remoteUser", psRemoteUser);
+		}
+		llAlertSoftwareLpar = lqUpdateAll.getResultList();
 
-            if (piMode == MODE_UNASSIGN) {
-                laslTemp.setRemoteUser("STAGING");
-            } else if (piMode == MODE_ASSIGN) {
-                laslTemp.setRemoteUser(psRemoteUser);
-            }
-            laslTemp.setComments(psComments);
-            laslTemp.setRecordTime(new Date());
+		for (AlertSoftwareLpar laslTemp : llAlertSoftwareLpar) {
+			createHistory(laslTemp);
 
-            super.getEntityManager().merge(laslTemp);
-            super.getEntityManager().flush();
-        }
-    }
+			if (piMode == MODE_UNASSIGN) {
+				laslTemp.setRemoteUser("STAGING");
+			} else if (piMode == MODE_ASSIGN) {
+				laslTemp.setRemoteUser(psRemoteUser);
+			}
+			laslTemp.setComments(psComments);
+			laslTemp.setRecordTime(new Date());
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void unassign(List<Long> findAffectedAlertUnlicensedSwList,
-            String remoteUser, String comments) {
-        // TODO Auto-generated method stub
-
-    }
+			super.getEntityManager().merge(laslTemp);
+			super.getEntityManager().flush();
+		}
+	}
 }

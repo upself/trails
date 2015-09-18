@@ -54,16 +54,16 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
-				icon="account" />
-			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
-				icon="account" />
-			<item value="SW LPAR w/o HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
-				icon="account" />
-			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
+			<item value="SOM1a: HW WITH HOSTNAME" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
 				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
+			<item value="SOM2a: HW LPAR WITH SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
+				icon="account" />
+			<item value="SOM2b: SW LPAR WITH HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
+				icon="account" />
+			<item value="SOM2c: UNEXPIRED SW LPAR" link="/account/alerts/alertExpiredScan.htm"
+				icon="account" />
 			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" 
 				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
 			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
@@ -288,16 +288,16 @@
 		</put-list-attribute>
 		<put-list-attribute name="/account/alerts/home.htm">
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
-			<item value="HW w/o HW LPAR" link="/account/alerts/alertHardware.htm"
-				icon="account" />
-			<item value="HW LPAR w/o SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
-				icon="account" />
-			<item value="SW LPAR w/o HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
-				icon="account" />
-			<item value="Outdated SW LPAR" link="/account/alerts/alertExpiredScan.htm"
+			<item value="SOM1a: HW WITH HOSTNAME" link="/account/alerts/alertHardware.htm"
 				icon="account" />
 			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
 				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
+			<item value="SOM2a: HW LPAR WITH SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
+				icon="account" />
+			<item value="SOM2b: SW LPAR WITH HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
+				icon="account" />
+			<item value="SOM2c: UNEXPIRED SW LPAR" link="/account/alerts/alertExpiredScan.htm"
+				icon="account" />
 			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" 
 				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
 			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
@@ -429,7 +429,7 @@
 	</definition>
 	
 	<definition name="tiles.alerts.history.v17e.popup" extends="tiles.v17ePopupLayout">
-		<put-attribute name="contentTitle" value="TRAILS alert hardware config cndb id history" />
+		<put-attribute name="contentTitle" value="TRAILS alert history" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/alerts/v17eAlertHistoryPopup.jsp" />
 	</definition>
 
@@ -522,35 +522,39 @@
 		<put-attribute name="keywords" value="SOM4c: ISV SW INSTANCES REVIEWED" />
 	</definition>
 
-	<definition name="tiles.alerts.alertHardware.list" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.alerts.alertHardware.list" extends="tiles.v17e.w3OneColumnLayout">
+	    <put-attribute name="contentTitle" value="SOM1a: HW WITH HOSTNAME" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareList.jsp" />
-		<put-attribute name="description" value="TRAILS alert hardware" />
-		<put-attribute name="keywords" value="TRAILS alert hardware" />
+		<put-attribute name="description" value="SOM1a: HW WITH HOSTNAME" />
+		<put-attribute name="keywords" value="SOM1a: HW WITH HOSTNAME" />
 	</definition>
 
 	<definition name="tiles.alerts.alertHardwareLpar.list"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM2a: HW LPAR WITH SW LPAR" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareLparList.jsp" />
-		<put-attribute name="description" value="TRAILS alert hardware lpar" />
-		<put-attribute name="keywords" value="TRAILS alert hardware lpar" />
+		<put-attribute name="description" value="SOM2a: HW LPAR WITH SW LPAR" />
+		<put-attribute name="keywords" value="SOM2a: HW LPAR WITH SW LPAR" />
 	</definition>
 
 	<definition name="tiles.alerts.alertSoftwareLpar.list"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM2b: SW LPAR WITH HW LPAR" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertSoftwareLparList.jsp" />
-		<put-attribute name="description" value="TRAILS alert software lpar" />
-		<put-attribute name="keywords" value="TRAILS alert software lpar" />
+		<put-attribute name="description" value="SOM2b: SW LPAR WITH HW LPAR" />
+		<put-attribute name="keywords" value="SOM2b: SW LPAR WITH HW LPAR" />
 	</definition>
 
 	<definition name="tiles.alerts.alertExpiredScan.list"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SOM2c: UNEXPIRED SW LPAR" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertExpiredScanList.jsp" />
-		<put-attribute name="description" value="TRAILS alert expired scan" />
-		<put-attribute name="keywords" value="TRAILS alert expired scan" />
+			value="/WEB-INF/jsp/alerts/alertUnExpiredSWLparList.jsp" />
+		<put-attribute name="description" value="SOM2c: UNEXPIRED SW LPAR" />
+		<put-attribute name="keywords" value="SOM2c: UNEXPIRED SW LPAR" />
 	</definition>
 
 	<definition name="tiles.alerts.alertExpiredMaint.list"

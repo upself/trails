@@ -34,6 +34,7 @@
 </div>
 <script>
 $(function(){
+	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
 	searchData();
 });
 
