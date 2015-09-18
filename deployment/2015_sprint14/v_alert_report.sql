@@ -20,7 +20,7 @@ where a.hardware_id = b.id
 union
 all
 select
-'HARDWARE_LPAR' || cast(a.id as char(16)) ,
+'HW_LPAR' || cast(a.id as char(16)) ,
 b.customer_id ,
 a.open ,
 case when a.remote_user = 'STAGING' then 0 else 1 end as assigned ,
@@ -34,7 +34,7 @@ where a.hardware_lpar_id = b.id
 union
 all
 select
-'SOFTWARE_LPAR' || cast(a.id as char(16)) ,
+'SW_LPAR' || cast(a.id as char(16)) ,
 b.customer_id ,
 a.open ,
 case when a.remote_user = 'STAGING' then 0 else 1 end as assigned ,
@@ -48,7 +48,7 @@ where a.software_lpar_id = b.id
 union
 all
 select
-'EXPIRED_SCAN' || cast(a.id as char(16)) ,
+'EXP_SCAN' || cast(a.id as char(16)) ,
 b.customer_id ,
 a.open ,
 case when a.remote_user = 'STAGING' then 0 else 1 end as assigned ,
@@ -91,8 +91,8 @@ and b.software_lpar_id = c.id
 union
 all
 select
-'ALERT_HARDWARE_CFGDATA' || cast(a.id as char(16)) ,
-b.customer_id ,
+'HWCFGDTA' || cast(a.id as char(16)) ,
+c.customer_id ,
 a.open ,
 case when a.remote_user = 'STAGING' then 0 else 1 end as assigned ,
 case when days(current timestamp) - days(a.creation_time) > 90 then 1 else 0 end as red ,
@@ -101,6 +101,9 @@ and 90 then 1 else 0 end as yellow ,
 case when days(current timestamp) - days(a.creation_time) between 0
 and 45 then 1 else 0 end as green ,
 'SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED'
-from EAADMIN.alert_hardware_cfgdata a , EAADMIN.hardware b
+from EAADMIN.alert_hardware_cfgdata a ,
+EAADMIN.hardware b ,
+EAADMIN.hardware_lpar c
 where a.hardware_id = b.id
+and b.id = c.hardware_id
 ;
