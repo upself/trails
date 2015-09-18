@@ -69,10 +69,10 @@ and at.code='HARDWARE'
 union
 all
 select
-'ALERT_HARDWARE_CFGDATA' || cast(ahc.id as char(16)) ,
+'HWCFGDTA' || cast(ahc.id as char(16)) ,
 ahc.id ,
 ahc.hardware_id ,
-h.customer_id ,
+hl.customer_id ,
 ahc.comments ,
 ahc.remote_user ,
 days(current timestamp) - days(ahc.creation_time) as ALERT_AGE ,
@@ -94,12 +94,14 @@ ac.show_in_gui,
 acr.name
 from EAADMIN.alert_hardware_cfgdata ahc ,
 EAADMIN.hardware h,
+EAADMIN.hardware_lpar hl,
 EAADMIN.cause_code cc,
 EAADMIN.alert_type at,
 EAADMIN.alert_type_cause atc,
 EAADMIN.alert_cause ac,
 EAADMIN.alert_cause_responsibility acr
 where ahc.hardware_id=h.id
+and hl.hardware_id = h.id
 and cc.alert_id=ahc.id
 and cc.alert_type_id=at.id
 and atc.alert_type_id=at.id
@@ -110,7 +112,7 @@ and at.code='HWCFGDTA'
 union
 all
 select
-'HARDWARE_LPAR' || cast(ahl.id as char(16)) ,
+'HW_LPAR' || cast(ahl.id as char(16)) ,
 ahl.id ,
 ahl.hardware_lpar_id ,
 hl.customer_id ,
@@ -151,7 +153,7 @@ and at.code='HW_LPAR'
 union
 all
 select
-'SOFTWARE_LPAR' || cast(asl.id as char(16)) ,
+'SW_LPAR' || cast(asl.id as char(16)) ,
 asl.id ,
 asl.software_lpar_id ,
 sl.customer_id ,
@@ -192,7 +194,7 @@ and at.code='SW_LPAR'
 union
 all
 select
-'EXPIRED_SCAN' || cast(aes.id as char(16)) ,
+'EXP_SCAN' || cast(aes.id as char(16)) ,
 aes.id ,
 aes.software_lpar_id ,
 sl.customer_id ,
