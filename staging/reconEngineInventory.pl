@@ -38,7 +38,6 @@ my $systemScheduleStatus = startJob($job);
 my $rNo = 'revision233';
 
 my $maxChildren        = 100;
-my %runningCustomerIds = ();
 my %runningCustomerDates = ();
 my %children           = ();
 my $children;
@@ -101,7 +100,7 @@ sub keepTicking {
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
-            if ( isCustomerRunning( $customerId ) == 1 ) {
+            if ( isCustomerRunning( $customerId, $date ) == 1 ) {
                 next;
             }
             else {
@@ -130,14 +129,18 @@ sub isCustomerRunning {
     my $date = shift;
     my $result     = 0;
     
-    if (( $children >= (0.66 * $maxChildren)) && ( exists $runningCustomerIds{$customerId} )) {
-        ilog("$rNo $customerId already running, skipping");
-        return 1;
-    }
-    
     if (( $children < (0.66 * $maxChildren)) && ( exists $runningCustomerDates{"$customerId $date"} )) {
 		ilog("$rNo $customerId and $date already running, skipping");
 		return 1;
+	}
+	
+	if ( $children >= ( 0.66 * $maxChildren) ) {
+		foreach my $key ( keys %runningCustomerDates ) {
+			if ( $key =~ /^$customerId / ) {
+				ilog("$rNo $customerId already running and reconEngineInventory is using 66% of maxthreads, skipping");
+				return 1;
+			}
+		}
 	}
 	
 	return 0;
@@ -156,7 +159,6 @@ sub newChild {
     if ($pid) {
         $children{$pid} = 1;
         $children++;
-        $runningCustomerIds{$customerId} = $pid;
         $runningCustomerDates{"$customerId $date"} = $pid;
         ilog("forked new child, we now have $children children");
         return;
@@ -230,10 +232,7 @@ sub REAPER {
         foreach my $key ( keys %runningCustomerDates ) {
 			if ( $stiff == $runningCustomerDates{$key} ) {
 				delete $runningCustomerDates{$key};
-				my ($custerm)=split(' ',$key);
-				dlog("Terminating key \"$key\", which means customerId \"$custerm\"");
-				delete $runningCustomerIds{$custerm} if exists $runningCustomerIds{$custerm};
-				wlog("$rNo reaped $custerm");
+				wlog("$rNo reaped $key");
 			}
 		}
 		
