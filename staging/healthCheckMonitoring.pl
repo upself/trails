@@ -101,7 +101,8 @@ my $PARAMETER_6_INDEX					  = 8;#For example, "N/A"
 my $PARAMETER_7_INDEX					  = 9;#For example, "N/A"
 my $PARAMETER_8_INDEX					  = 10;#For example, "N/A"
 my $PARAMETER_9_INDEX					  = 11;#For example, "N/A"
-my $PARAMETER_10_INDEX					  = 12;#For example, "N/A"
+my $THREADS_TO_KILL_INDEX				  = 12;#For example, "2" ... if reconEngine runs in less than this number of threads,
+																#	 it gets killed and restarted
  
 my $EVENT_RULE_TITLE                      = 13;#For example, "Loader Running Status on @1 Server"
 my $EVENT_RULE_MESSAGE                    = 14;#For example, "Loader @2 is currently not running."
@@ -139,6 +140,7 @@ my $SWCMTOSTAGING_START_STOP_SCRIPT         = "SWCMTOSTAGING_START_STOP_SCRIPT";
 my $MOVEMAINFRAME_START_STOP_SCRIPT         = "MOVEMAINFRAME_START_STOP_SCRIPT";#EVENT_TYPE_ID = 4
 my $BRAVOREPORTFORK_START_STOP_SCRIPT       = "BRAVOREPORTFORK_START_STOP_SCRIPT";#EVENT_TYPE_ID = 5
 my $STAGINGMOVE_START_STOP_SCRIPT           = "STAGINGMOVE_START_STOP_SCRIPT";#EVENT_TYPE_ID = 6
+my $RESTART_WHEN_DOWN						= "RESTART_WHEN_DOWN";#EVENT_TYPE_ID = 7 ???
 #File System Monitoring - Event Group Name
 my $FILE_SYSTEM_MONITORING                  = "FILE_SYSTEM_MONITORING";#EVENT_GROUP_ID = 2
 #File System Monitoring - its children Event Type Name
@@ -484,6 +486,41 @@ sub eventLogging{
 	 print LOG "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";
  }
 
+sub restartWhenDown { # This method restarts scripts when the number of running threads is equal to or below the THREADS_TO_KILL
+	my $minThreads=shift;
+	my $scriptToCheck=shift;
+	
+	print("Minimum threads: $minThreads, scripts to check: $scriptToCheck"); # debug
+	
+	my $threadsRunning= `ps -ef|grep -c $scriptToCheck`;
+	$threadsRunning--;
+	
+	if ( $threadsRunning > $minThreads ) {
+		print LOG "[$currentTimeStamp] $scriptToCheck running OK - $threadsRunning running, $minThreads minimum\n";
+		return 1;
+	}
+	
+	my @processIds = `ps -ef | grep $scriptToCheck | awk {'print $2'}`;
+	
+	foreach my $currId (@processIds) {
+		chomp $currId;
+		print LOG "[$currentTimeStamp] $scriptToCheck killing thread $currId\n";
+		system "kill -9 $currId";
+	}
+	
+	my $pidName=$scriptToCheck;
+	$pidName = s/\.pl/.pid/;
+	
+	$pidName = "/tmp/".$pidName;
+	
+	unlink($pidName) if ( -e $pidName );
+	
+	print LOG "[$currentTimeStamp] Restarting $scriptToCheck ...\n";
+	
+	return `cd /opt/staging/v2; ./$scriptToCheck start | grep -c "Parent daemon running."`;
+	
+}
+
 #This method is used to do event logic process
 #For any new event, you need to add new business logic here
 sub eventLogicProcess{
@@ -587,6 +624,7 @@ sub eventLogicProcess{
    	   ||($groupName eq $APPLICATION_MONITORING    && $eventName eq $WEBAPP_RUNNING_STATUS_CHECK_MONITORING)
    	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $DB_EXCEPTION_STATUS_CHECK_MONITORING)
    	   ||($groupName eq $DATABASE_MONITORING       && $eventName eq $RECON_QUEUES_DUPLICATE_DATA_MONITORING_AND_CLEANUP)
+   	   ||($groupName eq $TRAILS_BRAVO_CORE_SCRIPTS && $eventName eq $RESTART_WHEN_DOWN)
 	   ){
   	  #For these events,the eventValue value is not needed. It needs to be queried from EVENT DB table
 	  #So set 0 for eventValue var
@@ -641,7 +679,7 @@ sub eventRuleCheck{
           $metaRuleParameter7 = trim($metaRule->[$PARAMETER_7_INDEX]);#Remove space chars
 		  $metaRuleParameter8 = trim($metaRule->[$PARAMETER_8_INDEX]);#Remove space chars
 		  $metaRuleParameter9 = trim($metaRule->[$PARAMETER_9_INDEX]);#Remove space chars
-		  $metaRuleParameter10 = trim($metaRule->[$PARAMETER_10_INDEX]);#Remove space chars
+		  $metaRuleParameter10 = trim($metaRule->[$THREADS_TO_KILL_INDEX]);#Remove space chars
 		   
 	      $metaRuleTitle = trim($metaRule->[$EVENT_RULE_TITLE]);#Remove space chars
           $metaRuleMessage = trim($metaRule->[$EVENT_RULE_MESSAGE]);#Remove space chars
@@ -671,7 +709,7 @@ sub eventRuleCheck{
              print LOG "Event Rule Trigger Frequency(Hours): $metaRuleTriggerFrequency\n";
              
 			 #############THE FOLLOWING PIECE OF CODE IS THE RULE CORE BUSINESS LOGIC!!!!!!################################
-			 if(($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS) && ($triggerEventName eq $CONTINUOUS_RUN_SCRIPTS))#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "CONTINUOUS_RUN_SCRIPTS"
+			 if(($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS) && ($triggerEventName eq $CONTINUOUS_RUN_SCRIPTS))
 			 {
 			     #Define vars
 				 my @loaderList;
@@ -694,8 +732,7 @@ sub eventRuleCheck{
 					$processedRuleMessage = $metaRuleMessage;#reset the defined meta rule message to processedRuleMessage var for every loop
                     
 					 
-					my $specialLoaderNameMatched = ($loaderName=~ m/$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST/);#$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST = "swkbt"
-					if($specialLoaderNameMatched == 1){
+					if($loaderName=~ m/$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST/){
 					  print LOG "Matched special loader name[$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST] is LoaderName: $loaderName\n";
                       $returnProcessNum = `ps -ef|grep $loaderName|wc -l`;#calculate the number of running processes for certain loader name
 					  $returnProcessNum--;#decrease the unix command itself from the total calculated process number
@@ -735,6 +772,52 @@ sub eventRuleCheck{
 					  $emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
 			     }
 			 }
+			 elsif(($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS) && ($triggerEventName eq $RESTART_WHEN_DOWN))
+			 {
+			     #Define vars
+				 my @loaderList;
+				 my $loaderName;
+				 my $processedRuleTitle;
+				 my $processedRuleMessage;
+				 my @emailAlertMessageArray = ();
+				 my $emailAlertMessageCount;
+				
+			     if($SERVER_MODE eq $metaRuleParameter1){#TAP3 Server
+                    @loaderList = split(/\'/,$metaRuleParameter2);#TAP3 Server for toBravo loaders
+                 }
+				 elsif($SERVER_MODE eq $metaRuleParameter3){#TAP Server
+				    @loaderList = split(/\'/,$metaRuleParameter4);#TAP Server for toStaging loaders
+				 }
+				 
+				foreach $loaderName (@loaderList){#go loop for loader list
+					my $returnCode=restartWhenDown($metaRuleParameter10, $loaderName); # minimal number of threads to run and array of all scripts to check
+
+					if($returnCode==0){#if the number of return processes is 0 for certain loader name, the restart attempt failed
+						print LOG "EngineName: {$loaderName}\n";
+						$processedRuleTitle =~ s/\@1/$SERVER_MODE/g;
+						$processedRuleMessage =~ s/\@2/$loaderName/g;
+						push @emailAlertMessageArray,"$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";#append event rule message into email message array
+						print LOG "$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";
+						print LOG "$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $metaRuleHandlingInstrcutionCode\n";
+						print LOG "$EVENT_RULE_MESSAGE_TXT: $processedRuleMessage\n";
+						$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+						print LOG "[$currentTimeStamp]{Event Rule Code: $metaRuleCode} + {Event Rule Title: $metaRuleTitle} for {Event Group Name: $triggerEventGroup} + {Event Name: $triggerEventName} has been triggered.\n";
+					}#end of if($returnCode==0)
+                 
+					$emailAlertMessageCount = scalar(@emailAlertMessageArray);
+					if($emailAlertMessageCount > 0){#Append email content if has email alert message
+						$emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n";#append seperate line into email content
+						$processedRuleTitle = $metaRuleTitle;
+						$processedRuleTitle =~ s/\@1/$SERVER_MODE/g;
+						$emailFullContent.="$EVENT_RULE_TITLE_TXT: $processedRuleTitle\n";#append event rule title into email content
+						$emailFullContent.="$EVENT_RULE_HANDLING_INSTRUCTION_CODE_TXT: $metaRuleHandlingInstrcutionCode\n";#append event rule handling instruction code into email content
+						foreach my $emailAlertMessage (@emailAlertMessageArray){#go loop for email alert message
+							$emailFullContent.="$emailAlertMessage";#append event rule message into email content
+						}  
+						$emailFullContent.="----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";#append seperate line into email content
+					}
+				}
+			}
 			  
 			 elsif((($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $ATPTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "ATPTOSTAGING_START_STOP_SCRIPT"
                  ||($triggerEventGroup eq $TRAILS_BRAVO_CORE_SCRIPTS && $triggerEventName eq $SWCMTOSTAGING_START_STOP_SCRIPT)#Event Group: "TRAILS_BRAVO_CORE_SCRIPTS" + Event Type: "SWCMTOSTAGING_START_STOP_SCRIPT"
