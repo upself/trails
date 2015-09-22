@@ -3,6 +3,7 @@ package com.ibm.asset.trails.action;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,14 @@ public class CauseCodesUploadAction extends FileUploadAction implements
 		} catch (IOException e) {
 			getSession().put(ACTION_ERROR, e.getMessage().toString());
 			return NONE;
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
 
 		return SUCCESS;
@@ -101,9 +110,11 @@ public class CauseCodesUploadAction extends FileUploadAction implements
 				State.ATTR_STEPS);
 
 		ObjectMapper jsonMapper = new ObjectMapper();
+		Writer writer = null;
 		try {
 			String value = jsonMapper.writeValueAsString(steps);
-			reponse.getWriter().write(value);
+			writer = reponse.getWriter();
+			writer.write(value);
 
 		} catch (JsonGenerationException e) {
 			log.error(e.getMessage(), e);
@@ -111,6 +122,14 @@ public class CauseCodesUploadAction extends FileUploadAction implements
 			log.error(e.getMessage(), e);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
 
 	}

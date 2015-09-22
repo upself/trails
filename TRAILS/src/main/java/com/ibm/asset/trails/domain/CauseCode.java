@@ -14,7 +14,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "CAUSE_CODE")
-@NamedQueries({ @NamedQuery(name = "getCauseCodeById", query = "from CauseCode cc where cc.id  = :id ") })
+@NamedQueries({
+		@NamedQuery(name = "getCauseCodeById", query = "select cc from CauseCode cc where cc.id  = :id "),
+		@NamedQuery(name = "isCauseCodeExists", query = "select cc.id from CauseCode cc where cc.id  = :id "),
+		@NamedQuery(name = "getAlertTypeId", query = "select cc.alertType.id from CauseCode cc where cc.id  = :id "),
+		@NamedQuery(name = "getAlertCauseName", query = "select cc.alertCause.name from CauseCode cc where cc.id  = :id ") })
 public class CauseCode {
 
 	@Id

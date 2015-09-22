@@ -28,4 +28,5 @@ public class ScheduleF_ {
 	public static volatile SingularAttribute<ScheduleF, String> serial;
 	public static volatile SingularAttribute<ScheduleF, String> machineType;
 	public static volatile SingularAttribute<ScheduleF, String> hostname;
+	public static volatile SingularAttribute<ScheduleF, String> SWFinanceResp;
 }
