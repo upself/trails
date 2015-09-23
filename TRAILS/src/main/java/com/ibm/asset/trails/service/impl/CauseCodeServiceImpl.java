@@ -178,7 +178,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 									"Internal ID", ERROR_INTERNAL_ID_NOT_EXIST);
 						} else {
 							Long alertTypeId = getAertTypeId(cell);
-							if (alertTypeId != colIndexes.getAlertTypeId()
+							if (alertTypeId != null
+									&& alertTypeId != colIndexes
+											.getAlertTypeId()
 									&& alertTypeId != 17// Bypass alert type id
 														// value validation for
 														// the existing alert
