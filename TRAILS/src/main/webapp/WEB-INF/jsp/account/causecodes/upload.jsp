@@ -57,7 +57,7 @@
 				});
 
 		if (!stop) {
-			timer = setTimeout(progress, 500);
+			timer = setTimeout(progress, 3000);
 		}
 	}
 </script>
