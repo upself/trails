@@ -30,6 +30,9 @@ public class AlertUnlicensedSwH {
 
     @Column(name = "COMMENTS")
     private String comments;
+    
+    @Column(name = "TYPE")
+    private String type;
 
     @Column(name = "REMOTE_USER")
     private String remoteUser;
@@ -98,4 +101,12 @@ public class AlertUnlicensedSwH {
     public void setRemoteUser(String remoteUser) {
         this.remoteUser = remoteUser;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

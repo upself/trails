@@ -146,6 +146,7 @@ public abstract class BaseAlertUnlicensedSwServiceImpl extends
         AlertUnlicensedSwH aush = new AlertUnlicensedSwH();
         aush.setAlertUnlicensedSw(aus);
         aush.setComments(aus.getComments());
+        aush.setType(aus.getType());
         aush.setCreationTime(aus.getCreationTime());
         aush.setOpen(aus.isOpen());
         aush.setRecordTime(aus.getRecordTime());
