@@ -1403,7 +1403,7 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer sb = new StringBuffer(
 				"SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
 		sb.append(" ")
-				.append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
+				.append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.MAST_PROCESSOR_TYPE, H.PROCESSOR_MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
 				.append(" ")
 				.append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
 				.append(" ")
