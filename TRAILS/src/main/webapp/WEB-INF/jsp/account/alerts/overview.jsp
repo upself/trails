@@ -4,6 +4,7 @@
 <h1>Alert overview: <s:property value="account.name" />(<s:property
 	value="account.account" />)</h1>
 <p class="confidential">IBM Confidential</p>
+<p>The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.</p>
 <br />
 <small>
 	Data last refreshed: <s:date name="reportTimestamp" format="MM-dd-yyyy HH:mm:ss 'EST'" /><br />

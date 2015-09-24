@@ -199,6 +199,7 @@
 <h4>Aging red alerts reports</h4>
 <s:if test="geography != null || region != null || countryCode != null || department != null">
 <p class="confidential">IBM Confidential</p>
+<p>The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.</p>
 </s:if>
 <br />
 
