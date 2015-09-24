@@ -99,7 +99,7 @@ function searchData(){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl(${accountId},\"" + list[i].softwareLpar.name + "\"," + list[i].softwareLpar.id +");return false;'>" + list[i].softwareLpar.name + "</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl(" + list[i].account.account + ",\"" + list[i].softwareLpar.name + "\"," + list[i].softwareLpar.id +");return false;'>" + list[i].softwareLpar.name + "</a></td>";
 						html += "<td>" +list[i].softwareLpar.scanTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
 						html += "<td>" + list[i].remoteUser + "</td>";
