@@ -28,7 +28,6 @@ sub new {
                  _lpar           => undef,
                  _maps           => undef,
                  _inclusionMap   => undef,
-                 _tadzAccountMap   => undef,
                  _updateCntSlm   => 0,
                  _completeCntSlm => 0,
                  _deleteCntSlm   => 0,
@@ -164,10 +163,6 @@ sub prepareMappings {
     ilog('Obtaining bank account inclusion map');
     $self->inclusionMap( BRAVO::Delegate::BRAVODelegate->getBankAccountInclusionMap($bravoConnection) );
     ilog('Obtained bank account exception map');
-
-    ilog('Obtaining TADz bank account map');
-    $self->tadzAccountMap( Sigbank::Delegate::BankAccountDelegate->getBankAccountIdsByType('TADZ') );
-    ilog('Obtained TADz bank account map');
 
     dlog('End prepareMappings method');
 }
@@ -2037,16 +2032,14 @@ sub hwLparMap {
 
 sub isTADz {
 	my ( $self, $bankAccountId ) = @_;
-	my $tadzFlag = 0;
-	foreach my $realTadz ( @{$self->tadzAccountMap} ) {
-		if ( $realTadz == $bankAccountId ) {
-			$tadzFlag = 1;
-			dlog("$realTadz eq $bankAccountId -- I am TADZ");
-			return $tadzFlag;
-		}
+	
+	my $type = Sigbank::Delegate::BankAccountDelegate->getBankAccountTypeById($bankAccountId);
+	if( uc $type eq 'TADZ') {
+		dlog(" $bankAccountId is TADZ");
+		return 1;
 	}
 	dlog ("$bankAccountId is not TADZ");
-	return $tadzFlag;	
+	return 0;	
 }
 
 sub customerMap {

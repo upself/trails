@@ -489,4 +489,41 @@ sub queryBankAccountById {
 
     return ( 'bankAccountById', $query, \@fields );
 }
+
+sub getBankAccountTypeById() {
+	my ($self,$id) = @_;
+	my $trailsConnection = Database::Connection->new('trails');
+	$trailsConnection->prepareSqlQuery( $self->queryBankAccountTypeById() );
+    my @fields = (qw(type));
+    my $sth = $trailsConnection->sql->{bankAccountTypeById};
+    my %rec;
+    $sth->bind_columns( map { \$rec{$_} } @fields );
+    $sth->execute($id);
+    
+    my $returnType;
+    while ( $sth->fetchrow_arrayref ) {
+        $returnType = $rec{type};
+    }    
+    
+    $sth->finish;
+
+	dlog("for bankAccountId $id returning type $returnType");
+    return $returnType;
+    
+}
+
+
+sub queryBankAccountTypeById {
+    my $query = '
+        select
+            ba.type
+        from
+            bank_account ba
+        where
+            ba.id=?
+    ';
+
+    return ( 'bankAccountTypeById', $query );
+}
+
 1;
