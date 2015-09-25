@@ -4,8 +4,9 @@ package scanRecordToLpar::isTADZ;
 use Test::More;
 use base 'Test::Class';
 use Staging::ScanRecordToLparLoader;
+use Sigbank::Delegate::BankAccountDelegate;
 
-sub class { 'Staging::ScanRecordToLparLoader' }
+sub class { 'Staging::ScanRecordToLparLoader' };
 
 sub startup : Tests(startup => 1) {
     my $test = shift;
@@ -15,8 +16,11 @@ sub startup : Tests(startup => 1) {
 sub checkIsTadz : Tests(5) {
 	my $test  = shift;
 	my $class = $test->class;
+	$class = new Staging::ScanRecordToLparLoader();
+	my $bravoConnection = Database::Connection->new('trails');
 	
-
+	$class->tadzAccountMap(Sigbank::Delegate::BankAccountDelegate->getBankAccountIdsByType('TADZ',$bravoConnection));
+	
 	is($class->isTADz(1),0, "bankAccount 1 is not TADZ");
 	is($class->isTADz(-99999),0, "bankAccount -99999 is not TADZ");
 	is($class->isTADz(undef),0, "bankAccount undefined is not TADZ");

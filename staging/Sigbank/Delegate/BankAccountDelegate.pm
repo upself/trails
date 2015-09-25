@@ -302,18 +302,16 @@ sub queryBankAccountsByType {
             ba.connection_status
             ,ba.record_time
 	    ,ba.name
+	    with ur
     ';
 
     return ( 'bankAccounts', $query );
 }
 
 sub getBankAccountIdsByType {
-    my ($self,$type) = @_;
+    my ($self,$type, $trailsConnection) = @_;
 
     my @data;
-
-    ###Get the trails connection
-    my $trailsConnection = Database::Connection->new('trails');
 
     ###Prepare the query
     $trailsConnection->prepareSqlQuery( $self->queryBankAccountIdsByType() );
@@ -344,17 +342,13 @@ sub getBankAccountIdsByType {
 sub queryBankAccountIdsByType {
     my $query = '
         select
-            ba.id
+            id
         from
-            bank_account ba
+            bank_account
         where
-            ba.status = \'ACTIVE\'
-            and ba.data_type = \'INVENTORY\' 
-            and ba.type = ?
-        order by
-            ba.connection_status
-            ,ba.record_time
-	    ,ba.name
+            type = ?
+        with ur
+
     ';
 
     return ( 'bankAccountIds', $query );
@@ -521,6 +515,7 @@ sub queryBankAccountTypeById {
             bank_account ba
         where
             ba.id=?
+        with ur
     ';
 
     return ( 'bankAccountTypeById', $query );
