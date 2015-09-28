@@ -1,6 +1,6 @@
  -- Update alert_cause prefix
  -- Auther: Jackie vndwbwan@cn.ibm.com
- -- Description: Please make sure to update TRAILSPD && TRAILSRP && TRAILSST
+ -- Description: Please make sure to update TRAILSPD and the replication scripts for TRAILSRP && TRAILSST will do automatic data update for alert_cause db table
  -- Rule: Given the Cause Codes with the Prefix '1'
  --		The prefixes should be migrated to "SOM1a"
  --		Given the Cause Codes with the Prefix '2'
