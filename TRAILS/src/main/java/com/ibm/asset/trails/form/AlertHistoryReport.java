@@ -5,6 +5,8 @@ import java.util.Date;
 public class AlertHistoryReport {
 
 	private String comments;
+	
+	private String type;
 
 	private String remoteUser;
 
@@ -22,6 +24,16 @@ public class AlertHistoryReport {
 		this.recordTime = recordTime;
 		this.open = open;
 	}
+	
+	public AlertHistoryReport(String comments, String type, String remoteUser,
+			Date creationTime, Date recordTime, boolean open) {
+		this.comments = comments;
+		this.type = type;
+		this.remoteUser = remoteUser;
+		this.creationTime = creationTime;
+		this.recordTime = recordTime;
+		this.open = open;
+	}
 
 	public String getComments() {
 		return comments;
@@ -29,6 +41,14 @@ public class AlertHistoryReport {
 
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Date getCreationTime() {
