@@ -18,7 +18,8 @@ import javax.persistence.Table;
 @org.hibernate.annotations.Entity
 @NamedQueries( {
 		@NamedQuery(name = "alertExpiredScanTotalByAccount", query = "select count(*) from AlertExpiredScan a where a.softwareLpar.account = :account and a.open = 1"),
-		@NamedQuery(name = "assignAlertExpiredScan", query = "update AlertExpiredScan a set a.remoteUser = :remoteUser, a.comments = :comments where a.id in (:ids)") })
+		@NamedQuery(name = "assignAlertExpiredScan", query = "update AlertExpiredScan a set a.remoteUser = :remoteUser, a.comments = :comments where a.id in (:ids)"),
+		@NamedQuery(name = "alertExpiredScanById", query = "FROM AlertExpiredScan WHERE id = :id")})
 public class AlertExpiredScan implements Alert {
 
 	@Id
