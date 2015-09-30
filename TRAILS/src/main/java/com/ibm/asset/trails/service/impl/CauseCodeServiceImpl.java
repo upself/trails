@@ -471,6 +471,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private boolean dateCompare(Date dbValue, Date cellValue) {
 		if (cellValue == null || "".equals(cellValue.toString())) {
 			return true;
@@ -487,7 +488,21 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			return false;
 		}
 
-		return dbValue.equals(cellValue);
+	    int dbValueYear = dbValue.getYear();
+	    int dbValueMonth = dbValue.getMonth();
+	    int dbValueDay = dbValue.getDay();
+	    int cellValueYear = cellValue.getYear();
+	    int cellValueMonth = cellValue.getMonth();
+	    int cellValueDay = cellValue.getDay();
+	    
+	    if(dbValueYear == cellValueYear
+	    && dbValueMonth == cellValueMonth
+	    && dbValueDay == cellValueDay){
+	      return true;
+	    }
+	    else{
+	      return false;
+	    }
 	}
 
 	private boolean strCompare(String dbValue, String cellValue) {
