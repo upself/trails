@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +30,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.AlertCause;
+import com.ibm.asset.trails.domain.AlertExpiredScan;
+import com.ibm.asset.trails.domain.AlertExpiredScanH;
+import com.ibm.asset.trails.domain.AlertHardware;
+import com.ibm.asset.trails.domain.AlertHardwareCfgData;
+import com.ibm.asset.trails.domain.AlertHardwareCfgDataH;
+import com.ibm.asset.trails.domain.AlertHardwareH;
+import com.ibm.asset.trails.domain.AlertHardwareLpar;
+import com.ibm.asset.trails.domain.AlertHardwareLparH;
+import com.ibm.asset.trails.domain.AlertSoftwareLpar;
+import com.ibm.asset.trails.domain.AlertSoftwareLparH;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
 import com.ibm.asset.trails.domain.CauseCode;
@@ -53,18 +65,32 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	private final static String ERROR_UNKONW_TYPE = "Please do not change the structure of the report.";
 	private final static String ERROR_INTERNAL_ID_NOT_EXIST = "Internal id not exists";
-	private final static String ERROR_BAD_DATE_FORMAT = "Please ensure the cell is date formatted";
+	private final static String ERROR_BAD_DATE_FORMAT = "Please ensure the cell is date formatted or valid string value with format YYYY-MM-DD, YYYY/MM/DD or MM/DD/YYYY";
 	private static final String ERROR_UNKNOW_OWNER = "Please use an Email Address, as specified in Blue Pages";
 	private static final String ERROR_UNKONW_CAUSE_CODE = "Unknown alert cause or it's inactive";
 	private static final String ERROR_ALERT_TYPE_NOT_MATCH = "Alert type not match";
-
+	
 	private ECauseCodeReport colIndexes;
 
 	private final static String STEP2_LABEL = "VALIDATE";
 	private final static String STEP3_LABEL = "PERSISTE";
 
-	private static final String SOM3_REPORT_NAME = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
-
+	private static final String SOM1a_REPORT_NAME = "SOM1a: HW WITH HOSTNAME";
+	private static final String SOM1b_REPORT_NAME = "SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED";
+	private static final String SOM2a_REPORT_NAME = "SOM2a: HW LPAR WITH SW LPAR";
+	private static final String SOM2b_REPORT_NAME = "SOM2b: SW LPAR WITH HW LPAR";
+	private static final String SOM2c_REPORT_NAME = "SOM2c: UNEXPIRED SW LPAR";
+	private static final String SOM3_REPORT_NAME  = "SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE";
+	private static final String SOM4a_REPORT_NAME = "SOM4a: IBM SW INSTANCES REVIEWED";
+	private static final String SOM4b_REPORT_NAME = "SOM4b: PRIORITY ISV SW INSTANCES REVIEWED";
+	private static final String SOM4c_REPORT_NAME = "SOM4c: ISV SW INSTANCES REVIEWED";
+	
+	private static final String DASH  = "-";
+	private static final String SLASH = "/";
+	private static final String DATE_FORMAT1 = "yyyy-MM-dd";
+	private static final String DATE_FORMAT2 = "yyyy/MM/dd";
+	private static final String DATE_FORMAT3 = "MM/dd/yyyy";
+	
 	@Autowired
 	private AccountService accountService;
 
@@ -155,10 +181,11 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			int totalRows = sheet.getLastRowNum();
 			int colStart = colIndexes.getColCauseCode();
 			int colEnd = colIndexes.getColInternalId();
+			
 			while (rowIter.hasNext()) {
 				HSSFRow row = (HSSFRow) rowIter.next();
 				rowCounter++;
-
+				
 				int progress = (int) ((float) rowCounter / totalRows * 100);
 				state.setProgress(progress);
 
@@ -177,10 +204,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 									colIndexes.getColInternalId(),
 									"Internal ID", ERROR_INTERNAL_ID_NOT_EXIST);
 						} else {
-							Long alertTypeId = getAertTypeId(cell);
+							Long alertTypeId = getAlertTypeId(cell);
 							if (alertTypeId != null
-									&& alertTypeId != colIndexes
-											.getAlertTypeId()
+									&& alertTypeId != this.getAlertTypeIdByCode(colIndexes.getAlertTypeCode())
 									&& alertTypeId != 17// Bypass alert type id
 														// value validation for
 														// the existing alert
@@ -224,7 +250,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						}
 
 						if (alertCauseNameInCell == null
-								|| "".equals(alertCauseNameInCell)) {
+								|| "".equals(alertCauseNameInCell.trim())) {
 							pass = false;
 						}
 
@@ -239,7 +265,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 							alertCauseNameInCell = alertCauseNameInCell
 									.substring(0, 128);
 						}
-
+						
 						String alertCauseNameInDb = getAlertCauseName(causeCodeIdCell);
 						// compare the cc name and cause code name under id. if
 						// not same check it's availability. if same ignore.
@@ -256,7 +282,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 												alertCauseNameInCell.trim()
 														.toUpperCase())
 										.setParameter("alertTypeId",
-												colIndexes.getAlertTypeId())
+												this.getAlertTypeIdByCode(colIndexes.getAlertTypeCode()))
 										.getResultList();
 								if (acList.size() <= 0) {
 									buildErrorMsg(errorMsg,
@@ -272,7 +298,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 					}
 
 					if (col == colIndexes.getColTargetDate()) {
-						if (!isDateFormat(cell)) {
+						if (!isDateFormat(cell)){//CC Target Date is an optional field
 							buildErrorMsg(errorMsg,
 									colIndexes.getColTargetDate(),
 									"CC target date", ERROR_BAD_DATE_FORMAT);
@@ -280,7 +306,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 					}
 
 					if (col == colIndexes.getColOwner()) {
-						if (!isOwnerExistsInBluePage(cell)) {
+						if (!isOwnerExistsInBluePage(cell)){//CC Owner is an optional field
 							buildErrorMsg(errorMsg, colIndexes.getColOwner(),
 									"CC owner", ERROR_UNKNOW_OWNER);
 						}
@@ -373,11 +399,31 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			String colOwner = row.getCell(colIndexes.getColOwner())
 					.getStringCellValue().trim();
 
+			//Assignee Comments Function Start
+			if (colIndexes.getColAssigneeComments() != -1) {
+				HSSFCell assigneeCommentsCell = row.getCell(colIndexes
+						.getColAssigneeComments());
+
+				String assigneeComments = "";
+				if (assigneeCommentsCell!=null && assigneeCommentsCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+					assigneeComments = assigneeCommentsCell
+							.getStringCellValue();
+				}
+
+				if (assigneeComments != null
+						&& !"".equals(assigneeComments.trim())) {
+					updateAssigneeComments(causeCode.getAlertId(),
+							assigneeComments.trim(), colIndexes.getReportName()
+									.trim(), remoteUser);
+				}
+			}
+			//Assignee Comments Function End 
+			
 			boolean changed = false;
 
 			if (!strCompare(causeCodeName, colCauseCode)
 					|| !dateCompare(targetDate, colTargetDate)
-					|| !strCompare(owner, colOwner)) {
+					|| !strCompare(owner, colOwner)){
 				changed = true;
 			}
 
@@ -420,31 +466,14 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				getEntityManager().flush();
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
-			}
-
-			if (colIndexes.getColAssigneeComments() != -1) {
-				HSSFCell assigneeCommentsCell = row.getCell(colIndexes
-						.getColAssigneeComments());
-
-				String assigneeComments = "";
-				if (assigneeCommentsCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-					assigneeComments = assigneeCommentsCell
-							.getStringCellValue();
-				}
-
-				if (assigneeComments != null
-						&& !"".equals(assigneeComments.trim())) {
-					updateAssigneeComments(causeCode.getAlertId(),
-							assigneeComments.trim(), colIndexes.getReportName()
-									.trim(), remoteUser);
-				}
-			}
+			}			
 		}
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private boolean dateCompare(Date dbValue, Date cellValue) {
-		if (cellValue == null || "".equals(cellValue)) {
+		if (cellValue == null || "".equals(cellValue.toString())) {
 			return true;
 		}
 
@@ -459,11 +488,25 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			return false;
 		}
 
-		return dbValue.equals(cellValue);
+	    int dbValueYear = dbValue.getYear();
+	    int dbValueMonth = dbValue.getMonth();
+	    int dbValueDay = dbValue.getDay();
+	    int cellValueYear = cellValue.getYear();
+	    int cellValueMonth = cellValue.getMonth();
+	    int cellValueDay = cellValue.getDay();
+	    
+	    if(dbValueYear == cellValueYear
+	    && dbValueMonth == cellValueMonth
+	    && dbValueDay == cellValueDay){
+	      return true;
+	    }
+	    else{
+	      return false;
+	    }
 	}
 
 	private boolean strCompare(String dbValue, String cellValue) {
-		if (cellValue == null || "".equals(cellValue)) {
+		if (cellValue == null || "".equals(cellValue.trim())) {
 			return true;
 		}
 
@@ -483,13 +526,13 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 
 	private void buildErrorMsg(StringBuffer result, int columnNo,
 			String colName, String errorMsg) {
-		result.append(" Error: coloumn " + columnNo + ":" + colName + ",");
+		result.append(" Error: column " + columnNo + ":" + colName + ",");
 		result.append(errorMsg);
 	}
 
-	private boolean isOwnerExistsInBluePage(HSSFCell cell) {
+	private boolean isOwnerExistsInBluePage(HSSFCell cell){
 		if (cell == null) {
-			return false;
+			return true;
 		}
 
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
@@ -497,8 +540,8 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		}
 
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			String internetId = cell.getStringCellValue().trim();
-			if (internetId == null || "".equals(internetId)) {
+			String internetId = cell.getStringCellValue();
+			if (internetId == null || "".equals(internetId.trim())) {
 				return true;
 			}
 			BPResults result = BluePages.getPersonsByInternet(internetId);
@@ -507,29 +550,70 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		return false;
 	}
 
-	private boolean isDateFormat(HSSFCell cell) {
+	private boolean isDateFormat(HSSFCell cell){
 		if (cell == null || cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+			return true;
+		}
+		
+		if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
 			return true;
 		}
 
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			String str = cell.getStringCellValue();
-			if (str == null || "".equals(str)) {
+			String dateStr = cell.getStringCellValue();
+			if (dateStr == null || "".equals(dateStr.trim())){
 				return true;
 			}
-		}
-
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
-			return true;
+			else{
+				dateStr = dateStr.trim();
+				int dateLen = dateStr.length();
+				if(dateLen!=10){
+				 return false;	
+				}
+				else{
+				  boolean dashFormat = dateStr.indexOf(DASH)!=-1;
+				  if(dashFormat){//DASH Date Format: YYYY-MM-DD
+					  SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT1);
+					  try{
+						  format.setLenient(false);
+						  format.parse(dateStr);
+						  return true;
+					  }
+					  catch(ParseException e){
+						  return false;
+					  }
+				  }
+				  else{
+					  SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT2);//SLASH Date Format: YYYY/MM/DD
+					  try{
+						  format.setLenient(false);
+						  format.parse(dateStr);
+						  return true;
+					  }
+					  catch(ParseException e){
+						  format = new SimpleDateFormat(DATE_FORMAT3);//SLASH Date Format: MM/DD/YYYY
+						  try{
+							  format.setLenient(false);
+							  format.parse(dateStr);
+							  return true;
+						  }
+						  catch(ParseException ex){
+							  return false;
+						  } 
+					  } 
+				  }
+				}
+			}
 		}
 
 		if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC
 				&& HSSFDateUtil.isCellDateFormatted(cell)) {
 			return true;
 		}
+		
 		return false;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private boolean isAlertCauseExists(HSSFCell cell) {
 		String alertCause;
@@ -553,7 +637,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 					.createNamedQuery("findActiveAlertCauseByNameAndTypeId")
 					.setParameter("alertCauseName",
 							alertCause.trim().toUpperCase())
-					.setParameter("alertTypeId", colIndexes.getAlertTypeId())
+					.setParameter("alertTypeId", this.getAlertTypeIdByCode(colIndexes.getAlertTypeCode()))
 					.getResultList();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -561,7 +645,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		return acList.size() >= 1;
 	}
 
-	private Long getAertTypeId(HSSFCell cell) {
+	private Long getAlertTypeId(HSSFCell cell) {
 
 		Long causeCodeId = parseCauseCodeIdCell(cell);
 		if (causeCodeId == null) {
@@ -604,7 +688,6 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Long parseCauseCodeIdCell(HSSFCell cell) {
 
 		long causeCodeId;
@@ -624,11 +707,208 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		return causeCodeId;
 	}
 
+	private Long getAlertTypeIdByCode(String alertTypeCode){
+	  Long alertTypeId = (Long) getEntityManager()
+				.createNamedQuery("getAlertTypeIdByCode")
+				.setParameter("code", alertTypeCode).getSingleResult();
+
+	  return alertTypeId;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void updateAssigneeComments(long alertId, String assigneeComments,
 			String reportName, String remoteUser) {
 		if (reportName != null && !"".equals(reportName.trim())) {
-			if (reportName.equalsIgnoreCase(SOM3_REPORT_NAME)) {
+			if (reportName.equalsIgnoreCase(SOM1a_REPORT_NAME)){//SOM1a: HW WITH HOSTNAME
+				List<AlertHardware> ahList = null;
+				try {
+					ahList = getEntityManager()
+							.createNamedQuery("alertHardwareById")
+							.setParameter("id", alertId).getResultList();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+
+				if (ahList.size() >= 1) {
+					AlertHardware ahInDB = ahList.get(0);
+					String assigneeCommentsInDB = ahInDB.getComments();
+					if (!strCompare(assigneeCommentsInDB, assigneeComments)) {
+
+						AlertHardwareH ahHistory = new AlertHardwareH();
+						ahHistory.setAlertHardware(ahInDB);
+						ahHistory.setComments(ahInDB.getComments());
+						ahHistory.setRemoteUser(ahInDB.getRemoteUser());
+						ahHistory.setCreationTime(ahInDB.getCreationTime());
+						ahHistory.setRecordTime(ahInDB.getRecordTime());
+						ahHistory.setOpen(ahInDB.isOpen());
+
+						ahInDB.setComments(assigneeComments);
+						ahInDB.setRemoteUser(remoteUser);
+						ahInDB.setRecordTime(new Date());
+
+						try {
+							getEntityManager().persist(ahHistory);
+							getEntityManager().persist(ahInDB);
+							getEntityManager().flush();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}
+			}
+			else if(reportName.equalsIgnoreCase(SOM1b_REPORT_NAME)){//SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED
+				List<AlertHardwareCfgData> ahcfgList = null;
+				try {
+					ahcfgList = getEntityManager()
+							.createNamedQuery("alertHardwareCfgDataById")
+							.setParameter("id", alertId).getResultList();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+
+				if (ahcfgList.size() >= 1) {
+					AlertHardwareCfgData ahcfgInDB = ahcfgList.get(0);
+					String assigneeCommentsInDB = ahcfgInDB.getComments();
+					if (!strCompare(assigneeCommentsInDB, assigneeComments)) {
+
+						AlertHardwareCfgDataH ahcfgHistory = new AlertHardwareCfgDataH();
+						ahcfgHistory.setAlertHardwareCfgData(ahcfgInDB);
+						ahcfgHistory.setComments(ahcfgInDB.getComments());
+						ahcfgHistory.setRemoteUser(ahcfgInDB.getRemoteUser());
+						ahcfgHistory.setCreationTime(ahcfgInDB.getCreationTime());
+						ahcfgHistory.setRecordTime(ahcfgInDB.getRecordTime());
+						ahcfgHistory.setOpen(ahcfgInDB.isOpen());
+
+						ahcfgInDB.setComments(assigneeComments);
+						ahcfgInDB.setRemoteUser(remoteUser);
+						ahcfgInDB.setRecordTime(new Date());
+
+						try {
+							getEntityManager().persist(ahcfgHistory);
+							getEntityManager().persist(ahcfgInDB);
+							getEntityManager().flush();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}
+			}
+			else if(reportName.equalsIgnoreCase(SOM2a_REPORT_NAME)){//SOM2a: HW LPAR WITH SW LPAR
+				List<AlertHardwareLpar> ahwLparList = null;
+				try {
+					ahwLparList = getEntityManager()
+							.createNamedQuery("alertHardwareLparById")
+							.setParameter("id", alertId).getResultList();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+
+				if (ahwLparList.size() >= 1) {
+					AlertHardwareLpar ahwLparInDB = ahwLparList.get(0);
+					String assigneeCommentsInDB = ahwLparInDB.getComments();
+					if (!strCompare(assigneeCommentsInDB, assigneeComments)) {
+
+						AlertHardwareLparH ahwLparHistory = new AlertHardwareLparH();
+						ahwLparHistory.setAlertHardwareLpar(ahwLparInDB);
+						ahwLparHistory.setComments(ahwLparInDB.getComments());
+						ahwLparHistory.setRemoteUser(ahwLparInDB.getRemoteUser());
+						ahwLparHistory.setCreationTime(ahwLparInDB.getCreationTime());
+						ahwLparHistory.setRecordTime(ahwLparInDB.getRecordTime());
+						ahwLparHistory.setOpen(ahwLparInDB.isOpen());
+
+						ahwLparInDB.setComments(assigneeComments);
+						ahwLparInDB.setRemoteUser(remoteUser);
+						ahwLparInDB.setRecordTime(new Date());
+
+						try {
+							getEntityManager().persist(ahwLparHistory);
+							getEntityManager().persist(ahwLparInDB);
+							getEntityManager().flush();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}
+			}
+			else if(reportName.equalsIgnoreCase(SOM2b_REPORT_NAME)){//SOM2b: SW LPAR WITH HW LPAR
+				List<AlertSoftwareLpar> aswLparList = null;
+				try {
+					aswLparList = getEntityManager()
+							.createNamedQuery("alertSoftwareLparById")
+							.setParameter("id", alertId).getResultList();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+
+				if (aswLparList.size() >= 1) {
+					AlertSoftwareLpar aswLparInDB = aswLparList.get(0);
+					String assigneeCommentsInDB = aswLparInDB.getComments();
+					if (!strCompare(assigneeCommentsInDB, assigneeComments)) {
+
+						AlertSoftwareLparH aswLparHistory = new AlertSoftwareLparH();
+						aswLparHistory.setAlertSoftwareLpar(aswLparInDB);
+						aswLparHistory.setComments(aswLparInDB.getComments());
+						aswLparHistory.setRemoteUser(aswLparInDB.getRemoteUser());
+						aswLparHistory.setCreationTime(aswLparInDB.getCreationTime());
+						aswLparHistory.setRecordTime(aswLparInDB.getRecordTime());
+						aswLparHistory.setOpen(aswLparInDB.isOpen());
+
+						aswLparInDB.setComments(assigneeComments);
+						aswLparInDB.setRemoteUser(remoteUser);
+						aswLparInDB.setRecordTime(new Date());
+
+						try {
+							getEntityManager().persist(aswLparHistory);
+							getEntityManager().persist(aswLparInDB);
+							getEntityManager().flush();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}
+			}
+			else if(reportName.equalsIgnoreCase(SOM2c_REPORT_NAME)){//SOM2c: UNEXPIRED SW LPAR
+				List<AlertExpiredScan> aexpiredScanList = null;
+				try {
+					aexpiredScanList = getEntityManager()
+							.createNamedQuery("alertExpiredScanById")
+							.setParameter("id", alertId).getResultList();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+
+				if (aexpiredScanList.size() >= 1) {
+					AlertExpiredScan aexpiredScanInDB = aexpiredScanList.get(0);
+					String assigneeCommentsInDB = aexpiredScanInDB.getComments();
+					if (!strCompare(assigneeCommentsInDB, assigneeComments)) {
+
+						AlertExpiredScanH aexpiredScanHistory = new AlertExpiredScanH();
+						aexpiredScanHistory.setAlertExpiredScan(aexpiredScanInDB);
+						aexpiredScanHistory.setComments(aexpiredScanInDB.getComments());
+						aexpiredScanHistory.setRemoteUser(aexpiredScanInDB.getRemoteUser());
+						aexpiredScanHistory.setCreationTime(aexpiredScanInDB.getCreationTime());
+						aexpiredScanHistory.setRecordTime(aexpiredScanInDB.getRecordTime());
+						aexpiredScanHistory.setOpen(aexpiredScanInDB.isOpen());
+
+						aexpiredScanInDB.setComments(assigneeComments);
+						aexpiredScanInDB.setRemoteUser(remoteUser);
+						aexpiredScanInDB.setRecordTime(new Date());
+
+						try {
+							getEntityManager().persist(aexpiredScanHistory);
+							getEntityManager().persist(aexpiredScanInDB);
+							getEntityManager().flush();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}
+			}
+			else if (reportName.equalsIgnoreCase(SOM3_REPORT_NAME)//SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE
+				   ||reportName.equalsIgnoreCase(SOM4a_REPORT_NAME)//SOM4a: IBM SW INSTANCES REVIEWED
+				   ||reportName.equalsIgnoreCase(SOM4b_REPORT_NAME)//SOM4b: PRIORITY ISV SW INSTANCES REVIEWED
+				   ||reportName.equalsIgnoreCase(SOM4c_REPORT_NAME)//SOM4c: ISV SW INSTANCES REVIEWED
+					){
 				List<AlertUnlicensedSw> ausList = null;
 				try {
 					ausList = getEntityManager()

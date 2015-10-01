@@ -19,7 +19,8 @@ import org.hibernate.annotations.Formula;
 @org.hibernate.annotations.Entity
 @NamedQueries( {
 		@NamedQuery(name = "alertHardwareTotalByAccount", query = "select count(*) from AlertViewHardware a where a.account = :account and a.open = 1"),
-		@NamedQuery(name = "assignAlertHardware", query = "update AlertHardware a set a.remoteUser = :remoteUser, a.comments = :comments where a.id in (:ids)") })
+		@NamedQuery(name = "assignAlertHardware", query = "update AlertHardware a set a.remoteUser = :remoteUser, a.comments = :comments where a.id in (:ids)"),
+		@NamedQuery(name = "alertHardwareById", query = "FROM AlertHardware WHERE id = :id")})
 public class AlertHardware {
 
 	@Id
