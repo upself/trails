@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class DB2Connect {
   public static void main(String[] argv) {
     try {
-   Class.forName("COM.ibm.db2.jdbc.app.DB2Driver");
+   Class.forName("com.ibm.db2.jcc.DB2Driver");
      } catch (ClassNotFoundException e) {
       System.out.println("Please include Classpath  Where your DB2 Driver is located");
       e.printStackTrace();
