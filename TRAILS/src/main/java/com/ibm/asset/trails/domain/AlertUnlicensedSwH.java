@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ALERT_UNLICENSED_SW_H")
-@NamedQueries({ @NamedQuery(name = "alertUnlicensedSwHistory", query = "select new com.ibm.asset.trails.form.AlertHistoryReport(AUSH.comments, AUSH.remoteUser, AUSH.creationTime, AUSH.recordTime, AUSH.open) FROM AlertUnlicensedSwH AUSH WHERE AUSH.alertUnlicensedSw.id = :id") })
+@NamedQueries({ @NamedQuery(name = "alertUnlicensedSwHistory", query = "select new com.ibm.asset.trails.form.AlertHistoryReport(AUSH.comments, AUSH.type, AUSH.remoteUser, AUSH.creationTime, AUSH.recordTime, AUSH.open) FROM AlertUnlicensedSwH AUSH WHERE AUSH.alertUnlicensedSw.id = :id") })
 public class AlertUnlicensedSwH {
 
     @Id
