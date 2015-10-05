@@ -926,6 +926,7 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						AlertUnlicensedSwH ausHistory = new AlertUnlicensedSwH();
 						ausHistory.setAlertUnlicensedSw(ausInDB);
 						ausHistory.setComments(ausInDB.getComments());
+						ausHistory.setType(ausInDB.getType());
 						ausHistory.setRemoteUser(ausInDB.getRemoteUser());
 						ausHistory.setCreationTime(ausInDB.getCreationTime());
 						ausHistory.setRecordTime(ausInDB.getRecordTime());
