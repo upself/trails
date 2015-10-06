@@ -96,13 +96,13 @@ sub getData {
         
         $hwCustomerId = $self->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec);
         
-        if($hwCustomerId == undef) {
+        if(!defined($hwCustomerId)) {
         	next;
         }
              
         $hwLparCustomerId = $self->getHWLparCustomerId($customerNumberMap, $accountNumberMap,%rec);
         
-        if($hwLparCustomerId == undef) {
+        if(!defined($hwLparCustomerId)) {
         	$hwLparCustomerId = $hwCustomerId;
         }
         
@@ -232,7 +232,7 @@ sub getData {
 
 		my $processorCount = $self->processorCountLogic($rec{effProc});
 			
-		if ($processorCount == undef) {
+		if (!defined($processorCount)) {
 			dlog("skipping");
 			next;
 		}
