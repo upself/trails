@@ -79,6 +79,10 @@ sub start() {
 	unlink($sqlFile);
 	unlink($self->tmpDir . $self->regionName . ".zip");
 	system( "db2 terminated" );
+	system("rm -f ".$regionDataFile);
+	system("rm -f ".$regionFile);
+	system("rm -f ".$sqlFile);
+
 	
 	
 
