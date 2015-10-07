@@ -75,7 +75,8 @@ sub keepTicking {
     my $count = 0;
     while ( loaderCheckForStop($pidFile) == 0 ) {
         if ( scalar @customerIds == 0 ) {
-             my $connection = Database::Connection->new('trails');
+             my $connection;
+             while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              ( $masters, $members ) = getPoolCustomers($connection);
              $connection->disconnect;
@@ -85,7 +86,8 @@ sub keepTicking {
             sleep;
             
             wlog("$rNo before reset array size:". scalar @customerIds);
-            my $connection = Database::Connection->new('trails');
+            my $connection;
+            while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             ( $masters, $members ) = getPoolCustomers($connection);
             $connection->disconnect;
@@ -201,7 +203,7 @@ sub newChild {
     my $reconEngine = new Recon::LicensingReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 5;
+    sleep 35;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
@@ -241,7 +243,6 @@ sub daemonize {
 
     $SIG{__DIE__} = sub {
         elog( "FATAL! " . join( " ", @_ ) );
-        exit;
     };
 
     $SIG{HUP} = $SIG{INT} = $SIG{TERM} = sub {

@@ -77,7 +77,8 @@ sub keepTicking {
         if ( scalar @customerIds == 0 ) {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
              newPvuChild();
-             my $connection = Database::Connection->new('trails');
+             my $connection;
+             while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              $connection->disconnect;
         }
@@ -86,7 +87,8 @@ sub keepTicking {
             sleep;
             
             wlog("$rNo before reset array size:". scalar @customerIds);
-            my $connection = Database::Connection->new('trails');
+            my $connection;
+            while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             $connection->disconnect;
             wlog("$rNo end reset array size:". scalar @customerIds);
@@ -173,7 +175,7 @@ sub newChild {
     my $reconEngine = new Recon::InventoryReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 5;
+    sleep 35;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
@@ -265,7 +267,6 @@ sub daemonize {
 
     $SIG{__DIE__} = sub {
         elog( "FATAL! " . join( " ", @_ ) );
-        exit;
     };
 
     $SIG{HUP} = $SIG{INT} = $SIG{TERM} = sub {
