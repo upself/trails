@@ -1,6 +1,5 @@
 target
 */.project
-bin
 */.classpath
 */.springBeans
 */build.gradle
