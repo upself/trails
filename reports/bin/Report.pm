@@ -10,10 +10,10 @@ sub new
 	my $thisReportName = $0;
 	my ($login, $pass, $uid, $gid) = getpwuid($<);
 	my ($fileName, $fileDirectory) = fileparse($thisReportName, ".pl");
-	my $profileFile = "/home/$login" . "/report.properties";
+
 	my $systemFile = "/opt/staging/v2/config/connectionConfig.txt";
-	my $cfg = Config::Properties::Simple->new(file => $profileFile); 
-	my $cfg2 = Config::Properties::Simple->new(file => $systemFile); 
+
+	my $cfg = Config::Properties::Simple->new(file => $systemFile); 
 	
 	# don't try to use the db2 information until you properly load the profile because the DBI library
 	# requires it
@@ -30,12 +30,12 @@ sub new
         _thisGid => 766,
         _thisDir => $fileDirectory,
         _tmpDir => $cfg->getProperty("tmpDir"),
-        _productionDatabase => $cfg2->getProperty("trails.name"),
-        _productionDatabaseUser => $cfg2->getProperty("trails.user"),
-        _productionDatabasePassword => $cfg2->getProperty("trails.password"),
-        _stageDatabase => $cfg2->getProperty("staging.name"),
-        _stageDatabaseUser => $cfg2->getProperty("staging.user"),
-        _stageDatabasePassword => $cfg2->getProperty("staging.password"),
+        _productionDatabase => $cfg->getProperty("trails.name"),
+        _productionDatabaseUser => $cfg->getProperty("trails.user"),
+        _productionDatabasePassword => $cfg->getProperty("trails.password"),
+        _stageDatabase => $cfg->getProperty("staging.name"),
+        _stageDatabaseUser => $cfg->getProperty("staging.user"),
+        _stageDatabasePassword => $cfg->getProperty("staging.password"),
         _reportDatabase => $cfg->getProperty('reportDatabase'),
         _reportDatabaseUser => $cfg->getProperty('reportDatabaseUser'),
         _reportDatabasePassword => $cfg->getProperty('reportDatabasePassword'),
