@@ -169,16 +169,8 @@ sub queryReconQueueByCustomerId {
         where
             a.customer_id = ?
             and date(record_time) = ?
-            and not exists (
-                select b.id from v_recon_licensing_queue b where
-                    a.fk = b.fk and
-                    a.table = b.table and
-                    a.action = b.action and
-                    a.customer_id = b.customer_id and
-                    date(a.record_time) = date(b.record_time) and
-                    a.id > b.id
-            )
-         fetch first 200 rows only with ur
+         order by a.record_time
+         fetch first 300 rows only with ur
     ';
     dlog("queryReconQueueByCustomerId=$query");
     return ( 'reconQueueByCustomerId', $query, \@fields );

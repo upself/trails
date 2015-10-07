@@ -2,10 +2,10 @@
 #
 # IBM Confidential -- INTERNAL USE ONLY
 
-use lib "/opt/report/bin";
+use lib "/opt/reports";
 #use lib "/home/ondrej/git_separate/bravotrails_master/reports";
 require "/opt/staging/v2/Database/Connection.pm";
-require "/opt/report/bin/fullRecon/fullReconReport.pm";
+require "/opt/reports/fullRecon/fullReconReport.pm";
 
 use POSIX;
 use Getopt::Std;

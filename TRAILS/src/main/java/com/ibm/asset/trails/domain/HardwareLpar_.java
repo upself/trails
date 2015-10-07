@@ -1,11 +1,10 @@
 package com.ibm.asset.trails.domain;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
-
 
 @StaticMetamodel(HardwareLpar.class)
 public class HardwareLpar_ {
@@ -28,4 +27,5 @@ public class HardwareLpar_ {
 	public static volatile SingularAttribute<HardwareLpar, String> serverType;
 	public static volatile SingularAttribute<HardwareLpar, BigDecimal> effectiveThreads;
 	public static volatile SingularAttribute<HardwareLpar, String> osType;
+	public static volatile SingularAttribute<HardwareLpar, HardwareLparEff> hardwareLparEff;
 }

@@ -153,7 +153,7 @@
 							<div class="ibm-columns">
 								<div class="ibm-col-1-1"  style="margin-left:-20px">
 									<br>
-									<h1><tmp:insertAttribute name="contentTitle" /></h1>
+									<h1 id="titleContent" style="font-size:23px"><tmp:insertAttribute name="contentTitle" /></h1>
 								</div>
 							</div>
 						</div>
@@ -162,7 +162,7 @@
 				</div>
 				
 				<div id="ibm-content-body">
-					<div id="ibm-content-main">
+					<div id="ibm-content-main" >
 						<tmp:insertAttribute name="content" />      
 					</div>
 				</div>

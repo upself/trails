@@ -62,24 +62,24 @@
 		</action>
 
 		<!--  need to fix this -->
-		<action name="alertExpiredScanHistory" class="alertExpiredScanHistory">
-			<result type="tiles">tiles.alerts.history.popup</result>
+		<action name="alertExpiredScanHistory" method="excuteV17e" class="alertExpiredScanHistory">
+			<result type="tiles">tiles.alerts.history.v17e.popup</result>
 		</action>
 
-		<action name="alertSoftwareLparHistory" class="alertSoftwareLparHistory">
-			<result type="tiles">tiles.alerts.history.popup</result>
+		<action name="alertSoftwareLparHistory" method="excuteV17e" class="alertSoftwareLparHistory">
+			<result type="tiles">tiles.alerts.history.v17e.popup</result>
 		</action>
 
-		<action name="alertHardwareHistory" class="alertHardwareHistory">
-			<result type="tiles">tiles.alerts.history.popup</result>
+		<action name="alertHardwareHistory" method="excuteV17e" class="alertHardwareHistory">
+			<result type="tiles">tiles.alerts.history.v17e.popup</result>
 		</action>
 		
 		<action name="alertHardwareCfgDataHistory" method="excuteV17e" class="alertHardwareCfgDataHistory">
 			<result type="tiles">tiles.alerts.history.v17e.popup</result>
 		</action>
 
-		<action name="alertHardwareLparHistory" class="alertHardwareLparHistory">
-			<result type="tiles">tiles.alerts.history.popup</result>
+		<action name="alertHardwareLparHistory" method="excuteV17e" class="alertHardwareLparHistory">
+			<result type="tiles">tiles.alerts.history.v17e.popup</result>
 		</action>
 
 		<action name="alertUnlicensedIbmSwHistory" class="alertUnlicensedIbmSwHistory">

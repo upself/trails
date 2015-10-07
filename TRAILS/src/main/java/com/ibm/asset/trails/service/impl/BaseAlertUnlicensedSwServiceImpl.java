@@ -55,6 +55,7 @@ public abstract class BaseAlertUnlicensedSwServiceImpl extends
                 plId);
         lAlertHistoryReport = new AlertHistoryReport(
                 lAlertUnlicensedSw.getComments(),
+                lAlertUnlicensedSw.getType(),
                 lAlertUnlicensedSw.getRemoteUser(),
                 lAlertUnlicensedSw.getCreationTime(),
                 lAlertUnlicensedSw.getRecordTime(), lAlertUnlicensedSw.isOpen());
@@ -146,6 +147,7 @@ public abstract class BaseAlertUnlicensedSwServiceImpl extends
         AlertUnlicensedSwH aush = new AlertUnlicensedSwH();
         aush.setAlertUnlicensedSw(aus);
         aush.setComments(aus.getComments());
+        aush.setType(aus.getType());
         aush.setCreationTime(aus.getCreationTime());
         aush.setOpen(aus.isOpen());
         aush.setRecordTime(aus.getRecordTime());

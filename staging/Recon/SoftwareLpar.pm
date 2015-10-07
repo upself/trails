@@ -173,7 +173,7 @@ sub addInstalledSoftwareToQueue {
 		$installedSoftware->id($id);
 		my $queue =
 		  Recon::Queue->new( $self->connection, $installedSoftware,
-			$self->softwareLpar, 'LICENSING' );
+			$self->softwareLpar, 'UPDATE' );
 		$queue->add;
 		dlog("reconed $count of $total inst sw records for this sw lpar");
 	}

@@ -5,7 +5,7 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays number of active auditable software instances on active software scans where contract scope is not defined in Schedule F section of TRAILS. Assigment of these alerts can be performed in the reconciliation workspace</p>
+		<p>This page displays number of active auditable software instances on active software scans where contract scope is not defined in Schedule F section of TRAILS.</p>
 		
 		<div style="text-align:right">
 			<a href="${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/download/${accountId}">Download SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE alert report</a>
@@ -70,6 +70,7 @@
 </div>
 <script>
 $(function(){
+	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
 	searchData();
 });
 

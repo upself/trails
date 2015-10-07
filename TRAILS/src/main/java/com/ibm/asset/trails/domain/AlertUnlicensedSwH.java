@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ALERT_UNLICENSED_SW_H")
-@NamedQueries({ @NamedQuery(name = "alertUnlicensedSwHistory", query = "select new com.ibm.asset.trails.form.AlertHistoryReport(AUSH.comments, AUSH.remoteUser, AUSH.creationTime, AUSH.recordTime, AUSH.open) FROM AlertUnlicensedSwH AUSH WHERE AUSH.alertUnlicensedSw.id = :id") })
+@NamedQueries({ @NamedQuery(name = "alertUnlicensedSwHistory", query = "select new com.ibm.asset.trails.form.AlertHistoryReport(AUSH.comments, AUSH.type, AUSH.remoteUser, AUSH.creationTime, AUSH.recordTime, AUSH.open) FROM AlertUnlicensedSwH AUSH WHERE AUSH.alertUnlicensedSw.id = :id") })
 public class AlertUnlicensedSwH {
 
     @Id
@@ -30,6 +30,9 @@ public class AlertUnlicensedSwH {
 
     @Column(name = "COMMENTS")
     private String comments;
+    
+    @Column(name = "TYPE")
+    private String type;
 
     @Column(name = "REMOTE_USER")
     private String remoteUser;
@@ -98,4 +101,12 @@ public class AlertUnlicensedSwH {
     public void setRemoteUser(String remoteUser) {
         this.remoteUser = remoteUser;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

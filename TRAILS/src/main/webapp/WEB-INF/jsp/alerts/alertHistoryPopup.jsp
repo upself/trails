@@ -12,6 +12,7 @@
 	decorator="org.displaytag.decorator.TotalTableDecorator"
 	cellspacing="1" cellpadding="0" excludedParams="*">
 	<display:column property="comments" />
+	<display:column property="type" />
 	<display:column property="remoteUser" />
 	<display:column property="creationTime" class="date"
 		format="{0,date,MM-dd-yyyy}" />
