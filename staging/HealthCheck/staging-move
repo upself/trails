@@ -36,7 +36,7 @@ import Fatal 'mv';
 use File::Find::Rule;
 use File::Slurp qw{ slurp };
 use File::Pid;
-use PerlIO::gzip;
+#use PerlIO::gzip;
 
 use Net::FTPServer::XferLog;
 

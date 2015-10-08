@@ -1,4 +1,4 @@
-[BEJGSA]
+[DISCONNECTED]
 direction=gsa2loc # rem2loc - remote to local, or loc2rem
 srchostname=bldgsa.ibm.com
 source=/projects/s/swdata/ftp/disconnected
@@ -7,7 +7,18 @@ filemask=^[A-Z0-9_-]+_(computer|processor|socket|software_filter|software_signat
 filemask2=^[A-Z0-9_-]+\.(Z|gz|gzip|tsv|tsv\.gz)$
 srcusr=[gsa.swmulti.report.user] # for logging
 srcpwd=[gsa.swmulti.report.password]
-delsource=true
+delsource=false
+minage=5
+
+[TLCMZ]
+direction=gsa2loc # rem2loc - remote to local, or loc2rem
+srchostname=bldgsa.ibm.com
+source=/projects/s/swdata/ftp/disconnected
+target=/var/ftp/mf_scan
+filemask=.+\.(asc|ASC|txt|TXT|xml|XML)$
+srcusr=[gsa.swmulti.report.user] # for logging
+srcpwd=[gsa.swmulti.report.password]
+delsource=false
 minage=5
 
 # [TEMPLATE]
