@@ -1,0 +1,3 @@
+server=b03cxnp150293
+debugLevel=error
+sleepPeriod=10800

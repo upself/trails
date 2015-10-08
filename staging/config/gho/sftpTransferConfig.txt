@@ -1,0 +1,22 @@
+[BEJGSA]
+direction=gsa2loc # rem2loc - remote to local, or loc2rem
+srchostname=bldgsa.ibm.com
+source=/projects/s/swdata/ftp/disconnected
+target=/var/ftp/staging
+filemask=^[A-Z0-9_-]+_(computer|processor|socket|software_filter|software_signature|computer_memory|endpoint|hdisk|ip_address|TAD4D_Versions)\.tsv(\.gz|)$
+filemask2=^[A-Z0-9_-]+\.(Z|gz|gzip|tsv|tsv\.gz)$
+srcusr=[gsa.swmulti.report.user] # for logging
+srcpwd=[gsa.swmulti.report.password]
+delsource=true
+minage=5
+
+# [TEMPLATE]
+# direction=loc2rem
+# tgthostname=lexbz2250.cloud.dst.ibm.com
+# source=/home/michal.g/SFTPfrom
+# target=/home/myyysha/SFTPto
+# filemask=.*
+# tgtftpuser=myyysha # for logging
+# tgtftppwd=
+# delsource=true
+# flag=READY

@@ -1,0 +1,12 @@
+testMode=0
+server=b03cxnp150293
+applyChanges=1
+loadDeltaOnly=1
+debugLevel=warn
+fullLoadPeriodHours=12
+bravoFullLoadPeriodHours=36
+testBankAccounts=
+testCustomerIds=
+sleepPeriod=10800
+connRetryTimes=3
+connRetrySleepPeriod=30
