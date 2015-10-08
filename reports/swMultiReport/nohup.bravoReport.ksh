@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-. /home/eaadmin/sqllib/db2profile
+. /home/db2inst2/sqllib/db2profile 
 
 # num children
 MAX=50
