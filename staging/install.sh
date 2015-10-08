@@ -4,8 +4,8 @@ DIR=/opt/staging/v2
 SHOST=`uname -n |awk -F'.' '{print $1}'`
 
 set -x
-chmod -R 775 $DIR
-chgrp -R eadt $DIR
+chmod -R 770 $DIR
+chgrp -R trailsgp $DIR
 cd $DIR
 cp config/$SHOST/* config/
 mkdir -p /var/staging/logs/adcToBravo
@@ -46,12 +46,8 @@ mkdir -p /var/staging/logs/manualRecovery
 mkdir -p /var/staging/logs/bravoArchival
 mkdir -p /var/staging/logs/falseHitExpire
 
-dos2unix /opt/staging/v2/start-all.sh
-dos2unix /opt/staging/v2/stop-all.sh
-dos2unix /opt/staging/v2/scripts/*.sh
-
-chmod -R 775 $DIR
-chgrp -R eadt $DIR
+chmod -R 770 $DIR
+chgrp -R trailsgp $DIR
 set +x
 
 exit 0
