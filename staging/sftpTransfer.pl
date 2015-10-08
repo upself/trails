@@ -15,7 +15,7 @@ use File::stat;
 #### CONSTANTS TO CHANGE FOR USING IN A NEW TEAM
 use lib '/opt/staging/v2';
 use Base::Utils;
-our $useftp = ( hostname eq "tap.raleigh.ibm.com" ) ? "0" : "1"; # whether we can use the SFTP module
+our $useftp = ( hostname eq "tap.raleigh.ibm.com" ||  hostname eq "b03cxnp15029" ) ? "0" : "1"; # whether we can use the SFTP module
 our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
 our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
 
@@ -164,7 +164,7 @@ sub readcfgfile { # reads from config file
 		}
 	}
 	
-	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemasks[0] ne "" )) {
+	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $files[0] ne "" )) {
 		return 0 if exists ($processednames{$name});
 		$processednames{$name}=1;
 		dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask1=".$filemasks[0]);
