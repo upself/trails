@@ -511,6 +511,9 @@ sub setDB2ENVPath{
     elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
 	}
+	elsif($SERVER_MODE eq 'b03cxnp15029'){#GHO
+	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
+	}
 }
 
 sub filterAllOperationQueueNotDoneOperationsForCertainServer{
@@ -570,7 +573,9 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	  else{
 	    print LOG "Operation Queue Record with Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} has be filtered out for {$serverMode} Server to bypass process.\n";     
 	  }
-	}#end elsif($serverMode eq $TAP3)
+	}elsif($serverMode = 'b03cxnp15029' ){#end elsif($serverMode eq $TAP3)
+	    push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
+  }
   }#end for(my $index=0 ; $index<$operationQueueRecordsCnt; $index++)
   
   $filterOperationQueueRecordsForCertainServerCnt = scalar(@filterOperationQueueRecordsForCertainServer);

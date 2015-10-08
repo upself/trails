@@ -2668,6 +2668,9 @@ sub setDB2ENVPath{
 	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
 	}
+	elsif($SERVER_MODE eq 'b03cxnp15029'){#GHO
+	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
+	}
 }
 
 #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
