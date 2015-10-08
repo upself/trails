@@ -11,15 +11,15 @@ CUSTOMER="$2"
 db2 connect to $NAME user $USER using $PASS 
 db2 "set schema eaadmin" 
 
-sed -e "s,outputFilePar,$QUERY_OUTPUT,g" -e "s,customerIdPar,$2,g"  /opt/report/bin/fullRecon/fullRecon.sql  > /opt/report/bin/fullRecon/processing/$2.sql
+sed -e "s,outputFilePar,$QUERY_OUTPUT,g" -e "s,customerIdPar,$2,g"  /opt/reports/fullRecon/fullRecon.sql  > /opt/reports/fullRecon/processing/$2.sql
  
-OUTPUT=`db2 -tvsf /opt/report/bin/fullRecon/processing/$2.sql`
+OUTPUT=`db2 -tvsf /opt/reports/fullRecon/processing/$2.sql`
 
 if [ "$?" = "0" ] || [ "$?" = "1" ] || [ "$?" = "2" ]; then
  cat $QUERY_OUTPUT >> $3 
- rm -f /opt/report/bin/fullRecon/processing/$2.sql
+ rm -f /opt/reports/fullRecon/processing/$2.sql
  exit 0
 else
- echo $OUTPUT >> /opt/report/bin/fullRecon/logs/fullReconReportLogTest.txt
+ echo $OUTPUT >> /opt/reports/fullRecon/logs/fullReconReportLogTest.txt
  exit 1
 fi

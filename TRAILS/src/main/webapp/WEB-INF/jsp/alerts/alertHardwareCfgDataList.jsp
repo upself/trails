@@ -71,6 +71,7 @@
 </div>
 <script>
 $(function(){
+	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
 	searchData();
 });
 
@@ -97,7 +98,7 @@ function searchData(){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td><a href='javascript:void()' onclick='popupHardwareCfgData();return false;'>" + list[i].hardware.serial + "</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupHardwareCfgData("+list[i].account.account+");return false;'>" + list[i].hardware.serial + "</a></td>";
 						html += "<td>" +list[i].hardware.machineType.type + "</td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
@@ -207,6 +208,9 @@ function assignOrNot(url,params){
 		data: params,
 		type: 'POST',
 		dataType: 'json',
+		beforeSend: function(){
+			$("#pagebar").v17ePagination('showLoading');
+		},
 		success: function(wsMsg){
 			if(wsMsg.status != '200'){
 				alert(wsMsg.msg);
@@ -221,8 +225,8 @@ function assignOrNot(url,params){
 	});
 }
 
-function popupHardwareCfgData() {
-	newWin=window.open('//${bravoServerName}/BRAVO/account/view.do?accountId=${accountId}','popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+function popupHardwareCfgData(accountId) {
+	newWin=window.open('//${bravoServerName}/BRAVO/account/view.do?accountId='+accountId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 	newWin.focus(); 
 	void(0);
 }

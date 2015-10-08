@@ -25,8 +25,8 @@ my $connRetryTimes  = $cfgMgr->connRetryTimes;
 my $connRetrySleepPeriod = $cfgMgr->connRetrySleepPeriod;
 #my $applyChanges = $cfgMgr->applyChanges;
 
-###Validate server
-die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
+##Validate server
+ die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
     unless validateServer($server);
 
 logging_level( $cfgMgr->debugLevel );
@@ -38,7 +38,7 @@ my $systemScheduleStatus = startJob($job);
 my $rNo = 'revision233';
 
 my $maxChildren        = 100;
-my %runningCustomerIds = ();
+my %runningCustomerDates = ();
 my %children           = ();
 my $children;
 
@@ -59,7 +59,7 @@ sub spawnChildren {
         my $customer = shift @customerIds;
         last if( !defined $customer && scalar @customerIds == 0);
         my ($date, $customerId) = each %$customer;
-        if ( isCustomerRunning($customerId) == 1 ) {
+        if ( isCustomerRunning($customerId,$date) == 1 ) {
             next;
         }
         newChild( $customerId, $date, 0 );
@@ -77,7 +77,8 @@ sub keepTicking {
         if ( scalar @customerIds == 0 ) {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
              newPvuChild();
-             my $connection = Database::Connection->new('trails');
+             my $connection;
+             while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              $connection->disconnect;
         }
@@ -86,7 +87,8 @@ sub keepTicking {
             sleep;
             
             wlog("$rNo before reset array size:". scalar @customerIds);
-            my $connection = Database::Connection->new('trails');
+            my $connection;
+            while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             $connection->disconnect;
             wlog("$rNo end reset array size:". scalar @customerIds);
@@ -100,7 +102,7 @@ sub keepTicking {
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
             my ( $date, $customerId ) = each %$customer;
-            if ( isCustomerRunning( $customerId ) == 1 ) {
+            if ( isCustomerRunning( $customerId, $date ) == 1 ) {
                 next;
             }
             else {
@@ -126,12 +128,24 @@ sub keepTicking {
 
 sub isCustomerRunning {
     my $customerId = shift;
+    my $date = shift;
     my $result     = 0;
-    if ( exists $runningCustomerIds{$customerId} ) {
-        ilog("$rNo $customerId already running, skipping");
-        $result = 1;
-    }
-    return $result;
+    
+    if (( $children < (0.66 * $maxChildren)) && ( exists $runningCustomerDates{"$customerId $date"} )) {
+		ilog("$rNo $customerId and $date already running, skipping");
+		return 1;
+	}
+	
+	if ( $children >= ( 0.66 * $maxChildren) ) {
+		foreach my $key ( keys %runningCustomerDates ) {
+			if ( $key =~ /^$customerId / ) {
+				ilog("$rNo $customerId already running and reconEngineInventory is using 66% of maxthreads, skipping");
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
 }
 
 sub newChild {
@@ -147,7 +161,7 @@ sub newChild {
     if ($pid) {
         $children{$pid} = 1;
         $children++;
-        $runningCustomerIds{$customerId} = $pid;
+        $runningCustomerDates{"$customerId $date"} = $pid;
         ilog("forked new child, we now have $children children");
         return;
     }
@@ -161,7 +175,7 @@ sub newChild {
     my $reconEngine = new Recon::InventoryReconEngineCustomer( $customerId, $date, $poolRunning );
     $reconEngine->recon;
 
-    sleep 5;
+    sleep 35;
     wlog("$rNo Child $customerId, $date, $poolRunning complete");
 
     exit;
@@ -217,12 +231,19 @@ sub REAPER {
     while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
         warn("child $stiff terminated -- status $?");
         $children--;
-        foreach my $customerId ( keys %runningCustomerIds ) {
-            if ( $stiff == $runningCustomerIds{$customerId} ) {
-                delete $runningCustomerIds{$customerId};
-                wlog("$rNo reaped $customerId ");
-            }
-        }
+        foreach my $key ( keys %runningCustomerDates ) {
+			if ( $stiff == $runningCustomerDates{$key} ) {
+				delete $runningCustomerDates{$key};
+				wlog("$rNo reaped $key");
+			}
+		}
+		
+#        foreach my $customerId ( keys %runningCustomerIds ) {
+#            if ( $stiff == $runningCustomerIds{$customerId} ) {
+#                delete $runningCustomerIds{$customerId};
+#                wlog("$rNo reaped $customerId ");
+#            }
+#        }
     }
     $SIG{CHLD} = \&REAPER;
 }
@@ -246,7 +267,6 @@ sub daemonize {
 
     $SIG{__DIE__} = sub {
         elog( "FATAL! " . join( " ", @_ ) );
-        exit;
     };
 
     $SIG{HUP} = $SIG{INT} = $SIG{TERM} = sub {

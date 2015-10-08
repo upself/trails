@@ -37,20 +37,20 @@ public class ReportServiceImpl implements ReportService {
 			"SWCM ID", "Create date/time", "Age", "Assignee",
 			"Assignee comments", "Assigned date/time" };
 	private final String ALERT_EXPIRED_MAINT_REPORT_NAME = "Expired maintenance alert report";
-	private final String ALERT_EXPIRED_SCAN_REPORT_NAME = "Outdated SW LPAR alert report";
+	private final String ALERT_EXPIRED_SCAN_REPORT_NAME = "SOM2c: UNEXPIRED SW LPAR";
 	private final String[] ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS = {
 			"Status", "Hostname", "Serial", "Machine type", "Asset type",
 			"Create date/time", "Age", "Assignee", "Assignee comments",
 			"Assigned date/time", "Cause Code (CC)", "CC target date",
 			"CC owner", "CC change date", "CC change person", "Internal ID" };
-	private final String ALERT_HARDWARE_LPAR_REPORT_NAME = "HW LPAR w/o SW LPAR alert report";
+	private final String ALERT_HARDWARE_LPAR_REPORT_NAME = "SOM2a: HW LPAR WITH SW LPAR";
 	private final String[] ALERT_HARDWARE_REPORT_COLUMN_HEADERS = { "Status",
 			"Serial", "Machine type", "Asset type", "Create date/time", "Age",
 			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
-	private final String ALERT_HARDWARE_REPORT_NAME = "HW w/o HW LPAR alert report";
-	private final String ALERT_SOFTWARE_LPAR_REPORT_NAME = "SW LPAR w/o HW LPAR alert report";
+	private final String ALERT_HARDWARE_REPORT_NAME = "SOM1a: HW WITH HOSTNAME";
+	private final String ALERT_SOFTWARE_LPAR_REPORT_NAME = "SOM2b: SW LPAR WITH HW LPAR";
 	private final String[] ALERT_SW_LPAR_REPORT_COLUMN_HEADERS = { "Status",
 			"Hostname", "Bios serial", "Create date/time", "Age", "Assignee",
 			"Assignee comments", "Assigned date/time", "Cause Code (CC)",
@@ -245,7 +245,8 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.setString("type", "EXPIRED_SCAN").setInteger("alertTypeId", 6)
 				.scroll(ScrollMode.FORWARD_ONLY);
-		HSSFSheet sheet = phwb.createSheet("Alert Outdated Swlpar Report");
+		HSSFSheet sheet = phwb.createSheet("Alert Unexpired SW Lpar "
+				+ pAccount.getAccount() + " Report");
 		printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccount(),
 				ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
@@ -253,7 +254,7 @@ public class ReportServiceImpl implements ReportService {
 			int k = 1;
 			if (i > 65535) {
 				k++;
-				sheet = phwb.createSheet("Alert Outdated SWLpar Sheet" + k);
+				sheet = phwb.createSheet("Alert Unexpired SW Lpar " + pAccount.getAccount() + " Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -1402,7 +1403,7 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer sb = new StringBuffer(
 				"SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END,");
 		sb.append(" ")
-				.append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.PROCESSOR_MODEL, H.MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
+				.append("H.Serial, MT.Name, MT.Type, H.processor_manufacturer, H.MAST_PROCESSOR_TYPE, H.PROCESSOR_MODEL, H.NBR_CORES_PER_CHIP, H.CHIPS,")
 				.append(" ")
 				.append("H.PROCESSOR_COUNT, H.NBR_OF_CHIPS_MAX, H.CPU_GARTNER_MIPS, H.CPU_MIPS, H.CPU_MSU,")
 				.append(" ")

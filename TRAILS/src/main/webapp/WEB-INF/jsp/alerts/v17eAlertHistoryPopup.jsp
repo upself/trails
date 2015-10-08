@@ -3,7 +3,7 @@
 
 <div class="ibm-columns">
 	<div class="ibm-col-5-4">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table" summary="Sortable Non Instance based SW table">
+		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table" summary="Alert History">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="#sort"><span>Comments</span><span class="ibm-icon"></span></a></th>

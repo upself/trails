@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertExpiredScan;
 import com.ibm.asset.trails.domain.AlertExpiredScanH;
+import com.ibm.asset.trails.domain.AlertHardwareCfgData;
 import com.ibm.asset.trails.form.AlertHistoryReport;
 import com.ibm.asset.trails.form.AlertListForm;
 import com.ibm.asset.trails.service.AlertService;
@@ -26,7 +27,7 @@ public class AlertExpiredScanServiceImpl extends BaseAlertServiceImpl implements
     public ArrayList paginatedList(Account account, int startIndex,
             int objectsPerPage, String sort, String dir) {
         StringBuffer query = new StringBuffer(
-                "from AlertViewExpiredScan a join fetch a.softwareLpar where a.account = :account and a.open = 1 order by a.")
+                "from AlertViewExpiredScan a join fetch a.softwareLpar s left join fetch s.softwareLparEff where a.account = :account and a.open = 1 order by a.")
                 .append(sort).append(" ").append(dir);
 
         Query q = super.getEntityManager().createQuery(query.toString());
@@ -71,35 +72,37 @@ public class AlertExpiredScanServiceImpl extends BaseAlertServiceImpl implements
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void assign(List list, String remoteUser, String comments) {
+    public void assign(List<Long> list, String remoteUser, String comments) {
 
-        Iterator i = list.iterator();
-        while (i.hasNext()) {
-            AlertListForm alf = (AlertListForm) i.next();
+    	for(Long id: list){
+    		AlertExpiredScan alertExpiredScan = super.getEntityManager().find(AlertExpiredScan.class, id);
+			
+			createHistory(alertExpiredScan);
+			alertExpiredScan.setRemoteUser(remoteUser);
+			alertExpiredScan.setComments(comments);
+			alertExpiredScan.setRecordTime(new Date());
 
-            if (!alf.isAssign()) {
-                if (!alf.isUnassign()) {
-                    continue;
-                }
-            }
-
-            AlertExpiredScan aes = super.getEntityManager().find(
-                    AlertExpiredScan.class, alf.getId());
-            createHistory(aes);
-
-            if (alf.isUnassign()) {
-                aes.setRemoteUser("STAGING");
-            } else if (alf.isAssign()) {
-                aes.setRemoteUser(remoteUser);
-            }
-
-            aes.setComments(comments);
-            aes.setRecordTime(new Date());
-
-            super.getEntityManager().merge(aes);
-            super.getEntityManager().flush();
-        }
+			super.getEntityManager().merge(alertExpiredScan);
+			super.getEntityManager().flush();
+		}
     }
+    
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+   	public void unassign(List<Long> alertIds, String remoteUser, String comments) {
+   		// TODO Auto-generated method stub
+    	for(Long id: alertIds){
+    		AlertExpiredScan alertExpiredScan = super.getEntityManager().find(AlertExpiredScan.class, id);
+			
+			createHistory(alertExpiredScan);
+			alertExpiredScan.setRemoteUser("STAGING");
+			alertExpiredScan.setComments(comments);
+			alertExpiredScan.setRecordTime(new Date());
+
+			super.getEntityManager().merge(alertExpiredScan);
+			super.getEntityManager().flush();
+		}
+   	}
 
     private void createHistory(AlertExpiredScan aes) {
 
@@ -115,7 +118,9 @@ public class AlertExpiredScanServiceImpl extends BaseAlertServiceImpl implements
         super.getEntityManager().persist(aesh);
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+   
+
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public ArrayList getAlertHistory(Long id) {
 
         ArrayList<AlertHistoryReport> list = new ArrayList<AlertHistoryReport>();
@@ -168,12 +173,5 @@ public class AlertExpiredScanServiceImpl extends BaseAlertServiceImpl implements
             super.getEntityManager().merge(laesTemp);
             super.getEntityManager().flush();
         }
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void unassign(List<Long> findAffectedAlertUnlicensedSwList,
-            String remoteUser, String comments) {
-        // TODO Auto-generated method stub
-
     }
 }

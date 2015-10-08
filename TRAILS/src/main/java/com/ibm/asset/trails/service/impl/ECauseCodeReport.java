@@ -3,21 +3,21 @@ package com.ibm.asset.trails.service.impl;
 public enum ECauseCodeReport
 {
 
-	// 1. Report Name|2. Alert Type Id |3. Assignee|4. Assignee comments|5. Assigned date/time|
+	// 1. Report Name|2. Alert Type Code |3. Assignee|4. Assignee comments|5. Assigned date/time|
 	// 6. Cause Code (CC)|7. CC target date|8. CC owner|9. CC change date|10. CC change person|
 	// 11. CC Internal ID|12. message
-	HARDWARE("HW w/o HW LPAR alert report", 3, -1, -1, -1, 9, 10, 11, 12, 13, 14, 15),
-	HW_LPAR("HW LPAR w/o SW LPAR alert report", 4, -1, -1, -1, 10, 11, 12, 13, 14, 15, 16),
-	SW_LPAR("SW LPAR w/o HW LPAR alert report", 5, -1, -1, -1, 8, 9, 10, 11, 12, 13, 14),
-	EXP_SCAN("Outdated SW LPAR alert report", 6, -1, -1, -1,  8, 9, 10, 11, 12, 13, 14), 
-	SOM1B("SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED", 37, -1, -1, -1, 19, 20, 21, 22, 23, 24, 25),
-	SOM3("SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", 57, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
-	SOM4A("SOM4a: IBM SW INSTANCES REVIEWED", 7, -1, -1, -1, 8, 9, 10, 11, 12, 13, 14),
-	SOM4B("SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", 58, -1, -1, -1, 8, 9, 10, 11, 12, 13, 14),
-    SOM4C("SOM4c: ISV SW INSTANCES REVIEWED", 59, -1, -1, -1, 8, 9, 10, 11, 12, 13, 14);
+	SOM1a("SOM1a: HW WITH HOSTNAME", "HARDWARE", 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+	SOM1b("SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED", "HWCFGDTA", 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
+	SOM2a("SOM2a: HW LPAR WITH SW LPAR", "HW_LPAR", 7, 8, 9, 10, 11, 12, 13, 14, 15, 16),
+	SOM2b("SOM2b: SW LPAR WITH HW LPAR", "SW_LPAR", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+	SOM2c("SOM2c: UNEXPIRED SW LPAR", "EXP_SCAN", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), 
+	SOM3("SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "SWISCOPE", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+	SOM4a("SOM4a: IBM SW INSTANCES REVIEWED", "SWIBM", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+	SOM4b("SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", "SWISVPR", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+    SOM4c("SOM4c: ISV SW INSTANCES REVIEWED", "SWISVNPR", 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 
 	private String reportName;
-	private long alertTypeId;
+	private String alertTypeCode;
 	private int colAssignee;
 	private int colAssigneeComments;
 	private int colAssignedDate;
@@ -29,11 +29,11 @@ public enum ECauseCodeReport
 	private int colInternalId;
 	private int colMessage;
 
-	private ECauseCodeReport(String reportName, int alertTypeId, int assignee, int assigneeComments, int assignedDate,
+	private ECauseCodeReport(String reportName, String alertTypeCode, int assignee, int assigneeComments, int assignedDate,
 			int causeCode,int targetDate, int owner, int changeDate, int changePerson,
 			int causeCodeId, int message) {
 		this.reportName = reportName;
-		this.alertTypeId = alertTypeId;
+		this.alertTypeCode = alertTypeCode;
 		this.colAssignee = assignee;
 		this.colAssigneeComments = assigneeComments;
 		this.colAssignedDate = assignedDate;
@@ -79,8 +79,8 @@ public enum ECauseCodeReport
 		return colMessage;
 	}
 
-	public long getAlertTypeId() {
-		return alertTypeId;
+	public String getAlertTypeCode() {
+		return alertTypeCode;
 	}
 	
 	public int getColAssignee() {

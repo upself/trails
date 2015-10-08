@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "HARDWARE_LPAR")
 @org.hibernate.annotations.Entity(mutable = false)
@@ -62,7 +64,9 @@ public class HardwareLpar {
 	@Column(name = "EFFECTIVE_THREADS")
 	private BigDecimal effectiveThreads;
 
+	//story 19455
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "hardwareLpar")
+	@JsonIgnore
 	private HardwareLparEff hardwareLparEff;
 
 	public HardwareLparEff getHardwareLparEff() {

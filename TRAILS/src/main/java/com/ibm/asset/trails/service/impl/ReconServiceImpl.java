@@ -831,6 +831,7 @@ public class ReconServiceImpl implements ReconService {
 	private AlertUnlicensedSwH createAlertHistory(AlertUnlicensedSw alert) {
 		AlertUnlicensedSwH aush = new AlertUnlicensedSwH();
 		aush.setComments(alert.getComments());
+		aush.setType(alert.getType());
 		aush.setCreationTime(alert.getCreationTime());
 		aush.setOpen(alert.isOpen());
 		aush.setRecordTime(alert.getRecordTime());

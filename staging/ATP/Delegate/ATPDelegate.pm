@@ -88,7 +88,7 @@ sub getData {
 		if($self->checkRecord(\%rec) == 1 || $self->checkCustomerNumberMap($customerNumberMap,$accountNumberMap,\%rec) == 1 || $self->checkMachineTypeMap($machineTypeMap,\%rec)){
 			next;
 		}
-		
+		$rec{hardwareStatus} = $self->hardwareStatusLogic($rec{hardwareStatus});
 		$rec{lparStatus}=$self->fixLparStatus($rec{hardwareStatus},$rec{lparStatus});
         my $hwCustomerId;
         my $hwLparCustomerId;
@@ -96,13 +96,13 @@ sub getData {
         
         $hwCustomerId = $self->getHWCustomerId($customerNumberMap, $accountNumberMap,%rec);
         
-        if($hwCustomerId == undef) {
+        if(!defined($hwCustomerId)) {
         	next;
         }
              
         $hwLparCustomerId = $self->getHWLparCustomerId($customerNumberMap, $accountNumberMap,%rec);
         
-        if($hwLparCustomerId == undef) {
+        if(!defined($hwLparCustomerId)) {
         	$hwLparCustomerId = $hwCustomerId;
         }
         
@@ -123,7 +123,7 @@ sub getData {
         $hardware->serial( $rec{serial} );
         $hardware->customerNumber( $rec{customerNumber} );
         $hardware->owner( $rec{owner} );
-        $hardware->hardwareStatus( $self->hardwareStatusLogic($rec{hardwareStatus}) );
+        $hardware->hardwareStatus( $rec{hardwareStatus} );
         $hardware->country( $rec{country} );
         $hardware->status( $rec{status} );
         $hardware->updateDate( $rec{hwDate} );
@@ -232,7 +232,7 @@ sub getData {
 
 		my $processorCount = $self->processorCountLogic($rec{effProc});
 			
-		if ($processorCount == undef) {
+		if (!defined($processorCount)) {
 			dlog("skipping");
 			next;
 		}

@@ -204,10 +204,10 @@ public class OperationalReportTotalTableDecorator extends TableDecorator {
 							: subTotals.get("assetSum");
 
 					if (((Double) assetSum).doubleValue() == 0.00) {
-						total = 0.00;
+						total = 100.00;
 					} else {
-						total = ((Double) redSum).doubleValue()
-								/ ((Double) assetSum).doubleValue() * 100;
+						total = (1-((Double) redSum).doubleValue()
+								/ ((Double) assetSum).doubleValue()) * 100;
 					}
 				}
 

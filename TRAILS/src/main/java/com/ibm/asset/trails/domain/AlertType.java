@@ -16,9 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -27,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NamedQueries({
 		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT WHERE AT.id = :id"),
 		@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
-		@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC") })
+		@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC"),
+		@NamedQuery(name = "getAlertTypeIdByCode", query = "SELECT at.id FROM AlertType at WHERE at.code=:code")})
 public class AlertType extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1543290200848510819L;
 
