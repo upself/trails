@@ -16,7 +16,8 @@ import org.apache.log4j.Logger;
 import com.ibm.ea.bravo.framework.batch.BatchBase;
 import com.ibm.ea.bravo.framework.batch.IBatch;
 import com.ibm.ea.bravo.framework.common.Constants;
-import com.ibm.ea.bravo.framework.common.FTPUtil;
+//import com.ibm.ea.bravo.framework.common.FTPUtil;
+import com.ibm.ea.bravo.framework.common.SFTPUtil;
 import com.ibm.ea.bravo.framework.email.DelegateEmail;
 
 /**
@@ -84,10 +85,12 @@ public class FileUploadFtp extends BatchBase implements IBatch, Serializable {
 		this.scanType = scanType;
 		try {
 			properties.load(new FileInputStream(Constants.APP_PROPERTIES));
+			System.out.println("properties loaded");
 		} catch (Exception e) {
 			logger.error("CANNOT get ftp host from setting to default " + Constants.APP_PROPERTIES, e);
 			e.printStackTrace();
-			properties.setProperty("ftpHost", "tap.raleigh.ibm.com");
+			System.out.println("properties NOT loaded");
+//			properties.setProperty("ftpHost", "tap.raleigh.ibm.com");
 		}
 	}
 
@@ -109,6 +112,7 @@ public class FileUploadFtp extends BatchBase implements IBatch, Serializable {
 		// ftp csvFile
 		int ftpAttempts = 0;
 		String ftpHost = properties.getProperty("ftpHost");
+		String ftpPassword = properties.getProperty("ftpPassword");
 		while (ftpAttempts < Constants.MAX_FTP_ATTEMPTS) {
 
 			if (ftpAttempts > 0) {
@@ -122,13 +126,13 @@ public class FileUploadFtp extends BatchBase implements IBatch, Serializable {
 			success = false;
 			if ( this.scanType.equals("softaudit") ) {
 			
-			success = FTPUtil.ftpFileAsci(ftpHost,
-					Constants.FTP_ID_ANONYMOUS, this.remoteUser, this.uploadDir,
+			success = SFTPUtil.sftpFileAsci(ftpHost,
+					"trails"/*Constants.FTP_ID_ANONYMOUS*/, ftpPassword, /*this.remoteUser,*/ this.uploadDir,
 					this.uploadFile, Constants.FTP_DIR_TLCMZ);
 			}
 			if ( this.scanType.equals("dorana") ) {
-				success = FTPUtil.ftpFileAsci(Constants.FTP_HOST,
-						Constants.FTP_ID_ANONYMOUS, this.remoteUser, this.uploadDir,
+				success = SFTPUtil.sftpFileAsci(Constants.FTP_HOST,
+						"trails"/*Constants.FTP_ID_ANONYMOUS*/, this.remoteUser, this.uploadDir,
 						this.uploadFile, Constants.FTP_DIR_DORANA);				
 			}
 			if (!success) {
@@ -188,7 +192,7 @@ public class FileUploadFtp extends BatchBase implements IBatch, Serializable {
 
 				ftpAttempts++;
 
-				success = FTPUtil.ftpFileAsci(Constants.FTP_HOST,
+				success = SFTPUtil.sftpFileAsci(Constants.FTP_HOST,
 						Constants.FTP_ID, Constants.FTP_PW,
 						Constants.UPLOAD_DIR, this.errorFileShort,
 						Constants.FTP_DIR_TLCMZ);
@@ -202,7 +206,12 @@ public class FileUploadFtp extends BatchBase implements IBatch, Serializable {
 			}
 
 			// delete files
-			this.deleteAllFiles();
+//			this.deleteAllFiles();
+			//
+			//
+			//
+			//
+			
 
 		} catch (Exception e2) {
 			e2.printStackTrace();

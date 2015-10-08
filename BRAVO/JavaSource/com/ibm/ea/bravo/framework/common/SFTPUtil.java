@@ -29,6 +29,7 @@ public abstract class SFTPUtil {
 		logger.debug("host=" + host);
 		logger.debug("port=" + port);
 		logger.debug("user=" + user);
+		logger.debug("password=" + password);
 		logger.debug("sourceDir=" + sourceDir);
 		logger.debug("sourceFile=" + sourceFile);
 		logger.debug("targetDir=" + targetDir);
@@ -43,16 +44,25 @@ public abstract class SFTPUtil {
 		try{
             JSch jsch = new JSch();
             session = jsch.getSession(user,host,port);
+            System.out.println("Host: " + session.getHost());
             session.setPassword(password);
+            System.out
+					.println("1Session connected: " + session.isConnected());
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
             session.connect();
+            System.out
+			.println("2Session connected: " + session.isConnected());
             channel = session.openChannel("sftp");
             channel.connect();
+            System.out
+					.println("Channel connected: " + channel.isConnected());
             channelSftp = (ChannelSftp)channel;
+            System.out.println("channelSftp.pwd(): " + channelSftp.pwd());
             channelSftp.cd(targetDir);
-            File f = new File(FILETOTRANSFER);
+            File f = new File(FILETOTRANSFER/*"C:\\var\\bravo\\upload\\WEB_35400_KLMXP25_LUIS.txt"*/);
+            System.out.println("File f: " + f);
             channelSftp.put(new FileInputStream(f), f.getName());
 		}catch(Exception ex){
 			ex.printStackTrace();
