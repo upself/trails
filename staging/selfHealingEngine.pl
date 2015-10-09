@@ -2000,8 +2000,8 @@ sub coreOperationProcess{
 		 }#end else
          
 		 #3. Change the group of the log file to 'users' to let the log file downloaded
-		 my $changeGroupCommand = "chgrp users $logFile";
-		 my $logFileChangedGroupFlag = system("$changeGroupCommand");
+		 #my $changeGroupCommand = "chgrp users $logFile";
+		 #my $logFileChangedGroupFlag = system("$changeGroupCommand");
 		 if($logFileChangedGroupFlag == 0){
 		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
 		 }#end if($logFileChangedGroupFlag == 0)
@@ -2660,7 +2660,7 @@ sub getValidLoaderListOnTAP3Server{
 #This method is used to set DB2 ENV path
 sub setDB2ENVPath{
     if($SERVER_MODE eq $TAP){#TAP Server
-      $DB_ENV = "/db2/tap/sqllib/db2profile";
+	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
 	  $DB_ENV = "/home/tap/sqllib/db2profile";
