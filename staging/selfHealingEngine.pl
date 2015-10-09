@@ -2001,7 +2001,7 @@ sub coreOperationProcess{
          
 		 #3. Change the group of the log file to 'users' to let the log file downloaded
 		 #my $changeGroupCommand = "chgrp users $logFile";
-		 #my $logFileChangedGroupFlag = system("$changeGroupCommand");
+		 my $logFileChangedGroupFlag = 0;
 		 if($logFileChangedGroupFlag == 0){
 		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
 		 }#end if($logFileChangedGroupFlag == 0)
@@ -2055,7 +2055,7 @@ sub coreOperationProcess{
 
 	   $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
-    }#end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
+    } #end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
 	#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 	#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
     elsif($operationNameCode eq $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE){#ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE
@@ -2632,6 +2632,14 @@ sub getValidLoaderListOnTAPServer{
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 Start
   push @vaildLoaderList,"capTypeToBravo.pl";#24
+  push @vaildLoaderList,"reconEngineInventory.pl";#1
+  push @vaildLoaderList,"reconEngineLicensing.pl";#1a
+  push @vaildLoaderList,"softwareToBravo.pl";#2
+  push @vaildLoaderList,"ipAddressToBravo.pl";#3
+  push @vaildLoaderList,"memModToBravo.pl";#4
+  push @vaildLoaderList,"hardwareToBravo.pl";#5
+  push @vaildLoaderList,"hdiskToBravo.pl";#6
+  push @vaildLoaderList,"processorToBravo.pl";#7
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 End
   #push @vaildLoaderList,"testingTAP.pl";#25 #For testing function purpose only
   
