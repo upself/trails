@@ -9,7 +9,7 @@ use DBI;
 use File::Basename;
 use TAP::DBConnection;
 use Tap::NewPerl;
-
+use Database::Connection;
 #
 # globals
 #
@@ -40,6 +40,7 @@ $users{'martin.kacor@cz.ibm.com'}++;
 $users{'petr_soufek@cz.ibm.com'}++;
 $users{'zengqh@cn.ibm.com'}++;
 $users{'shaodsz@cn.ibm.com'}++;
+$users{'tomas.sima@cz.ibm.com'}++;
 
 my $cgi = new CGI;
 my $self = basename($0);
@@ -63,15 +64,32 @@ if (!exists $users{ $ENV{'REMOTE_USER'} }) {
 #
 # db2 environment
 #
-setupDB2Env();
+  setDB2ENVPath();
 
-#
-# db connections
-#
-my $bravo = new DBConnection();
-$bravo->setDatabase($BRAVO_DB);
-$bravo->connect();
-$bravo->getDbh->do("set current schema $SCHEMA");
+sub setDB2ENVPath{
+    if($SERVER_MODE eq $TAP){#TAP Server
+	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
+    }
+	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
+	  $DB_ENV = "/home/tap/sqllib/db2profile";
+	}
+	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
+	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
+	}
+	elsif($SERVER_MODE eq 'b03cxnp15029'){#GHO
+	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
+	}
+}
+}
+  #Setup DB2 environment
+  setupDB2Env();
+  
+  #Set DB Connection Information
+  setDBConnInfo();
+  
+    $bravo = Database::Connection->new('trails');
+  ###Get staging db connection
+  $staging = Database::Connection->new('staging');
 
 my $staging = new DBConnection();
 $staging->setDatabase($STAGING_DB);
@@ -81,7 +99,7 @@ $staging->setDbh($dbh);
 
 #$staging->setDatabase($STAGING_DB);
 #$staging->connect();
-#$staging->getDbh->do("set current schema $SCHEMA");
+#$staging->do("set current schema $SCHEMA");
 
 #
 # maps
@@ -236,7 +254,7 @@ sub print_rs_html {
 
 sub getCustomerMap {
     my %map = ();
-    my @rs = exec_sql_rs($bravo->getDbh,
+    my @rs = exec_sql_rs($bravo,
         "select customer_id, account_number from customer with ur");
     for my $i (0 .. $#rs) {
         next if $i == 0;
@@ -248,7 +266,7 @@ sub getCustomerMap {
 
 sub getBankAcctMap {
     my %map = ();
-    my @rs = exec_sql_rs($bravo->getDbh,
+    my @rs = exec_sql_rs($bravo,
         "select id, name from bank_account with ur");
     for my $i (0 .. $#rs) {
         next if $i == 0;
@@ -340,7 +358,7 @@ HTML
         eval {
             # bravo data
             print "<h3>bravo hw lpar to sw lpar</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select
                     hl.id as brhl_id
                     ,hl.name as hl_name
@@ -367,7 +385,7 @@ HTML
                     with ur");
             print_rs_html(\@rs);
             print "<h3>bravo sw lpar to hw lpar</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select
                     hl.id as brhl_id
                     ,hl.name as hl_name
@@ -396,7 +414,7 @@ HTML
     
             # staging data
             print "<h3>staging hw lpar</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            @rs = exec_sql_rs($staging,
                 "select
                     hl.id as hl_id
                     ,hl.name as hl_name
@@ -420,7 +438,7 @@ HTML
                     with ur");
             print_rs_html(\@rs);
             print "<h3>staging scan record to sw lpar</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            @rs = exec_sql_rs($staging,
                 "select
                     sr.id as sr_id
                     ,sr.name as sr_name
@@ -444,7 +462,7 @@ HTML
                     with ur");
             print_rs_html(\@rs);
             print "<h3>staging sw lpar to scan record</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            @rs = exec_sql_rs($staging,
                 "select
                     sr.id as sr_id
                     ,sr.name as sr_name
@@ -468,7 +486,7 @@ HTML
                     with ur");
             print_rs_html(\@rs);
             print "<h3>staging sw lpar to scan record inst sw</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            @rs = exec_sql_rs($staging,
                 "select
                     sr_id
                     ,bank_acct_id
