@@ -60,7 +60,7 @@ sub start() {
 	    	dlog($self->reportDir.'/fullReconReportPerCustomer.sh '.$self->databaseName .' '. $rec{customer_id}.' '.$regionDataFile);
 	    	$output = system($self->reportDir.'/fullReconReportPerCustomer.sh '.$self->databaseName .' '. $rec{customer_id}.' '.$regionDataFile);
 	    	
-	    	if($output != 0) {die "error from sql query look to log for more details"};
+	    	if($output == 1) {die "error from sql query look to log for more details"};
 	    	
 	    	$counter++;
 	    	}

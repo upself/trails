@@ -3,7 +3,6 @@
 # IBM Confidential -- INTERNAL USE ONLY
 
 use lib "/opt/reports";
-#use lib "/home/ondrej/git_separate/bravotrails_master/reports";
 require "/opt/staging/v2/Database/Connection.pm";
 require "/opt/reports/fullRecon/fullReconReport.pm";
 

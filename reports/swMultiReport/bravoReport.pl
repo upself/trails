@@ -67,9 +67,9 @@ die "Usage: $0 -c CUSTOMER_NUMBER (-e for empty bank account)\n"
   unless defined $customer;
 
                                                                                          
-my $reportDir = '/opt/bravo/scripts/report/target/bin';
-my $JAR       = '/opt/bravo/scripts/report/target';
-my $logFilePath   = '/opt/bravo/scripts/report/logs/bravoReport.log.'."$customer";
+my $reportDir = '/opt/reports/swMulti/target/bin';
+my $JAR       = '/opt/reports/swMulti/target';
+my $logFilePath   = '/opt/reports/swMulti/logs/bravoReport.log.'."$customer";
 my $connConfigFile = '/opt/staging/v2/config/connectionConfig.txt';                                
 my $zipfile;
 our $accountNumber;

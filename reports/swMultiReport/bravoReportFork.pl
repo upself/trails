@@ -11,7 +11,6 @@
 ### Use/Require Statements
 ###
 ###############################################################################
-use lib '/opt/bravo/scripts/report/lib'; 
 use lib '/opt/staging/v2'; 
 use strict;
 use Getopt::Long qw(GetOptions);
@@ -41,16 +40,15 @@ my %children      = ();
 my $children      = 0;
 my $sleepTime     = 5;
 my @logArray      = qw(1 2 3 4 5 6);
-my $scriptDir     = '/opt/bravo/scripts/report';
-my $trailsSqlFile = $scriptDir . '/trails_sql.xml';
-my $logFilePath       = '/opt/bravo/scripts/report/logs/bravoReportFork.log';
-my $reportScript  = '/opt/bravo/scripts/report/bravoReport.pl';
+my $logFilePath       = '/opt/reports/swMulti/logs/bravoReportFork.log';
+my $reportScript  = '/opt/reports/swMulti/bravoReport.pl';
 #my $reportScript  = '/opt/bravo/scripts/report/sw_multi_report';
 my $eventTypeName = 'BRAVOREPORTFORK_START_STOP_SCRIPT';#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $eventObject;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 my $logFile;
 open($logFile, '>>', $logFilePath);
 $SIG{CHLD} = \&REAPER;
+
 
 ###############################################################################
 ### Main

@@ -8,7 +8,7 @@ my $thisReportName = $0;
 # getlogin will NOT work when ran from cron
 my ($login, $pass, $uid, $gid) = getpwuid($<);
 my $thisUser = $login;
-my $profileFile    = "/home/$thisUser" . "/report.properties";
+my $profileFile    = "/opt/staging/v2/config/connectionConfig.txt";
 my ( $fileName, $fileDirectory ) = fileparse( $thisReportName, ".pl" );
 my $individualTempFileName = "MY_REPORT_TEMP_" . $fileName;
 
@@ -33,9 +33,9 @@ $reportDir = "/gsa/pokgsa/projects/e/emea_assets/";
 $reportDir = "/opt/reports/bin/";
 $tmpDir    = "$tmpDir/";
 
-my $tmpFile1 = $tmpDir . "emeaBankTmp1.txt";
-my $tmpFile2 = $tmpDir . "emeaBankTmp2.txt";
-my $tmpSQL = $tmpDir . $fileName . ".sql";
+my $tmpFile1 = $tmpDir . "/emeaBankTmp1.txt";
+my $tmpFile2 = $tmpDir . "/emeaBankTmp2.txt";
+my $tmpSQL = $tmpDir ."/". $fileName . ".sql";
 
 my $dataFile = $reportDir . "asset_bank.tsv";
 
