@@ -43,7 +43,7 @@ use Net::FTPServer::XferLog;
 use Log::Log4perl qw{:easy};
 $Archive::Extract::PREFER_BIN = 1; 
 
-#use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
+use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck And Monitor Module - Phase 2B
 
 #############################################################################
 # globals/constants
@@ -82,8 +82,6 @@ my %opts = (
     tmp_dir    => '/var/ftp/staging/secondary/tmp',
     fail_dir   => '/var/ftp/staging/fail',
 
-    # ftp xfer log
-    ftpd_log => '/var/log/vsftpd.log',
 
     mtime_check => 1,
 
@@ -166,7 +164,7 @@ sub fetch_dbh {
     my @lines = 
         #join q{},
         grep  { /^\$dbs/ }
-        slurp '/usr/lib/perl5/vendor_perl/5.8.0/TAP/DBConnection.pm'
+        slurp '/opt/staging/scripts/stagingImport/DBConnection.pm'
         ;
     my $to_eval = join q{}, @lines;
     
@@ -258,7 +256,7 @@ validate_options();
 ### init our logger...
 Log::Log4perl->easy_init(
     { file => 'STDOUT', level => $DEBUG },
-    { file => '>> /var/log/staging-move', level => $DEBUG },
+    { file => '>> /var/staging/logs/staging-move', level => $DEBUG },
 );
 
     #Added by Larry for HealthCheck And Monitor Module - Phase 2B Start
@@ -307,6 +305,7 @@ my @gzips = File::Find::Rule
     ->in($opts{upload_dir})
     ;
 
+### DEBUG
 for my $gzip (@gzips) {
 
     my $gz = $gzip;
@@ -319,12 +318,6 @@ for my $gzip (@gzips) {
 ## Part the third: loop over found files
 ##
 
-DEBUG 'Building out info from ftpd log...';
-my %log_entry = 
-    map  { my $h = parse_logline($_); $h->{filename} => $h }
-    grep { m|/staging/|                                    }
-    slurp $opts{ftpd_log}
-    ;
 
 ###### %log_entry
 
@@ -356,16 +349,7 @@ for my $file (@files) {
 
     # find our submitter...
     my $from_email;
-    if (not defined $log_entry{$file}) {
-
-        INFO "No log entry for $file";
         $from_email = 'no log entry';
-    }
-    else {
-
-        # check for completeness, etc... maybe?
-        $from_email = $log_entry{$file}->{username};
-    }
 
     DEBUG "($file) username: $from_email";
 
@@ -472,7 +456,7 @@ if ($@) {
     
     ###Notify the Event Engine that we had an error
     INFO "erroring $eventTypeName event status";
-    #EventLoaderDelegate->error($eventObject,$eventTypeName);
+    EventLoaderDelegate->error($eventObject,$eventTypeName);
     INFO "errored $eventTypeName event status";   
 
     die $@;
@@ -481,7 +465,7 @@ else {
 
     ###Notify the Event Engine that we are stopping
     INFO "stopping $eventTypeName event status";
-    #EventLoaderDelegate->stop($eventObject,$eventTypeName);
+    EventLoaderDelegate->stop($eventObject,$eventTypeName);
     INFO "stopped $eventTypeName event status";
 }
 #Added by Larry for HealthCheck And Monitor Module - Phase 2B End
@@ -584,4 +568,5 @@ Chris Weyl <cweyl@us.ibm.com>
 This is revision $Id: perl-app-dbi,v 1.7 2007/03/14 23:46:20 cweyl Exp $.
 
 =cut 
+
 
