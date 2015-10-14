@@ -21,6 +21,8 @@ use filetest 'access';
 use English qw{-no_match_vars};
 use Fatal qw{open close unlink};
 
+use Encode::Guess;
+
 use Carp;
 use Pod::Usage;
 use Getopt::Long;
@@ -128,9 +130,9 @@ sub archive_file {
 
     DEBUG "Checking encoding: $filename";
 
-    my $enc = `/usr/bin/enca --guess -L none -i '$filename'`;
-    chomp $enc;
-
+#    my $enc = `/usr/bin/enca --guess -L none -i '$filename'`;
+    my $enc=guess_encoding($filename);
+    $enc=uc$enc->name;
     if (($enc eq 'ASCII') || ($enc eq 'UTF-8') || ($enc eq '???')) {
 
         DEBUG "encoding is $enc";
@@ -150,7 +152,7 @@ sub archive_file {
     DEBUG "archiving via external gzip: $filename -> $archive_name";
     
     local $CHILD_ERROR;
-    system "cat $filename | gzip -c - > $archive_name";
+    system "gzip -c $filename > $archive_name";
     
     confess "Error attempting to compress to $archive_name: $CHILD_ERROR"
         if $CHILD_ERROR;
@@ -334,7 +336,7 @@ my @files = File::Find::Rule->file()
     ;
 
 my $total = scalar @files;
-my $i	  = 0;
+my $i     = 0;
 
 DEBUG "Found this many files to process: $total";
 
@@ -418,7 +420,7 @@ for my $file (@files) {
         # FIXME!  should complain loudly when it isn't a .tsv
         $extracted_file = "$opts{tmp_dir}/$extracted_file";
 
-	if (-d $extracted_file) {
+        if (-d $extracted_file) {
 
             WARN "Is a directory: $extracted_file";
             next EXTRACTED_LOOP;
@@ -568,5 +570,6 @@ Chris Weyl <cweyl@us.ibm.com>
 This is revision $Id: perl-app-dbi,v 1.7 2007/03/14 23:46:20 cweyl Exp $.
 
 =cut 
+
 
 

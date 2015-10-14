@@ -699,15 +699,11 @@ sub eventRuleCheck{
 					if($specialLoaderNameMatched == 1){
 					  print LOG "Matched special loader name[$CONTINUOUS_RUN_SCRIPTS_SPECIAL_CHECK_LIST] is LoaderName: $loaderName\n";
                       $returnProcessNum = `ps -ef|grep $loaderName|grep -v 'grep $loaderName'|wc -l`;#calculate the number of running processes for certain loader name
-					  $returnProcessNum--;#decrease the unix command itself from the total calculated process number
 					}
 					else{
 					  $returnProcessNum = `ps -ef|grep $loaderName|grep start|wc -l`;#calculate the number of running processes for certain loader name
 					}
-                     
-
 					chomp($returnProcessNum);#remove the return line char
-                    $returnProcessNum--;#decrease the unix command itself from the total calculated process number
 					$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
                   	print LOG "[$currentTimeStamp]Return Process Number is $returnProcessNum for linux command \"ps \-ef\|grep $loaderName\|grep start\|wc -l\".\n";
 				    if($returnProcessNum<=0){#if the number of return processes is 0 for certain loader name, it means that it is not running

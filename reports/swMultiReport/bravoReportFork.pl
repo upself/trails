@@ -139,7 +139,7 @@ sub spawnScript {
 
         # i am the child, i *CANNOT* return only exit
         logit("Spawning script $customerId", $logFile);
-        exec "/opt/perl-5.10.1/bin/perl $reportScript -c $customerId";
+        exec "perl $reportScript -c $customerId";
         #exit 0;
     }
 }
