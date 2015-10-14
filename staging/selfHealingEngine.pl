@@ -646,7 +646,7 @@ sub coreOperationProcess{
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
           #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode| grep -v systemSupportEngine | grep -v selfHealingEngine | grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
@@ -1432,13 +1432,13 @@ sub coreOperationProcess{
 		
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
-           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
+           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName| grep -v systemSupportEngine | grep -v selfHealingEngine | grep -v grep|awk '{print \$2}'`;
 		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
-             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l`;
+             my $targetChildLoaderPidRunningCnt = `ps -ef | grep $targetChildLoaderPid | grep -v grep|wc -l`;
 			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars
@@ -1531,23 +1531,6 @@ sub coreOperationProcess{
 		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched failed.\n";
 		     }#end else
 
-		      #4. Change the group of the log file to 'users' to let the log file downloaded
-			  my $changeGroupCommand = "chgrp users $logFile";
-		      my $logFileChangedGroupFlag = system("$changeGroupCommand");
-              if($logFileChangedGroupFlag == 0){
-                print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
-		      }#end if($logFileChangedGroupFlag == 0)
-		      else{
-		        $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		        if($operationFailedComments ne ""){
-		          $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";  
-		        }#end if($operationFailedComments ne "")
-		        else{
-		          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-                  $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
-		        }#end else
-		        print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
-		      }#end else
 
 			  #5. Set Operation Success Specail Comments to include Log File Value
 			  if($operationResultFlag == $OPERATION_SUCCESS){
@@ -1999,23 +1982,6 @@ sub coreOperationProcess{
 		   print LOG "The Staging Bravo Data SYNC - The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched failed.\n";
 		 }#end else
          
-		 #3. Change the group of the log file to 'users' to let the log file downloaded
-		 #my $changeGroupCommand = "chgrp users $logFile";
-		 my $logFileChangedGroupFlag = 0;
-		 if($logFileChangedGroupFlag == 0){
-		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
-		 }#end if($logFileChangedGroupFlag == 0)
-		 else{
-		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
-		   if($operationFailedComments ne ""){
-		     $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";  
-		   }#end if($operationFailedComments ne "")
-		   else{
-		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-			 $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
-		   }#end else
-		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
-		 }#end else
 
          #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
 		 #3.1 Copy the target log file to the GSA Log Shared Folder Path
