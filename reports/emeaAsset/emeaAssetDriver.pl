@@ -3,7 +3,7 @@
 # IBM Confidential -- INTERNAL USE ONLY
 # programmer: dbryson@us.ibm.com
 # ========================================================
-use lib "/opt/report/bin";
+use lib "/opt/reports";
 use File::Copy;
 use File::Basename;
 use Conf::ReportProperty;

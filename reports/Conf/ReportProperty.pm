@@ -16,12 +16,9 @@ sub new
         my $shost = ( split( /\./, $host ) )[0];       
          
         die "!!! ONLY RUN THIS SCRIPT ON tap2/tap3 !!!\n"
-                    if($shost ne 'tap2' && $shost ne 'tap3');                        
-        
-        my $profileFile = "/opt/report/bin/Conf/$shost.report.properties";
+                    if($shost ne 'tap2' && $shost ne 'tap3' && $shost ne 'b03cxnp15029');                        
         my $systemFile = "/opt/staging/v2/config/connectionConfig.txt";
-        my $cfg = Config::Properties::Simple->new(file => $profileFile);
-        my $cfg2 = Config::Properties::Simple->new(file => $systemFile);
+        my $cfg = Config::Properties::Simple->new(file => $systemFile);
 
         # don't try to use the db2 information until you properly load the profile because the DBI library
         # requires it
