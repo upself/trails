@@ -10,9 +10,9 @@
 
 	var Page = function(element, options) {
 		var defaultOption = {
-			pageSize : 10,
-			pageBtnCount : 5,
-			showFirstLastBtn : false,
+			pageSize : 100,
+			pageBtnCount : 7,
+			showFirstLastBtn : true,
 			firstBtnText : 'First',
 			lastBtnText : 'Last',
 			prevBtnText : "Pre",
@@ -50,7 +50,7 @@
 		this.$container = getContainer(element, this.options.containerId);
 		this.total = this.options.total || 0;
 		this.options.pageSizeItems = this.options.pageSizeItems
-				|| [ 10, 20, 50, 100 ], this.currentPageIndex = 1;
+				|| [ 20, 50, 100, 200 ], this.currentPageIndex = 1;
 		this.currentPageSize = this.options.pageSize;
 		this.pageCount = getPageCount(this.total, this.currentPageSize);
 
@@ -73,6 +73,7 @@
 									+ that.options.pageSizeItems[i] + '</a>');
 				}
 			}
+			
 			that.$size.append(that.$sizeInfo);
 			that.$size.append(that.$sizeLinks);
 
@@ -145,6 +146,7 @@
 			// render pageSizes
 			this.$sizeInfo.empty();
 			this.$sizeLinks.empty();
+			
 			this.$sizeInfo.append('Results per page:<strong>'
 					+ this.currentPageSize + '</strong>');
 			for (var i = 0; i < this.options.pageSizeItems.length; i++) {
@@ -156,6 +158,7 @@
 									+ this.options.pageSizeItems[i] + '</a>');
 				}
 			}
+			this.$sizeLinks.append('<a style="cursor:pointer; margin-left:3px;" class="ibm-forward-em-link" data-page-size="'+ this.total+ '">All</a>');
 			this.$size.append(this.$sizeInfo);
 			this.$size.append(this.$sizeLinks);
 

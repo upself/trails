@@ -83,6 +83,8 @@ function searchData(){
 	$("#pagebar").v17ePagination('destroy').v17ePagination({
 		showInfo: true,
 		showPageSizes: true,
+		pageSize : 2,
+		pageSizeItems : [ 2, 5, 10, 20 ],
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/alertWithDefinedContractScope/search",
 			type: "POST",
