@@ -4,8 +4,8 @@ tgthostname=pokgsa.ibm.com
 source=/var/staging/disconnected
 target=/projects/a/amsd/adp/global/computer
 filemask=.+computer\.tsv\.gz$
-srcusr=[gsaUser]
-srcpwd=[gsaPassword]
+tgtusr=[gsaUser]
+tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
@@ -15,8 +15,8 @@ tgthostname=pokgsa.ibm.com
 source=/var/staging/disconnected
 target=/projects/a/amsd/adp/global/computer/software_signature
 filemask=.+software_signature\.tsv\.gz$
-srcusr=[gsaUser]
-srcpwd=[gsaPassword]
+tgtusr=[gsaUser]
+tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
@@ -26,8 +26,8 @@ tgthostname=pokgsa.ibm.com
 source=/var/staging/disconnected
 target=/projects/a/amsd/adp/global/computer/software_filter
 filemask=.+software_filter\.tsv\.gz$
-srcusr=[gsaUser]
-srcpwd=[gsaPassword]
+tgtusr=[gsaUser]
+tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
@@ -37,8 +37,8 @@ tgthostname=pokgsa.ibm.com
 source=/var/ftp/staging/secondary/socket_files
 target=/projects/a/amsd/adp/global/computer/socket
 filemask=.+socket\.tsv\.gz$
-srcusr=[gsaUser]
-srcpwd=[gsaPassword]
+tgtusr=[gsaUser]
+tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
