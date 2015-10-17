@@ -278,6 +278,8 @@ sub getfile { # transfers the file from source to /tmp, returns 0 on success
 		return ( $ftphandle->status != 0 );
 	}
 	
+	chmod 0666, $srcdir."/".$srcfile if ( -e $srcdir."/".$srcfile );
+	
 	my $ret=copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
 	return 0 if ( $ret == 1 );
 	return 1;
@@ -426,6 +428,7 @@ while (readcfgfile(\*CFGFILE)) {
 		if ( $ret != 0 ) {
 			elog("Job $name, error getting file $file!");
 			$filestocopy{$file}=0;
+			unlink("/tmp/$file") if ( -e "/tmp/$file" ); # delete temporary file if existing
 			$successfulfiles--;
 			next;
 		}
