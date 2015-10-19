@@ -10,6 +10,7 @@ sub new {
         ,_alertUnlicensedSoftwareId => undef
         ,_comments => undef
         ,_open => undef
+        ,_type => undef
         ,_creationTime => undef
         ,_remoteUser => 'STAGING'
         ,_recordTime => undef
@@ -43,6 +44,13 @@ sub equals {
         $equal = 1 if $self->open eq $object->open;
     }
     $equal = 1 if (!defined $self->open && !defined $object->open);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->type && defined $object->type) {
+        $equal = 1 if $self->type eq $object->type;
+    }
+    $equal = 1 if (!defined $self->type && !defined $object->type);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -84,6 +92,12 @@ sub open {
     my $self = shift;
     $self->{_open} = shift if scalar @_ == 1;
     return $self->{_open};
+}
+
+sub type {
+    my $self = shift;
+    $self->{_type} = shift if scalar @_ == 1;
+    return $self->{_type};
 }
 
 sub creationTime {
@@ -139,6 +153,11 @@ sub toString {
         $s .= $self->{_open};
     }
     $s .= ",";
+    $s .= "type=";
+    if (defined $self->{_type}) {
+        $s .= $self->{_type};
+    }
+    $s .= ",";
     $s .= "creationTime=";
     if (defined $self->{_creationTime}) {
         $s .= $self->{_creationTime};
@@ -180,6 +199,7 @@ sub save {
             $self->alertUnlicensedSoftwareId
             ,$self->comments
             ,$self->open
+            ,$self->type
             ,$self->creationTime
             ,$self->recordTime
         );
@@ -194,6 +214,7 @@ sub save {
             $self->alertUnlicensedSoftwareId
             ,$self->comments
             ,$self->open
+            ,$self->type
             ,$self->creationTime
             ,$self->recordTime
             ,$self->id
@@ -212,11 +233,13 @@ sub queryInsert {
             alert_unlicensed_sw_id
             ,comments
             ,open
+            ,type
             ,creation_time
             ,remote_user
             ,record_time
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -234,6 +257,7 @@ sub queryUpdate {
             alert_unlicensed_sw_id = ?
             ,comments = ?
             ,open = ?
+            ,type = ?
             ,creation_time = ?
             ,remote_user = \'STAGING\'
             ,record_time = ?
@@ -272,6 +296,7 @@ sub getById {
     my $alertUnlicensedSoftwareId;
     my $comments;
     my $open;
+    my $type;
     my $creationTime;
     my $remoteUser;
     my $recordTime;
@@ -279,6 +304,7 @@ sub getById {
         \$alertUnlicensedSoftwareId
         ,\$comments
         ,\$open
+        ,\$type
         ,\$creationTime
         ,\$remoteUser
         ,\$recordTime
@@ -291,6 +317,7 @@ sub getById {
     $self->alertUnlicensedSoftwareId($alertUnlicensedSoftwareId);
     $self->comments($comments);
     $self->open($open);
+    $self->type($type);
     $self->creationTime($creationTime);
     $self->remoteUser($remoteUser);
     $self->recordTime($recordTime);
@@ -303,6 +330,7 @@ sub queryGetById {
             alert_unlicensed_sw_id
             ,comments
             ,open
+            ,type
             ,creation_time
             ,remote_user
             ,record_time
