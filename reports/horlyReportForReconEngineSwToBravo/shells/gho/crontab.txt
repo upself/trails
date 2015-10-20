@@ -1,0 +1,3 @@
+#hourly status mail
+0,10,20,30,40,50 * * * * cd /opt/reports/recon-summary; ./recordThreadQty.sh > recordThreads.log 2>&1
+0 * * * * . /home/trails/.profile; cd /opt/reports/recon-summary; ./notify.sh > notify.log 2>&1
