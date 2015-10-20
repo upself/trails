@@ -208,7 +208,7 @@ $query.='      ( aus.open = 1 )
 $query.='					( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id = 17 ) )
 					or
 							( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id = 6 ) )
-			) with ur';
+			) order by h.id with ur';
 			
  dlog($query);
 
