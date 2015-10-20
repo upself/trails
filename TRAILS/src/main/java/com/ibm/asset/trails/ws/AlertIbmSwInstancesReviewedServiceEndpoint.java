@@ -93,6 +93,8 @@ public class AlertIbmSwInstancesReviewedServiceEndpoint {
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED", "IBM");
+			//story 35896
+			response.flushBuffer();
 
 		} catch (Exception e) {
 			e.printStackTrace();

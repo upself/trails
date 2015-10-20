@@ -160,11 +160,11 @@ public class AlertSwLparWithHwLparServiceEndpoint {
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition","attachment; filename=alertSwLparWithHwLpar" + account.getAccount() + ".xls");
 			reportService.getAlertSoftwareLparReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
-			
+			//story 35896
+			response.flushBuffer();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
 
 		ResponseBuilder responseBuilder = Response.ok(response.getOutputStream());
 		return responseBuilder.build();

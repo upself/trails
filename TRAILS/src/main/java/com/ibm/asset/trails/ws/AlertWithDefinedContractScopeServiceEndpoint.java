@@ -94,6 +94,8 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "Alert Contract Scope");
+			//story 35896
+			response.flushBuffer();
 
 		} catch (Exception e) {
 			e.printStackTrace();
