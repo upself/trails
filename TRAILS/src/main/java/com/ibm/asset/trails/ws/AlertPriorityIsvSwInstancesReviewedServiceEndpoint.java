@@ -93,6 +93,8 @@ public class AlertPriorityIsvSwInstancesReviewedServiceEndpoint {
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWISVPR","SWISVPR","SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", "PrioISV");
+			//story 35896
+			response.flushBuffer();
 
 		} catch (Exception e) {
 			e.printStackTrace();

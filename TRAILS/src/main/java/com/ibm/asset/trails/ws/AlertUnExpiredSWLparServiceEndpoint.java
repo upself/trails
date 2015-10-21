@@ -157,7 +157,9 @@ public class AlertUnExpiredSWLparServiceEndpoint {
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition","attachment; filename=alertUnExpiredSWLpar" + account.getAccount() + ".xls");
 			reportService.getAlertExpiredScanReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
-			
+			//story 35896
+			response.flushBuffer();
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
