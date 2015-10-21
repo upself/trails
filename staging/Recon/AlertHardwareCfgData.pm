@@ -141,6 +141,7 @@ sub queryHardwareLparCount {
             h.id = ?
             and h.id = hl.hardware_id
             and hl.status = 'ACTIVE'
+            and hl.lpar_status = 'ACTIVE'
         with ur
     };
 
