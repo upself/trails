@@ -2956,6 +2956,7 @@ sub recordAlertUnlicensedSoftwareHistory {
  $history->creationTime( $alert->creationTime );
  $history->comments( $alert->comments );
  $history->open( $alert->open );
+ $history->type( $alert->type );
  $history->recordTime( $alert->recordTime );
  $history->save( $self->connection );
 }
@@ -3008,6 +3009,9 @@ sub openAlertUnlicensedSoftware {
 				Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
 				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
 				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
+			} else {
+				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
+				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
 			}
 		}
 	}
