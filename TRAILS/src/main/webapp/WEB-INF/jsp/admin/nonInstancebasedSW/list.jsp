@@ -1,5 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
@@ -90,24 +90,23 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
-			summary="Sortable Non Instance based SW table">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+			summary="Non Instance based SW table">
 			<thead>
 				<tr>
-					<th scope="col">Software component</th>
-					<th scope="col">Manufacturer</th>
-					<th scope="col">Restriction</th>
-					<th scope="col">Non Instance based only</th>
-					<th scope="col">Non Instance capacity type</th>
-					<th scope="col">Status</th>
-					<th scope="col" style="min-width:180px; text-align:center">Operation</th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software component</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Restriction</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Non Instance based only</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Non Instance capacity type</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" style="min-width:180px; text-align:center" class="ibm-sort"><a href="javascript:void(0)"><span>Operation</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
 				
 			</tbody>
 		</table>
-		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 </div>
 
@@ -131,9 +130,7 @@ $(function(){
 });
 
 function searchData(){
-	$("#pagebar").v17ePagination('destroy').v17ePagination({
-		showInfo: true,
-		showPageSizes: true,
+	$("#page").paginationTable('destroy').paginationTable({
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/noninstance/search",
 			type: "POST",
@@ -172,7 +169,8 @@ function searchData(){
 				}
 				$("#non_instance_list").html(html);
 			}
-		}
+		},
+		orderColumns: ['software.softwareName','manufacturer.manufacturerName','restriction','baseOnly','capacityType.description','status.description','id']
 	}); 
 };
 

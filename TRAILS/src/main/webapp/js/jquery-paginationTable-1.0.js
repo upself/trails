@@ -9,7 +9,7 @@
 		pageClicked : 'pageClicked'
 	}
 
-	//object
+	// object
 	var Page = function(element, options) {
 		var defaultOption = {
 			pageSize : 100,
@@ -41,29 +41,23 @@
 		}
 
 		this.$element = $(element);
-		/*<p class="ibm-table-navigation">
-			<span class="ibm-primary-navigation">
-				<span><strong>1-20</strong> of <strong>50</strong> results</span>
-				<span class="ibm-table-navigation-links">
-					<a class="ibm-forward-em-link" href="#">First</a>
-					<a class="ibm-forward-em-link" href="#">Pre</a>
-					<a class="ibm-forward-em-link" href="#">1</a>
-					<a class="ibm-forward-em-link" href="#">2</a>
-					<a class="ibm-forward-em-link" href="#">3</a>
-					<a class="ibm-forward-em-link" href="#">4</a>
-					<a class="ibm-forward-em-link" href="#">Next</a>
-					<a class="ibm-forward-em-link" href="#">Last</a>
-				</span>
-			</span>
-			<span class="ibm-secondary-navigation">
-				<span>Results per page: <strong>20</strong> </span>
-				<span class="ibm-table-navigation-links">
-					<a href="__REPLACE__">50</a>
-					<a href="__REPLACE__">100</a>
-					<a href="__REPLACE__">All</a>
-				</span>
-			</span>
-		</p>*/
+		/*
+		 * <p class="ibm-table-navigation"> <span
+		 * class="ibm-primary-navigation"> <span><strong>1-20</strong> of
+		 * <strong>50</strong> results</span> <span
+		 * class="ibm-table-navigation-links"> <a class="ibm-forward-em-link"
+		 * href="#">First</a> <a class="ibm-forward-em-link" href="#">Pre</a>
+		 * <a class="ibm-forward-em-link" href="#">1</a> <a
+		 * class="ibm-forward-em-link" href="#">2</a> <a
+		 * class="ibm-forward-em-link" href="#">3</a> <a
+		 * class="ibm-forward-em-link" href="#">4</a> <a
+		 * class="ibm-forward-em-link" href="#">Next</a> <a
+		 * class="ibm-forward-em-link" href="#">Last</a> </span> </span> <span
+		 * class="ibm-secondary-navigation"> <span>Results per page: <strong>20</strong>
+		 * </span> <span class="ibm-table-navigation-links"> <a
+		 * href="__REPLACE__">50</a> <a href="__REPLACE__">100</a> <a
+		 * href="__REPLACE__">All</a> </span> </span> </p>
+		 */
 		this.$pageBar = $('<p class="ibm-table-navigation"></p>');
 		this.$pageBarPri = $('<span class="ibm-primary-navigation">');
 		this.$pageBarPri_info = $('<span></span>');
@@ -73,7 +67,8 @@
 		this.$pageBarSec_pageSizeItems = $('<span class="ibm-table-navigation-links"></span>');
 		this.$pageLoading = $('<span class="ibm-spinner-large"></span>');
 
-		this.options = $.extend(true, {}, defaultOption,$.fn.paginationTable.defaults, options);
+		this.options = $.extend(true, {}, defaultOption,
+				$.fn.paginationTable.defaults, options);
 		this.total = this.options.total || 0;
 		this.pageSizeItems = this.options.pageSizeItems || [ 20, 50, 100, 200 ];
 		this.currentPageIndex = 1;
@@ -82,47 +77,51 @@
 		this.orderColumns = this.options.orderColumns || [];
 		this.currentPageOrder = '';
 		this.currentPageOrderType = '';
-		
-		//init method
+
+		// init method
 		var init = function(obj) {
 			var that = obj;
-			
-			//init page bar structure
+
+			// init page bar structure
 			that.$pageBarPri.append(that.$pageBarPri_info);
 			that.$pageBarPri.append(that.$pageBarPri_pages);
 			that.$pageBar.append(that.$pageBarPri);
-			
+
 			that.$pageBarSec.append(that.$pageBarSec_pageSizeInfo);
 			that.$pageBarSec.append(that.$pageBarSec_pageSizeItems);
 			that.$pageBar.append(that.$pageBarSec);
-			
-			//init loading effect
+
+			// init loading effect
 			that._resizeLoading();
-			
-			//init pagination table with a page bar and a loading image
+
+			// init pagination table with a page bar and a loading image
 			that.$element.after(that.$pageLoading);
 			that.$element.after(that.$pageBar);
-			
-			//bind sort columns
-			if(that._isEnableOrder()){
-				var thList = that.$element.children('thead').children('tr').children('th');
-				for(var i = 0; i < that.orderColumns.length; i++){
-					if(that.orderColumns[i] !== null && that.orderColumns[i] !=='' && typeof thList[i] !== 'undefined'){
-						$(thList[i]).children('a').children('span').data('pageOrder', that.orderColumns[i]);
-					}	
+
+			// bind sort columns
+			if (that._isEnableOrder()) {
+				var thList = that.$element.children('thead').children('tr')
+						.children('th');
+				for (var i = 0; i < that.orderColumns.length; i++) {
+					if (that.orderColumns[i] !== null
+							&& that.orderColumns[i] !== ''
+							&& typeof thList[i] !== 'undefined') {
+						$(thList[i]).children('a').children('span').data(
+								'pageOrder', that.orderColumns[i]);
+					}
 				}
 			}
-			
-			//Render pagination table by directly or by remote
+
+			// Render pagination table by directly or by remote
 			that._remoteOrRender(1);
-			
-			//License user's operations
+
+			// License user's operations
 			that.$element.on('click', {
 				page : that
 			}, function(event) {
 				eventHandler(event);
 			});
-			
+
 			that.$pageBar.on('click', {
 				page : that
 			}, function(event) {
@@ -130,62 +129,87 @@
 			});
 		}
 
-		//handler user's operations
+		// handler user's operations
 		var eventHandler = function(event) {
 			var that = event.data.page;
 			var $target = $(event.target);
-			//page click
-			if (event.type === 'click' && $target.data('pageIndex') !== undefined && !$target.hasClass('active')) {
+			// page click
+			if (event.type === 'click'
+					&& $target.data('pageIndex') !== undefined
+					&& !$target.hasClass('active')) {
 				var pageIndex = $(event.target).data("pageIndex");
 				that.debug('event[ pageClicked ] : pageIndex = ' + (pageIndex));
 				that._remoteOrRender(pageIndex);
-			} else if (event.type === 'click' && $target.data('pageSize') !== undefined) {
+			} else if (event.type === 'click'
+					&& $target.data('pageSize') !== undefined) {
 				var pageSize = $(event.target).data("pageSize");
 				that.currentPageSize = pageSize;
 				that.debug('event[ pageSizeClicked ] : pageSize = ' + pageSize);
 				that._remoteOrRender(1);
-			} else if(event.type === 'click' && $target.data('pageOrder') !== undefined) {
+			} else if (event.type === 'click'
+					&& $target.data('pageOrder') !== undefined) {
 				var pageOrder = $(event.target).data("pageOrder");
 				var pageIndex = that.currentPageIndex;
-				
-				//reset order type and css
-				if(that.currentPageOrder == pageOrder){
-					if(that.currentPageOrderType == 'Asc'){
+
+				// remove all css
+				that.$element.children('thead').children('tr').children('th')
+						.removeClass('tablesorter-headerAsc');
+				that.$element.children('thead').children('tr').children('th')
+						.removeClass('ibm-sort-up');
+				that.$element.children('thead').children('tr').children('th')
+						.removeClass('tablesorter-headerDesc');
+				that.$element.children('thead').children('tr').children('th')
+						.removeClass('ibm-sort-down');
+
+				// reset order type and add it's css
+				if (that.currentPageOrder == pageOrder) {
+					if (that.currentPageOrderType == 'Asc') {
 						that.currentPageOrderType = 'Desc';
-						$target.parent().parent().removeClass("tablesorter-headerAsc");
+						$target.parent().parent().removeClass(
+								"tablesorter-headerAsc");
 						$target.parent().parent().removeClass("ibm-sort-up");
-						$target.parent().parent().addClass("tablesorter-headerDesc");
+						$target.parent().parent().addClass(
+								"tablesorter-headerDesc");
 						$target.parent().parent().addClass("ibm-sort-down");
-					}else{
+					} else {
 						that.currentPageOrderType = 'Asc';
-						$target.parent().parent().removeClass("tablesorter-headerDesc");
+						$target.parent().parent().removeClass(
+								"tablesorter-headerDesc");
 						$target.parent().parent().removeClass("ibm-sort-down");
-						$target.parent().parent().addClass("tablesorter-headerAsc");
+						$target.parent().parent().addClass(
+								"tablesorter-headerAsc");
 						$target.parent().parent().addClass("ibm-sort-up");
 					}
-				}else{
+				} else {
 					that.currentPageOrderType = 'Asc';
-					$target.parent().parent().removeClass("tablesorter-headerDesc");
+					$target.parent().parent().removeClass(
+							"tablesorter-headerDesc");
 					$target.parent().parent().removeClass("ibm-sort-down");
 					$target.parent().parent().addClass("tablesorter-headerAsc");
 					$target.parent().parent().addClass("ibm-sort-up");
 				}
 				that.currentPageOrder = pageOrder;
-				
-				that.debug('event[ pageOrderClicked ] : pageOrder = ' + pageOrder + ', orderType = ' + that.currentPageOrderType + ', pageIndex = ' + pageIndex);
+
+				that.debug('event[ pageOrderClicked ] : pageOrder = '
+						+ pageOrder + ', orderType = '
+						+ that.currentPageOrderType + ', pageIndex = '
+						+ pageIndex);
 				that._remoteOrRender(pageIndex);
 			}
 		}
 
-		//init on load
-		if (typeof this.options.total === 'undefined' && this.options.remote.url === null) {
-			console && console.error("[init error] : the options must have the parameter of 'remote.url' or 'total'.");
+		// init on load
+		if (typeof this.options.total === 'undefined'
+				&& this.options.remote.url === null) {
+			console
+					&& console
+							.error("[init error] : the options must have the parameter of 'remote.url' or 'total'.");
 		} else {
 			init(this);
 		}
 	}
 
-	//method
+	// method
 	Page.prototype = {
 		_remoteOrRender : function(pageIndex) {
 			if (this.options.remote.url != null) {
@@ -206,18 +230,22 @@
 			var pageParams = {};
 			pageParams[this.options.remote.pageIndexName] = pageIndex;
 			pageParams[this.options.remote.pageSizeName] = this.currentPageSize;
-			if(this._isEnableOrder() && this.currentPageOrder != null && this.currentPageOrder.trim() != ''
-						&& this.currentPageOrderType != null && this.currentPageOrderType.trim() != ''){
+			if (this._isEnableOrder() && this.currentPageOrder != null
+					&& this.currentPageOrder.trim() != ''
+					&& this.currentPageOrderType != null
+					&& this.currentPageOrderType.trim() != '') {
 				pageParams[this.options.remote.pageOrderName] = this.currentPageOrder;
 				pageParams[this.options.remote.pageOrderTypeName] = this.currentPageOrderType;
 			}
-			
+
 			this.options.remote.params = deserializeParams(this.options.remote.params);
 			if (params) {
 				params = deserializeParams(params);
-				this.options.remote.params = $.extend({},this.options.remote.params, params);
+				this.options.remote.params = $.extend({},
+						this.options.remote.params, params);
 			}
-			var requestParams = $.extend({}, this.options.remote.params,pageParams);
+			var requestParams = $.extend({}, this.options.remote.params,
+					pageParams);
 			$
 					.ajax({
 						url : this.options.remote.url,
@@ -228,95 +256,118 @@
 						beforeSend : function(XMLHttpRequest) {
 							that._resizeLoading();
 							that.$pageLoading.show();
-							if (typeof that.options.remote.beforeSend === 'function'){
+							if (typeof that.options.remote.beforeSend === 'function') {
 								that.options.remote.beforeSend(XMLHttpRequest);
 							}
 						},
 						complete : function(XMLHttpRequest, textStatu) {
 							that.$pageLoading.hide();
-							if (typeof that.options.remote.complete === 'function'){
-								that.options.remote.complete(XMLHttpRequest,textStatu);
+							if (typeof that.options.remote.complete === 'function') {
+								that.options.remote.complete(XMLHttpRequest,
+										textStatu);
 							}
-								
+
 						},
 						success : function(result) {
-							var total = GetCustomTotalName(result,that.options.remote.totalName);
+							var total = GetCustomTotalName(result,
+									that.options.remote.totalName);
 							if (total == null || total == undefined) {
-								console && console.error("the response of totalName :  '" + that.options.remote.totalName+ "'  not found");
+								console
+										&& console
+												.error("the response of totalName :  '"
+														+ that.options.remote.totalName
+														+ "'  not found");
 							} else {
 								that._updateTotal(total);
-								if (typeof that.options.remote.success === 'function'){
-									that.options.remote.success(result,pageIndex);
+								if (typeof that.options.remote.success === 'function') {
+									that.options.remote.success(result,
+											pageIndex);
 								}
 								that._renderPagination(pageIndex);
 							}
 						}
 					})
-		
+
 		},
-		_renderPagination : function (pageIndex) {
-            this.currentPageIndex = pageIndex;
-            
-            var info = renderInfo(this.currentPageIndex, this.currentPageSize, this.total, this.options.infoFormat);
-            var pages = renderPages(this.currentPageIndex, this.currentPageSize, this.total, this.options.pageBtnCount, this.options.firstBtnText, this.options.lastBtnText, this.options.prevBtnText, this.options.nextBtnText, this.options.showFirstLastBtn);
-            var pageSizeInfo = renderPageSizeInfo(this.currentPageSize);
-            var pageSizeItems = renderPageSizeItems(this.currentPageSize, this.pageSizeItems, this.total);
-            
-           
-            
-            this.$pageBarPri_info.empty().append(info);
-            this.$pageBarPri_pages.empty().append(pages);
-            this.$pageBarSec_pageSizeInfo.empty().append(pageSizeInfo);
-            this.$pageBarSec_pageSizeItems.empty().append(pageSizeItems);
-            
-            if (this.pageCount > 0) {
-                this.$pageBarPri_pages.show();
-                if (this.options.showInfo){
-                	this.$pageBarPri_info.show();
-                } 
-                if (this.options.showPageSizes) {
-                	this.$pageBarSec_pageSizeInfo.show();
-                	this.$pageBarSec_pageSizeItems.show();
-                }
-            }
-            else {
-            	this.$pageBarPri_info.hide();
-            	this.$pageBarPri_pages.hide();
-            	this.$pageBarSec_pageSizeInfo.hide();
-                this.$pageBarSec_pageSizeItems.hide();
-            }
-            
+		_renderPagination : function(pageIndex) {
+			this.currentPageIndex = pageIndex;
+
+			var info = renderInfo(this.currentPageIndex, this.currentPageSize,
+					this.total, this.options.infoFormat);
+			var pages = renderPages(this.currentPageIndex,
+					this.currentPageSize, this.total,
+					this.options.pageBtnCount, this.options.firstBtnText,
+					this.options.lastBtnText, this.options.prevBtnText,
+					this.options.nextBtnText, this.options.showFirstLastBtn);
+			var pageSizeInfo = renderPageSizeInfo(this.currentPageSize);
+			var pageSizeItems = renderPageSizeItems(this.currentPageSize,
+					this.pageSizeItems, this.total);
+
+			this.$pageBarPri_info.empty().append(info);
+			this.$pageBarPri_pages.empty().append(pages);
+			this.$pageBarSec_pageSizeInfo.empty().append(pageSizeInfo);
+			this.$pageBarSec_pageSizeItems.empty().append(pageSizeItems);
+
+			if (this.pageCount > 0) {
+				this.$pageBarPri_pages.show();
+				if (this.options.showInfo) {
+					this.$pageBarPri_info.show();
+				}
+				if (this.options.showPageSizes) {
+					this.$pageBarSec_pageSizeInfo.show();
+					this.$pageBarSec_pageSizeItems.show();
+				}
+			} else {
+				this.$pageBarPri_info.hide();
+				this.$pageBarPri_pages.hide();
+				this.$pageBarSec_pageSizeInfo.hide();
+				this.$pageBarSec_pageSizeItems.hide();
+			}
+
 		},
 		_updateTotal : function(total) {
 			this.total = total;
 			this.pageCount = getPageCount(total, this.currentPageSize);
 		},
-		_resizeLoading : function(){
-			this.$pageLoading.css("cssText", "height: "+ (this.$element.children('tbody').height() || 50) + "px !important");
+		_resizeLoading : function() {
+			this.$pageLoading.css("cssText", "height: "
+					+ (this.$element.children('tbody').height() || 50)
+					+ "px !important");
 			this.$pageLoading.css({
 				"position" : "absolute",
-				"top" : "" + this.$element.children('tbody').position().top + "px",
-				"left" : "" + this.$element.children('tbody').position().left + "px",
+				"top" : "" + this.$element.children('tbody').position().top
+						+ "px",
+				"left" : "" + this.$element.children('tbody').position().left
+						+ "px",
 				"width" : "" + this.$element.children('tbody').width() + "px",
 				"padding" : "0px",
 				"background-color" : "#EEE",
 				"opacity" : "0.7"
 			});
 		},
-		_isEnableOrder : function(){
-			if(this.options.remote.url === null){
-				console && console.error("[enable sortable error] : the options must have the parameter of 'remote.url' when you want to use sortable feature.");
+		_isEnableOrder : function() {
+			if (this.options.remote.url === null) {
+				console
+						&& console
+								.error("[enable sortable error] : the options must have the parameter of 'remote.url' when you want to use sortable feature.");
 				return false;
-			} else if (this.orderColumns === null || typeof this.orderColumns === 'undefined' || this.orderColumns.length <=0) {
+			} else if (this.orderColumns === null
+					|| typeof this.orderColumns === 'undefined'
+					|| this.orderColumns.length <= 0) {
 				return false;
-			} else{
+			} else {
 				return true;
 			}
 		},
-		
-		destroy: function () {
-            this.$element.unbind().data("page", null).empty();
-        },
+		showLoading : function() {
+			this._resizeLoading();
+			this.$pageLoading.show();
+		},
+		destroy : function() {
+			this.$element.unbind().data("page", null);
+			this.$pageBar.remove();
+			this.$pageLoading.remove();
+		},
 		debug : function(message, data) {
 			if (this.options.debug && console) {
 				message && console.info(message);
@@ -324,39 +375,47 @@
 			}
 		}
 	}
-	
-	//Global method
-	var renderInfo = function(currentPageIndex, currentPageSize, total, infoFormat) {
+
+	// Global method
+	var renderInfo = function(currentPageIndex, currentPageSize, total,
+			infoFormat) {
 		var startNum = (currentPageIndex - 1) * currentPageSize + 1;
 		var endNum = (currentPageIndex) * currentPageSize;
 		endNum = endNum >= total ? total : endNum;
-		return infoFormat.replace('{start}', startNum).replace('{end}', endNum).replace('{total}', total);
+		return infoFormat.replace('{start}', startNum).replace('{end}', endNum)
+				.replace('{total}', total);
 	}
-	
-	var renderPages = function(pageIndex, pageSize, total, pageBtnCount, firstBtnText, lastBtnText, prevBtnText, nextBtnText, showFirstLastBtn) {
-		pageIndex = pageIndex == undefined ? 1 : parseInt(pageIndex); 
+
+	var renderPages = function(pageIndex, pageSize, total, pageBtnCount,
+			firstBtnText, lastBtnText, prevBtnText, nextBtnText,
+			showFirstLastBtn) {
+		pageIndex = pageIndex == undefined ? 1 : parseInt(pageIndex);
 		var pageCount = getPageCount(total, pageSize);
 		var html = [];
 
 		if (pageCount <= pageBtnCount) {
-			//Numeric buttons
+			// Numeric buttons
 			html = renderPage(1, pageCount, pageIndex);
 		} else {
-			//First Last Prev Next buttons
+			// First Last Prev Next buttons
 			var firstPage = renderPerPage(firstBtnText || 1, 1);
 			var lastPage = renderPerPage(lastBtnText || pageCount, pageCount);
 			var prevPage = renderPerPage(prevBtnText, pageIndex - 1);
 			var nextPage = renderPerPage(nextBtnText, pageIndex + 1);
-			
-			// Numeric buttons with or without First Last Prev Next buttons 
+
+			// Numeric buttons with or without First Last Prev Next buttons
 			var symmetryBtnCount = (pageBtnCount - 1 - 4) / 2;
-			if (!showFirstLastBtn) symmetryBtnCount = symmetryBtnCount + 1;
+			if (!showFirstLastBtn)
+				symmetryBtnCount = symmetryBtnCount + 1;
 			var frontBtnNum = (pageBtnCount + 1) / 2;
 			var behindBtnNum = pageCount - ((pageBtnCount + 1) / 2);
 
-			symmetryBtnCount = symmetryBtnCount.toString().indexOf('.') == -1 ? symmetryBtnCount : symmetryBtnCount + 0.5;
-			frontBtnNum = frontBtnNum.toString().indexOf('.') == -1 ? frontBtnNum : frontBtnNum + 0.5;
-			behindBtnNum = behindBtnNum.toString().indexOf('.') == -1 ? behindBtnNum : behindBtnNum + 0.5;
+			symmetryBtnCount = symmetryBtnCount.toString().indexOf('.') == -1 ? symmetryBtnCount
+					: symmetryBtnCount + 0.5;
+			frontBtnNum = frontBtnNum.toString().indexOf('.') == -1 ? frontBtnNum
+					: frontBtnNum + 0.5;
+			behindBtnNum = behindBtnNum.toString().indexOf('.') == -1 ? behindBtnNum
+					: behindBtnNum + 0.5;
 			if (pageIndex <= frontBtnNum) {
 				if (showFirstLastBtn) {
 					html = renderPage(1, pageBtnCount - 2, pageIndex);
@@ -368,22 +427,26 @@
 				}
 			} else if (pageIndex > behindBtnNum) {
 				if (showFirstLastBtn) {
-					html = renderPage(pageCount - pageBtnCount + 3, pageBtnCount - 2, pageIndex);
+					html = renderPage(pageCount - pageBtnCount + 3,
+							pageBtnCount - 2, pageIndex);
 					html.unshift(prevPage);
 					html.unshift(firstPage);
 				} else {
-					html = renderPage(pageCount - pageBtnCount + 2, pageBtnCount - 1, pageIndex);
+					html = renderPage(pageCount - pageBtnCount + 2,
+							pageBtnCount - 1, pageIndex);
 					html.unshift(prevPage);
 				}
 			} else {
 				if (showFirstLastBtn) {
-					html = renderPage(pageIndex - symmetryBtnCount, pageBtnCount - 4, pageIndex);
+					html = renderPage(pageIndex - symmetryBtnCount,
+							pageBtnCount - 4, pageIndex);
 					html.unshift(prevPage);
 					html.push(nextPage);
 					html.unshift(firstPage);
 					html.push(lastPage);
 				} else {
-					html = renderPage(pageIndex - symmetryBtnCount, pageBtnCount - 2, pageIndex);
+					html = renderPage(pageIndex - symmetryBtnCount,
+							pageBtnCount - 2, pageIndex);
 					html.unshift(prevPage);
 					html.push(nextPage);
 				}
@@ -391,7 +454,7 @@
 		}
 		return html;
 	}
-	
+
 	var renderPage = function(beginPageNum, count, currentPage) {
 		var html = [];
 		for (var i = 0; i < count; i++) {
@@ -406,34 +469,43 @@
 		}
 		return html;
 	}
-	
+
 	var renderPerPage = function(text, value) {
-		return $('<a class="ibm-forward-em-link" href="javascript:void(0)" style="margin-left:3px;" data-page-index="'+ value + '">' + text + '</a>');
+		return $('<a class="ibm-forward-em-link" href="javascript:void(0)" style="margin-left:3px;" data-page-index="'
+				+ value + '">' + text + '</a>');
 	}
-	
-	var renderPageSizeInfo = function(currentPageSize){
-		return $('<strong>Results per page: '+currentPageSize+'</strong> ');
+
+	var renderPageSizeInfo = function(currentPageSize) {
+		return $('<strong>Results per page: ' + currentPageSize + '</strong> ');
 	}
-	
-	var renderPageSizeItems = function(currentPageSize, pageSizeItems, total){
+
+	var renderPageSizeItems = function(currentPageSize, pageSizeItems, total) {
 		var html = [];
 		for (var i = 0; i < pageSizeItems.length; i++) {
 			if (pageSizeItems[i] != currentPageSize) {
-				html.push($('<a href="javascript:void(0)" style="margin-left:3px;" data-page-size="'+ pageSizeItems[i]+ '">'+ pageSizeItems[i] + '</a>'));
+				html
+						.push($('<a href="javascript:void(0)" style="margin-left:3px;" data-page-size="'
+								+ pageSizeItems[i]
+								+ '">'
+								+ pageSizeItems[i]
+								+ '</a>'));
 			}
 		}
-		html.push($('<a href="javascript:void(0)" style="margin-left:3px;" data-page-size="'+ total+ '">All</a>'));
+		html
+				.push($('<a href="javascript:void(0)" style="margin-left:3px;" data-page-size="'
+						+ total + '">All</a>'));
 		return html;
 	}
-	
+
 	var getPageCount = function(total, pageSize) {
 		var pageCount = 0;
 		var total = parseInt(total);
 		var i = total / pageSize;
-		pageCount = i.toString().indexOf('.') != -1 ? parseInt(i.toString().split('.')[0]) + 1 : i;
+		pageCount = i.toString().indexOf('.') != -1 ? parseInt(i.toString()
+				.split('.')[0]) + 1 : i;
 		return pageCount;
 	}
-	
+
 	var deserializeParams = function(params) {
 		var newParams = {};
 		if (typeof params === 'string') {
@@ -480,7 +552,7 @@
 		return null;
 	}
 
-	//plugin
+	// plugin
 	$.fn.paginationTable = function(option) {
 		var args = arguments;
 		return this

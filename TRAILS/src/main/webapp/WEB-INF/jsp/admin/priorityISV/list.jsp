@@ -1,5 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <s:if test="hasErrors()">
 	<s:actionerror />
@@ -38,24 +38,23 @@
 		</div>
 		<br><br>
 		<table id="isvTable" cellspacing="0" cellpadding="0" border="0"
-			class="ibm-data-table ibm-sortable-table" summary="Priority ISV list">
+			class="ibm-data-table" summary="Priority ISV list">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" id="level_th" class="ibm-sort"><a href="#sort">Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Remote User</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
-					<th scope="col"><span>Operation</span><span class="ibm-icon"></span></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" id="level_th" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote User</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Record Time</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Operation</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_list" />
 		</table>
-		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 
 </div>
@@ -143,9 +142,7 @@
 	}
 
 	function searchData() {
-		$("#pagebar").v17ePagination('destroy').v17ePagination({
-			showInfo: true,
-			showPageSizes: true,
+		$("#isvTable").paginationTable('destroy').paginationTable({
 			remote: {
 				url: "${pageContext.request.contextPath}/ws/priorityISV/isv/all",
 				type: "GET",
@@ -184,7 +181,8 @@
 					}
 					$("#priority_isv_list").html(html);
 				}
-			}
+			},
+			orderColumns: ['manufacturerName','level','accountName','accountNumber','evidenceLocation','statusDesc','businessJustification','remoteUser','recordTime','id']
 		});
 	}
 
