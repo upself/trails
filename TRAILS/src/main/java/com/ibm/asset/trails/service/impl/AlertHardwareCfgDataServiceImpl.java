@@ -30,7 +30,7 @@ public class AlertHardwareCfgDataServiceImpl extends BaseAlertServiceImpl implem
 		// TODO Auto-generated method stub
 		
 		StringBuffer query = new StringBuffer(
-				"from AlertViewHardwareCfgData cfgData join fetch cfgData.hardware hw join fetch hw.machineType where hw.account = :account and cfgData.open = 1 order by cfgData.")
+				"from AlertViewHardwareCfgData cfgData join fetch cfgData.hardware hw join fetch hw.machineType where cfgData.account = :account and cfgData.open = 1 order by cfgData.")
 				.append(sort).append(" ").append(dir);
 		
 
