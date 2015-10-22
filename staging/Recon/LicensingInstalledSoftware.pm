@@ -2956,6 +2956,7 @@ sub recordAlertUnlicensedSoftwareHistory {
  $history->creationTime( $alert->creationTime );
  $history->comments( $alert->comments );
  $history->open( $alert->open );
+ $history->type( $alert->type );
  $history->recordTime( $alert->recordTime );
  $history->save( $self->connection );
 }
