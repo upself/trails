@@ -57,6 +57,7 @@ sub recon0101 {
 	
 	my $manquery = "";
 	my $autoquery= "";
+	my $namequery;
 	
 	return unless $action =~ /^[01]+[0123]$/ ; # action is not composed of 0's and 1's (with 0123 at the end)
 	
@@ -90,18 +91,20 @@ sub recon0101 {
 	
 	$manquery =~ s/, $//; # removing the closing ", " in the $manquery
 	$autoquery =~ s/, $//; # the same for autoquery
+	$namequery = $manquery;
+	$namequery =~ s/, /-/;
 	
 	wlog("Breaking these allocation methodologies: $manquery, captypes: $autoquery");
 	
 	my %rec;
 	
-    $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($manquery, $autoquery) );
+    $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($manquery, $autoquery, $namequery) );
 
     ###access statement handle
-    my $sth = $self->connection->sql->{getReconcilesByMethodology};
+    my $sth = $self->connection->sql->{'getReconcilesByMethodology-'.$namequery};
 
     ###Bind columns
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{getReconcilesByMethodologyFields} } );
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{'getReconcilesByMethodology-'.$namequery.'Fields'} } );
 
     ###Execute query
     $sth->execute( $self->hardwareLpar->id );
@@ -215,6 +218,7 @@ sub queryGetReconcilesByMethodology {
 	my $self=shift;
 	my $methodologies=shift;
 	my $captypes=shift;
+	my $namequery=shift;
 
     my @fields = qw(
       rId
@@ -239,7 +243,7 @@ sub queryGetReconcilesByMethodology {
 	  with ur
     };
 
-    return ( 'getReconcilesByMethodology', $query, \@fields );
+    return ( 'getReconcilesByMethodology-'.$namequery, $query, \@fields );
 }
 
 1;
