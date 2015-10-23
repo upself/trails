@@ -16,11 +16,11 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch::FileRotate;
+use Recon::OM::ScarletReconcile;
 
 sub new {
- my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $hardwareId )    
-   = @_;
+ my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId, $hardwareId ) =
+   @_;
  my $self = {
   _connection      => Database::Connection->new('trails'),
   _extSrcIds       => [],
@@ -137,7 +137,7 @@ sub httpGetScarletGuids {
  if ( $response->is_success ) {
   my $json = new JSON;
   try {
-   local $SIG{__DIE__};# No sigdie handler
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
    $scarletGuids = $jsObj->{$member} if ( defined $jsObj->{$member} );
     }
@@ -411,6 +411,10 @@ and kbd.guid in(' . $guids . ') with ur ';
      $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
 
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id($reconcile);
+   $scarletReconcile->save( $self->connection );
+   
    $self->info( 'SUCCESS:' . $reconcile . ' ref ' . $isObj->toString );
 
    foreach my $ulId ( @{ $self->usedLicenses } ) {

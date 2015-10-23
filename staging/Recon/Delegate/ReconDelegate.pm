@@ -8,6 +8,7 @@ use Recon::OM::Reconcile;
 use Recon::OM::UsedLicense;
 use BRAVO::OM::License;
 use Recon::Queue;
+use Recon::OM::ScarletReconcile;
 
 sub getReconcileTypeMap {
 	my ($self) = @_;
@@ -300,6 +301,17 @@ sub breakReconcileById {
 	dlog("deleting the reconciliation");
 	$reconcile->delete($connection);
 	dlog("deleted the reconciliation");
+	
+	###Delete scarlet reconcile object if exists.
+	dlog("deleting the scarlet reconciliation");
+	my $scarletReconcile = new Recon::OM::ScarletReconcile();
+    $scarletReconcile->id($reconcile->id);
+    $scarletReconcile->getByBizKey($connection);
+    
+    if(defined $scarletReconcile->lastValidateTime){
+	  $scarletReconcile->delete($connection);
+    }
+	dlog("deleted the scarlet reconciliation");
 
 	dlog("Adding licenses to queue");
 	foreach my $licenseId ( keys %licenseIds ) {
