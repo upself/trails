@@ -119,32 +119,30 @@ sub hardwareLparCount {
     my $self = shift;
 
     my $count = 0;
-
-    $self->connection->prepareSqlQuery( $self->queryHardwareLparCount );
-    my $sth = $self->connection->sql->{hardwareLparCount};
-    $sth->bind_columns( \$count );
+    
+    $self->connection->prepareSqlQuery( $self->queryActiveLparCount );
+    my $sth = $self->connection->sql->{activeLparCount};
+    $sth->bind_columns ( \$count );
     $sth->execute( $self->hardware->id );
     $sth->fetchrow_arrayref;
     $sth->finish;
-
+    
     return $count;
 }
 
-sub queryHardwareLparCount {
-    my $query = qq{
+sub queryActiveLparCount {
+    my $query = "
         select
             count(hl.id)
         from
-            hardware h
-            ,hardware_lpar hl
+            hardware_lpar hl
         where
-            h.id = ?
-            and h.id = hl.hardware_id
+            hl.hardware_id = ?
             and hl.status = 'ACTIVE'
-        with ur
-    };
+            and hl.lpar_status = 'ACTIVE'
+        with ur";
 
-    return ( 'hardwareLparCount', $query );
+    return ( 'activeLparCount', $query );
 }
 
 sub openAlert {
