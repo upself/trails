@@ -1,3 +1,5 @@
+CONNECT TO TRAILSPD
+;
 ------------------------------------------------
 -- DDL Statements for Table "TRAILSPD_CD"."SCARLET_RECONCILE"
 ------------------------------------------------
