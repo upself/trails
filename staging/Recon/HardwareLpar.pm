@@ -101,10 +101,10 @@ sub recon0101 {
     $self->connection->prepareSqlQueryAndFields( $self->queryGetReconcilesByMethodology($manquery, $autoquery, $namequery) );
 
     ###access statement handle
-    my $sth = $self->connection->sql->{'getReconcilesByMethodology-'.$namequery};
+    my $sth = $self->connection->sql->{'getReconcilesByMethodologyLpar-'.$namequery};
 
     ###Bind columns
-    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{'getReconcilesByMethodology-'.$namequery.'Fields'} } );
+    $sth->bind_columns( map { \$rec{$_} } @{ $self->connection->sql->{'getReconcilesByMethodologyLpar-'.$namequery.'Fields'} } );
 
     ###Execute query
     $sth->execute( $self->hardwareLpar->id );
@@ -243,7 +243,7 @@ sub queryGetReconcilesByMethodology {
 	  with ur
     };
 
-    return ( 'getReconcilesByMethodology-'.$namequery, $query, \@fields );
+    return ( 'getReconcilesByMethodologyLpar-'.$namequery, $query, \@fields );
 }
 
 1;
