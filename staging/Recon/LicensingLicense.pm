@@ -321,7 +321,7 @@ sub getLicenseAllocationsData {
 															$rec{swName}, # software name
 															$rec{hOwner}, # hardware owner ID
 															$rec{hSerial}, # hardware serial
-															$rec{mtType}, #machine type
+															$rec{mtId}, #machine type ID
 															$rec{slName} #hostname
 															  );
 
@@ -365,6 +365,7 @@ sub queryLicenseAllocationsData {
 	  hlPartMIPS
 	  hlPartGartnerMIPS
 	  hlPartMSU
+	  mtId
 	  mtType
 	  slComplianceMgmt
 	  guid
@@ -396,6 +397,7 @@ sub queryLicenseAllocationsData {
             ,hl.part_mips
             ,hl.part_gartner_mips
             ,hl.part_msu
+            ,mt.id
             ,mt.type
             ,c.sw_compliance_mgmt
             ,kbd.guid
