@@ -17,7 +17,7 @@ my $configFile = "/opt/staging/v2/config/scarletProcessConfig.txt";
 my $cfgMgr      = Base::ConfigManager->instance($configFile);
 my $sleepPeriod = $cfgMgr->sleepPeriod;
 my $server      = $cfgMgr->server;
-my $gapHour     = $cfgMgr->validationGapHour;                   
+my $gapHour     = $cfgMgr->config->getProperty('validationGapHour');                   
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
