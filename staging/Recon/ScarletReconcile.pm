@@ -66,12 +66,15 @@ sub validate {
    dlog("reconcile already breaked ");
    my $scarletReconcile = new Recon::OM::ScarletReconcile();
    $scarletReconcile->id($reconcileId);
-   $scarletReconcile->delete($self->connection);
-   dlog("scarlet reconcile deleted");    
+   $scarletReconcile->delete( $self->connection );
+   dlog("scarlet reconcile deleted");
   }
-  elsif ( not $scarletIs->existInScarlet( $reconcileId, $installedSoftwareId ) )
+  elsif (
+      ( not $scarletIs->existInScarlet( $reconcileId, $installedSoftwareId ) )
+   && ( not $scarletIs->outOfService )    
+    )
   {
-   dlog("scarlet not valid.");
+   dlog("item not in scarlet");
    dlog("reconcileId=$reconcileId");
    dlog("installedSoftwareId=$installedSoftwareId");
 
@@ -88,8 +91,12 @@ sub validate {
 
    dlog("appened into licensing queue");
   }
+  elsif ( $scarletIs->outOfService ) {
+   ##scarlet out of service do nothing.
+   wlog('scarlet out of service. ');
+  }
   else {
-   dlog("scarlet still valid.");
+   dlog("item still valid in scarlet");
    my $scarletReconcile = new Recon::OM::ScarletReconcile();
    $scarletReconcile->id($reconcileId);
    $scarletReconcile->update( $self->connection );
