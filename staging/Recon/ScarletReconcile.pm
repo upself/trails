@@ -65,7 +65,7 @@ sub validate {
   if ( !defined $installedSoftwareId || !defined $customerId ) {
    dlog("reconcile already breaked ");
    my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id( $reconcile->id );
+   $scarletReconcile->id($reconcileId);
    $scarletReconcile->delete($self->connection);
    dlog("scarlet reconcile deleted");    
   }
@@ -76,7 +76,7 @@ sub validate {
    dlog("installedSoftwareId=$installedSoftwareId");
 
    my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-   $installedSoftware->id($instSwId);
+   $installedSoftware->id($installedSoftwareId);
 
    my $softwareLpar = new BRAVO::OM::SoftwareLpar();
    $softwareLpar->customerId($customerId);
@@ -91,7 +91,7 @@ sub validate {
   else {
    dlog("scarlet still valid.");
    my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcile);
+   $scarletReconcile->id($reconcileId);
    $scarletReconcile->update( $self->connection );
 
    dlog("last validation time reset.");

@@ -1,5 +1,5 @@
 --License Primary Component <> Alert Component and recon type id= 5 (ALA)
-insert into scarlet_reconcile (id, last_validate_time)
+insert into eaadmin.scarlet_reconcile (id, last_validate_time)
 select unique (reconcile.id), current_timestamp
 from eaadmin.reconcile reconcile
 inner join eaadmin.installed_software installed_software on
