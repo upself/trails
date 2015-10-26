@@ -21,6 +21,11 @@ sub _new_instance {
     return $self;
 }
 
+sub config{
+    my $self = shift;
+    return $self->{_cfg};
+}
+
 sub testMode {
     my $self = shift;
     return $self->{_cfg}->getProperty('testMode');
