@@ -55,12 +55,8 @@ sub save {
 
  $connection->prepareSqlQuery( $self->queryInsert() );
  my $sth = $connection->sql->{insertScarletReconcile};
- my $id;
- $sth->bind_columns( \$id );
  $sth->execute( $self->id );    
- $sth->fetchrow_arrayref;
  $sth->finish;
- $self->id($id);
 }
 
 sub update {
@@ -80,7 +76,7 @@ sub queryInsert {
             last_validate_time
         ) values (
             ?, current timestamp 
-        ))
+        )
     ';
  return ( 'insertScarletReconcile', $query );
 }
