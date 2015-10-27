@@ -152,13 +152,8 @@ sub httpGetScarletGuids {
     catch { wlog('bad json format.') };
  }
  else {
-  if ( $response->status_line =~ /500/ ) {
    $self->outOfService(1);
-   wlog('http 500 scarlet not accessable');
-  }    
-  else {
    wlog( 'scarlet requesting failed: ' . $response->status_line );
-  }
  }
 
  return $scarletGuids;
