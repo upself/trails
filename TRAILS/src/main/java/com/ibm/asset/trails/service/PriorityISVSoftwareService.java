@@ -14,6 +14,6 @@ public interface PriorityISVSoftwareService {
 	public PriorityISVSoftware findPriorityISVSoftwareByUniqueKeys(String level, Long manufacturerId, Long customerId);
 	public Long total();
 	public Long totalHistory(Long priorityISVSoftwareId);
-	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize);
-	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(Long priorityISVSoftwareId,Integer startIndex, Integer pageSize);
+	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer startIndex, Integer pageSize, String sort, String dir);
+	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(Long priorityISVSoftwareId,Integer startIndex, Integer pageSize, String sort, String dir);
 }

@@ -149,14 +149,14 @@ public class PriorityISVSoftwareServiceImpl implements PriorityISVSoftwareServic
 	}
 
 	@Override
-	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer pageIndex, Integer pageSize) {
-	  return this.priorityISVSoftwareDAO.getAllPriorityISVSoftwareDisplays(pageIndex,pageSize);
+	public List<PriorityISVSoftwareDisplay> getAllPriorityISVSoftwareDisplays(Integer pageIndex, Integer pageSize, String sort, String dir) {
+	  return this.priorityISVSoftwareDAO.getAllPriorityISVSoftwareDisplays(pageIndex,pageSize,sort,dir);
 	}
 
 	@Override
 	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(
-			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize) {
-	   return this.priorityISVSoftwareHDAO.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId, startIndex, pageSize);
+			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize, String sort, String dir) {
+	   return this.priorityISVSoftwareHDAO.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId, startIndex, pageSize,sort,dir);
 	}
 	
 	private void insertRelatedReconPriorityISVSWs(String operation, PriorityISVSoftware oldPISVSW,PriorityISVSoftware newPISVSW){
