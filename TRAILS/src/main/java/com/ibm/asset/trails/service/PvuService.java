@@ -8,6 +8,7 @@ import com.ibm.asset.trails.domain.ProcessorValueUnit;
 public interface PvuService {
 
 	List<ProcessorValueUnit> getPvuList();
+	List<ProcessorValueUnit> getPvuList(int startIndex,int objectsPerPage, String sort, String dir);
 
 	void savePvuMap(ProcessorValueUnit pvu, String processorBrand,
 			String processorModel, MachineType pMachineType);
