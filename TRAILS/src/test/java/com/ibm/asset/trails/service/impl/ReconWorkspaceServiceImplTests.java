@@ -132,7 +132,7 @@ public class ReconWorkspaceServiceImplTests {
 	 * 
 	 * Testing manual recon close by per HWIFL 17231 in Jazz Hub.
 	 */
-	@Test
+	//@Test
 	@Transactional
 	public void testManualReconGroupForStory17231() throws Throwable {
 
@@ -234,7 +234,7 @@ public class ReconWorkspaceServiceImplTests {
 	 * Testing manual recon close the oldest alerts first. Details check story
 	 * 16837 in Jazz Hub.
 	 */
-	@Test
+	//@Test
 	@Transactional
 	public void testManualReconGroupForStory16837() throws Throwable {
 
