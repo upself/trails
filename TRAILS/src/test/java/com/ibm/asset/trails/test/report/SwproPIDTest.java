@@ -20,7 +20,7 @@ public class SwproPIDTest {
 	 * Author: vndwbwan@cn.ibm.com
 	 * Test swproPID in license 
 	 * */
-	@Test
+	//@Test
 	public void swproPIDTest() throws Exception {
 		
 		

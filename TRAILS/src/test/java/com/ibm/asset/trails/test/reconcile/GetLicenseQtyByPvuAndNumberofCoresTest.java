@@ -33,7 +33,7 @@ public class GetLicenseQtyByPvuAndNumberofCoresTest {
 	 * Author: vndwbwan@cn.ibm.com
 	 * Test manual reconcile by PVU,Story_22770 in jazzHub 
 	 * */
-	@Test
+	//@Test
 	public void getLicenseQtyByPvuAndNumberofCores_offline_1_Test() throws Exception {
 		
 		List<PvuInfo> llPvuInfo = new ArrayList<PvuInfo>();
