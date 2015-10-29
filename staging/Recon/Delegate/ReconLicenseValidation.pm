@@ -596,7 +596,10 @@ sub validateLicenseSoftwareMap {
  my ( $self, $swMapSoftwareId, $isManual, $isSoftwareId, $reconcileId,
   $licenseId, $isId )
    = @_;
-
+  dlog('begin validateLicenseSoftwareMap');
+  dlog('$swMapSoftwareId='.$swMapSoftwareId.' $isManual='.$isManual.
+  ' $isSoftwareId='.$isSoftwareId.' $swMapSoftwareId='.$swMapSoftwareId);
+ 
  ###Validate software id if mapped and recon was auto.
  if (defined $swMapSoftwareId
   && $isManual == 0
@@ -624,7 +627,11 @@ sub validateLicenseSoftwareMap {
   else {
    $self->scarletAllocation('YES');
   }
- }
+ }elsif(defined $swMapSoftwareId
+  && $isManual == 0
+  && $isSoftwareId == $swMapSoftwareId ){
+   $self->scarletAllocation('NO');
+  }
 
  return 1;
 }

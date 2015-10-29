@@ -97,7 +97,7 @@ sub validate {
     dlog("scarlet reconcile deleted");
    }
    else {
-    dlog("not exists in scarlet");    
+    dlog("not exists in scarlet");
     my $installedSoftware = new BRAVO::OM::InstalledSoftware();
     $installedSoftware->id($installedSoftwareId);
 
@@ -108,6 +108,10 @@ sub validate {
       Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar,
      'LICENSING' );
     $queue->add;
+
+    my $scarletReconcile = new Recon::OM::ScarletReconcile();
+    $scarletReconcile->id($reconcileId);
+    $scarletReconcile->update( $self->connection );
 
     dlog("appened into licensing queue");
    }
@@ -128,7 +132,8 @@ sub validate {
 }
 
 sub checkIfAutoScarletAllocate {
- my ( $self, $reconTypeId, $softwareIdOfInstalledSw, $reconcileId ) = shift;
+ my ( $self, $reconTypeId, $softwareIdOfInstalledSw, $reconcileId ) =
+   @_;    
 
  my $query = '
     select
@@ -146,6 +151,7 @@ sub checkIfAutoScarletAllocate {
  ';
 
  dlog( "query=" . $query );
+ dlog( "reconcileId=" . $reconcileId );
 
  my $softwareIdFromLicenseMap;
  $self->connection->prepareSqlQuery( 'getSWIdFromLicenseMap', $query );
@@ -154,7 +160,13 @@ sub checkIfAutoScarletAllocate {
  $sth->execute($reconcileId);
 
  my $swMapLicense = 0;
+
  while ( $sth->fetchrow_arrayref ) {
+
+  dlog('$softwareIdOfInstalledSw='
+     . $softwareIdOfInstalledSw
+     . ' $softwareIdFromLicenseMap='
+     . $softwareIdFromLicenseMap );
 
   #if not equal means it's scarlet reconcile.
   if ( $softwareIdOfInstalledSw ne $softwareIdFromLicenseMap ) {

@@ -138,7 +138,9 @@ sub recon {
   $self->closeAlertUnlicensedSoftware(1);
 
   my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-
+  
+  dlog('scarletAllocation='.$validation->scarletAllocation.' rTypeId='.
+     $self->installedSoftwareReconData->rTypeId);
   #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
   if ( $self->installedSoftwareReconData->rTypeId ==
       $reconcileTypeMap->{'Automatic license allocation'}
