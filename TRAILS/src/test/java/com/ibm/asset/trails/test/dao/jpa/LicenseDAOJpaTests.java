@@ -60,7 +60,7 @@ public class LicenseDAOJpaTests {
         assertEquals(data.getList().size(), objectsPerPage);
     }
 
-    @Test
+   // @Test
     public void testPaginatedList() {
         int startIndex = 0;
         String sort = "id";
