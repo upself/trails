@@ -36,7 +36,9 @@ sub validate {
     select 
       sr.id, 
       r.installed_software_id,
-      sl.customer_id
+      sl.customer_id, 
+      r.reconcile_type_id,
+      is.software_id
     from 
       scarlet_reconcile sr
       left outer join reconcile r
@@ -46,16 +48,20 @@ sub validate {
       left outer join software_lpar sl
       on sl.id = is.software_lpar_id
     where 
-      TIMESTAMPDIFF(8, (current timestamp)-(sr.last_validate_time)) >=?';
+      TIMESTAMPDIFF(8, (current timestamp)-(sr.last_validate_time)) >=?'
+   ;
 
  dlog( 'getObserveItems=' . $query );
 
  my $reconcileId;
  my $installedSoftwareId;
  my $customerId;
+ my $reconcileTypeId;
+ my $swIdOfInstalledSw;
  $self->connection->prepareSqlQuery( 'getObserveItems', $query );
  my $sth = $self->connection->sql->{getObserveItems};
- $sth->bind_columns( \$reconcileId, \$installedSoftwareId, \$customerId );
+ $sth->bind_columns( \$reconcileId, \$installedSoftwareId, \$customerId,
+  \$reconcileTypeId, \$swIdOfInstalledSw );
 
  $sth->execute( $self->gapHour );
 
@@ -71,25 +77,40 @@ sub validate {
   }
   elsif (
       ( not $scarletIs->existInScarlet( $reconcileId, $installedSoftwareId ) )
-   && ( not $scarletIs->outOfService )    
-    )
+   && ( not $scarletIs->outOfService ) )
   {
    dlog("item not in scarlet");
    dlog("reconcileId=$reconcileId");
    dlog("installedSoftwareId=$installedSoftwareId");
 
-   my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-   $installedSoftware->id($installedSoftwareId);
+   my $isAutoScarlet =
+     $self->checkIfAutoScarletAllocate( $reconcileTypeId, $swIdOfInstalledSw,
+    $reconcileId );
 
-   my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-   $softwareLpar->customerId($customerId);
+   dlog( "isAutoScarlet=" . $isAutoScarlet );
 
-   my $queue =
-     Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar,
-    'LICENSING' );
-   $queue->add;
+   if ( not $isAutoScarlet ) {
+    dlog("not reconciled by scarelt");
+    my $scarletReconcile = new Recon::OM::ScarletReconcile();
+    $scarletReconcile->id($reconcileId);
+    $scarletReconcile->delete( $self->connection );
+    dlog("scarlet reconcile deleted");
+   }
+   else {
+    dlog("not exists in scarlet");    
+    my $installedSoftware = new BRAVO::OM::InstalledSoftware();
+    $installedSoftware->id($installedSoftwareId);
 
-   dlog("appened into licensing queue");
+    my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+    $softwareLpar->customerId($customerId);
+
+    my $queue =
+      Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar,
+     'LICENSING' );
+    $queue->add;
+
+    dlog("appened into licensing queue");
+   }
   }
   elsif ( $scarletIs->outOfService ) {
    ##scarlet out of service do nothing.
@@ -106,4 +127,50 @@ sub validate {
  }
 }
 
+sub checkIfAutoScarletAllocate {
+ my ( $self, $reconTypeId, $softwareIdOfInstalledSw, $reconcileId ) = shift;
+
+ my $query = '
+    select
+     lsm.software_id
+   from 
+     scarlet_reconcile sr, 
+     reconcile_used_license rul, 
+     used_license ul,
+     license_sw_map lsm
+   where
+     sr.id  = rul.reconcile_id
+     and rul.used_license_id = ul.id
+     and ul.license_id  = lsm.license_id
+     and sr.id  = ?
+ ';
+
+ dlog( "query=" . $query );
+
+ my $softwareIdFromLicenseMap;
+ $self->connection->prepareSqlQuery( 'getSWIdFromLicenseMap', $query );
+ my $sth = $self->connection->sql->{getSWIdFromLicenseMap};
+ $sth->bind_columns( \$softwareIdFromLicenseMap );
+ $sth->execute($reconcileId);
+
+ my $swMapLicense = 0;
+ while ( $sth->fetchrow_arrayref ) {
+
+  #if not equal means it's scarlet reconcile.
+  if ( $softwareIdOfInstalledSw ne $softwareIdFromLicenseMap ) {
+   $swMapLicense = 1;
+   last;
+  }
+ }
+
+ dlog( "swMapLicense=" . $swMapLicense );
+
+ if ( ( $reconTypeId eq 5 ) and $swMapLicense ) {
+  return 1;
+ }
+ return 0;
+
+}
+
 1;
+
