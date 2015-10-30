@@ -165,7 +165,10 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		   List<ReconcileType> reconcileTypeRemoveList = new ArrayList<ReconcileType>();
 			
 	  	   for(ReconcileType reconcileType: reconcileTypeList){
+<<<<<<< HEAD
 	  		   //task 36542 add MLA back to Trails on UAT and DEV
+=======
+>>>>>>> refs/heads/master
 		     if(reconcileType.getId()!=null && reconcileType.getId().intValue()==2){//judge if reconcile type is manual CO/CM
 		       reconcileTypeRemoveList.add(reconcileType);//add manual CO/CM reconcile type into reconcile type remove list
 		     }

@@ -28,6 +28,10 @@ public abstract class AbstractXMLCPT {
 		this.path = path;
 	}
 
+	public String getPath() {
+		return this.path;
+	}
+
 	public AbstractXMLCPT(String tagName, String path) {
 		this.tagName = tagName;
 		this.path = path;
@@ -58,8 +62,8 @@ public abstract class AbstractXMLCPT {
 		}
 
 		if (this.element == null) {
-			throw new RuntimeException("Element" + getElementName()
-					+ "not found in " + path);
+			throw new RuntimeException("Element " + getElementName()
+					+ " not found in " + path);
 		}
 	}
 

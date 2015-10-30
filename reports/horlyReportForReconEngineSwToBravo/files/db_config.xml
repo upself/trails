@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <application>
-	<connection name="trailsConnection">
-		<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver>
-		<url>jdbc:db2:trails</url>
-		<user>eaadmin</user>
-		<password>Gr0wl3rs</password>
+
+	<propertyLoader name="stagingConnConfig"
+		path="/opt/staging/v2/config/connectionConfig.txt" />
+
+	<connection name="trailsConnection" property="stagingConnConfig">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2:${trails.name}</url>
+		<user>${trails.user}</user>
+		<password>${trails.password}</password>
 	</connection>
 
-	<connection name="stagingConnection">
-		<driver>COM.ibm.db2.jdbc.app.DB2Driver</driver>
-		<url>jdbc:db2:staging</url>
-		<user>eaadmin</user>
-		<password>apr03db2</password>
+	<connection name="stagingConnection" property="stagingConnConfig">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2:${staging.name}</url>
+		<user>${staging.user}</user>
+		<password>${staging.password}</password>
 	</connection>
-
 
 
 	<dbQuery name="summaryInventoryQty" connection="trailsConnection">
@@ -232,7 +235,7 @@
 			<metadata type="int" name="qty" sequence="2" />
 		</result>
 	</dbQuery>
-	
+
 	<dbQuery name="queryP44" connection="trailsConnection">
 		<query><![CDATA[
                select c.customer_name, ris.action, count(*) 

@@ -138,9 +138,7 @@ sub recon {
   $self->closeAlertUnlicensedSoftware(1);
 
   my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-  
-  dlog('scarletAllocation='.$validation->scarletAllocation.' rTypeId='.
-     $self->installedSoftwareReconData->rTypeId);
+
   #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
   if ( $self->installedSoftwareReconData->rTypeId ==
       $reconcileTypeMap->{'Automatic license allocation'}
@@ -2974,7 +2972,6 @@ sub recordAlertUnlicensedSoftwareHistory {
  $history->creationTime( $alert->creationTime );
  $history->comments( $alert->comments );
  $history->open( $alert->open );
- $history->type( $alert->type );
  $history->recordTime( $alert->recordTime );
  $history->save( $self->connection );
 }
@@ -3011,37 +3008,49 @@ sub openAlertUnlicensedSoftware {
    $alert->save( $self->connection );
    $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection ) if ( $alert->type eq 'SCOPE' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection ) if ( $alert->type eq 'IBM' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection ) if ( $alert->type eq 'ISVPRIO' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection ) if ( $alert->type eq 'ISVNOPRIO' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+     if ( $alert->type eq 'SCOPE' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+     if ( $alert->type eq 'IBM' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+     if ( $alert->type eq 'ISVPRIO' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+     if ( $alert->type eq 'ISVNOPRIO' );
   }
   elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-			if (( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' )) { # when changing from ISVPRIO to ISVNOPRIO or vice versa,
-																			# cause code shouldn't be reset
-				dlog("Alert type has changed, creating a new history record and resetting the cause code.");
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			} else {
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			}
-		}
-	}
-	else {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
-		
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-	}
+   if ( ( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' ) )
+   {    # when changing from ISVPRIO to ISVNOPRIO or vice versa,
+        # cause code shouldn't be reset
+    dlog(
+"Alert type has changed, creating a new history record and resetting the cause code."
+    );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+      if ( $alert->type eq 'SCOPE' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+      if ( $alert->type eq 'IBM' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+      if ( $alert->type eq 'ISVPRIO' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+      if ( $alert->type eq 'ISVNOPRIO' );
+   }
+  }
+ }
+ else {
+  $alert->creationTime( currentTimeStamp() );
+  $alert->save( $self->connection );
+
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+    if ( $alert->type eq 'SCOPE' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+    if ( $alert->type eq 'IBM' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+    if ( $alert->type eq 'ISVPRIO' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+    if ( $alert->type eq 'ISVNOPRIO' );
+ }
 
  dlog("end openAlertUnlicensedSoftware");
 }
