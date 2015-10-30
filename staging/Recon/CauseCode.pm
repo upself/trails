@@ -38,9 +38,18 @@ sub resetCCcode {
 
 sub updateCCtable {
 	my ( $alertid, $alertcode, $connection) = @_;
+	my $oldId;
 	
-	if ( GetByAlert ( $alertid, $alertcode, $connection ) ) {
-		# alert ID + alerttype combination already found, nothing added
+	if ( $oldId=GetByAlert ( $alertid, $alertcode, $connection ) ) {
+		return 0 if ( $alertcode !~ /^SWI/ );
+		
+		$connection->prepareSqlQuery(queryUpdateAlertCode());
+		
+		my $sth=$connection->sql->{updateAlertCode};
+	
+		$sth->execute( $alertcode, $oldId );
+		$sth->finish;
+		
 		return 0;
 		
 	} else {
@@ -122,6 +131,16 @@ sub queryGetByAlert {
 		with ur
 		';
 	return ( 'GetCCbyAlert', $query );
+}
+
+sub queryUpdateAlertCode {
+    my $query = '
+        update cause_code
+			set
+			alert_type_id = ( select id from alert_type where code = ? )
+		where id = ?
+    ';
+    return ('updateAlertCode', $query);
 }
 
 sub queryResetCC {
