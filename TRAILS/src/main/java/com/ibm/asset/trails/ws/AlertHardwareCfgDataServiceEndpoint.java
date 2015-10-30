@@ -167,15 +167,15 @@ public class AlertHardwareCfgDataServiceEndpoint {
 			HSSFWorkbook hwb=new HSSFWorkbook();
 			Account account = accountService.getAccount(accountId);
 			
+			//story 35896
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfig" + account.getAccount() + ".xls");
 			reportService.getAlertHardwareCfgDataReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
-			
+			//story 35896
+			response.flushBuffer();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
-
 		ResponseBuilder responseBuilder = Response.ok(response.getOutputStream());
 		return responseBuilder.build();
 	}

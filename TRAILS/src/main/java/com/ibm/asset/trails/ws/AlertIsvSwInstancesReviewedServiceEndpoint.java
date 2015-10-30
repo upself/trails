@@ -93,6 +93,8 @@ public class AlertIsvSwInstancesReviewedServiceEndpoint {
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWISVNPR","SWISVNPR","SOM4c: ISV SW INSTANCES REVIEWED", "ISV");
+			//story 35896
+			response.flushBuffer();
 
 		} catch (Exception e) {
 			e.printStackTrace();
