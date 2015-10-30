@@ -16,8 +16,8 @@ public interface NonInstanceService {
 	public NonInstanceDisplay findNonInstanceDisplayById(Long Id);
 	public Long total(NonInstanceDisplay nonInstanceDisplay);
 	public Long totalHistory(Long nonInstanceId);
-	public List<NonInstance> findNonInstances(NonInstanceDisplay nonInstanceDisplay,Integer startIndex, Integer pageSize);
-	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize);
+	public List<NonInstance> findNonInstances(NonInstanceDisplay nonInstanceDisplay,Integer startIndex, Integer pageSize, String sort, String dir);
+	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize, String sort, String dir);
 	
 	public void updateNonInstance(NonInstance nonInstance);
 	public void saveNonInstance(NonInstance nonInstance);

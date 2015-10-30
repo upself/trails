@@ -1,32 +1,31 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Priority ISV history table">
 			<caption>
-                <em>Priority ISV SW History</em>
-                </caption>
+               <em>Priority ISV SW History</em>
+            </caption>
 			<thead>
 				<tr>
-					<th scope="col">Manufacturer Name</th>
-					<th scope="col">Level</th>
-					<th scope="col">CNDB Name</th>
-					<th scope="col">CNDB ID</th>
-					<th scope="col">Evidence Location</th>
-					<th scope="col">Status</th>
-					<th scope="col">Business Justification</th>
-					<th scope="col">Remote User</th>
-					<th scope="col">Record Time</th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>CNDB Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>CNDB ID</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Evidence Location</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Business Justification</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote User</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Record Time</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="priority_isv_history_list">
 			</tbody>
 		</table>
-		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 </div>
 <script>
@@ -35,9 +34,7 @@ $(function(){
 });
 
 function searchData(){
-	$("#pagebar").v17ePagination({
-		showInfo: true,
-		showPageSizes: true,
+	$("#page").paginationTable({
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/priorityISV/isvh/<s:property value='priorityISVSoftwareId'/>",
 			type: "GET",
@@ -63,7 +60,8 @@ function searchData(){
 				}
 				$("#priority_isv_history_list").html(html);
 			}
-		}
+		},
+		orderColumns: ['manufacturerName','level','accountName','accountNumber','evidenceLocation','statusDesc','businessJustification','remoteUser','recordTime']
 	});
 };
 </script>

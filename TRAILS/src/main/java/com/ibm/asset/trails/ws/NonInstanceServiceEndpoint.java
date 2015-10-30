@@ -72,7 +72,9 @@ public class NonInstanceServiceEndpoint {
 			@FormParam("baseOnly") String baseOnlyStr,
 			@FormParam("statusId") String statusIdStr,
 			@FormParam("currentPage") Integer currentPage,
-			@FormParam("pageSize") Integer pageSize) {
+			@FormParam("pageSize") Integer pageSize,
+			@FormParam("sort") String sort,
+			@FormParam("dir") String dir) {
 
 		Integer capacityCode = null;
 		Integer baseOnly  = null;
@@ -99,7 +101,7 @@ public class NonInstanceServiceEndpoint {
 		int startIndex = (currentPage-1) * pageSize;
 		Long total = nonInstanceService.total(searchObj);
 		if(total > 0){
-			nonList = nonInstanceService.findNonInstances(searchObj,startIndex,pageSize);
+			nonList = nonInstanceService.findNonInstances(searchObj,startIndex,pageSize,sort,dir);
 		}
 			
 
@@ -116,13 +118,15 @@ public class NonInstanceServiceEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg history(@PathParam("nonInstanceId") Long nonInstanceId,
 			@QueryParam("currentPage") Integer currentPage,
-			@QueryParam("pageSize") Integer pageSize) {
+			@QueryParam("pageSize") Integer pageSize,
+			@QueryParam("sort") String sort,
+			@QueryParam("dir") String dir) {
 
 		List<NonInstanceH> nonHList = null;
 		int startIndex = (currentPage-1) * pageSize;
 		Long total = nonInstanceService.totalHistory(nonInstanceId);
 		if(total > 0){
-			nonHList = nonInstanceService.findNonInstanceHs(nonInstanceId,startIndex,pageSize);
+			nonHList = nonInstanceService.findNonInstanceHs(nonInstanceId,startIndex,pageSize,sort,dir);
 		}
 		
 

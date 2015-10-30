@@ -1,31 +1,30 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
-			summary="Sortable Non Instance based SW history table">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+			summary="Non Instance based SW history table">
 			<caption>
                 <em>Non Instance based SW history</em>
                 </caption>
 			<thead>
 				<tr>
-					<th scope="col">Software title</th>
-					<th scope="col">Manufacturer</th>
-					<th scope="col">Restriction</th>
-					<th scope="col">Non Instance based only</th>
-					<th scope="col">Capacity type</th>
-					<th scope="col">Status</th>
-					<th scope="col">Remote users</th>
-					<th scope="col">Record time</th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Restriction</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Non Instance based only</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote users</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Record time</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
 				
 			</tbody>
 		</table>
-		<p id="pagebar" class="ibm-table-navigation"></p>
 	</div>
 </div>
 <script>
@@ -35,9 +34,7 @@ $(function(){
 });
 
 function searchData(){
-	$("#pagebar").v17ePagination({
-		showInfo: true,
-		showPageSizes: true,
+	$("#page").paginationTable({
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/noninstance/history/<s:property value='nonInstanceId' />",
 			type: "GET",
@@ -66,7 +63,8 @@ function searchData(){
 				}
 				$("#non_instance_list").html(html);
 			}
-		}
+		},
+		orderColumns: ['software.softwareName','manufacturer.manufacturerName','restriction','baseOnly','capacityType.description','status.description','remoteUser','recordTime']
 	});
 };
 </script>

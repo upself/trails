@@ -1,5 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
@@ -48,26 +48,24 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable Hardware with Hostname">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SOM1a: Hardware with Hostname">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort nobreak">Assign/Unassign</th>
-					<th scope="col" class="ibm-sort nobreak">Status</th>
-					<th scope="col" class="ibm-sort nobreak">Serial</th>
-					<th scope="col" class="ibm-sort nobreak">MachineType</th>
-					<th scope="col" class="ibm-sort nobreak">Country</th>
-					<th scope="col" class="ibm-sort nobreak">Create date</th>
-					<th scope="col" class="ibm-sort nobreak">Age(days)</th>
-					<th scope="col" class="ibm-sort nobreak">Assignee</th>
-					<th scope="col" class="ibm-sort nobreak">Comments</th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/Unassign</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>MachineType</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Country</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Create date</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Age(days)</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assignee</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Comments</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="tb">
 				
 			</tbody>
 		</table>
-		<p class="ibm-table-navigation" id="pagebar"></p>
-		
 	</div>
 </div>
 <script>
@@ -82,9 +80,7 @@ function searchData(){
 	params['sort'] = 'alertAge';
 	params['dir'] = 'desc';
 	
-	$("#pagebar").v17ePagination('destroy').v17ePagination({
-		showInfo: true,
-		showPageSizes: true,
+	$("#page").paginationTable('destroy').paginationTable({
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/alertHardware/search",
 			type: "POST",
@@ -111,7 +107,8 @@ function searchData(){
 				}
 				$("#tb").html(html);
 			}
-		}
+		},
+		orderColumns: ['tableId','alertAge','hardware.serial','hardware.machineType.name','hardware.country','creationTime','alertAge','remoteUser','tableId']
 	}); 
 };
 function assignComments(type){
@@ -211,7 +208,7 @@ function assignOrNot(url,params){
 		type: 'POST',
 		dataType: 'json',
 		beforeSend: function(){
-			$("#pagebar").v17ePagination('showLoading');
+			$("#page").paginationTable('showLoading');
 		},
 		success: function(wsMsg){
 			if(wsMsg.status != '200'){

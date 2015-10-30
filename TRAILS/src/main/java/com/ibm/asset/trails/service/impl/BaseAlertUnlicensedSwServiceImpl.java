@@ -71,7 +71,9 @@ public abstract class BaseAlertUnlicensedSwServiceImpl extends
             lsbSort.append("Alert_Age ");
         } else if (psSort.equalsIgnoreCase("softwareItemName")) {
             lsbSort.append("Software_Item_Name ");
-        } else if (psSort.equalsIgnoreCase("alertCount")) {
+        } else if (psSort.equalsIgnoreCase("creationTime")){
+        	lsbSort.append("Creation_Time ");
+        }else if (psSort.equalsIgnoreCase("alertCount")) {
             lsbSort.append("Alert_Count ");
         }
         lsbSort.append(psDir);

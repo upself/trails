@@ -74,7 +74,7 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	@SuppressWarnings("unchecked")
 
 	public void testGetOnePageOfPriorityISVSoftwareDisplays(){
-	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays(1,10);
+	    WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getAllPriorityISVSoftwareDisplays(1,10,null,null);
 		Pagination page = (Pagination) wsMsg.getData();
 	    if(null!=page){
 	    	System.out.println("Get one page of PriorityISVSoftware List, current page is  "+page.getCurrentPage()+", pagaSize is "+page.getPageSize()+", total is "+page.getTotal()+";");
@@ -161,7 +161,7 @@ public class PriorityISVSoftwareServiceEndpointTest {
 	public void tesGetPriorityISVSoftwareHDisplaysByISVSoftwareId(){
 		
 		Long isvId = new Long(10);//Please change this value based on actual situation
-		WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getPriorityISVSoftwareHDisplaysByISVSoftwareId(isvId,1,10);
+		WSMsg wsMsg = priorityISVSoftwareServiceEndpoint.getPriorityISVSoftwareHDisplaysByISVSoftwareId(isvId,1,10,null,null);
 		   
 		Pagination page = (Pagination) wsMsg.getData();
 		if(null!=page){

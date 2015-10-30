@@ -19,6 +19,7 @@ import com.ibm.asset.trails.domain.Manufacturer_;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareH;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareHDisplay;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareH_;
+import com.ibm.asset.trails.domain.PriorityISVSoftware_;
 import com.ibm.asset.trails.domain.Status;
 import com.ibm.asset.trails.domain.Status_;
 
@@ -29,7 +30,7 @@ public class PriorityISVSoftwareHDAOJap extends
 
 	@Override
 	public List<PriorityISVSoftwareHDisplay> findPriorityISVSoftwareHDisplaysByISVSoftwareId(
-			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize) {
+			Long priorityISVSoftwareId,Integer startIndex, Integer pageSize, String sort, String dir) {
 		
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<PriorityISVSoftwareHDisplay> q = cb.createQuery(PriorityISVSoftwareHDisplay.class);
@@ -58,6 +59,61 @@ public class PriorityISVSoftwareHDAOJap extends
 				priorityISVSoftwareH.get(PriorityISVSoftwareH_.businessJustification).alias("businessJustification"),
 				priorityISVSoftwareH.get(PriorityISVSoftwareH_.remoteUser).alias("remoteUser"),
 				priorityISVSoftwareH.get(PriorityISVSoftwareH_.recordTime).alias("recordTime"));
+		
+		if(null != sort && !"".equals(sort.trim()) && null != dir && !"".equals(dir.trim())){
+			if(dir.equalsIgnoreCase("asc")){
+				if(sort.equalsIgnoreCase("manufacturerName")){
+					q.orderBy(cb.asc(manufacturer.get(Manufacturer_.manufacturerName)));
+				} else if(sort.equalsIgnoreCase("level")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.level)));
+				} else if(sort.equalsIgnoreCase("accountName")){
+					q.orderBy(cb.asc(account.get(Account_.name)));
+				} else if(sort.equalsIgnoreCase("accountNumber")){
+					q.orderBy(cb.asc(account.get(Account_.account)));
+				} else if(sort.equalsIgnoreCase("evidenceLocation")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.evidenceLocation)));
+				} else if(sort.equalsIgnoreCase("statusDesc")){
+					q.orderBy(cb.asc(status.get(Status_.description)));
+				} else if(sort.equalsIgnoreCase("businessJustification")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.businessJustification)));
+				} else if(sort.equalsIgnoreCase("remoteUser")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.remoteUser)));
+				}else if(sort.equalsIgnoreCase("recordTime")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.recordTime)));
+				}else if(sort.equalsIgnoreCase("id")){
+					q.orderBy(cb.asc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.id)));
+				}else{
+					
+				}
+			}
+			
+			if(dir.equalsIgnoreCase("desc")){
+				if(sort.equalsIgnoreCase("manufacturerName")){
+					q.orderBy(cb.desc(manufacturer.get(Manufacturer_.manufacturerName)));
+				} else if(sort.equalsIgnoreCase("level")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.level)));
+				} else if(sort.equalsIgnoreCase("accountName")){
+					q.orderBy(cb.desc(account.get(Account_.name)));
+				} else if(sort.equalsIgnoreCase("accountNumber")){
+					q.orderBy(cb.desc(account.get(Account_.account)));
+				} else if(sort.equalsIgnoreCase("evidenceLocation")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.evidenceLocation)));
+				} else if(sort.equalsIgnoreCase("statusDesc")){
+					q.orderBy(cb.desc(status.get(Status_.description)));
+				} else if(sort.equalsIgnoreCase("businessJustification")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.businessJustification)));
+				} else if(sort.equalsIgnoreCase("remoteUser")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.remoteUser)));
+				}else if(sort.equalsIgnoreCase("recordTime")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.recordTime)));
+				}else if(sort.equalsIgnoreCase("id")){
+					q.orderBy(cb.desc(priorityISVSoftwareH.get(PriorityISVSoftwareH_.id)));
+				}else{
+					
+				}
+			}
+			
+		}
 		
 		TypedQuery<PriorityISVSoftwareHDisplay> typedQuery = entityManager.createQuery(q);
 		List<PriorityISVSoftwareHDisplay> results = typedQuery.setFirstResult(startIndex).setMaxResults(pageSize).getResultList();

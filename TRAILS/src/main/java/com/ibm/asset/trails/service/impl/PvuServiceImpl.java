@@ -27,7 +27,22 @@ public class PvuServiceImpl implements PvuService {
         return getEntityManager().createNamedQuery("pvuList").getResultList();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public List<ProcessorValueUnit> getPvuList(int startIndex,
+			int objectsPerPage, String sort, String dir) {
+		// TODO Auto-generated method stub
+    	String hql = "FROM ProcessorValueUnit p";
+    	if(null != sort && !"".equals(sort) && null != dir && !"".equals(dir)){
+    		hql += " order by p." + sort + " " + dir;
+    	}
+    	return getEntityManager().createQuery(hql).setFirstResult(startIndex).setMaxResults(objectsPerPage).getResultList();
+	}
+
+
+
+	@SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public List<String> getAssetProcessorBrandList() {
         return getEntityManager().createNamedQuery("processorBrandList")
