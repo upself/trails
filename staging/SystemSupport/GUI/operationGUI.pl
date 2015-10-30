@@ -52,7 +52,6 @@ BEGIN{
 }
 
 sub handler_fatal {
-     print "Content-type: text/html\n\n";
      print "@_";
 }
 
@@ -67,7 +66,7 @@ my $TAP2 = "TAP2";#TAP2 Server
 my $SERVER_MODE;
 
 #Database
-my $DB_ENV;
+my $DB_ENV = "/home/staging/sqllib/db2profile";
 my $dbh;
 my $db_url;
 my $db_userid;
@@ -194,17 +193,17 @@ $authorizedUserList{'inesa_strugare@cz.ibm.com'}++;
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 $authorizedUserList{'petra.povolna@cz.ibm.com'}++;
 #Invoke loginUserAuthentication method to do login user authentication
+my $user = $ARGV[0];
 loginUserAuthentication();
 
 #This method is used to do login User Authentication
 sub loginUserAuthentication{
-  
-  if(!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq ''){
+  if(!defined $user|| $user eq ''){
     error();
     exit 0;
   }
 
-  if(!exists $authorizedUserList{$ENV{'REMOTE_USER'}}){
+  if(!exists $authorizedUserList{ $user }){
     invalidUserAccess();
     exit 0;
   }
@@ -226,9 +225,6 @@ sub init{
   
   #Get Server Mode - For example: 'TAP'
   $SERVER_MODE = getServerMode($OPERATION_GUI_CONFIG_FILE);
-
-  #set db2 env path
-  setDB2ENVPath();
 
   #Setup DB2 environment
   setupDB2Env();
@@ -283,7 +279,6 @@ sub postProcess{
 
 #This method is used to generate Operation GUI
 sub generateOperationGUI{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -1254,8 +1249,7 @@ sub setupDB2Env {
 
 #This method is used to get the current login valid userid
 sub getValidLoginUserid{
-  my $validLoginUserId = $ENV{"REMOTE_USER"};
-  return $validLoginUserId;
+  return $user;
 }
 
 #my $INSERT_OPERATION_RECORD_SQL = "INSERT INTO OPERATION_QUEUE(OPERATION_NAME_CODE, OPERATION_NAME_DESCRIPTION, OPERATION_PARMS, OPERATION_STATUS, OPERATION_USER, OPERATION_ADD_TIME) VALUES(?,?,?,?,?,CURRENT TIMESTAMP)";
@@ -1283,7 +1277,6 @@ sub insertOperationRecordMethod{
 
 #Error Page
 sub error{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -1296,7 +1289,6 @@ sub error{
 
 #Invalid User Access
 sub invalidUserAccess{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -1355,7 +1347,7 @@ sub setDB2ENVPath{
 
 #This method is used to set DB Connection Information
 sub setDBConnInfo{
-	my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
+	my $cfg=Config::Properties::Simple->new(file=>'/home/tomas.si/go/connection.txt');        
       $db_url = "dbi:DB2:";
       $db_url .= $cfg->getProperty('staging.name');
       $db_userid = $cfg->getProperty('staging.user');;

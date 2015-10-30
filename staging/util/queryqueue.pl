@@ -45,6 +45,7 @@ $users{'shaodsz@cn.ibm.com'}++;
 
 my $cgi = new CGI;
 my $self = basename($0);
+    my $user = $ARGV[0];
 
 #
 # authentication
