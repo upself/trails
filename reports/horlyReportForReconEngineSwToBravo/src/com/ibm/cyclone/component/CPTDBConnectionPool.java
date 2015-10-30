@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -33,18 +35,38 @@ public class CPTDBConnectionPool extends AbstractXMLCPT {
 		if (conn == null) {
 
 			this.name = name;
+
 			try {
 				super.parse();
 
+				String propertyName = element.getAttribute("property").trim();
+				CPTPropertiesLoader propertyLoader = null;
+				if (propertyName != null && !"".equals(propertyName)) {
+					propertyLoader = new CPTPropertiesLoader(this.getPath(),
+							propertyName);
+					propertyLoader.execute();
+				}
+
+				String pattern = "\\$\\{.*\\}";
+				Pattern regexPattern = Pattern.compile(pattern);
+
 				String url = element.getElementsByTagName("url").item(0)
 						.getFirstChild().getNodeValue();
+				url = checkPropertyInject(propertyLoader, regexPattern, url);
+
 				String user = element.getElementsByTagName("user").item(0)
 						.getFirstChild().getNodeValue();
+				user = checkPropertyInject(propertyLoader, regexPattern, user);
+
 				String password = element.getElementsByTagName("password")
 						.item(0).getFirstChild().getNodeValue();
+				password = checkPropertyInject(propertyLoader, regexPattern,
+						password);
 
 				String driver = element.getElementsByTagName("driver").item(0)
 						.getFirstChild().getNodeValue();
+				driver = checkPropertyInject(propertyLoader, regexPattern,
+						driver);
 
 				Class.forName(driver).newInstance();
 				Connection connection = DriverManager.getConnection(url, user,
@@ -71,6 +93,20 @@ public class CPTDBConnectionPool extends AbstractXMLCPT {
 		}
 
 		return map.get(name);
+	}
+
+	private String checkPropertyInject(CPTPropertiesLoader propertyLoader,
+			Pattern r, String line) {
+		if (propertyLoader == null) {
+			throw new RuntimeException(
+					"property is expected in the connection element");
+		}
+		Matcher m = r.matcher(line);
+		if (m.find()) {
+			String key = m.group(0).replace("${", "").replace("}", "");
+			line = m.replaceAll(propertyLoader.getProperty(key));
+		}
+		return line;
 	}
 
 	@Override
