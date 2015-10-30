@@ -422,6 +422,8 @@
 		<put-attribute name="contentSidebar" type="template"
 			value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+		<!-- 36643 -->
+		<put-attribute name="contentHead" value="" />
 	</definition>
 	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
@@ -1114,11 +1116,11 @@
 			value="TRAILS account recon settings success" />
 	</definition>
 
-	<definition name="tiles.account.recon.workspace" extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/workspace.jsp" />
+	<!-- 36643 -->
+	<definition name="tiles.account.recon.workspace" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace.jsp" />
+		<put-attribute name="navigation" value="" />
 		<put-attribute name="description" value="TRAILS recon workspace" />
 		<put-attribute name="keywords" value="TRAILS recon workspace" />
 	</definition>

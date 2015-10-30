@@ -228,12 +228,9 @@
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
 	<div class="float-left" style="width: 75%;">
-<<<<<<< HEAD
 		<!--  task 36542 add MLA back to Trails on UAT and DEV
 		 <label><span style="font-weight: bold; color:red;">NOTE: The Manual License Allocation action has been temporarily removed due to an ongoing data recovery effort. This action will be restored as quickly as possible.</span></label>
 		 -->
-=======
->>>>>>> refs/heads/master
 		<label for="action_1">Action:</label>
 		<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
 			listKey="id" listValue="name" headerKey="" headerValue="Select one"
@@ -257,8 +254,9 @@
 	</div>
 	<div class="clear"></div>
 	<br />
-
-	<display:table name="data" class="basic-table" id="row"
+	<!-- 36643 -->
+	<div id="displayTab">
+	<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-defaultx" id="row"
 		summary="Reconciliation Query Results"
 		decorator="org.displaytag.decorator.TotalTableDecorator"
 		cellspacing="1" cellpadding="0" style="font-size:.8em"
@@ -401,4 +399,5 @@
 				href="javascript:displayPopUp('/TRAILS/account/alerts/alertUnlicensedIbmSwHistory.htm?id=<s:property value="%{#attr.row.alertId}" />')">${row.assignee}</a>
 		</display:column>
 	</display:table>
+	</div>
 </s:form>

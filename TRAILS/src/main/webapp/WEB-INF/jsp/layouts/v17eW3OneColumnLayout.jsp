@@ -142,8 +142,13 @@
 			</div>
 		</div>
 		<!-- MASTHEAD_END -->
-
+		
 		<div id="ibm-pcon" style="width: 100%;">
+		<!-- 36643 -->
+		<div id="content-head">
+			<tmp:insertAttribute name="contentHead" />
+		</div>
+		
 			<!-- CONTENT_BEGIN -->
 			<div id="ibm-content">
 				<div id="ibm-content-head">
