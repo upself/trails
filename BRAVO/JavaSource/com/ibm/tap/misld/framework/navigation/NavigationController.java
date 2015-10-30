@@ -31,7 +31,7 @@ import com.ibm.tap.misld.framework.UserContainer;
 public class NavigationController extends BaseAction implements Controller {
 
 	//Top Level Links
-	String assetHomeLink = "http://tap.raleigh.ibm.com/";
+	String assetHomeLink = "https://w3-connections.ibm.com/communities/service/html/communitystart?communityUuid=85cfd34a-2938-4667-8823-bf4743894fbc";
 	
 	String bravoHomeLink = "/home.do";
 
