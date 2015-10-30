@@ -7,6 +7,7 @@
 	<property name="comments" type="scalar" equals="true"
 		sql-name="comments" />
 	<property name="open" type="scalar" equals="true" sql-name="open" />
+	<property name="type" type="scalar" equals="true" sql-name="type" />
 	<property name="creationTime" type="scalar" sql-name="creation_time" />
 	<property name="remoteUser" type="scalar" sql-name="remote_user"
 		default="STAGING" />
