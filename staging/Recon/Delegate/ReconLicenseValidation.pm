@@ -20,7 +20,7 @@ sub new {
   _freeCapacity          => undef,
   _machineLevelOnly      => undef,
   _deleteQueue           => undef,
-  _scarletAllocation     => 0
+  _scarletAllocation     => 'UNKNOW'
  };
  bless $self, $class;
  return $self;
@@ -605,7 +605,9 @@ sub validateLicenseSoftwareMap {
 
   my $scarletIs = new Recon::ScarletInstalledSoftware();
 
-  if ( not $scarletIs->existInScarlet( $reconcileId, $isId ) ) {
+  if (( not $scarletIs->existInScarlet( $reconcileId, $isId ) )
+   && ( not $scarletIs->outOfService ) )    
+  {
    dlog("isSoftwareId=$isSoftwareId");
    dlog("swMapSoftwareId=$swMapSoftwareId");
    dlog("software id does not match, adding to list to break");
@@ -613,10 +615,14 @@ sub validateLicenseSoftwareMap {
      if defined $reconcileId;
    $self->addToDeleteQueue($licenseId) if defined $licenseId;
    $self->validationCode(0);
+   $self->scarletAllocation('NO');
    return 0;
   }
+  elsif ( $scarletIs->outOfService ) {
+   $self->scarletAllocation('UNKNOW');
+  }
   else {
-   $self->scarletAllocation(1);    
+   $self->scarletAllocation('YES');
   }
  }
 

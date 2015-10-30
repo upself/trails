@@ -141,8 +141,8 @@ sub recon {
 
   #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
   if ( $self->installedSoftwareReconData->rTypeId ==
-   $reconcileTypeMap->{'Automatic license allocation'}
-   && not $validation->scarletAllocation )
+      $reconcileTypeMap->{'Automatic license allocation'}
+   && $validation->scarletAllocation eq 'NO' )    
   {
    dlog("Perform scarlet allocation");
    my $scarletIs = new Recon::ScarletInstalledSoftware();
@@ -320,10 +320,9 @@ sub reconcile {
    $self->installedSoftware->id, $allocMethodId
   );
 
-  my $scarletInstalledSw = new Recon::ScarletInstalledSoftware(
-   $reconcileTypeId, $machineLevel, $allocMethodId,
-   $self->installedSoftwareReconData->hId    
-  );
+  my $scarletInstalledSw =
+    new Recon::ScarletInstalledSoftware( $reconcileTypeId, $machineLevel,
+   $allocMethodId, $self->installedSoftwareReconData->hId );
 
   foreach my $lId ( keys %{$licsToAllocate} ) {
    dlog(
@@ -2120,55 +2119,55 @@ sub getInstalledSoftwareReconData {
 
  my $installedSoftwareReconData = new Recon::OM::ReconInstalledSoftwareData();
 
-	###Execute base query and populate data.
-	$self->connection->prepareSqlQueryAndFields(
-		$self->queryReconInstalledSoftwareBaseData() );
-	my $sth = $self->connection->sql->{reconInstalledSoftwareBaseData};
-	my %rec;
-	$sth->bind_columns( map { \$rec{$_} }
-		  @{ $self->connection->sql->{reconInstalledSoftwareBaseDataFields} } );
-	$sth->execute( $self->installedSoftware->id );
-	while ( $sth->fetchrow_arrayref ) {
-		$installedSoftwareReconData->hId( $rec{hId} );
-		$installedSoftwareReconData->hStatus( $rec{hStatus} );
-		$installedSoftwareReconData->hProcCount( $rec{hProcCount} );
-		$installedSoftwareReconData->hHwStatus( $rec{hHwStatus} );
-		$installedSoftwareReconData->hSerial( $rec{hSerial} );
-		$installedSoftwareReconData->hChips( $rec{hChips} );
-		$installedSoftwareReconData->hNbrCoresPerChip ( $rec{hNbrCoresPerChip} );
-		$installedSoftwareReconData->hProcessorBrand( $rec{hProcessorBrand} );
-		$installedSoftwareReconData->hProcessorModel( $rec{hProcessorModel} );
-		$installedSoftwareReconData->hMachineTypeId( $rec{hMachineTypeId} );
-		$installedSoftwareReconData->hServerType( $rec{hServerType} );
-		$installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
-		$installedSoftwareReconData->hCpuGartnerMIPS ( $rec{hCpuGartnerMIPS} );
-		$installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
-		$installedSoftwareReconData->hCpuIFL( $rec{hCpuIFL} );
-		$installedSoftwareReconData->hOwner( $rec{hOwner} );
-		$installedSoftwareReconData->mtType( $rec{mtType} );
-		$installedSoftwareReconData->hlId( $rec{hlId} );
-		$installedSoftwareReconData->hlStatus( $rec{hlStatus} );
-		$installedSoftwareReconData->hlName( $rec{hlName} );
-		$installedSoftwareReconData->hlPartMIPS( $rec{hlPartMIPS} );
-		$installedSoftwareReconData->hlPartGartnerMIPS ( $rec{hlPartGartnerMIPS} );
-		$installedSoftwareReconData->hlPartMSU( $rec{hlPartMSU} );
-		$installedSoftwareReconData->slId( $rec{slId} );
-		$installedSoftwareReconData->cId( $rec{cId} );
-		$installedSoftwareReconData->slName( $rec{slName} );
-		$installedSoftwareReconData->slStatus( $rec{slStatus} );
-		$installedSoftwareReconData->sId ( $rec{sId} );
-		$installedSoftwareReconData->sName ( $rec{sName} );
-		$installedSoftwareReconData->sStatus( $rec{sStatus} );
-		$installedSoftwareReconData->sPriority( $rec{sPriority} );
-		$installedSoftwareReconData->sLevel( $rec{sLevel} );
-		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
-		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
-		$installedSoftwareReconData->sMfg( $rec{sMfg} );
-		$installedSoftwareReconData->scName( $rec{scName} );
-		$installedSoftwareReconData->rId( $rec{rId} );
-		$installedSoftwareReconData->rTypeId( $rec{rTypeId} );
-		$installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
-		$installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
+ ###Execute base query and populate data.
+ $self->connection->prepareSqlQueryAndFields(
+  $self->queryReconInstalledSoftwareBaseData() );
+ my $sth = $self->connection->sql->{reconInstalledSoftwareBaseData};
+ my %rec;
+ $sth->bind_columns( map { \$rec{$_} }
+    @{ $self->connection->sql->{reconInstalledSoftwareBaseDataFields} } );
+ $sth->execute( $self->installedSoftware->id );
+ while ( $sth->fetchrow_arrayref ) {
+  $installedSoftwareReconData->hId( $rec{hId} );
+  $installedSoftwareReconData->hStatus( $rec{hStatus} );
+  $installedSoftwareReconData->hProcCount( $rec{hProcCount} );
+  $installedSoftwareReconData->hHwStatus( $rec{hHwStatus} );
+  $installedSoftwareReconData->hSerial( $rec{hSerial} );
+  $installedSoftwareReconData->hChips( $rec{hChips} );
+  $installedSoftwareReconData->hNbrCoresPerChip( $rec{hNbrCoresPerChip} );
+  $installedSoftwareReconData->hProcessorBrand( $rec{hProcessorBrand} );
+  $installedSoftwareReconData->hProcessorModel( $rec{hProcessorModel} );
+  $installedSoftwareReconData->hMachineTypeId( $rec{hMachineTypeId} );
+  $installedSoftwareReconData->hServerType( $rec{hServerType} );
+  $installedSoftwareReconData->hCpuMIPS( $rec{hCpuMIPS} );
+  $installedSoftwareReconData->hCpuGartnerMIPS( $rec{hCpuGartnerMIPS} );
+  $installedSoftwareReconData->hCpuMSU( $rec{hCpuMSU} );
+  $installedSoftwareReconData->hCpuIFL( $rec{hCpuIFL} );
+  $installedSoftwareReconData->hOwner( $rec{hOwner} );
+  $installedSoftwareReconData->mtType( $rec{mtType} );
+  $installedSoftwareReconData->hlId( $rec{hlId} );
+  $installedSoftwareReconData->hlStatus( $rec{hlStatus} );
+  $installedSoftwareReconData->hlName( $rec{hlName} );
+  $installedSoftwareReconData->hlPartMIPS( $rec{hlPartMIPS} );
+  $installedSoftwareReconData->hlPartGartnerMIPS( $rec{hlPartGartnerMIPS} );
+  $installedSoftwareReconData->hlPartMSU( $rec{hlPartMSU} );
+  $installedSoftwareReconData->slId( $rec{slId} );
+  $installedSoftwareReconData->cId( $rec{cId} );
+  $installedSoftwareReconData->slName( $rec{slName} );
+  $installedSoftwareReconData->slStatus( $rec{slStatus} );
+  $installedSoftwareReconData->sId( $rec{sId} );
+  $installedSoftwareReconData->sName( $rec{sName} );
+  $installedSoftwareReconData->sStatus( $rec{sStatus} );
+  $installedSoftwareReconData->sPriority( $rec{sPriority} );
+  $installedSoftwareReconData->sLevel( $rec{sLevel} );
+  $installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
+  $installedSoftwareReconData->sMfgId( $rec{sMfgId} );
+  $installedSoftwareReconData->sMfg( $rec{sMfg} );
+  $installedSoftwareReconData->scName( $rec{scName} );
+  $installedSoftwareReconData->rId( $rec{rId} );
+  $installedSoftwareReconData->rTypeId( $rec{rTypeId} );
+  $installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
+  $installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
   $installedSoftwareReconData->rIsManual( $rec{rIsManual} );
 
@@ -2207,7 +2206,7 @@ sub getInstalledSoftwareReconData {
  $sth->finish;
 
  ###Reading new scope from scheduleF, procedure added by Michal Gross
-	
+
  my ( $scopename_temp, $priofound_temp ) =
    Recon::Delegate::ReconDelegate->getScheduleFScope(
   $self->connection,
@@ -2222,16 +2221,21 @@ sub getInstalledSoftwareReconData {
  $installedSoftwareReconData->scopeName($scopename_temp);
  $installedSoftwareReconData->scheduleFlevel($priofound_temp)
    ;    # 3 = hostname, 2 = HWbox, 1 = hardware owner, 0 = software
-    
-    if ( not defined $scopename_temp ) {
-		$installedSoftwareReconData->expectedAlertType ( "SCOPE" );
-		dlog("Expected alert for unlicensed SW is type SCOPE... no ScheduleF scope found.");
-	} else {
-		$installedSoftwareReconData->expectedAlertType (
-					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
-																	$installedSoftwareReconData->sMfgId,
-																	$installedSoftwareReconData->cId ) );
-	}
+
+ if ( not defined $scopename_temp ) {
+  $installedSoftwareReconData->expectedAlertType("SCOPE");
+  dlog(
+   "Expected alert for unlicensed SW is type SCOPE... no ScheduleF scope found."
+  );
+ }
+ else {
+  $installedSoftwareReconData->expectedAlertType(
+   Recon::Delegate::ReconDelegate->getIBMISVprio(
+    $self->connection, $installedSoftwareReconData->sMfgId,
+    $installedSoftwareReconData->cId
+   )
+  );
+ }
 
  ###Execute extended query of all inst sw for this lpar if in category,
  ###a parent of a bundle, or a child in a bundle.
@@ -2346,53 +2350,53 @@ sub getInstalledSoftwareReconData {
 }
 
 sub queryReconInstalledSoftwareBaseData {
-	my @fields = qw(
-	  hId
-	  hStatus
-	  hHwStatus
-	  hSerial
-	  hProcCount
-	  hChips
-	  hNbrCoresPerChip
-	  hProcessorBrand
-	  hProcessorModel
-	  hMachineTypeId
-	  hServerType
-	  hCpuMIPS
-	  hCpuGartnerMIPS
-	  hCpuMSU
-	  hCpuIFL
-	  hOwner
-	  mtType
-	  hlId
-	  hlStatus
-	  hlName
-	  hlPartMIPS
-	  hlCpuGartnerMIPS
-	  hlPartMSU
-	  slId
-	  cId
-	  slName
-	  slStatus
-	  slProcCount
-	  sId
-	  sName
-	  sStatus
-	  sPriority
-	  sLevel
-	  sVendorMgd
-	  sMfgId
-	  sMfg
-	  scName
-	  bpId
-	  bcSwId
-	  rId
-	  rTypeId
-	  rParentInstSwId
-	  rMachineLevel
-	  rIsManual
-	);
-	my $query = '
+ my @fields = qw(
+   hId
+   hStatus
+   hHwStatus
+   hSerial
+   hProcCount
+   hChips
+   hNbrCoresPerChip
+   hProcessorBrand
+   hProcessorModel
+   hMachineTypeId
+   hServerType
+   hCpuMIPS
+   hCpuGartnerMIPS
+   hCpuMSU
+   hCpuIFL
+   hOwner
+   mtType
+   hlId
+   hlStatus
+   hlName
+   hlPartMIPS
+   hlCpuGartnerMIPS
+   hlPartMSU
+   slId
+   cId
+   slName
+   slStatus
+   slProcCount
+   sId
+   sName
+   sStatus
+   sPriority
+   sLevel
+   sVendorMgd
+   sMfgId
+   sMfg
+   scName
+   bpId
+   bcSwId
+   rId
+   rTypeId
+   rParentInstSwId
+   rMachineLevel
+   rIsManual
+ );
+ my $query = '
         select
             h.id
             ,h.status
@@ -2538,37 +2542,49 @@ sub closeAlertUnlicensedSoftware {
  $alert->comments('Auto Close');
  $alert->open(0);
 
-	if ( defined $alert->id ) {
-		if ( $oldAlert->open == 1 ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+ if ( defined $alert->id ) {
+  if ( $oldAlert->open == 1 ) {
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISCOPE", $self->connection )
+     if ( $alert->type eq 'SCOPE' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWIBM", $self->connection )
+     if ( $alert->type eq 'IBM' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISVPR", $self->connection )
+     if ( $alert->type eq 'ISVPRIO' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISVNPR", $self->connection )
+     if ( $alert->type eq 'ISVNOPRIO' );
+  }
+  elsif ( $oldAlert->type ne $alert->type ) {
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-			Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-		}
-	}
-	elsif ( $createNew == 1 ) {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISCOPE", $self->connection )
+     if ( $alert->type eq 'SCOPE' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWIBM", $self->connection )
+     if ( $alert->type eq 'IBM' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISVPR", $self->connection )
+     if ( $alert->type eq 'ISVPRIO' );
+   Recon::CauseCode::updateCCtable( $alert->id, "SWISVNPR", $self->connection )
+     if ( $alert->type eq 'ISVNOPRIO' );
+  }
+ }
+ elsif ( $createNew == 1 ) {
+  $alert->creationTime( currentTimeStamp() );
+  $alert->save( $self->connection );
 
-		Recon::CauseCode::updateCCtable ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-		Recon::CauseCode::updateCCtable ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-		Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-	}	
+  Recon::CauseCode::updateCCtable( $alert->id, "SWISCOPE", $self->connection )
+    if ( $alert->type eq 'SCOPE' );
+  Recon::CauseCode::updateCCtable( $alert->id, "SWIBM", $self->connection )
+    if ( $alert->type eq 'IBM' );
+  Recon::CauseCode::updateCCtable( $alert->id, "SWISVPR", $self->connection )
+    if ( $alert->type eq 'ISVPRIO' );
+  Recon::CauseCode::updateCCtable( $alert->id, "SWISVNPR", $self->connection )
+    if ( $alert->type eq 'ISVNOPRIO' );
+ }
 
-	dlog("end closeAlertUnlicensedSoftware");
+ dlog("end closeAlertUnlicensedSoftware");
 }
 
 sub addChildrenToQueue {
@@ -2956,14 +2972,13 @@ sub recordAlertUnlicensedSoftwareHistory {
  $history->creationTime( $alert->creationTime );
  $history->comments( $alert->comments );
  $history->open( $alert->open );
- $history->type( $alert->type );
  $history->recordTime( $alert->recordTime );
  $history->save( $self->connection );
 }
 
 sub openAlertUnlicensedSoftware {
-	my $self = shift;
-	dlog("begin openAlertUnlicensedSoftware");
+ my $self = shift;
+ dlog("begin openAlertUnlicensedSoftware");
 
  ###Instantiate alert object.
  my $alert = new Recon::OM::AlertUnlicensedSoftware();
@@ -2987,43 +3002,55 @@ sub openAlertUnlicensedSoftware {
  $alert->comments('Auto Open');
  $alert->open(1);
 
-	if ( defined $alert->id ) {
-		if ( $oldAlert->open == 0 ) {
-			$alert->creationTime( currentTimeStamp() );
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
-			
-			Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-			Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-			Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-			Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-		}
-		elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+ if ( defined $alert->id ) {
+  if ( $oldAlert->open == 0 ) {
+   $alert->creationTime( currentTimeStamp() );
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-			if (( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' )) { # when changing from ISVPRIO to ISVNOPRIO or vice versa,
-																			# cause code shouldn't be reset
-				dlog("Alert type has changed, creating a new history record and resetting the cause code.");
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			} else {
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			}
-		}
-	}
-	else {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
-		
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-	}
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+     if ( $alert->type eq 'SCOPE' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+     if ( $alert->type eq 'IBM' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+     if ( $alert->type eq 'ISVPRIO' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+     if ( $alert->type eq 'ISVNOPRIO' );
+  }
+  elsif ( $oldAlert->type ne $alert->type ) {
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+
+   if ( ( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' ) )
+   {    # when changing from ISVPRIO to ISVNOPRIO or vice versa,
+        # cause code shouldn't be reset
+    dlog(
+"Alert type has changed, creating a new history record and resetting the cause code."
+    );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+      if ( $alert->type eq 'SCOPE' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+      if ( $alert->type eq 'IBM' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+      if ( $alert->type eq 'ISVPRIO' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+      if ( $alert->type eq 'ISVNOPRIO' );
+   }
+  }
+ }
+ else {
+  $alert->creationTime( currentTimeStamp() );
+  $alert->save( $self->connection );
+
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+    if ( $alert->type eq 'SCOPE' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+    if ( $alert->type eq 'IBM' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+    if ( $alert->type eq 'ISVPRIO' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+    if ( $alert->type eq 'ISVNOPRIO' );
+ }
 
  dlog("end openAlertUnlicensedSoftware");
 }
