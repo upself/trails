@@ -36,9 +36,11 @@ import javax.servlet.http.HttpServletRequest;
 
 
 
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 
 
 
@@ -178,7 +180,7 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<NonInstance> findNonInstances(
-			NonInstanceDisplay nonInstanceDisplay, Integer startIndex, Integer pageSize) {
+			NonInstanceDisplay nonInstanceDisplay, Integer startIndex, Integer pageSize, String sort, String dir) {
 		// TODO Auto-generated method stub
 		String hql = "From NonInstance non "
 				+ " Join Fetch non.software "
@@ -232,13 +234,19 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 			hql += " and UCASE(non.remoteUser) like UCASE('%" + nonInstanceDisplay.getRemoteUser() + "%')";
 		}
 		
+		if(null != sort && !"".equals(sort.trim()) && null != dir && !"".equals(dir.trim())){
+			hql += " order by non." + sort + " " + dir;
+		}
+		
+		
+		
 		List<NonInstance> list =  getEntityManager().createQuery(hql).setFirstResult(startIndex).setMaxResults(pageSize).getResultList();
 
 		return list;
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize) {
+	public List<NonInstanceH> findNonInstanceHs(Long nonInstanceId,Integer startIndex, Integer pageSize, String sort, String dir) {
 		
 		String hql = "From NonInstanceH non "
 				+ " Join Fetch non.software "
@@ -246,6 +254,10 @@ public class NonInstanceServiceImpl implements NonInstanceService{
 				+ " Join Fetch non.capacityType"
 				+ " Join Fetch non.status"
 				+ " Where non.nonInstanceId = :nonInstanceId";
+		if(null != sort && !"".equals(sort.trim()) && null != dir && !"".equals(dir.trim())){
+			hql += " order by non." + sort + " " + dir;
+		}
+		
 		
 		List<NonInstanceH> list = getEntityManager().createQuery(hql)
 		.setParameter("nonInstanceId", nonInstanceId)

@@ -20,7 +20,7 @@ sub new {
   _freeCapacity          => undef,
   _machineLevelOnly      => undef,
   _deleteQueue           => undef,
-  _scarletAllocation     => 0
+  _scarletAllocation     => 'UNKNOW'
  };
  bless $self, $class;
  return $self;
@@ -596,7 +596,10 @@ sub validateLicenseSoftwareMap {
  my ( $self, $swMapSoftwareId, $isManual, $isSoftwareId, $reconcileId,
   $licenseId, $isId )
    = @_;
-
+  dlog('begin validateLicenseSoftwareMap');
+  dlog('$swMapSoftwareId='.$swMapSoftwareId.' $isManual='.$isManual.
+  ' $isSoftwareId='.$isSoftwareId.' $swMapSoftwareId='.$swMapSoftwareId);
+ 
  ###Validate software id if mapped and recon was auto.
  if (defined $swMapSoftwareId
   && $isManual == 0
@@ -605,7 +608,9 @@ sub validateLicenseSoftwareMap {
 
   my $scarletIs = new Recon::ScarletInstalledSoftware();
 
-  if ( not $scarletIs->existInScarlet( $reconcileId, $isId ) ) {
+  if (( not $scarletIs->existInScarlet( $reconcileId, $isId ) )
+   && ( not $scarletIs->outOfService ) )    
+  {
    dlog("isSoftwareId=$isSoftwareId");
    dlog("swMapSoftwareId=$swMapSoftwareId");
    dlog("software id does not match, adding to list to break");
@@ -613,12 +618,20 @@ sub validateLicenseSoftwareMap {
      if defined $reconcileId;
    $self->addToDeleteQueue($licenseId) if defined $licenseId;
    $self->validationCode(0);
+   $self->scarletAllocation('NO');
    return 0;
   }
-  else {
-   $self->scarletAllocation(1);    
+  elsif ( $scarletIs->outOfService ) {
+   $self->scarletAllocation('UNKNOW');
   }
- }
+  else {
+   $self->scarletAllocation('YES');
+  }
+ }elsif(defined $swMapSoftwareId
+  && $isManual == 0
+  && $isSoftwareId == $swMapSoftwareId ){
+   $self->scarletAllocation('NO');
+  }
 
  return 1;
 }

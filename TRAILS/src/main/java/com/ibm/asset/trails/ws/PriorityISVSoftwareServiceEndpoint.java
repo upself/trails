@@ -89,14 +89,16 @@ public class PriorityISVSoftwareServiceEndpoint {
 	@Path("/isv/all")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getAllPriorityISVSoftwareDisplays(@QueryParam("currentPage") Integer currentPage,
-			@QueryParam("pageSize") Integer pageSize){
+			@QueryParam("pageSize") Integer pageSize,
+			@QueryParam("sort") String sort,
+			@QueryParam("dir") String dir){
 	
 
 		List<PriorityISVSoftwareDisplay> results = null;
 		int startIndex = (currentPage-1) * pageSize;
 		Long total = this.priorityISVSoftwareService.total();
 		if(total > 0){
-			results = this.priorityISVSoftwareService.getAllPriorityISVSoftwareDisplays(startIndex, pageSize);
+			results = this.priorityISVSoftwareService.getAllPriorityISVSoftwareDisplays(startIndex, pageSize, sort, dir);
 		}
 		
 		Pagination page = new Pagination();
@@ -112,13 +114,15 @@ public class PriorityISVSoftwareServiceEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getPriorityISVSoftwareHDisplaysByISVSoftwareId(@PathParam("isvid") Long priorityISVSoftwareId,
 			@QueryParam("currentPage") Integer currentPage,
-			@QueryParam("pageSize") Integer pageSize){
+			@QueryParam("pageSize") Integer pageSize,
+			@QueryParam("sort") String sort,
+			@QueryParam("dir") String dir){
 		
 		List<PriorityISVSoftwareHDisplay> priISVSwHList = null;
 		int startIndex = (currentPage-1) * pageSize;
 		Long total = this.priorityISVSoftwareService.totalHistory(priorityISVSoftwareId);
 		if(total > 0){
-			priISVSwHList = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId,startIndex,pageSize);
+			priISVSwHList = this.priorityISVSoftwareService.findPriorityISVSoftwareHDisplaysByISVSoftwareId(priorityISVSoftwareId,startIndex,pageSize, sort, dir);
 		}
 		
 

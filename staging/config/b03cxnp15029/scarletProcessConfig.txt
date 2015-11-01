@@ -1,0 +1,4 @@
+server=b03cxnp15029
+debugLevel=warn
+validationGapHour=24
+sleepPeriod=10800

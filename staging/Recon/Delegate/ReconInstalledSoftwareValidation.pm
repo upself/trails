@@ -19,7 +19,7 @@ sub new {
   _deleteQueue                => undef,
   _poolParentCustomers        => undef,
   _valueUnitsPerCore          => undef,
-  _scarletAllocation          => 0
+  _scarletAllocation          => 'UNKNOW'
  };
  bless $self, $class;
  return $self;
@@ -119,54 +119,58 @@ sub valueUnitsPerCore {
  my $self = shift;
  $self->{_valueUnitsPerCore} = shift if scalar @_ == 1;
  if ( !defined $self->{_valueUnitsPerCore} ) {
-  $self->{_valueUnitsPerCore} = -1; # 100 is no longer a default value
+  $self->{_valueUnitsPerCore} = -1;    # 100 is no longer a default value
  }
  return $self->{_valueUnitsPerCore};
 }
 
 sub validate {
  my $self = shift;
- my ( $callfrom ) = caller;
+ my ($callfrom) = caller;
 
-	if (   $self->validateCustomer == 0
-		|| $self->validateInstalledSoftware == 0
-		|| $self->validateSoftwareLpar == 0
-		|| $self->validateComposite == 0
-		|| $self->validateHardware == 0
-		|| $self->validateHardwareLpar == 0
-		|| $self->validateSoftware == 0 )
-	{
-		$self->validationCode(0);
-	} elsif ( $callfrom eq "Recon::InventoryInstalledSoftware" ) {
-		$self->validationCode(1);
-		$self->isValid(1);
-		dlog("InstalledSoftware object is valid, needs to take over by Licensing engine.");
-		return;
-	} elsif ( $self->isInstalledSoftwareReconciled == 0 ) {
-		$self->validationCode(1);
-	}
-	elsif ($self->validateVendorManaged == 0
-		|| $self->validateSoftwareCategory == 0
-		|| $self->validateBundle == 0
-		|| $self->validateScheduleFdefined == 0
-		|| $self->validateCustomerOwnedAndManaged == 0
-		|| $self->validateIBMOwned3rdManaged == 0
-		|| $self->validateCustomerOwned3rdManaged == 0
-		|| $self->validateIBMOwnedIBMManagedCons == 0
-		|| $self->validateCustOwnedIBMManagedCons == 0
-		|| $self->validateManualCustomerOwnedAndManaged == 0
-		|| $self->validateParentInstalledSW == 0
-		|| $self->validateLicenseAllocation == 0 )
-	{
-		$self->validationCode(2);
-	}
+ if ($self->validateCustomer == 0
+  || $self->validateInstalledSoftware == 0
+  || $self->validateSoftwareLpar == 0
+  || $self->validateComposite == 0
+  || $self->validateHardware == 0
+  || $self->validateHardwareLpar == 0
+  || $self->validateSoftware == 0 )
+ {
+  $self->validationCode(0);
+ }
+ elsif ( $callfrom eq "Recon::InventoryInstalledSoftware" ) {
+  $self->validationCode(1);
+  $self->isValid(1);
+  dlog(
+   "InstalledSoftware object is valid, needs to take over by Licensing engine."
+  );
+  return;
+ }
+ elsif ( $self->isInstalledSoftwareReconciled == 0 ) {
+  $self->validationCode(1);
+ }
+ elsif ( $self->validateVendorManaged == 0
+  || $self->validateSoftwareCategory == 0
+  || $self->validateBundle == 0
+  || $self->validateScheduleFdefined == 0
+  || $self->validateCustomerOwnedAndManaged == 0
+  || $self->validateIBMOwned3rdManaged == 0
+  || $self->validateCustomerOwned3rdManaged == 0
+  || $self->validateIBMOwnedIBMManagedCons == 0
+  || $self->validateCustOwnedIBMManagedCons == 0
+  || $self->validateManualCustomerOwnedAndManaged == 0
+  || $self->validateParentInstalledSW == 0
+  || $self->validateLicenseAllocation == 0 )
+ {
+  $self->validationCode(2);
+ }
 
-	if ( defined $self->validationCode ) {
-		$self->isValid(0);
-	}
-	else {
-		$self->isValid(1);
-	}
+ if ( defined $self->validationCode ) {
+  $self->isValid(0);
+ }
+ else {
+  $self->isValid(1);
+ }
 }
 
 sub validateCustomer {
@@ -199,7 +203,8 @@ sub validateInstalledSoftware {
  elsif ( $self->installedSoftware->discrepancyTypeId ==
      $self->discrepancyTypeMap->{'FALSE HIT'}
   || $self->installedSoftware->discrepancyTypeId ==
-  $self->discrepancyTypeMap->{'INVALID'} || $self->installedSoftware->discrepancyTypeId ==
+  $self->discrepancyTypeMap->{'INVALID'}
+  || $self->installedSoftware->discrepancyTypeId ==
   $self->discrepancyTypeMap->{'TADZ'} )
  {
   dlog("discrepancy type not valid for recon base");
@@ -235,12 +240,14 @@ sub validateComposite {
 
 sub validateHardwareLpar {
  my $self = shift;
- dlog('validateHardwareLpar hlstatus='.$self->installedSoftwareReconData->hlStatus);
+ dlog( 'validateHardwareLpar hlstatus='
+    . $self->installedSoftwareReconData->hlStatus );
  ###Check hw lpar status.
- return 1  if( '' eq $self->installedSoftwareReconData->hlStatus 
-      || !defined $self->installedSoftwareReconData->hlStatus 
-      || 'null' eq $self->installedSoftwareReconData->hlStatus);
- 
+ return 1
+   if ( '' eq $self->installedSoftwareReconData->hlStatus
+  || !defined $self->installedSoftwareReconData->hlStatus
+  || 'null' eq $self->installedSoftwareReconData->hlStatus );
+
  if ( $self->installedSoftwareReconData->hlStatus eq 'HWCOUNT' ) {
   dlog("hw lpar not active, not in recon base");
   return 0;
@@ -319,27 +326,38 @@ sub validateVendorManaged {
 sub validateParentInstalledSW {
  my $self = shift;
 
- return 1 if ( ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Included with other product'} ) &&
-      ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Bundled software product'} ) &&
-      ( $self->installedSoftwareReconData->rTypeId != $self->reconcileTypeMap->{'Covered by software category'} ) );
-      
+ return 1
+   if (
+  (
+   $self->installedSoftwareReconData->rTypeId !=
+   $self->reconcileTypeMap->{'Included with other product'}
+  )
+  && ( $self->installedSoftwareReconData->rTypeId !=
+   $self->reconcileTypeMap->{'Bundled software product'} )
+  && ( $self->installedSoftwareReconData->rTypeId !=
+   $self->reconcileTypeMap->{'Covered by software category'} )
+   );
+
  dlog("applicable to parent-installed-software validation");
 
  my $conn = $self->connection;
- 
+
  $conn->prepareSqlQuery( 'getISWstatus',
-  'select 1 from installed_software is where is.id = ? and is.status=\'ACTIVE\' and is.discrepancy_type_id in ( 1, 2, 4 )' );
+'select 1 from installed_software is where is.id = ? and is.status=\'ACTIVE\' and is.discrepancy_type_id in ( 1, 2, 4 )'
+ );
  my $sth = $conn->sql->{getISWstatus};
- $sth->execute ( $self->installedSoftwareReconData->rParentInstSwId );
+ $sth->execute( $self->installedSoftwareReconData->rParentInstSwId );
  my ($result) = $sth->fetchrow_array;
  $sth->finish;
 
- return 1 if (( defined $result ) && ( $result == 1 )); # iSW with the given ID which is active and correct discrepancy still exists
- 
+ return 1
+   if ( ( defined $result ) && ( $result == 1 ) )
+   ; # iSW with the given ID which is active and correct discrepancy still exists
+
  dlog("invalid parent installed SW ID, the reconcile is invalid!");
- 
+
  return 0;
- 
+
 }
 
 sub validateSoftwareCategory {
@@ -403,201 +421,217 @@ sub validateBundle {
 }
 
 sub validateManualCustomerOwnedAndManaged {
-	my $self = shift;
-	if($self->installedSoftwareReconData->rTypeId == 2)
-	{
-	  dlog("reconciled as manual customer owned and customer managed, it will be broken.");
-	  return 0;
-	}
-	
-	return 1;
+ my $self = shift;
+ if ( $self->installedSoftwareReconData->rTypeId == 2 ) {
+  dlog(
+"reconciled as manual customer owned and customer managed, it will be broken."
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
 sub validateCustomerOwnedAndManaged {
-    my $self = shift;
-	dlog("begin validateCustomerOwnedAndManaged");
-   
-	if ((defined $self->installedSoftwareReconData->scopeName)
-		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'))
-    {
-		dlog("scheduleF scope is CUSTOCUSTM");
-		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
-		dlog( "reconcile map id "
-		  . $self->reconcileTypeMap->{'Customer owned and customer managed'} );
-		  
-		if ($self->installedSoftwareReconData->rTypeId ==
-			$self->reconcileTypeMap->{'Customer owned and customer managed'})
-		{
-			dlog("reconciled as customer owned and customer managed");
-			return 1;
-		}
-	   
-		dlog("A different reconcile type than automatic CUSTOCUSTM, so invalid.");
-		return 0;
-	}
+ my $self = shift;
+ dlog("begin validateCustomerOwnedAndManaged");
 
-	if ($self->installedSoftwareReconData->rTypeId ==
-	$self->reconcileTypeMap->{'Customer owned and customer managed'})
-	{
-		dlog("reconciled as customer owned and customer managed, but scheduleF scope doesn't allow that");
-		return 0;
-	}
-	
-	return 1;
+ if (( defined $self->installedSoftwareReconData->scopeName )
+  && ( $self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM' ) )
+ {
+  dlog("scheduleF scope is CUSTOCUSTM");
+  dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+  dlog( "reconcile map id "
+     . $self->reconcileTypeMap->{'Customer owned and customer managed'} );
+
+  if ( $self->installedSoftwareReconData->rTypeId ==
+   $self->reconcileTypeMap->{'Customer owned and customer managed'} )
+  {
+   dlog("reconciled as customer owned and customer managed");
+   return 1;
+  }
+
+  dlog("A different reconcile type than automatic CUSTOCUSTM, so invalid.");
+  return 0;
+ }
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'Customer owned and customer managed'} )
+ {
+  dlog(
+"reconciled as customer owned and customer managed, but scheduleF scope doesn't allow that"
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
 sub validateIBMOwned3rdManaged {
-    my $self = shift;
-	dlog("begin validateIBMOwned3rdManaged");
-   
-	if ((defined $self->installedSoftwareReconData->scopeName)
-		&& ($self->installedSoftwareReconData->scopeName eq 'IBMO3RDM'))
-    {
-		dlog("scheduleF scope is IBMO3RDM");
-		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
-		dlog( "reconcile map id "
-		  . $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} );
-		  
-		if ($self->installedSoftwareReconData->rTypeId ==
-			$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'})
-		{
-			dlog("reconciled as IBM owned, managed by 3rd party");
-			return 1;
-		}
-	   
-		dlog("A different reconcile type than automatic IBMO3RDM, so invalid.");
-		return 0;
-	}
+ my $self = shift;
+ dlog("begin validateIBMOwned3rdManaged");
 
-	if ($self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'IBM owned, managed by 3rd party'})
-	{
-		dlog("reconciled as IBM owned, managed by 3rd party, but scheduleF scope doesn't allow that");
-		return 0;
-	}
-	
-	return 1;
+ if (( defined $self->installedSoftwareReconData->scopeName )
+  && ( $self->installedSoftwareReconData->scopeName eq 'IBMO3RDM' ) )
+ {
+  dlog("scheduleF scope is IBMO3RDM");
+  dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+  dlog( "reconcile map id "
+     . $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} );
+
+  if ( $self->installedSoftwareReconData->rTypeId ==
+   $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} )
+  {
+   dlog("reconciled as IBM owned, managed by 3rd party");
+   return 1;
+  }
+
+  dlog("A different reconcile type than automatic IBMO3RDM, so invalid.");
+  return 0;
+ }
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'IBM owned, managed by 3rd party'} )
+ {
+  dlog(
+"reconciled as IBM owned, managed by 3rd party, but scheduleF scope doesn't allow that"
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
 sub validateCustomerOwned3rdManaged {
-    my $self = shift;
-	dlog("begin validateCustomerOwned3rdManaged");
-   
-	if ((defined $self->installedSoftwareReconData->scopeName)
-		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM')
-		&& (defined $self->customer->swComplianceMgmt)
-	    && ($self->customer->swComplianceMgmt eq 'YES'))
-    {
-		dlog("scheduleF scope is CUSTO3RDM, compliance mgmt YES");
-		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
-		dlog( "reconcile map id "
-		  . $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} );
-		  
-		if ($self->installedSoftwareReconData->rTypeId ==
-			$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'})
-		{
-			dlog("reconciled as customer owned, managed by 3rd party");
-			return 1;
-		}
-	   
-		dlog("A different reconcile type than automatic CUSTO3RDM, so invalid.");
-		return 0;
-	}
-	
-	if ($self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned, managed by 3rd party'})
-	{
-		dlog("reconciled as customer owned, managed by 3rd party, but scheduleF scope doesn't allow that");
-		return 0;
-	}
-	
-	return 1;
+ my $self = shift;
+ dlog("begin validateCustomerOwned3rdManaged");
+
+ if (( defined $self->installedSoftwareReconData->scopeName )
+  && ( $self->installedSoftwareReconData->scopeName eq 'CUSTO3RDM' )
+  && ( defined $self->customer->swComplianceMgmt )
+  && ( $self->customer->swComplianceMgmt            eq 'YES' ) )
+ {
+  dlog("scheduleF scope is CUSTO3RDM, compliance mgmt YES");
+  dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+  dlog( "reconcile map id "
+     . $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} );
+
+  if ( $self->installedSoftwareReconData->rTypeId ==
+   $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} )
+  {
+   dlog("reconciled as customer owned, managed by 3rd party");
+   return 1;
+  }
+
+  dlog("A different reconcile type than automatic CUSTO3RDM, so invalid.");
+  return 0;
+ }
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'Customer owned, managed by 3rd party'} )
+ {
+  dlog(
+"reconciled as customer owned, managed by 3rd party, but scheduleF scope doesn't allow that"
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
 sub validateIBMOwnedIBMManagedCons {
-    my $self = shift;
-	dlog("begin validateIBMOwnedIBMManagedCons");
-   
-	if ((defined $self->installedSoftwareReconData->scopeName)
-		&& ($self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO'))
-    {
-		dlog("scheduleF scope is IBMOIBMMSWCO");
-		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
-		dlog( "reconcile map id "
-		  . $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} );
-		  
-		if ($self->installedSoftwareReconData->rTypeId ==
-			$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'})
-		{
-			dlog("reconciled as IBM owned, IBM managed SW consumption based");
-			return 1;
-		}
-	   
-		dlog("A different reconcile type than automatic IBMOIBMMSWCO, so invalid.");
-		return 0;
-	}
+ my $self = shift;
+ dlog("begin validateIBMOwnedIBMManagedCons");
 
-	if ($self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'})
-	{
-		dlog("reconciled as IBM owned, IBM managed SW consumption based, but ScheduleF doesn't allow that");
-		return 0;
-	}
-	
-	return 1;
+ if (( defined $self->installedSoftwareReconData->scopeName )
+  && ( $self->installedSoftwareReconData->scopeName eq 'IBMOIBMMSWCO' ) )
+ {
+  dlog("scheduleF scope is IBMOIBMMSWCO");
+  dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+  dlog( "reconcile map id "
+     . $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'}
+  );
+
+  if ( $self->installedSoftwareReconData->rTypeId ==
+   $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} )
+  {
+   dlog("reconciled as IBM owned, IBM managed SW consumption based");
+   return 1;
+  }
+
+  dlog("A different reconcile type than automatic IBMOIBMMSWCO, so invalid.");
+  return 0;
+ }
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'IBM owned, IBM managed SW consumption based'} )
+ {
+  dlog(
+"reconciled as IBM owned, IBM managed SW consumption based, but ScheduleF doesn't allow that"
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
 sub validateCustOwnedIBMManagedCons {
-    my $self = shift;
-	dlog("begin validateCustOwnedIBMManagedCons");
-   
-	if ((defined $self->installedSoftwareReconData->scopeName)
-		&& ($self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO')
-		&& (defined $self->customer->swComplianceMgmt)
-	    && ($self->customer->swComplianceMgmt eq 'YES'))
-    {
-		dlog("scheduleF scope is CUSTOIBMMSWCO, compliance managed YES");
-		dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
-		dlog( "reconcile map id "
-		  . $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'} );
-		  
-		if ($self->installedSoftwareReconData->rTypeId ==
-			$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'})
-		{
-			dlog("reconciled as Customer owned, IBM managed SW consumption based");
-			return 1;
-		}
-	   
-		dlog("A different reconcile type than automatic CUSTOIBMMSWCO, so invalid.");
-		return 0;
-	}
-	
-	if ($self->installedSoftwareReconData->rTypeId ==
-		$self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'})
-	{
-		dlog("reconciled as Customer owned, IBM managed SW consumption based, ScheduleF scope doesn't allow that");
-		return 0;
-	}
-	
-	return 1;
+ my $self = shift;
+ dlog("begin validateCustOwnedIBMManagedCons");
+
+ if (( defined $self->installedSoftwareReconData->scopeName )
+  && ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMMSWCO' )
+  && ( defined $self->customer->swComplianceMgmt )
+  && ( $self->customer->swComplianceMgmt            eq 'YES' ) )
+ {
+  dlog("scheduleF scope is CUSTOIBMMSWCO, compliance managed YES");
+  dlog( "reconcile type id " . $self->installedSoftwareReconData->rTypeId );
+  dlog( "reconcile map id "
+     . $self->reconcileTypeMap->{
+    'Customer owned, IBM managed SW consumption based'} );
+
+  if ( $self->installedSoftwareReconData->rTypeId ==
+   $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'}
+    )
+  {
+   dlog("reconciled as Customer owned, IBM managed SW consumption based");
+   return 1;
+  }
+
+  dlog("A different reconcile type than automatic CUSTOIBMMSWCO, so invalid.");
+  return 0;
+ }
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'Customer owned, IBM managed SW consumption based'}
+   )
+ {
+  dlog(
+"reconciled as Customer owned, IBM managed SW consumption based, ScheduleF scope doesn't allow that"
+  );
+  return 0;
+ }
+
+ return 1;
 }
 
-sub validateScheduleFdefined { # since 20.5.2015, scheduleF must be defined for any auto-recon whatsoever (not just license recon)
-        my $self = shift;
-	dlog("begin validateScheduleFdefined");
-	if (( not defined $self->installedSoftwareReconData->scopeName )
-		|| ( $self->installedSoftwareReconData->scopeName eq "" ))
-		{
-			if (( defined $self->installedSoftwareReconData->rIsManual ) && ( $self->installedSoftwareReconData->rIsManual == 0 ))
-            {
-				dlog("reconcile automatic, scheduleF not defined");
-				return 0;
-			}
-		}
+sub validateScheduleFdefined
+{ # since 20.5.2015, scheduleF must be defined for any auto-recon whatsoever (not just license recon)
+ my $self = shift;
+ dlog("begin validateScheduleFdefined");
+ if (( not defined $self->installedSoftwareReconData->scopeName )
+  || ( $self->installedSoftwareReconData->scopeName eq "" ) )
+ {
+  if (( defined $self->installedSoftwareReconData->rIsManual )
+   && ( $self->installedSoftwareReconData->rIsManual == 0 ) )
+  {
+   dlog("reconcile automatic, scheduleF not defined");
+   return 0;
+  }
+ }
 
-	return 1;
+ return 1;
 }
-
 
 sub validateLicenseAllocation {
  my $self = shift;
@@ -622,18 +656,22 @@ sub validateLicenseAllocation {
   $sth->bind_columns( map { \$rec{$_} }
      @{ $self->connection->sql->{validateLicenseAllocationFields} } );
   $sth->execute( $self->installedSoftware->id );
-  
+
   while ( $sth->fetchrow_arrayref ) {
    logRec( 'dlog', \%rec );
-   
-   $machineLevel = $rec{machineLevel};
-   
-   $validation->validateScheduleF( $rec{ibmOwned}, $self->customer->swComplianceMgmt,
-					$self->installedSoftwareReconData->scopeName, undef, 0 );
 
-#   if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
-#    $validation->validationCode(0);
-#   }
+   $machineLevel = $rec{machineLevel};
+
+   $validation->validateScheduleF(
+    $rec{ibmOwned},
+    $self->customer->swComplianceMgmt,
+    $self->installedSoftwareReconData->scopeName,
+    undef, 0
+   );
+
+   #   if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
+   #    $validation->validationCode(0);
+   #   }
 
    ###Add used quantity.
    $usedQuantity = $usedQuantity + $rec{lrmUsedQuantity};
@@ -650,42 +688,59 @@ sub validateLicenseAllocation {
     undef, 0 );
 
    ###Validate cap_type 34, 5, 9, 70 serial match
-   $validation->validatePhysicalCpuSerialMatch( $rec{capType}, $rec{licenseType},
-    $self->installedSoftwareReconData->hSerial,
+   $validation->validatePhysicalCpuSerialMatch( $rec{capType},
+    $rec{licenseType}, $self->installedSoftwareReconData->hSerial,
     $rec{cpuSerial}, undef, undef, 0 );
-    
-   ###Validate cap_type 5, 9, 70 lpar name match   
-   $validation->validateLparNameMatch( $rec{capType}, $rec{licenseType}, $rec{lparName}, 
-    $self->installedSoftwareReconData->slName, 
+
+   ###Validate cap_type 5, 9, 70 lpar name match
+   $validation->validateLparNameMatch(
+    $rec{capType},
+    $rec{licenseType},
+    $rec{lparName},
+    $self->installedSoftwareReconData->slName,
     $self->installedSoftwareReconData->hlName,
-    undef, undef, 0 );
-    
+    undef,
+    undef,
+    0
+   );
+
    ###Validate environment match
-   $validation->validateEnvironmentMatch( $rec{licEnvironment}, $self->installedSoftwareReconData->hServerType, 0, undef );
+   $validation->validateEnvironmentMatch( $rec{licEnvironment},
+    $self->installedSoftwareReconData->hServerType,
+    0, undef );
 
    ###Validate license software map
    $validation->validateLicenseSoftwareMap( $rec{sId}, 0,
     $self->installedSoftware->softwareId,
     $rec{reconcileId}, undef, $self->installedSoftware->id );
-   $self->scarletAllocation(1) if ( $validation->scarletAllocation ); 
+   $self->scarletAllocation( $validation->scarletAllocation );    
 
    ###Validate try and buy
    $validation->validateTryAndBuy( $rec{tryAndBuy}, $rec{capType}, undef, 0 );
 
    ###Validate subcapacity
    $validation->validateSubCapacity( $rec{licenseType}, undef, 0 );
-   
+
    ###Validate MIPS / Gartner MIPS / MSU, the component count on the hardware box
-   $validation->validateMipsGartnerMsu( 0, $rec{capType}, $rec{licenseType}, $self->installedSoftwareReconData->mtType,
-			$self->installedSoftwareReconData->rMachineLevel, undef,
-			$self->installedSoftwareReconData->hCpuMIPS, $self->installedSoftwareReconData->hCpuGartnerMIPS, $self->installedSoftwareReconData->hCpuMSU,
-			$self->installedSoftwareReconData->hlPartMIPS, $self->installedSoftwareReconData->hlPartGartnerMIPS, $self->installedSoftwareReconData->hlPartMSU
+   $validation->validateMipsGartnerMsu(
+    0,
+    $rec{capType},
+    $rec{licenseType},
+    $self->installedSoftwareReconData->mtType,
+    $self->installedSoftwareReconData->rMachineLevel,
+    undef,
+    $self->installedSoftwareReconData->hCpuMIPS,
+    $self->installedSoftwareReconData->hCpuGartnerMIPS,
+    $self->installedSoftwareReconData->hCpuMSU,
+    $self->installedSoftwareReconData->hlPartMIPS,
+    $self->installedSoftwareReconData->hlPartGartnerMIPS,
+    $self->installedSoftwareReconData->hlPartMSU
    );
 
    ###Validate expire date based on mt type if recon was auto.
    $validation->validateMaintenanceExpiration(
-    $self->installedSoftwareReconData->mtType, $rec{capType},
-    0, $rec{expireAge}, undef, undef );
+    $self->installedSoftwareReconData->mtType,
+    $rec{capType}, 0, $rec{expireAge}, undef, undef );
 
    $validation->validateProcessorChip(
     0, $rec{capType},
@@ -693,23 +748,26 @@ sub validateLicenseAllocation {
     $self->installedSoftwareReconData->rMachineLevel
    );
 
-	# skip check of customer agreement for machinelevel closed reconciles in IBMOIBMM
-	if (( $self->installedSoftwareReconData->rMachineLevel != 1 ) or ( $self->installedSoftwareReconData->scopeName ne "IBMOIBMM" )) {
-   #TODO check poolable
-		if ( $rec{pool} == 1 ) {
-			###Validate customerId change
-			if ($rec{cId} != $self->installedSoftwareReconData->cId
-			&& $self->isInParentPool( $rec{cId} ) != 1 )
-			{
-				dlog( "customer id does not match lic, adding to list to break" );
-				$validation->validationCode(0);
-			}
-		}
-		elsif ( $rec{cId} != $self->installedSoftwareReconData->cId ) {
-			dlog( "customer id does not match lic, adding to list to break" );
-			$validation->validationCode(0);
-		}
-	}
+# skip check of customer agreement for machinelevel closed reconciles in IBMOIBMM
+   if (( $self->installedSoftwareReconData->rMachineLevel != 1 )
+    or ( $self->installedSoftwareReconData->scopeName ne "IBMOIBMM" ) )
+   {
+
+    #TODO check poolable
+    if ( $rec{pool} == 1 ) {
+     ###Validate customerId change
+     if ($rec{cId} != $self->installedSoftwareReconData->cId
+      && $self->isInParentPool( $rec{cId} ) != 1 )
+     {
+      dlog("customer id does not match lic, adding to list to break");
+      $validation->validationCode(0);
+     }
+    }
+    elsif ( $rec{cId} != $self->installedSoftwareReconData->cId ) {
+     dlog("customer id does not match lic, adding to list to break");
+     $validation->validationCode(0);
+    }
+   }
 
    ###Validate quantity.
    if ( $rec{lrmUsedQuantity} > $rec{quantity} ) {
@@ -748,39 +806,47 @@ sub validateLicenseAllocation {
   ###Validate used quantity.
   ###Number of processors
   if ( $licCapType eq '2' ) {
-   if ( ( $self->installedSoftwareReconData->processorCount != $usedQuantity ) ||
-        ( $self->installedSoftwareReconData->processorCount == 0 ) ) {
+   if (( $self->installedSoftwareReconData->processorCount != $usedQuantity )
+    || ( $self->installedSoftwareReconData->processorCount == 0 ) )
+   {
     dlog("Processor count greater than used quantity or 0");
     return 0;
    }
-   if (( $rec{licenseType} eq "NAMED CPU" ) && ( defined $rec{cpuSerial} ) && ( $rec{cpuSerial} ne $self->installedSoftwareReconData->hSerial )) {
-	   dlog("Number of processors and NAMED CPU, license with different serialnumber used");
-	   return 0;
+   if (( $rec{licenseType} eq "NAMED CPU" )
+    && ( defined $rec{cpuSerial} )
+    && ( $rec{cpuSerial} ne $self->installedSoftwareReconData->hSerial ) )
+   {
+    dlog(
+"Number of processors and NAMED CPU, license with different serialnumber used"
+    );
+    return 0;
    }
    if ( $machineLevel == 0 ) {
-	   dlog("Number of processors, reconcile not on machine level!");
-	   return 0;
+    dlog("Number of processors, reconcile not on machine level!");
+    return 0;
    }
   }
   ###PVU
   elsif ( $licCapType eq '17' ) {
    if (
-       (
-        (
-          $self->installedSoftwareReconData->processorCount *
-          $self->valueUnitsPerCore
-        ) != $usedQuantity
-       ) || ( $self->valueUnitsPerCore == -1 ) # added to make the default value invalid
-       || ( $self->installedSoftwareReconData->processorCount == 0 )
+    (
+     (
+      $self->installedSoftwareReconData->processorCount *
+      $self->valueUnitsPerCore
+     ) != $usedQuantity
+    )
+    || (
+     $self->valueUnitsPerCore == -1 )  # added to make the default value invalid
+    || ( $self->installedSoftwareReconData->processorCount == 0 )
      )
    {
     dlog("PVU needed greater than current used or not found in PVU table");
     return 0;
    }
-     if ( $machineLevel == 0 ) {
-		 dlog("PVU, reconcile not on machine level");
-		 return 0;
-	 }
+   if ( $machineLevel == 0 ) {
+    dlog("PVU, reconcile not on machine level");
+    return 0;
+   }
   }
   elsif ( $licCapType eq '48' ) {
    if ( $self->installedSoftwareReconData->hChips != $usedQuantity ) {
@@ -789,61 +855,62 @@ sub validateLicenseAllocation {
    }
   }
   elsif ( $licCapType eq '49' ) {
-	  if ( $self->installedSoftwareReconData->hCpuIFL != $usedQuantity ) {
-		  dlog("IFL needed different than current used");
-		  return 0;
-	  }
+   if ( $self->installedSoftwareReconData->hCpuIFL != $usedQuantity ) {
+    dlog("IFL needed different than current used");
+    return 0;
+   }
   }
-  elsif($licCapType eq '5' || $licCapType eq '9'){
-  	if($self->installedSoftwareReconData->mtType ne 'MAINFRAME')
-  	{
-    	dlog("Machine Type needed MAINFRAME");
-    	return 0;
-  	}
-    if ($licCapType eq '5') {
-        if ( $self->installedSoftwareReconData->rMachineLevel == 0 ){		
-            if($self->installedSoftwareReconData->hCpuMIPS > 0){             
-                dlog("can allocate at the machine level");
-                return 0;
-            }
-            elsif($self->installedSoftwareReconData->hlPartMIPS != $usedQuantity){
-                dlog("Part MIPS not equal to used quantity");
-                return 0;               
-            }  
-    	}	
-    	elsif($self->installedSoftwareReconData->hCpuMIPS != $usedQuantity){
-    		dlog("CPU MIPS not equal to used quantity");
-            return 0;
-    	}		
-    }	
-    else{  	##$licCapType eq '9'
-    	 if ( $self->installedSoftwareReconData->rMachineLevel == 0 ){      
-            if($self->installedSoftwareReconData->hCpuMSU > 0){             
-                dlog("can allocate at the machine level");
-                return 0;
-            }
-            elsif($self->installedSoftwareReconData->hlPartMSU != $usedQuantity){
-                dlog("Part MSU not equal to used quantity");
-                return 0;               
-            }  
-        }   
-        elsif($self->installedSoftwareReconData->hCpuMSU != $usedQuantity){
-            dlog("CPU MSU not equal to used quantity");
-            return 0;
-        }	
+  elsif ( $licCapType eq '5' || $licCapType eq '9' ) {
+   if ( $self->installedSoftwareReconData->mtType ne 'MAINFRAME' ) {
+    dlog("Machine Type needed MAINFRAME");
+    return 0;
+   }
+   if ( $licCapType eq '5' ) {
+    if ( $self->installedSoftwareReconData->rMachineLevel == 0 ) {
+     if ( $self->installedSoftwareReconData->hCpuMIPS > 0 ) {
+      dlog("can allocate at the machine level");
+      return 0;
+     }
+     elsif ( $self->installedSoftwareReconData->hlPartMIPS != $usedQuantity ) {
+      dlog("Part MIPS not equal to used quantity");
+      return 0;
+     }
     }
-    	
-  } elsif ($licCapType eq '14' ) {
-	  if ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) {
-		  dlog("cap.type PER WORKSTATION used on a non-workstation");
-		  return 0;
-	  }
-  }  	
+    elsif ( $self->installedSoftwareReconData->hCpuMIPS != $usedQuantity ) {
+     dlog("CPU MIPS not equal to used quantity");
+     return 0;
+    }
+   }
+   else {    ##$licCapType eq '9'
+    if ( $self->installedSoftwareReconData->rMachineLevel == 0 ) {
+     if ( $self->installedSoftwareReconData->hCpuMSU > 0 ) {
+      dlog("can allocate at the machine level");
+      return 0;
+     }
+     elsif ( $self->installedSoftwareReconData->hlPartMSU != $usedQuantity ) {
+      dlog("Part MSU not equal to used quantity");
+      return 0;
+     }
+    }
+    elsif ( $self->installedSoftwareReconData->hCpuMSU != $usedQuantity ) {
+     dlog("CPU MSU not equal to used quantity");
+     return 0;
+    }
+   }
+
+  }
+  elsif ( $licCapType eq '14' ) {
+   if ( $self->installedSoftwareReconData->mtType ne 'WORKSTATION' ) {
+    dlog("cap.type PER WORKSTATION used on a non-workstation");
+    return 0;
+   }
+  }
  }
 
  if ( $self->installedSoftwareReconData->rTypeId ==
- $self->reconcileTypeMap->{'Manual license allocation'} ) {
-   dlog("reconciled as manual license allocation");
+  $self->reconcileTypeMap->{'Manual license allocation'} )
+ {
+  dlog("reconciled as manual license allocation");
 
   my $validation = new Recon::Delegate::ReconLicenseValidation();
   $validation->validationCode(1);
@@ -858,10 +925,14 @@ sub validateLicenseAllocation {
 
   while ( $sth->fetchrow_arrayref ) {
    logRec( 'dlog', \%rec );
-   
-   $validation->validateScheduleF( $rec{ibmOwned}, $self->customer->swComplianceMgmt,
-					$self->installedSoftwareReconData->scopeName, undef, 1 );
-					
+
+   $validation->validateScheduleF(
+    $rec{ibmOwned},
+    $self->customer->swComplianceMgmt,
+    $self->installedSoftwareReconData->scopeName,
+    undef, 1
+   );
+
    ###Validate license status
    $validation->validateLicense( $rec{licenseStatus}, undef );
   }

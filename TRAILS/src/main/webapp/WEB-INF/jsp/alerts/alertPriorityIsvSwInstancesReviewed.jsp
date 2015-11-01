@@ -1,5 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-v17ePagination-1.0.0.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
@@ -14,22 +14,20 @@
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable Non Instance based SW table">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort nobreak">Oldest alert status</th>
-					<th scope="col" class="ibm-sort nobreak">Installed component</th>
-					<th scope="col" class="ibm-sort nobreak">Number of instances</th>
-					<th scope="col" class="ibm-sort nobreak">Date loaded</th>
-					<th scope="col" class="ibm-sort nobreak">Oldest alert age</th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Oldest alert status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Installed component</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Number of instances</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Date loaded</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Oldest alert age</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
 			<tbody id="tb">
 				
 			</tbody>
 		</table>
-		<p class="ibm-table-navigation" id="pagebar"></p>
-		
 	</div>
 </div>
 <script>
@@ -44,9 +42,7 @@ function searchData(){
 	params['sort'] = 'alertAge';
 	params['dir'] = 'desc';
 	
-	$("#pagebar").v17ePagination({
-		showInfo: true,
-		showPageSizes: true,
+	$("#page").paginationTable({
 		remote: {
 			url: "${pageContext.request.contextPath}/ws/alertPriorityIsvSwInstancesReviewed/search",
 			type: "POST",
@@ -69,7 +65,8 @@ function searchData(){
 				}
 				$("#tb").html(html);
 			}
-		}
+		},
+		orderColumns: ['alertAge','softwareItemName','alertCount','creationTime','alertAge']
 	}); 
 }
 

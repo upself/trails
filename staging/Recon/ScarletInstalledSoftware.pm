@@ -16,11 +16,11 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch::FileRotate;
+use Recon::OM::ScarletReconcile;
 
 sub new {
- my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId,
-  $hardwareId )    
-   = @_;
+ my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId, $hardwareId ) =
+   @_;
  my $self = {
   _connection      => Database::Connection->new('trails'),
   _extSrcIds       => [],
@@ -34,7 +34,8 @@ sub new {
    file => '/opt/staging/v2/config/connectionConfig.txt'
 
   ),
-  _cachedParentGuids => {}
+  _cachedParentGuids => {},
+  _outOfService      => 0
  };
  bless $self, $class;
 }
@@ -99,6 +100,12 @@ sub hardwareId {
  return $self->{_hardwareId};
 }
 
+sub outOfService {
+ my $self = shift;
+ $self->{_outOfService} = shift if scalar @_ == 1;
+ return $self->{_outOfService};
+}
+
 sub appendData {
 
  my ( $self, $freePoollData, $licenseId, $usedLicenseId ) = @_;
@@ -135,16 +142,18 @@ sub httpGetScarletGuids {
 
  my $scarletGuids = [];
  if ( $response->is_success ) {
+  $self->outOfService(0);
   my $json = new JSON;
   try {
-   local $SIG{__DIE__};# No sigdie handler
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
    $scarletGuids = $jsObj->{$member} if ( defined $jsObj->{$member} );
     }
     catch { wlog('bad json format.') };
  }
  else {
-  wlog( 'scarlet requesting failed: ' . $response->status_line );
+   $self->outOfService(1);
+   wlog( 'scarlet requesting failed: ' . $response->status_line );
  }
 
  return $scarletGuids;
@@ -410,6 +419,10 @@ and kbd.guid in(' . $guids . ') with ur ';
    my $reconcile =
      $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
     $self->machineLevel, $isId, $self->allocMethodId );
+
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id($reconcile);
+   $scarletReconcile->save( $self->connection );
 
    $self->info( 'SUCCESS:' . $reconcile . ' ref ' . $isObj->toString );
 
