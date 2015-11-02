@@ -630,6 +630,8 @@ sub validateLicenseSoftwareMap {
  }elsif(defined $swMapSoftwareId
   && $isManual == 0
   && $isSoftwareId == $swMapSoftwareId ){
+   #it's not scarlet recocniled if installed software id of
+   #license matches. 
    $self->scarletAllocation('NO');
   }
 
