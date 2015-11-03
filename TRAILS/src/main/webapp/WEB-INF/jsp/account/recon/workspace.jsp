@@ -228,12 +228,6 @@
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
 	<div class="float-left" style="width: 75%;">
-<<<<<<< HEAD
-=======
-		<!--  task 36542 add MLA back to Trails on UAT and DEV
-		 <label><span style="font-weight: bold; color:red;">NOTE: The Manual License Allocation action has been temporarily removed due to an ongoing data recovery effort. This action will be restored as quickly as possible.</span></label>
-		 -->
->>>>>>> refs/heads/release
 		<label for="action_1">Action:</label>
 		<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
 			listKey="id" listValue="name" headerKey="" headerValue="Select one"
