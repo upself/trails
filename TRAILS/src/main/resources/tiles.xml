@@ -426,8 +426,6 @@
 	<definition name="tiles.v17e.w3OneColumnLayoutWithHead" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayoutWithHead.jsp">
 		<put-attribute name="contentTitle" value="" />
 		<put-attribute name="content" type="template" value="" />
-		<put-attribute name="contentSidebar" type="template" value="" />
-		<put-attribute name="navigation" value="tiles.v17e.navigation" />
 		<put-attribute name="contentHead" value="" />
 	</definition>
 	
@@ -1123,7 +1121,7 @@
 	</definition>
 
 	<definition name="tiles.account.recon.workspace" extends="tiles.v17e.w3OneColumnLayoutWithHead">
-		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="contentTitle" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace.jsp" />
 		<put-attribute name="navigation" value="" />
 		<put-attribute name="description" value="TRAILS recon workspace" />

@@ -156,7 +156,7 @@
 							<div class="ibm-columns">
 								<div class="ibm-col-1-1"  style="margin-left:-20px">
 									<br>
-									<h1 id="titleContent" style="font-size:23px"><tmp:insertAttribute name="contentTitle" /></h1>
+									<h1 id="titleContent" style="font-size:15px"><tmp:insertAttribute name="contentTitle" /></h1>
 								</div>
 							</div>
 						</div>
@@ -170,17 +170,8 @@
 					</div>
 				</div>
 				
-				<!-- FEATURES_BEGIN -->
-				<div id="ibm-content-sidebar">
-					<tmp:insertAttribute name="contentSidebar" />
-				</div>
-				<!-- FEATURES_END -->
 			</div>
 			<!-- CONTENT_END -->
-
-			<!-- NAVIGATION_BEGIN -->
-			<tmp:insertAttribute name="navigation" />
-			<!-- NAVIGATION_END -->
 		</div>
 
 		<div id="ibm-related-content">

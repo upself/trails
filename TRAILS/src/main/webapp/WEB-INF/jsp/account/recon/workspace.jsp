@@ -199,30 +199,32 @@
 	namespace="/account/license" includeContext="true" includeParams="none">
 </s:url>
 
-<h1>
-	Reconcile workspace:
-	<s:property value="account.name" />
-	(
-	<s:property value="account.account" />
-	)
-</h1>
-<p class="confidential">IBM Confidential</p>
-<br />
-<p>The results from your reconciliation workspace settings are
-	displayed below. Select an action to take by using the dropdown box
-	below and then select the assets in which you would like to use for the
-	basis of your action. The actions, manual license allocation and
-	included with other product, will only accept a single line item
-	selection. Once your selection is complete, depress the "GO" button to
-	be taken to the next screen.</p>
-<br />
-<br />
-<div class="ibm-rule"></div>
-<div style="float:right">
-	<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
-</div>
-
-<s:if test="hasErrors()">
+<div id="contentDesc" style="width:1100px">
+	<h1>
+		Reconcile workspace:
+		<s:property value="account.name" />
+		(
+		<s:property value="account.account" />
+		)
+	</h1>
+	<p class="confidential">IBM Confidential</p>
+	<br />
+		<p>The results from your reconciliation workspace settings are
+			displayed below. Select an action to take by using the dropdown box
+			below and then select the assets in which you would like to use for the
+			basis of your action. The actions, manual license allocation and
+			included with other product, will only accept a single line item
+			selection. Once your selection is complete, depress the "GO" button to
+			be taken to the next screen.</p>
+		
+		</div>
+		<br />
+		<br />
+		<div style="float:right">
+			<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
+		</div>
+		
+		<s:if test="hasErrors()">
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
@@ -247,7 +249,7 @@
 	<br />
 
 	<div class="clear"></div>
-	<div class="hrule-dots"></div>
+	<div class="ibm-rule" style="width:1100px"></div>
 	<div class="clear"></div>
 	<div class="float-left" style="width: 25%;">
 		<a href="javascript:popupFreePool('${freepool}')">License free
