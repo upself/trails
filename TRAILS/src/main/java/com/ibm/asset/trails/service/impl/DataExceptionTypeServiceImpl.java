@@ -35,4 +35,9 @@ public class DataExceptionTypeServiceImpl extends
         return dao.list();
     }
 
+	@Override
+	public List<AlertType> getAlertTypeForSOMs() {
+		return dao.getAlertTypeForSOMs();
+	}
+
 }
