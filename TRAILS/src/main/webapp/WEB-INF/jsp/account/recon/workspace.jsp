@@ -105,7 +105,11 @@
 					});
 
 	var lastValue = '';
-
+	
+	$("#go-btn-link").click(function(){
+		$("#showQuestion").submit();
+	});
+	
 	function keyup(type) {
 		var value = $.trim(type.value);
 		if (value == $.trim('') || value == '' || value == lastValue) {
@@ -212,32 +216,29 @@
 	selection. Once your selection is complete, depress the "GO" button to
 	be taken to the next screen.</p>
 <br />
-<div style="float: right">
+<br />
+<div class="ibm-rule"></div>
+<div style="float:right">
 	<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
 </div>
-<br />
-<br />
-<div class="hrule-dots"></div>
-<br />
+
 <s:if test="hasErrors()">
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
+<br>
 <s:form action="showQuestion" namespace="/account/recon" theme="simple">
 	<s:hidden name="page" value="%{#attr.page}" />
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
 	<div class="float-left" style="width: 75%;">
-		<!--  task 36542 add MLA back to Trails on UAT and DEV
-		 <label><span style="font-weight: bold; color:red;">NOTE: The Manual License Allocation action has been temporarily removed due to an ongoing data recovery effort. This action will be restored as quickly as possible.</span></label>
-		 -->
 		<label for="action_1">Action:</label>
 		<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
 			listKey="id" listValue="name" headerKey="" headerValue="Select one"
-			id="action_1" onchange="rcnTypSltChng(this)" />
-		<span class="button-blue"> <s:submit value="GO" id="go-btn"
-				alt="Submit" />
-		</span>
+			id="action_1" onchange="rcnTypSltChng(this)" style="height:25px"/>
+		<p class="ibm-button-link-alternate ibm-btn-small" style="float:right;margin-right:15%">
+			<a id="go-btn-link" class="ibm-btn-small" alt="Submit" href="#">Go</a>
+		</p>
 	</div>
 	<div class="clear"></div>
 
@@ -254,7 +255,6 @@
 	</div>
 	<div class="clear"></div>
 	<br />
-	<!-- 36643 -->
 	<div id="displayTab">
 	<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-defaultx" id="row"
 		summary="Reconciliation Query Results"

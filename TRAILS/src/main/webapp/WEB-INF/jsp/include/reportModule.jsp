@@ -1,10 +1,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
-<script src="${pageContext.request.contextPath}/js/jquery.js"
-	type="text/javascript"></script>
-<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
-	type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     
        $(document).ready(function() 
@@ -95,6 +93,10 @@ function reportChange(id) {
 		document.getElementById('comments').style.display='block';
 	}
 }
+$("#go-btn-link-report").click(function(){
+	setAction();
+	$("#reportList").submit();
+});
 
 </script>
 <s:form action="reportList" method="get" namespace="/report/download"
@@ -114,11 +116,16 @@ function reportChange(id) {
 			<td><label for="reportFileName">Report name:</label></td>
 		</tr>
 		<tr>
-			<td><s:select name="reportFileName" label="Report"
+		<div style="float:right">
+			<td>
+			<s:select name="reportFileName" label="Report"
 					list="reportList" id="reportFileName" listKey="reportFileName"
-					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; <span
-				class="button-blue"><s:submit value="GO"
-						onclick="return setAction()" alt="Download report" /></span></td>
+					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; 
+				<p class="ibm-button-link-alternate ibm-btn-small" style="float:right">
+					<a id="go-btn-link-report" class="ibm-btn-small" href="#" alt="Download report" >Go</a>
+				</p>
+			</td>
+		</div>
 		</tr>
  	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0">
 		<tr>
