@@ -2172,6 +2172,7 @@ sub getInstalledSoftwareReconData {
   $installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
   $installedSoftwareReconData->rIsManual( $rec{rIsManual} );
+  $installedSoftwareReconData->rAllocMethodology( $rec{rAllocMethodology} );
 
   $installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
@@ -2397,6 +2398,7 @@ sub queryReconInstalledSoftwareBaseData {
    rParentInstSwId
    rMachineLevel
    rIsManual
+   rAllocMethodology
  );
  my $query = '
         select
@@ -2444,6 +2446,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,r.parent_installed_software_id
             ,r.machine_level
             ,rt.is_manual
+            ,r.allocation_methodology_id
         from
             installed_software is
             join software_lpar sl on 

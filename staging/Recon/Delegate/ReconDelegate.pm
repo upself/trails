@@ -40,9 +40,10 @@ sub getReconcileTypeMap {
 }
 
 sub getAllocationMethodologyMap {
-	my ($self) = @_;
+	my ($self, $extrastring) = @_;
 
 	my %data;
+	my $extrastring="" unless defined ($extrastring);
 
 	###NOTE: Hard coding these values from the database
 	###b/c they are extremely static and this data is
@@ -52,19 +53,19 @@ sub getAllocationMethodologyMap {
 	###allow for ability to get once and reuse across
 	###multiple recons.
 	
-	$data{'Per LPAR'} = "1, ";
-	$data{'Per processor'} = "2, ";
-	$data{'Per hardware device'} = "3, ";
-	$data{'Per hardware processor'} = "4, ";
-	$data{'Per hardware chip'} = "5, ";
-	$data{'Per PVU'} = "6, ";
-	$data{'Per hardware Gartner MIPS'} = "21, ";
-	$data{'Per LPAR Gartner MIPS'} = "22, ";
-	$data{'Per hardware IBM LSPR MIPS'} = "23, ";
-	$data{'Per LPAR IBM LSPR MIPS'} = "24, ";
-	$data{'Per hardware MSU'} = "25, ";
-	$data{'Per LPAR MSU'} = "26, ";
-	$data{'Per hardware IFL'} = "41, ";
+	$data{'Per LPAR'} = "1".$extrastring;
+	$data{'Per processor'} = "2".$extrastring;
+	$data{'Per hardware device'} = "3".$extrastring;
+	$data{'Per hardware processor'} = "4".$extrastring;
+	$data{'Per hardware chip'} = "5".$extrastring;
+	$data{'Per PVU'} = "6".$extrastring;
+	$data{'Per hardware Gartner MIPS'} = "21".$extrastring;
+	$data{'Per LPAR Gartner MIPS'} = "22".$extrastring;
+	$data{'Per hardware IBM LSPR MIPS'} = "23".$extrastring;
+	$data{'Per LPAR IBM LSPR MIPS'} = "24".$extrastring;
+	$data{'Per hardware MSU'} = "25".$extrastring;
+	$data{'Per LPAR MSU'} = "26".$extrastring;
+	$data{'Per hardware IFL'} = "41".$extrastring;
 
 	return \%data;
 }
