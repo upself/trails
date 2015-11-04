@@ -121,7 +121,7 @@ $("#go-btn-link-report").click(function(){
 			<s:select name="reportFileName" label="Report"
 					list="reportList" id="reportFileName" listKey="reportFileName"
 					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; 
-				<p class="ibm-button-link-alternate ibm-btn-small" style="float:right">
+				<p class="ibm-button-link-alternate ibm-btn-small" style="float:right"">
 					<a id="go-btn-link-report" class="ibm-btn-small" href="#" alt="Download report" >Go</a>
 				</p>
 			</td>

@@ -49,9 +49,9 @@
 	var fltrCntr = 0;
 	function addFltr() {
 
-		var filter = '<div class="fltr">'
+		var filter = '<div class="fltr" style="width:1100px">'
 				+ '<div class="clear"></div>'
-				+ '<div class="hrule-dots"></div>'
+				+ '<div class="ibm-rule" style="width:1100px"></div>'
 				+ '<div class="clear"></div>'
 				+ '<input type="button" value="delete" onclick="delFltr(this)"/>'
 				+ ' Capacity Type:';
