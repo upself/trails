@@ -43,7 +43,7 @@ sub getAllocationMethodologyMap {
 	my ($self, $extrastring) = @_;
 
 	my %data;
-	my $extrastring="" unless defined ($extrastring);
+	$extrastring="" unless defined ($extrastring);
 
 	###NOTE: Hard coding these values from the database
 	###b/c they are extremely static and this data is
