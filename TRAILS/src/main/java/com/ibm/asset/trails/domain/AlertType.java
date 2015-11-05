@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		@NamedQuery(name = "findAlertTypeById", query = "FROM AlertType AT WHERE AT.id = :id"),
 		@NamedQuery(name = "getAlertTypeByCode", query = "FROM AlertType a WHERE a.code=:code"),
 		@NamedQuery(name = "getAlertTypeList", query = "FROM AlertType ORDER BY name ASC"),
+		@NamedQuery(name = "getAlertTypeListForSOMs", query = "FROM AlertType at where at.dataQuality = 0 ORDER BY at.name ASC"),
 		@NamedQuery(name = "getAlertTypeIdByCode", query = "SELECT at.id FROM AlertType at WHERE at.code=:code")})
 public class AlertType extends AbstractDomainEntity {
 	private static final long serialVersionUID = -1543290200848510819L;
@@ -42,6 +43,9 @@ public class AlertType extends AbstractDomainEntity {
 	@Column(name = "CODE")
 	protected String code;
 	
+	@Column(name = "IS_DQ")
+	private boolean dataQuality;
+	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.alertType", cascade = CascadeType.ALL)
 	protected Set<AlertTypeCause> alertTypeCauses = new HashSet<AlertTypeCause>();
@@ -52,6 +56,14 @@ public class AlertType extends AbstractDomainEntity {
 
 	public void setAlertTypeCauses(Set<AlertTypeCause> alertTypeCauses) {
 		this.alertTypeCauses = alertTypeCauses;
+	}
+
+	public boolean isDataQuality() {
+		return dataQuality;
+	}
+
+	public void setDataQuality(boolean dataQuality) {
+		this.dataQuality = dataQuality;
 	}
 
 	public Long getId() {

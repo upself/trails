@@ -50,4 +50,11 @@ public class DataExceptionTypeDaoJpa extends
 		}
 		return result;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AlertType> getAlertTypeForSOMs() {
+		return entityManager.createNamedQuery("getAlertTypeListForSOMs")
+				.getResultList();
+	}
 }

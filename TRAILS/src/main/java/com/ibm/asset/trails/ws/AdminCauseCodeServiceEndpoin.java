@@ -60,7 +60,7 @@ public class AdminCauseCodeServiceEndpoin {
 	@Path("/alertTypes")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getAlertTypes() {
-		List<AlertType> list = alertTypeService.list();
+		List<AlertType> list = alertTypeService.getAlertTypeForSOMs();
 		return WSMsg.successMessage("SUCCESS", list);
 	}
 

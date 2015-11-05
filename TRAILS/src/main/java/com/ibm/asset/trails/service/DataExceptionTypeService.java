@@ -9,4 +9,6 @@ public interface DataExceptionTypeService extends BaseEntityService<AlertType, L
 	AlertType findWithAlertCauses(Long plId);
 
 	List<AlertType> list();
+	
+	List<AlertType> getAlertTypeForSOMs();
 }
