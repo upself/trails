@@ -935,6 +935,9 @@ sub validateLicenseAllocation {
 
    ###Validate license status
    $validation->validateLicense( $rec{licenseStatus}, undef );
+   
+   $validation->validateProcCount( $self->installedSoftwareReconData->hProcCount, undef, undef, undef, 1, $self->installedSoftwareReconData->rAllocMethodology );
+   
   }
   return 0 if ( $validation->validationCode == 0 );
  }
