@@ -48,10 +48,9 @@
 
 	var fltrCntr = 0;
 	function addFltr() {
-
-		var filter = '<div class="fltr" style="width:1100px">'
+		var filter = '<div class="fltr">'
 				+ '<div class="clear"></div>'
-				+ '<div class="ibm-rule" style="width:1100px"></div>'
+				+ '<div class="ibm-rule" style="width:150%"></div>'
 				+ '<div class="clear"></div>'
 				+ '<input type="button" value="delete" onclick="delFltr(this)"/>'
 				+ ' Capacity Type:';
@@ -72,16 +71,16 @@
 						$("#filters").empty();
 					}
 				});
-		filter += ' Manufacturer(s): <input type="text" name="filter['
+		filter += '<table><tr><td>'
+				+ ' Manufacturer(s): <input style="margin-right: 5px; margin-bottom: 5px;" type="text" name="filter['
 				+ fltrCntr
-				+ '].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'
+				+ '].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/></td><td>'
 				+ ' Product name(s):<input type="text" name="filter['
 				+ fltrCntr
-				+ '].productName" autocomplete="off" onKeyUp="keyup(this)"/>'
-				+ ' PO number(s):<input type="text" name="filter['+fltrCntr+'].poNo"/>'
-				+ ' SWCM ID:<input type="text" name="filter['+fltrCntr+'].swcmId"/>'
+				+ '].productName" autocomplete="off" onKeyUp="keyup(this)"/></td></tr>'
+				+ ' <tr><td style="margin-right:2px">PO number(s):<input style="float:right;margin-right: 5px; margin-bottom: 5px;" type="text" name="filter['+fltrCntr+'].poNo"/></td><td>'
+				+ ' SWCM ID:<input style="float:right" type="text" name="filter['+fltrCntr+'].swcmId"/></td></tr></table>'
 				+ '</div>';
-
 		$("#filters").after(filter);
 		fltrCntr++;
 	}
@@ -199,7 +198,7 @@
 	namespace="/account/license" includeContext="true" includeParams="none">
 </s:url>
 
-<div id="contentDesc" style="width:1100px">
+<div id="contentDesc" style="width:150%">
 	<h1>
 		Reconcile workspace:
 		<s:property value="account.name" />
@@ -217,11 +216,13 @@
 			selection. Once your selection is complete, depress the "GO" button to
 			be taken to the next screen.</p>
 		
-		</div>
+</div>
 		<br />
 		<br />
-		<div style="float:right">
-			<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
+		<div style="width:120%;" align="right">
+			<div style="float:right" align="left">
+				<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
+			</div>
 		</div>
 		
 		<s:if test="hasErrors()">
@@ -234,22 +235,27 @@
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
 	<div class="float-left" style="width: 75%;">
-		<label for="action_1">Action:</label>
-		<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
-			listKey="id" listValue="name" headerKey="" headerValue="Select one"
-			id="action_1" onchange="rcnTypSltChng(this)" style="height:25px"/>
-		<p class="ibm-button-link-alternate ibm-btn-small" style="float:right;margin-right:15%">
-			<a id="go-btn-link" class="ibm-btn-small" alt="Submit" href="#">Go</a>
-		</p>
+			<!-- <div style="width:70%"> -->
+				<label for="action_1">Action:</label>
+				<s:select name="reconcileTypeId" label="Action" list="reconcileTypes"
+					listKey="id" listValue="name" headerKey="" headerValue="Select one" id="action_1" onchange="rcnTypSltChng(this)" style="height:25px"/>&nbsp;&nbsp;
+				<span class="button-blue"> 
+					<s:submit value="GO" id="go-btn" alt="Submit" />
+				</span>
+			<!-- </div> -->
+			<!--<div style="float:right"> 
+				<p class="ibm-button-link-alternate ibm-btn-small">
+					<a id="go-btn-link" class="ibm-btn-small" alt="Submit" href="#">Go</a>
+				</p>
+			  </div> -->
 	</div>
-	<div class="clear"></div>
 
 	<div id="filterSpan"></div>
 	<div id="filters"></div>
 	<br />
 
 	<div class="clear"></div>
-	<div class="ibm-rule" style="width:1100px"></div>
+	<div class="ibm-rule" style="width:150%"></div>
 	<div class="clear"></div>
 	<div class="float-left" style="width: 25%;">
 		<a href="javascript:popupFreePool('${freepool}')">License free

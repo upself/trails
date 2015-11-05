@@ -7,6 +7,8 @@
     
        $(document).ready(function() 
 		 {
+    	   document.getElementById('checkboxlist').style.display='none';
+   		   document.getElementById('comments').style.display='block';
     	   var reportName = document.getElementById("reportFileName").options[document.getElementById("reportFileName").selectedIndex].text;
        	if(reportName == 'Software compliance summary'){
        		document.getElementById('checkboxlist').style.display='block';
@@ -116,18 +118,16 @@ $("#go-btn-link-report").click(function(){
 			<td><label for="reportFileName">Report name:</label></td>
 		</tr>
 		<tr>
-		<div style="float:right">
 			<td>
 			<s:select name="reportFileName" label="Report"
 					list="reportList" id="reportFileName" listKey="reportFileName"
 					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; 
-				<p class="ibm-button-link-alternate ibm-btn-small" style="float:right"">
-					<a id="go-btn-link-report" class="ibm-btn-small" href="#" alt="Download report" >Go</a>
-				</p>
+				<span
+				class="button-blue"><s:submit value="GO"
+						onclick="return setAction()" alt="Download report" /></span>
 			</td>
-		</div>
 		</tr>
- 	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0">
+ 	<table id="checkboxlist" style="display:none" class="basic-table" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><s:checkbox
 					label="Customer owned/customer managed titles/vendors"
@@ -192,7 +192,7 @@ $("#go-btn-link-report").click(function(){
 				for="selectAll">SelectALL</label></td>
 		</tr>
 		</table>
-		<table id="comments" class="basic-table" cellspacing="0" cellpadding="0">
+		<table id="comments" style="display:none" class="basic-table" cellspacing="0" cellpadding="0">
     	<tr><td>
              Scope Selection was removed </br>
              All reports here are return with "Full mode"
