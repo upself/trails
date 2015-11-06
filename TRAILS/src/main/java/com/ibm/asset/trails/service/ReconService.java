@@ -11,20 +11,24 @@ import com.ibm.asset.trails.domain.Recon;
 
 public interface ReconService {
 
-    public void reconcileByAlert(Long alertId,
-            InstalledSoftware parentInstalledSoftware, Recon pRecon,
-            String remoteUser, String comments, Account account);
+	public void reconcileByAlert(Long alertId,
+			InstalledSoftware parentInstalledSoftware, Recon pRecon,
+			String remoteUser, String comments, Account account);
 
-    public Long manualReconcileByAlert(Long alertId,
-            InstalledSoftware parentInstalledSoftware, Recon pRecon,
-            String remoteUser, String comments, Account account,
-            Map<License, Integer> pmLicenseApplied, String psMethod,int owner);
+	public Long manualReconcileByAlert(Long alertId,
+			InstalledSoftware parentInstalledSoftware, Recon pRecon,
+			String remoteUser, String comments, Account account,
+			Map<License, Integer> pmLicenseApplied, String psMethod, int owner);
 
-    public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
-            Account account, String remoteUser);
-    //AB added2
-    public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);
-    //AB added
-    //Story 26012
-    public List<String> getScheduleFDefInRecon();
+	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
+			Account account, String remoteUser);
+
+	// AB added2
+	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);
+
+	// AB added
+	// Story 26012
+	public List<String> getScheduleFDefInRecon();
+
+	public boolean isAllocateByHardware(Recon pRecon);
 }
