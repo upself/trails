@@ -2,17 +2,11 @@ package com.ibm.asset.trails.action;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.service.AlertService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
 import com.ibm.tap.trails.annotation.UserRoleType;
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionContext;
 
 public class ApplyManualRecon extends AccountBaseAction {
 

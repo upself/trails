@@ -43,9 +43,9 @@ public class ReconServiceImpl implements ReconService {
 	private static final Log log = LogFactory.getLog(ReconServiceImpl.class);
 
 	private EntityManager em;
-	
-	//AB added, flag used for export the validate result to reconWorkspaceImpl
-	//Story 26012
+
+	// AB added, flag used for export the validate result to reconWorkspaceImpl
+	// Story 26012
 	private List<String> ScheduleFDefInRecon;
 
 	public List<String> getScheduleFDefInRecon() {
@@ -53,19 +53,19 @@ public class ReconServiceImpl implements ReconService {
 	}
 
 	public void setScheduleFDefInRecon(String result) {
-		if(result!=null){
-			if(ScheduleFDefInRecon==null||ScheduleFDefInRecon.isEmpty()){
-				ScheduleFDefInRecon=new ArrayList<String>();
+		if (result != null) {
+			if (ScheduleFDefInRecon == null || ScheduleFDefInRecon.isEmpty()) {
+				ScheduleFDefInRecon = new ArrayList<String>();
 				ScheduleFDefInRecon.add(result);
-			}else{
-				if(!ScheduleFDefInRecon.contains(result)){
+			} else {
+				if (!ScheduleFDefInRecon.contains(result)) {
 					ScheduleFDefInRecon.add(result);
 				}
 			}
-		}else{
-			ScheduleFDefInRecon=null;
+		} else {
+			ScheduleFDefInRecon = null;
 		}
-	
+
 	}
 
 	@Autowired
@@ -187,45 +187,51 @@ public class ReconServiceImpl implements ReconService {
 		}
 		return false;
 	}
-	
-	//AB added2
-	public int validateScheduleFowner(AlertUnlicensedSw alert,Recon recon){
-		ScheduleF scheduleF = getScheduleFItem( alert.getInstalledSoftware().getSoftwareLpar().getAccount(),
-				    alert.getInstalledSoftware().getSoftware().getSoftwareName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
-				    alert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
+
+	// AB added2
+	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon recon) {
+		ScheduleF scheduleF = getScheduleFItem(alert.getInstalledSoftware()
+				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+				.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
+				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
+				.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+				alert.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getMachineType()
+						.getName(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getSerial());
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
 					.split(",");
-			
-			//AB added2
+
+			// AB added2
 			/**
-			 * manualAllocation, 		reconType=1,    Schedule F scope must be xxxIBM Managed
-			 * customerOwned,			reconType=2,    Schedule F scope must be Customer owned Customer managed.
-			 * altPurchase, 			reconType=3,    Schedule F scope must be xxxIBM Managed
-			 * Included, 				reconType=4,    Schedule F scope must be xxxIBM Managed
-			 * enterpriseAgreement, 	reconType=13,   Schedule F scope must be IBM Ownedxxx
+			 * manualAllocation, reconType=1, Schedule F scope must be xxxIBM
+			 * Managed customerOwned, reconType=2, Schedule F scope must be
+			 * Customer owned Customer managed. altPurchase, reconType=3,
+			 * Schedule F scope must be xxxIBM Managed Included, reconType=4,
+			 * Schedule F scope must be xxxIBM Managed enterpriseAgreement,
+			 * reconType=13, Schedule F scope must be IBM Ownedxxx
 			 */
-			int reconType=recon.getReconcileType().getId().intValue();
-			if(reconType!=0){
-				if(reconType == 1 || reconType == 3 || reconType == 4){
-					if(!scDesParts[1].contains("IBM managed")){
+			int reconType = recon.getReconcileType().getId().intValue();
+			if (reconType != 0) {
+				if (reconType == 1 || reconType == 3 || reconType == 4) {
+					if (!scDesParts[1].contains("IBM managed")) {
 						return owner;
 					}
-				}else if(reconType == 2){
-					if(!scDesParts[0].contains("Customer owned") || !scDesParts[1].contains("Customer managed")){
+				} else if (reconType == 2) {
+					if (!scDesParts[0].contains("Customer owned")
+							|| !scDesParts[1].contains("Customer managed")) {
 						return owner;
 					}
-				}else if(reconType == 13){
-					if(!scDesParts[0].contains("IBM owned")){
+				} else if (reconType == 13) {
+					if (!scDesParts[0].contains("IBM owned")) {
 						return owner;
 					}
 				}
 			}
-			
+
 			if (scDesParts[0].contains("IBM owned")) {
 				owner = 1;
 			} else if (scDesParts[0].contains("Customer owned")) {
@@ -234,68 +240,103 @@ public class ReconServiceImpl implements ReconService {
 		}
 		return owner;
 	}
-	
-	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
-	//This method is used to judge if alert is a cross account alert or not
-	private boolean isCrossAccountAlert(Account alertExistedAccount, Account currentWorkingAccount){
-	 boolean crossAccountAlertFlag = false;
-	 if( alertExistedAccount!=null 
-	  && currentWorkingAccount!=null
-	  && alertExistedAccount.getAccount().intValue()!=currentWorkingAccount.getAccount().intValue()){
-       crossAccountAlertFlag = true;   	 
-	 }
-	  return crossAccountAlertFlag;	
+
+	// User Story - 17236 - Manual License Allocation at HW level can
+	// automatically close Alerts on another account on the same Shared HW as
+	// requested by users Start
+	// This method is used to judge if alert is a cross account alert or not
+	private boolean isCrossAccountAlert(Account alertExistedAccount,
+			Account currentWorkingAccount) {
+		boolean crossAccountAlertFlag = false;
+		if (alertExistedAccount != null
+				&& currentWorkingAccount != null
+				&& alertExistedAccount.getAccount().intValue() != currentWorkingAccount
+						.getAccount().intValue()) {
+			crossAccountAlertFlag = true;
+		}
+		return crossAccountAlertFlag;
 	}
-	
-	//This method is used to judge if there is one validate schdeduleF record defined for current working alert and cross account alert
-	//1. SCHEDULE_F.SCOPE_ID = 3(IBM owned, IBM managed)
-	//2. SCHEDULE_F.LEVEL != 'HOSTNAME'(The value can be 'HWBOX','HWOWNER','PRODUCT')
-	private boolean validateScheduleF4WorkingAlertAndCrossAccountAlert(AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert){
+
+	// This method is used to judge if there is one validate schdeduleF record
+	// defined for current working alert and cross account alert
+	// 1. SCHEDULE_F.SCOPE_ID = 3(IBM owned, IBM managed)
+	// 2. SCHEDULE_F.LEVEL != 'HOSTNAME'(The value can be
+	// 'HWBOX','HWOWNER','PRODUCT')
+	private boolean validateScheduleF4WorkingAlertAndCrossAccountAlert(
+			AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert) {
 		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
-		
-		ScheduleF scheduleF4WorkingAlert = getScheduleFItem( workingAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
-				workingAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
-				workingAlert.getInstalledSoftware().getSoftwareLpar().getName(),
-				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
-				workingAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
-		
-		ScheduleF scheduleF4RelatedAlert = getScheduleFItem( relatedAlert.getInstalledSoftware().getSoftwareLpar().getAccount(),
-				relatedAlert.getInstalledSoftware().getSoftware().getSoftwareName(),
-				relatedAlert.getInstalledSoftware().getSoftwareLpar().getName(),
-				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getMachineType().getName(),
-				relatedAlert.getInstalledSoftware().getSoftwareLpar().getHardwareLpar().getHardware().getSerial());
-		
-		if (scheduleF4WorkingAlert!=null && scheduleF4RelatedAlert != null) {
-			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope().getId();
-			Long scopeId4RelatedAlert = scheduleF4RelatedAlert.getScope().getId();
-		
-			if(scopeId4WorkingAlert.intValue()==3//Working Alert Scope must be IBM owned, IBM managed
-			  && scheduleF4WorkingAlert.getLevel()!=null
-			  && !scheduleF4WorkingAlert.getLevel().trim().equals("HOSTNAME")//Working Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
-			  && scopeId4RelatedAlert.intValue() == 3//Cross Account Alert Scope must be IBM owned, IBM managed
-			  && scheduleF4RelatedAlert.getLevel()!=null
-			  && !scheduleF4RelatedAlert.getLevel().trim().equals("HOSTNAME")//Cross Account Alert Level must be great than "HOSTNAME"(The value can be 'HWBOX','HWOWNER','PRODUCT') 
-			  ){
-			  validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;  
+
+		ScheduleF scheduleF4WorkingAlert = getScheduleFItem(workingAlert
+				.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				workingAlert.getInstalledSoftware().getSoftware()
+						.getSoftwareName(), workingAlert.getInstalledSoftware()
+						.getSoftwareLpar().getName(), workingAlert
+						.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getOwner(),
+				workingAlert.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getMachineType()
+						.getName(), workingAlert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getSerial());
+
+		ScheduleF scheduleF4RelatedAlert = getScheduleFItem(relatedAlert
+				.getInstalledSoftware().getSoftwareLpar().getAccount(),
+				relatedAlert.getInstalledSoftware().getSoftware()
+						.getSoftwareName(), relatedAlert.getInstalledSoftware()
+						.getSoftwareLpar().getName(), relatedAlert
+						.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getOwner(),
+				relatedAlert.getInstalledSoftware().getSoftwareLpar()
+						.getHardwareLpar().getHardware().getMachineType()
+						.getName(), relatedAlert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware()
+						.getSerial());
+
+		if (scheduleF4WorkingAlert != null && scheduleF4RelatedAlert != null) {
+			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope()
+					.getId();
+			Long scopeId4RelatedAlert = scheduleF4RelatedAlert.getScope()
+					.getId();
+
+			if (scopeId4WorkingAlert.intValue() == 3// Working Alert Scope must
+													// be IBM owned, IBM managed
+					&& scheduleF4WorkingAlert.getLevel() != null
+					&& !scheduleF4WorkingAlert.getLevel().trim()
+							.equals("HOSTNAME")// Working Alert Level must be
+												// great than "HOSTNAME"(The
+												// value can be
+												// 'HWBOX','HWOWNER','PRODUCT')
+					&& scopeId4RelatedAlert.intValue() == 3// Cross Account
+															// Alert Scope must
+															// be IBM owned, IBM
+															// managed
+					&& scheduleF4RelatedAlert.getLevel() != null
+					&& !scheduleF4RelatedAlert.getLevel().trim()
+							.equals("HOSTNAME")// Cross Account Alert Level must
+												// be great than "HOSTNAME"(The
+												// value can be
+												// 'HWBOX','HWOWNER','PRODUCT')
+			) {
+				validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;
 			}
 		}
-		
+
 		return validateScheduleF4WorkingAlertAndCrossAccountAlertFlag;
 	}
-	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
+
+	// User Story - 17236 - Manual License Allocation at HW level can
+	// automatically close Alerts on another account on the same Shared HW as
+	// requested by users End
 
 	private ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial) {
-	
+
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
 						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
 				.setParameter("account", account)
 				.setParameter("swname", swname).getResultList();
-
 
 		if (results == null || results.isEmpty()) {
 			return null;
@@ -560,182 +601,164 @@ public class ReconServiceImpl implements ReconService {
 	public Long manualReconcileByAlert(Long alertId,
 			InstalledSoftware parentInstalledSoftware, Recon pRecon,
 			String remoteUser, String comments, Account account,
-			Map<License, Integer> pmLicenseApplied, String psMethod, int owner) {
-		AlertUnlicensedSw aus = getEntityManager().find(
+			Map<License, Integer> appliedLicenseQtyMap, String psMethod, int owner) {
+		AlertUnlicensedSw selectedAlert = getEntityManager().find(
 				AlertUnlicensedSw.class, alertId);
-		List<AlertUnlicensedSw> llAlertUnlicensedSw = new ArrayList<AlertUnlicensedSw>();
+		List<AlertUnlicensedSw> affectedAlertList = new ArrayList<AlertUnlicensedSw>();
 		Reconcile reconcile = null;
 		Iterator<Entry<License, Integer>> liLicenseApplied = null;
 		Entry<License, Integer> leTemp = null;
-		boolean lbFoundZero = false;
 
-		liLicenseApplied = pmLicenseApplied.entrySet().iterator();
+		liLicenseApplied = appliedLicenseQtyMap.entrySet().iterator();
+
 		while (liLicenseApplied.hasNext()) {
 			leTemp = liLicenseApplied.next();
 			if (leTemp.getValue().intValue() == 0) {
 				log.error("ERROR: Attempting to insert a 0 quantity LicenseReconMap for method "
 						+ psMethod);
-				log.error(aus);
-				log.error(pmLicenseApplied);
-				lbFoundZero = true;
-				break;
+				log.error(selectedAlert);
+				log.error(appliedLicenseQtyMap);
+				return null;
 			}
 		}
 
-		if (!lbFoundZero) {
-			if (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
-					|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
-					|| pRecon.getPer().equalsIgnoreCase("PVU")
-					|| pRecon.getPer().equalsIgnoreCase("CHIP")
-					|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
-					|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
-					|| pRecon.getPer().equalsIgnoreCase("HWMSU")) {
-				llAlertUnlicensedSw.addAll(findAffectedAlertList(account, aus
-						.getInstalledSoftware().getSoftware().getSoftwareId(), aus
-						.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getHardware().getId(),
-						pRecon.isAutomated(), pRecon.isManual()));
-			} else {
-				llAlertUnlicensedSw.add(aus);
-			}
-
-			liLicenseApplied = pmLicenseApplied.entrySet().iterator();
-			Set<UsedLicense> usedLicenses = new HashSet<UsedLicense>();
-			Set<UsedLicenseHistory> usedLicenseHistories = new HashSet<UsedLicenseHistory>();
-			int totalUsedLicenses = 0;
-			while (liLicenseApplied.hasNext()) {
-				leTemp = liLicenseApplied.next();
-
-				UsedLicense ul = new UsedLicense();
-				ul.setLicense(leTemp.getKey());
-				ul.setUsedQuantity(leTemp.getValue());
-				ul.setCapacityType(leTemp.getKey().getCapacityType());
-				getEntityManager().persist(ul);
-				usedLicenses.add(ul);
-				totalUsedLicenses += ul.getUsedQuantity();
-
-				UsedLicenseHistory ulh = new UsedLicenseHistory();
-				ulh.setLicense(leTemp.getKey());
-				ulh.setUsedQuantity(leTemp.getValue());
-				ulh.setCapacityType(leTemp.getKey().getCapacityType());
-				getEntityManager().persist(ulh);
-				usedLicenseHistories.add(ulh);
-			}
-
-			//Story 26012
-			int alertWithoutScheduleFcounter=0;
-			for (AlertUnlicensedSw lausTemp : llAlertUnlicensedSw) {
-				boolean bReconcileValidation = reconcileValidate(lausTemp,
-						pRecon, totalUsedLicenses);
-				
-				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
-				int alertlistSwOwner = -1;//default init value
-				boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;//default init value
-				boolean crossAccountAlertFlag = isCrossAccountAlert(lausTemp.getInstalledSoftware().getSoftwareLpar().getAccount(), account);
-				if(crossAccountAlertFlag == false){//same account alert
-					
-				  //AB added
-					alertlistSwOwner = validateScheduleFowner(lausTemp, pRecon);
-				  //this only used to export the schedule F defined flag to ReconWorkspaceImpl
-				  if(alertlistSwOwner==2){
-					  alertWithoutScheduleFcounter++;
-				  }
-				  
-				}
-				else{//cross account alert
-					validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = validateScheduleF4WorkingAlertAndCrossAccountAlert(aus,lausTemp);
-				}
-				
-				if((crossAccountAlertFlag == false && alertlistSwOwner == owner && owner != 2)//same account alert
-				||(crossAccountAlertFlag == true && validateScheduleF4WorkingAlertAndCrossAccountAlertFlag == true))//cross alert alert
-				//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
-				{
-					if (bReconcileValidation) {
-						if (lausTemp.isOpen()) {
-							reconcile = createReconcile(
-									lausTemp.getInstalledSoftware(),
-									lausTemp.getInstalledSoftware(), pRecon,
-									remoteUser, comments, usedLicenses,
-									usedLicenseHistories);
-
-							AlertUnlicensedSwH aush = createAlertHistory(lausTemp);
-							aush.setAlertUnlicensedSw(lausTemp);
-
-							// Close the alert
-							lausTemp.setOpen(false);
-							lausTemp.setComments("Manual Close");
-							lausTemp.setRecordTime(new Date());
-							aush = getEntityManager().merge(aush);
-						} else {
-							reconcile = lausTemp.getReconcile();
-							reconcile.setParentInstalledSoftware(reconcile
-									.getParentInstalledSoftware());
-							reconcile.setReconcileType(pRecon
-									.getReconcileType());
-							reconcile.setRecordTime(new Date());
-							reconcile.setRemoteUser(remoteUser);
-							reconcile.setComments(comments);
-							reconcile
-									.setMachineLevel(new Integer(
-											pRecon.getPer().equalsIgnoreCase(
-													"HWDEVICE")
-													|| pRecon
-															.getPer()
-															.equalsIgnoreCase(
-																	"HWPROCESSOR")
-													|| pRecon.getPer()
-															.equalsIgnoreCase(
-																	"PVU")
-												    || pRecon.getPer()
-															.equalsIgnoreCase(
-																	"CHIP")
-													|| pRecon
-															.getPer()
-															.equalsIgnoreCase(
-																	"HWGARTMIPS")
-													|| pRecon
-															.getPer()
-															.equalsIgnoreCase(
-																	"HWLSPRMIPS")
-													|| pRecon.getPer()
-															.equalsIgnoreCase(
-																	"HWMSU") ? 1
-													: 0));
-							if (pRecon.getPer() != null) {
-								AllocationMethodology allocationMethodology = allocationMethodologyService
-										.findByCode(pRecon.getPer()
-												.toUpperCase());
-								reconcile
-										.setAllocationMethodology(allocationMethodology);
-							}
-
-							log.debug("Clearing licenses");
-							clearUsedLicenses(reconcile, remoteUser);
-							reconcile.setUsedLicenses(usedLicenses);
-							log.debug("Saving reconcile");
-							reconcile = getEntityManager().merge(reconcile);
-							createReconcileHistory(reconcile,
-									usedLicenseHistories);
-						}
-					} else {
-						clearUsedLicenses(usedLicenses, usedLicenseHistories,
-								remoteUser);
-					}
-				}
-			}
-			
-			//Story 26012
-			if(alertWithoutScheduleFcounter==llAlertUnlicensedSw.size()){
-				setScheduleFDefInRecon("Schedule F not defined");
-			}else if(alertWithoutScheduleFcounter>0 && alertWithoutScheduleFcounter<llAlertUnlicensedSw.size()){
-				setScheduleFDefInRecon("Schedule F not defined for all alerts");
-			}
-
-			return aus.getInstalledSoftware().getSoftwareLpar()
-					.getHardwareLpar().getHardware().getId();
+		if (isAllocateByHardware(pRecon)) {
+			affectedAlertList.addAll(findAffectedAlertList(account,
+					selectedAlert.getInstalledSoftware().getSoftware()
+							.getSoftwareId(), selectedAlert
+							.getInstalledSoftware().getSoftwareLpar()
+							.getHardwareLpar().getHardware().getId(),
+					pRecon.isAutomated(), pRecon.isManual()));
 		} else {
-			return null;
+			affectedAlertList.add(selectedAlert);
 		}
+
+		liLicenseApplied = appliedLicenseQtyMap.entrySet().iterator();
+		Set<UsedLicense> usedLicenseSet = new HashSet<UsedLicense>();
+		Set<UsedLicenseHistory> usedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
+		int totalUsedLicenses = 0;
+		while (affectedAlertList.size() != 0 && liLicenseApplied.hasNext()) {
+			leTemp = liLicenseApplied.next();
+
+			UsedLicense ul = new UsedLicense();
+			ul.setLicense(leTemp.getKey());
+			ul.setUsedQuantity(leTemp.getValue());
+			ul.setCapacityType(leTemp.getKey().getCapacityType());
+			getEntityManager().persist(ul);
+			usedLicenseSet.add(ul);
+			totalUsedLicenses += ul.getUsedQuantity();
+
+			UsedLicenseHistory ulh = new UsedLicenseHistory();
+			ulh.setLicense(leTemp.getKey());
+			ulh.setUsedQuantity(leTemp.getValue());
+			ulh.setCapacityType(leTemp.getKey().getCapacityType());
+			getEntityManager().persist(ulh);
+			usedLicenseHistorieSet.add(ulh);
+		}
+
+		// Story 26012
+		int alertWithoutScheduleFcounter = 0;
+		for (AlertUnlicensedSw affectedAlert : affectedAlertList) {
+			boolean bReconcileValidation = reconcileValidate(affectedAlert,
+					pRecon, totalUsedLicenses);
+
+			// User Story - 17236 - Manual License Allocation at HW level
+			// can automatically close Alerts on another account on the same
+			// Shared HW as requested by users Start
+			int alertlistSwOwner = -1;// default init value
+			boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;// default
+																					// init
+																					// value
+			boolean crossAccountAlertFlag = isCrossAccountAlert(affectedAlert
+					.getInstalledSoftware().getSoftwareLpar().getAccount(),
+					account);
+			if (crossAccountAlertFlag == false) {// same account alert
+
+				// AB added
+				alertlistSwOwner = validateScheduleFowner(affectedAlert, pRecon);
+				// this only used to export the schedule F defined flag to
+				// ReconWorkspaceImpl
+				if (alertlistSwOwner == 2) {
+					alertWithoutScheduleFcounter++;
+				}
+
+			} else {// cross account alert
+				validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = validateScheduleF4WorkingAlertAndCrossAccountAlert(
+						selectedAlert, affectedAlert);
+			}
+
+			if ((crossAccountAlertFlag == false && alertlistSwOwner == owner && owner != 2)
+					|| (crossAccountAlertFlag == true && validateScheduleF4WorkingAlertAndCrossAccountAlertFlag == true)) {
+
+				if (!bReconcileValidation) {
+					clearUsedLicenses(usedLicenseSet, usedLicenseHistorieSet,
+							remoteUser);
+					continue;
+
+				}
+				if (affectedAlert.isOpen()) {
+					reconcile = createReconcile(
+							affectedAlert.getInstalledSoftware(),
+							affectedAlert.getInstalledSoftware(), pRecon,
+							remoteUser, comments, usedLicenseSet,
+							usedLicenseHistorieSet);
+
+					AlertUnlicensedSwH aush = createAlertHistory(affectedAlert);
+					aush.setAlertUnlicensedSw(affectedAlert);
+
+					// Close the alert
+					affectedAlert.setOpen(false);
+					affectedAlert.setComments("Manual Close");
+					affectedAlert.setRecordTime(new Date());
+					aush = getEntityManager().merge(aush);
+				} else {
+					reconcile = affectedAlert.getReconcile();
+					reconcile.setParentInstalledSoftware(reconcile
+							.getParentInstalledSoftware());
+					reconcile.setReconcileType(pRecon.getReconcileType());
+					reconcile.setRecordTime(new Date());
+					reconcile.setRemoteUser(remoteUser);
+					reconcile.setComments(comments);
+					reconcile.setMachineLevel(new Integer(
+							isAllocateByHardware(pRecon) ? 1 : 0));
+					if (pRecon.getPer() != null) {
+						AllocationMethodology allocationMethodology = allocationMethodologyService
+								.findByCode(pRecon.getPer().toUpperCase());
+						reconcile
+								.setAllocationMethodology(allocationMethodology);
+					}
+
+					log.debug("Clearing licenses");
+					clearUsedLicenses(reconcile, remoteUser);
+					reconcile.setUsedLicenses(usedLicenseSet);
+					log.debug("Saving reconcile");
+					reconcile = getEntityManager().merge(reconcile);
+					createReconcileHistory(reconcile, usedLicenseHistorieSet);
+				}
+			}
+		}// end of for
+
+		// Story 26012
+		if (alertWithoutScheduleFcounter == affectedAlertList.size()) {
+			setScheduleFDefInRecon("Schedule F not defined");
+		} else if (alertWithoutScheduleFcounter > 0
+				&& alertWithoutScheduleFcounter < affectedAlertList.size()) {
+			setScheduleFDefInRecon("Schedule F not defined for all alerts");
+		}
+
+		return selectedAlert.getInstalledSoftware().getSoftwareLpar()
+				.getHardwareLpar().getHardware().getId();
+
+	}
+
+	public boolean isAllocateByHardware(Recon pRecon) {
+		return pRecon.getPer().equalsIgnoreCase("HWDEVICE")
+				|| pRecon.getPer().equalsIgnoreCase("HWPROCESSOR")
+				|| pRecon.getPer().equalsIgnoreCase("PVU")
+				|| pRecon.getPer().equalsIgnoreCase("CHIP")
+				|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
+				|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
+				|| pRecon.getPer().equalsIgnoreCase("HWMSU");
 	}
 
 	private Reconcile createReconcile(InstalledSoftware installedSoftware,
@@ -755,18 +778,8 @@ public class ReconServiceImpl implements ReconService {
 		reconcile.setComments(comments);
 		reconcile.setRecordTime(new Date());
 		reconcile.setRemoteUser(remoteUser);
-		reconcile.setMachineLevel(new Integer(
-				pRecon.getPer() != null
-						&& (pRecon.getPer().equalsIgnoreCase("HWDEVICE")
-								|| pRecon.getPer().equalsIgnoreCase(
-										"HWPROCESSOR")
-								|| pRecon.getPer().equalsIgnoreCase("PVU")
-								|| pRecon.getPer().equalsIgnoreCase("CHIP")
-								|| pRecon.getPer().equalsIgnoreCase(
-										"HWGARTMIPS")
-								|| pRecon.getPer().equalsIgnoreCase(
-										"HWLSPRMIPS") || pRecon.getPer()
-								.equalsIgnoreCase("HWMSU")) ? 1 : 0));
+		reconcile.setMachineLevel(new Integer(pRecon.getPer() != null
+				&& isAllocateByHardware(pRecon) ? 1 : 0));
 
 		reconcile.setUsedLicenses(usedLicenses);
 		if (pRecon.getPer() != null) {
@@ -841,135 +854,62 @@ public class ReconServiceImpl implements ReconService {
 		return aush;
 	}
 
-	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users Start
-	/**
+	// For User Story 17236, change the logic of findAffectedAlertList method to
+	// get the affected alert list
+	// from account level to global cross account level for the same hardware
+	// box
 	@SuppressWarnings("unchecked")
 	private List<AlertUnlicensedSw> findAffectedAlertList(Account pAccount,
-			Long plProductInfoId, Long plHardwareID, boolean pbAutomated,
-			boolean pbManual) {
+			Long productInfoId, Long hardwareId, boolean isAuto,
+			boolean isManual) {
 		List<AlertUnlicensedSw> llAlertUnlicensedSw = new ArrayList<AlertUnlicensedSw>();
 		StringBuffer lsbQuery = null;
 
-		if (pAccount != null) {
-			// This query will get all open alerts that meet our criteria, but
-			// the
-			// manual and automated variables do not come into play
-			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
-			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
+		// This query will get all open alerts that meet our criteria, but
+		// the
+		// manual and automated variables do not come into play
+		lsbQuery = new StringBuffer(
+				"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
+		log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
 
-			llAlertUnlicensedSw = getEntityManager()
-					.createQuery(lsbQuery.toString())
-					.setParameter("account", pAccount)
-					.setParameter("hardwareID", plHardwareID)
-					.setParameter("productInfoId", plProductInfoId)
-					.getResultList();
-			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
-					.append(llAlertUnlicensedSw.size()));
-		}
+		llAlertUnlicensedSw = getEntityManager()
+				.createQuery(lsbQuery.toString())
+				.setParameter("hardwareID", hardwareId)
+				.setParameter("productInfoId", productInfoId).getResultList();
+		log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
+				.append(llAlertUnlicensedSw.size()));
 
-		if (pbAutomated) {
-			Query lQuery = null;
-
-			// This query will get all alerts that were reconciled automatically
-			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
-					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
-							: "");
-			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
-
-			lQuery = getEntityManager().createQuery(lsbQuery.toString())
-					.setParameter("productInfoId", plProductInfoId)
-					.setParameter("hardwareID", plHardwareID);
-			if (pAccount != null) {
-				lQuery.setParameter("account", pAccount);
-			}
-
-			llAlertUnlicensedSw.addAll(lQuery.getResultList());
-			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
-					.append(llAlertUnlicensedSw.size()));
-		}
-
-		if (pbManual) {
-			Query lQuery = null;
-
-			// This query will get all alerts that were reconciled manually
-			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID")
-					.append(pAccount != null ? " AND AUS.installedSoftware.softwareLpar.hardwareLpar.account = :account"
-							: "");
-			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
-
-			lQuery = getEntityManager().createQuery(lsbQuery.toString())
-					.setParameter("productInfoId", plProductInfoId)
-					.setParameter("hardwareID", plHardwareID);
-			if (pAccount != null) {
-				lQuery.setParameter("account", pAccount);
-			}
-
-			llAlertUnlicensedSw.addAll(lQuery.getResultList());
-			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
-					.append(llAlertUnlicensedSw.size()));
-		}
-
-		return llAlertUnlicensedSw;
-	}**/
-	
-	//For User Story 17236, change the logic of findAffectedAlertList method to get the affected alert list 
-	//from account level to global cross account level for the same hardware box
-	@SuppressWarnings("unchecked")
-	private List<AlertUnlicensedSw> findAffectedAlertList(Account pAccount,
-			Long plProductInfoId, Long plHardwareID, boolean pbAutomated,
-			boolean pbManual) {
-		List<AlertUnlicensedSw> llAlertUnlicensedSw = new ArrayList<AlertUnlicensedSw>();
-		StringBuffer lsbQuery = null;
-
-			// This query will get all open alerts that meet our criteria, but
-			// the
-			// manual and automated variables do not come into play
-			lsbQuery = new StringBuffer(
-					"FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID AND AUS.installedSoftware.software.softwareId = :productInfoId");
-			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
-
-			llAlertUnlicensedSw = getEntityManager()
-					.createQuery(lsbQuery.toString())
-					.setParameter("hardwareID", plHardwareID)
-					.setParameter("productInfoId", plProductInfoId)
-					.getResultList();
-			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
-					.append(llAlertUnlicensedSw.size()));
-	
-		if (pbAutomated) {
+		if (isAuto) {
 			Query lQuery = null;
 
 			// This query will get all alerts that were reconciled automatically
 			lsbQuery = new StringBuffer(
 					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 0 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID");
-				
+
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
 
 			lQuery = getEntityManager().createQuery(lsbQuery.toString())
-					.setParameter("productInfoId", plProductInfoId)
-					.setParameter("hardwareID", plHardwareID);
-			
+					.setParameter("productInfoId", productInfoId)
+					.setParameter("hardwareID", hardwareId);
+
 			llAlertUnlicensedSw.addAll(lQuery.getResultList());
 			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
 					.append(llAlertUnlicensedSw.size()));
 		}
 
-		if (pbManual) {
+		if (isManual) {
 			Query lQuery = null;
 
 			// This query will get all alerts that were reconciled manually
 			lsbQuery = new StringBuffer(
 					"FROM AlertUnlicensedSw AUS JOIN FETCH AUS.reconcile WHERE AUS.reconcile.reconcileType.manual = 1 AND AUS.installedSoftware.software.softwareId = :productInfoId AND AUS.installedSoftware.softwareLpar.hardwareLpar.hardware.id = :hardwareID");
-					
+
 			log.debug(new StringBuffer("lsbQuery = ").append(lsbQuery));
 
 			lQuery = getEntityManager().createQuery(lsbQuery.toString())
-					.setParameter("productInfoId", plProductInfoId)
-					.setParameter("hardwareID", plHardwareID);
-		
+					.setParameter("productInfoId", productInfoId)
+					.setParameter("hardwareID", hardwareId);
+
 			llAlertUnlicensedSw.addAll(lQuery.getResultList());
 			log.debug(new StringBuffer("llAlertUnlicensedSw size: ")
 					.append(llAlertUnlicensedSw.size()));
@@ -977,5 +917,7 @@ public class ReconServiceImpl implements ReconService {
 
 		return llAlertUnlicensedSw;
 	}
-	//User Story - 17236 - Manual License Allocation at HW level can automatically close Alerts on another account on the same Shared HW as requested by users End
+	// User Story - 17236 - Manual License Allocation at HW level can
+	// automatically close Alerts on another account on the same Shared HW as
+	// requested by users End
 }
