@@ -54,6 +54,7 @@ sub new {
         ,_rParentInstSwId => undef
         ,_rMachineLevel => undef
         ,_rIsManual => undef
+        ,_rAllocMethodology => undef
         ,_licsToRecon => undef
         ,_scopeName => undef
         ,_scheduleFlevel => undef
@@ -397,6 +398,13 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
+    if (defined $self->rAllocMethodology && defined $object->rAllocMethodology) {
+        $equal = 1 if $self->rAllocMethodology eq $object->rAllocMethodology;
+    }
+    $equal = 1 if (!defined $self->rAllocMethodology && !defined $object->rAllocMethodology);
+    return 0 if $equal == 0;
+
+    $equal = 0;
     if (defined $self->licsToRecon && defined $object->licsToRecon) {
         $equal = 1 if $self->licsToRecon eq $object->licsToRecon;
     }
@@ -701,6 +709,12 @@ sub rIsManual {
     return $self->{_rIsManual};
 }
 
+sub rAllocMethodology {
+    my $self = shift;
+    $self->{_rAllocMethodology} = shift if scalar @_ == 1;
+    return $self->{_rAllocMethodology};
+}
+
 sub licsToRecon {
     my $self = shift;
     $self->{_licsToRecon} = shift if scalar @_ == 1;
@@ -966,6 +980,11 @@ sub toString {
     $s .= "rIsManual=";
     if (defined $self->{_rIsManual}) {
         $s .= $self->{_rIsManual};
+    }
+    $s .= ",";
+    $s .= "rAllocMethodology=";
+    if (defined $self->{_rAllocMethodology}) {
+        $s .= $self->{_rAllocMethodology};
     }
     $s .= ",";
     $s .= "licsToRecon=";
