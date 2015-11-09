@@ -146,7 +146,7 @@ sub doDelta {
 	my @fields = (qw(id scanRecordId guId lastUsed useCount action bankAccountId));
 
 	###Get the statement handle
-	my $sth = $connection->sql->{scanSoftwareItemData};
+	my $sth = $connection->sql->{"scanSoftwareItemData".$bankAccountId};
 
 	###Bind our columns
 	my %rec;

@@ -2933,7 +2933,7 @@ sub queryScanSoftwareItemData {
 		$query .= ' with ur';
 	}
    dlog($query);
-	return ( 'scanSoftwareItemData', $query );
+	return ( 'scanSoftwareItemData'.$bankAccountId, $query );
 }
 
 
