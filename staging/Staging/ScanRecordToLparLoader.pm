@@ -296,6 +296,11 @@ sub doDelta {
         $newSl->processorCount( $sr->processorCount );
         $newSl->scanTime( $sr->scanTime );
         $newSl->status('ACTIVE');
+        
+        my $tmpString=$newSl->extId;
+        $tmpString=~ s/\s+$//;
+        $newSl->extId($tmpString);
+
         dlog( $newSl->toString );
 
         my $oldSl = new Staging::OM::SoftwareLpar();

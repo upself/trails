@@ -20,7 +20,7 @@ tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
-[SOFTWARE_SIGNATURE]
+[SOFTWARE_FILTER]
 direction=loc2gsa
 tgthostname=pokgsa.ibm.com
 source=/var/staging/disconnected
@@ -31,7 +31,7 @@ tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
-[SOCKET]
+[SOCKET_FILE]
 direction=loc2gsa
 tgthostname=pokgsa.ibm.com
 source=/var/ftp/staging/secondary/socket_files
@@ -41,4 +41,5 @@ tgtusr=[gsaUser]
 tgtpwd=[gsaPassword]
 delsource=false
 minage=5
+
 
