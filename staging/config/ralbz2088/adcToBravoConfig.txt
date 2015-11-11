@@ -1,0 +1,7 @@
+testMode=0
+server=ralbz2088
+applyChanges=1
+loadDeltaOnly=1
+debugLevel=warn
+bravoFullLoadPeriodHours=36
+sleepPeriod=10800

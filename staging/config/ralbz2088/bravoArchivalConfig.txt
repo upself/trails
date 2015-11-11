@@ -1,0 +1,3 @@
+server=tap
+debugLevel=warn
+testMode=0
