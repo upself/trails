@@ -1,0 +1,4 @@
+server=ralbz2088
+debugLevel=warn
+validationGapHour=24
+sleepPeriod=10800
