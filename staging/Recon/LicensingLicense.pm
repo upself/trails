@@ -302,6 +302,7 @@ sub getLicenseAllocationsData {
         $lav->lrmId( $rec{lrmId} );
         $lav->rtName( $rec{rtName} );
         $lav->rtIsManual( $rec{rtIsManual} );
+        $lav->rAllocMethodology ( $rec{rAllocMethodology} );
         $lav->isId( $rec{isId} );
         $lav->isSoftwareId( $rec{isSoftwareId} );
         $lav->slCustomerId( $rec{slCustomerId} );
@@ -348,6 +349,7 @@ sub queryLicenseAllocationsData {
 	  expireAge
 	  rtName
 	  rtIsManual
+	  rAllocMethodology
 	  isId
 	  isSoftwareId
 	  slCustomerId
@@ -380,6 +382,7 @@ sub queryLicenseAllocationsData {
             ,days(l.expire_date) - days(current timestamp)         
             ,rt.name
             ,rt.is_manual
+            ,r.allocation_methodology_id
             ,is.id
             ,is.software_id
             ,sl.customer_id

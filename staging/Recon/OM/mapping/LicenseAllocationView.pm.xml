@@ -8,6 +8,7 @@
 	<property name="rId" type="scalar" equals="true" />
 	<property name="rtName" type="scalar" equals="true" />
 	<property name="rtIsManual" type="scalar" equals="true" />
+	<property name="rAllocMethodology" type="scalar" equals="true" />
 	<property name="isId" type="scalar" equals="true" />
 	<property name="isSoftwareId" type="scalar" equals="true" />
 	<property name="slCustomerId" type="scalar" equals="true" />

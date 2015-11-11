@@ -48,6 +48,7 @@
 	<property name="rParentInstSwId" type="scalar" equals="true" />
 	<property name="rMachineLevel" type="scalar" equals="true" />
 	<property name="rIsManual" type="scalar" equals="true" />
+	<property name="rAllocMethodology" type="scalar" equals="true" />
 	<property name="licsToRecon" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
 	<property name="scheduleFlevel" type="scalar" />

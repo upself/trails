@@ -12,6 +12,8 @@ public interface DataExceptionTypeDao extends BaseEntityDAO<AlertType, Long>{
 	AlertType getAlertTypeByCode(String code);
 
 	List<AlertType> list();
+	
+	List<AlertType> getAlertTypeForSOMs();
 
 	List<Map<String, String>> summary(Long accountId, String alertTypeType);
 }

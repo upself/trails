@@ -866,10 +866,10 @@ sub getFreePoolData {
 
  $self->connection->prepareSqlQueryAndFields(
   $self->queryFreePoolData($scopeName) );
- my $sth = $self->connection->sql->{freePoolData};
+ my $sth = $self->connection->sql->{"freePoolData".$scopeName};
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{freePoolDataFields} } );
+    @{ $self->connection->sql->{"freePoolData".$scopeName."Fields"} } );
  $sth->execute(
   $self->installedSoftwareReconData->cId,
   $self->installedSoftwareReconData->cId,
@@ -1819,27 +1819,31 @@ sub getValueUnitsPerProcessor {
  if ( defined $pvuMap->id ) {
 
   my $processorSql = '';
+  my $sqlname = "M";
 
   if ( $nbrCoresPerChip == 1 ) {
    $processorSql =
      " (processor_type = 'SINGLE-CORE' or processor_type like '%ONE%') ";
+   $sqlname="1";
   }
   elsif ( $nbrCoresPerChip == 2 ) {
    $processorSql = " processor_type = 'DUAL-CORE' ";
+   $sqlname="2";
   }
   elsif ( $nbrCoresPerChip == 4 ) {
    $processorSql = " processor_type like '%QUAD-CORE%' ";
+   $sqlname="4";
   }
 
   if ( $processorSql ne '' ) {
    $valueUnitsPerCore =
-     $self->getValueUnitsPerCore( $processorSql, $pvuMap->pvuId );
+     $self->getValueUnitsPerCore( $processorSql, $sqlname, $pvuMap->pvuId );
   }
 
   if ( $valueUnitsPerCore == 0 && $nbrCoresPerChip > 1 ) {
    $processorSql      = " processor_type like '%MULTI-CORE%' ";
    $valueUnitsPerCore =
-     $self->getValueUnitsPerCore( $processorSql, $pvuMap->pvuId );
+     $self->getValueUnitsPerCore( $processorSql, "M", $pvuMap->pvuId );
   }
 
   dlog("processor sql is $processorSql");
@@ -1854,11 +1858,11 @@ sub getValueUnitsPerProcessor {
 }
 
 sub getValueUnitsPerCore {
- my ( $self, $sql, $pvuId ) = @_;
+ my ( $self, $sql, $sqlname, $pvuId ) = @_;
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryValueUnitsPerCore($sql) );
- my $sth   = $self->connection->sql->{valueUnitsPerCore};
+  $self->queryValueUnitsPerCore($sql,$sqlname) );
+ my $sth   = $self->connection->sql->{"valueUnitsPerCore".$sqlname};
  my $count = 0;
  $sth->bind_columns( \$count );
  $sth->execute($pvuId);
@@ -1868,7 +1872,7 @@ sub getValueUnitsPerCore {
 }
 
 sub queryValueUnitsPerCore {
- my ( $self, $sql ) = @_;
+ my ( $self, $sql, $sqlname ) = @_;
 
  my $query = '
         select
@@ -1879,7 +1883,7 @@ sub queryValueUnitsPerCore {
             pvu_id = ?
             and ' . $sql;
 
- return ( 'valueUnitsPerCore', $query );
+ return ( 'valueUnitsPerCore'.$sqlname, $query );
 }
 
 sub attemptLicenseAllocationChip {
@@ -2111,7 +2115,7 @@ from
 
  dlog("Reading licenses query: $query");    # debug
 
- return ( 'freePoolData', $query, \@fields );
+ return ( 'freePoolData'.$scopeName, $query, \@fields );
 }
 
 sub getInstalledSoftwareReconData {
@@ -2172,6 +2176,7 @@ sub getInstalledSoftwareReconData {
   $installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
 ##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
   $installedSoftwareReconData->rIsManual( $rec{rIsManual} );
+  $installedSoftwareReconData->rAllocMethodology( $rec{rAllocMethodology} );
 
   $installedSoftwareReconData->processorCount( $rec{slProcCount} );
 
@@ -2397,6 +2402,7 @@ sub queryReconInstalledSoftwareBaseData {
    rParentInstSwId
    rMachineLevel
    rIsManual
+   rAllocMethodology
  );
  my $query = '
         select
@@ -2444,6 +2450,7 @@ sub queryReconInstalledSoftwareBaseData {
             ,r.parent_installed_software_id
             ,r.machine_level
             ,rt.is_manual
+            ,r.allocation_methodology_id
         from
             installed_software is
             join software_lpar sl on 

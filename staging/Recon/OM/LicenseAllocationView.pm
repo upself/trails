@@ -14,6 +14,7 @@ sub new {
         ,_rId => undef
         ,_rtName => undef
         ,_rtIsManual => undef
+        ,_rAllocMethodology => undef
         ,_isId => undef
         ,_isSoftwareId => undef
         ,_slCustomerId => undef
@@ -96,6 +97,13 @@ sub equals {
         $equal = 1 if $self->rtIsManual eq $object->rtIsManual;
     }
     $equal = 1 if (!defined $self->rtIsManual && !defined $object->rtIsManual);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->rAllocMethodology && defined $object->rAllocMethodology) {
+        $equal = 1 if $self->rAllocMethodology eq $object->rAllocMethodology;
+    }
+    $equal = 1 if (!defined $self->rAllocMethodology && !defined $object->rAllocMethodology);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -275,6 +283,12 @@ sub rtIsManual {
     return $self->{_rtIsManual};
 }
 
+sub rAllocMethodology {
+    my $self = shift;
+    $self->{_rAllocMethodology} = shift if scalar @_ == 1;
+    return $self->{_rAllocMethodology};
+}
+
 sub isId {
     my $self = shift;
     $self->{_isId} = shift if scalar @_ == 1;
@@ -430,6 +444,11 @@ sub toString {
     $s .= "rtIsManual=";
     if (defined $self->{_rtIsManual}) {
         $s .= $self->{_rtIsManual};
+    }
+    $s .= ",";
+    $s .= "rAllocMethodology=";
+    if (defined $self->{_rAllocMethodology}) {
+        $s .= $self->{_rAllocMethodology};
     }
     $s .= ",";
     $s .= "isId=";

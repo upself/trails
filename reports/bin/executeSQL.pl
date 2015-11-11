@@ -50,11 +50,11 @@ if ( defined $opt_r ) {
 	}
 }
 
-
+system("date");
 system("db2 connect to $Database user $DatabaseUser using $DatabasePassword");
 system("db2 set current schema eaadmin");
 system("db2 -tvf $opt_s");
-
+system("date");
 
 if ( defined $opt_g ) {
 	if ( ! defined $opt_f ) {

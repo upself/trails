@@ -164,7 +164,7 @@ sub readcfgfile { # reads from config file
 		}
 	}
 	
-	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $files[0] ne "" )) {
+	if ( (( $srchostname ne "" ) || ( $tgthostname ne "" )) && ( $direction ne "" ) && ( $source ne "" ) && ( $target ne "" ) && ( $filemasks[0] ne "" )) {
 		return 0 if exists ($processednames{$name});
 		$processednames{$name}=1;
 		dlog("Found job: name=$name, direction=$direction, srchostname=$srchostname, tgthostname=$tgthostname, source=$source, target=$target, filemask1=".$filemasks[0]);

@@ -2,6 +2,7 @@ package Recon::Delegate::ReconLicenseValidation;
 
 use strict;
 use Base::Utils;
+use Recon::Delegate::ReconDelegate;
 use Recon::Pvu;
 use Recon::ScarletInstalledSoftware;
 
@@ -183,7 +184,8 @@ sub validate {
   );
   $rValid *= $self->validateProcCount(
    $licenseAllocationView->hProcessorCount, $self->license->capType,
-   $licenseAllocationView->rId,             $self->license->id
+   $licenseAllocationView->rId,             $self->license->id,
+   $licenseAllocationView->rtIsManual, $licenseAllocationView->rAllocMethodology
   );
   $rValid *= $self->validatePhysicalCpuSerialMatch(
    $self->license->capType,         $self->license->licType,
@@ -439,15 +441,18 @@ sub validateCapacityType {
 }
 
 sub validateProcCount {
- my ( $self, $hProcessorCount, $licenseCapType, $reconcileId, $licenseId ) = @_;
+ my ( $self, $hProcessorCount, $licenseCapType, $reconcileId, $licenseId, $rtIsManual, $allocMethodology ) = @_;
 
  ## for license type 17 (PVU), validate proc count > 0
+ 
+ my $allocMethodologyMap = Recon::Delegate::ReconDelegate::getAllocationMethodologyMap();
 
- if ( $licenseCapType eq '17' ) {
+ if ( (( $licenseCapType eq '17' ) && ( $rtIsManual == 0 )) ||
+	 (( $allocMethodology eq $allocMethodologyMap->{'Per PVU'} ) && ( $rtIsManual == 1 )) ) {
   if (( defined $hProcessorCount )
    && ( ( $hProcessorCount == 0 ) || ( $hProcessorCount < 0 ) ) )
   {
-   dlog("license ID $licenseId, lic type 17, hProcessorCount == 0");
+   dlog("license ID $licenseId, lic type PVU, hProcessorCount == 0");
    $self->addToReconcilesToBreak($reconcileId)   if defined $reconcileId;
    $self->addToDeleteQueue( $self->license->id ) if defined $licenseId;
    $self->validationCode(0);

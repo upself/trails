@@ -47,7 +47,7 @@ sub recon0101 {
 	my $action = $self->action;
 	
 	my $allocMethodologyMap =
-	  Recon::Delegate::ReconDelegate->getAllocationMethodologyMap();
+	  Recon::Delegate::ReconDelegate->getAllocationMethodologyMap(", ");
 	
 	my $manquery = "";
 	my $autoquery = "";

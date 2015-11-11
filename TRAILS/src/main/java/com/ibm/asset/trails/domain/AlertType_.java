@@ -9,5 +9,6 @@ public class AlertType_ {
 	public static volatile SingularAttribute<AlertType, Long> id;
 	public static volatile SingularAttribute<AlertType, String> name;
 	public static volatile SingularAttribute<AlertType, String> code;
+	public static volatile SingularAttribute<AlertType, Boolean> dataQuality;
 	public static volatile SetAttribute<AlertType, AlertTypeCause> alertTypeCauses;
 }

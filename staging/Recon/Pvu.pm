@@ -110,12 +110,12 @@ sub getInsSwList {
  $self->connection->prepareSqlQueryAndFields( $self->queryInsSwByBrandModel( $self->reconPvuQueue->action ) );
 
  #Acquire the statement handle.
- my $sth = $self->connection->sql->{queryInsSwByBrandModel};
+ my $sth = $self->connection->sql->{"queryInsSwByBrandModel".uc($self->reconPvuQueue->action)};
 
  #Bind fields.
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{queryInsSwByBrandModelFields} } );
+    @{ $self->connection->sql->{"queryInsSwByBrandModel".uc($self->reconPvuQueue->action)."Fields"} } );
 
  #Fetch correspond sw recon infor.
  $sth->execute( $self->reconPvuQueue->processorBrand,
@@ -212,7 +212,7 @@ $query.='					( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id = 17 ) )
 			
  dlog($query);
 
- return ( 'queryInsSwByBrandModel', $query, \@fields );
+ return ( 'queryInsSwByBrandModel'.uc($action), $query, \@fields );
 }
 
 sub connection {

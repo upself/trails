@@ -21,6 +21,12 @@ then
 elif [ "$SHOST" = "tapmf" ]
 then
 	. /db2/cndb/sqllib/db2profile
+elif [ "$SHOST" = "ralbz2088" ]
+then
+       . /home/trails/sqllib/db2profile
+elif [ "$SHOST" = "b03cxnp15029" ]
+then
+       . /home/db2inst2/sqllib/db2profile
 else
     echo "ERROR: Unable to execute on this host: $SHOST"
     exit 1
