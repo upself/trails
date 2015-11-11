@@ -33,7 +33,7 @@ my $systemScheduleStatus = startJob($job);
 
 my $rNo                = "revision290";
 my $children           =0;
-my $maxChildren        = 100;
+my $maxChildren        = 40;
 my $segmentSize        = 50;
 my %runningCustomerIds = ();
 my %children           = ();
