@@ -427,6 +427,7 @@ while (readcfgfile(\*CFGFILE)) {
 			elog("Job $name, error getting file $file!");
 			$filestocopy{$file}=0;
 			$successfulfiles--;
+			unlink("/tmp/".$file) if ( -e "/tmp/".$file );
 			next;
 		}
 		
