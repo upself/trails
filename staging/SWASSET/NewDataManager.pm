@@ -285,6 +285,7 @@ sub queryScanIdsByCustomerByNameByBankAccountIdBySoftwareIdFromStaging {
             and b.scan_record_id = c.id
             and d.software_id = ?
             and d.scan_record_id = b.scan_record_id
+        with ur
     ';
 
 	return ( 'scanIdsByCustomerByNameByBankAccountIdBySoftwareIdFromStaging', $query,
@@ -340,6 +341,7 @@ sub queryScanIdsByCustomerByNameByBankAccountIdFromStaging {
             and c.bank_account_id = ?
             and a.id = b.software_lpar_id
             and b.scan_record_id = c.id
+        with ur
     ';
 
 	return ( 'scanIdsByCustomerByNameByBankAccountIdFromStaging', $query,
@@ -759,6 +761,7 @@ sub queryInstalledManualSoftwareCountById {
         select count(*)
         from inst_manual_sware
         where upper(computer_sys_id) = ?
+        with ur
     ';
 
 	return ( 'installedManualSoftwareCountById', $query, \@fields );
@@ -815,6 +818,7 @@ sub querySwassetQueue {
             a.deleted = 0
         order by
             a.record_time
+        with ur
     ';
 
 	return ( 'swassetQueue', $query, \@fields );
@@ -875,6 +879,7 @@ sub queryManualQueue {
             a.deleted = 0
         order by
 	    a.record_time
+	    with ur
     ';
 
 	return ( 'manualQueue', $query, \@fields );
