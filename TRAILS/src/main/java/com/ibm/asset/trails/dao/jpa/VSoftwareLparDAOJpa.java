@@ -28,6 +28,144 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 public class VSoftwareLparDAOJpa extends
 		AbstractGenericEntityDAOJpa<VSoftwareLpar, Long> implements
 		VSoftwareLparDAO {
+	
+	@Override
+	public Long total(Account account, ReconSetting reconSetting) {
+		// TODO Auto-generated method stub
+		Criteria criteria = getHibernateSessionCriteria();
+
+		criteria.createAlias("hardwareLpar", "hl")
+				.createAlias("hl.hardwareLparEff", "hle", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("hl.hardware", "h")
+				.createAlias("h.machineType", "mt")
+				.createAlias("installedSoftwares", "is")
+				.createAlias("is.softwareLpar", "sl")
+				.createAlias("is.alert", "aus")
+				.createAlias("aus.reconcile", "r",
+						CriteriaSpecification.LEFT_JOIN)
+				.createAlias("r.reconcileType", "rt",
+						CriteriaSpecification.LEFT_JOIN)
+				.createAlias("is.software", "sw")
+				.add(Restrictions.eq("account", account));
+
+		if (reconSetting.getReconcileType() != null) {
+			criteria.add(Restrictions.eq("rt.id",
+					reconSetting.getReconcileType()));
+		}
+
+		if (StringUtils.isNotBlank(reconSetting.getAlertStatus())) {
+			boolean open = false;
+			if (reconSetting.getAlertStatus().equals("OPEN")) {
+				open = true;
+				criteria.add(Restrictions.eq("aus.open", open));
+			} else {
+				criteria.add(Restrictions.and(Restrictions
+						.eq("aus.open", false), Restrictions.eqProperty(
+						"is.id", "r.installedSoftware.id")));
+			}
+
+		} else {
+			criteria.add(Restrictions.or(Restrictions.eq("aus.open", true),
+					Restrictions.and(Restrictions.eq("aus.open", false),
+							Restrictions.eqProperty("is.id",
+									"r.installedSoftware.id"))));
+		}
+
+		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
+			if (reconSetting.getAlertColor().equals("Green")) {
+				criteria.add(Restrictions.lt("aus.alertAge", 45));
+			} else if (reconSetting.getAlertColor().equals("Yellow")) {
+				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
+			} else if (reconSetting.getAlertColor().equals("Red")) {
+				criteria.add(Restrictions.gt("aus.alertAge", 90));
+			}
+		}
+
+		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
+			if (reconSetting.getAssigned().equals("Assigned")) {
+				criteria.add(Restrictions.ne("aus.remoteUser", "STAGING"));
+			}
+			if (reconSetting.getAssigned().equals("Unassigned")) {
+				criteria.add(Restrictions.eq("aus.remoteUser", "STAGING"));
+			}
+		}
+
+		if (StringUtils.isNotBlank(reconSetting.getAssignee())) {
+			criteria.add(Restrictions.eq("aus.remoteUser",
+					reconSetting.getAssignee()).ignoreCase());
+		}
+
+		if (StringUtils.isNotBlank(reconSetting.getOwner())) {
+			if (reconSetting.getOwner().equalsIgnoreCase("IBM")) {
+				criteria.add(Restrictions
+						.eq("h.owner", reconSetting.getOwner()).ignoreCase());
+			} else if (reconSetting.getOwner().equalsIgnoreCase("Customer")) {
+				ArrayList<String> lalOwner = new ArrayList<String>();
+
+				lalOwner.add("CUST");
+				lalOwner.add("CUSTO");
+				criteria.add(Restrictions.in("h.owner", lalOwner));
+			}
+		}
+
+		// I'm not sure why the heck we aren't just getting a list of strings?
+		if (reconSetting.getCountries().length > 0) {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < reconSetting.getCountries().length; i++) {
+				if (StringUtils.isNotBlank(reconSetting.getCountries()[i])) {
+					list.add(reconSetting.getCountries()[i].toUpperCase());
+				}
+			}
+
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("h.country", list));
+			}
+		}
+
+		if (reconSetting.getNames().length > 0) {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < reconSetting.getNames().length; i++) {
+				if (StringUtils.isNotBlank(reconSetting.getNames()[i])) {
+					list.add(reconSetting.getNames()[i].toUpperCase());
+				}
+			}
+
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("hl.name", list));
+			}
+		}
+
+		if (reconSetting.getSerialNumbers().length > 0) {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < reconSetting.getSerialNumbers().length; i++) {
+				if (StringUtils.isNotBlank(reconSetting.getSerialNumbers()[i])) {
+					list.add(reconSetting.getSerialNumbers()[i].toUpperCase());
+				}
+			}
+
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("h.serial", list));
+			}
+		}
+
+		if (reconSetting.getProductInfoNames().length > 0) {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < reconSetting.getProductInfoNames().length; i++) {
+				if (StringUtils
+						.isNotBlank(reconSetting.getProductInfoNames()[i])) {
+					list.add(reconSetting.getProductInfoNames()[i]);
+				}
+			}
+
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("sw.softwareName", list));
+			}
+		}
+		criteria.setProjection(Projections.projectionList().add(Projections.rowCount()));
+		
+		Long total = (Long)criteria.uniqueResult();
+		return total;
+	}
 
 	public void paginatedList(DisplayTagList data, Account account,
 			ReconSetting reconSetting, int startIndex, int objectsPerPage,
