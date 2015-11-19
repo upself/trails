@@ -169,6 +169,7 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("aus.alertAge").as("alertAgeI"))
 				.add(Projections.property("is.id").as("installedSoftwareId"))
 				.add(Projections.property("hl.name").as("hostname"))
+				.add(Projections.property("sl.name").as("sl_hostname"))
 				.add(Projections.property("hl.spla").as("spla"))
 				.add(Projections.property("hl.sysplex").as("sysplex"))
 				.add(Projections.property("hl.internetIccFlag").as("internetIccFlag"))
@@ -191,7 +192,6 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("hl.serverType").as("lparServerType"))
 				.add(Projections.property("h.shared").as("shared"))
 				.add(Projections.property("mt.type").as("assetType"))
-				//story 30027
 				.add(Projections.property("mt.name").as("assetName"))
 				.add(Projections.property("h.hardwareStatus").as("hardwareStatus"))
 				.add(Projections.property("hl.lparStatus").as("lparStatus"))
@@ -251,10 +251,9 @@ public class VSoftwareLparDAOJpa extends
 		
 	}
 	
-	//story 30027
 	private void addSchedulef2List(Account account, List<ReconWorkspace> list){
 		for(ReconWorkspace rw:list){
-			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getHostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial());
+			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getSl_hostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial());
 			if(sf!=null){
 				rw.setScope(sf.getScope().getDescription());
 			}else{
