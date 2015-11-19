@@ -1,74 +1,6 @@
 #!/usr/bin/perl -w
 #
 # This perl script is used to provide a Self Healing Engine Support Feature 
-# Author: liuhaidl@cn.ibm.com 
-# Date        Who            Version         Description
-# ----------  ------------   -----------     -------------------------------------------------------------------------------------------------------------------
-# 2013-07-30  Liu Hai(Larry) 1.0.0           Design and implement the basic architecture for Self Healing Engine
-# 2013-08-05  Liu Hai(Larry) 1.0.1           Add 'Database::Connection' Object to support Multi Databases
-#                                            Add 'Update' business logic for 'OPERATION_QUEUE' DB Table
-# 2013-08-08  Liu Hai(Larry) 1.0.2           Add Log Support Feature to generate a New Log File for every day
-# 2013-08-15  Liu Hai(Larry) 1.0.3           Add 'RESTART_LOADER' Support Feature
-# 2013-08-20  Liu Hai(Larry) 1.0.4           Remove 'RESTART_LOADER' Support Feature and Add 'RESTART_LOADER_ON_TAP_SERVER' and 'RESTART_LOADER_ON_TAP3_SERVER' Support Features
-#                                            Add Configuration File named 'selfHealingEngine.properties' Feature for Server Mode parameter
-# 2013-12-24  Liu Hai(Larry) 1.0.5           1) There is a bug found in the program. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count like below:
-#                                               #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
-#                                               Comment out the above code line to fix bug
-#                                            2) Print out the restart loader process running message
-# 2013-12-27  Liu Hai(Larry) 1.0.6           Add the following new loaders into authorized loader list:
-#                                            1) atpToStaging.pl
-# 2013-12-27  Liu Hai(Larry) 1.0.7           A. Add the following new loaders into authorized loader list:
-#                                            1) swcmToStaging.pl
-#                                            B. Add the loader running mode(start/run-once) support feature
-# 2014-03-10  Liu Hai(Larry) 1.0.8           A. Add the following new loaders into authorized loader list:
-#                                            1) capTypeToBravo.pl
-# 2014-03-25  Liu Hai(Larry) 1.0.9           Add Post Check to judge if all the related loader processes have been killed fully and successfully, retry to kill all the related processes one time, 
-#                                            if still cannot kill fully, then generates the error message
-###################################################################################################################################################################################################
-#                                            Phase 2 Development Formal Tag: 'Added by Larry for Self Healing Service Component - Phase 2'
-# 2013-08-28  Liu Hai(Larry) 1.2.0           Self Healing Service Component - Phase 2: Restart Loader on TAP3 Server
-# 2013-09-06  Liu Hai(Larry) 1.2.1           Self Healing Service Component - Phase 2: Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-# 2013-09-30  Liu Hai(Larry) 1.2.2           Self Healing Service Component - Phase 2: For TAP3 Server, there is no root privilege granted. So the 'sudo' unix command needs to be used to get temp root privilege to execute special unix commands 
-# 2014-03-26  Liu Hai(Larry) 1.2.3           Add Post Check to judge if all the related loader processes have been killed fully and successfully, retry to kill all the related processes one time, 
-#                                            if still cannot kill fully, then generates the error message
-###################################################################################################################################################################################################
-#                                            Phase 3 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 3'
-# 2013-10-14  Liu Hai(Larry) 1.3.0           System Support And Self Healing Service Components - Phase 3 - Operation Parameters Input String whatever Operation Parameters have values or not. The Operation Parameters String has included 10 values using ^ char to seperate. For example: TI30326-36768^reconEngine.pl^^^^^^^^
-#                                            System Support And Self Healing Service Components - Phase 3 - Add 'RESTART_CHILD_LOADER_ON_TAP_SERVER' Support Feature
-# 2013-11-18  Liu Hai(Larry) 1.3.2           Add the feature support when the input operation parameters have ' ' space chars in them - For example - "Test 2". 
-#                                            There is a bug found when there are ' ' space chars in operation parameters, then there is a parse error for Self Healing Engine to get the input Operation Parameters
-#                                            Solution: replace all the ' ' chars using '~' special chars for temp and then convert them back for Self Healing Engine 
-# 2013-12-11  Liu Hai(Larry) 1.3.3           Change the -f value from 12 to 1 to support full load all the time for child loader
-#                                            my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";
-#                                            Per Eugen, if 'Restart Child Loader on TAP Server' SSC feature has been used, it means that the full load for this child loader is needed.
-#
-###################################################################################################################################################################################################
-#                                            Phase 4 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 4'
-# 2013-11-08  Liu Hai(Larry) 1.4.0           System Support And Self Healing Service Components - Phase 4 - Add 'RESTART_IBMIHS_ON_TAP_SERVER' Support Feature 
-###################################################################################################################################################################################################
-#                                            Phase 5 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 5'
-# 2013-11-20  Liu Hai(Larry) 1.5.0           System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_BRAVO_WEB_APPLICATION' Support Feature  
-#                                            System Support And Self Healing Service Components - Phase 5 - Add 'RESTART_TRAILS_WEB_APPLICATION' Support Feature
-###################################################################################################################################################################################################
-#                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
-# 2014-01-27  Liu Hai(Larry) 1.6.0           System Support And Self Healing Service Components - Phase 6 - Add 'STAGING_BRAVO_DATA_SYNC' Support Feature  
-###################################################################################################################################################################################################
-#                                            Phase 6A Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6A'
-# 2014-02-25  Liu Hai(Larry) 1.6.1           System Support And Self Healing Service Components - Phase 6A - Add GSA SSE Shared Log Folder Support Feature  
-###################################################################################################################################################################################################
-#                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
-# 2014-03-11  Liu Hai(Larry) 1.7.0           System Support And Self Healing Service Components - Phase 7 - Add 'ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE' Support Feature  
-#
-###################################################################################################################################################################################################
-#                                            Phase 8 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 8'
-# 2014-03-11  Tomas Sima(Tomas) 1.8.0        System Support And Self Healing Service Components - Phase 8 - Add 'REMOVE_CERTAIN_BANK_ACCOUNT' Support Feature  
-#
-######################################################################
-#                                            Phase 5A Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 5A'
-# 2014-07-02  Tomas Sima(Tomas) 1.5.1 		 System Support And Self Healing Service Components - Phase 5A - Enhancement for Restart Remote Web App Feature of SelfHealing? Engine to check and cleanup filesystem space 
-###################################################################################################################################################################################################
-#                                            Phase 9 Development Formal Tag: 'Added by Tomas for System Support And Self Healing Service Components - Phase 9'
-# 2014-07-07  Tomas Sima(Tomas) 1.9.0        System Support And Self Healing Service Components - Phase 9 - Add 'CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS' Support Feature  
 
 
 #Load required modules
@@ -646,7 +578,7 @@ sub coreOperationProcess{
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
           #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode| grep -v systemSupportEngine | grep -v selfHealingEngine | grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
@@ -1432,13 +1364,13 @@ sub coreOperationProcess{
 		
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
-           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName| grep -v systemSupportEngine | grep -v selfHealingEngine | grep -v grep|awk '{print \$2}'`;
+           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
 		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
-             my $targetChildLoaderPidRunningCnt = `ps -ef | grep $targetChildLoaderPid | grep -v grep|wc -l`;
+             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l`;
 			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars
@@ -1531,6 +1463,23 @@ sub coreOperationProcess{
 		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched failed.\n";
 		     }#end else
 
+		      #4. Change the group of the log file to 'users' to let the log file downloaded
+			  my $changeGroupCommand = "chgrp users $logFile";
+		      my $logFileChangedGroupFlag = system("$changeGroupCommand");
+              if($logFileChangedGroupFlag == 0){
+                print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
+		      }#end if($logFileChangedGroupFlag == 0)
+		      else{
+		        $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		        if($operationFailedComments ne ""){
+		          $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";  
+		        }#end if($operationFailedComments ne "")
+		        else{
+		          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+                  $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
+		        }#end else
+		        print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
+		      }#end else
 
 			  #5. Set Operation Success Specail Comments to include Log File Value
 			  if($operationResultFlag == $OPERATION_SUCCESS){
@@ -1982,6 +1931,23 @@ sub coreOperationProcess{
 		   print LOG "The Staging Bravo Data SYNC - The Target Folder: {$STAGING_BRAVO_DATA_SYNC_SCRIPT_HOME_PATH} has been switched failed.\n";
 		 }#end else
          
+		 #3. Change the group of the log file to 'users' to let the log file downloaded
+		 my $changeGroupCommand = "chgrp users $logFile";
+		 my $logFileChangedGroupFlag = system("$changeGroupCommand");
+		 if($logFileChangedGroupFlag == 0){
+		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
+		 }#end if($logFileChangedGroupFlag == 0)
+		 else{
+		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
+		   if($operationFailedComments ne ""){
+		     $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";  
+		   }#end if($operationFailedComments ne "")
+		   else{
+		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
+			 $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
+		   }#end else
+		   print LOG "The Staging Bravo Data SYNC - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
+		 }#end else
 
          #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
 		 #3.1 Copy the target log file to the GSA Log Shared Folder Path
@@ -2021,7 +1987,7 @@ sub coreOperationProcess{
 
 	   $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
 	   print LOG "[$currentTimeStamp]Operation has been finished to process for Operation Name Code: {$operationNameCode} + Operation Merged Parameters Value: {$operationMergedParametersValue}\n";
-    } #end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
+    }#end elsif($operationNameCode eq $STAGING_BRAVO_DATA_SYNC)
 	#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 	#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
     elsif($operationNameCode eq $ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE){#ADD_SPECIFIC_ID_LIST_INTO_TARGET_RECON_QUEUE
@@ -2508,7 +2474,6 @@ sub getCurrentTimeStamp{
 #This method is used to generate the certain format time value
 sub getTime
 {
-    #The function time() returns the amount of accumulate second from 1/1/1970
     my $time = shift || time();
     
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($time);
@@ -2521,9 +2486,6 @@ sub getTime
     $mon  = ($mon<10)?"0$mon":$mon;#Month[0,11]
     $year+=1900;#From 1900 year
     
-    #$wday is accumulated from Saturday, stands for which day of one week[0-6]
-    #$yday is accumulated from 1/1£¬stands for which day of one year[0,364]
-    #$isdst is a flag
     my $weekday = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat')[$wday];
     return { 'second' => $sec,
              'minute' => $min,
@@ -2545,7 +2507,7 @@ sub getTime
 #This method is used to update 
 sub updateOperationFunction{
   my ($connection, $querySQL, $operationStatus, $operationComments, $operationId) = @_;
-  $connection->prepareSqlQuery(queryUpdateOperation($querySQL));
+  $connection->prepareSqlQuery('updateOperation',$querySQL);
   my $sth = $connection->sql->{updateOperation};
   eval{
 	$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
@@ -2558,11 +2520,6 @@ sub updateOperationFunction{
   if($@){
     print LOG "Database Exception happened due to reason: $@\n";
   }
-}
-
-sub queryUpdateOperation{
-  my $query = shift;
-  return ('updateOperation', $query);
 }
 
 sub getValidLoaderListOnTAPServer{
@@ -2598,15 +2555,6 @@ sub getValidLoaderListOnTAPServer{
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 Start
   push @vaildLoaderList,"capTypeToBravo.pl";#24
-  push @vaildLoaderList,"reconEngineInventory.pl";#1
-  push @vaildLoaderList,"reconEngineLicensing.pl";#1a
-  push @vaildLoaderList,"softwareToBravo.pl";#2
-  push @vaildLoaderList,"ipAddressToBravo.pl";#3
-  push @vaildLoaderList,"memModToBravo.pl";#4
-  push @vaildLoaderList,"hardwareToBravo.pl";#5
-  push @vaildLoaderList,"hdiskToBravo.pl";#6
-  push @vaildLoaderList,"processorToBravo.pl";#7
-  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#7 
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 End
   #push @vaildLoaderList,"testingTAP.pl";#25 #For testing function purpose only
   
@@ -2617,9 +2565,7 @@ sub getValidLoaderListOnTAP3Server{
   my @vaildLoaderList = ();
 
   #TAP3 Loader List
-#  push @vaildLoaderList,"reconEngine.pl";#1
-  push @vaildLoaderList,"reconEngineInventory.pl";#1
-  push @vaildLoaderList,"reconEngineLicensing.pl";#1a
+  push @vaildLoaderList,"reconEngine.pl";#1
   push @vaildLoaderList,"softwareToBravo.pl";#2
   push @vaildLoaderList,"ipAddressToBravo.pl";#3
   push @vaildLoaderList,"memModToBravo.pl";#4
@@ -2635,16 +2581,13 @@ sub getValidLoaderListOnTAP3Server{
 #This method is used to set DB2 ENV path
 sub setDB2ENVPath{
     if($SERVER_MODE eq $TAP){#TAP Server
-	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
+      $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
 	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
 	  $DB_ENV = "/home/tap/sqllib/db2profile";
 	}
 	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
 	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
-	}
-	elsif($SERVER_MODE eq 'b03cxnp15029'){#GHO
-	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
 	}
 }
 
