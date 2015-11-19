@@ -49,27 +49,19 @@ public class InstalledSaProduct extends InstalledBase {
 //	public void setId(Long id) {
 //		this.id = id;
 //	}
-//	/**
-//	 * @return Returns the installedSoftware.
-//	 */
-//	public InstalledSoftware getInstalledSoftware() {
-//		return installedSoftware;
-//	}
-//	/**
-//	 * @param installedSoftware The installedSoftware to set.
-//	 */
-//	public void setInstalledSoftware(InstalledSoftware installedSoftware) {
-//		this.installedSoftware = installedSoftware;
-//	}
-//	/**
-//	 * @return Returns the saProduct.
-//	 */
+
+	public InstalledSoftware getInstalledSoftware() {
+		return installedSoftware;
+	}
+	
+	public void setInstalledSoftware(InstalledSoftware installedSoftware) {
+		this.installedSoftware = installedSoftware;
+	}
+
 	public SaProduct getSaProduct() {
 		return saProduct;
 	}
-	/**
-	 * @param saProduct The saProduct to set.
-	 */
+	
 	public void setSaProduct(SaProduct saProduct) {
 		this.saProduct = saProduct;
 	}
