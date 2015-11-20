@@ -8,7 +8,7 @@
 <h2>Confirm reconciliation workspace settings</h2>
 <br />
 <s:if test="total > 300">
-	Your workspace settings will return ${total} number of records.
+	Your workspace settings will return ${total} alerts, would you like to <a href="settings.htm">revise</a> your workspace settings?
 </s:if>
 <p>Reconciliation workspace settings successfully updated. Use the
 navigation on the left to proceed to the workspace or click <s:a
