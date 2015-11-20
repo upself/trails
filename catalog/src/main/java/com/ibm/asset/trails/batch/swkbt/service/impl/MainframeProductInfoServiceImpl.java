@@ -77,6 +77,10 @@ public class MainframeProductInfoServiceImpl extends
 			log.debug("manufacturer changed!");
 			recon = true;
 		}
+		if (softwareNameChange(existing, xmlEntity)) {
+			log.debug("software name changed!");
+			recon = true;
+		}
 		if (licenseTypeChange(existing, xmlEntity)) {
 			log.debug("license type changed!");
 			recon = true;
@@ -204,6 +208,15 @@ public class MainframeProductInfoServiceImpl extends
 		boolean isNewIBM = manufacturerService.isIBMManufacturer(xmlEntity
 				.getManufacturer());
 		if (isNewIBM != isExistingIBM) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean softwareNameChange(ProductInfo existing,
+			MainframeProductType xmlEntity) {
+
+		if (existing.getName().equals(xmlEntity.getName())) {
 			return true;
 		}
 		return false;

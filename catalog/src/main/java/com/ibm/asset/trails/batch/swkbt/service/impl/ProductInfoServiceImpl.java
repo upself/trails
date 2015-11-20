@@ -78,6 +78,10 @@ public class ProductInfoServiceImpl extends
 			log.debug("manufacturer changed!");
 			recon = true;
 		}
+		if (softwareNameChange(existing, xmlEntity)) {
+			log.debug("software name changed!");
+			recon = true;
+		}
 		if (licenseTypeChange(existing, xmlEntity)) {
 			log.debug("license type changed!");
 			recon = true;
@@ -194,6 +198,15 @@ public class ProductInfoServiceImpl extends
 		return false;
 	}
 
+	private boolean softwareNameChange(ProductInfo existing,
+			DistributedProductType xmlEntity) {
+
+		if (existing.getName().equals(xmlEntity.getName())) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void afterPropertiesSet() throws Exception {
 		String line;
 		try {
