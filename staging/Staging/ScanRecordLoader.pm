@@ -194,6 +194,7 @@ sub doDelta {
         $scanRecord->osMinor( $rec{osMinor} );
         $scanRecord->osSub( $rec{osSub} );
         $scanRecord->osType( $rec{osType} );
+        $scanRecord->osInstDate( $rec{osInstDate} );
         $scanRecord->userName( $rec{userName} );
         $scanRecord->biosManufacturer( $rec{manufacturer} );
         $scanRecord->biosModel( $rec{biosModel} );
@@ -241,25 +242,37 @@ sub doDelta {
             my $stagingBTs = $rec{biosDate};
             $stagingBTs =~ s/\D//g;
             $stagingBTs =~ s/\s+//g;
+            
+            my $stagingInstDate = $rec{osInstDate};
+            $stagingInstDate =~ s/\D//g;
+            $stagingInstDate =~ s/\s+//g;
 
             $scanRecord->scanTime($stagingTs);
             $scanRecord->biosDate($stagingBTs);
+            $scanRecord->osInstDate($stagingInstDate);
 
             my $sourceTs  = $self->list->{$key}->scanTime;
             my $oSourceTs = $self->list->{$key}->scanTime;
 
             my $sourceBTs  = $self->list->{$key}->biosDate;
             my $oSourceBTs = $self->list->{$key}->biosDate;
+            
+            my $sourceInstDate  = $self->list->{$key}->osInstDate;
+            my $oSourceInstDate = $self->list->{$key}->osInstDate;
 
             $sourceTs =~ s/\D//g;
             $sourceTs =~ s/\s+//g;
 
             $sourceBTs =~ s/\D//g;
             $sourceBTs =~ s/\s+//g;
+            
+            $sourceInstDate =~ s/\D//g;
+            $sourceInstDate =~ s/\s+//g;
 
             $self->list->{$key}->scanTime($sourceTs);
             $self->list->{$key}->biosDate($sourceBTs);
-
+            $self->list->{$key}->osInstDate($sourceInstDate);
+            
             ###Set the id
             $self->list->{$key}->id( $rec{id} );
             $self->list->{$key}->action('COMPLETE');
@@ -285,6 +298,7 @@ sub doDelta {
 
             $self->list->{$key}->scanTime($oSourceTs);
             $self->list->{$key}->biosDate($oSourceBTs);
+            $self->list->{$key}->osInstDate($oSourceInstDate);
         }
         else {
             dlog('Record does not exist in bank account');

@@ -79,7 +79,7 @@ sub getDisconnectedScanRecordData {
                 osMajor
                 osMinor
                 osSub
-                osInst
+                osInstDate
                 userName
                 manufacturer
                 biosModel
@@ -378,14 +378,14 @@ sub getConnectedScanRecordData {
     elsif ( $bankAccount->authenticatedData eq 'Y' ) {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
-                osName osType osMajor osMinor osSub osInst userName manufacture biosModel alias physicalTotalKb
+                osName osType osMajor osMinor osSub osInstDate userName manufacture biosModel alias physicalTotalKb
                 virtualMemory physicalFreeMemory virtualFreeMemory)
         );
     }
     elsif ($bankAccount->type eq 'TADZ' ) {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
-                osName osType osMajor osMinor osSub osInst userName manufacture biosModel alias physicalTotalKb
+                osName osType osMajor osMinor osSub osInstDate userName manufacture biosModel alias physicalTotalKb
                 virtualMemory physicalFreeMemory virtualFreeMemory biosDate biosSerialNumber biosUniqueId boardSerial
                 caseSerial caseAssetTag extId techImgId )
         );
@@ -394,7 +394,7 @@ sub getConnectedScanRecordData {
     else {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
-                osName osType osMajor osMinor osSub osInst userName manufacture biosModel alias physicalTotalKb
+                osName osType osMajor osMinor osSub osInstDate userName manufacture biosModel alias physicalTotalKb
                 virtualMemory physicalFreeMemory virtualFreeMemory biosDate biosSerialNumber biosUniqueId boardSerial
                 caseSerial caseAssetTag)
         );
