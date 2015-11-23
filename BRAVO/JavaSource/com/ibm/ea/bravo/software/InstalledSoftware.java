@@ -63,28 +63,26 @@ public class InstalledSoftware extends OrmBase {
 	private String comment;
 	
 	public boolean isTadz() throws HibernateException, Exception{
-		Integer count;
+		Object result;
 		Session session = HibernateDelegate.getSession();
-		count = (Integer) session
+		result = (Object) session
 				.getNamedQuery("installedSoftwareIsTadz")
 				.setLong("installedSoftwareId",
-						this.id)
-				.uniqueResult();
-		if (null == count) {
+						this.id);
+		if (null == result) {
 			return false;
 		} 
 		return true;
 	}
 	
 	public boolean isTlcmz() throws HibernateException, Exception{
-		Integer count;
+		Object result;
 		Session session = com.ibm.ea.bravo.framework.hibernate.HibernateDelegate.getSession();
-		count = (Integer) session
+		result = (Object) session
 				.getNamedQuery("installedSoftwareIsTLCMZ")
 				.setLong("installedSoftwareId",
-						this.id)
-				.uniqueResult();
-		if (null == count) {
+						this.id);
+		if (null == result) {
 			return false;
 		} 
 		return true;
