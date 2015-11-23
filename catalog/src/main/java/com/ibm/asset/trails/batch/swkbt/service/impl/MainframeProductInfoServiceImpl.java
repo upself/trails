@@ -20,6 +20,7 @@ import com.ibm.asset.swkbt.schema.MainframeProductType;
 import com.ibm.asset.trails.batch.swkbt.service.MainframeProductInfoService;
 import com.ibm.asset.trails.batch.swkbt.service.ManufacturerService;
 import com.ibm.asset.trails.batch.swkbt.service.ProductInfoService;
+import com.ibm.asset.trails.batch.swkbt.service.ReconService;
 import com.ibm.asset.trails.dao.ProductDao;
 import com.ibm.asset.trails.dao.ProductInfoDao;
 import com.ibm.asset.trails.domain.ProductInfo;
@@ -37,6 +38,8 @@ public class MainframeProductInfoServiceImpl extends
 	@Autowired
 	private ManufacturerService manufacturerService;
 	@Autowired
+	private ReconService<?, ?> reconService;
+	@Autowired
 	private InputStream mfGuidFileInputStream;
 	private static final List<String> licGuids = new ArrayList<String>();
 
@@ -47,11 +50,11 @@ public class MainframeProductInfoServiceImpl extends
 			existing = new ProductInfo();
 			existing = update(existing, xmlEntity);
 //     We are not reconcile mainframe product due to not reporting alerts			
-//			recon(existing, xmlEntity);
+			recon(existing, xmlEntity);
 		} else {
 			log.debug("have existing " + existing.toString());
 //     We are not reconcile mainframe product due to not reporting alerts
-//		    recon(existing, xmlEntity);
+		    recon(existing, xmlEntity);
 			existing = super.update(existing, xmlEntity);
 		}
 		merge(existing);
@@ -99,12 +102,19 @@ public class MainframeProductInfoServiceImpl extends
 
 	public void addToRecon(ProductInfo newEntity) {
 		log.debug(" Trying to add recon");
+		Recon existing = (Recon) reconService.findByNaturalKey(newEntity.getId());
+		if (existing == null){
+		log.debug(" Recon doesn't exist");
 		Recon recon = new Recon();
 		recon.setAction("UPDATE");
 		recon.setRecordTime(new Date());
 		recon.setRemoteUser("TADZMainframe");
 		recon.setProductInfo(newEntity);
 		newEntity.setRecon(recon);
+		} else {
+		log.debug(" Recon exists");
+		newEntity.setRecon(existing);
+		}
 	}
 
 	private boolean vendorManagedChange(ProductInfo existing,
@@ -216,7 +226,7 @@ public class MainframeProductInfoServiceImpl extends
 	private boolean softwareNameChange(ProductInfo existing,
 			MainframeProductType xmlEntity) {
 
-		if (existing.getName().equals(xmlEntity.getName())) {
+		if (!existing.getName().equals(xmlEntity.getName())) {
 			return true;
 		}
 		return false;
