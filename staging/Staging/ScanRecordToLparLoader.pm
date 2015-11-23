@@ -213,7 +213,7 @@ sub doDelta {
         $sr->osMajor( $rec{scanRecordOsMajor} );
         $sr->osMinor( $rec{scanRecordOsMinor} );
         $sr->osSub( $rec{scanRecordOsSub} );
-        $sr->osType( $rec{scanRecordOsType} );
+        $sr->osInstDate( $rec{scanRecordOsInst} );
         $sr->userName( $rec{scanRecordUserName} );
         $sr->biosManufacturer( $rec{scanRecordManufacturer} );
         $sr->biosModel( $rec{scanRecordBiosModel} );
@@ -263,7 +263,7 @@ sub doDelta {
         $newSl->osMajor( $sr->osMajor );
         $newSl->osMinor( $sr->osMinor );
         $newSl->osSub( $sr->osSub );
-        $newSl->osType( $sr->osType );
+        $newSl->osInstDate( $sr->osInstDate );
         $newSl->userName( $sr->userName );
         $newSl->biosManufacturer( $sr->biosManufacturer );
         $newSl->biosModel( $sr->biosModel );
@@ -316,7 +316,7 @@ sub doDelta {
         $oldSl->osMajor( $rec{softwareLparOsMajor} );
         $oldSl->osMinor( $rec{softwareLparOsMinor} );
         $oldSl->osSub( $rec{softwareLparOsSub} );
-        $oldSl->osType( $rec{softwareLparOsType} );
+        $oldSl->osInstDate( $rec{softwareLparOsInst} );
         $oldSl->userName( $rec{softwareLparUserName} );
         $oldSl->biosManufacturer( $rec{softwareLparManufacturer} );
         $oldSl->biosModel( $rec{softwareLparBiosModel} );
