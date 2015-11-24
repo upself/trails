@@ -68,11 +68,13 @@ public class InstalledSoftware extends OrmBase {
 		result = (Object) session
 				.getNamedQuery("installedSoftwareIsTadz")
 				.setLong("installedSoftwareId",
-						this.id);
+						this.id)
+				.uniqueResult();
 		if (null == result) {
 			return false;
-		} 
+		}
 		return true;
+		
 	}
 	
 	public boolean isTlcmz() throws HibernateException, Exception{
@@ -81,10 +83,11 @@ public class InstalledSoftware extends OrmBase {
 		result = (Object) session
 				.getNamedQuery("installedSoftwareIsTLCMZ")
 				.setLong("installedSoftwareId",
-						this.id);
+						this.id)
+				.uniqueResult();
 		if (null == result) {
 			return false;
-		} 
+		}
 		return true;
 	}
 
