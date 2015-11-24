@@ -178,6 +178,7 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 											<%-- 			</c:if> --%>
 											<th class="blue-med">Scan Time</th>
 											<th class="blue-med">SW_EXT_ID</th>
+											<th class="blue-med">OS Install Date</th>
 											<th class="blue-med">Acquisition Time</th>
 										</tr>
 									</thead>
@@ -202,6 +203,8 @@ function checkAll(pForm, psAllCheckboxName, psCheckboxName) {
 													value="${software.softwareLpar.scantimeDate}" /></font></td>
 											<td><font class="orange-dark"><c:out
 						                                    value="${software.softwareLpar.extId}" /></font></td>
+						                    <td><font class="orange-dark"> <c:out
+													value="${software.softwareLpar.osInstallDate}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${software.softwareLpar.acquisitionDate}" /></font></td>
 										</tr>
