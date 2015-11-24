@@ -69,7 +69,7 @@ public class InstalledSoftware extends OrmBase {
 				.getNamedQuery("installedSoftwareIsTadz")
 				.setLong("installedSoftwareId",
 						this.id)
-				.uniqueResult();
+				.list();
 		if (null == result) {
 			return false;
 		}
@@ -84,7 +84,7 @@ public class InstalledSoftware extends OrmBase {
 				.getNamedQuery("installedSoftwareIsTLCMZ")
 				.setLong("installedSoftwareId",
 						this.id)
-				.uniqueResult();
+				.list();
 		if (null == result) {
 			return false;
 		}
