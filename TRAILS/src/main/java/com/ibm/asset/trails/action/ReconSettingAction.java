@@ -23,6 +23,8 @@ public class ReconSettingAction extends AccountBaseAction {
 	private String reconcileTypeName;
 
 	private String productInfoName;
+	
+	private Long total;
 
 	@UserRole(userRole = UserRoleType.READER)
 	public void prepare() {
@@ -60,6 +62,9 @@ public class ReconSettingAction extends AccountBaseAction {
 		}
 
 		reconSetting = getUserSession().getReconSetting();
+		if (reconSetting != null) {
+			total = getReconWorkspaceService().total(getUserSession().getAccount(), reconSetting);
+        }
 		return SUCCESS;
 	}
 
@@ -118,4 +123,8 @@ public class ReconSettingAction extends AccountBaseAction {
 	public void setProductInfoName(String productInfoName) {
 		this.productInfoName = productInfoName;
 	}
+
+	public Long getTotal() {
+		return total;
+	}	
 }
