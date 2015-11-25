@@ -6,6 +6,8 @@
  */
 package com.ibm.ea.bravo.software;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -63,14 +65,15 @@ public class InstalledSoftware extends OrmBase {
 	private String comment;
 	
 	public boolean isTadz() throws HibernateException, Exception{
-		Object result;
+		List result;
 		Session session = HibernateDelegate.getSession();
-		result = (Object) session
+		result = (List) session
 				.getNamedQuery("installedSoftwareIsTadz")
 				.setLong("installedSoftwareId",
 						this.id)
 				.list();
-		if (null == result) {
+		
+		if (result.isEmpty()) {
 			return false;
 		}
 		return true;
@@ -78,14 +81,14 @@ public class InstalledSoftware extends OrmBase {
 	}
 	
 	public boolean isTlcmz() throws HibernateException, Exception{
-		Object result;
+		List result;
 		Session session = com.ibm.ea.bravo.framework.hibernate.HibernateDelegate.getSession();
-		result = (Object) session
+		result = (List) session
 				.getNamedQuery("installedSoftwareIsTLCMZ")
 				.setLong("installedSoftwareId",
 						this.id)
 				.list();
-		if (null == result) {
+		if (result.isEmpty()) {
 			return false;
 		}
 		return true;
