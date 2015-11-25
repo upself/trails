@@ -12,6 +12,7 @@ use Tap::NewPerl;
 use Recon::InventoryReconEngineCustomer;
 use Recon::ReconEngineSoftware;
 use Recon::ReconEnginePvu;
+use Recon::Delegate::ReconDelegate;
 
 my $logfile    = "/var/staging/logs/reconEngineInventory/reconEngineInventory.log";
 my $pidFile    = "/tmp/reconEngineInventory.pid";
@@ -40,7 +41,7 @@ my $rNo = 'revision233';
 my $maxChildren        = 100;
 my %runningCustomerDates = ();
 my %children           = ();
-my $children;
+# my $children;
 
 my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
 my @customerIds = getReconCustomerQueue( $connection, $testMode );
@@ -78,17 +79,26 @@ sub keepTicking {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
              newPvuChild();
              my $connection;
-             while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
+             while (!defined($connection)) {
+				$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
+				elog("Connection retried three times with no success, keeping on retrying...");
+			 }
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              $connection->disconnect;
+             Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
         }
-        if ( $children >= $maxChildren ) {
-            wlog("$rNo sleeping");
-            sleep;
+        if ( scalar (keys (%children)) >= $maxChildren ) {
+			if ( Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children) == 0 ) {
+				wlog("$rNo sleeping");
+				sleep;
+			}
             
             wlog("$rNo before reset array size:". scalar @customerIds);
             my $connection;
-            while (!defined($connection)) {$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod)}
+            while (!defined($connection)) {
+				$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
+				elog("Connection retried three times with no success, keeping on retrying...");
+			}
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             $connection->disconnect;
             wlog("$rNo end reset array size:". scalar @customerIds);
@@ -97,7 +107,7 @@ sub keepTicking {
         }
         
         
-        for ( my $i = $children; $i < $maxChildren; $i++ ) {
+        for ( my $i = scalar (keys %children); $i < $maxChildren; $i++ ) {
             ilog("$rNo running $i");
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
@@ -114,12 +124,15 @@ sub keepTicking {
             }
         }
         
-        if ((scalar @customerIds == 0) && ( $children > 0 )) {
-            wlog("$rNo loop of customer array finished will sleep till end of child");
-            sleep;
-            wlog("$rNo waked up");   
+        if ((scalar @customerIds == 0) && ( scalar (keys %children) > 0 )) {
+			Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
+			if ( scalar (keys %children) > 0 ) {
+				wlog("$rNo loop of customer array finished will sleep till end of child");
+				sleep;
+				wlog("$rNo waked up");
+			}
         }
-        elsif ((scalar @customerIds == 0) && ( $children == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
+        if ((scalar @customerIds == 0) && ( scalar(keys %children) == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
 			wlog("$rNo customer array empty and no children running, waiting 10 minutes before reloading the queue");
 			sleep 600;
 		}
@@ -131,12 +144,12 @@ sub isCustomerRunning {
     my $date = shift;
     my $result     = 0;
     
-    if (( $children < (0.66 * $maxChildren)) && ( exists $runningCustomerDates{"$customerId $date"} )) {
+    if (( scalar (keys %children) < (0.66 * $maxChildren)) && ( exists $runningCustomerDates{"$customerId $date"} )) {
 		ilog("$rNo $customerId and $date already running, skipping");
 		return 1;
 	}
 	
-	if ( $children >= ( 0.66 * $maxChildren) ) {
+	if ( scalar (keys %children ) >= ( 0.66 * $maxChildren) ) {
 		foreach my $key ( keys %runningCustomerDates ) {
 			if ( $key =~ /^$customerId / ) {
 				ilog("$rNo $customerId already running and reconEngineInventory is using 66% of maxthreads, skipping");
@@ -160,9 +173,8 @@ sub newChild {
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
     if ($pid) {
         $children{$pid} = 1;
-        $children++;
         $runningCustomerDates{"$customerId $date"} = $pid;
-        ilog("forked new child, we now have $children children");
+        ilog("forked new child, we now have ".scalar(keys %children)." children");
         return;
     }
 
@@ -191,8 +203,7 @@ sub newSoftwareChild {
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
     if ($pid) {
         $children{$pid} = 1;
-        $children++;
-        ilog("forked new child, we now have $children children");
+        ilog("forked new child, we now have ".scalar (keys %children)." children");
         return;
     }
 
@@ -213,8 +224,7 @@ sub newPvuChild {
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
     if ($pid) {
         $children{$pid} = 1;
-        $children++;
-        ilog("forked new child, we now have $children children");
+        ilog("forked new child, we now have ".scalar(keys %children)." children");
         return;
     }
 
@@ -230,7 +240,7 @@ sub REAPER {
     my $stiff;
     while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
         warn("child $stiff terminated -- status $?");
-        $children--;
+        delete $children{$stiff} if exists ( $children{$stiff} );
         foreach my $key ( keys %runningCustomerDates ) {
 			if ( $stiff == $runningCustomerDates{$key} ) {
 				delete $runningCustomerDates{$key};
