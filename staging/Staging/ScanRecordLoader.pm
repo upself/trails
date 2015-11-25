@@ -235,39 +235,19 @@ sub doDelta {
         if ( defined $self->list->{$key} ) {
             dlog('Scan exists in bank account');
 
-            my $stagingTs = $rec{scanTime};
-            $stagingTs =~ s/\D//g;
-            $stagingTs =~ s/\s+//g;
+            $scanRecord->scanTime(removeSpacesAndNonDigits($rec{scanTime}));
+            $scanRecord->biosDate(removeSpacesAndNonDigits($rec{biosDate}));
+            $scanRecord->osInstDate(removeSpacesAndNonDigits($rec{osInstDate}));
 
-            my $stagingBTs = $rec{biosDate};
-            $stagingBTs =~ s/\D//g;
-            $stagingBTs =~ s/\s+//g;
+			my $originSourceTs = $self->list->{$key}->scanTime;
+            my $sourceTs  = removeSpacesAndNonDigits($self->list->{$key}->scanTime);
             
-            my $stagingInstDate = $rec{osInstDate};
-            $stagingInstDate =~ s/\D//g;
-            $stagingInstDate =~ s/\s+//g;
+            my $originSourceBTs = $self->list->{$key}->biosDate;
+            my $sourceBTs  = removeSpacesAndNonDigits($self->list->{$key}->biosDate);
 
-            $scanRecord->scanTime($stagingTs);
-            $scanRecord->biosDate($stagingBTs);
-            $scanRecord->osInstDate($stagingInstDate);
+            my $originSourceInstDate = $self->list->{$key}->osInstDate;
+            my $sourceInstDate  = removeSpacesAndNonDigits($self->list->{$key}->osInstDate);
 
-            my $sourceTs  = $self->list->{$key}->scanTime;
-            my $oSourceTs = $self->list->{$key}->scanTime;
-
-            my $sourceBTs  = $self->list->{$key}->biosDate;
-            my $oSourceBTs = $self->list->{$key}->biosDate;
-            
-            my $sourceInstDate  = $self->list->{$key}->osInstDate;
-            my $oSourceInstDate = $self->list->{$key}->osInstDate;
-
-            $sourceTs =~ s/\D//g;
-            $sourceTs =~ s/\s+//g;
-
-            $sourceBTs =~ s/\D//g;
-            $sourceBTs =~ s/\s+//g;
-            
-            $sourceInstDate =~ s/\D//g;
-            $sourceInstDate =~ s/\s+//g;
 
             $self->list->{$key}->scanTime($sourceTs);
             $self->list->{$key}->biosDate($sourceBTs);
@@ -296,9 +276,9 @@ sub doDelta {
                 $self->list->{$key}->action('COMPLETE');
             }
 
-            $self->list->{$key}->scanTime($oSourceTs);
-            $self->list->{$key}->biosDate($oSourceBTs);
-            $self->list->{$key}->osInstDate($oSourceInstDate);
+            $self->list->{$key}->scanTime($originSourceTs);
+            $self->list->{$key}->biosDate($originSourceBTs);
+            $self->list->{$key}->osInstDate($originSourceInstDate);
         }
         else {
             dlog('Record does not exist in bank account');
@@ -326,6 +306,15 @@ sub doDelta {
     $sth->finish;
 
     dlog('End doDelta method');
+}
+
+sub removeSpacesAndNonDigits {
+	my ( $self, $source ) = @_;
+	
+	$source =~ s/\D//g;
+	$source =~ s/\s+//g;
+	
+	return $source;
 }
 
 sub applyDelta {

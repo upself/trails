@@ -2,6 +2,6 @@
 
 use lib '/opt/staging/v2/';
 
-use t::tests::scanRecordToLpar::isTADZ;
+use t::tests::scanRecordToStaging::removeSpacesAndNonDigits;
 
 Test::Class->runtests;
