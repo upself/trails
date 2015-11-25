@@ -158,13 +158,10 @@ public class FormSoftware extends FormBase {
 				return errors;
 			}
 			
-			//ab added sprint9
-			InstalledSaProduct isp = installedSoftware.getInstalledSaProduct();
-			if(isp!=null){
+			if(installedSoftware.isTlcmz()){
 				setTlcmz("TLCMz");
 			}
-			InstalledTadz it = installedSoftware.getInstalledTadz();
-			if(it!=null){
+			if(installedSoftware.isTadz()) {
 				setTadz("TADz");
 			}
 

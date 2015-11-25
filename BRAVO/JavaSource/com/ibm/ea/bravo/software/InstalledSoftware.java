@@ -7,30 +7,20 @@
 package com.ibm.ea.bravo.software;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 
 import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.common.OrmBase;
-//Change Bravo to use Software View instead of Product Object Start
-//import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
 import com.ibm.ea.sigbank.Software;
-//Change Bravo to use Software View instead of Product Object End
 
-/**
- * @author denglers
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- */
+
 public class InstalledSoftware extends OrmBase {
-	/**
-     * 
-     */
+
     private static final long serialVersionUID = 3688213177349925244L;
 
-    /**
-	 * Logger for this class
-	 */
 	private static final Logger logger = Logger
 			.getLogger(InstalledSoftware.class);
 
@@ -40,12 +30,7 @@ public class InstalledSoftware extends OrmBase {
 	
 	private Long softwareLparId;
 
-//	private Software software;
-	
-	//Change Bravo to use Software View instead of Product Object Start
-	//private Product software;
 	private Software software;
-	//Change Bravo to use Software View instead of Product Object End
 
 	private DiscrepancyType discrepancyType;
 
@@ -77,24 +62,33 @@ public class InstalledSoftware extends OrmBase {
 	
 	private String comment;
 	
-	//ab added sprint9 story 27296
-	private InstalledSaProduct installedSaProduct;
-	private InstalledTadz installedTadz;
-
-	public InstalledTadz getInstalledTadz() {
-		return installedTadz;
+	public boolean isTadz() throws HibernateException, Exception{
+		Object result;
+		Session session = HibernateDelegate.getSession();
+		result = (Object) session
+				.getNamedQuery("installedSoftwareIsTadz")
+				.setLong("installedSoftwareId",
+						this.id)
+				.list();
+		if (null == result) {
+			return false;
+		}
+		return true;
+		
 	}
-
-	public void setInstalledTadz(InstalledTadz installedTadz) {
-		this.installedTadz = installedTadz;
-	}
-
-	public InstalledSaProduct getInstalledSaProduct() {
-		return installedSaProduct;
-	}
-
-	public void setInstalledSaProduct(InstalledSaProduct installedSaProduct) {
-		this.installedSaProduct = installedSaProduct;
+	
+	public boolean isTlcmz() throws HibernateException, Exception{
+		Object result;
+		Session session = com.ibm.ea.bravo.framework.hibernate.HibernateDelegate.getSession();
+		result = (Object) session
+				.getNamedQuery("installedSoftwareIsTLCMZ")
+				.setLong("installedSoftwareId",
+						this.id)
+				.list();
+		if (null == result) {
+			return false;
+		}
+		return true;
 	}
 
 	public String getKeyManaged() {
