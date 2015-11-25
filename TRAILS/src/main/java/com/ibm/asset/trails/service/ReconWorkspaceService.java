@@ -16,6 +16,8 @@ public interface ReconWorkspaceService extends BaseService {
 
 	public List<ReconcileType> reconcileTypes(boolean isManual);
 
+	public Long total(Account account, ReconSetting reconSetting);
+	
 	public void paginatedList(DisplayTagList list, Account account,
 			ReconSetting reconSetting, int startIndex, int objectsPerPage,
 			String sort, String dir);

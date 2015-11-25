@@ -2606,6 +2606,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"hardwareToBravo.pl";#5
   push @vaildLoaderList,"hdiskToBravo.pl";#6
   push @vaildLoaderList,"processorToBravo.pl";#7
+  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#7 
   #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 End
   #push @vaildLoaderList,"testingTAP.pl";#25 #For testing function purpose only
   
