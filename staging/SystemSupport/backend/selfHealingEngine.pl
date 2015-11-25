@@ -3,35 +3,28 @@
 # This perl script is used to provide a Self Healing Engine Support Feature 
 
 
-#Load required modules
 use strict;
 use DBI;
 use Database::Connection;
 use Base::ConfigManager;
-use Net::Telnet;#Added by Larry for System Support And Self Healing Service Components - Phase 5
-use Net::SCP::Expect;#Added by Larry for System Support And Self Healing Service Components - Phase 6A
+use Net::Telnet;
+use Net::SCP::Expect;
 use Config::Properties::Simple;
+use Sys::Hostname;
+my $HOSTNAME= hostname;
 
 #Globals
-my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEngine.log";
 my $selfHealingEngineConfigFile = "/opt/staging/v2/config/selfHealingEngine.properties";
 
 #SERVER MODE
 my $TAP  = "TAP";#TAP Server for toStaging Loaders
 my $TAP2 = "TAP2";#TAP2 Testing Server
 my $TAP3 = "TAP3";#TAP3 Server for toBravo Loaders
-my $SERVER_MODE;
 
-my $SUDO_CMD_PREFIX        = "sudo";#Added by Larry for Self Healing Service Component - Phase 2
 my $LOADER_EXISTING_PATH   = "/opt/staging/v2/";
-my $LOADER_EXISTING_PATH_2 = "/opt/staging/v2";#Added by Larry for System Support And Self Healing Service Components - Phase 3
-my $START_ALL_SHELL_NAME   = "start-all.sh";#Added by Larry for Self Healing Service Component - Phase 2
 
-#Operation Status Code List
-my $OPERATION_STATUS_ADDED_CODE       = "ADDED";
 my $OPERATION_STATUS_PROGRESSING_CODE = "PROGRESSING";
 my $OPERATION_STATUS_FAILED_CODE      = "FAILED";
-my $OPERATION_STATUS_DONE_CODE        = "DONE";
 #Self Healing Engine Parameter Definition Indexes
 my $PARAMETER_OPERATOIN_ID_INDEX                      = 1;
 my $PARAMETER_OPERATOIN_NAME_CODE_INDEX               = 2;
@@ -42,7 +35,6 @@ my $COMMAND_MODE = "COMMAND_MODE";
 #Statements for 'OPERATION_QUEUE.COMMENTS' column
 my $PROGRESSING_COMMENTS = "This Operation is being progressed.";
 my $FAILED_COMMENTS      = "This Operatoin is failed due to reason:<br>";
-my $DONE_COMMENTS        = "This Operation has been finished successfully.";
 
 #TIMESTAMP STYLE
 my $STYLE1 = 1;#YYYY-MM-DD-HH.MM.SS For Example: 2013-06-18-10.30.33
@@ -117,18 +109,6 @@ my $cfgMgr;
 my $configServerMode;
 my $configNonDebugLogPath;#Added by Larry for System Support And Self Healing Service Components - Phase 3
 
-#Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
-#Operation Parameter Indexes
-my $OPERATION_PARAMETER_1_INDEX  = 0;
-my $OPERATION_PARAMETER_2_INDEX  = 1;
-my $OPERATION_PARAMETER_3_INDEX  = 2;
-my $OPERATION_PARAMETER_4_INDEX  = 3;
-my $OPERATION_PARAMETER_5_INDEX  = 4;
-my $OPERATION_PARAMETER_6_INDEX  = 5;
-my $OPERATION_PARAMETER_7_INDEX  = 6;
-my $OPERATION_PARAMETER_8_INDEX  = 7;
-my $OPERATION_PARAMETER_9_INDEX  = 8;
-my $OPERATION_PARAMETER_10_INDEX = 9;
 
 #'Restart Loader on TAP Server' Operation Parameter Definition Indexes
 my $RESTART_LOADER_ON_TAP_SERVER_RELATED_TICKET_NUMBER_INDEX = 0;#Related Ticket Number(Optional) - For example: TI30620-56800
@@ -363,6 +343,7 @@ sub init{
 	
   #Log File Operation
   $currentDate = getCurrentTimeStamp($STYLE3);#Get the current date using format YYYYMMDD
+my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEngine.log";
   $selfHealingEngineLogFile.= ".$currentDate";
   open LOG, ">>$selfHealingEngineLogFile";#Open Log File
 
@@ -372,14 +353,14 @@ sub init{
   $configServerMode = trim($cfgMgr->server);
   print LOG "Config Server Mode: {$configServerMode}\n";
   #Set Server Mode Value from configuration file
-  $SERVER_MODE  = $configServerMode;
+  $HOSTNAME  = $configServerMode;
   #Get the config Non Debug Log Path
   $configNonDebugLogPath = trim($cfgMgr->nonDebugLogPath);
   print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
   
   #set db2 env path
   setDB2ENVPath();
-
+  #TODO vytahni log cestu z configu
   #Setup DB2 environment
   setupDB2Env();
   ###Get bravo db connection
@@ -399,7 +380,7 @@ sub process{
   #2. Input Operation Name Code Parameter = "RESTART_LOADER_ON_TAP_SERVER"
   #3. Input Operation Merged Parameter Values Parameter "reconEngine.pl"
   if($parameterCnt ==3){
-    $selfHealingEngineInvokedMode = $QUEUE_MODE;#Queue Mode
+    $selfHealingEngineInvokedMode = "QUEUE_MODE";#Queue Mode
 	print LOG "The selfHealingEngine Invoke Mode is {$QUEUE_MODE}\n";
   }
   #If the count of input parameters is 2, it means that the invoked mode for SelfHealingEngine is 'Command' mode.
@@ -407,11 +388,11 @@ sub process{
   #1. Input Operation Name Code Parameter = "RESTART_LOADER_ON_TAP_SERVER"
   #2. Input Operation Merged Parameter Values Parameter "reconEngine.pl"
   else{
-    $selfHealingEngineInvokedMode = $COMMAND_MODE;#Command Mode
+    $selfHealingEngineInvokedMode = "COMMAND_MODE";#Command Mode
 	print LOG "The selfHealingEngine Invoke Mode is {$COMMAND_MODE}\n";
   }
  
- if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
+ if($selfHealingEngineInvokedMode eq "QUEUE_MODE"){
     foreach my $parameter (@ARGV){
 	  if($loopIndex == $QUEUE_INVOKE_MODE_INPUT_PARAMETER_OPERATION_ID_INDEX){#Parameter Operation ID - for example: "1"
 	    $parameterOperationId = $parameter;
@@ -432,7 +413,7 @@ sub process{
       $loopIndex++; 
     }
   }
-  elsif($selfHealingEngineInvokedMode eq $COMMAND_MODE){
+  elsif($selfHealingEngineInvokedMode eq "COMMAND_MODE"){
 	foreach my $parameter (@ARGV){
 	  if($loopIndex == $COMMAND_INVOKE_MODE_INPUT_PARAMETER_OPERATION_NAME_CODE_INDEX){#Parameter Operation Name Code - for example: "RESTART_LOADER_ON_TAP_SERVER"
 	    $parameterOperationNameCode = $parameter;
@@ -485,16 +466,16 @@ sub coreOperationProcess{
   my $operationParameter9;
   my $operationParameter10;
 
-  $operationParameter1 = trim($operationParametersArray[$OPERATION_PARAMETER_1_INDEX]);
-  $operationParameter2 = trim($operationParametersArray[$OPERATION_PARAMETER_2_INDEX]);
-  $operationParameter3 = trim($operationParametersArray[$OPERATION_PARAMETER_3_INDEX]);
-  $operationParameter4 = trim($operationParametersArray[$OPERATION_PARAMETER_4_INDEX]);
-  $operationParameter5 = trim($operationParametersArray[$OPERATION_PARAMETER_5_INDEX]);
-  $operationParameter6 = trim($operationParametersArray[$OPERATION_PARAMETER_6_INDEX]);
-  $operationParameter7 = trim($operationParametersArray[$OPERATION_PARAMETER_7_INDEX]);
-  $operationParameter8 = trim($operationParametersArray[$OPERATION_PARAMETER_8_INDEX]);
-  $operationParameter9 = trim($operationParametersArray[$OPERATION_PARAMETER_9_INDEX]);
-  $operationParameter10 = trim($operationParametersArray[$OPERATION_PARAMETER_10_INDEX]);
+  $operationParameter1 = trim($operationParametersArray[1]);
+  $operationParameter2 = trim($operationParametersArray[2]);
+  $operationParameter3 = trim($operationParametersArray[3]);
+  $operationParameter4 = trim($operationParametersArray[4]);
+  $operationParameter5 = trim($operationParametersArray[5]);
+  $operationParameter6 = trim($operationParametersArray[6]);
+  $operationParameter7 = trim($operationParametersArray[7]);
+  $operationParameter8 = trim($operationParametersArray[8]);
+  $operationParameter9 = trim($operationParametersArray[9]);
+  $operationParameter10 = trim($operationParametersArray[10]);
 
   print LOG "The Operation Parameter 1: {$operationParameter1}\n";
   print LOG "The Operation Parameter 2: {$operationParameter2}\n";
@@ -512,7 +493,7 @@ sub coreOperationProcess{
   
 	#############THE FOLLOWING PIECE OF CODE IS THE OPERATION CORE BUSINESS LOGIC!!!!!!################################
     if(($operationNameCode eq $RESTART_LOADER_ON_TAP_SERVER)#RESTART_LOADER_ON_TAP_SERVER
-	 &&($SERVER_MODE eq $TAP || $SERVER_MODE eq $TAP2)){#TAP Server or Support TAP2 Testing Server Case
+	 &&($HOSTNAME eq $TAP || $HOSTNAME eq $TAP2)){#TAP Server or Support TAP2 Testing Server Case
       
 	  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
         #Operation has been started to be processed
@@ -803,7 +784,7 @@ sub coreOperationProcess{
     }#end if($operationNameCode eq $RESTART_LOADER_ON_TAP_SERVER)
 	#Added by Larry for Self Healing Service Component - Phase 2 Start
     elsif(($operationNameCode eq $RESTART_LOADER_ON_TAP3_SERVER)#RESTART_LOADER_ON_TAP3_SERVER
-	    &&($SERVER_MODE eq $TAP3 ||$SERVER_MODE eq $TAP2)){#TAP3 Server or Support TAP2 Server Testing Purpose 
+	    &&($HOSTNAME eq $TAP3 ||$HOSTNAME eq $TAP2)){#TAP3 Server or Support TAP2 Server Testing Purpose 
      
 	 if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
         #Operation has been started to be processed
@@ -1014,15 +995,15 @@ sub coreOperationProcess{
           #2. Start target loader using start-all.sh due that there is no root privilege granted on TAP3 Server we need to use 'sudo' unix command to get temp root privilege - For exmaple: "sudo /opt/staging/v2/start-all.sh"
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
 		  if($killLoaderFlag == $SUCCESS){
-			if($SERVER_MODE eq $TAP3){
-              $restartLoaderFullCommand = "$SUDO_CMD_PREFIX ";#append "sudo " when TAP3 server
-            }#end if($SERVER_MODE eq $TAP3)
+			if($HOSTNAME eq $TAP3){
+              $restartLoaderFullCommand = "sudo ";#append "sudo " when TAP3 server
+            }#end if($HOSTNAME eq $TAP3)
 			else{
               $restartLoaderFullCommand = "";#append "" when TAP2 server
 			}#end else
 			#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
 		    $restartLoaderFullCommand.= $loaderExistingPath;#Append the '/opt/staging/v2/' loader existing path
-            $restartLoaderFullCommand.= $START_ALL_SHELL_NAME;#Append the 'start-all.sh' shell name
+            $restartLoaderFullCommand.= "start-all.sh";#Append the 'start-all.sh' shell name
 		    print LOG "The Restart Loader on TAP3 Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
 		    my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
             print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
@@ -1431,9 +1412,9 @@ sub coreOperationProcess{
        
              #3. Restart Child Loader
              #Switch to the /opt/staging/v2 folder first
-		     my $switchFolderCmdExecResult = system('cd $LOADER_EXISTING_PATH_2');
+		     my $switchFolderCmdExecResult = system('cd $LOADER_EXISTING_PATH');
 		     if($switchFolderCmdExecResult == 0){
-               print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched successfully.\n";
+               print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched successfully.\n";
 			   #Restart the target Child Loader
 		       my $restartChildLoaderCmdExecResult = system("$processedInvokedCommand");
                if($restartChildLoaderCmdExecResult == 0){
@@ -1454,13 +1435,13 @@ sub coreOperationProcess{
 		     else{
                $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
 		       if($operationFailedComments ne ""){
-		         $operationFailedComments.="The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched failed.<br>";  
+		         $operationFailedComments.="The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.<br>";  
 		       }#end if($operationFailedComments ne "")
 		       else{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-                 $operationFailedComments.="The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched failed.<br>";
+                 $operationFailedComments.="The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.<br>";
 		       }#end else 
-		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH_2} has been switched failed.\n";
+		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.\n";
 		     }#end else
 
 		      #4. Change the group of the log file to 'users' to let the log file downloaded
@@ -1484,7 +1465,7 @@ sub coreOperationProcess{
 			  #5. Set Operation Success Specail Comments to include Log File Value
 			  if($operationResultFlag == $OPERATION_SUCCESS){
                 $operationSuccessSpecialFlag = $TRUE;
-			    $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+			    $operationSuccessSpecialComments = "This Operation has been finished successfully."."<br>";
                 $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.";
 				print LOG "The Restart Child Loader on TAP Server - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
     		  }#end if($operationResultFlag == $OPERATION_SUCCESS)
@@ -1537,11 +1518,11 @@ sub coreOperationProcess{
        }#end else
 
        #2. Start IBMIHS Server
-	   if($SERVER_MODE eq $TAP2){#TAP2 Testing Server
+	   if($HOSTNAME eq $TAP2){#TAP2 Testing Server
 	     `$START_IBMIHS_SERVER_ON_TAP2_SERVER`;
          print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP2_SERVER} has been executed.\n";
 	   }
-	   elsif($SERVER_MODE eq $TAP){#TAP PROD Server
+	   elsif($HOSTNAME eq $TAP){#TAP PROD Server
 	     `$START_IBMIHS_SERVER_ON_TAP_SERVER`;
          print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP_SERVER} has been executed.\n";
 	   }
@@ -1974,7 +1955,7 @@ sub coreOperationProcess{
 		 #4. Set Operation Success Specail Comments to include Log File Value
 		 if($operationResultFlag == $OPERATION_SUCCESS){
 		   $operationSuccessSpecialFlag = $TRUE;
-		   $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+		   $operationSuccessSpecialComments = "This Operation has been finished successfully."."<br>";
 		   $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.<br>";
 		   #Added by Larry for System Support And Self Healing Service Components - Phase 6A Start
 		   $operationSuccessSpecialComments.="This Log File has also been copied to the GSA SSE Shared Log Folder Path:<br>";
@@ -2135,7 +2116,7 @@ sub coreOperationProcess{
 		   #Generate Operation Success Specail Comments
 		   if($operationResultFlag == $OPERATION_SUCCESS){
 		     $operationSuccessSpecialFlag = $TRUE;
-		     $operationSuccessSpecialComments = $DONE_COMMENTS."<br>";
+		     $operationSuccessSpecialComments = "This Operation has been finished successfully."."<br>";
 
 			 #Generate Existed Id List Specail Comments
 			 my $existedIdList = "";
@@ -2391,10 +2372,10 @@ sub coreOperationProcess{
 	  if($operationResultFlag == $OPERATION_SUCCESS){#Operation has been finished to be processed successfully
 	    #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
 		if($operationSuccessSpecialFlag == $TRUE){
-          updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_DONE_CODE,$operationSuccessSpecialComments,$parameterOperationId);	
+          updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,"DONE",$operationSuccessSpecialComments,$parameterOperationId);	
 		}#if($operationSuccessSpecialFlag == $TRUE)
 		else{
-	      updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,$OPERATION_STATUS_DONE_CODE,$DONE_COMMENTS,$parameterOperationId);	
+	      updateOperationFunction($stagingConnection,$UPDATE_CERTAIN_OPERATION_STATUS_SQL,"DONE","This Operation has been finished successfully.",$parameterOperationId);	
 	    }#end else
 		#Added by Larry for System Support And Self Healing Service Components - Phase 3 End
       }
@@ -2416,16 +2397,12 @@ sub coreOperationProcess{
   }#end if($@)
 }#end sub coreOperationProcess
 
-#This method is used to do Self Healing Engine Business Post Process for example, close db handlers, close file handers etc
 sub postProcess{
-  #Close Log File Handler
   close LOG; 
-  #Disconnect DB
   $bravoConnection->disconnect;
   $stagingConnection->disconnect;
 }
 
-#This method is used to setup DB2 environment
 sub setupDB2Env {
     die "ERROR: Unable to setup DB2 env !!"
         unless -e "$DB_ENV";
@@ -2439,7 +2416,6 @@ sub setupDB2Env {
     return 1;
 }
 
-#This sub trim() method is used to remove before and after space chars of a string
 sub trim
 {  
    my $trimString = shift;
@@ -2503,8 +2479,6 @@ sub getTime
           };
 }
 
-#my $UPDATE_CERTAIN_OPERATION_STATUS_SQL = "UPDATE OPERATION_QUEUE SET OPERATION_STATUS = ?, OPERATION_UPDATE_TIME = CURRENT TIMESTAMP, COMMENTS = ? WHERE OPERATION_ID = ?";
-#This method is used to update 
 sub updateOperationFunction{
   my ($connection, $querySQL, $operationStatus, $operationComments, $operationId) = @_;
   $connection->prepareSqlQuery('updateOperation',$querySQL);
@@ -2561,35 +2535,6 @@ sub getValidLoaderListOnTAPServer{
   return @vaildLoaderList;
 }
 
-sub getValidLoaderListOnTAP3Server{
-  my @vaildLoaderList = ();
-
-  #TAP3 Loader List
-  push @vaildLoaderList,"reconEngine.pl";#1
-  push @vaildLoaderList,"softwareToBravo.pl";#2
-  push @vaildLoaderList,"ipAddressToBravo.pl";#3
-  push @vaildLoaderList,"memModToBravo.pl";#4
-  push @vaildLoaderList,"hardwareToBravo.pl";#5
-  push @vaildLoaderList,"hdiskToBravo.pl";#6
-  push @vaildLoaderList,"processorToBravo.pl";#7
-  #push @vaildLoaderList,"swkbt";#8
-  #push @vaildLoaderList,"testingTAP.pl";#9 #For testing function purpose only
-  
-  return @vaildLoaderList;
-}
-
-#This method is used to set DB2 ENV path
-sub setDB2ENVPath{
-    if($SERVER_MODE eq $TAP){#TAP Server
-      $DB_ENV = "/db2/tap/sqllib/db2profile";
-    }
-	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/tap/sqllib/db2profile";
-	}
-	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
-	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
-	}
-}
 
 #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
 sub getValidChildLoaderListOnTAPServer{
@@ -2611,7 +2556,6 @@ sub getValidChildLoaderListOnTAPServer{
   return @vaildChildLoaderList;
 }
 
-#my $GET_COUNT_NUMBER_FOR_CERTAIN_BANK_ACCOUNT_NAME_SQL = "SELECT COUNT(*) FROM BANK_ACCOUNT WHERE NAME = ? WITH UR";
 sub getCountNumberForCertainBankAccountNameFunction{
   my $connection = shift;
   my $bankAccountName = shift;
@@ -2632,9 +2576,7 @@ sub queryCountNumberForCertainBankAccountName{
   print LOG "[queryCountNumberForCertainBankAccountName] Query SQL: {$GET_COUNT_NUMBER_FOR_CERTAIN_BANK_ACCOUNT_NAME_SQL}\n";
   return ('countNumberForCertainBankAccountName', $GET_COUNT_NUMBER_FOR_CERTAIN_BANK_ACCOUNT_NAME_SQL);
 }
-#Added by Larry for System Support And Self Healing Service Components - Phase 3 End
 
-#Added by Larry for System Support And Self Healing Service Components - Phase 5 Start
 sub error
 {
   my ($place,$reason)=@_;
@@ -2656,10 +2598,7 @@ sub printMessageWithTimeStamp{
   my $messageWithTimeStamp = "[$currentTimeStamp]$message\n";
   print LOG $messageWithTimeStamp;
 }
-#Added by Larry for System Support And Self Healing Service Components - Phase 5 End
 
-#Added by Larry for System Support And Self Healing Service Components - Phase 6 Start
-#my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL = "SELECT COUNT(*) FROM CUSTOMER WHERE ACCOUNT_NUMBER = ? AND STATUS = 'ACTIVE' WITH UR";
 sub getCountNumberForCertainAccountNumberFunction{
   my $connection = shift;
   my $accountNumber = shift;
@@ -2681,7 +2620,6 @@ sub queryCountNumberForCertainAccountNumber{
   return ('countNumberForCertainAccountNumber', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_SQL);
 }
 
-#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - Start
 sub deleteBankAccountFromTrails(){
   my $accountName = shift;
   my $connection = $bravoConnection;
@@ -2815,9 +2753,6 @@ sub getBankAccountID{
 	
 }
 
-#Added by Tomas for System Support And Self Healing Service Components - Phase 8 - End
-
-#my $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL = "SELECT COUNT(*) FROM SOFTWARE_LPAR SL, CUSTOMER C WHERE C.ACCOUNT_NUMBER = ? AND SL.NAME = ? AND C.CUSTOMER_ID = SL.CUSTOMER_ID AND C.STATUS = 'ACTIVE' AND SL.STATUS ='ACTIVE' WITH UR";
 sub getCountNumberForCertainAccountNumberAndHostnameFunction{
   my $connection = shift;
   my $accountNumber = shift;
@@ -2839,9 +2774,7 @@ sub queryCountNumberForCertainAccountNumberAndHostname{
   print LOG "[queryCountNumberForCertainAccountNumberAndHostname] Query SQL: {$GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL}\n";
   return ('countNumberForCertainAccountNumberAndHostname', $GET_COUNT_NUMBER_FOR_CERTAIN_ACCOUNT_NUMBER_AND_HOSTNAME_SQL);
 }
-#Added by Larry for System Support And Self Healing Service Components - Phase 6 End
 
-#Added by Larry for System Support And Self Healing Service Components - Phase 7 Start
 sub exec_sql_rs {
     my $dbconnection = shift;
     my $sqlname = shift;
@@ -2892,4 +2825,3 @@ sub exec_sql_rc {
    
     return $rc;
 }
-#Added by Larry for System Support And Self Healing Service Components - Phase 7 End

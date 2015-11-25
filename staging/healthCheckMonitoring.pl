@@ -12,6 +12,21 @@ else{
  print "Change Directory to $HOME_DIR successfully.\n";
 }
 
+
+
+my $ua = LWP::UserAgent->new;
+$ua->timeout(300);
+my $response = $ua->get($url);
+
+if ($response->is_error) {
+    printf "[%d] %s\n", $response->code, $response->message;
+
+    # record the timeout
+    if ($response->code == HTTP::Status::HTTP_REQUEST_TIMEOUT) {
+        ...
+    }
+}
+
 #Load required modules
 use lib '/opt/staging/v2';  
 use strict;
@@ -27,6 +42,8 @@ use HealthCheck::Delegate::EventLoaderDelegate;
 use Config::Properties::Simple;
 use HealthCheck::Common::MetaRule;
 use HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
+use LWP::Agent;
+use HTTP::Status ();
 
 #Globals
 my $eventRuleDefinitionFile   = $HOME_DIR . "/config/eventCheckRuleDefinition.properties";
