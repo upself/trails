@@ -23,6 +23,7 @@ use Recon::OM::PvuInfo;
 use Recon::SoftwareLpar;
 use Recon::CauseCode;
 use Recon::ScarletInstalledSoftware;
+use Scarlet::LicenseService;
 
 sub new {
  my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -83,10 +84,6 @@ sub setUp {
   $processorCount = $self->installedSoftwareReconData->hProcCount;
  }
 
- #	else {
- #		$processorCount = $self->installedSoftwareReconData->processorCount;
- #	}
-
  my $nbrCoresPerChip = $self->installedSoftwareReconData->hNbrCoresPerChip;
 
  my $valueUnitsPerCore =
@@ -138,13 +135,16 @@ sub recon {
   $self->closeAlertUnlicensedSoftware(1);
 
   my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-  
-  dlog('scarletAllocation='.$validation->scarletAllocation.' rTypeId='.
-     $self->installedSoftwareReconData->rTypeId);
+
+  dlog('scarletAllocation='
+     . $validation->scarletAllocation
+     . ' rTypeId='
+     . $self->installedSoftwareReconData->rTypeId );
+
   #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
   if ( $self->installedSoftwareReconData->rTypeId ==
       $reconcileTypeMap->{'Automatic license allocation'}
-   && $validation->scarletAllocation eq 'NO' )    
+   && $validation->scarletAllocation eq 'NO' )
   {
    dlog("Perform scarlet allocation");
    my $scarletIs = new Recon::ScarletInstalledSoftware();
@@ -308,11 +308,14 @@ sub reconcile {
   $licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
   $allocMethodId, $freePoolData
    )
-   = $self->attemptLicenseAllocation;
+   = $self->attemptLicenseAllocation('legacy');
 
- dlog( "reconcileTypeId=" . $reconcileTypeId );
- dlog( "machineLevel=" . $machineLevel );
- dlog( "allocMethodId=" . $allocMethodId ) if defined($allocMethodId);
+ if(!defined $licsToAllocate){
+   (
+    $licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
+    $allocMethodId, $freePoolData
+   ) = $self->attemptLicenseAllocation('scarlet');
+ }
 
  if ( defined $licsToAllocate ) {
 
@@ -345,22 +348,6 @@ sub reconcile {
 
   return ( 1, $scarletInstalledSw );
  }
-##	elsif ( defined $self->customer->swComplianceMgmt
-##		&& $self->customer->swComplianceMgmt eq 'YES' )
-##	{
-##		if ( defined $self->installedSoftwareReconData->scopeName ) {
-##			if ( $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' ) {
- ###Create reconcile and set id in data.
-##				my $reconcileTypeMap =
-##				  Recon::Delegate::ReconDelegate->getReconcileTypeMap();
-##				my $rId =
-##				  $self->createReconcile(
-##					$reconcileTypeMap->{'Pending customer decision'},
-##					0, $self->installedSoftware->id );
-##				return 1;
-##			}
-##		}
-##	}
 
  return ( 0, undef );
 }
@@ -702,6 +689,7 @@ sub attemptExistingMachineLevel {
 
 sub attemptLicenseAllocation {
  my $self = shift;
+ my $through = shift;
  dlog("being attempt license allocation");
 
  ###Get reconcile type map.
@@ -720,16 +708,17 @@ sub attemptLicenseAllocation {
     if defined $licsToAllocate;
  }
 
- #	if (( !defined $self->installedSoftwareReconData->scopeName ) ||
- #		( $self->installedSoftwareReconData->scopeName eq '' )) {
- #			dlog("ScheduleF not defined, license allocation won't be performed!");
- #			return ( undef, $reconcileTypeMap->{'Automatic license allocation'}, 0 );
- #	}
-
  ###Get license free pool by customer id and software id.
- my $freePoolData =
-   $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
-
+ my $freePoolData = undef
+ if($through eq 'legacy'){
+   $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
+ }else{
+   my $scarletLicSev = new Scarlet::LicenseService();
+   $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData->scopeName, 
+    $self->installedSoftwareReconData->cId, $self->installedSoftwareReconData->
+    );
+   
+ }
  if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
   ###License type: GARTNER MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
@@ -879,20 +868,6 @@ sub getFreePoolData {
  while ( $sth->fetchrow_arrayref ) {
   dlog("lId =$rec{lId}");
 
-  #		if ( defined $rec{usedQuantity} && $rec{machineLevel} == 1 ) {
-  #			my $hwServerType = $self->mechineLevelServerType;
-  #			dlog("it is machine level");
-  #			###not do auto recon if hw and lic don't have the same environment.
-  #			dlog(
-  #				"serverType=$hwServerType,rec{lEnvironment}=$rec{lEnvironment}"
-  #			);
-  #			next
-  #			  if (
-  #				$self->isEnvironmentSame( $hwServerType, $rec{lEnvironment} ) ==
-  #				0 );
-  #			dlog('getFreePoolData-license and hw environment same');
-  #		}
-
   ###I should centralize this check
   if ( defined $self->customer->swComplianceMgmt
    && $self->customer->swComplianceMgmt eq 'YES' )
@@ -925,6 +900,7 @@ sub getFreePoolData {
    $licView->lparName( $rec{lparName} );
    $licView->environment( $rec{lEnvironment} );
    $licView->extSrcId( $rec{extSrcId} );
+   $licView->fromScarlet($rec{fromScarlet});
    dlog( $licView->toString );
 
    if ( defined $rec{usedQuantity} ) {
@@ -1379,8 +1355,6 @@ sub attemptLicenseAllocationMipsMsuGartner {
  my ( $self, $freePoolData, $myCapType, $machineLevel ) = @_;
  dlog("begin attemptLicenseAllocationMIPS");
  dlog( "machineLevel=" . $machineLevel );
-
- #	dlog( "hwSpecificOnly=" . $hwSpecificOnly );
 
  return undef
    if $self->installedSoftwareReconData->mtType ne 'MAINFRAME';
@@ -2049,6 +2023,7 @@ sub queryFreePoolData {
    usedQuantity
    machineLevel
    hId
+   fromScarlet
  );
  my $query = '
 select
@@ -2067,7 +2042,8 @@ select
        ul.id,
        ul.used_quantity,
        r.machine_level,
-       h.id 
+       h.id,
+       \'NO\'
 from 
       license l join license_sw_map lsm 
         on lsm. license_id = l. id 
@@ -2170,7 +2146,6 @@ sub getInstalledSoftwareReconData {
   $installedSoftwareReconData->rTypeId( $rec{rTypeId} );
   $installedSoftwareReconData->rParentInstSwId( $rec{rParentInstSwId} );
   $installedSoftwareReconData->rMachineLevel( $rec{rMachineLevel} );
-##		$installedSoftwareReconData->scopeName( $rec{scopeName} );
   $installedSoftwareReconData->rIsManual( $rec{rIsManual} );
 
   $installedSoftwareReconData->processorCount( $rec{slProcCount} );
@@ -3011,37 +2986,55 @@ sub openAlertUnlicensedSoftware {
    $alert->save( $self->connection );
    $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection ) if ( $alert->type eq 'SCOPE' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection ) if ( $alert->type eq 'IBM' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection ) if ( $alert->type eq 'ISVPRIO' );
-   Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection ) if ( $alert->type eq 'ISVNOPRIO' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+     if ( $alert->type eq 'SCOPE' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+     if ( $alert->type eq 'IBM' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+     if ( $alert->type eq 'ISVPRIO' );
+   Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+     if ( $alert->type eq 'ISVNOPRIO' );
   }
   elsif ( $oldAlert->type ne $alert->type ) {
-			$alert->save( $self->connection );
-			$self->recordAlertUnlicensedSoftwareHistory($oldAlert);
+   $alert->save( $self->connection );
+   $self->recordAlertUnlicensedSoftwareHistory($oldAlert);
 
-			if (( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' )) { # when changing from ISVPRIO to ISVNOPRIO or vice versa,
-																			# cause code shouldn't be reset
-				dlog("Alert type has changed, creating a new history record and resetting the cause code.");
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			} else {
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-				Recon::CauseCode::updateCCtable ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-			}
-		}
-	}
-	else {
-		$alert->creationTime( currentTimeStamp() );
-		$alert->save( $self->connection );
-		
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISCOPE", $self->connection) if ( $alert->type eq 'SCOPE' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWIBM", $self->connection) if ( $alert->type eq 'IBM' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVPR", $self->connection) if ( $alert->type eq 'ISVPRIO' );
-		Recon::CauseCode::resetCCcode ( $alert->id, "SWISVNPR", $self->connection) if ( $alert->type eq 'ISVNOPRIO' );
-	}
+   if ( ( $oldAlert->type !~ '^ISV' ) || ( $alert->type !~ '^ISV' ) )
+   {    # when changing from ISVPRIO to ISVNOPRIO or vice versa,
+        # cause code shouldn't be reset
+    dlog(
+"Alert type has changed, creating a new history record and resetting the cause code."
+    );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+      if ( $alert->type eq 'SCOPE' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+      if ( $alert->type eq 'IBM' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+      if ( $alert->type eq 'ISVPRIO' );
+    Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+      if ( $alert->type eq 'ISVNOPRIO' );
+   }
+   else {
+    Recon::CauseCode::updateCCtable( $alert->id, "SWISVPR", $self->connection )
+      if ( $alert->type eq 'ISVPRIO' );
+    Recon::CauseCode::updateCCtable( $alert->id, "SWISVNPR", $self->connection )
+      if ( $alert->type eq 'ISVNOPRIO' );
+   }
+  }
+ }
+ else {
+  $alert->creationTime( currentTimeStamp() );
+  $alert->save( $self->connection );
+
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISCOPE", $self->connection )
+    if ( $alert->type eq 'SCOPE' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWIBM", $self->connection )
+    if ( $alert->type eq 'IBM' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVPR", $self->connection )
+    if ( $alert->type eq 'ISVPRIO' );
+  Recon::CauseCode::resetCCcode( $alert->id, "SWISVNPR", $self->connection )
+    if ( $alert->type eq 'ISVNOPRIO' );
+ }
 
  dlog("end openAlertUnlicensedSoftware");
 }

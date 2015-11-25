@@ -14,4 +14,5 @@
 	<property name="usedQuantity" type="scalar" equals="true" />
 	<property name="lparName" type="scalar" equals="true" />
 	<property name="environment" type="scalar" equals="true" />
+	<property name="fromScarlet" type="scalar" equals="true" />
 </class>

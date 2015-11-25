@@ -20,6 +20,7 @@ sub new {
         ,_usedQuantity => undef
         ,_lparName => undef
         ,_environment => undef
+        ,_fromScarlet => undef
     };
     bless $self, $class;
     return $self;
@@ -120,6 +121,13 @@ sub equals {
     $equal = 1 if (!defined $self->environment && !defined $object->environment);
     return 0 if $equal == 0;
 
+    $equal = 0;
+    if (defined $self->fromScarlet && defined $object->fromScarlet) {
+        $equal = 1 if $self->fromScarlet eq $object->fromScarlet;
+    }
+    $equal = 1 if (!defined $self->fromScarlet && !defined $object->fromScarlet);
+    return 0 if $equal == 0;
+
     return 1;
 }
 
@@ -207,6 +215,12 @@ sub environment {
     return $self->{_environment};
 }
 
+sub fromScarlet {
+    my $self = shift;
+    $self->{_fromScarlet} = shift if scalar @_ == 1;
+    return $self->{_fromScarlet};
+}
+
 sub toString {
     my ($self) = @_;
     my $s = "[LicenseView] ";
@@ -278,6 +292,11 @@ sub toString {
     $s .= "environment=";
     if (defined $self->{_environment}) {
         $s .= $self->{_environment};
+    }
+    $s .= ",";
+    $s .= "fromScarlet=";
+    if (defined $self->{_fromScarlet}) {
+        $s .= $self->{_fromScarlet};
     }
     $s .= ",";
     chop $s;
