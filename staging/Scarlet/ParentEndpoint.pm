@@ -3,8 +3,9 @@ package Scarlet::ParentEndpoint;
 use strict;
 use Base::Utils;
 use URI;
+use Scarlet::ScarletEndpoint;
 
-our @ISA = qw(ScarletEndpoint);
+our @ISA = qw(Scarlet::ScarletEndpoint);
 
 sub new {
  my ($class) = @_;
@@ -24,7 +25,7 @@ sub guid {
 
 sub httpGet {
  my ( $self, $guid ) = @_;
- $self->guid = $guid;
+ $self->guid($guid);
 
  $self->SUPER::httpGet;
 }

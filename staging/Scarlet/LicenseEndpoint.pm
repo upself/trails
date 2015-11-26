@@ -3,6 +3,7 @@ package Scarlet::LicenseEndPoint;
 use strict;
 use Base::Utils;
 use URI;
+use Scarlet::ScarletEndpoint;
 
 our @ISA = qw(ScarletEndpoint);
 
@@ -31,8 +32,8 @@ sub guid {
 
 sub httpGet {
  my ( $self, $accountNo, $guid ) = @_;
- $self->accountNo = $accountNo;
- $self->guid      = $guid;
+ $self->accountNo($accountNo);
+ $self->guid($guid);
 
  $self->SUPER::httpGet;
 
@@ -71,10 +72,10 @@ sub parseJson {
  my $licenseId = [];
 
  foreach my $s ( @{$skus} ) {
-  push $licenseId, $s->{'licenseIds'};
+  push @{$licenseId}, $s->{'licenseIds'};    
  }
 
- return $licenseId;    
+ return $licenseId;
 }
 
 1;

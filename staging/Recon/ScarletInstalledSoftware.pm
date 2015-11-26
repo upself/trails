@@ -209,7 +209,6 @@ sub setGuidsFromScarlet {
 
   my $scarletGuids = $self->guidEndpoint->httpGet($swcmLicenseId);
 
-  dlog("GET $uri");
   dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
    next if ( $excludeSelf && ( $id eq $guid ) );
@@ -240,6 +239,8 @@ sub traverseUp {
   $self->cachedParentGuids->{$id} = 1;
 
   my $scarletParentsGuids = $self->parentEndpoint->httpGet($id);
+  $scarletParentsGuids=[]
+      if(!defined $scarletParentsGuids);
 
   $self->traverseUp($scarletParentsGuids);
 

@@ -709,16 +709,15 @@ sub attemptLicenseAllocation {
  }
 
  ###Get license free pool by customer id and software id.
- my $freePoolData = undef
+ my $freePoolData = undef;
  if($through eq 'legacy'){
    $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }else{
    my $scarletLicSev = new Scarlet::LicenseService();
    $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData->scopeName, 
-    $self->installedSoftwareReconData->cId, $self->installedSoftwareReconData->
-    );
-   
+    $self->installedSoftwareReconData->cId, $self->installedSoftware->id);
  }
+ 
  if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
   ###License type: GARTNER MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =

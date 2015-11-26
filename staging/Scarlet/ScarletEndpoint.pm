@@ -1,4 +1,4 @@
-package Recon::ScarletEndpoint;
+package Scarlet::ScarletEndpoint;
 
 use strict;
 use Base::Utils;
@@ -45,7 +45,7 @@ sub convertArrayToHash {
 
  my $hash = {};
  foreach my $i ( @{$array} ) {
-  $hash->{$id} = 1;
+  $hash->{$i} = 1;
  }
  return $hash;
 }
@@ -57,20 +57,22 @@ sub httpGet {
  $ua->timeout(10);
  $ua->env_proxy;
 
- my $response = $ua->get( $self->assembleURI );
+ my $uri = $self->assembleURI;
+ dlog("GET $uri");
+ my $response = $ua->get($uri);    
 
  my $result = undef;
  if ( $response->is_success ) {
   $self->outOfService(0);
   my $json = new JSON;
   try {
-   local $SIG{__DIE__};    # No sigdie handler
+   local $SIG{__DIE__};            # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
 
    $result = $self->parseJson($jsObj)
      if ( $self->validateJsonFeedback($jsObj) );
 
-    }    
+    }
     catch { wlog('no data found.') };
  }
  else {
