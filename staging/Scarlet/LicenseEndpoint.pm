@@ -1,11 +1,11 @@
-package Scarlet::LicenseEndPoint;
+package Scarlet::LicenseEndpoint;
 
 use strict;
 use Base::Utils;
 use URI;
 use Scarlet::ScarletEndpoint;
 
-our @ISA = qw(ScarletEndpoint);
+our @ISA = qw(Scarlet::ScarletEndpoint);
 
 sub new {
  my ($class) = @_;
@@ -40,7 +40,7 @@ sub httpGet {
 }
 
 sub assembleURI {
- my ($self) = @_;
+ my $self = shift;
 
  my $uri = URI->new( $self->api );
  $uri->query_form(
@@ -54,10 +54,12 @@ sub assembleURI {
 sub validateJsonFeedback {
  my ( $self, $jsonObj ) = @_;
 
- if (( defined $jsonObj->{'match'} )
-  && ( $jsonObj->{'match'} eq 'true' )
+ if (
+  ( defined $jsonObj->{'match'} )    
+  && ( $jsonObj->{'match'} eq 'true' || $jsonObj->{'match'} == 1 )
   && ( defined $jsonObj->{'skus'} )
-  && ( scalar @{ $jsonObj->{'skus'} } >= 1 ) )
+  && ( scalar @{ $jsonObj->{'skus'} } >= 1 )
+   )
  {
   return 1;
  }
@@ -72,9 +74,10 @@ sub parseJson {
  my $licenseId = [];
 
  foreach my $s ( @{$skus} ) {
-  push @{$licenseId}, $s->{'licenseIds'};    
+  foreach my $extSrcId ( @{ $s->{'licenseIds'} } ) {
+   push @{$licenseId}, 'SWCM_' . $extSrcId;
+  }
  }
-
  return $licenseId;
 }
 

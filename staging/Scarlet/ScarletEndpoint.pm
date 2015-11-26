@@ -93,7 +93,7 @@ sub parseJson {
 }
 
 sub assembleURI {
- return '';
+ return 'need/rewrite/';
 }
 
 1;

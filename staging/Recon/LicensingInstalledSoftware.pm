@@ -311,10 +311,10 @@ sub reconcile {
    = $self->attemptLicenseAllocation('legacy');
 
  if(!defined $licsToAllocate){
-   (
-    $licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
-    $allocMethodId, $freePoolData
-   ) = $self->attemptLicenseAllocation('scarlet');
+   dlog('start attempt license allocation through scarlet');
+   ($licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
+    $allocMethodId, $freePoolData) = $self->attemptLicenseAllocation('scarlet');
+   dlog('end attempt license allocation through scarlet');
  }
 
  if ( defined $licsToAllocate ) {
@@ -714,8 +714,8 @@ sub attemptLicenseAllocation {
    $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }else{
    my $scarletLicSev = new Scarlet::LicenseService();
-   $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData->scopeName, 
-    $self->installedSoftwareReconData->cId, $self->installedSoftware->id);
+   $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
+                 $self->installedSoftware->id);
  }
  
  if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
@@ -2451,13 +2451,6 @@ sub queryReconInstalledSoftwareBaseData {
         with ur
 	';
  return ( 'reconInstalledSoftwareBaseData', $query, \@fields );
-
- #	            left outer join schedule_f sf on
- #                sf.customer_id = sl.customer_id
- #                and sf.software_id = is.software_id
- #                and sf.status_id = 2
- #            left outer join scope scope on
- #                scope.id = sf.scope_id
 
 }
 

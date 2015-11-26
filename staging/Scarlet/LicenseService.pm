@@ -30,46 +30,66 @@ sub licenseEndpoint {
 }
 
 sub getFreePoolData {
- my $self                = shift;
- my $scopeName           = shift;
- my $customerId          = shift;
- my $installedSoftwareId = shift;
+ my $self                       = shift;
+ my $installedSoftwareReconData = shift;
+ my $customer                   = shift;
+ my $installedSoftwareId       = shift;    
 
  dlog("begin scarlet.getFreePoolData");
 
  my %data = ();
  my %machineLevel;
 
- my $customer = new BRAVO::OM::Customer();
- $customer->customerId($customerId);
- $customer->getByBizKey( $self->connection );
-
  my $sIs  = new Recon::ScarletInstalledSoftware();
  my $guid = $sIs->getGuiIdByInstalledSoftwareId($installedSoftwareId);
 
  my $licenseIds =
-   $self->licenseEndpoint->httpGet( $customer->accountNumber, $guid );    
+   $self->licenseEndpoint->httpGet( $customer->accountNumber, $guid );
+ if ( !defined $licenseIds ) {
+  $licenseIds = [];
+ }
+
+ dlog( scalar @{$licenseIds} . ' license(s) found from scarlet.' );
+
+ my $foundQty = scalar @{$licenseIds};
+ return \%data
+   if ( $foundQty <= 0 );
+
+ my $counter = 0;
+ my $wherestmt;
+ foreach my $extSrcId ( @{$licenseIds} ) {
+  $counter++;
+  if ( $counter < $foundQty ) {
+   $wherestmt .= "'$extSrcId',";
+  }
+  else {
+   $wherestmt .= "'$extSrcId'";
+  }
+ }
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryFreePoolData($scopeName) );
+  $self->queryFreePoolData(
+   $installedSoftwareReconData->scopeName, $wherestmt
+  )
+ );
  my $sth = $self->connection->sql->{freePoolData};
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
     @{ $self->connection->sql->{freePoolDataFields} } );
 
- $sth->execute( @{$licenseIds} );
+ $sth->execute();
 
  while ( $sth->fetchrow_arrayref ) {
   dlog("lId =$rec{lId}");
 
   ###I should centralize this check
-  if ( defined $self->customer->swComplianceMgmt
-   && $self->customer->swComplianceMgmt eq 'YES' )
+  if ( defined $customer->swComplianceMgmt
+   && $customer->swComplianceMgmt eq 'YES' )
   {
-   if ( defined $self->installedSoftwareReconData->scopeName ) {
+   if ( defined $installedSoftwareReconData->scopeName ) {
 
-    if ($self->installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
-     || $self->installedSoftwareReconData->scopeName eq 'CUSTOIBMM' )
+    if ($installedSoftwareReconData->scopeName eq 'CUSTOCUSTM'
+     || $installedSoftwareReconData->scopeName eq 'CUSTOIBMM' )
     {
      next if $rec{ibmOwned} == 1;
     }
@@ -139,32 +159,28 @@ sub getFreePoolData {
   $validation->validationCode(1);
 
   ###Validate license in scope
-  $validation->isLicInFinRespScope( $self->customer->swFinancialResponsibility,
+  $validation->isLicInFinRespScope( $customer->swFinancialResponsibility,
    $licView->ibmOwned, undef );
   $validation->validateMaintenanceExpiration(
-   $self->installedSoftwareReconData->mtType,
+   $installedSoftwareReconData->mtType,
    $licView->capType, 0, $licView->expireAge, undef, undef );
   $validation->validatePhysicalCpuSerialMatch( $licView->capType,
-   $licView->licenseType, $self->installedSoftwareReconData->hSerial,
+   $licView->licenseType, $installedSoftwareReconData->hSerial,
    $licView->cpuSerial, undef, undef, 0 );
   $validation->validateLparNameMatch(
-   $licView->capType,
-   $licView->licenseType,
-   $licView->lparName,
-   $self->installedSoftwareReconData->slName,
-   $self->installedSoftwareReconData->hlName,
-   undef,
-   undef,
-   0
+   $licView->capType,                   $licView->licenseType,
+   $licView->lparName,                  $installedSoftwareReconData->slName,
+   $installedSoftwareReconData->hlName, undef,
+   undef,                               0
   );
   $validation->validateProcessorChip( 0, $licView->capType,
-   $self->installedSoftwareReconData->mtType,
+   $installedSoftwareReconData->mtType,
    1, undef );
 
   ###Check pool
   if ( $licView->pool == 0 ) {
    ###License is not poolable, must equal customer
-   if ( $licView->cId != $self->customer->id ) {
+   if ( $licView->cId != $customer->id ) {
     dlog("License is not poolable and does not equal the customer id");
     $validation->validationCode(0);
    }
@@ -185,6 +201,7 @@ sub getFreePoolData {
 sub queryFreePoolData {
  my $self      = shift;
  my $scopeName = shift;
+ my $inStmt    = shift;
 
  my @fields = qw(
    lId
@@ -244,7 +261,7 @@ from
       left outer join hardware h 
            on h. id = hl. hardware_id 
       where
-            l.ext_src_id in (?)
+            l.ext_src_id in (' . $inStmt . ')
             and ((l.cap_type in( 2, 13, 14, 17, 34, 48, 49 ) and l.try_and_buy = 0) or ( l.cap_type in ( 5, 9, 70 ) ) )
             and l.lic_type != \'SC\'   
             and l.status = \'ACTIVE\'
