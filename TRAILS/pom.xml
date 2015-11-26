@@ -252,16 +252,6 @@
 			<version>3.0.3</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>displaytag</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>bluepage-jtk</artifactId>
-			<version>3.0.3</version>
-		</dependency>
-		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
@@ -339,31 +329,14 @@
 			<version>1.8.4</version>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<!--Add the external jar files dependency by Larry for temp Jenkins Maven 
 			build testing -->
 		<dependency>
 			<groupId>com.ibm</groupId>
-			<artifactId>bluepages</artifactId>
-			<version>3.0.3</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bpjtk-v3.0.3_b20090914.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>displaytag</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/Displaytag.jar</systemPath>
-		</dependency>
-		<!--Add the external jar files dependency by Larry for temp Jenkins Maven 
-			build testing -->
-		<dependency>
-			<groupId>com.ibm.db2</groupId>
-			<artifactId>jdbc</artifactId>
-			<version>4.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc4.jar</systemPath>
+			<artifactId>db2jcc4</artifactId>
+			<version>3.65.131</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
