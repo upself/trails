@@ -12,21 +12,6 @@ else{
  print "Change Directory to $HOME_DIR successfully.\n";
 }
 
-
-
-my $ua = LWP::UserAgent->new;
-$ua->timeout(300);
-my $response = $ua->get($url);
-
-if ($response->is_error) {
-    printf "[%d] %s\n", $response->code, $response->message;
-
-    # record the timeout
-    if ($response->code == HTTP::Status::HTTP_REQUEST_TIMEOUT) {
-        ...
-    }
-}
-
 #Load required modules
 use lib '/opt/staging/v2';  
 use strict;
@@ -42,8 +27,6 @@ use HealthCheck::Delegate::EventLoaderDelegate;
 use Config::Properties::Simple;
 use HealthCheck::Common::MetaRule;
 use HealthCheck::EventCheckRules::FileSystem::SwMultiReportFileAge;
-use LWP::Agent;
-use HTTP::Status ();
 
 #Globals
 my $eventRuleDefinitionFile   = $HOME_DIR . "/config/eventCheckRuleDefinition.properties";
@@ -2086,21 +2069,13 @@ sub eventRuleCheck{
 				 
 				   $processedRuleMessage = $metaRuleMessage;#Reset to metaRuleMessage for every loop
                    
-				   my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
+				   my $WEBAPP_CURL_COMMAND = "/opt/staging/v2/SystemSupport/Shellscripts/connectionTester.sh \@url";
                    my $processedCURL = $WEBAPP_CURL_COMMAND;#Reset CURL initial value for every loop
 
 				   my @webAppsCheckConfigValuesArrayItemArray = split(/\~/,$webAppsCheckConfigValuesArrayItem);
 
 				   my $webAppName = trim($webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX]);#remove spaces
                    print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - webAppName: {$webAppName}\n";
-				  
-				   my $connectTimeout = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX];
-				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - connectTimeout: {$connectTimeout}\n";
-				   $processedCURL =~ s/\@connectTimeout/$connectTimeout/g;#replace @connectTimeout with connect timeout value - for example: 15
-				  
-				   my $maxTime = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX];
-				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - maxTime: {$maxTime}\n";
-				   $processedCURL =~ s/\@maxTime/$maxTime/g;#replace @maxTime with maxTime value - for example: 20
 				  
 				   my $url = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_URL_INDEX];
 				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - url: {$url}\n";
@@ -2118,8 +2093,7 @@ sub eventRuleCheck{
                      $webReturnMsg =~ s/[\r\n]//g;#Remove \r\n chars for HTML data line. Please note that HTML data line default uses '\r\n' as the ending chars. 
 					 print LOG "Web Application Running Status Check Monitoring - Web Return Message: {$webReturnMsg}\n";
 					
-					 if($webReturnMsg =~ /$HTTP_OK_CODE/#Judge if the web return message includes HTTP_OK_CODE '200'
-					  ||$webReturnMsg =~ /$HTTP_FORBIDDEN_CODE/){#Judge if the web return message includes HTTP_FORBIDDEN_CODE '403'
+					 if($webReturnMsg ~= 'CONNECTED*'){
                        $webAppRunningFlag = $TRUE;
 					   last;
 					 }
@@ -2127,81 +2101,15 @@ sub eventRuleCheck{
 
                    if($webAppRunningFlag == $TRUE){
                      print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n"; 
-					 
-					 #For Testing Purpose on TAP2 Server only Start
-					 #For TAP2 Testing Server, whatever there are actual webApp Error Messages or not, always generates webApp Error Messages about Alert Email Content for testing purpose 
-					 if($SERVER_MODE eq $TAP2){
-                       $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-					   push @webAppErrorMessageArray, $processedRuleMessage;
-                       
-                       #Please note that the following codes have been added for Testing Purpose on TAP2 Server only
-					   #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					   if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
-					    &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
-					     ){
-
-					     #Switch to the target perl execution folder - '/opt/staging/v2/'  
-					     chdir $loaderExistingPath;
-		                 print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
-                       
-					     #Check the current folder information	 
-					     my @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
-					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
-					       chomp($pwdReturnMsg);
-					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
-					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
-
-					     my $restartWebAppExecCmd;#var used to to store restart web application execution command
-					     if($webAppName eq $BRAVO_WEB_APP){
-					       $restartWebAppExecCmd = $selfHealingEngineRestartBravoWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_BRAVO_WEB_APPLICATION ^^^^^^^^^"
-					     }#end if($webAppName eq $BRAVO_WEB_APP)
-					     else{
-					       $restartWebAppExecCmd = $selfHealingEngineRestartTrailsWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_TRAILS_WEB_APPLICATION ^^^^^^^^^"
-					     }#end else
-
-					     my $restartWebAppCmdExecResult = system($restartWebAppExecCmd);
-                         if($restartWebAppCmdExecResult == 0){
-					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed successfully.\n";
-					       $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationSuccessMessage;
-						   $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-						   push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
-						   print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
-					     }#end if($restartWebAppCmdExecResult == 0)
-					     else{
-					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed failed.\n";
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationFailMessage;
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@3/"The Restart Web Application Unix Command: {$restartWebAppExecCmd} has been executed failed."/g;
-                           push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
-                           print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
-					     }#end else
-
-                         #Switch back to the HME home folder - '/home/liuhaidl/working/scripts'  
-					     chdir $HOME_DIR;
-		                 print LOG "Web Application Running Status Check Monitoring - The HealthCheck and Monitoring Engine Home Folder: {$HOME_DIR} has been switched back.\n";
-                      
-					     #Check the current folder information	 
-					     @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
-					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
-					       chomp($pwdReturnMsg);
-					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
-					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
-					   }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
-                       #The Self Healing Engine Restart Web Application Operation Automatically Ended here
-					 }#end if($SERVER_MODE eq $TAP2)
-					 #For Testing Purpose on TAP2 Server only End
-				   }#end if($webAppRunningFlag == $TRUE)
+				   }
 				   else{
 					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					 push @webAppErrorMessageArray, $processedRuleMessage;
 				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
 					 
 					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					 if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
-					  &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
-					   ){
+					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on { 
 
-					   #Switch to the target perl execution folder - '/opt/staging/v2/'  
 					   chdir $loaderExistingPath;
 		               print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
                        
