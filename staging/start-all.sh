@@ -24,6 +24,9 @@ then
 elif [ "$SHOST" = "ralbz2088" ]
 then
        . /home/trails/sqllib/db2profile
+elif [ "$SHOST" = "ralbz001063" ]
+then
+       . /home/trails/sqllib/db2profile
 elif [ "$SHOST" = "b03cxnp15029" ]
 then
        . /home/db2inst2/sqllib/db2profile
