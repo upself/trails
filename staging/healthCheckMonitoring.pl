@@ -2093,7 +2093,7 @@ sub eventRuleCheck{
                      $webReturnMsg =~ s/[\r\n]//g;#Remove \r\n chars for HTML data line. Please note that HTML data line default uses '\r\n' as the ending chars. 
 					 print LOG "Web Application Running Status Check Monitoring - Web Return Message: {$webReturnMsg}\n";
 					
-					 if($webReturnMsg ~= 'CONNECTED*'){
+					 if($webReturnMsg =~ 'CONNECTED*'){
                        $webAppRunningFlag = $TRUE;
 					   last;
 					 }
@@ -2108,7 +2108,7 @@ sub eventRuleCheck{
 				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
 					 
 					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on { 
+					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON){}#Self Healing Engine Restart Web Application Feature has been turn on { 
 
 					   chdir $loaderExistingPath;
 		               print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
@@ -2871,6 +2871,7 @@ sub loaderStart{
 
 #This method is used to set DB2 ENV path
 sub setDB2ENVPath{
+		$DB_ENV= 'home/trails/sqllib/db2profile';
     if($SERVER_MODE eq $TAP){#TAP Server
       $DB_ENV = '/db2/tap/sqllib/db2profile';
     }

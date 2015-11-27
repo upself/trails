@@ -80,13 +80,23 @@ sub ageDaysDelete {
     my $self = shift;
     return $self->{_cfg}->getProperty('ageDaysDelete');
 }
+sub db2Profile{
+    my $self = shift;
+    return $self->{_cfg}->getProperty('db2Profile');
+}
+sub LogFile {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('LogFile');
+}
+sub allowedOperations {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('allowedOperations');
+}
 
-#Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
 sub nonDebugLogPath {
     my $self = shift;
     return $self->{_cfg}->getProperty('nonDebugLogPath');
 }
-#Added by Larry for System Support And Self Healing Service Components - Phase 3 End
 
 ###Returns an array of Test Bank Account names
 sub testBankAccounts {

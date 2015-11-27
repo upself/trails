@@ -11,29 +11,14 @@ use Base::ConfigManager;
 use Sys::Hostname;
 
 my $HOSTNAME= hostname;
-my $selfHealingEngineFile         = "./selfHealingEngine.pl";
 my $systemSupportEnginePidFile    = "/tmp/systemSupportEngine.pid";
 my $systemSupportEngineConfigFile = "./config/systemSupportEngine.properties";
-my @operationQueueRecords = ();
-my $operationQueueRecordsCnt;#var used to store the count of Operation Queue Records 
 my $currentTimeStamp;
 
 #TIMESTAMP STYLE
 my $STYLE1 = 1;#YYYY-MM-DD-HH.MM.SS For Example: 2013-04-18-10.30.33
 my $STYLE2 = 2;#YYYYMMDDHHMMSS For Example: 20130418103033
 my $STYLE3 = 3;#YYYYMMDD For Example: 20130618 #Added by Larry for System Support And Self Healing Service Components - Phase 3
-
-#Operation Record Data Indexes Definition
-my $OPERATION_ID_INDEX                       = 0;
-my $OPERATION_NAME_CODE_INDEX                = 1;
-my $OPERATION_NAME_DESCRIPTION_INDEX         = 2;
-my $OPERATION_PARMS_INDEX                    = 3;
-my $OPERATION_STATUS_INDEX                   = 4;
-my $OPERATION_USER_INDEX                     = 5;
-
-my $operationId;
-my $operationNameCode;
-my $operationParameters;
 
 ###Make a daemon.
 umask 0;
@@ -51,9 +36,7 @@ sub main{
 }
 
 sub init{
-	#load config
 	my $config   = Base::ConfigManager->instance($systemSupportEngineConfigFile);
-	#setup db2 environment
 	setupDB2Env($config->db2Profile);
 }
 
@@ -61,17 +44,18 @@ sub process{
 	my $config   = Base::ConfigManager->instance($systemSupportEngineConfigFile);
 	my $SleepPeriod = trim($config->sleepPeriod);
 	my $LogFile=get_log_path($config->LogFile);
+my @operationQueueRecords = ();
 
 	while (1){
 		my $staging_connection = Database::Connection->new('staging');      
 		
-		open(LOG,">>$LogFile");#Open Log File
+		open(LOG,">>$LogFile");
 
 		eval{
 
 
-			@operationQueueRecords = getOperations($staging_connection);
-			$operationQueueRecordsCnt = scalar(@operationQueueRecords);
+			@operationQueueRecords = getOperations($staging_connection,$config);
+			my $operationQueueRecordsCnt = scalar(@operationQueueRecords);
 			if($operationQueueRecordsCnt > 0){
 				print LOG "There are $operationQueueRecordsCnt new Operations which need to be processed in the new round on $HOSTNAME Server.\n";
 				print LOG "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
@@ -83,14 +67,14 @@ sub process{
 			foreach my $operationQueueRecord (@operationQueueRecords){
 			#Set the finalPerlScriptExecutionCommand to empty string before every command to run
 			my $finalPerlScriptExecutionCommand = "";
-			$finalPerlScriptExecutionCommand.=$selfHealingEngineFile;
-			$operationId = $operationQueueRecord->[$OPERATION_ID_INDEX];
+			$finalPerlScriptExecutionCommand.="./selfHealingEngine.pl";
+			my $operationId = $operationQueueRecord->[0];
 			print LOG "Operation ID: {$operationId}\n";
 			$finalPerlScriptExecutionCommand.=" $operationId";
-			$operationNameCode = $operationQueueRecord->[$OPERATION_NAME_CODE_INDEX];
+			my $operationNameCode = $operationQueueRecord->[1];
 			print LOG "Operation Name Code: {$operationNameCode}\n";
 			$finalPerlScriptExecutionCommand.=" $operationNameCode";
-			$operationParameters = $operationQueueRecord->[$OPERATION_PARMS_INDEX];
+			my $operationParameters = $operationQueueRecord->[3];
 			print LOG "Operation Parameters: {$operationParameters}\n";
 			$operationParameters =~ s/ /\~/g;
 			print LOG "Converted Operation Parameters to replace char ' ' with '~' : {$operationParameters}\n";
@@ -120,9 +104,10 @@ sub get_log_path{
 }
 
 sub getOperations{
-	($staging_connection) = @_;
+	my ($staging_connection,$config) = @_;
+my @operationQueueRecords = ();
 	@operationQueueRecords = getAllOperationQueueNotDoneOperationsFunction($staging_connection);
-	@operationQueueRecords = filterAllOperationQueueNotDoneOperationsForCertainServer($records);
+	@operationQueueRecords = filterAllOperationQueueNotDoneOperationsForCertainServer(\@operationQueueRecords,$config);
 	return @operationQueueRecords;
 }
 
@@ -151,7 +136,8 @@ sub getAllOperationQueueNotDoneOperationsFunction{
 }
 
 sub filterAllOperationQueueNotDoneOperationsForCertainServer{
-	my $operationQueueRecordsRef = shift;
+	my ($operationQueueRecordsRef ,$config) = @_;
+	my @allowedOperations = split(',',$config->allowedOperations);
 	my @operationQueueRecords = @$operationQueueRecordsRef;
 	my $serverMode = shift;
 	my $operationQueueRecordRef;
@@ -166,17 +152,18 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	
 	foreach $operationQueueRecordRef (@operationQueueRecords){
 		@operationQueueRecord = ();
-		$operationId = $operationQueueRecordRef->[$OPERATION_ID_INDEX];
+		$operationId = $operationQueueRecordRef->[0];
 	push @operationQueueRecord, $operationId;#Operation ID
-	$operationNameCode = $operationQueueRecordRef->[$OPERATION_NAME_CODE_INDEX];
+	$operationNameCode = $operationQueueRecordRef->[1];
 		push @operationQueueRecord, $operationNameCode;#Operation Name Code
-		push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_NAME_DESCRIPTION_INDEX];
-		push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_PARMS_INDEX];
-		push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_STATUS_INDEX];
-		push @operationQueueRecord, $operationQueueRecordRef->[$OPERATION_USER_INDEX];
-		
+		push @operationQueueRecord, $operationQueueRecordRef->[2];
+		push @operationQueueRecord, $operationQueueRecordRef->[3];
+		push @operationQueueRecord, $operationQueueRecordRef->[4];
+		push @operationQueueRecord, $operationQueueRecordRef->[5];
+		if ( first { $_ == $operationNameCode } @allowedOperations ) {
 
- # pokud je operace ok     push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
+  push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
+	}
 }
 
 $filterOperationQueueRecordsForCertainServerCnt = scalar(@filterOperationQueueRecordsForCertainServer);
