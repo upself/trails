@@ -20,7 +20,7 @@ sub new {
         ,_usedQuantity => undef
         ,_lparName => undef
         ,_environment => undef
-        ,_fromScarlet => undef
+        ,_from => undef
     };
     bless $self, $class;
     return $self;
@@ -122,10 +122,10 @@ sub equals {
     return 0 if $equal == 0;
 
     $equal = 0;
-    if (defined $self->fromScarlet && defined $object->fromScarlet) {
-        $equal = 1 if $self->fromScarlet eq $object->fromScarlet;
+    if (defined $self->from && defined $object->from) {
+        $equal = 1 if $self->from eq $object->from;
     }
-    $equal = 1 if (!defined $self->fromScarlet && !defined $object->fromScarlet);
+    $equal = 1 if (!defined $self->from && !defined $object->from);
     return 0 if $equal == 0;
 
     return 1;
@@ -215,10 +215,10 @@ sub environment {
     return $self->{_environment};
 }
 
-sub fromScarlet {
+sub from {
     my $self = shift;
-    $self->{_fromScarlet} = shift if scalar @_ == 1;
-    return $self->{_fromScarlet};
+    $self->{_from} = shift if scalar @_ == 1;
+    return $self->{_from};
 }
 
 sub toString {
@@ -294,9 +294,9 @@ sub toString {
         $s .= $self->{_environment};
     }
     $s .= ",";
-    $s .= "fromScarlet=";
-    if (defined $self->{_fromScarlet}) {
-        $s .= $self->{_fromScarlet};
+    $s .= "from=";
+    if (defined $self->{_from}) {
+        $s .= $self->{_from};
     }
     $s .= ",";
     chop $s;

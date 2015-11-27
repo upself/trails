@@ -714,7 +714,7 @@ sub attemptLicenseAllocation {
    $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }else{
    my $scarletLicSev = new Scarlet::LicenseService();
-   $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
+   $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
                  $self->installedSoftware->id);
  }
  
@@ -899,7 +899,7 @@ sub getFreePoolData {
    $licView->lparName( $rec{lparName} );
    $licView->environment( $rec{lEnvironment} );
    $licView->extSrcId( $rec{extSrcId} );
-   $licView->fromScarlet($rec{fromScarlet});
+   $licView->from($rec{from});
    dlog( $licView->toString );
 
    if ( defined $rec{usedQuantity} ) {
@@ -2026,7 +2026,7 @@ sub queryFreePoolData {
    usedQuantity
    machineLevel
    hId
-   fromScarlet
+   from
  );
  my $query = '
 select
@@ -2046,7 +2046,7 @@ select
        ul.used_quantity,
        r.machine_level,
        h.id,
-       \'NO\'
+       \'legacy\'
 from 
       license l join license_sw_map lsm 
         on lsm. license_id = l. id 

@@ -114,7 +114,7 @@ sub getFreePoolData {
    $licView->lparName( $rec{lparName} );
    $licView->environment( $rec{lEnvironment} );
    $licView->extSrcId( $rec{extSrcId} );
-   $licView->fromScarlet( $rec{fromScarlet} );
+   $licView->from( $rec{from} );
    dlog( $licView->toString );
 
    if ( defined $rec{usedQuantity} ) {
@@ -221,7 +221,7 @@ sub queryFreePoolData {
    usedQuantity
    machineLevel
    hId
-   fromScarlet
+   from
  );
  my $query = '
 select
@@ -241,7 +241,7 @@ select
        ul.used_quantity,
        r.machine_level,
        h.id,
-       \'YES\' 
+       \'scarlet\' 
 from 
       license l 
       left outer join used_license ul
