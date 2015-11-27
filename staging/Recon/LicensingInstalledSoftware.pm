@@ -141,7 +141,7 @@ sub recon {
      . ' rTypeId='
      . $self->installedSoftwareReconData->rTypeId );
 
-  #Perform scarlet allocation if it's legacy allocation and auto reconcilation.
+  #Try scarlet allocation if it's legacy allocation and auto reconcilation.
   if ( $self->installedSoftwareReconData->rTypeId ==
       $reconcileTypeMap->{'Automatic license allocation'}
    && $validation->scarletAllocation eq 'NO' )
@@ -173,10 +173,10 @@ sub recon {
 
   if ( $returnCode == 1 ) {
    $self->closeAlertUnlicensedSoftware(1);
-
+  
+   #try scarlet allocation to see if there's more beneift. 
    $scarletInstalledSoftware->tryToReconcile( $self->installedSoftware )
-     if ( defined $scarletInstalledSoftware )
-     ;    # added by myyysha - some reconciles do not init scarlet class
+     if ( defined $scarletInstalledSoftware ); # added by myyysha - some reconciles do not init scarlet class
   }
   elsif ( $returnCode == 2 ) {
    return $returnCode;
@@ -324,14 +324,24 @@ sub reconcile {
    $reconcileTypeId,             $machineLevel,
    $self->installedSoftware->id, $allocMethodId
   );
+  
+  foreach my $lId ( keys %{$licsToAllocate} ) {
+     if($freePoolData->{$lId}->from eq 'scarlet'){
+        dlog('build scarlet reconcile');
+        my $scarletReconcile = new Recon::OM::ScarletReconcile();
+        $scarletReconcile->id($rId);
+        $scarletReconcile->save( $self->connection );
+        
+        last;
+     }
+  }
 
   my $scarletInstalledSw =
     new Recon::ScarletInstalledSoftware( $reconcileTypeId, $machineLevel,
    $allocMethodId, $self->installedSoftwareReconData->hId );
 
   foreach my $lId ( keys %{$licsToAllocate} ) {
-   dlog(
-    "allocating license id=$lId, using quantity=" . $licsToAllocate->{$lId} );
+   dlog("allocating license id=$lId, using quantity=" . $licsToAllocate->{$lId} );
 
    ###Create lic recon map.
    my $rul =
@@ -1620,11 +1630,6 @@ sub attemptLicenseAllocationPVU {
   $machineLevel   = 1;
   $processorCount = $self->installedSoftwareReconData->hProcCount;
  }
-
- #	else { no longer used, ticket 394
- #		$machineLevel   = 0;
- #		$processorCount = $self->installedSoftwareReconData->processorCount;
- #	}
 
  return undef if $processorCount == 0;
 

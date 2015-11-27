@@ -3,7 +3,7 @@ package Recon::Delegate::ReconLicenseValidation;
 use strict;
 use Base::Utils;
 use Recon::Pvu;
-use Recon::ScarletInstalledSoftware;
+use Recon::ScarletReconcile;
 
 sub new {
  my ($class) = @_;
@@ -606,10 +606,9 @@ sub validateLicenseSoftwareMap {
   && $isSoftwareId != $swMapSoftwareId )
  {
 
-  my $scarletIs = new Recon::ScarletInstalledSoftware();
-
-  if (( not $scarletIs->existInScarlet( $reconcileId, $isId ) )
-   && ( not $scarletIs->outOfService ) )    
+  my $scarletReconcile = new Recon::ScarletReconcile();
+  
+  if ( not ($scarletReconcile->contains($reconcileId)) )    
   {
    dlog("isSoftwareId=$isSoftwareId");
    dlog("swMapSoftwareId=$swMapSoftwareId");
@@ -620,9 +619,6 @@ sub validateLicenseSoftwareMap {
    $self->validationCode(0);
    $self->scarletAllocation('NO');
    return 0;
-  }
-  elsif ( $scarletIs->outOfService ) {
-   $self->scarletAllocation('UNKNOW');
   }
   else {
    $self->scarletAllocation('YES');
