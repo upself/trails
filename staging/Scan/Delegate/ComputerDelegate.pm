@@ -443,81 +443,11 @@ sub buildScanRecord {
     cleanValues($rec);
     upperValues($rec);
     
-
-    dlog( $rec->{scanTime} );
-    ###fix the scantime
-    if ( !defined $rec->{scanTime} ) {
-        $rec->{scanTime} = '1970-01-01-00.00.00.000000';
-    }
-    if ( $rec->{scanTime} eq '' ) {
-        $rec->{scanTime} = '1970-01-01-00.00.00.000000';
-    }
-
-    my @fields = split( /\./, $rec->{scanTime} );
-    my $size = scalar @fields;
-    my $lastField;
-
-    if ( $size == 1 ) {
-        $rec->{scanTime} .= '.0';
-        $lastField = 0;
-    }
-    else {
-        $lastField = $fields[ $size - 1 ];
-    }
-
-    my $lastFieldSize = length($lastField);
-
-    while ( length($lastField) < 6 ) {
-        $lastField .= "0";
-        $rec->{scanTime} .= "0";
-    }
-
-    if (    $rec->{scanTime} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
-         || $rec->{scanTime} =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
-    {
-        dlog('Good timestamp');
-    }
-    else {
-        dlog('Bad timestamp');
-        $rec->{scanTime} = '1970-01-01-00.00.00.000000';
-    }
-
-    ###fix the biosDate
-    if ( !defined $rec->{biosDate} ) {
-        $rec->{biosDate} = '1970-01-01-00.00.00.000000';
-    }
-    if ( $rec->{biosDate} eq '' ) {
-        $rec->{biosDate} = '1970-01-01-00.00.00.000000';
-    }
-
-    @fields = split( /\./, $rec->{biosDate} );
-    $size = scalar @fields;
-
-    if ( $size == 1 ) {
-        $rec->{biosDate} .= '.0';
-        $lastField = 0;
-    }
-    else {
-        $lastField = $fields[ $size - 1 ];
-    }
-
-    $lastFieldSize = length($lastField);
-
-    while ( length($lastField) < 6 ) {
-        $lastField .= "0";
-        $rec->{biosDate} .= "0";
-    }
-
-    if (    $rec->{biosDate} =~ /^\d{4}-\d{2}-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
-         || $rec->{biosDate} =~ /^\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
-    {
-        dlog('Good timestamp');
-    }
-    else {
-        dlog('Bad timestamp');
-        $rec->{biosDate} = '1970-01-01-00.00.00.000000';
-    }
-
+    $rec->{scanTime} = $self->checkDateSyntax($rec->{scanTime},'1970-01-01-00.00.00.000000');
+    $rec->{biosDate} = $self->checkDateSyntax($rec->{biosDate},'1970-01-01-00.00.00.000000');
+    $rec->{osInst} = $self->checkDateSyntax($rec->{osInst},'');
+    
+    
     ###Adjust the processor count
     if ( defined $rec->{authProcessorCount}
          && $rec->{authProcessorCount} != 0 )
@@ -716,6 +646,51 @@ sub buildScanRecord {
     dlog( $scanRecord->toString );
 
     return $scanRecord;
+}
+
+sub checkDateSyntax() {
+	my ($self, $sourceDate, $defaultDate ) = @_;
+	
+	dlog( "source date: ". $sourceDate );
+	
+    if (( !defined $sourceDate )|| ( $sourceDate eq '' )) {
+        return $defaultDate;
+    }
+    
+    if( $sourceDate =~ /^\d{4}-(0[1-9]|1[012])-\d{2}$/ ) {
+    	$sourceDate .= '-00.00.00.000000' 
+    }
+    
+    my @fields = split( /\./, $sourceDate );
+    my $size = scalar @fields;
+    my $lastField;
+
+    if ( $size == 1 ) {
+        $sourceDate .= '.0';
+        $lastField = 0;
+    }
+    else {
+        $lastField = $fields[ $size - 1 ];
+    }
+
+    my $lastFieldSize = length($lastField);
+
+    while ( length($lastField) < 6 ) {
+        $lastField .= "0";
+        $sourceDate .= "0";
+    }
+
+    if (    $sourceDate =~ /^\d{4}-(0[1-9]|1[012])-\d{2}-\d{2}\.\d{2}\.\d{2}\.\d{6}$/
+         || $sourceDate =~ /^\d{4}-(0[1-9]|1[012])-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{6}$/ )
+    {
+        dlog('Good timestamp');
+    }
+    else {
+        dlog('Bad timestamp');
+        $sourceDate = $defaultDate;
+    }
+    
+    return $sourceDate;
 }
 
 sub queryComputerData1 {
