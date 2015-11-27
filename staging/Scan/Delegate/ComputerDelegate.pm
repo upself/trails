@@ -144,7 +144,7 @@ sub getDisconnectedScanRecordData {
 
     if ( $bankAccount->authenticatedData eq 'Y' ) {
         ###WE are going to need to alter this to for the counts are done differently for tcm environments
-        ###vs everything else
+        ###vs everything elsegetDisconnectedScanRecordData
         dlog('parsing the processor file now');
 
         $filePart = 'cpu_count';
@@ -445,7 +445,7 @@ sub buildScanRecord {
     
     $rec->{scanTime} = $self->checkDateSyntax($rec->{scanTime},'1970-01-01-00.00.00.000000');
     $rec->{biosDate} = $self->checkDateSyntax($rec->{biosDate},'1970-01-01-00.00.00.000000');
-    $rec->{osInst} = $self->checkDateSyntax($rec->{osInst},'');
+    $rec->{osInstDate} = $self->checkDateSyntax($rec->{osInstDate},'');
     
     
     ###Adjust the processor count
@@ -501,9 +501,6 @@ sub buildScanRecord {
         }
         if ( length( $rec->{osSub} ) > 32 ) {
             $rec->{osSub} = undef;
-        }
-        if ( length( $rec->{osInstDate} ) > 32 ) {
-            $rec->{osInstDate} = undef;
         }
         if ( length( $rec->{userName} ) > 255 ) {
             $rec->{userName} = undef;
