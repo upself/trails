@@ -326,7 +326,11 @@ exit if $pid;
 #setsid or die "ERROR: Unable to setsid: $!";#Hai comments out for temp
 
 loaderStart(shift @ARGV, $pidFile);#Start HealthCheck and Monitor Process
+my $mailFlag = shift @ARGV;
 
+if ($mailFlag == undef){
+	$mailFlag = $FALSE;
+}
 ###Wrap everything in an eval so we can capture in logfile.
 eval{
 	#1.Do event init operation
@@ -459,13 +463,13 @@ sub eventLogging{
      appendStartAndStopScriptEmailAlertsIntoEmailContent(); 
      
      #Send Out Alert Email
-	 if($emailFullContent ne ""){#Send email only email content has value
+	 if($emailFullContent ne "" && $mailFlag == $TRUE){#Send email only email content has value
 		#Append Alert Email Signature Into Email Content
         appendAlertEmailSignatureIntoEmailContent(); 
         sendEmail($emailSubjectInfo,$emailToAddressList,$emailCcAddressList,$emailFullContent);
      }
 	  
-	 elsif($emailFullContent eq ""){#A new feature to support that there is no alert message generated case
+	 elsif($emailFullContent eq "" && $mailFlag == $TRUE){#A new feature to support that there is no alert message generated case
         #Append Server Normal Running Information Into Email Content
         appendServerNormalRunningInfoIntoEmailContent();
         #Append Alert Email Signature Into Email Content
@@ -2106,9 +2110,10 @@ sub eventRuleCheck{
 					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					 push @webAppErrorMessageArray, $processedRuleMessage;
 				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
+				     $mailFlag = $TRUE;
 					 
 					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON){}#Self Healing Engine Restart Web Application Feature has been turn on { 
+					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON){
 
 					   chdir $loaderExistingPath;
 		               print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
