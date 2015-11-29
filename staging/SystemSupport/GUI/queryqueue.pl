@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # modules
@@ -7,18 +7,24 @@ use strict;
 use CGI;
 use DBI;
 use File::Basename;
-use TAP::DBConnection;
-use Tap::NewPerl;
+use Config::Properties::Simple;
 
 #
 # globals
 #
-my $DB_ENV = '/db2/tap/sqllib/db2profile';
+my $DB_ENV = '/home/eaadmin/sqllib/db2profile';
+
 my $BRAVO_DB = 'trails';
-my $STAGING_DB = 'staging';
+my $STAGING_DB = 'stagigho';
 my $SCHEMA = 'eaadmin';
 my %softwareMap = () ;
 my %typicalItemMap =() ;
+my $db_url ;
+my $db_userid;
+my $db_password ;
+my $db2_url ;
+my $db2_userid ;
+my $db2_password ;
 
 my %users = ();
 $users{'gonght@cn.ibm.com'}++;
@@ -42,14 +48,16 @@ $users{'martin.kacor@cz.ibm.com'}++;
 $users{'petr_soufek@cz.ibm.com'}++;
 $users{'zengqh@cn.ibm.com'}++;
 $users{'shaodsz@cn.ibm.com'}++;
+$users{'tomas.sima@cz.ibm.com'}++;
 
 my $cgi = new CGI;
 my $self = basename($0);
+    my $user = $ARGV[0];
 
 #
 # authentication
 #
-if (!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq '') {
+if (!defined $user || $user eq '') {
     error();
     exit 0;
 }
@@ -57,7 +65,7 @@ if (!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq '') {
 #
 # authorization
 #
-if (!exists $users{ $ENV{'REMOTE_USER'} }) {
+if (!exists $users{ $user }) {
     invalid_access();
     exit 0;
 }
@@ -66,20 +74,16 @@ if (!exists $users{ $ENV{'REMOTE_USER'} }) {
 # db2 environment
 #
 setupDB2Env();
+setDBConnInfo();
 
 #
 # db connections
 #
-my $bravo = new DBConnection();
-$bravo->setDatabase($BRAVO_DB);
-$bravo->connect();
-$bravo->getDbh->do("set current schema $SCHEMA");
 
-my $staging = new DBConnection();
-$staging->setDatabase($STAGING_DB);
-my $string = "dbi:DB2:DATABASE=staging;HOSTNAME=tap.raleigh.ibm.com;PORT=5104;PROTOCOL=TCPIP;";
-my $dbh = DBI->connect($string, 'eaadmin', 'apr03db2') || die "Connection failed with error: $DBI::errstr";
-$staging->setDbh($dbh);
+#$staging->setDatabase($STAGING_DB);
+#my $string = "dbi:DB2:DATABASE=staging;HOSTNAME=tap.raleigh.ibm.com;PORT=5104;PROTOCOL=TCPIP;";
+my $staging = DBI->connect($db_url, $db_userid, $db_password) || die "Connection failed with error: $DBI::errstr";
+my $bravo = DBI->connect($db2_url, $db2_userid, $db2_password) || die "Connection failed with error: $DBI::errstr";
 
 
 #
@@ -97,7 +101,7 @@ else {
      %typicalItemMap = getTypicalItemMap($objectF,$objectId);
     }
  # printout($softwareMap);
-   	 queryhost($objectF,$objectId);
+     queryhost($objectF,$objectId);
    
 }
 
@@ -157,11 +161,11 @@ sub print_rs_html {
            if ($i == 0) {
                 print "<th>\n";
             }else {
-            	print "<td >\n";
+                print "<td >\n";
             }
             print "<font size=1>\n";
             if (defined $rs->[$i][$j]) {
-            	
+                
                 if (uc($rs->[0][$j]) eq 'SOFTWARE_NAME') {
                     if ($i == 0) {
                         print 'SOFTWARE_NAME';
@@ -235,7 +239,7 @@ sub print_rs_html {
                     }
                 }
                 elsif (uc($rs->[0][$j]) eq 'SOFTWARE_ID') { 
-                	 if ($i == 0) {
+                     if ($i == 0) {
                         print 'SOFTWARE_ID';
                     }
                     else {                  
@@ -249,13 +253,13 @@ sub print_rs_html {
                         print 'BANK_ACCT';
                     }
                     else {
-                    	print "<A href='queryqueue.pl?objectF=BANK_ACCOUNT&objectId=$rs->[$i][$j-1]'>";
+                        print "<A href='queryqueue.pl?objectF=BANK_ACCOUNT&objectId=$rs->[$i][$j-1]'>";
                         print  $rs->[$i][$j] ;
                         print "</A>";
                     }
                 }
                 else {
-                		print $rs->[$i][$j];  
+                        print $rs->[$i][$j];  
                 }         
              } else {
                 print "-";
@@ -309,23 +313,23 @@ sub getSoftwareMap {
     my $objectF = shift ;
     my $objectId = shift ;
     if ( $objectF eq 'SIGNATURE' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_ID from  software_signature where scan_record_id = $objectId group by software_id with ur");
     }
     if ( $objectF eq 'FILTER' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_ID from  software_filter where scan_record_id = $objectId group by software_id with ur");
     }
     if ( $objectF eq 'TLCMZ' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_ID from  software_tlcmz where scan_record_id = $objectId group by software_id with ur");
     }
     if ( $objectF eq 'MANUAL' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_ID from  software_manual where scan_record_id = $objectId group by software_id with ur");
     }
     if ( $objectF eq 'TADZ' ){
-    	@srs = exec_sql_rs($staging->getDbh,
+        @srs = exec_sql_rs($staging,
         "select GUID from  scan_software_item where scan_record_id = $objectId group by guid with ur");
     }
     if ( $objectF eq 'TADZ' ){
@@ -333,14 +337,14 @@ sub getSoftwareMap {
         next if $i == 0;
         $guidstring= $guidstring.',\''.$srs[$i][0].'\'';
       }
-       @bs = exec_sql_rs($bravo->getDbh,
+       @bs = exec_sql_rs($bravo,
         "select upper(kb.guid),si.name from  software_item si join kb_definition kb on si.id=kb.id where upper(kb.guid) in ($guidstring) with ur");
     }else { 
       for my $i (0 .. $#rs) {
         next if $i == 0;
         $idstring= $idstring.','.$rs[$i][0];
       }     
-     @bs = exec_sql_rs($bravo->getDbh,
+     @bs = exec_sql_rs($bravo,
         "select id,name from  software_item where id in ($idstring) with ur");
     }
     
@@ -362,19 +366,19 @@ sub getTypicalItemMap {
     my $objectF = shift ;
     my $objectId = shift ;
     if ( $objectF eq 'SIGNATURE' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_SIGNATURE_ID from  software_signature where scan_record_id = $objectId group by SOFTWARE_SIGNATURE_ID with ur");
     }
     if ( $objectF eq 'FILTER' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SOFTWARE_FILTER_ID from  software_filter where scan_record_id = $objectId group by SOFTWARE_FILTER_ID with ur");
     }
     if ( $objectF eq 'TLCMZ' ){
-    	@rs = exec_sql_rs($staging->getDbh,
+        @rs = exec_sql_rs($staging,
         "select SA_PRODUCT_ID from  software_tlcmz where scan_record_id = $objectId group by SA_PRODUCT_ID with ur");
     }
     if ( $objectF eq 'TADZ' ){
-    	@srs = exec_sql_rs($staging->getDbh,
+        @srs = exec_sql_rs($staging,
          "select GUID from  scan_software_item where scan_record_id = $objectId group by guid with ur");
     }
 
@@ -387,19 +391,19 @@ sub getTypicalItemMap {
         $guidstring= $guidstring.',\''.$srs[$i][0].'\'';
     }
      if ( $objectF eq 'SIGNATURE' ){
-     @bs = exec_sql_rs($bravo->getDbh,
+     @bs = exec_sql_rs($bravo,
         "select SOFTWARE_SIGNATURE_ID,file_name,file_size from  software_signature where software_signature_id in ($idstring) with ur");
      }
      if ( $objectF eq 'FILTER' ){
-     @bs = exec_sql_rs($bravo->getDbh,
+     @bs = exec_sql_rs($bravo,
         "select SOFTWARE_FILTER_ID,software_name,software_version from  software_filter where software_filter_id in ($idstring) with ur");
      }
      if ( $objectF eq 'TLCMZ' ){
-     @bs = exec_sql_rs($bravo->getDbh,
+     @bs = exec_sql_rs($bravo,
         "select ID,sa_product,version from  sa_product where id in ($idstring) with ur");
      }
      if ( $objectF eq 'TADZ' ){
-     @bs = exec_sql_rs($bravo->getDbh,
+     @bs = exec_sql_rs($bravo,
         "select upper(kb.guid),si.name,mv.version from mainframe_version mv join software_item si on mv.product_id=si.id join kb_definition kb on mv.id=kb.id where upper(kb.guid) in ($guidstring) 
         union all 
         select upper(kb.guid),si.name,mv.version from mainframe_feature mf join kb_definition kb on mf.id=kb.id join mainframe_version mv on mf.version_id=mv.id join software_item si on mv.product_id=si.id where upper(kb.guid) in ($guidstring)");
@@ -416,7 +420,6 @@ sub getTypicalItemMap {
 # header
 sub header {
     print <<HTML;
-Content-type: text/html
 
 <html>
 <head>
@@ -445,8 +448,8 @@ HTML
 
 # error page
 sub printout {
-	my $var;
-	$var = shift;
+    my $var;
+    $var = shift;
     header();
     print <<HTML;
 <h3><font color=red>the output is $var </font></h3>
@@ -472,10 +475,10 @@ sub queryhost {
     $objecId =~ s/^\s+//;
     $objecId =~ s/\s+$//;
 if ( $objecId =~ m/\D/ ) {
-	exit 0;
+    exit 0;
 }
 if ( $objectF ne 'SWLPAR' && $objectF ne 'HWLPAR' && $objectF ne 'CUSTOMER' && $objectF eq 'SIGNATURE' && $objectF eq 'FILTER' && $objectF eq 'TLCMZ' && $objectF eq 'MANUAL' && $objectF eq 'SOFTWARE' && $objectF eq 'BANK_ACCOUNT') {
-	exit 0;
+    exit 0;
 }
 
     header();
@@ -483,9 +486,9 @@ if ( $objectF ne 'SWLPAR' && $objectF ne 'HWLPAR' && $objectF ne 'CUSTOMER' && $
     if ($objecId ne "NULL" && $objectF ne "NULL") {
         my @rs;
         eval {
-        	if ( $objectF eq 'SWLPAR' ) {
+            if ( $objectF eq 'SWLPAR' ) {
             print "<h3>Bravo SW Lpar Alert and Recon Info</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select T.sl_id
   ,T.hostname
   ,T.alert_Id
@@ -552,7 +555,7 @@ where sl.id = $objecId
 left outer join recon_sw_lpar rsl on rsl.software_lpar_id=T.sl_id with ur");
             print_rs_html(\@rs);
             print "<h3>Bravo Installed Softwares of lpar, Alert and Recon Info</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select 
    is.id as installedSW_id
    ,si.name as product_name
@@ -596,11 +599,11 @@ select a.installed_software_id,a.bank_account_id,'tadz' as type from installed_t
 left outer join bank_account ba on T.bank_account_id=ba.id 
 left outer join alert_unlicensed_sw aus on aus.installed_software_id=is.id
 left outer join recon_installed_sw ris on ris.installed_software_id=is.id
-where  sl.id = 	$objecId 	 with ur");
+where  sl.id =  $objecId     with ur");
             print_rs_html(\@rs);
     
             print "<h3>Bravo Installed Softwares Reconciliation Info</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select 
    is.id as installedSW_id
    ,si.name as product_name
@@ -655,10 +658,10 @@ left outer join used_license ul on rul.used_license_id=ul.id
 left outer join license rcl on ul.license_id=rcl.id
 where  sl.id = $objecId with ur");
             print_rs_html(\@rs);
-        	}
+            }
         if ( $objectF eq 'HWLPAR' ){
-        	print "<h3>Bravo HW Lpar  Alert and Recon Info</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            print "<h3>Bravo HW Lpar  Alert and Recon Info</h3>\n";
+            @rs = exec_sql_rs($bravo,
                 "select 
   hl.id as hl_id
   ,hl.name as hostname
@@ -678,7 +681,7 @@ left outer join recon_hw_lpar rhl on rhl.hardware_lpar_id=hl.id
 where hl.id = $objecId with ur");
             print_rs_html(\@rs);
           print "<h3>Bravo Hardware Alert and Recon Info</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select 
   hw.id as hw_id
   ,hl.name as hostname
@@ -699,7 +702,7 @@ left outer join recon_hardware rhw on rhw.hardware_id=hw.id
 where hl.id = $objecId with ur");
             print_rs_html(\@rs);
                       print "<h3>Bravo Hardware Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            @rs = exec_sql_rs($bravo,
                 "select 
   hw.id as hw_id
   ,hl.name as hostname
@@ -726,8 +729,8 @@ where hl.id = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'CUSTOMER' ){
-        	print "<h3>CUSTOMER Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+            print "<h3>CUSTOMER Infomation</h3>\n";
+            @rs = exec_sql_rs($bravo,
                 "select
 cs.CUSTOMER_ID as CUSTOMER_ID
 ,ct.CUSTOMER_TYPE_NAME as   cs_TYPE_NAME  
@@ -757,7 +760,7 @@ join COUNTRY_CODE cc on cs.COUNTRY_CODE_id=cc.id
 where account_number = $objecId with ur");
             print_rh_html(\@rs);
             print "<h3>MemberShip Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh, 
+            @rs = exec_sql_rs($bravo, 
             "         SELECT 
             cs.account_number as account_number
             ,mpcs.account_number as member_accounts
@@ -771,8 +774,8 @@ where account_number = $objecId with ur");
        print_rs_html(\@rs);
         }
                 if ( $objectF eq 'SIGNATURE' ){
-        	print "<h3>Staing SIGNATURE Infomation</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            print "<h3>Staing SIGNATURE Infomation</h3>\n";
+            @rs = exec_sql_rs($staging,
                 "select
                 ss.id as id
                 ,ss.scan_record_id as scan_record_id
@@ -787,8 +790,8 @@ where account_number = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'FILTER' ){
-        	print "<h3>Staing FILTER Infomation</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            print "<h3>Staing FILTER Infomation</h3>\n";
+            @rs = exec_sql_rs($staging,
                 "select
                 ft.id as id
                 ,ft.scan_record_id as scan_record_id
@@ -803,8 +806,8 @@ where account_number = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'TLCMZ' ){
-        	print "<h3>Staing TLCMZ Product Infomation</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            print "<h3>Staing TLCMZ Product Infomation</h3>\n";
+            @rs = exec_sql_rs($staging,
                 "select
                 tl.id as id
                 ,tl.scan_record_id as scan_record_id
@@ -819,8 +822,8 @@ where account_number = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'TADZ' ){
-        	print "<h3>Staing TADZ Product Infomation</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            print "<h3>Staing TADZ Product Infomation</h3>\n";
+            @rs = exec_sql_rs($staging,
                 "select
                 ssi.id as id
                 ,ssi.scan_record_id as scan_record_id
@@ -837,8 +840,8 @@ where account_number = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'MANUAL' ){
-        	print "<h3>Staing MANUAL SOFTWARE Infomation</h3>\n";
-            @rs = exec_sql_rs($staging->getDbh,
+            print "<h3>Staing MANUAL SOFTWARE Infomation</h3>\n";
+            @rs = exec_sql_rs($staging,
                 "select
                 sm.id as id
                 ,sm.scan_record_id as scan_record_id
@@ -852,8 +855,8 @@ where account_number = $objecId with ur");
             print_rs_html(\@rs);
         }
         if ( $objectF eq 'SOFTWARE' ){
-        	 	print "<h3>Bravo Software Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+                print "<h3>Bravo Software Infomation</h3>\n";
+            @rs = exec_sql_rs($bravo,
                 "select 
 si.id
 ,si.name
@@ -884,8 +887,8 @@ join software_category sc on pi.software_category_id=sc.software_category_id
 join installed_software is on is.software_id=si.id
 where is.id = $objecId with ur");
             print_rs_html(\@rs);
-                    	print "<h3>Bravo Software License Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+                        print "<h3>Bravo Software License Infomation</h3>\n";
+            @rs = exec_sql_rs($bravo,
                 "select 
 l.id 
 ,l.customer_id
@@ -917,8 +920,8 @@ where is.id= $objecId and l.customer_id in (select b.customer_id from  installed
             print_rs_html(\@rs);
         }
                 if ( $objectF eq 'BANK_ACCOUNT' ){
-        	 	print "<h3>Bank Account Infomation</h3>\n";
-            @rs = exec_sql_rs($bravo->getDbh,
+                print "<h3>Bank Account Infomation</h3>\n";
+            @rs = exec_sql_rs($bravo,
                 "select 
            a.id as id
            ,a.name as name
@@ -945,4 +948,16 @@ where a.id = $objecId with ur");
         }
     }
     footer();
+}
+
+sub setDBConnInfo{
+	my $cfg=Config::Properties::Simple->new(file=>'/opt/SupportGui/connection.txt');        
+      $db_url = "dbi:DB2:";
+      $db_url .= $cfg->getProperty('staging.name');
+      $db_userid = $cfg->getProperty('staging.user');;
+      $db_password = $cfg->getProperty('staging.password');
+      $db2_url = "dbi:DB2:";
+      $db2_url .= $cfg->getProperty('trails.name');
+      $db2_userid = $cfg->getProperty('trails.user');;
+      $db2_password = $cfg->getProperty('trails.password');
 }

@@ -52,7 +52,6 @@ BEGIN{
 }
 
 sub handler_fatal {
-     print "Content-type: text/html\n\n";
      print "@_";
 }
 
@@ -67,7 +66,7 @@ my $TAP2 = "TAP2";#TAP2 Server
 my $SERVER_MODE;
 
 #Database
-my $DB_ENV;
+my $DB_ENV = "/home/eaadmin/sqllib/db2profile";
 my $dbh;
 my $db_url;
 my $db_userid;
@@ -93,25 +92,25 @@ my $CONFIG_LINE_KEY_SERVER          = "server";
 
 #Operation Meta Data Indexes
 my $OPERATION_SEQUENCE_CODE_INDEX         = 0;#For example, "OPT001"
-my $OPERATION_GROUP_CODE_INDEX	          = 1;#For example, "LOADER_GROUP"
-my $OPERATION_GROUP_DESC_INDEX			  = 2;#For example, "Loader Group"
-my $OPERATION_NAME_CODE_INDEX	          = 3;#For example, "RESTART_LOADER"
-my $OPERATION_NAME_DESC_INDEX			  = 4;#For example, "Restart Loader"
-my $PARAMETER_FIELD_1_INDEX				  = 5;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_2_INDEX				  = 6;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_3_INDEX				  = 7;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_4_INDEX				  = 8;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_5_INDEX				  = 9;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_6_INDEX				  = 10;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_7_INDEX				  = 11;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_8_INDEX				  = 12;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_9_INDEX				  = 13;#For example, "Y|Related Ticket Number|CHR|R"
-my $PARAMETER_FIELD_10_INDEX			  = 14;#For example, "Y|Related Ticket Number|CHR|R"
+my $OPERATION_GROUP_CODE_INDEX            = 1;#For example, "LOADER_GROUP"
+my $OPERATION_GROUP_DESC_INDEX            = 2;#For example, "Loader Group"
+my $OPERATION_NAME_CODE_INDEX             = 3;#For example, "RESTART_LOADER"
+my $OPERATION_NAME_DESC_INDEX             = 4;#For example, "Restart Loader"
+my $PARAMETER_FIELD_1_INDEX               = 5;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_2_INDEX               = 6;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_3_INDEX               = 7;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_4_INDEX               = 8;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_5_INDEX               = 9;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_6_INDEX               = 10;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_7_INDEX               = 11;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_8_INDEX               = 12;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_9_INDEX               = 13;#For example, "Y|Related Ticket Number|CHR|R"
+my $PARAMETER_FIELD_10_INDEX              = 14;#For example, "Y|Related Ticket Number|CHR|R"
 #Operation Parameter Meta Data Indexes
-my $PARAMETER_DISPLAY_FLAG_INDEX	      = 0;#Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'
-my $PARAMETER_DISPLAY_LABEL_INDEX		  = 1;#Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'
-my $PARAMETER_VALUE_TYPE_INDEX			  = 2;#Parameter Value Type: (CHR: String Only, INT: Integter Only, ALL:String and Integer are ok). For example: 'CHR'
-my $PARAMETER_REQUIRED_FLAG_INDEX		  = 3;#Parameter Required Flag: R or N(R: Required, N: Non Required). For example: 'R'
+my $PARAMETER_DISPLAY_FLAG_INDEX          = 0;#Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'
+my $PARAMETER_DISPLAY_LABEL_INDEX         = 1;#Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'
+my $PARAMETER_VALUE_TYPE_INDEX            = 2;#Parameter Value Type: (CHR: String Only, INT: Integter Only, ALL:String and Integer are ok). For example: 'CHR'
+my $PARAMETER_REQUIRED_FLAG_INDEX         = 3;#Parameter Required Flag: R or N(R: Required, N: Non Required). For example: 'R'
 #Parameter Dispaly Flag Values
 my $PARAMETER_DISPLAY_FLAG_Y_VALUE        = "Y";#Display
 my $PARAMETER_DISPLAY_FLAG_N_VALUE        = "N";#Hidden
@@ -194,17 +193,17 @@ $authorizedUserList{'inesa_strugare@cz.ibm.com'}++;
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 $authorizedUserList{'petra.povolna@cz.ibm.com'}++;
 #Invoke loginUserAuthentication method to do login user authentication
+my $user = $ARGV[0];
 loginUserAuthentication();
 
 #This method is used to do login User Authentication
 sub loginUserAuthentication{
-  
-  if(!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq ''){
+  if(!defined $user|| $user eq ''){
     error();
     exit 0;
   }
 
-  if(!exists $authorizedUserList{$ENV{'REMOTE_USER'}}){
+  if(!exists $authorizedUserList{ $user }){
     invalidUserAccess();
     exit 0;
   }
@@ -227,9 +226,6 @@ sub init{
   #Get Server Mode - For example: 'TAP'
   $SERVER_MODE = getServerMode($OPERATION_GUI_CONFIG_FILE);
 
-  #set db2 env path
-  setDB2ENVPath();
-
   #Setup DB2 environment
   setupDB2Env();
   
@@ -251,21 +247,21 @@ sub loadOperationDefinitionMetadata{
   while (my $operationDefinitionConfigLine = <OPERATION_DEFINITION_FILE_HANDLER>) {
     $operationDefinitionConfigLine = trim($operationDefinitionConfigLine);
     #Get the first char of a string
-	my $strFirstChar = substr($operationDefinitionConfigLine,0,1);
-	#Bypass comment line
+    my $strFirstChar = substr($operationDefinitionConfigLine,0,1);
+    #Bypass comment line
     if($strFirstChar eq $COMMENT_CHAR){
-	  next;
-	}
+      next;
+    }
 
     #Get the first three chars of a string
-	my $strCode = substr($operationDefinitionConfigLine,0,3);
-	
+    my $strCode = substr($operationDefinitionConfigLine,0,3);
+    
     #Judge if operation definition line
-	if($strCode eq $OPERATION_SEQUENCE_PREFIX_CODE_DEFINITION){#Operation Sequence Prefix Code "OPT"
-	  #Split operation definition line using '^' char
-	  my @operationMetaRecord = split(/\^/,$operationDefinitionConfigLine);
+    if($strCode eq $OPERATION_SEQUENCE_PREFIX_CODE_DEFINITION){#Operation Sequence Prefix Code "OPT"
+      #Split operation definition line using '^' char
+      my @operationMetaRecord = split(/\^/,$operationDefinitionConfigLine);
       push @operationMetaRecords, [@operationMetaRecord];
-  	}#end while (my $operationDefinitionConfigLine = <OPERATION_DEFINITION_FILE_HANDLER>)
+    }#end while (my $operationDefinitionConfigLine = <OPERATION_DEFINITION_FILE_HANDLER>)
   }
   close OPERATION_DEFINITION_FILE_HANDLER;
 }
@@ -277,13 +273,12 @@ sub process{
 
 #This method is used to do Operation Business Post Process for example, close db handlers, close file handers etc
 sub postProcess{
-	#Disconnect DB
-	$dbh->disconnect();
+    #Disconnect DB
+    $dbh->disconnect();
 }
 
 #This method is used to generate Operation GUI
 sub generateOperationGUI{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -314,9 +309,9 @@ sub addJavascriptLogic{
   print "      <script type='text/javascript'>\n";
   print "        //Vars Definition\n";
   print "        //Operation Parameter Meta Data Indexes\n";
-  print "        var PARAMETER_DISPLAY_FLAG_INDEX	 = 0;//Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'\n";
-  print "        var PARAMETER_DISPLAY_LABEL_INDEX	 = 1;//Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'\n";
-  print "        var PARAMETER_VALUE_TYPE_INDEX	     = 2;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ANY:Any String,Integer and Specail Chars). For example: 'CHR'\n";
+  print "        var PARAMETER_DISPLAY_FLAG_INDEX    = 0;//Parameter Dispaly Flag: Y or N(Y = Display or N = Hidden). For example: 'Y'\n";
+  print "        var PARAMETER_DISPLAY_LABEL_INDEX   = 1;//Parameter Display Label: Any text is ok. For example: 'Related Ticket Number'\n";
+  print "        var PARAMETER_VALUE_TYPE_INDEX      = 2;//Parameter Value Type: (CHR: String Only, INT: Integter Only, ANY:Any String,Integer and Specail Chars). For example: 'CHR'\n";
   print "        var PARAMETER_REQUIRED_FLAG_INDEX   = 3;//Parameter Required Flag: R or N(R: Required, N: Non Required). For example: 'R'\n";
   print "        //Parameter Dispaly Flag Values\n";
   print "        var PARAMETER_DISPLAY_FLAG_Y_VALUE  = 'Y';//Display\n";
@@ -608,39 +603,39 @@ sub printOperationMetadataDefinition{
 
    foreach my $metaOperation (@operationMetaRecords){#Go loop operation metadata definition
           $metaOperationSequenceCode = trim($metaOperation->[$OPERATION_SEQUENCE_CODE_INDEX]);#Remove space chars
-	      $metaOperationGroupCode = trim($metaOperation->[$OPERATION_GROUP_CODE_INDEX]);#Remove space chars
+          $metaOperationGroupCode = trim($metaOperation->[$OPERATION_GROUP_CODE_INDEX]);#Remove space chars
           $metaOperationGroupDesc = trim($metaOperation->[$OPERATION_GROUP_DESC_INDEX]);#Remove space chars
           $metaOperationNameCode = trim($metaOperation->[$OPERATION_NAME_CODE_INDEX]);#Remove space chars
-		  $metaOperationNameDesc = trim($metaOperation->[$OPERATION_NAME_DESC_INDEX]);#Remove space chars
+          $metaOperationNameDesc = trim($metaOperation->[$OPERATION_NAME_DESC_INDEX]);#Remove space chars
           $metaOperationParameterField1 = trim($metaOperation->[$PARAMETER_FIELD_1_INDEX]);#Remove space chars
-		  $metaOperationParameterField2 = trim($metaOperation->[$PARAMETER_FIELD_2_INDEX]);#Remove space chars
-		  $metaOperationParameterField3 = trim($metaOperation->[$PARAMETER_FIELD_3_INDEX]);#Remove space chars
+          $metaOperationParameterField2 = trim($metaOperation->[$PARAMETER_FIELD_2_INDEX]);#Remove space chars
+          $metaOperationParameterField3 = trim($metaOperation->[$PARAMETER_FIELD_3_INDEX]);#Remove space chars
           $metaOperationParameterField4 = trim($metaOperation->[$PARAMETER_FIELD_4_INDEX]);#Remove space chars
           $metaOperationParameterField5 = trim($metaOperation->[$PARAMETER_FIELD_5_INDEX]);#Remove space chars
-		  $metaOperationParameterField6 = trim($metaOperation->[$PARAMETER_FIELD_6_INDEX]);#Remove space chars
-		  $metaOperationParameterField7 = trim($metaOperation->[$PARAMETER_FIELD_7_INDEX]);#Remove space chars
-		  $metaOperationParameterField8 = trim($metaOperation->[$PARAMETER_FIELD_8_INDEX]);#Remove space chars
-		  $metaOperationParameterField9 = trim($metaOperation->[$PARAMETER_FIELD_9_INDEX]);#Remove space chars
-		  $metaOperationParameterField10 = trim($metaOperation->[$PARAMETER_FIELD_10_INDEX]);#Remove space chars 
+          $metaOperationParameterField6 = trim($metaOperation->[$PARAMETER_FIELD_6_INDEX]);#Remove space chars
+          $metaOperationParameterField7 = trim($metaOperation->[$PARAMETER_FIELD_7_INDEX]);#Remove space chars
+          $metaOperationParameterField8 = trim($metaOperation->[$PARAMETER_FIELD_8_INDEX]);#Remove space chars
+          $metaOperationParameterField9 = trim($metaOperation->[$PARAMETER_FIELD_9_INDEX]);#Remove space chars
+          $metaOperationParameterField10 = trim($metaOperation->[$PARAMETER_FIELD_10_INDEX]);#Remove space chars 
       
-	  #Print out the Operation Metadata Column Values
-	  print "  <tr>\n";
+      #Print out the Operation Metadata Column Values
+      print "  <tr>\n";
       print "    <td>$metaOperationSequenceCode</td>\n";
       print "    <td>$metaOperationGroupCode</td>\n";
-	  print "    <td>$metaOperationGroupDesc</td>\n";
-	  print "    <td>$metaOperationNameCode</td>\n";
-	  print "    <td>$metaOperationNameDesc</td>\n";
-	  print "    <td>$metaOperationParameterField1</td>\n";
+      print "    <td>$metaOperationGroupDesc</td>\n";
+      print "    <td>$metaOperationNameCode</td>\n";
+      print "    <td>$metaOperationNameDesc</td>\n";
+      print "    <td>$metaOperationParameterField1</td>\n";
       print "    <td>$metaOperationParameterField2</td>\n";
-	  print "    <td>$metaOperationParameterField3</td>\n";
-	  print "    <td>$metaOperationParameterField4</td>\n";
-	  print "    <td>$metaOperationParameterField5</td>\n";
-	  print "    <td>$metaOperationParameterField6</td>\n";
-	  print "    <td>$metaOperationParameterField7</td>\n";
-	  print "    <td>$metaOperationParameterField8</td>\n";
-	  print "    <td>$metaOperationParameterField9</td>\n";
-	  print "    <td>$metaOperationParameterField10</td>\n";
-	  print "  </tr>\n";
+      print "    <td>$metaOperationParameterField3</td>\n";
+      print "    <td>$metaOperationParameterField4</td>\n";
+      print "    <td>$metaOperationParameterField5</td>\n";
+      print "    <td>$metaOperationParameterField6</td>\n";
+      print "    <td>$metaOperationParameterField7</td>\n";
+      print "    <td>$metaOperationParameterField8</td>\n";
+      print "    <td>$metaOperationParameterField9</td>\n";
+      print "    <td>$metaOperationParameterField10</td>\n";
+      print "  </tr>\n";
    }
    print "</table><br>\n";
 }
@@ -663,120 +658,120 @@ sub trim
 sub addOperationListValues{
   my $optionIndex = 0;
   foreach my $metaOperation (@operationMetaRecords){#Go loop operation metadata definition
-	my $metaOperationParameterFieldsDefinition = "";
+    my $metaOperationParameterFieldsDefinition = "";
     $metaOperationNameCode = trim($metaOperation->[$OPERATION_NAME_CODE_INDEX]);#Remove space chars
     $metaOperationParameterFieldsDefinition.= $metaOperationNameCode;
     
-	$metaOperationNameDesc = trim($metaOperation->[$OPERATION_NAME_DESC_INDEX]);#Remove space chars
-	$metaOperationParameterFieldsDefinition.= "^";
+    $metaOperationNameDesc = trim($metaOperation->[$OPERATION_NAME_DESC_INDEX]);#Remove space chars
+    $metaOperationParameterFieldsDefinition.= "^";
     $metaOperationParameterFieldsDefinition.= $metaOperationNameDesc;
-	
+    
     $metaOperationParameterField1 = trim($metaOperation->[$PARAMETER_FIELD_1_INDEX]);#Remove space chars
-	if($metaOperationParameterField1 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField1;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField1 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField1;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField2 = trim($metaOperation->[$PARAMETER_FIELD_2_INDEX]);#Remove space chars
-	if($metaOperationParameterField2 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField2;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField2 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField2;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField3 = trim($metaOperation->[$PARAMETER_FIELD_3_INDEX]);#Remove space chars
-	if($metaOperationParameterField3 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField3;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField3 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField3;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField4 = trim($metaOperation->[$PARAMETER_FIELD_4_INDEX]);#Remove space chars
-	if($metaOperationParameterField4 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField4;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField4 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField4;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField5 = trim($metaOperation->[$PARAMETER_FIELD_5_INDEX]);#Remove space chars
-	if($metaOperationParameterField5 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField5;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField5 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField5;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField6 = trim($metaOperation->[$PARAMETER_FIELD_6_INDEX]);#Remove space chars
-	if($metaOperationParameterField6 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField6;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField6 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField6;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField7 = trim($metaOperation->[$PARAMETER_FIELD_7_INDEX]);#Remove space chars
-	if($metaOperationParameterField7 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField7;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField7 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField7;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField8 = trim($metaOperation->[$PARAMETER_FIELD_8_INDEX]);#Remove space chars
-	if($metaOperationParameterField8 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField8;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField8 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField8;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField9 = trim($metaOperation->[$PARAMETER_FIELD_9_INDEX]);#Remove space chars
-	if($metaOperationParameterField9 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField9;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField9 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField9;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
 
     $metaOperationParameterField10 = trim($metaOperation->[$PARAMETER_FIELD_10_INDEX]);#Remove space chars
-	if($metaOperationParameterField10 ne ""){
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $metaOperationParameterField10;
-	}
-	else{
-	  $metaOperationParameterFieldsDefinition.= "^";
-	  $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
-	}
+    if($metaOperationParameterField10 ne ""){
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $metaOperationParameterField10;
+    }
+    else{
+      $metaOperationParameterFieldsDefinition.= "^";
+      $metaOperationParameterFieldsDefinition.= $OPERATION_PARAMETER_FIELD_DEFAULT_DEFINITION;
+    }
  
     if($optionIndex == 0){
-  	  print "            <option selected='selected' value='$metaOperationParameterFieldsDefinition'>$metaOperationNameDesc</option>\n";
+      print "            <option selected='selected' value='$metaOperationParameterFieldsDefinition'>$metaOperationNameDesc</option>\n";
     }
-	else{
-	  print "            <option value='$metaOperationParameterFieldsDefinition'>$metaOperationNameDesc</option>\n";
-	}
+    else{
+      print "            <option value='$metaOperationParameterFieldsDefinition'>$metaOperationNameDesc</option>\n";
+    }
 
     $optionIndex++;
   }#end foreach my $metaOperation (@operationMetaRecords)
@@ -805,7 +800,7 @@ sub printOperationAndParameterFieldsInputValues{
      print "<table width='100%' border='1'>\n";
      print "  <tr bgcolor='#FCFCFC'>\n";
      print "    <td>Operation Name Selected Code</td>\n";
-	 print "    <td>Operation Name Selected Description</td>\n";
+     print "    <td>Operation Name Selected Description</td>\n";
      print "    <td>Parameter Field 1 Input Value</td>\n";
      print "    <td>Parameter Field 2 Input Value</td>\n";
      print "    <td>Parameter Field 3 Input Value</td>\n";
@@ -816,7 +811,7 @@ sub printOperationAndParameterFieldsInputValues{
      print "    <td>Parameter Field 8 Input Value</td>\n";
      print "    <td>Parameter Field 9 Input Value</td>\n";
      print "    <td>Parameter Field 10 Input Value</td>\n";
-	 print "    <td>The Merged Parameter Fields Value</td>\n";
+     print "    <td>The Merged Parameter Fields Value</td>\n";
      print "  </tr>\n";
      print "  <tr>\n";
      $operationParameterFieldsDefinition = trim($cgi->param("operationListName"));
@@ -827,121 +822,121 @@ sub printOperationAndParameterFieldsInputValues{
      $operationNameSelectedDesc = trim($operationParameterFieldsDefinitionArray[1]);#Get the Operation Name Selected Description Value
      print "    <td>$operationNameSelectedDesc</td>\n";
 
-	 if(defined $cgi->param("parm_fld1_name") && (trim($cgi->param("parm_fld1_name")) ne "")){
+     if(defined $cgi->param("parm_fld1_name") && (trim($cgi->param("parm_fld1_name")) ne "")){
        $operationParameterField1InputValue = trim($cgi->param("parm_fld1_name"));
        $operationParameterField1InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField1InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField1InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField1InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld2_name") && (trim($cgi->param("parm_fld2_name")) ne "")){
        $operationParameterField2InputValue = trim($cgi->param("parm_fld2_name"));
-	   $operationParameterField2InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField2InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField2InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField2InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField2InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld3_name") && (trim($cgi->param("parm_fld3_name")) ne "")){
-	   $operationParameterField3InputValue = trim($cgi->param("parm_fld3_name"));
-	   $operationParameterField3InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField3InputValue = trim($cgi->param("parm_fld3_name"));
+       $operationParameterField3InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField3InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField3InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField3InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld4_name") && (trim($cgi->param("parm_fld4_name")) ne "")){
-	   $operationParameterField4InputValue = trim($cgi->param("parm_fld4_name"));
+       $operationParameterField4InputValue = trim($cgi->param("parm_fld4_name"));
        $operationParameterField4InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField4InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField4InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField4InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld5_name") && (trim($cgi->param("parm_fld5_name")) ne "")){
-	   $operationParameterField5InputValue = trim($cgi->param("parm_fld5_name"));
-	   $operationParameterField5InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField5InputValue = trim($cgi->param("parm_fld5_name"));
+       $operationParameterField5InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField5InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField5InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField5InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld6_name") && (trim($cgi->param("parm_fld6_name")) ne "")){
-	   $operationParameterField6InputValue = trim($cgi->param("parm_fld6_name"));
-	   $operationParameterField6InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField6InputValue = trim($cgi->param("parm_fld6_name"));
+       $operationParameterField6InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField6InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField6InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField6InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld7_name") && (trim($cgi->param("parm_fld7_name")) ne "")){
-	   $operationParameterField7InputValue = trim($cgi->param("parm_fld7_name"));
-	   $operationParameterField7InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField7InputValue = trim($cgi->param("parm_fld7_name"));
+       $operationParameterField7InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField7InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField7InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField7InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld8_name") && (trim($cgi->param("parm_fld8_name")) ne "")){
-	   $operationParameterField8InputValue = trim($cgi->param("parm_fld8_name"));
-	   $operationParameterField8InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField8InputValue = trim($cgi->param("parm_fld8_name"));
+       $operationParameterField8InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField8InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField8InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField8InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld9_name") && (trim($cgi->param("parm_fld9_name")) ne "")){
-	   $operationParameterField9InputValue = trim($cgi->param("parm_fld9_name"));
-	   $operationParameterField9InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField9InputValue = trim($cgi->param("parm_fld9_name"));
+       $operationParameterField9InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField9InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField9InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField9InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if(defined $cgi->param("parm_fld10_name") && (trim($cgi->param("parm_fld10_name")) ne "")){
-	   $operationParameterField10InputValue = trim($cgi->param("parm_fld10_name"));
-	   $operationParameterField10InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField10InputValue = trim($cgi->param("parm_fld10_name"));
+       $operationParameterField10InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        print "    <td>$operationParameterField10InputValue</td>\n";
-	   $mergedOperationParameterFieldsValue.= "^";
-	   $mergedOperationParameterFieldsValue.= $operationParameterField10InputValue;
+       $mergedOperationParameterFieldsValue.= "^";
+       $mergedOperationParameterFieldsValue.= $operationParameterField10InputValue;
      }
-	 else{
-	   print "    <td>-</td>\n";
-	 }
+     else{
+       print "    <td>-</td>\n";
+     }
 
      if($mergedOperationParameterFieldsValue ne ""){
-	   print "    <td>$mergedOperationParameterFieldsValue</td>\n";
-	 }
-	 else{
-	   print "    <td>-</td>\n";
-	 } 
+       print "    <td>$mergedOperationParameterFieldsValue</td>\n";
+     }
+     else{
+       print "    <td>-</td>\n";
+     } 
 
      print "  </tr>\n";
      print "</table><br>\n";
@@ -972,112 +967,112 @@ sub insertOperationRecord{
      $operationParameterFieldsDefinition = trim($cgi->param("operationListName"));
      @operationParameterFieldsDefinitionArray = split(/\^/,$operationParameterFieldsDefinition);
      $operationNameSelectedCode = $operationParameterFieldsDefinitionArray[0];#Get the Operation Name Selected Code Value
-  	 $operationNameSelectedDesc = trim($operationParameterFieldsDefinitionArray[1]);#Get the Operation Name Selected Description Value
-  	
-	 #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start - Append Operation Parameter value whatevet it has value or not 
-	 #if(defined $cgi->param("parm_fld1_name") && (trim($cgi->param("parm_fld1_name")) ne "")){
-	 if(defined $cgi->param("parm_fld1_name")){
+     $operationNameSelectedDesc = trim($operationParameterFieldsDefinitionArray[1]);#Get the Operation Name Selected Description Value
+    
+     #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start - Append Operation Parameter value whatevet it has value or not 
+     #if(defined $cgi->param("parm_fld1_name") && (trim($cgi->param("parm_fld1_name")) ne "")){
+     if(defined $cgi->param("parm_fld1_name")){
        $operationParameterField1InputValue = trim($cgi->param("parm_fld1_name"));
-	   $operationParameterField1InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       $operationParameterField1InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
        $mergedOperationParameterFieldsValue.= $operationParameterField1InputValue;
      }
  
      #if(defined $cgi->param("parm_fld2_name") && (trim($cgi->param("parm_fld2_name")) ne "")){
-	 if(defined $cgi->param("parm_fld2_name")){
+     if(defined $cgi->param("parm_fld2_name")){
        $operationParameterField2InputValue = trim($cgi->param("parm_fld2_name"));
-	   $operationParameterField2InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField2InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField2InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField2InputValue;
      }
 
      #if(defined $cgi->param("parm_fld3_name") && (trim($cgi->param("parm_fld3_name")) ne "")){
      if(defined $cgi->param("parm_fld3_name")){
-	   $operationParameterField3InputValue = trim($cgi->param("parm_fld3_name"));
-	   $operationParameterField3InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField3InputValue = trim($cgi->param("parm_fld3_name"));
+       $operationParameterField3InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField3InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField3InputValue;
      }
 
      #if(defined $cgi->param("parm_fld4_name") && (trim($cgi->param("parm_fld4_name")) ne "")){
      if(defined $cgi->param("parm_fld4_name")){
-	   $operationParameterField4InputValue = trim($cgi->param("parm_fld4_name"));
-	   $operationParameterField4InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField4InputValue = trim($cgi->param("parm_fld4_name"));
+       $operationParameterField4InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField4InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField4InputValue;
      }
 
      #if(defined $cgi->param("parm_fld5_name") && (trim($cgi->param("parm_fld5_name")) ne "")){
      if(defined $cgi->param("parm_fld5_name")){
-	   $operationParameterField5InputValue = trim($cgi->param("parm_fld5_name"));
-	   $operationParameterField5InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField5InputValue = trim($cgi->param("parm_fld5_name"));
+       $operationParameterField5InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField5InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField5InputValue;
      }
 
      #if(defined $cgi->param("parm_fld6_name") && (trim($cgi->param("parm_fld6_name")) ne "")){
      if(defined $cgi->param("parm_fld6_name")){
-	   $operationParameterField6InputValue = trim($cgi->param("parm_fld6_name"));
-	   $operationParameterField6InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField6InputValue = trim($cgi->param("parm_fld6_name"));
+       $operationParameterField6InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField6InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField6InputValue;
      }
 
      #if(defined $cgi->param("parm_fld7_name") && (trim($cgi->param("parm_fld7_name")) ne "")){
      if(defined $cgi->param("parm_fld7_name")){
-	   $operationParameterField7InputValue = trim($cgi->param("parm_fld7_name"));
-	   $operationParameterField7InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField7InputValue = trim($cgi->param("parm_fld7_name"));
+       $operationParameterField7InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField7InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField7InputValue;
      }
 
      #if(defined $cgi->param("parm_fld8_name") && (trim($cgi->param("parm_fld8_name")) ne "")){
      if(defined $cgi->param("parm_fld8_name")){
-	   $operationParameterField8InputValue = trim($cgi->param("parm_fld8_name"));
-	   $operationParameterField8InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField8InputValue = trim($cgi->param("parm_fld8_name"));
+       $operationParameterField8InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField8InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField8InputValue;
      }
 
      #if(defined $cgi->param("parm_fld9_name") && (trim($cgi->param("parm_fld9_name")) ne "")){
      if(defined $cgi->param("parm_fld9_name")){
-	   $operationParameterField9InputValue = trim($cgi->param("parm_fld9_name"));
-	   $operationParameterField9InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField9InputValue = trim($cgi->param("parm_fld9_name"));
+       $operationParameterField9InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField9InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField9InputValue;
      }
 
      #if(defined $cgi->param("parm_fld10_name") && (trim($cgi->param("parm_fld10_name")) ne "")){
      if(defined $cgi->param("parm_fld10_name")){
-	   $operationParameterField10InputValue = trim($cgi->param("parm_fld10_name"));
-	   $operationParameterField10InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
-	   #if($mergedOperationParameterFieldsValue ne ""){
-	     $mergedOperationParameterFieldsValue.= "^";
+       $operationParameterField10InputValue = trim($cgi->param("parm_fld10_name"));
+       $operationParameterField10InputValue =~ s/\\/\\\\/g;#Replace all the chars '\' using '\\' if Operation Parameter has #Added by Larry for System Support And Self Healing Service Components - Phase 3
+       #if($mergedOperationParameterFieldsValue ne ""){
+         $mergedOperationParameterFieldsValue.= "^";
        #}
-	   $mergedOperationParameterFieldsValue.= $operationParameterField10InputValue;
+       $mergedOperationParameterFieldsValue.= $operationParameterField10InputValue;
      }
-	 #Added by Larry for System Support And Self Healing Service Components - Phase 3 End - Append Operation Parameter value whatevet it has value or not 
+     #Added by Larry for System Support And Self Healing Service Components - Phase 3 End - Append Operation Parameter value whatevet it has value or not 
      
      if($operationNameSelectedCode ne ""){
-  	   $operationUser = getValidLoginUserid();
-	   #Invoke Insert Operation Record Method
+       $operationUser = getValidLoginUserid();
+       #Invoke Insert Operation Record Method
        insertOperationRecordMethod($dbh,$INSERT_OPERATION_RECORD_SQL,$operationNameSelectedCode,$operationNameSelectedDesc,$mergedOperationParameterFieldsValue,$OPERATION_STATUS_ADDED_CODE,$operationUser);
-	 }
+     }
    }#end if(defined $cgi->param("operationListName") && trim($cgi->param("operationListName")) ne "")
 }#end insertOperationRecord
 
@@ -1087,7 +1082,7 @@ sub printOperationQueueTableData{
   my $operationQueueDataRecordCount = scalar(@operationQueueDataRecordResultSet);
   if($operationQueueDataRecordCount > 0){
     #print "<table border = '1' width='100%'>\n";
-	print "<table border = '1' width='100%' style='table-layout:fixed'>\n";
+    print "<table border = '1' width='100%' style='table-layout:fixed'>\n";
     printOperationQueueTableHeader(\@OPERATION_QUEUE_TABLE_HEADER_COLUMN_NAMES);
     printOperationQueueTableRecords(\@operationQueueDataRecordResultSet);
     print "</table>\n";
@@ -1097,34 +1092,34 @@ sub printOperationQueueTableData{
 #This method is used to output HTML Operation Queue Table Header
 sub printOperationQueueTableHeader{
     my $tableHeaderColumnNames = shift;
-	print "  <tr bgcolor='#FCFCFC' align='left' style='height:30px;'>\n";
+    print "  <tr bgcolor='#FCFCFC' align='left' style='height:30px;'>\n";
     for my $i (0 .. $#{$tableHeaderColumnNames}){
-	  if($i == 0){#'Index #' column - td width='4%'
+      if($i == 0){#'Index #' column - td width='4%'
         print "   <td width='4%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
       }
-	  elsif($i == 1){#'Operation Name Description' column - td width='15%'
-	    print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
+      elsif($i == 1){#'Operation Name Description' column - td width='15%'
+        print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
       elsif($i == 2){#'Operation Parameters' column - td width='15%'
-	    print "   <td width='23%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
+        print "   <td width='23%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
       elsif($i == 3){#'Operation Status' column - td width='6%'
-	    print "   <td width='5%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
-	  elsif($i == 4){#'Operation User' column - td width='10%'
-	    print "   <td width='8%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
-	  elsif($i == 5){#'Operation Add Time' column - td width='10%'
-	    print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
-	  elsif($i == 6){#'Operation Update Time' column - td width='10%'
-	    print "   <td width='11%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
-	  elsif($i == 7){#'Comments' column - td width='30%'
-	    print "   <td width='29%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
-	  }
-	}
-	print "  </tr>\n";
+        print "   <td width='5%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
+      elsif($i == 4){#'Operation User' column - td width='10%'
+        print "   <td width='8%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
+      elsif($i == 5){#'Operation Add Time' column - td width='10%'
+        print "   <td width='10%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
+      elsif($i == 6){#'Operation Update Time' column - td width='10%'
+        print "   <td width='11%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
+      elsif($i == 7){#'Comments' column - td width='30%'
+        print "   <td width='29%' style='word-break:break-all;word-wrap:break-word;'><b><font size='3'>$tableHeaderColumnNames->[$i]</font></b></td>\n";
+      }
+    }
+    print "  </tr>\n";
 }
 
 #This method is used to print Operation Queue Table Records
@@ -1134,88 +1129,88 @@ sub printOperationQueueTableRecords{
   my $j = 0;
 
   for $i (0 .. $#{$resultSet}){
-	 if($i % 2 == 0){
+     if($i % 2 == 0){
        print "  <tr align='left'>\n";
      }
-	 else{
-	   print "  <tr bgcolor='#FCFCFC' align='left'>\n";
-	 }
+     else{
+       print "  <tr bgcolor='#FCFCFC' align='left'>\n";
+     }
      
-	 #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
-	 #print out the index # for every row
-	 my $indexNumber = $i+1;
+     #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
+     #print out the index # for every row
+     my $indexNumber = $i+1;
      print "    <td width='4%'><font size='2'>$indexNumber</font></td>\n";#'Index #' column - td width='4%' 
 
      for $j (0 .. $#{$resultSet->[$i]}){
-	   my $columnValue = $resultSet->[$i][$j];
-	   if($j==0){#'Operation Name Description' column - td width='15%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
+       my $columnValue = $resultSet->[$i][$j];
+       if($j==0){#'Operation Name Description' column - td width='15%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+           print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }
-	   }
-	   elsif($j==1){#'Operation Parameters' column - td width='15%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
-           $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='23%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+       }
+       elsif($j==1){#'Operation Parameters' column - td width='15%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
+           $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
+           print "    <td width='23%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+         }
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='23%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	   elsif($j==2){#'Operation Status' column - td width='6%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
+         }  
+       }
+       elsif($j==2){#'Operation Status' column - td width='6%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='5%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+           print "    <td width='5%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='5%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	   elsif($j==3){#'Operation User' column - td width='10%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
+         }  
+       }
+       elsif($j==3){#'Operation User' column - td width='10%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='8%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+           print "    <td width='8%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='8%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	   elsif($j==4){#'Operation Add Time' column - td width='10%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
-		   $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 	  
-	       print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+         }  
+       }
+       elsif($j==4){#'Operation Add Time' column - td width='10%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
+           $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has      
+           print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='10%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	   elsif($j==5){#'Operation Update Time' column - td width='10%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
+         }  
+       }
+       elsif($j==5){#'Operation Update Time' column - td width='10%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='11%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+           print "    <td width='11%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='11%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	   elsif($j==6){#'Comments' column - td width='30%'
-	     if(defined $columnValue){#If the value of column is not null, then output the value of this column
+         }  
+       }
+       elsif($j==6){#'Comments' column - td width='30%'
+         if(defined $columnValue){#If the value of column is not null, then output the value of this column
            $columnValue =~ s/\\\\/\\/g;#Replace all the chars '\\' back using '\' if Operation Parameter has 
-	       print "    <td width='29%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
+           print "    <td width='29%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>$columnValue</font></td>\n";
          }
-	     else{#If the value of column is null, then output '-' as the value of this column
+         else{#If the value of column is null, then output '-' as the value of this column
            print "    <td width='29%' style='word-break:break-all;word-wrap:break-word;'><font size='2'>-</font></td>\n";
-	     }  
-	   }
-	 }
-	 #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
+         }  
+       }
+     }
+     #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
 
      print "  </tr>\n";
-	}
+    }
 }
 
 #This method is used to execute SQL and then return a resultSet array
@@ -1254,8 +1249,7 @@ sub setupDB2Env {
 
 #This method is used to get the current login valid userid
 sub getValidLoginUserid{
-  my $validLoginUserId = $ENV{"REMOTE_USER"};
-  return $validLoginUserId;
+  return $user;
 }
 
 #my $INSERT_OPERATION_RECORD_SQL = "INSERT INTO OPERATION_QUEUE(OPERATION_NAME_CODE, OPERATION_NAME_DESCRIPTION, OPERATION_PARMS, OPERATION_STATUS, OPERATION_USER, OPERATION_ADD_TIME) VALUES(?,?,?,?,?,CURRENT TIMESTAMP)";
@@ -1264,11 +1258,11 @@ sub insertOperationRecordMethod{
     my $dbh = shift;
     my $insertOperationSQL = shift;
     my $operationNameCode = shift;
-	my $operationNameDesc = shift;
-	my $operationParametersValue = shift; 
-	my $operationStatus = shift; 
-	my $operationUser = shift;
-	my $sth;
+    my $operationNameDesc = shift;
+    my $operationParametersValue = shift; 
+    my $operationStatus = shift; 
+    my $operationUser = shift;
+    my $sth;
 
     eval {
         $sth = $dbh->prepare($insertOperationSQL);
@@ -1283,7 +1277,6 @@ sub insertOperationRecordMethod{
 
 #Error Page
 sub error{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -1296,7 +1289,6 @@ sub error{
 
 #Invalid User Access
 sub invalidUserAccess{
-  print "Content-type: text/html\n\n";
   print "<html>\n";
   print "  <head>\n";
   print "     <title>Operation Support GUI</title>\n";
@@ -1317,21 +1309,21 @@ sub getServerMode{
   while (my $operationGUIConfigLine = <OPERATION_GUI_CONFIG_FILE_HANDLER>){
     $operationGUIConfigLine = trim($operationGUIConfigLine);
     #Get the first char of a string
-	my $strFirstChar = substr($operationGUIConfigLine,0,1);
-	#Bypass comment line
+    my $strFirstChar = substr($operationGUIConfigLine,0,1);
+    #Bypass comment line
     if($strFirstChar eq $COMMENT_CHAR){
-	  next;
-	}
+      next;
+    }
  
     my @operationGUIConfigLineArray = split(/\=/,$operationGUIConfigLine);
-	my $operationGUIConfigLineArrayCnt = scalar(@operationGUIConfigLineArray);
-	if($operationGUIConfigLineArrayCnt == 2){
-	  my $configKey = trim($operationGUIConfigLineArray[$OPERATION_GUI_CONFIG_LINE_KEY]);#Config Line Key - For example: 'server'
+    my $operationGUIConfigLineArrayCnt = scalar(@operationGUIConfigLineArray);
+    if($operationGUIConfigLineArrayCnt == 2){
+      my $configKey = trim($operationGUIConfigLineArray[$OPERATION_GUI_CONFIG_LINE_KEY]);#Config Line Key - For example: 'server'
       if($configKey eq $CONFIG_LINE_KEY_SERVER){
-	    $serverMode = trim($operationGUIConfigLineArray[$OPERATION_GUI_CONFIG_LINE_VALUE]);#Config Line Value - For example: 'TAP'
-		last;
-	  }
-	} 		
+        $serverMode = trim($operationGUIConfigLineArray[$OPERATION_GUI_CONFIG_LINE_VALUE]);#Config Line Value - For example: 'TAP'
+        last;
+      }
+    }       
   }#end while (my $operationGUIConfigLine = <OPERATION_GUI_CONFIG_FILE_HANDLER>)
   close OPERATION_GUI_CONFIG_FILE_HANDLER;
 
@@ -1348,14 +1340,14 @@ sub setDB2ENVPath{
     if($SERVER_MODE eq $TAP){#TAP Server
       $DB_ENV = "/db2/tap/sqllib/db2profile";
     }
-	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/tap/sqllib/db2profile";
-	}
+    elsif($SERVER_MODE eq $TAP2){#TAP2 Server
+      $DB_ENV = "/home/tap/sqllib/db2profile";
+    }
 }
 
 #This method is used to set DB Connection Information
 sub setDBConnInfo{
-	my $cfg=Config::Properties::Simple->new(file=>'/opt/staging/v2/config/connectionConfig.txt');        
+    my $cfg=Config::Properties::Simple->new(file=>'/opt/SupportGui/connection.txt');        
       $db_url = "dbi:DB2:";
       $db_url .= $cfg->getProperty('staging.name');
       $db_userid = $cfg->getProperty('staging.user');;

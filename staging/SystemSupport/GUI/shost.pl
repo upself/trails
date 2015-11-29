@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # modules
@@ -7,16 +7,20 @@ use strict;
 use CGI;
 use DBI;
 use File::Basename;
-use TAP::DBConnection;
-use Tap::NewPerl;
 use Database::Connection;
 #
 # globals
 #
-my $DB_ENV = '/db2/tap/sqllib/db2profile';
+my $DB_ENV = '/home/eaadmin/sqllib/db2profile';
 my $BRAVO_DB = 'trails';
 my $STAGING_DB = 'staging';
 my $SCHEMA = 'eaadmin';
+my $db_url;
+my $db_userid ;
+my $db_password ;
+my $db2_url ;
+my $db2_userid ;
+my $db2_password ;
 
 my %users = ();
 $users{'gonght@cn.ibm.com'}++;
@@ -43,12 +47,13 @@ $users{'shaodsz@cn.ibm.com'}++;
 $users{'tomas.sima@cz.ibm.com'}++;
 
 my $cgi = new CGI;
-my $self = basename($0);
+my $self = "shost";
+my $user = $ARGV[0];
 
 #
 # authentication
 #
-if (!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq '') {
+if (!defined $user || $user eq '') {
     error();
     exit 0;
 }
@@ -56,46 +61,17 @@ if (!defined $ENV{'REMOTE_USER'} || $ENV{"REMOTE_USER"} eq '') {
 #
 # authorization
 #
-if (!exists $users{ $ENV{'REMOTE_USER'} }) {
+if (!exists $users{ $user }) {
     invalid_access();
     exit 0;
-}
-
-#
-# db2 environment
-#
-  setDB2ENVPath();
-
-sub setDB2ENVPath{
-    if($SERVER_MODE eq $TAP){#TAP Server
-	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
-    }
-	elsif($SERVER_MODE eq $TAP2){#TAP2 Server
-	  $DB_ENV = "/home/tap/sqllib/db2profile";
-	}
-	elsif($SERVER_MODE eq $TAP3){#TAP3 Server
-	  $DB_ENV = '/home/eaadmin/sqllib/db2profile';
-	}
-	elsif($SERVER_MODE eq 'b03cxnp15029'){#GHO
-	  $DB_ENV = '/home/db2inst2/sqllib/db2profile';
-	}
-}
 }
   #Setup DB2 environment
   setupDB2Env();
   
-  #Set DB Connection Information
-  setDBConnInfo();
-  
-    $bravo = Database::Connection->new('trails');
+setDBConnInfo();
   ###Get staging db connection
-  $staging = Database::Connection->new('staging');
-
-my $staging = new DBConnection();
-$staging->setDatabase($STAGING_DB);
-my $string = "dbi:DB2:DATABASE=staging;HOSTNAME=tap.raleigh.ibm.com;PORT=5104;PROTOCOL=TCPIP;";
-my $dbh = DBI->connect($string, 'eaadmin', 'apr03db2') || die "Connection failed with error: $DBI::errstr";
-$staging->setDbh($dbh);
+my  $staging = DBI->connect($db_url, $db_userid, $db_password) || die "Connection failed with error: $DBI::errstr";
+my    $bravo = DBI->connect($db2_url, $db2_userid, $db2_password) || die "Connection failed with error: $DBI::errstr";
 
 #$staging->setDatabase($STAGING_DB);
 #$staging->connect();
@@ -109,7 +85,7 @@ my %bankAcctMap = getBankAcctMap();
 
 #
 # main
-#
+
 my $error = $cgi->param("error");
 if (defined $error) {
     error();
@@ -279,7 +255,6 @@ sub getBankAcctMap {
 # header
 sub header {
     print <<HTML;
-Content-type: text/html
 
 <html>
 <head>
@@ -584,4 +559,16 @@ HTML
         }
     }
     footer();
+}
+
+sub setDBConnInfo{
+	my $cfg=Config::Properties::Simple->new(file=>'/opt/SupportGui/connection.txt');        
+      $db_url = "dbi:DB2:";
+      $db_url .= $cfg->getProperty('staging.name');
+      $db_userid = $cfg->getProperty('staging.user');;
+      $db_password = $cfg->getProperty('staging.password');
+      $db2_url = "dbi:DB2:";
+      $db2_url .= $cfg->getProperty('trails.name');
+      $db2_userid = $cfg->getProperty('trails.user');;
+      $db2_password = $cfg->getProperty('trails.password');
 }
