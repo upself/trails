@@ -10,6 +10,7 @@ use Database::Connection;
 use Base::ConfigManager;
 use Tap::NewPerl;
 use Recon::LicensingReconEngineCustomer;
+use Recon::Delegate::ReconDelegate;
 
 my $logfile    = "/var/staging/logs/reconEngineLicensing/reconEngineLicensing.log";
 my $pidFile    = "/tmp/reconEngineLicensing.pid";
@@ -38,7 +39,7 @@ my $rNo = 'revision233';
 my $maxChildren        = 100;
 my %runningCustomerIds = ();
 my %children           = ();
-my $children;
+# my $children;
 
 my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
 my @customerIds = getReconCustomerQueue( $connection, $testMode );
@@ -80,10 +81,13 @@ sub keepTicking {
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              ( $masters, $members ) = getPoolCustomers($connection);
              $connection->disconnect;
+             Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
         }
-        if ( $children >= $maxChildren ) {
-            wlog("$rNo sleeping");
-            sleep;
+         if ( scalar (keys (%children)) >= $maxChildren ) {
+			if ( Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children) == 0 ) {
+				wlog("$rNo sleeping");
+				sleep;
+			}
             
             wlog("$rNo before reset array size:". scalar @customerIds);
             my $connection;
@@ -97,7 +101,7 @@ sub keepTicking {
         }
         
         
-        for ( my $i = $children; $i < $maxChildren; $i++ ) {
+        for ( my $i = scalar (keys %children); $i < $maxChildren; $i++ ) {
             ilog("$rNo running $i");
             my $customer = shift @customerIds;
             last if( !defined $customer && scalar @customerIds == 0);
@@ -116,12 +120,15 @@ sub keepTicking {
             }
         }
         
-        if ((scalar @customerIds == 0) && ( $children > 0 )) {
-            wlog("$rNo loop of customer array finished will sleep till end of child");
-            sleep;
-            wlog("$rNo waked up");   
+        if ((scalar @customerIds == 0) && ( scalar (keys %children) > 0 )) {
+			Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
+			if ( scalar (keys %children) > 0 ) {
+				wlog("$rNo loop of customer array finished will sleep till end of child");
+				sleep;
+				wlog("$rNo waked up");
+			}
         }
-        elsif ((scalar @customerIds == 0) && ( $children == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
+        if ((scalar @customerIds == 0) && ( scalar(keys %children) == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
 			wlog("$rNo customer array empty and no children running, waiting 10 minutes before reloading the queue");
 			sleep 600;
 		}
@@ -188,9 +195,8 @@ sub newChild {
     die "Cannot fork child: $!\n" unless defined( $pid = fork );
     if ($pid) {
         $children{$pid} = 1;
-        $children++;
         $runningCustomerIds{$customerId} = $pid;
-        ilog("forked new child, we now have $children children");
+        ilog("forked new child, we now have ".scalar(keys %children)." children");
         return;
     }
 
@@ -213,7 +219,7 @@ sub REAPER {
     my $stiff;
     while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
         warn("child $stiff terminated -- status $?");
-        $children--;
+        delete $children{$stiff} if exists $children{$stiff};
         foreach my $customerId ( keys %runningCustomerIds ) {
             if ( $stiff == $runningCustomerIds{$customerId} ) {
                 delete $runningCustomerIds{$customerId};
