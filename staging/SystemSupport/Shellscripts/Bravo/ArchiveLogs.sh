@@ -40,7 +40,6 @@ bye
 
 if [ -s ftp.error ]; then 
 	LOG_CONTENT+="Error during 'ftping' logs transaction\n" 
-	RETURN_CODE=1
 else 
 	LOG_CONTENT+="Succesfully 'ftped' the logs\n" 
 fi

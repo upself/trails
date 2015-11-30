@@ -1,44 +1,6 @@
 #!/usr/bin/perl -w
 #
 # This perl script is used to provide a GUI to let AM support team add operations into Operation Queue 
-# Author: liuhaidl@cn.ibm.com 
-# Date        Who            Version         Description
-# ----------  ------------   -----------     -------------------------------------------------------------------------------------------------------------------
-# 2013-07-17  Liu Hai(Larry) 1.0.0           This is the initial version for Operation GUI perl script
-#                                            The Operation GUI Design and Implementation
-#                                            The basic architecture design and implementation of System Support Component for Operation GUI
-# 2013-07-18  Liu Hai(Larry) 1.0.1           Add the 'operationDefinition.properties' operation definition properties Support Feature
-# 2013-07-19  Liu Hai(Larry) 1.0.2           Control Dynamically Operation Parameter Fields based on the 'operationDefinition.properties' operation definition
-#                                            Operation Parameter Fields Input Value Validation Support Feature
-# 2013-07-23  Liu Hai(Larry) 1.0.3           Add 'OPERATION_QUEUE' DB Table Storage Logic Support Feature
-# 2013-07-26  Liu Hai(Larry) 1.0.4           Display and Adjust GUI for all the data records of 'OPERATION_QUEUE' DB Table
-#                                            1. Add a 'Index #' column which is used to show record number
-#                                            2. Add a 'Operation User' column which is used to record operation user. For example: 'liuhaidl@cn.ibm.com'
-#                                            3. Remove the 'Operation ID' and 'Operation Name Code' columns from the 'OPERATION_QUEUE' DB HTML Table
-# 2013-07-29  Liu Hai(Larry) 1.0.5           1. Add 'Yes/No' Javascript Confirm Panel for 'OPERATION_QUEUE' DB Table Insert Operation   
-#                                            2. Add 'OPERATION_QUEUE' DB Table Insert Logic Support Feature
-#                                            3. Remove the 'RECORD_TIME' column and then add two new 'OPERATION_ADD_TIME' and 'OPERATION_UPDATE_TIME' columns for the 'OPERATION_QUEUE' DB Table
-#                                            Please note that:
-#                                              A. The new 'OPERATION_ADD_TIME' DB column is used to record operation added time.
-#                                              B. The new 'OPERATION_UPDATE_TIME' DB column is used to record operation updated time. For example: Operation Execution Successful Time or Operation Execution Failed Time
-# 2013-08-07  Liu Hai(Larry) 1.0.6           Add Login User Authorization Support Feature
-# 2013-08-15  Liu Hai(Larry) 1.0.7           Adjust Operation Queue Table Column to be fixed width
-# 2013-08-26  Liu Hai(Larry) 1.0.8           Add the 'operationGUI.properties' properties file Support Feature - For example: server mode 'TAP'
-# 2013-08-27  Liu Hai(Larry) 1.0.9           Add 'System Support Operation User Manual' URL Link Support Feature
-###################################################################################################################################################################################################
-#                                            Phase 3 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 3'
-# 2013-10-12  Liu Hai(Larry) 1.3.0           Adjust Operation Queue Table Data Column to be fixed width
-# 2013-10-14  Liu Hai(Larry) 1.3.1           Generate Operation Parameters Input String whatever Operation Parameters have values or not. The Operation Parameters String has included 10 values using ^ char to seperate. For example: TI30326-36768^reconEngine.pl^^^^^^^^
-# 2013-11-05  Liu Hai(Larry) 1.3.2           System Support And Self Healing Service Components - Phase 3 - Add the special char '\' support for the Operation Parameters 
-###################################################################################################################################################################################################
-#                                            Phase 6 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 6'
-# 2014-02-13  Liu Hai(Larry) 1.6.0           Add Operation Parameter Value Type Check Support Feature
-###################################################################################################################################################################################################
-#                                            Phase 7 Development Formal Tag: 'Added by Larry for System Support And Self Healing Service Components - Phase 7'
-# 2014-03-21  Liu Hai(Larry) 1.7.0           1. Add total input parameter values length check logic. Currently the total length cannot exceed 503 chars
-#                                            2. Improve Operation GUI experience to set the width of Operation Queue Table and Operation Queue Table Columns as fixed width   
-# 2014-12-04  Liu Hai(Larry) 1.7.1           Add 'liukaid@cn.ibm.com' user into the valid authorization user list
-#
 
 #Load required modules
 use strict;

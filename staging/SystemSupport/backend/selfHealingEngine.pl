@@ -359,7 +359,7 @@ my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEn
   print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
   
   #set db2 env path
-  setDB2ENVPath();
+  $DB_ENV= $cfgMgr->db2Profile;
   #TODO vytahni log cestu z configu
   #Setup DB2 environment
   setupDB2Env();
@@ -1613,10 +1613,10 @@ sub coreOperationProcess{
 		$telnet->errmode($RETURN_ERROR_MODE);
 
 		#Set Telnet Object Log Parameters
-		$telnet->dump_log($TELNET_DUMP_FILE);
-		$telnet->output_log($TELNET_OUTPUT_FILE);
-		$telnet->input_log($TELNET_INPUT_FILE);
-		$telnet->option_log($TELNET_OPTION_FILE);
+		#$telnet->dump_log($TELNET_DUMP_FILE);
+		#$telnet->output_log($TELNET_OUTPUT_FILE);
+		#$telnet->input_log($TELNET_INPUT_FILE);
+		#$telnet->option_log($TELNET_OPTION_FILE);
 
 		$telnet->waitfor($MATCH=>$LOGIN) or &error("Match Telnet Return Message for Login Userid with Regex String {$LOGIN}",$telnet->errmsg);
 
@@ -1649,7 +1649,6 @@ sub coreOperationProcess{
 
 				    @msgReturnLines = $telnet->cmd($executeLoggingSpaceCheckCommand);
                     #@msgReturnLines = $telnet->waitfor($PROMPT) or &error("Match Telnet Return Message for Basic Input Line with Regex String {$PROMPT}",$telnet->errmsg);
-				    if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD){ # Is there enought filespace for logs?
                       printMessageWithTimeStamp("The filespace for logs are full, cleaning the filespace\n");
 				      $telnet->print($executeClearLoggingSpace); # clean the filespace
            		      $telnet->waitfor($MATCH=>$PASSWORD) or &error("Match Telnet Return Message for Login Password with Regex String {$PASSWORD}",$telnet->errmsg);
@@ -1676,7 +1675,6 @@ sub coreOperationProcess{
 				      }else{
 				  	    printMessageWithTimeStamp("Cleaniung of the filespace was succesfull, continuing with BRAVO/TRAILS restart operation.");
 				      } #if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD)
-				    } #if($msgReturnLines[0] > $LOGFILESPACETHRESHOLD)
 
   			        if($operationErrorFlag == $FALSE){#$operationErrorFlag == $FALSE - 4
 				      $telnet->print($executeStopCommand);
@@ -2499,7 +2497,6 @@ sub updateOperationFunction{
 sub getValidLoaderListOnTAPServer{
   my @vaildLoaderList = ();
 
-  #TAP Loader List
   push @vaildLoaderList,"doranaToSwasset.pl";#1
   push @vaildLoaderList,"hdiskToStaging.pl";#2
   push @vaildLoaderList,"ipAddressToStaging.pl";#3
@@ -2517,20 +2514,13 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"expiredMaintManager.pl";#15
   push @vaildLoaderList,"expiredScansManager.pl";#16
   push @vaildLoaderList,"scanRecordToLpar.pl";#17
-  #push @vaildLoaderList,"softwareDoranaToStaging.pl";#18#Added by Larry to remove the softwareDoranaToStaging.pl loader from the valid list
   push @vaildLoaderList,"licenseToBravo.pl";#19
   push @vaildLoaderList,"licTypeToBravo.pl";#20
   push @vaildLoaderList,"scanSoftwareItemToStaging.pl";#21
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.6 Start
   push @vaildLoaderList,"atpToStaging.pl";#22
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.6 End
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
   push @vaildLoaderList,"swcmToStaging.pl";#23
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 Start
   push @vaildLoaderList,"capTypeToBravo.pl";#24
-  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.8 End
-  #push @vaildLoaderList,"testingTAP.pl";#25 #For testing function purpose only
+  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#24
   
   return @vaildLoaderList;
 }

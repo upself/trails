@@ -34,6 +34,7 @@ my $healthCheckMonitorLogFile = "/var/staging/logs/HME/healthCheckMonitoring.log
 my $pidFile                   = "/tmp/healthCheckMonitoring.pid";
 my $configFile                = $HOME_DIR . "/config/healthCheckMonitoring.properties";
 
+my $action;
 my $cfgMgr   = Base::ConfigManager->instance($configFile);
 my $configSleepPeriod  = trim($cfgMgr->sleepPeriod);
 print "configSleepPeriod: {$configSleepPeriod}\n";
@@ -249,7 +250,8 @@ my $ONLY_SEND_ERROR_EMAIL_FLAG       = "N";#Only Send Error Email Flag
 my $DB_EXCEPTION_MESSAGE = "Database Exception Message";
 #HealthCheck and Monitoring Engine Startup Error Messages
 my $HME_ERROR_EMAIL_TITLE          = "HealthCheck and Monitoring Engine Startup Error Email";
-my $HME_ERROR_EMAIL_TO_PERSON_LIST = "tomas.sima\@cz.ibm.com,liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
+my $HME_ERROR_EMAIL_TO_PERSON_LIST = "tomas.sima\@cz.ibm.com";#,liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
+#TODO uncomment
 my $HME_ERROR_EMAIL_TXT            = "HealthCheck and Monitoring Engine Startup Error Message";
 my $hme_error_mail_message;
 #Web Application Check Configuration Value Definition Indexes
@@ -328,7 +330,7 @@ exit if $pid;
 loaderStart(shift @ARGV, $pidFile);#Start HealthCheck and Monitor Process
 my $mailFlag = shift @ARGV;
 
-if ($mailFlag == undef){
+if (not defined $mailFlag ){
 	$mailFlag = $FALSE;
 }
 ###Wrap everything in an eval so we can capture in logfile.
@@ -423,7 +425,7 @@ sub process{
 		if(($SERVER_MODE eq $TAP2) && ($loopIndex==2)){
 		  last;
 		}
-        
+        if($action eq "run-once"){exit;}
 		sleep $sleepPeriod;
     }
 }
@@ -2773,7 +2775,7 @@ sub loaderStart{
     my $msg = "Usage: $baseName [run-once|start|stop]\n";
 
     ###Check action argument was passed by user.
-    my $action = shift;
+    $action = shift;
     die $msg if ( !defined $action || $action =~ m/^\s+$/ );
    
     ###Check pid file argument.
@@ -2898,6 +2900,10 @@ sub setDB2ENVPath{
 	elsif($SERVER_MODE eq $b03cxnp15029){#GHO Server
 	$DB_ENV = '/home/db2inst2/sqllib/db2profile';
 	}
+	elsif($SERVER_MODE eq 'ralbz2088'){#GHO Server
+	$DB_ENV = '/home/trails/sqllib/db2profile';
+	}
+	
 }
 
 #This method is used to setup DB2 into System ENV var
