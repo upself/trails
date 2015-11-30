@@ -669,9 +669,6 @@ sub validateLicenseAllocation {
     undef, 0
    );
 
-   #   if ( $self->validateScheduleF( $rec{ibmOwned} ) == 0 ) {
-   #    $validation->validationCode(0);
-   #   }
 
    ###Add used quantity.
    $usedQuantity = $usedQuantity + $rec{lrmUsedQuantity};

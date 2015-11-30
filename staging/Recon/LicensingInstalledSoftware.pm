@@ -326,7 +326,15 @@ sub reconcile {
   );
   
   foreach my $lId ( keys %{$licsToAllocate} ) {
-     if($freePoolData->{$lId}->from eq 'scarlet'){
+    if(!defined $freePoolData){
+       last;
+    }
+    
+    if(!defined $freePoolData->{$lId}){
+       next;
+    }
+    
+    if($freePoolData->{$lId}->from eq 'scarlet'){
         dlog('build scarlet reconcile');
         my $scarletReconcile = new Recon::OM::ScarletReconcile();
         $scarletReconcile->id($rId);

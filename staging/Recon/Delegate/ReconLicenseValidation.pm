@@ -610,9 +610,10 @@ sub validateLicenseSoftwareMap {
   
   if ( not ($scarletReconcile->contains($reconcileId)) )    
   {
+   dlog("software not match and not in scarlet reconcile, add to break");
    dlog("isSoftwareId=$isSoftwareId");
    dlog("swMapSoftwareId=$swMapSoftwareId");
-   dlog("software id does not match, adding to list to break");
+  
    $self->addToReconcilesToBreak($reconcileId)
      if defined $reconcileId;
    $self->addToDeleteQueue($licenseId) if defined $licenseId;
@@ -621,6 +622,7 @@ sub validateLicenseSoftwareMap {
    return 0;
   }
   else {
+   dlog("software not match but in scarlet reconcile");
    $self->scarletAllocation('YES');
   }
  }elsif(defined $swMapSoftwareId
