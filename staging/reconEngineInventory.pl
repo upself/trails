@@ -78,11 +78,7 @@ sub keepTicking {
         if ( scalar @customerIds == 0 ) {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
              newPvuChild();
-             my $connection;
-             while (!defined($connection)) {
-				$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
-				elog("Connection retried three times with no success, keeping on retrying...");
-			 }
+             my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
              @customerIds = getReconCustomerQueue( $connection, $testMode );
              $connection->disconnect;
              Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
@@ -94,11 +90,7 @@ sub keepTicking {
 			}
             
             wlog("$rNo before reset array size:". scalar @customerIds);
-            my $connection;
-            while (!defined($connection)) {
-				$connection= Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
-				elog("Connection retried three times with no success, keeping on retrying...");
-			}
+            my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
             @customerIds = getReconCustomerQueue( $connection, $testMode );
             $connection->disconnect;
             wlog("$rNo end reset array size:". scalar @customerIds);
