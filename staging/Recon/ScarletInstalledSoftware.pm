@@ -208,6 +208,8 @@ sub setGuidsFromScarlet {
   }
 
   my $scarletGuids = $self->guidEndpoint->httpGet($swcmLicenseId);
+  $scarletGuids=[]
+      if(!defined $scarletGuids);
 
   dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {

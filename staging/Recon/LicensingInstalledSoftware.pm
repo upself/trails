@@ -325,25 +325,16 @@ sub reconcile {
    $self->installedSoftware->id, $allocMethodId
   );
   
-  foreach my $lId ( keys %{$licsToAllocate} ) {
-    if(!defined $freePoolData){
-       last;
-    }
-    
-    if(!defined $freePoolData->{$lId}){
-       next;
-    }
-    
-    if($freePoolData->{$lId}->from eq 'scarlet'){
-        dlog('build scarlet reconcile');
-        my $scarletReconcile = new Recon::OM::ScarletReconcile();
-        $scarletReconcile->id($rId);
-        $scarletReconcile->save( $self->connection );
-        
-        last;
-     }
-  }
-
+  if($self->isFreePoolFromScarlet($licsToAllocate,$freePoolData)
+    ||$self->isMachineAttemptFromScarlet($reconcileIdForMachineLevel))
+  {
+       dlog('build scarlet reconcile');
+       my $scarletReconcile = new Recon::OM::ScarletReconcile();
+       $scarletReconcile->id($rId);
+       $scarletReconcile->save( $self->connection );
+       dlog('scarlet reconcile built');
+  }     
+       
   my $scarletInstalledSw =
     new Recon::ScarletInstalledSoftware( $reconcileTypeId, $machineLevel,
    $allocMethodId, $self->installedSoftwareReconData->hId );
@@ -368,6 +359,53 @@ sub reconcile {
  }
 
  return ( 0, undef );
+}
+
+sub isFreePoolFromScarlet{
+ my $self = shift;
+ my $licsToAllocate = shift;
+ my $freePoolData = shift;
+ 
+ 
+ if(!defined $freePoolData){
+   dlog('free pool not defiend.');
+   return 0;
+ }
+ 
+ foreach my $lId ( keys %{$licsToAllocate} ) {
+    if(!defined $freePoolData->{$lId}){
+       next;
+    }
+    
+    if($freePoolData->{$lId}->from eq 'scarlet'){
+       return 1;
+    }
+  }
+  
+  dlog('free pool not from scarlet.');
+  return 0;
+}
+
+sub isMachineAttemptFromScarlet{
+   my $self = shift;
+   my $reconcileId = shift;
+   
+   if(!defined $reconcileId){
+      dlog('not machine level attempt');
+      return 0;
+   }
+   
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id($reconcileId);
+   $scarletReconcile->getByBizKey( $self->connection );
+   
+   if(defined $scarletReconcile->lastValidateTime){
+     dlog('machie level attempt from scarlet');
+     return 1;
+   }
+   
+   dlog('machie level attempt not from scarlet');
+   return 0;
 }
 
 sub attemptVendorManaged {
@@ -692,7 +730,6 @@ sub attemptExistingMachineLevel {
  if ( defined $reconcileTypeId && defined $reconcileIdForUsedLicense ) {
   dlog("allocated");
 
-  #		$self->enqueuePotentialHWboxAlloc();
 
   return (
    \%licsToAllocate,           $reconcileTypeId,
