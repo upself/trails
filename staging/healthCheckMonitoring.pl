@@ -250,8 +250,7 @@ my $ONLY_SEND_ERROR_EMAIL_FLAG       = "N";#Only Send Error Email Flag
 my $DB_EXCEPTION_MESSAGE = "Database Exception Message";
 #HealthCheck and Monitoring Engine Startup Error Messages
 my $HME_ERROR_EMAIL_TITLE          = "HealthCheck and Monitoring Engine Startup Error Email";
-my $HME_ERROR_EMAIL_TO_PERSON_LIST = "tomas.sima\@cz.ibm.com";#,liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
-#TODO uncomment
+my $HME_ERROR_EMAIL_TO_PERSON_LIST = "tomas.sima\@cz.ibm.com,liuhaidl\@cn.ibm.com,HDRUST\@de.ibm.com,Petr_Soufek\@cz.ibm.com,dbryson\@us.ibm.com,AMTS\@cz.ibm.com,stammelw\@us.ibm.com";
 my $HME_ERROR_EMAIL_TXT            = "HealthCheck and Monitoring Engine Startup Error Message";
 my $hme_error_mail_message;
 #Web Application Check Configuration Value Definition Indexes
