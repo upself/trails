@@ -9,35 +9,44 @@ use JSON;
 use Recon::LicensingInstalledSoftware;
 use Database::Connection;
 use BRAVO::OM::InstalledSoftware;
-use Config::Properties::Simple;
-use Try::Tiny;
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch::FileRotate;
 use Recon::OM::ScarletReconcile;
+use Scarlet::GuidEndpoint;
+use Scarlet::ParentEndpoint;
 
 sub new {
  my ( $class, $reconcileTypeId, $machineLevel, $allocMethodId, $hardwareId ) =
    @_;
  my $self = {
-  _connection      => Database::Connection->new('trails'),
-  _extSrcIds       => [],
-  _guids           => {},
-  _usedLicenses    => [],
-  _reconcileTypeId => $reconcileTypeId,
-  _machineLevel    => $machineLevel,
-  _allocMethodId   => $allocMethodId,
-  _hardwareId      => $hardwareId,
-  _config          => Config::Properties::Simple->new(
-   file => '/opt/staging/v2/config/connectionConfig.txt'
-
-  ),
+  _connection        => Database::Connection->new('trails'),
+  _extSrcIds         => [],
+  _guids             => {},
+  _usedLicenses      => [],
+  _reconcileTypeId   => $reconcileTypeId,
+  _machineLevel      => $machineLevel,
+  _allocMethodId     => $allocMethodId,
+  _hardwareId        => $hardwareId,
   _cachedParentGuids => {},
-  _outOfService      => 0
+  _guidEndpoint      => new Scarlet::GuidEndpoint(),
+  _parentEndpoint    => new Scarlet::ParentEndpoint()
  };
  bless $self, $class;
+}
+
+sub guidEndpoint {
+ my $self = shift;
+ $self->{_guidEndpoint} = shift if scalar @_ == 1;
+ return $self->{_guidEndpoint};
+}
+
+sub parentEndpoint {
+ my $self = shift;
+ $self->{_parentEndpoint} = shift if scalar @_ == 1;
+ return $self->{_parentEndpoint};
 }
 
 sub connection {
@@ -82,12 +91,6 @@ sub allocMethodId {
  return $self->{_allocMethodId};
 }
 
-sub config {
- my $self = shift;
- $self->{_config} = shift if scalar @_ == 1;
- return $self->{_config};
-}
-
 sub cachedParentGuids {
  my $self = shift;
  $self->{_cachedParentGuids} = shift if scalar @_ == 1;
@@ -102,8 +105,10 @@ sub hardwareId {
 
 sub outOfService {
  my $self = shift;
- $self->{_outOfService} = shift if scalar @_ == 1;
- return $self->{_outOfService};
+
+ return ( $self->guidEndpoint->outOfService )
+   || ( $self->parentEndpoint->outOfService );
+
 }
 
 sub appendData {
@@ -129,34 +134,6 @@ sub appendData {
 
  push @{ $self->extSrcIds },    $extSrcId;
  push @{ $self->usedLicenses }, $usedLicenseId;
-}
-
-sub httpGetScarletGuids {
- my ( $self, $uri, $member ) = @_;
-
- my $ua = LWP::UserAgent->new;
- $ua->timeout(10);
- $ua->env_proxy;
-
- my $response = $ua->get($uri);
-
- my $scarletGuids = [];
- if ( $response->is_success ) {
-  $self->outOfService(0);
-  my $json = new JSON;
-  try {
-   local $SIG{__DIE__};    # No sigdie handler
-   my $jsObj = $json->decode( $response->decoded_content );
-   $scarletGuids = $jsObj->{$member} if ( defined $jsObj->{$member} );
-    }
-    catch { wlog('bad json format.') };
- }
- else {
-   $self->outOfService(1);
-   wlog( 'scarlet requesting failed: ' . $response->status_line );
- }
-
- return $scarletGuids;
 }
 
 sub initByReconcileId {
@@ -207,14 +184,14 @@ sub existInScarlet {
  dlog("existInScarlet reconcileId=$reconcileId,isId=$isId");
 
  $self->initByReconcileId($reconcileId);
- my $guid = $self->setUpGuidsFromScarlet( $isId, 0 );
+ my $guid = $self->setGuidsFromScarlet( $isId, 0 );
 
  return 1 if ( $self->guids->{$guid} );
 
  return 0;
 }
 
-sub setUpGuidsFromScarlet {
+sub setGuidsFromScarlet {
 
  my ( $self, $installedSoftwareId, $excludeSelf ) = @_;
 
@@ -230,12 +207,10 @@ sub setUpGuidsFromScarlet {
    next;
   }
 
-  my $scarletGuidsApi = $self->config->getProperty('scarlet.guids');
-  my $uri             = URI->new($scarletGuidsApi);
-  $uri->query_form( 'licenseId' => $swcmLicenseId );
-  my $scarletGuids = $self->httpGetScarletGuids( $uri, 'guids' );
+  my $scarletGuids = $self->guidEndpoint->httpGet($swcmLicenseId);
+  $scarletGuids=[]
+      if(!defined $scarletGuids);
 
-  dlog("GET $uri");
   dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
    next if ( $excludeSelf && ( $id eq $guid ) );
@@ -257,8 +232,6 @@ sub traverseUp {
   return;
  }
 
- my $scarletGuidsApi = $self->config->getProperty('scarlet.guids.parents');
-
  foreach my $id ( @{$guids} ) {
 
   ###avoid duplicate request to scarlet.
@@ -267,13 +240,12 @@ sub traverseUp {
 
   $self->cachedParentGuids->{$id} = 1;
 
-  my $uri = URI->new("$scarletGuidsApi/$id/parents");
-
-  my $scarletParentsGuids = $self->httpGetScarletGuids( $uri, 'parents' );
+  my $scarletParentsGuids = $self->parentEndpoint->httpGet($id);
+  $scarletParentsGuids=[]
+      if(!defined $scarletParentsGuids);
 
   $self->traverseUp($scarletParentsGuids);
 
-  dlog("GET $uri");
   dlog( scalar @{$scarletParentsGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletParentsGuids} ) {
    $self->guids->{$id} = 1;
@@ -313,8 +285,8 @@ sub tryToReconcile {
   return;
  }
 
- #set up guids exclude guid of $isObj.
- $self->setUpGuidsFromScarlet( $isObj->id, 1 );
+ #set guids exclude guid of $isObj.
+ $self->setGuidsFromScarlet( $isObj->id, 1 );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {

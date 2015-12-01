@@ -4,7 +4,7 @@ use strict;
 use Base::Utils;
 use Recon::Delegate::ReconDelegate;
 use Recon::Pvu;
-use Recon::ScarletInstalledSoftware;
+use Recon::ScarletReconcile;
 
 sub new {
  my ($class) = @_;
@@ -611,14 +611,14 @@ sub validateLicenseSoftwareMap {
   && $isSoftwareId != $swMapSoftwareId )
  {
 
-  my $scarletIs = new Recon::ScarletInstalledSoftware();
-
-  if (( not $scarletIs->existInScarlet( $reconcileId, $isId ) )
-   && ( not $scarletIs->outOfService ) )    
+  my $scarletReconcile = new Recon::ScarletReconcile();
+  
+  if ( not ($scarletReconcile->contains($reconcileId)) )    
   {
+   dlog("software not match and not in scarlet reconcile, add to break");
    dlog("isSoftwareId=$isSoftwareId");
    dlog("swMapSoftwareId=$swMapSoftwareId");
-   dlog("software id does not match, adding to list to break");
+  
    $self->addToReconcilesToBreak($reconcileId)
      if defined $reconcileId;
    $self->addToDeleteQueue($licenseId) if defined $licenseId;
@@ -626,10 +626,8 @@ sub validateLicenseSoftwareMap {
    $self->scarletAllocation('NO');
    return 0;
   }
-  elsif ( $scarletIs->outOfService ) {
-   $self->scarletAllocation('UNKNOW');
-  }
   else {
+   dlog("software not match but in scarlet reconcile");
    $self->scarletAllocation('YES');
   }
  }elsif(defined $swMapSoftwareId

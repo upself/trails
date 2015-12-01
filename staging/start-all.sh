@@ -92,4 +92,6 @@ sleep $SLEEP
 sleep $SLEEP
 ./reconEnginePriorityISVSoftware.pl start
 sleep $SLEEP
+./scarletProcess.pl start
+sleep $SLEEP
 exit 0
