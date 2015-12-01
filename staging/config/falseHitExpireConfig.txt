@@ -3,7 +3,7 @@
 
 logfile=/var/staging/logs/falseHitExpire/falseHitExpire.log
 debugLevel=info
-server=tap3
+server=b03cxnp15029
 
 falsehitage=396
 complexstring=Complex discovery
