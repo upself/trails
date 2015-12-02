@@ -1,0 +1,5 @@
+testMode=0
+server=ralbz001063
+applyChanges=1
+debugLevel=warn
+sleepPeriod=10800

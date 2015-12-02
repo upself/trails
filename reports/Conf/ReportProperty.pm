@@ -13,10 +13,7 @@ sub new
         my ($fileName, $fileDirectory) = fileparse($thisReportName, ".pl");
         
         my $host = hostname;
-        my $shost = ( split( /\./, $host ) )[0];       
-         
-        die "!!! ONLY RUN THIS SCRIPT ON tap2/tap3 !!!\n"
-                    if($shost ne 'tap2' && $shost ne 'tap3' && $shost ne 'b03cxnp15029');                        
+        my $shost = ( split( /\./, $host ) )[0];
         my $systemFile = "/opt/staging/v2/config/connectionConfig.txt";
         my $cfg = Config::Properties::Simple->new(file => $systemFile);
 
