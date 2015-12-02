@@ -50,8 +50,7 @@ use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck A
 #############################################################################
 # globals/constants
 
-# derive version directly from CVS revision.  As good a method as any.
-use version; our $VERSION = qv((split(/ /, q$Revision: 1.7 $))[1]);
+# derive version directly from CVS revision.  As good a method as any. use version; our $VERSION = qv((split(/ /, q$Revision: 1.7 $))[1]);
 
 # where we find / move files to
 #Readonly my $FROM_DIR   => '/var/ftp/staging';
@@ -435,6 +434,8 @@ for my $file (@files) {
             next EXTRACTED_LOOP;
         }
 
+        ### removing white character
+        sed -i 's/﻿//g' "$extracted_file"
 
         ### compressing: $extracted_file
         archive_file($extracted_file);
