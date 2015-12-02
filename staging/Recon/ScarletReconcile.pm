@@ -142,7 +142,7 @@ sub validate {
  $sth->finish;
 }
 
-sub checkIfAutoScarletAllocate {
+sub checkDataConstency {
  my ( $self, $reconTypeId, $softwareIdOfInstalledSw, $reconcileId ) = @_;
 
  my $query = '
