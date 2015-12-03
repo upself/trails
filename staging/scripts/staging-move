@@ -435,7 +435,8 @@ for my $file (@files) {
         }
 
         ### removing white character
-        sed -i 's/﻿//g' "$extracted_file"
+        sed 's/﻿//g' $extracted_file > "/tmp/tmp$extracted_file"
+        mv "/tmp/tmp$extracted_file" $extracted_file
 
         ### compressing: $extracted_file
         archive_file($extracted_file);
