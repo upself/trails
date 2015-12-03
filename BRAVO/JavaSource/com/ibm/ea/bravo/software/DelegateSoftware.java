@@ -265,28 +265,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		return size;
 	}
 
-	//Change Bravo to use Software View instead of Product Object Start
-	/*public static Product getSoftware(String softwareName) {
-		logger.debug("DelegateSoftware.getSoftware");
-		Product software = null;
 
-		try {
-			Session session = getSession();
-
-			ArrayList<Product> products = (ArrayList<Product>) session
-					.getNamedQuery("softwareByName")
-					.setString("name", softwareName).list();
-			if (products.size() > 0)
-				software = products.get(0);
-
-			closeSession(session);
-
-		} catch (Exception e) {
-			logger.error(e, e);
-		}
-
-		return software;
-	}*/
 	
 	public static Software getSoftware(String softwareName) {
 		logger.debug("DelegateSoftware.getSoftware");
@@ -310,27 +289,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		return software;
 	}
 	
-	/*@SuppressWarnings("unchecked")
-	public static List<Product> searchSoftware(String search) throws Exception {
-		logger.debug("DelegateSoftware.searchSigBank search = " + search);
-		List<Product> list = null;
 
-		if (EaUtils.isBlank(search))
-			return list;
-
-		Session session = getSession();
-
-		list = session.getNamedQuery("softwaresSearch")
-				.setString("name", "%" + search.toUpperCase() + "%")
-				.setString("manufacturer", "%" + search.toUpperCase() + "%")
-				.list();
-
-		closeSession(session);
-
-		logger.debug("About ready to return list of " + list.size());
-
-		return list;
-	}*/
 	
 	@SuppressWarnings("unchecked")
 	public static List<Software> searchSoftware(String search) throws Exception {
@@ -446,34 +405,6 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
-
-	
-	//Change Bravo to use Software View instead of Product Object Start
-	/*public static Product getSigBank(String id) {
-		logger.debug("DelegateSoftware.getSigBank(String) id = " + id);
-		if (EaUtils.isBlank(id))
-			return null;
-
-		return getSigBank(Long.parseLong(id));
-	}
-
-	public static Product getSigBank(long id) {
-		logger.debug("DelegateSoftware.getSigBank(long) id = " + id);
-		Product software = null;
-
-		try {
-			Session session = getSession();
-
-			software = (Product) session.getNamedQuery("softwareById")
-					.setLong("id", id).uniqueResult();
-
-			closeSession(session);
-		} catch (Exception e) {
-			logger.error(e, e);
-		}
-
-		return software;
-	}*/
 	
 	public static Software getSigBank(String id) {
 		logger.debug("DelegateSoftware.getSigBank(String) id = " + id);

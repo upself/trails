@@ -122,21 +122,6 @@
 				l.name like :name
 		]]>
 	</query>
-
-    <!--Change Bravo to use Software View instead of Product Object Start-->
-	<!-- <query name="softwareByName">
-		<![CDATA[
-			from
-				Product s
-			join fetch s.softwareItem
-			join fetch s.kbDefinition
-				
-			where
-				upper(s.softwareItem.name) = :name
-				and s.kbDefinition.deleted != 1
-			order by product_role desc
-		]]>
-	</query> -->
 	
 	<query name="softwareByName">
 		<![CDATA[
@@ -148,19 +133,6 @@
 			order by s.productRole desc
 		]]>
 	</query>
-
-   <!-- <query name="swByName">
-		<![CDATA[
-		from Product s
-		    join fetch s.productInfo.softwareCategory
-
-		where
-			upper(s.softwareItem.name) = :softwareName 
-			and s.kbDefinition.deleted != 1
-            order by product_role desc
-
-		]]>
-	</query> -->
 	
 	<query name="swByName">
 		<![CDATA[
@@ -173,18 +145,6 @@
             order by s.productRole desc
 		]]>
 	</query>
- 
-	<!--<query name="softwareById">
-		<![CDATA[
-			from
-				Product s
-			join fetch s.manufacturer
-			join fetch s.softwareItem
-			join fetch s.productInfo
-			where
-				s.id = :id
-		]]>
-	</query> -->
 	
 	<query name="softwareById">
 		<![CDATA[
@@ -197,20 +157,6 @@
 		]]>
 	</query>
 	
-	<!-- <query name="softwaresSearch">
-		<![CDATA[
-			FROM Product P
-				JOIN FETCH P.manufacturer
-				JOIN FETCH P.softwareItem
-				JOIN FETCH P.productInfo
-				JOIN FETCH P.kbDefinition
-			WHERE (UPPER(P.softwareItem.name) LIKE :name
-				OR UPPER(P.manufacturer.manufacturerName) LIKE :manufacturer)
-			AND P.softwareItem.productRole = 'SOFTWARE_PRODUCT'
-			AND P.kbDefinition.deleted != 1
-		]]>
-	</query> -->
-	
 	<query name="softwaresSearch">
 		<![CDATA[
 			FROM Software s
@@ -221,18 +167,6 @@
 			AND s.status = 'ACTIVE'
 		]]>
 	</query>
-
-	<!-- <query name="softwaresSearchCount">
-		<![CDATA[
-			select
-				count(*)
-			from
-				Product s
-			where
-				upper(s.softwareItem.name) like :name
-				or upper(s.manufacturer.manufacturerName) like :manufacturer
-		]]>
-	</query> -->
 	
 	<query name="softwaresSearchCount">
 		<![CDATA[
@@ -245,7 +179,6 @@
 				or upper(s.manufacturer.manufacturerName) like :manufacturer
 		]]>
 	</query>
-	<!--Change Bravo to use Software View instead of Product Object End-->
 
 	<query name="softwareLparById">
 		<![CDATA[
@@ -315,23 +248,6 @@
 				and l.name = :name
 		]]>
 	</query>
-
-    <!--Change Bravo to use Software View instead of Product Object Start-->
-	<!--<query name="installedSoftwaresBySoftwareLpar">
-		<![CDATA[
-			from
-				com.ibm.ea.bravo.software.InstalledSoftware s
-			join fetch s.softwareLpar
-			join fetch s.software
-			join fetch s.software.manufacturer
-			join fetch s.software.softwareItem
-			join fetch s.discrepancyType
-			where
-				s.softwareLpar = :softwareLpar
-			order by
-				s.software.softwareItem.name
-		]]>
-	</query>-->
 	
 	<query name="installedSoftwaresBySoftwareLpar">
 		<![CDATA[
@@ -348,23 +264,6 @@
 		]]>
 	</query>
 
-	<!--<query name="installedSoftwaresById">
-		<![CDATA[
-			from
-				com.ibm.ea.bravo.software.InstalledSoftware s
-			join fetch s.softwareLpar
-			join fetch s.softwareLpar.customer
-			join fetch s.software
-			join fetch s.software.manufacturer
-			join fetch s.software.softwareItem
-			join fetch s.discrepancyType
-			where
-				s.id = :id
-			order by
-				s.software.softwareItem.name
-		]]>
-	</query>-->
-
     <query name="installedSoftwaresById">
 		<![CDATA[
 			from
@@ -380,22 +279,6 @@
 				s.software.softwareName
 		]]>
 	</query>
-   
-	<!--<query name="installedSoftwareBySoftwareBySoftwareLpar">
-		<![CDATA[
-			from
-				com.ibm.ea.bravo.software.InstalledSoftware s
-				join fetch s.softwareLpar
-				join fetch s.softwareLpar.customer
-				join fetch s.software
-				join fetch s.software.manufacturer
-				join fetch s.software.softwareItem
-				join fetch s.discrepancyType
-			where
-				s.softwareLpar = :softwareLpar
-				and s.software = :software
-		]]>
-	</query>-->
 	
 	 <query name="installedSoftwareBySoftwareBySoftwareLpar">
 		<![CDATA[
@@ -411,7 +294,6 @@
 				and s.software = :software
 		]]>
 	 </query>
-	 <!--Change Bravo to use Software View instead of Product Object End-->
 
 	<query name="softwareHistoryBySoftwareId">
 		<![CDATA[
@@ -504,57 +386,8 @@
 				and l.hardwareLpar is null
 				and l.status in (:status)
 		]]>
-	</query><!--
-	
-	
-	<query name="getSoftwareLparIPAddress">
-		<![CDATA[
-			from
-				SoftwareLparIPAddress 
-			where
-				softwareLpar = :softwareLpar
-		]]>
 	</query>
 	
-
-	<query name="getSoftwareLparHDisk">
-		<![CDATA[
-			from
-				SoftwareLparHDisk
-			where
-				softwareLpar = :softwareLpar
-		]]>
-	</query>
-
-
-	<query name="getSoftwareLparMemMod">
-		<![CDATA[
-			from
-				SoftwareLparMemMod
-			where
-				softwareLpar = :softwareLpar
-		]]>
-	</query>
-
-	<query name="getSoftwareLparADC">
-		<![CDATA[
-			from
-				SoftwareLparADC
-			where
-				softwareLpar = :softwareLpar
-		]]>
-	</query>
-
-	<query name="getSoftwareLparProcessor">
-		<![CDATA[
-			from
-				SoftwareLparProcessor
-			where
-				softwareLpar = :softwareLpar
-		]]>
-	</query>
-
--->
 	<sql-query name="checkManualQueue">
 		<![CDATA[
 			select 1 
