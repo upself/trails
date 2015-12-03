@@ -8,11 +8,11 @@
 <h2>Confirm reconciliation workspace settings</h2>
 <br />
 <s:if test="total > 300">
-	Your workspace settings will return ${total} alerts, would you like to <a href="settings.htm">revise</a> your workspace settings?
+	<p>Your workspace settings will return ${total} alerts, would you like to <a href="settings.htm">revise</a> your workspace settings or <s:a href="%{workspaceLink}">continue</s:a> to the workspace?</p>
 </s:if>
-<p>Reconciliation workspace settings successfully updated. Use the
-navigation on the left to proceed to the workspace or click <s:a
-	href="%{workspaceLink}">here</s:a>.</p>
+<s:if test="total <= 300">
+	<p>Reconciliation workspace settings successfully updated. Use the navigation on the left to proceed to the workspace or click <s:a href="%{workspaceLink}">here</s:a>.</p>
+</s:if>
 <br />
 <div class="hrule-dots"></div>
 
