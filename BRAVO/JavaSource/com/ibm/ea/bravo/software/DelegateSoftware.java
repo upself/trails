@@ -270,16 +270,21 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	public static Software getSoftware(String softwareName) {
 		logger.debug("DelegateSoftware.getSoftware");
 		Software software = null;
-
 		try {
 			Session session = getSession();
-
+			
 			ArrayList<Software> products = (ArrayList<Software>) session
-					.getNamedQuery("softwareByName")
+					.getNamedQuery("softwareByNameCaseSensitive")
 					.setString("name", softwareName).list();
 			if (products.size() > 0)
 				software = products.get(0);
-
+			else {
+				products = (ArrayList<Software>) session
+						.getNamedQuery("softwareByName")
+						.setString("name", softwareName).list();
+				if (products.size() > 0)
+					software = products.get(0);
+			}
 			closeSession(session);
 
 		} catch (Exception e) {

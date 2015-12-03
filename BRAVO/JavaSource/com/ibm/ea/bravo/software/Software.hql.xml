@@ -123,6 +123,17 @@
 		]]>
 	</query>
 	
+	<query name="softwareByNameCaseSensitive">
+		<![CDATA[
+			from
+				Software s
+			where
+				s.softwareName = :name
+				and s.status= 'ACTIVE'
+			order by s.productRole desc
+		]]>
+	</query>
+	
 	<query name="softwareByName">
 		<![CDATA[
 			from
