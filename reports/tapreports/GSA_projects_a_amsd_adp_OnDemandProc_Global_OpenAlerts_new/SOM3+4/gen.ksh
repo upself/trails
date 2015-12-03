@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/ksh
 
-geo=( AP EUROPE GCG NA LA MEA UNKNOWN JAPAN )
-numbers=( 6 7 8 9 )
+set -A geo AP EUROPE GCG NA LA MEA UNKNOWN JAPAN
+set -A numbers 6 7 8 9
 
 AP1="AP1_HW_No_LPAR_alert"
 AP2="AP2_HW_LPAR_No_SW_LPAR_alert"
@@ -89,16 +89,17 @@ for n in "${numbers[@]}"
 do
 		cp base $g$n.sql
 TEMP=$g$n
-		sed -i "s/:geo:/$g/g" $g$n.sql
-		sed -i "s/:code:/:code"$n":/g" $g$n.sql
-		sed -i "s/:output:/${!TEMP}.txt/g" $g$n.sql
+		sed "s/:geo:/$g/g" <$g$n.sql >temp.$$ && mv temp.$$ $g$n.sql
+		sed "s/:code:/:code"$n":/g" <$g$n.sql >temp.$$ && mv temp.$$ $g$n.sql
 done
 done
 
+for file in $(find . -type f -name "*.sql"); do
+   sed "s/:code6:/SWISCOPE/g" <$file >temp.$$ && mv temp.$$ $file
+   sed "s/:code7:/SWIBM/g" <$file >temp.$$ && mv temp.$$ $file
+   sed "s/:code8:/SWISVPR/g" <$file >temp.$$ && mv temp.$$ $file
+   sed "s/:code9:/SWISVNPR/g" <$file >temp.$$ && mv temp.$$ $file
+done
 
-sed -i "s/:code6:/SWISCOPE/g" *.sql
-sed -i "s/:code7:/SWIBM/g" *.sql
-sed -i "s/:code8:/SWISVPR/g" *.sql
-sed -i "s/:code9:/SWISVNPR/g" *.sql
 
 
