@@ -9,7 +9,7 @@ SELECT
 	 VA.Creation_Time as "Create date/time", 
 	 VA.Alert_Age as "Age",
 	 swlhw.machtyp "Asset Type",
-	 swlhw.ostype "OS TYPE", 
+	 swlhw.ostype "OS Type", 
 	 VA.Remote_User as "Assignee", 
 	 VA.Comments as "Assignee comments", 
 	 VA.Record_Time as "Assigned date/time", 
