@@ -19,7 +19,6 @@ SELECT
 			VA.Creation_Time as "Create date/time", 
 			VA.Alert_Age as "Age", 
 			MT.Type as "Asset type", 
-			HL.OS_TYPE as "OS TYPE",
 			VA.Remote_User as "Assignee", 
 			VA.Comments as "Assignee comments", 
 			VA.Record_Time as "Assigned date/time", 
@@ -32,7 +31,6 @@ SELECT
 
 FROM EAADMIN.V_Alerts VA
      join EAADMIN.Hardware H on H.Id = VA.FK_Id
-     join EAADMIN.Hardware_lpar HL on HL.HARDWARE_ID = H.ID
      join EAADMIN.Machine_Type MT on MT.Id = H.Machine_Type_Id
      join EAADMIN.cause_code CC on VA.id=CC.alert_id
      join eaadmin.alert_type at on at.id=CC.alert_type_id
