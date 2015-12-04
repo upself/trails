@@ -1,7 +1,7 @@
 #!/bin/ksh
 
 set -A geo AP EUROPE GCG NA LA MEA UNKNOWN JAPAN
-n=1
+n=4
 for g in "${geo[@]}" 
 do
 		cp base $g$n.sql
