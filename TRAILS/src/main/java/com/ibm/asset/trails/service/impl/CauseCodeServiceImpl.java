@@ -387,6 +387,9 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 						&& HSSFDateUtil.isCellDateFormatted(targetDateCell)) {
 					colTargetDate = targetDateCell.getDateCellValue();
 				}
+				else if(targetDateCell.getCellType() == HSSFCell.CELL_TYPE_STRING){
+					colTargetDate = convertTextToDate(targetDateCell);//Convert Date Text to Date Object
+				}
 			}
 			String owner = causeCode.getOwner();
 			String colOwner = row.getCell(colIndexes.getColOwner())
@@ -605,6 +608,51 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 		}
 		
 		return false;
+	}
+	
+	private Date convertTextToDate(HSSFCell cell){
+		Date formattedDate = null;
+
+		if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+			String dateText = cell.getStringCellValue();
+			if (dateText != null && !"".equals(dateText.trim())){
+				dateText = dateText.trim();
+				int dateLen = dateText.length();
+				if(dateLen==10){
+				  boolean dashFormat = dateText.indexOf(DASH)!=-1;
+				  if(dashFormat){//DASH Date Format: YYYY-MM-DD
+					  SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT1);
+					  try{
+						  format.setLenient(false);
+						  formattedDate = format.parse(dateText);
+					  }
+					  catch(ParseException e){
+						 formattedDate = null;
+					  }
+				  }
+				  else{
+					  SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT2);//SLASH Date Format: YYYY/MM/DD
+					  try{
+						  format.setLenient(false);
+						  formattedDate = format.parse(dateText);
+					  }
+					  catch(ParseException e){
+						  format = new SimpleDateFormat(DATE_FORMAT3);//SLASH Date Format: MM/DD/YYYY
+						  try{
+							  format.setLenient(false);
+							  formattedDate = format.parse(dateText);
+						  }
+						  catch(ParseException ex){
+							 formattedDate = null;
+						  } 
+					  } 
+				  }
+			  }
+			}
+			
+		}
+		
+		return formattedDate;
 	}
 	
 	@SuppressWarnings("unchecked")
