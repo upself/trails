@@ -18,12 +18,12 @@
 <span class="download-link">
 	<a href="/TRAILS/reports/operational/accountDetailDownload.htm?d-49653-e=2&6578706f7274=1&accountId=<s:property value="%{#attr.account.id}" />">Operational metrics</a>
 </span>
-<span class="download-link">
+<%-- <span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionDetail<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionDetail">Pending customer decision reconciled detail alert</a>
 </span>
 <span class="download-link">
 	<a href="/TRAILS/report/download/pendingCustomerDecisionSummary<s:property value="%{#attr.account.account}" />.tsv?name=pendingCustomerDecisionSummary">Pending customer decision reconciled summary alert</a>
-</span>
+</span> --%>
 
 
 <h2 class="bar-blue-med-light">Data Exception Reports</h2><br />

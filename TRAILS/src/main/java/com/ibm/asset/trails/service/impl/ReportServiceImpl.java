@@ -121,7 +121,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] NON_WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
 			"Account #", "Account name", "Account type", "Geography", "Region",
 			"Country", "Sector", "Workstation count", "HW status" };
-	private final String[] PENDING_CUSTOMER_DECISION_DETAIL_COLUMN_HEADERS = {
+	/*private final String[] PENDING_CUSTOMER_DECISION_DETAIL_COLUMN_HEADERS = {
 			"Primary Component", "Hostname", "Action performed",
 			"Create date/time", "Recon date/time", "Recon user" };
 	private final String PENDING_CUSTOMER_DECISION_DETAIL_REPORT_NAME = "Customer owned and IBM managed detail report";
@@ -129,7 +129,7 @@ public class ReportServiceImpl implements ReportService {
 			"Primary Component", "Action performed", "Total", "0 - 45 days",
 			"46 - 90 days", "91 - 120 days", "121 - 180 days",
 			"181 - 365 days", "Over 365 days" };
-	private final String PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME = "Customer owned and IBM managed summary report";
+	private final String PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME = "Customer owned and IBM managed summary report";*/
 	private final String[] RECONCILIATION_SUMMARY_COLUMN_HEADERS = {
 			"Primary Component", "Installed instances",
 			"Installed instances covered by entitlement",
@@ -1088,7 +1088,7 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	/*@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getPendingCustomerDecisionDetailReport(Account pAccount,
 			String remoteUser, String lsName, PrintWriter pPrintWriter)
 			throws HibernateException, Exception {
@@ -1106,9 +1106,9 @@ public class ReportServiceImpl implements ReportService {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}
 		lsrReport.close();
-	}
+	}*/
 
-	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	/*@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getPendingCustomerDecisionSummaryReport(Account pAccount,
 			String remoteUser, String lsName, PrintWriter pPrintWriter)
 			throws HibernateException, Exception {
@@ -1126,7 +1126,7 @@ public class ReportServiceImpl implements ReportService {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}
 		lsrReport.close();
-	}
+	}*/
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getReconciliationSummaryReport(Account pAccount,
