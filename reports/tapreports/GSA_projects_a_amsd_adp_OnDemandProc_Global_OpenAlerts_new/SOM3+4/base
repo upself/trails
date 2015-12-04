@@ -25,7 +25,7 @@ SELECT
 			 join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id 
 			 join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id 
 			 join EAADMIN.HW_SW_COMPOSITE HSC on HSC.software_lpar_id=SL.id
-			 join EAADMIN.HARDWARE_LPAR HL on HSC.hardware_lpar_id=HL
+			 join EAADMIN.HARDWARE_LPAR HL on HSC.hardware_lpar_id=HL.id
 			 join EAADMIN.HARDWARE HW on HL.hardware_id=HW.id
 			 join EAADMIN.MACHINE_TYPE MT on HW.machine_type_id=MT.id
 			 join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id 
