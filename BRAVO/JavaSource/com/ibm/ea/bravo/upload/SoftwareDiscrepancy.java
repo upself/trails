@@ -109,7 +109,7 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 			String accountId = data[0];
 			String softwareLparName = data[1].toUpperCase().trim();
 			String processorCount = data[2];
-			String softwareName = data[3].toUpperCase().trim();
+			String softwareName = data[3].trim();
 			String version = data[4].toUpperCase().trim();
 			String users = data[5];
 
@@ -276,10 +276,9 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 	
 	private Software getSoftware(String softwareName) {
 		Software software = null;
-
 		// check the cache first
 		software = (Software) softwares.get(softwareName);
-
+		
 		// if not in the cache, try the database
 		if (software == null) {
 			software = DelegateSoftware.getSoftware(softwareName);
@@ -288,7 +287,6 @@ public class SoftwareDiscrepancy extends UploadBase implements IBatch {
 			if (software != null)
 				softwares.put(softwareName, software);
 		}
-
 		return software;
 	}
 	//Change Bravo to use Software View instead of Product Object End
