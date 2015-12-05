@@ -20,7 +20,7 @@ public class PendingCustomerDecisionDetailReport extends ReportBase {
 	@Override
 	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		super.getReportService().getPendingCustomerDecisionDetailReport(pAccount, remoteUser, lsName,
-				new PrintWriter(super.getOutputStream(), true));
+		/*super.getReportService().getPendingCustomerDecisionDetailReport(pAccount, remoteUser, lsName,
+				new PrintWriter(super.getOutputStream(), true));*/
 	}
 }
