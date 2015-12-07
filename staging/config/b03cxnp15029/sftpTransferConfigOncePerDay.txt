@@ -42,4 +42,15 @@ tgtpwd=[gsaPassword]
 delsource=false
 minage=5
 
+[SWGUID]
+direction=gsa2loc # rem2loc - remote to local, or loc2rem
+srchostname=bldgsa.ibm.com
+source=/projects/s/swdata/cot/
+target=/opt/catalog/swkbt/loader/swkbtComponent
+filemask=^swguid\.del$
+srcusr=[gsa.swmulti.report.user] # for logging
+srcpwd=[gsa.swmulti.report.password]
+delsource=false
+minage=800
+
 
