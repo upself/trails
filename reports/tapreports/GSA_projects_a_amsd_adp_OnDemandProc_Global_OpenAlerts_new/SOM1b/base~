@@ -1,0 +1,50 @@
+SELECT
+			r.name as "Region",
+			ccode.name as "Country",
+			c.customer_name as "Account Name",
+			c.account_number as "Account Number",
+			CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as "Status",
+			H.Serial as "Serial", 
+			MT.Name as "Machine type", 
+			MT.Type as "Asset type", 
+			H.processor_manufacturer as "Processor Manufacturer", 
+			H.MAST_PROCESSOR_TYPE as "Mast Processor Type", 
+			H.PROCESSOR_MODEL as "Processor Model", 
+			H.NBR_CORES_PER_CHIP as "NBR Cores Per Chip", 
+			H.CHIPS as "HW Chips",
+			H.PROCESSOR_COUNT as "HW Processor Count", 
+			H.NBR_OF_CHIPS_MAX as "NBR Of Chips Max", 
+			H.CPU_GARTNER_MIPS as "CPU Gartner MIPS", 
+			H.CPU_MIPS as "CPU IBM LSPR MIPS", 
+			H.CPU_MSU as "CPU MSU",
+			VA.Creation_Time as "Create date/time", 
+			VA.Alert_Age as "Age", 
+			VA.Remote_User as "Assignee", 
+			VA.Comments as "Assignee comments", 
+			VA.Record_Time as "Assigned date/time", 
+			AC.name as "Cause Code (CC)",
+			CC.target_date as "CC target date", 
+			CC.owner as "CC owner", 
+			CC.record_time as "CC change date", 
+			CC.remote_user as "CC change person", 
+			CC.id as "Internal ID"
+
+FROM EAADMIN.V_Alerts VA
+     join EAADMIN.Hardware H on H.Id = VA.FK_Id
+     join EAADMIN.Machine_Type MT on MT.Id = H.Machine_Type_Id
+     join EAADMIN.cause_code CC on VA.id=CC.alert_id
+     join eaadmin.alert_type at on at.id=CC.alert_type_id
+     join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id
+     join eaadmin.customer c on c.customer_id = va.customer_id
+     join eaadmin.country_code ccode on ccode.id=c.country_code_id
+     join eaadmin.region r on r.id = ccode.region_id
+     join eaadmin.geography geo on r.geography_id=geo.id
+
+WHERE 
+	VA.Type = 'HWCFGDTA' 
+	AND VA.Open = 1
+	and at.code='HWCFGDTA'
+	and geo.name=':geo:'
+
+ORDER BY c.customer_name, H.Serial ASC
+with ur;
