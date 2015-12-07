@@ -20,6 +20,7 @@ use filetest 'access';
 
 use English qw{-no_match_vars};
 use Fatal qw{open close unlink};
+use String::BOM qw(strip_bom_from_file);
 
 use Encode::Guess;
 
@@ -50,8 +51,7 @@ use HealthCheck::Delegate::EventLoaderDelegate;#Added by Larry for HealthCheck A
 #############################################################################
 # globals/constants
 
-# derive version directly from CVS revision.  As good a method as any.
-use version; our $VERSION = qv((split(/ /, q$Revision: 1.7 $))[1]);
+# derive version directly from CVS revision.  As good a method as any. use version; our $VERSION = qv((split(/ /, q$Revision: 1.7 $))[1]);
 
 # where we find / move files to
 #Readonly my $FROM_DIR   => '/var/ftp/staging';
@@ -236,6 +236,14 @@ sub validate_options {
     return;
 }
 
+sub remove_white_characters {
+    my ($file) = @_;
+    DEBUG "Removing white characters from file: ".$file;
+
+    strip_bom_from_file($file);
+}
+
+
 #############################################################################
 # main()
 
@@ -366,30 +374,10 @@ for my $file (@files) {
 
     if ($file =~ /.+\.tsv$/) {
 
+        remove_white_characters($file);
         ### we're just a tsv: $file
         archive_file($file);
         unlink $file unless $test;
-        next FILE_LOOP;
-    }
-    elsif ($file =~ /.+\.tsv\.gz$/) {
-
-        DEBUG "we're already in the right form, just move: $file";
-
-        local $EVAL_ERROR;        
-        eval { mv $file, $opts{to_dir}; };
-        if ($EVAL_ERROR) {
-
-            my $base = $file;
-            $file =~ s|.+/||;
-
-            my $cmd = "(cat $file > $opts{to_dir}/$base)";
-
-            WARN  "Cannot mv file directly, cat'ing and then unlink'ing";
-            DEBUG "RUNNING: $cmd";
-
-            system $cmd;
-        }
-
         next FILE_LOOP;
     }
 
@@ -435,6 +423,7 @@ for my $file (@files) {
             next EXTRACTED_LOOP;
         }
 
+        remove_white_characters($extracted_file);
 
         ### compressing: $extracted_file
         archive_file($extracted_file);
