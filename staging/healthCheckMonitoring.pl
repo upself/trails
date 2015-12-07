@@ -34,6 +34,7 @@ my $healthCheckMonitorLogFile = "/var/staging/logs/HME/healthCheckMonitoring.log
 my $pidFile                   = "/tmp/healthCheckMonitoring.pid";
 my $configFile                = $HOME_DIR . "/config/healthCheckMonitoring.properties";
 
+my $action;
 my $cfgMgr   = Base::ConfigManager->instance($configFile);
 my $configSleepPeriod  = trim($cfgMgr->sleepPeriod);
 print "configSleepPeriod: {$configSleepPeriod}\n";
@@ -326,7 +327,11 @@ exit if $pid;
 #setsid or die "ERROR: Unable to setsid: $!";#Hai comments out for temp
 
 loaderStart(shift @ARGV, $pidFile);#Start HealthCheck and Monitor Process
+my $mailFlag = shift @ARGV;
 
+if (not defined $mailFlag ){
+	$mailFlag = $FALSE;
+}
 ###Wrap everything in an eval so we can capture in logfile.
 eval{
 	#1.Do event init operation
@@ -419,7 +424,7 @@ sub process{
 		if(($SERVER_MODE eq $TAP2) && ($loopIndex==2)){
 		  last;
 		}
-        
+        if($action eq "run-once"){exit;}
 		sleep $sleepPeriod;
     }
 }
@@ -459,13 +464,13 @@ sub eventLogging{
      appendStartAndStopScriptEmailAlertsIntoEmailContent(); 
      
      #Send Out Alert Email
-	 if($emailFullContent ne ""){#Send email only email content has value
+	 if($emailFullContent ne "" && $mailFlag == $TRUE){#Send email only email content has value
 		#Append Alert Email Signature Into Email Content
         appendAlertEmailSignatureIntoEmailContent(); 
         sendEmail($emailSubjectInfo,$emailToAddressList,$emailCcAddressList,$emailFullContent);
      }
 	  
-	 elsif($emailFullContent eq ""){#A new feature to support that there is no alert message generated case
+	 elsif($emailFullContent eq "" && $mailFlag == $TRUE){#A new feature to support that there is no alert message generated case
         #Append Server Normal Running Information Into Email Content
         appendServerNormalRunningInfoIntoEmailContent();
         #Append Alert Email Signature Into Email Content
@@ -2069,21 +2074,13 @@ sub eventRuleCheck{
 				 
 				   $processedRuleMessage = $metaRuleMessage;#Reset to metaRuleMessage for every loop
                    
-				   my $WEBAPP_CURL_COMMAND = "curl --connect-timeout \@connectTimeout --max-time \@maxTime --head --silent \@url";
+				   my $WEBAPP_CURL_COMMAND = "/opt/staging/v2/SystemSupport/Shellscripts/connectionTester.sh \@url";
                    my $processedCURL = $WEBAPP_CURL_COMMAND;#Reset CURL initial value for every loop
 
 				   my @webAppsCheckConfigValuesArrayItemArray = split(/\~/,$webAppsCheckConfigValuesArrayItem);
 
 				   my $webAppName = trim($webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_WEB_APPNAME_INDEX]);#remove spaces
                    print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - webAppName: {$webAppName}\n";
-				  
-				   my $connectTimeout = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_CONNECT_TIMEOUT_INDEX];
-				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - connectTimeout: {$connectTimeout}\n";
-				   $processedCURL =~ s/\@connectTimeout/$connectTimeout/g;#replace @connectTimeout with connect timeout value - for example: 15
-				  
-				   my $maxTime = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_MAX_TIME_INDEX];
-				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - maxTime: {$maxTime}\n";
-				   $processedCURL =~ s/\@maxTime/$maxTime/g;#replace @maxTime with maxTime value - for example: 20
 				  
 				   my $url = $webAppsCheckConfigValuesArrayItemArray[$WEBAPP_CHECK_CONFIG_VALUE_URL_INDEX];
 				   print LOG "Web Application Running Status Check Monitoring - The Web Application Check Configuration Value - url: {$url}\n";
@@ -2101,8 +2098,7 @@ sub eventRuleCheck{
                      $webReturnMsg =~ s/[\r\n]//g;#Remove \r\n chars for HTML data line. Please note that HTML data line default uses '\r\n' as the ending chars. 
 					 print LOG "Web Application Running Status Check Monitoring - Web Return Message: {$webReturnMsg}\n";
 					
-					 if($webReturnMsg =~ /$HTTP_OK_CODE/#Judge if the web return message includes HTTP_OK_CODE '200'
-					  ||$webReturnMsg =~ /$HTTP_FORBIDDEN_CODE/){#Judge if the web return message includes HTTP_FORBIDDEN_CODE '403'
+					 if($webReturnMsg =~ 'CONNECTED*'){
                        $webAppRunningFlag = $TRUE;
 					   last;
 					 }
@@ -2110,81 +2106,16 @@ sub eventRuleCheck{
 
                    if($webAppRunningFlag == $TRUE){
                      print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently running.\n"; 
-					 
-					 #For Testing Purpose on TAP2 Server only Start
-					 #For TAP2 Testing Server, whatever there are actual webApp Error Messages or not, always generates webApp Error Messages about Alert Email Content for testing purpose 
-					 if($SERVER_MODE eq $TAP2){
-                       $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-					   push @webAppErrorMessageArray, $processedRuleMessage;
-                       
-                       #Please note that the following codes have been added for Testing Purpose on TAP2 Server only
-					   #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					   if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
-					    &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
-					     ){
-
-					     #Switch to the target perl execution folder - '/opt/staging/v2/'  
-					     chdir $loaderExistingPath;
-		                 print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
-                       
-					     #Check the current folder information	 
-					     my @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
-					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
-					       chomp($pwdReturnMsg);
-					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
-					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
-
-					     my $restartWebAppExecCmd;#var used to to store restart web application execution command
-					     if($webAppName eq $BRAVO_WEB_APP){
-					       $restartWebAppExecCmd = $selfHealingEngineRestartBravoWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_BRAVO_WEB_APPLICATION ^^^^^^^^^"
-					     }#end if($webAppName eq $BRAVO_WEB_APP)
-					     else{
-					       $restartWebAppExecCmd = $selfHealingEngineRestartTrailsWebAppOperationExecutionCommand;#"./selfHealingEngine.pl RESTART_TRAILS_WEB_APPLICATION ^^^^^^^^^"
-					     }#end else
-
-					     my $restartWebAppCmdExecResult = system($restartWebAppExecCmd);
-                         if($restartWebAppCmdExecResult == 0){
-					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed successfully.\n";
-					       $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationSuccessMessage;
-						   $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-						   push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
-						   print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
-					     }#end if($restartWebAppCmdExecResult == 0)
-					     else{
-					       print LOG "Web Application Running Status Check Monitoring - The Restart Web Application Unix Command {$restartWebAppExecCmd} has been executed failed.\n";
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage = $selfHealingEngineRestartWebAppOperationFailMessage;
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
-                           $selfHealingEngineRestartWebAppOperationProcessedMessage =~ s/\@3/"The Restart Web Application Unix Command: {$restartWebAppExecCmd} has been executed failed."/g;
-                           push @webAppErrorMessageArray, "*** $selfHealingEngineRestartWebAppOperationProcessedMessage ***";
-                           print LOG "Web Application Running Status Check Monitoring - The Self Healing Engine Restart Web Application Operation Processed Message: {$selfHealingEngineRestartWebAppOperationProcessedMessage}\n"; 
-					     }#end else
-
-                         #Switch back to the HME home folder - '/home/liuhaidl/working/scripts'  
-					     chdir $HOME_DIR;
-		                 print LOG "Web Application Running Status Check Monitoring - The HealthCheck and Monitoring Engine Home Folder: {$HOME_DIR} has been switched back.\n";
-                      
-					     #Check the current folder information	 
-					     @pwdReturnMsgs = `$PWD_UNIX_COMMAND`;
-					     foreach my $pwdReturnMsg(@pwdReturnMsgs){
-					       chomp($pwdReturnMsg);
-					       print LOG "Web Application Running Status Check Monitoring - The Current Folder: {$pwdReturnMsg}\n";
-					     }#end foreach my $pwdReturnMsg(@pwdReturnMsgs)
-					   }#end if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON) &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP))
-                       #The Self Healing Engine Restart Web Application Operation Automatically Ended here
-					 }#end if($SERVER_MODE eq $TAP2)
-					 #For Testing Purpose on TAP2 Server only End
-				   }#end if($webAppRunningFlag == $TRUE)
+				   }
 				   else{
 					 $processedRuleMessage =~ s/\@2/$webAppName/g;#replace @2 with web application name value - for example: 'Bravo'
 					 push @webAppErrorMessageArray, $processedRuleMessage;
 				     print LOG "Web Application Running Status Check Monitoring - The Web Application $webAppName is currently not running.\n";
+				     $mailFlag = $TRUE;
 					 
 					 #The Self Healing Engine Restart Web Application Operation Automatically Started here
-					 if(($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON)#Self Healing Engine Restart Web Application Feature has been turn on
-					  &&($webAppName eq $BRAVO_WEB_APP||$webAppName eq $TRAILS_WEB_APP)#Restart Web Application Self Healing Operation only used for Bravo/Trails Web Application
-					   ){
+					 if($selfHealingEngineSwitch eq $SELF_HEALING_ENGINE_RESTART_WEB_APP_OPERATION_TURN_ON){
 
-					   #Switch to the target perl execution folder - '/opt/staging/v2/'  
 					   chdir $loaderExistingPath;
 		               print LOG "Web Application Running Status Check Monitoring - The Target Folder: {$loaderExistingPath} has been switched.\n";
                        
@@ -2843,7 +2774,7 @@ sub loaderStart{
     my $msg = "Usage: $baseName [run-once|start|stop]\n";
 
     ###Check action argument was passed by user.
-    my $action = shift;
+    $action = shift;
     die $msg if ( !defined $action || $action =~ m/^\s+$/ );
    
     ###Check pid file argument.
@@ -2946,6 +2877,7 @@ sub loaderStart{
 
 #This method is used to set DB2 ENV path
 sub setDB2ENVPath{
+		$DB_ENV= 'home/trails/sqllib/db2profile';
     if($SERVER_MODE eq $TAP){#TAP Server
       $DB_ENV = '/db2/tap/sqllib/db2profile';
     }
@@ -2967,6 +2899,10 @@ sub setDB2ENVPath{
 	elsif($SERVER_MODE eq $b03cxnp15029){#GHO Server
 	$DB_ENV = '/home/db2inst2/sqllib/db2profile';
 	}
+	elsif($SERVER_MODE eq 'ralbz2088'){#GHO Server
+	$DB_ENV = '/home/trails/sqllib/db2profile';
+	}
+	
 }
 
 #This method is used to setup DB2 into System ENV var

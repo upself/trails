@@ -161,6 +161,7 @@
 		<mapping resource="com/ibm/ea/bravo/report/Report.hql.xml" />
 		<mapping resource="com/ibm/ea/bravo/software/parser/Parser.hql.xml" />
 		<mapping resource="com/ibm/ea/bravo/software/Software.hql.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledSoftware.hql.xml" />
 		<mapping resource="com/ibm/ea/bravo/swasset/Swasset.hql.xml" />
 		<mapping resource="com/ibm/ea/bravo/systemstatus/SystemScheduleStatus.hql.xml" />
 

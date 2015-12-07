@@ -15,7 +15,7 @@ public class ProductInfoDaoJpa extends ProductDaoJpa<ProductInfo, Long>
 		@SuppressWarnings("unchecked")
 		List<ProductInfo> list = getEntityManager()
 				.createQuery(
-						"SELECT ProductInfo h left join fetch h.alias left join fetch h.pids left join fetch h.recon where h.guid = :key")
+						"SELECT ProductInfo h left join fetch h.alias left join fetch h.pids left join fetch h.recon where h.guid = :guid")
 				.setParameter("guid", key)
 				.setHint("org.hibernate.cacheable", Boolean.TRUE)
 				.getResultList();

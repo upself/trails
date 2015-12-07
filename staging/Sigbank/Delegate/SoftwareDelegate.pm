@@ -43,14 +43,12 @@ sub getSoftwareMap {
 sub querySoftware {
     my $query = '
         select
-            a.software_id
+            software_id
         from
-            software a
-            ,kb_definition b
+            software
         where
-            a.software_id != 1000
-            and a.software_id=b.id
-            and b.deleted != 1
+            status = \'ACTIVE\'
+        with ur
     ';
 
     return ('software',$query);

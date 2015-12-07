@@ -10,6 +10,37 @@ use BRAVO::OM::License;
 use Recon::Queue;
 use Recon::OM::ScarletReconcile;
 
+sub checkRunningProcHash { # compares the hash of running process IDs with actually running processes
+						   # returns number of processes deleted from hash, that weren't running
+	my $self = shift;
+	my $param = shift;
+    my %prochash = %$param;
+	
+	my $toreturn=0;
+	
+	my @runningproc=split ('\n', `ps -ef`);
+	
+	foreach my $procId (@runningproc) {
+		chomp $procId;
+		$procId =~ /^[^ ]+[ ]+([^ ]+)/;
+		$procId = $1;
+		$prochash{$procId} = 2 if exists $prochash{$procId}; # setting value to 2
+															 # if the process is found among actually running ones
+	}
+	
+	foreach my $hashnow ( keys %prochash ) {
+		if ( $prochash{$hashnow} == 1 ) { # anything in process hash still value 1 is NOT running
+			wlog("$hashnow is in process hash, but not running, deleting from hash!");
+			delete $prochash{$hashnow};
+			$toreturn++;
+		} else {
+			$prochash{$hashnow}=1;
+		}
+	}
+	
+	return $toreturn;
+}
+
 sub getReconcileTypeMap {
 	my ($self) = @_;
 
