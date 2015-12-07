@@ -445,7 +445,7 @@ sub buildScanRecord {
     
     $rec->{scanTime} = $self->checkDateSyntax($rec->{scanTime},'1970-01-01-00.00.00.000000');
     $rec->{biosDate} = $self->checkDateSyntax($rec->{biosDate},'1970-01-01-00.00.00.000000');
-    $rec->{osInstDate} = $self->checkDateSyntax($rec->{osInstDate},'');
+    $rec->{osInstDate} = $self->checkDateSyntax($rec->{osInstDate},undef);
     
     
     ###Adjust the processor count
