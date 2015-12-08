@@ -18,6 +18,7 @@ use Base::Utils;
 our $useftp = ( hostname eq "tap.raleigh.ibm.com" ||  hostname eq "b03cxnp15029" ) ? "0" : "1"; # whether we can use the SFTP module
 our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
 our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
+our $tempdir = "/var/ftp/";
 
 logging_level( "error" ); # detailed level of the logfile
 ###################################################
@@ -48,6 +49,8 @@ our $flagispresent; # flag is present
 our %processednames; # hash of all the processed FTP sessions
 
 our %connConfigParams; # hash of all the lines in connection config file, to keep passwords in one place
+
+$tempdir = $tempdir."/" unless ( $tempdir =~ /\/$/ );
 
 ####################################
 ##       SUBS
@@ -266,7 +269,7 @@ sub filetomove { # determines whether given file is elligible to be copied
 	return 0;
 }
 
-sub getfile { # transfers the file from source to /tmp, returns 0 on success
+sub getfile { # transfers the file from source to $tempdir, returns 0 on success
 	my $srcdir=shift;
 	my $srcfile=shift;
 	my $ftphandle=shift;
@@ -274,16 +277,16 @@ sub getfile { # transfers the file from source to /tmp, returns 0 on success
 	dlog "getting $srcdir/$srcfile";
 	
 	if ( defined $ftphandle ) {
-		$ftphandle->get($srcdir."/".$srcfile, "/tmp/".$srcfile);
+		$ftphandle->get($srcdir."/".$srcfile, $tempdir.$srcfile);
 		return ( $ftphandle->status != 0 );
 	}
 	
-	my $ret=copy($srcdir."/".$srcfile, "/tmp/".$srcfile );
+	my $ret=copy($srcdir."/".$srcfile, $tempdir.$srcfile );
 	return 0 if ( $ret == 1 );
 	return 1;
 }
 
-sub putfile { # moves file from /tmp to target
+sub putfile { # moves file from $tempdir to target
 	my $srcfile=shift;
 	my $tgtdir=shift;
 	my $ftphandle=shift;
@@ -291,12 +294,12 @@ sub putfile { # moves file from /tmp to target
 	dlog "putting $tgtdir/$srcfile";
 	
 	if ( defined $ftphandle ) {
-		$ftphandle->put("/tmp/".$srcfile, $tgtdir."/".$srcfile);
-		unlink("/tmp/".$srcfile);
+		$ftphandle->put($tempdir.$srcfile, $tgtdir."/".$srcfile);
+		unlink($tempdir.$srcfile);
 		return ( $ftphandle->status != 0 );
 	}
 	
-	my $ret=move("/tmp/".$srcfile, $tgtdir."/".$srcfile);
+	my $ret=move($tempdir.$srcfile, $tgtdir."/".$srcfile);
 	
 	`chmod 664 /$tgtdir/$srcfile` if ( $ret == 1 );
 	
@@ -427,7 +430,7 @@ while (readcfgfile(\*CFGFILE)) {
 			elog("Job $name, error getting file $file!");
 			$filestocopy{$file}=0;
 			$successfulfiles--;
-			unlink("/tmp/".$file) if ( -e "/tmp/".$file );
+			unlink($tempdir.$file) if ( -e $tempdir.$file );
 			next;
 		}
 		
