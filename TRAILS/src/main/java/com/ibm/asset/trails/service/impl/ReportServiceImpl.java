@@ -125,15 +125,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] NON_WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
 			"Account #", "Account name", "Account type", "Geography", "Region",
 			"Country", "Sector", "Workstation count", "HW status" };
-	/*private final String[] PENDING_CUSTOMER_DECISION_DETAIL_COLUMN_HEADERS = {
-			"Primary Component", "Hostname", "Action performed",
-			"Create date/time", "Recon date/time", "Recon user" };
-	private final String PENDING_CUSTOMER_DECISION_DETAIL_REPORT_NAME = "Customer owned and IBM managed detail report";
-	private final String[] PENDING_CUSTOMER_DECISION_SUMMARY_COLUMN_HEADERS = {
-			"Primary Component", "Action performed", "Total", "0 - 45 days",
-			"46 - 90 days", "91 - 120 days", "121 - 180 days",
-			"181 - 365 days", "Over 365 days" };
-	private final String PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME = "Customer owned and IBM managed summary report";*/
+	
 	private final String[] RECONCILIATION_SUMMARY_COLUMN_HEADERS = {
 			"Primary Component", "Installed instances",
 			"Installed instances covered by entitlement",
@@ -1131,45 +1123,6 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 
-	/*@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionDetailReport(Account pAccount,
-			String remoteUser, String lsName, PrintWriter pPrintWriter)
-			throws HibernateException, Exception {
-		ScrollableResults lsrReport = ((Session) getEntityManager()
-				.getDelegate())
-				.createSQLQuery(
-						"SELECT S.software_name, SL.Name AS SL_Name, RT.Name AS RT_Name, AUS.Creation_Time, R.Record_Time, R.Remote_User FROM EAADMIN.software S, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE S.software_id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id ORDER BY S.software_name, SL.Name, RT.Name")
-				.setLong("customerId", pAccount.getId())
-				.scroll(ScrollMode.FORWARD_ONLY);
-
-		printHeader(PENDING_CUSTOMER_DECISION_DETAIL_REPORT_NAME,
-				pAccount.getAccount(),
-				PENDING_CUSTOMER_DECISION_DETAIL_COLUMN_HEADERS, pPrintWriter);
-		while (lsrReport.next()) {
-			pPrintWriter.println(outputData(lsrReport.get()));
-		}
-		lsrReport.close();
-	}*/
-
-	/*@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-	public void getPendingCustomerDecisionSummaryReport(Account pAccount,
-			String remoteUser, String lsName, PrintWriter pPrintWriter)
-			throws HibernateException, Exception {
-		ScrollableResults lsrReport = ((Session) getEntityManager()
-				.getDelegate())
-				.createSQLQuery(
-						"SELECT S.software_name, RT.Name AS RT_Name, COUNT(AUS.Id), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) < 46 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 46 AND 90 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 91 AND 120 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 121 AND 180 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) BETWEEN 181 AND 365 THEN 1 ELSE 0 END), SUM(CASE WHEN DAYS(CURRENT TIMESTAMP) - DAYS(AUS.Creation_Time) > 365 THEN 1 ELSE 0 END) FROM EAADMIN.software S, EAADMIN.Installed_Software IS, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Software_Lpar SL, EAADMIN.Reconcile R, EAADMIN.Reconcile_Type RT WHERE S.software_id = IS.Software_Id AND IS.Id = AUS.Installed_Software_Id AND AUS.Open = 0 AND SL.Id = IS.Software_Lpar_Id AND SL.Customer_Id = :customerId AND R.Installed_Software_Id = IS.Id AND R.Reconcile_Type_ID IN (2, 14) AND RT.Id = R.Reconcile_Type_Id GROUP BY S.software_name, RT.Name ORDER BY S.software_name, RT.Name")
-				.setLong("customerId", pAccount.getId())
-				.scroll(ScrollMode.FORWARD_ONLY);
-
-		printHeader(PENDING_CUSTOMER_DECISION_SUMMARY_REPORT_NAME,
-				pAccount.getAccount(),
-				PENDING_CUSTOMER_DECISION_SUMMARY_COLUMN_HEADERS, pPrintWriter);
-		while (lsrReport.next()) {
-			pPrintWriter.println(outputData(lsrReport.get()));
-		}
-		lsrReport.close();
-	}*/
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getReconciliationSummaryReport(Account pAccount,

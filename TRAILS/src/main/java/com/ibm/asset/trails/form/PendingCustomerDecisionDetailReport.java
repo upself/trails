@@ -1,7 +1,6 @@
 package com.ibm.asset.trails.form;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,9 +17,8 @@ public class PendingCustomerDecisionDetailReport extends ReportBase {
 	}
 
 	@Override
-	public void execute(HttpServletRequest pHttpServletRequest, Account pAccount, String remoteUser, String lsName)
+	public void execute(HttpServletRequest pHttpServletRequest,
+			Account pAccount, String remoteUser, String lsName)
 			throws HibernateException, Exception {
-		/*super.getReportService().getPendingCustomerDecisionDetailReport(pAccount, remoteUser, lsName,
-				new PrintWriter(super.getOutputStream(), true));*/
 	}
 }

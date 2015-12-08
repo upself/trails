@@ -3,8 +3,6 @@ package com.ibm.asset.trails.service;
 import java.io.PrintWriter;
 import java.io.OutputStream;
 
-import javax.persistence.EntityManager;
-
 import org.hibernate.HibernateException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
@@ -81,12 +79,6 @@ public interface ReportService {
 
 	void getNonWorkstationAccountsReport(String remoteUser, String lsName, PrintWriter pPrintWriter)
 			throws HibernateException, Exception;
-
-	/*void getPendingCustomerDecisionDetailReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception;
-
-	void getPendingCustomerDecisionSummaryReport(Account pAccount, String remoteUser, String lsName, 
-			PrintWriter pPrintWriter) throws HibernateException, Exception;*/
 
 	void getReconciliationSummaryReport(Account pAccount, String remoteUser, String lsName, 
 			PrintWriter pPrintWriter) throws HibernateException, Exception;
