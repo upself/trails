@@ -1,4 +1,4 @@
-package integration::scarlet::Story36172_TC1;
+package integration::reconEngine::Story36172_TC1;
 
 use base 'Test::Class';
 use Test::More;
@@ -9,12 +9,12 @@ use Base::Utils;
 use Base::ConfigManager;
 use Recon::LicensingReconEngineCustomer;
 
-sub TC1 : Tests(5) {    
+sub TC1 : Tests(5) {
 
  my $connectionConfig = '/opt/staging/v2/config/connectionConfig.txt';
  file_contains_like( $connectionConfig, qr{scarlet\.license\s*=\s*http} );
 
- my $opt_f = 'integration/scarlet/Story36172_reconEnginConf.txt';
+ my $opt_f = 'integration/reconEngine/Story36172/reconEnginConf.txt';    
 
  #2 checkers here;
  file_contains_like( $opt_f,
