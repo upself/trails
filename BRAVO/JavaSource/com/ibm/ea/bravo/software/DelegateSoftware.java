@@ -281,7 +281,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 			else {
 				products = (ArrayList<Software>) session
 						.getNamedQuery("softwareByName")
-						.setString("name", softwareName).list();
+						.setString("name", softwareName.toUpperCase()).list();
 				if (products.size() > 0)
 					software = products.get(0);
 			}
