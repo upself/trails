@@ -1,0 +1,3 @@
+server=ralbz001063
+debugLevel=warn
+sleepPeriod=10800

@@ -1,7 +1,5 @@
 #!/bin/ksh
 
-. /home/db2inst2/sqllib/db2profile 
-
 # num children
 MAX=50
 

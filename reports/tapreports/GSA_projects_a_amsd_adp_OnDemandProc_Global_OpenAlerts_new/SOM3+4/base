@@ -1,0 +1,43 @@
+SELECT 
+			 r.name as "Region",
+			 ccode.name as "Country",
+			 c.customer_name as "Account Name",
+			 c.account_number as "Account Number",
+			 CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as "Status", 
+			 sl.name as "Hostname",
+			 sw.software_name as "Installed SW product name",
+			 VA.Creation_Time as "Create date/time", 
+			 VA.Alert_Age as "Age", 
+			 MT.Type as "Asset type", 
+			 HL.OS_TYPE as "OS Type",
+			 MT.Name as "Machine type",
+			 VA.Remote_User as "Assignee",
+			 VA.Comments "Assignee comments", 
+			 VA.Record_Time "Assigned date/time",
+			 AC.name as "Cause Code (CC)",
+			 CC.target_date as "CC target date", 
+			 CC.owner as  "CC owner",
+			 CC.record_time as  "CC change date", 
+			 CC.remote_user as "CC change person",
+			 CC.id as "Internal ID" 
+
+			FROM EAADMIN.V_Alerts VA 
+			 join EAADMIN.INSTALLED_SOFTWARE IS on IS.id = VA.Fk_id 
+			 join EAADMIN.SOFTWARE_LPAR SL on SL.id = IS.software_lpar_id 
+			 join EAADMIN.HW_SW_COMPOSITE HSC on HSC.software_lpar_id=SL.id
+			 join EAADMIN.HARDWARE_LPAR HL on HSC.hardware_lpar_id=HL.id
+			 join EAADMIN.HARDWARE HW on HL.hardware_id=HW.id
+			 join EAADMIN.MACHINE_TYPE MT on HW.machine_type_id=MT.id
+			 join EAADMIN.SOFTWARE SW on SW.software_id = IS.software_id 
+			 join EAADMIN.cause_code CC on CC.alert_id = VA.id 
+			 join EAADMIN.alert_cause AC on CC.alert_cause_id=AC.id 
+			 join EAADMIN.alert_type AT on AT.id = CC.alert_type_id 
+			 join eaadmin.customer c on c.customer_id = va.customer_id
+			 join eaadmin.country_code ccode on ccode.id=c.country_code_id
+			 join eaadmin.region r on r.id = ccode.region_id
+			 join eaadmin.geography geo on r.geography_id=geo.id
+			 WHERE VA.Type = ':code:'
+			 AND VA.Open = 1   AND AT.code in ( 'NOLIC', ':code:' )
+			 and geo.name=':geo:'
+			 ORDER BY c.customer_name, sl.name ASC
+with ur;

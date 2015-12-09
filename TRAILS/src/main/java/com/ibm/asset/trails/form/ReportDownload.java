@@ -1,6 +1,5 @@
 package com.ibm.asset.trails.form;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
@@ -45,12 +44,6 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 
 	private final String REPORT_NAME_ALERT_UNLICENSED_ISV_SW =
 			"alertUnlicensedIsvSw";
-
-	private final String REPORT_NAME_PENDING_CUSTOMER_DECISION_DETAIL =
-			"pendingCustomerDecisionDetail";
-
-	private final String REPORT_NAME_PENDING_CUSTOMER_DECISION_SUMMARY =
-			"pendingCustomerDecisionSummary";
 
 	private final String REPORT_NAME_FREE_LICENSE_POOL = "freeLicensePool";
 
@@ -279,14 +272,6 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 					pServletOutputStream);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_NON_WORKSTATION_ACCOUNTS)) {
 			return new NonWorkstationAccountsReport(pReportService,
-					pServletOutputStream);
-		} else if (psName
-				.equalsIgnoreCase(REPORT_NAME_PENDING_CUSTOMER_DECISION_DETAIL)) {
-			return new PendingCustomerDecisionDetailReport(pReportService,
-					pServletOutputStream);
-		} else if (psName
-				.equalsIgnoreCase(REPORT_NAME_PENDING_CUSTOMER_DECISION_SUMMARY)) {
-			return new PendingCustomerDecisionSummaryReport(pReportService,
 					pServletOutputStream);
 		} else if (psName.equalsIgnoreCase(REPORT_NAME_RECONCILIATION_SUMMARY)) {
 			return new ReconciliationSummaryReport(pReportService,

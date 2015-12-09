@@ -129,8 +129,6 @@
 			<item value="Department" link="/reports/alerts/department.htm"
 				icon="false" />
 			<item value="Account" link="/reports/alerts/account.htm" icon="false" />
-			<item value="Pending customer decision" link="/reports/alerts/pendingCustomerDecision.htm"
-				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/reports/operational/home.htm">
 			<item value="Geography" link="/reports/operational/geography.htm"

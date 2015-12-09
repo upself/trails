@@ -57,7 +57,7 @@ function searchData(){
 						html += "<tr>";
 // 						html += "<td><input value='"+list[i].tableId+"' type='checkbox'></td>";
 						html += "<td>" + list[i].alertStatus + "</td>";
-						html += "<td><a href='${pageContext.request.contextPath}/account/recon/settingsSoftware.htm?productInfoName=" + list[i].softwareItemName + "'>"  + list[i].softwareItemName + "</a></td>"; 
+						html += "<td><a href='${pageContext.request.contextPath}/account/recon/settingsSoftware.htm?productInfoName=" + encodeURIComponent(list[i].softwareItemName) + "'>"  + list[i].softwareItemName + "</a></td>"; 
 						html += "<td>" + list[i].alertCount + "</td>";
 						html += "<td>" + list[i].creationTime + "</td>";
 						html += "<td>" + list[i].alertAge + "</td>";
