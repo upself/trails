@@ -1,0 +1,6 @@
+staging.password=apr03db2
+staging.user=eaadmin
+staging.name=STAGUA
+trails.password=may2012a
+trails.user=eaadmin
+trails.name=TRAILSPD
