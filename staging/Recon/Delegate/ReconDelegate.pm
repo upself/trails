@@ -18,12 +18,12 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 	
 	my $toreturn=0;
 	
-	my @runningproc=split ('\n', `ps -ef`);
+	my @runningproc=split ('\n', `ps -A -o pid`);
 	
 	foreach my $procId (@runningproc) {
 		chomp $procId;
-		$procId =~ /^[^ ]+[ ]+([^ ]+)/;
-		$procId = $1;
+#		$procId =~ /^[^ ]+[ ]+([^ ]+)/;
+#		$procId = $1;
 		$prochash{$procId} = 2 if exists $prochash{$procId}; # setting value to 2
 															 # if the process is found among actually running ones
 	}
