@@ -15,6 +15,15 @@ public class ReconWorkspace implements Serializable {
 	private Integer alertAgeI;
 
 	private String hostname;
+	private String sl_hostname;
+	
+	public String getSl_hostname() {
+		return sl_hostname;
+	}
+
+	public void setSl_hostname(String sl_hostname) {
+		this.sl_hostname = sl_hostname;
+	}
 
 	private String serial;
 

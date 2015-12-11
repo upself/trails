@@ -3,6 +3,7 @@ package com.ibm.asset.trails.batch.swkbt.service.impl;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.swkbt.schema.DistributedProductType;
 import com.ibm.asset.trails.batch.swkbt.service.ManufacturerService;
 import com.ibm.asset.trails.batch.swkbt.service.ProductInfoService;
+import com.ibm.asset.trails.batch.swkbt.service.ReconService;
 import com.ibm.asset.trails.dao.ProductDao;
 import com.ibm.asset.trails.dao.ProductInfoDao;
+import com.ibm.asset.trails.domain.DomainEntity;
 import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.Recon;
 
@@ -34,6 +37,8 @@ public class ProductInfoServiceImpl extends
 	private ProductInfoDao dao;
 	@Autowired
 	private ManufacturerService manufacturerService;
+	@Autowired
+	private  ReconService<?, ?> reconService;
 	@Autowired
 	private InputStream guidFileInputStream;
 	private static final List<String> licGuids = new ArrayList<String>();
@@ -78,6 +83,10 @@ public class ProductInfoServiceImpl extends
 			log.debug("manufacturer changed!");
 			recon = true;
 		}
+		if (softwareNameChange(existing, xmlEntity)) {
+			log.debug("software name changed!");
+			recon = true;
+		}
 		if (licenseTypeChange(existing, xmlEntity)) {
 			log.debug("license type changed!");
 			recon = true;
@@ -95,12 +104,19 @@ public class ProductInfoServiceImpl extends
 	}
 
 	public void addToRecon(ProductInfo newEntity) {
+		Recon existing = (Recon) reconService.findByNaturalKey(newEntity.getId());
+		if (existing == null){
+		log.debug(" Recon doesn't exist");
 		Recon recon = new Recon();
 		recon.setAction("UPDATE");
 		recon.setRecordTime(new Date());
 		recon.setRemoteUser("SWKBT");
 		recon.setProductInfo(newEntity);
 		newEntity.setRecon(recon);
+		} else {
+			log.debug(" Recon exists");
+		newEntity.setRecon(existing);
+		}
 	}
 
 	private boolean vendorManagedChange(ProductInfo existing,
@@ -194,6 +210,15 @@ public class ProductInfoServiceImpl extends
 		return false;
 	}
 
+	private boolean softwareNameChange(ProductInfo existing,
+			DistributedProductType xmlEntity) {
+
+		if (!existing.getName().equals(xmlEntity.getName())) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void afterPropertiesSet() throws Exception {
 		String line;
 		try {

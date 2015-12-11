@@ -868,8 +868,14 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			}
 		}
 	}
-
 	// End break reconcile manual action
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public Long total(Account account, ReconSetting reconSetting) {
+		// TODO Auto-generated method stub
+		return vSwLparDAO.total(account, reconSetting);
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void paginatedList(DisplayTagList data, Account account,
 			ReconSetting reconSetting, int startIndex, int objectsPerPage,
@@ -877,6 +883,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		vSwLparDAO.paginatedList(data, account, reconSetting, startIndex,
 				objectsPerPage, sort, dir);
 	}
+	
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public Reconcile reconcileDetail(Long id) {

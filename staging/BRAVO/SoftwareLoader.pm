@@ -236,7 +236,7 @@ sub load {
                 $stagingSoftwareLpar->osMajor( $rec{osMajor} );
                 $stagingSoftwareLpar->osMinor( $rec{osMinor} );
                 $stagingSoftwareLpar->osSub( $rec{osSub} );
-                $stagingSoftwareLpar->osType( $rec{osType} );
+                $stagingSoftwareLpar->osInstDate( $rec{osInstDate} );
                 $stagingSoftwareLpar->userName( $rec{userName} );
                 $stagingSoftwareLpar->biosManufacturer( $rec{manufacturer} );
                 $stagingSoftwareLpar->biosModel( $rec{biosModel} );
@@ -448,7 +448,7 @@ sub load {
                         $bravoSoftwareLpar->osMajor( $stagingSoftwareLpar->osMajor );
                         $bravoSoftwareLpar->osMinor( $stagingSoftwareLpar->osMinor );
                         $bravoSoftwareLpar->osSub( $stagingSoftwareLpar->osSub );
-                        $bravoSoftwareLpar->osType( $stagingSoftwareLpar->osType );
+                        $bravoSoftwareLpar->osInstDate( $stagingSoftwareLpar->osInstDate );
                         $bravoSoftwareLpar->userName( $stagingSoftwareLpar->userName );
                         $bravoSoftwareLpar->biosManufacturer( $stagingSoftwareLpar->biosManufacturer );
                         $bravoSoftwareLpar->biosModel( $stagingSoftwareLpar->biosModel );
@@ -1479,7 +1479,7 @@ sub querySoftwareLparDataByCustomerId {
             osMajor
             osMinor
             osSub
-            osInst
+            osInstDate
             userName
             manufacturer
             biosModel

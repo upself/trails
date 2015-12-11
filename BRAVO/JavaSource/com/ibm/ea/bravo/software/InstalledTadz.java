@@ -13,6 +13,7 @@ public class InstalledTadz extends InstalledBase {
     private int useCount;
 	private Date lastUsed;
 	private SoftwareItem softwareItem;
+	private InstalledSoftware installedSoftware;
 	
 	public void setSoftwareItem(SoftwareItem softwareItem) {
 		this.softwareItem = softwareItem;
@@ -36,6 +37,14 @@ public class InstalledTadz extends InstalledBase {
 
 	public void setLastUsed(Date lastUsed) {
 		this.lastUsed = lastUsed;
+	}
+
+	public InstalledSoftware getInstalledSoftware() {
+		return installedSoftware;
+	}
+
+	public void setInstalledSoftware(InstalledSoftware installedSoftware) {
+		this.installedSoftware = installedSoftware;
 	}
 
 

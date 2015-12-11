@@ -34,9 +34,6 @@
         <property name="status" column="STATUS" length="32" not-null="true" index="IDX_ISWSTS"/>
 
         <property name="invalidCategory" column="INVALID_CATEGORY" length="64"/>
-			
-    	<one-to-one name="installedTadz"
-			class="com.ibm.ea.bravo.software.InstalledTadz"
-			property-ref="installedSoftware" cascade="delete" />			
+        
     </class>
 </hibernate-mapping>

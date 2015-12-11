@@ -60,8 +60,8 @@ public class SoftwareLpar {
 	
 	private String osSubVersion;
 	
-	private String osInstallDate;
-	
+	private Date osInstallDate;
+
 	private String userName;
 
 	private String biosManufacturer;
@@ -256,13 +256,13 @@ public class SoftwareLpar {
 		this.objectId = objectId;
 	}
 
-	public String getOsInstallDate() {
-		return osInstallDate;
-	}
-
-	public void setOsInstallDate(String osInstallDate) {
-		this.osInstallDate = osInstallDate;
-	}
+//	public String getOsInstallDate() {
+//		return osInstallDate;
+//	}
+//
+//	public void setOsInstallDate(String osInstallDate) {
+//		this.osInstallDate = osInstallDate;
+//	}
 
 	public Integer getOsMajorVersion() {
 		return osMajorVersion;
@@ -535,6 +535,14 @@ public class SoftwareLpar {
 		return EaUtils.monthDayYear(acquisitionTime);
 	}
 
+	public String getOsInstallDate() {
+		return EaUtils.monthDayYear(osInstallDate);
+	}
+	
+	public void setOsInstallDate(Date osInstallDate) {
+		this.osInstallDate = osInstallDate;
+	}
+	
 	public String getScantimeDate() {
 		return EaUtils.monthDayYear(scantime);
 	}

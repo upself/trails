@@ -40,7 +40,6 @@ bye
 
 if [ -s ftp.error ]; then 
 	LOG_CONTENT+="Error during 'ftping' logs transaction\n" 
-	RETURN_CODE=1
 else 
 	LOG_CONTENT+="Succesfully 'ftped' the logs\n" 
 fi
@@ -48,6 +47,14 @@ fi
 cd $LOGS_FOLDER
 rm -f *
 rm -f $TEMP_FOLDER/$ARCHIVE_FILE_NAME
+rm -f $TEMP_FOLDER/heapdump* 
+rm -f $TEMP_FOLDER/core* 
+rm -f $TEMP_FOLDER/javacore* 
+rm -f $TEMP_FOLDER/Snap*
+rm -f /tmp/heapdump* 
+rm -f /tmp/core* 
+rm -f /tmp/javacore* 
+rm -f /tmp/Snap*
 
 LOG_CONTENT+="Removed logs file\n"
 LOG_CONTENT+="Ending TrailsArchiveLogs script\n"
