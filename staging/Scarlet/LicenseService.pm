@@ -33,7 +33,7 @@ sub getFreePoolData {
  my $self                       = shift;
  my $installedSoftwareReconData = shift;
  my $customer                   = shift;
- my $installedSoftwareId       = shift;    
+ my $installedSoftwareId        = shift;
 
  dlog("begin scarlet.getFreePoolData");
 
@@ -49,7 +49,7 @@ sub getFreePoolData {
   $licenseIds = [];
  }
 
- dlog( scalar @{$licenseIds} . ' license(s) found from scarlet.' );
+ dlog( scalar @{$licenseIds} . ' license(s) found from scarlet.' );    
 
  my $foundQty = scalar @{$licenseIds};
  return \%data
