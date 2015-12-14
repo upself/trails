@@ -59,14 +59,14 @@ sub httpGet {
 
  my $uri = $self->assembleURI;
  dlog("GET $uri");
- my $response = $ua->get($uri);    
+ my $response = $ua->get($uri);
 
  my $result = undef;
  if ( $response->is_success ) {
   $self->outOfService(0);
   my $json = new JSON;
   try {
-   local $SIG{__DIE__};            # No sigdie handler
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
 
    $result = $self->parseJson($jsObj)
@@ -80,7 +80,7 @@ sub httpGet {
   wlog( 'scarlet requesting failed: ' . $response->status_line );
  }
 
- return $result;
+ return $result;    
 }
 
 sub validateJsonFeedback {
