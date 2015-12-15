@@ -559,7 +559,7 @@ sub coreOperationProcess{
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
           #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		  my @targetLoaderPids = `ps -ef| grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
@@ -1345,13 +1345,13 @@ sub coreOperationProcess{
 		
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
-           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
-		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
+           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep | grep -v selfHeal |awk '{print \$2}'`;
+		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName | grep -v selfHeal | grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
-             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l`;
+             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep |  grep -v selfHeal |wc -l`;
 			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars

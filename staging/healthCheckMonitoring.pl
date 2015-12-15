@@ -2267,7 +2267,7 @@ sub eventRuleCheck{
                    print LOG "Database Exception Status Check Monitoring - The Database Monitoring Operation should be done.\n";
 
 				   #set monitoring db profile
-				   my $monitoringDBProfile;#var used to store db monitoring profile
+				   my $monitoringDBProfile = '/home/db2inst2/sqllib/db2profile';#var used to store db monitoring profile
                    if($serverMode eq $TAP){#TAP DB Profile
 				     $monitoringDBProfile = "/db2/tap/sqllib/db2profile";  	    
 				   }#end if($serverMode eq $TAP)
