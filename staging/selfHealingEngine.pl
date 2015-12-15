@@ -559,7 +559,7 @@ sub coreOperationProcess{
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
           #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		  my @targetLoaderPids = `ps -ef| grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
@@ -794,7 +794,7 @@ sub coreOperationProcess{
 
       my $relatedTicketNumber;#var used to store related ticket number #Added by Larry for System Support And Self Healing Service Components - Phase 3
 	  my $restartLoaderName;#var used to store restart loader name
-	  my @validLoaderList = getValidLoaderListOnTAP3Server();#array used to store valid loader list on TAP3 Server
+	  my @validLoaderList = getValidLoaderListOnTAPServer();#array used to store valid loader list on TAP3 Server
 	  my $validLoaderFlag = $FALSE;#Set 0(0 = False) as default value
 	  my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing path
 	  my $restartLoaderFullCommand;#var used to store restart loader full command  - For example: "sudo /opt/staging/v2/start-all.sh"
@@ -1345,13 +1345,13 @@ sub coreOperationProcess{
 		
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
-           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
-		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
+           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep | grep -v selfHeal |awk '{print \$2}'`;
+		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName | grep -v selfHeal | grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
-             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l`;
+             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep |  grep -v selfHeal |wc -l`;
 			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars
@@ -2521,6 +2521,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"swcmToStaging.pl";#23
   push @vaildLoaderList,"capTypeToBravo.pl";#24
   push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#24
+  push @vaildLoaderList,"reconEngineLicensing.pl";#24
   
   return @vaildLoaderList;
 }
