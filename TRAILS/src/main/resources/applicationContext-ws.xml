@@ -21,6 +21,7 @@
 	<bean id="alertHardwarelparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertHardwarelparServiceEndpoint" />
 	<bean id="alertUnExpiredSWLpar" class="com.ibm.asset.trails.ws.AlertUnExpiredSWLparServiceEndpoint" />
 	<bean id="alertSwLparWithHwLparServiceEndpoint" class="com.ibm.asset.trails.ws.AlertSwLparWithHwLparServiceEndpoint" />
+	<bean id="dataExceptionServiceEndpoint" class="com.ibm.asset.trails.ws.DataExceptionServiceEndpoint" />
 	    
 	<bean id="hibernateMapper"
 		class="com.ibm.asset.trails.ws.common.HibernateAwareObjectMapper"></bean>
@@ -40,6 +41,7 @@
             <ref bean="alertHardwarelparServiceEndpoint" />
             <ref bean="alertUnExpiredSWLpar" />
             <ref bean="alertSwLparWithHwLparServiceEndpoint" />
+             <ref bean="dataExceptionServiceEndpoint" />
 		</jaxrs:serviceBeans>
 		<jaxrs:extensionMappings>
 			<entry key="json" value="application/json" />

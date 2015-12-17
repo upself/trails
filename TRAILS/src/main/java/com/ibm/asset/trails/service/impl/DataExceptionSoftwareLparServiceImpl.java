@@ -107,4 +107,20 @@ public class DataExceptionSoftwareLparServiceImpl implements
         this.alertTypeCode = alertTypeCode;
         alertSoftwareLparDao.setAlertTypeCode(alertTypeCode);
     }
+
+	@Override
+	public void assign(List<Long> dataExpIds, String remoteUser, String comments) {
+		for(Long dataExpId: dataExpIds){
+			DataExceptionSoftwareLpar dataExpSwLpar = (DataExceptionSoftwareLpar) alertSoftwareLparDao.getById(dataExpId);
+            this.updateAssignment(dataExpSwLpar, remoteUser,comments, true);
+        }	
+	}
+
+	@Override
+	public void unassign(List<Long> dataExpIds, String remoteUser, String comments) {
+		for(Long dataExpId: dataExpIds){
+			DataExceptionSoftwareLpar dataExpSwLpar = (DataExceptionSoftwareLpar) alertSoftwareLparDao.getById(dataExpId);
+            this.updateAssignment(dataExpSwLpar, remoteUser,comments, false);
+        }	
+	}
 }
