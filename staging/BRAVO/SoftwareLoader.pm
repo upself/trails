@@ -26,6 +26,8 @@ use SWASSET::Delegate::SWASSETDelegate;
 use SWASSET::OM::InstalledManualSoftware;
 use Recon::Queue;
 
+my $quit_signal=0;
+
 ###Object constructor.
 sub new {
     my ($class,$stagingConnection, $trailsConnection, $swassetConnection) = @_;
@@ -47,8 +49,17 @@ sub new {
     $self->discrepancyTypeMap( BRAVO::Delegate::BRAVODelegate->getDiscrepancyTypeMap );
     dlog("got discrepancy type map");
 
+    $SIG{'QUIT'} = \&handle_QUIT;
+    dlog("set stop signal");
     return $self;
 }
+
+sub handle_QUIT {	
+	wlog("received stop signal");
+	$quit_signal=1;
+}
+
+
 
 ###Object get/set methods.
 sub loadDeltaOnly {
@@ -161,7 +172,7 @@ sub load {
         my %stagingSoftwareLparsToDelete = ();
         my %stagingMapsToDelete          = ();
         my %stagingScanRecordsToDelete   = ();
-        while ( $sth->fetchrow_arrayref ) {
+        while ( $sth->fetchrow_arrayref && $quit_signal==0) {
 
             ###Clean record values
             cleanValues( \%rec );
@@ -1364,7 +1375,7 @@ sub load {
         $sth->finish;
 
         ###Perform staging deletes if applyChanges is 1.
-        if ( $self->applyChanges == 1 ) {
+        if ( $self->applyChanges == 1 && $quit_signal==0) {
 
             ###Delete any staging software lpar maps which have been flagged
             ###and processed above.

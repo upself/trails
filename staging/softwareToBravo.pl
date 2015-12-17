@@ -42,8 +42,20 @@ my @customerIds;
 daemonize();
 spawnChildren();
 keepTicking();
+waitForAllChildren();
 endJob($systemScheduleStatus);
-exit;
+
+
+sub waitForAllChildren {
+	my $kid;
+	do {
+        $kid = waitpid(-1, WNOHANG);
+        wlog("Thank you for gracefull stop. $children children are still running");
+        if ($kid > 0) { sleep 30;}
+        
+    } while $kid > 0;
+	wlog("All children finished.")
+}
 
 sub spawnChildren {
  wlog("$rNo Spawning children");
@@ -132,6 +144,25 @@ sub keepTicking {
     }
   }
  }
+ 
+ if(loaderCheckForStop ( $pidFile ) != 0) {
+ 	sendAllChildrenQuitSignal();
+ }
+ 
+}
+
+sub sendAllChildrenQuitSignal(){
+  wlog("sendAllChildrenQuitSignal function");
+  my $process_id;
+  foreach my $customerId ( keys %runningCustomerIds ) {
+   foreach my $date ( keys %{$runningCustomerIds{$customerId}}) {
+    foreach my $lparId (keys %{$runningCustomerIds{$customerId}{$date}}){
+     $process_id= $runningCustomerIds{$customerId}{$date}{$lparId};
+     kill 'QUIT', $process_id;
+    }
+   }
+  }
+	
 }
 
 sub isCustomerRunning {
@@ -214,7 +245,7 @@ sub newChild {
 sub REAPER {
  my $stiff;
  while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
- warn("child $stiff terminated -- status $?");
+ wlog("child $stiff terminated -- status $?");
  $children--;
   foreach my $customerId ( keys %runningCustomerIds ) {
    foreach my $date ( keys %{$runningCustomerIds{$customerId}}) {
