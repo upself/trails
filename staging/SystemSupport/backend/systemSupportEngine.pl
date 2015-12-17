@@ -160,10 +160,8 @@ sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 		push @operationQueueRecord, $operationQueueRecordRef->[3];
 		push @operationQueueRecord, $operationQueueRecordRef->[4];
 		push @operationQueueRecord, $operationQueueRecordRef->[5];
-		if ( first { $_ == $operationNameCode } @allowedOperations ) {
 
   push @filterOperationQueueRecordsForCertainServer, [@operationQueueRecord];
-	}
 }
 
 $filterOperationQueueRecordsForCertainServerCnt = scalar(@filterOperationQueueRecordsForCertainServer);

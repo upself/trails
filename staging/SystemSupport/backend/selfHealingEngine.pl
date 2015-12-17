@@ -466,16 +466,16 @@ sub coreOperationProcess{
   my $operationParameter9;
   my $operationParameter10;
 
-  $operationParameter1 = trim($operationParametersArray[1]);
-  $operationParameter2 = trim($operationParametersArray[2]);
-  $operationParameter3 = trim($operationParametersArray[3]);
-  $operationParameter4 = trim($operationParametersArray[4]);
-  $operationParameter5 = trim($operationParametersArray[5]);
-  $operationParameter6 = trim($operationParametersArray[6]);
-  $operationParameter7 = trim($operationParametersArray[7]);
-  $operationParameter8 = trim($operationParametersArray[8]);
-  $operationParameter9 = trim($operationParametersArray[9]);
-  $operationParameter10 = trim($operationParametersArray[10]);
+  $operationParameter1 = trim($operationParametersArray[0]);
+  $operationParameter2 = trim($operationParametersArray[1]);
+  $operationParameter3 = trim($operationParametersArray[2]);
+  $operationParameter4 = trim($operationParametersArray[3]);
+  $operationParameter5 = trim($operationParametersArray[4]);
+  $operationParameter6 = trim($operationParametersArray[5]);
+  $operationParameter7 = trim($operationParametersArray[6]);
+  $operationParameter8 = trim($operationParametersArray[7]);
+  $operationParameter9 = trim($operationParametersArray[8]);
+  $operationParameter10 = trim($operationParametersArray[9]);
 
   print LOG "The Operation Parameter 1: {$operationParameter1}\n";
   print LOG "The Operation Parameter 2: {$operationParameter2}\n";
@@ -794,7 +794,7 @@ sub coreOperationProcess{
 
       my $relatedTicketNumber;#var used to store related ticket number #Added by Larry for System Support And Self Healing Service Components - Phase 3
 	  my $restartLoaderName;#var used to store restart loader name
-	  my @validLoaderList = getValidLoaderListOnTAP3Server();#array used to store valid loader list on TAP3 Server
+	  my @validLoaderList = getValidLoaderListOnTAPServer();#array used to store valid loader list on TAP3 Server
 	  my $validLoaderFlag = $FALSE;#Set 0(0 = False) as default value
 	  my $loaderExistingPath = $LOADER_EXISTING_PATH;#var used to store loader existing path
 	  my $restartLoaderFullCommand;#var used to store restart loader full command  - For example: "sudo /opt/staging/v2/start-all.sh"
@@ -2521,6 +2521,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"swcmToStaging.pl";#23
   push @vaildLoaderList,"capTypeToBravo.pl";#24
   push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#24
+  push @vaildLoaderList,"reconEngineLicensing.pl";#24
   
   return @vaildLoaderList;
 }
