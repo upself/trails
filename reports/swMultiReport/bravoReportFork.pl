@@ -152,12 +152,12 @@ sub getIds {
     eval {
         $dbh = Database::Connection->new("trails");
         my $query = "select
-                      id
+                      customer_id
                   from
                       customer
                   where
                       status = 'ACTIVE'
-                  and id not in (999999)  
+                  and customer_id not in (999999)  
                   with ur";
         $dbh->prepareSqlQuery( 'CustomersIDs', $query);
         my $sth = $dbh->sql->{CustomersIDs};
