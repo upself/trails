@@ -1552,64 +1552,49 @@
 		<put-attribute name="keywords" value="Priority ISV SW Upload" />
 	</definition>
 
-	<definition name="tiles.account.exception.lparZEROPROC"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparNoProcessor.jsp" />
+	<definition name="tiles.account.exception.lparZEROPROC" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR with zero processor/effective processor" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoProcessor.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with 0 processors" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with 0 processors" />
 	</definition>
-	<definition name="tiles.account.exception.lparNULLTIME"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparInvalidScantime.jsp" />
+	<definition name="tiles.account.exception.lparNULLTIME" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR with NULL or 1970 Scan Date" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparInvalidScantime.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOOS" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparNoOperatingSystem.jsp" />
+	<definition name="tiles.account.exception.lparNOOS" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR without Operating System" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoOperatingSystem.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no operating system" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no operating system" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOSW" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparNoSoftware.jsp" />
+	<definition name="tiles.account.exception.lparNOSW" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR without Software" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoSoftware.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no software" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no software" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOLP" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparNoProducts.jsp" />
+	<definition name="tiles.account.exception.lparNOLP" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR without Licensable Products" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoProducts.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no licensable products" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no licensable products" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOCUST"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/account/exception/exceptionJSHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/exception/swlparNoCustomer.jsp" />
+	<definition name="tiles.account.exception.lparNOCUST" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Active SW LPAR without Customer" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoCustomer.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no customer" />
 		<put-attribute name="keywords"
@@ -1666,7 +1651,7 @@
 		<put-attribute name="description" value="TRAILS account cause codes upload" />
 		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>
-	<definition name="tiles.account.exception.overview" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.account.exception.overview" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/overview.jsp" />
 		<put-attribute name="description"
