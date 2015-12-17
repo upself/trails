@@ -10,6 +10,7 @@ use Database::Connection;
 use Base::ConfigManager;
 use BRAVO::SoftwareLoader;
 use Tap::NewPerl;
+use Time::HiRes;
 
 my $logfile    = "/var/staging/logs/softwareToBravo/softwareToBravo.log";
 my $pidFile    = "/tmp/softwareToBravo.pid";
@@ -18,8 +19,7 @@ my $configFile = "/opt/staging/v2/config/softwareToBravoConfig.txt";
 my $cfgMgr       = Base::ConfigManager->instance($configFile);
 my $sleepPeriod  = $cfgMgr->sleepPeriod;
 my $server       = $cfgMgr->server;
-#my $testMode     = $cfgMgr->testMode;
-#my $applyChanges = $cfgMgr->applyChanges;
+my $waitForChildren = $cfgMgr->waitForChildren;
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
@@ -47,18 +47,16 @@ endJob($systemScheduleStatus);
 
 
 sub waitForAllChildren {
-	my $kid;
-	do {
-        $kid = waitpid(-1, WNOHANG);
-        wlog("Thank you for gracefull stop. $children children are still running");
-        if ($kid > 0) { sleep 30;}
-        
-    } while $kid > 0;
-	wlog("All children finished.")
+	while($children > 0){
+		dlog("Thank you for graceful stop. $children children are still running");
+		sleep 5;
+	}
+	
+	ilog("All children finished.")
 }
 
 sub spawnChildren {
- wlog("$rNo Spawning children");
+ dlog("$rNo Spawning children");
  
  if(!@customerIds){
    my $connection = Database::Connection->new('staging');
@@ -96,13 +94,13 @@ sub spawnChildren {
 }
 
 sub keepTicking {
- wlog("$rNo Keep on ticking");
+ dlog("$rNo Keep on ticking");
  my $count = 4;
  while ( loaderCheckForStop ( $pidFile ) == 0 ) {
   if ( $children >= $maxChildren ) {
-   wlog("$rNo sleeping");
+   dlog("$rNo sleeping");
    sleep;
-   wlog("$rNo done sleeping");
+   dlog("$rNo done sleeping");
   }
   
   if ( scalar @customerIds == 0 ) {
@@ -120,7 +118,7 @@ sub keepTicking {
    my @lparIds = findSoftwareLparsByCustomerIdByDate($customerId,$date,$count,$connection);
    $connection->disconnect;
    foreach my $segLparIds (@lparIds){
-       wlog("checking is customer running $customerId,$date,".scalar @$segLparIds.' scalar @lparIds '. scalar @lparIds);
+       dlog("checking is customer running $customerId,$date,".scalar @$segLparIds.' scalar @lparIds '. scalar @lparIds);
        if ( isCustomerRunning( $customerId,$date, $segLparIds ) == 1 ) {
         next;
        }
@@ -146,13 +144,17 @@ sub keepTicking {
  }
  
  if(loaderCheckForStop ( $pidFile ) != 0) {
+	my $sleepCounter = 0;
+	while($sleepCounter < $waitForChildren){
+		$sleepCounter += Time::HiRes::sleep ($waitForChildren-$sleepCounter);
+	}
  	sendAllChildrenQuitSignal();
  }
  
 }
 
 sub sendAllChildrenQuitSignal(){
-  wlog("sendAllChildrenQuitSignal function");
+  dlog("sendAllChildrenQuitSignal function");
   my $process_id;
   foreach my $customerId ( keys %runningCustomerIds ) {
    foreach my $date ( keys %{$runningCustomerIds{$customerId}}) {
@@ -191,7 +193,7 @@ sub newChild {
  my $lparsRef      = shift;
  my $pid;
 
-  wlog("$rNo spawning $customerId, $date, $phase");
+  dlog("$rNo spawning $customerId, $date, $phase");
   my $sigset = POSIX::SigSet->new(SIGINT);
   sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
   die "Cannot fork child: $!\n" unless defined( $pid = fork );
@@ -203,15 +205,15 @@ sub newChild {
     foreach my $lparId (@lpars) {
       $runningCustomerIds{$customerId}{$date}{$lparId} = $pid;
     }
-    wlog("forked new child, we now have $children children $pid");
+    dlog("forked new child, we now have $children children $pid");
     return;
   }
  
   my $start  = time;
-  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", running -- $phase" );
+  dlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", running -- $phase" );
   foreach my $lparId (@lpars) {
      my $lparStart  =  time;
-     wlog("$rNo Child $customerId, $date, lparId=" . $lparId . ", running -- $phase" );
+     dlog("$rNo Child $customerId, $date, lparId=" . $lparId . ", running -- $phase" );
      my $stagingConnection = Database::Connection->new('staging');
      my $trailsConnection  = Database::Connection->new('trails');
      my $swassetConnection = Database::Connection->new('swasset');
@@ -232,20 +234,20 @@ sub newChild {
      
      my $lparDuration = time - $lparStart;
      $lparDuration = $lparDuration . ' sec(s)';
-     wlog("$rNo Child $customerId, $date, lparId=" . $lparId . ", done -- $phase duration $lparDuration" );
+     dlog("$rNo Child $customerId, $date, lparId=" . $lparId . ", done -- $phase duration $lparDuration" );
   }
   
   my $duration = time - $start;
   $duration = $duration . ' sec(s)';
   
-  wlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase, duration: $duration" );
+  dlog("$rNo Child $customerId, $date, chunk size " . scalar @lpars . ", done -- $phase, duration: $duration" );
  exit;
 }
 
 sub REAPER {
  my $stiff;
  while ( ( $stiff = waitpid( -1, &WNOHANG ) ) > 0 ) {
- wlog("child $stiff terminated -- status $?");
+ dlog("child $stiff terminated -- status $?");
  $children--;
   foreach my $customerId ( keys %runningCustomerIds ) {
    foreach my $date ( keys %{$runningCustomerIds{$customerId}}) {
@@ -310,7 +312,7 @@ sub getStagingQueue {
  my %customerIdDateHash = ();
 
  for ( my $p = 0 ; $p < 2 ; $p++ ) {
-  wlog("$rNo start building customer id array for $p");
+  dlog("$rNo start building customer id array for $p");
   ###Prepare query to pull software lpar ids from staging
   dlog("preparing software lpar ids query");
   $connection->prepareSqlQueryAndFields(
@@ -350,10 +352,10 @@ sub getStagingQueue {
    }
   }
   $sth->finish;
-  wlog("$rNo end building customer id array for $p");
+  dlog("$rNo end building customer id array for $p");
  }
- wlog( $rNo.' Loaded customer/date combinations :' . scalar @customers. ' Phase :'.$count );
- wlog("$rNo Running Threads : $children ");
+ dlog( $rNo.' Loaded customer/date combinations :' . scalar @customers. ' Phase :'.$count );
+ dlog("$rNo Running Threads : $children ");
 
  return @customers;
 }

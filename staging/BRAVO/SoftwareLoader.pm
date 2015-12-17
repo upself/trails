@@ -55,7 +55,7 @@ sub new {
 }
 
 sub handle_QUIT {	
-	wlog("received stop signal");
+	dlog("received stop signal");
 	$quit_signal=1;
 }
 
