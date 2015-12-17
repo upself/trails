@@ -145,10 +145,12 @@ sub keepTicking {
  
  if(loaderCheckForStop ( $pidFile ) != 0) {
 	my $sleepCounter = 0;
-	while($sleepCounter < $waitForChildren){
+	while($sleepCounter < $waitForChildren && $children > 0){
 		$sleepCounter += Time::HiRes::sleep ($waitForChildren-$sleepCounter);
 	}
- 	sendAllChildrenQuitSignal();
+	if ($children > 0) {
+ 		sendAllChildrenQuitSignal();
+	}
  }
  
 }
