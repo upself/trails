@@ -21,5 +21,8 @@ public interface DataExceptionService {
 	AlertType getAlertType();
 	
 	void setAlertTypeCode(String alertTypeCode);
-
+	
+	void assign(List<Long> dataExpIds, String remoteUser, String comments);
+	
+	void unassign(List<Long> dataExpIds, String remoteUser, String comments);
 }

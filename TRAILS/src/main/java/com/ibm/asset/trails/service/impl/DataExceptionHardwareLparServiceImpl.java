@@ -107,4 +107,14 @@ public class DataExceptionHardwareLparServiceImpl implements
         this.alertTypeCode = alertTypeCode;
         alertHardwareLparDao.setAlertTypeCode(alertTypeCode);
     }
+
+	@Override
+	public void assign(List<Long> list, String remoteUser, String comments) {
+	 //TODO	
+	}
+
+	@Override
+	public void unassign(List<Long> alertIds, String remoteUser, String comments) {
+	  //TODO
+	}
 }
