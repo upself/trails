@@ -86,7 +86,7 @@ sub spawnChildren {
 sub keepTicking {
  wlog("$rNo Keep on ticking");
  my $count = 4;
- while (1) {
+ while ( loaderCheckForStop ( $pidFile ) == 0 ) {
   if ( $children >= $maxChildren ) {
    wlog("$rNo sleeping");
    sleep;
@@ -100,7 +100,7 @@ sub keepTicking {
    $connection->disconnect;
   }
   
-  while ( $children < $maxChildren) {
+  while ( $children < $maxChildren && loaderCheckForStop ( $pidFile ) == 0) {
    dlog("$rNo running $children");
    my $customer = shift @customerIds;
    my ( $date, $customerId ) = each %$customer;
