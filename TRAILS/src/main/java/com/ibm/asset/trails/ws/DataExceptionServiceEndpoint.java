@@ -1,28 +1,24 @@
 package com.ibm.asset.trails.ws;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
+import com.ibm.asset.trails.domain.DataExceptionSoftwareLparView;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.DataExceptionService;
 import com.ibm.asset.trails.ws.common.Pagination;
@@ -31,10 +27,10 @@ import com.ibm.asset.trails.ws.common.WSMsg;
 @Path("/exceptions")
 public class DataExceptionServiceEndpoint {
 	@Autowired
-	private DataExceptionService alertSoftwareLparService;
+	private @Qualifier("alertSwlparService") DataExceptionService dataExpSoftwareLparService;
 	
 	@Autowired
-	private DataExceptionService alertHardwareLparService;
+	private @Qualifier("alertHwlparService")DataExceptionService dataExpHardwareLparService;
 	
 	@Autowired
 	private AccountService accountService;
@@ -42,7 +38,7 @@ public class DataExceptionServiceEndpoint {
 	private final String SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/NULLTIME/NOCUST/NOLP/NOOS/ZEROPROC/NOSW/";
 	private final String HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/HWNCHP/HWNPRC/NCPMDL/NPRCTYP/";
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@POST
 	@Path("/{dataExpType}/search")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -67,20 +63,24 @@ public class DataExceptionServiceEndpoint {
 				
 				Long total = null;
 				List list = null;
-				dataExpType = dataExpType.trim();
 				AlertType alertType = null;
+				dataExpType = dataExpType.trim().toUpperCase();
 				
 				if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
-				   alertSoftwareLparService.setAlertTypeCode(dataExpType);
-				   alertType = alertSoftwareLparService.getAlertType();
-				   total = new Long(alertSoftwareLparService.getAlertListSize(account, alertType));
-				   list = alertSoftwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
+					dataExpSoftwareLparService.setAlertTypeCode(dataExpType);
+				   alertType = dataExpSoftwareLparService.getAlertType();
+				   total = new Long(dataExpSoftwareLparService.getAlertListSize(account, alertType));
+				   list = dataExpSoftwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
+				   list = this.swLparDataExpsTransformer(list);
 				}
-				else{//Hardware Lpar Data Exception Type
-				   alertHardwareLparService.setAlertTypeCode(dataExpType);
-				   alertType = alertHardwareLparService.getAlertType();
-				   total = new Long(alertHardwareLparService.getAlertListSize(account, alertType));
-				   list = alertHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
+				else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
+					dataExpHardwareLparService.setAlertTypeCode(dataExpType);
+				   alertType = dataExpHardwareLparService.getAlertType();
+				   total = new Long(dataExpHardwareLparService.getAlertListSize(account, alertType));
+				   list = dataExpHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
+				}
+				else{
+				  return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");
 				}
 				
 				Pagination page = new Pagination();
@@ -110,12 +110,18 @@ public class DataExceptionServiceEndpoint {
 				for(String idStr : assignIds.split(",")){
 					assignList.add(Long.valueOf(idStr));
 				}
+				
+				dataExpType = dataExpType.trim().toUpperCase();
 				if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
-					alertSoftwareLparService.assign(assignList, request.getRemoteUser(), comments);	  
+					dataExpSoftwareLparService.assign(assignList, request.getRemoteUser(), comments);	  
 				}
-				else{//Hardware Lpar Data Exception Type
-					alertHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
+				else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
+					dataExpHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
 				}
+				else{
+					return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");	
+				}
+				
 				return WSMsg.successMessage("Assign success");
 			}catch(Exception e){
 				e.printStackTrace();
@@ -141,12 +147,18 @@ public class DataExceptionServiceEndpoint {
 				for(String idStr : unassignIds.split(",")){
 					unassignList.add(Long.valueOf(idStr));
 				}
+				
+				dataExpType = dataExpType.trim().toUpperCase();
 				if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
-					alertSoftwareLparService.unassign(unassignList, request.getRemoteUser(), comments);	  
+					dataExpSoftwareLparService.unassign(unassignList, request.getRemoteUser(), comments);	  
 				}
-				else{//Hardware Lpar Data Exception Type
-					alertHardwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
+				else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
+					dataExpHardwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
 				}
+				else{
+					return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");	
+				}
+				
 				return WSMsg.successMessage("Unassign success");
 			}catch(Exception e){
 				e.printStackTrace();
@@ -194,4 +206,23 @@ public class DataExceptionServiceEndpoint {
 			return WSMsg.failMessage("Unassign failed");
 		}
 	}*/
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList){
+	  List swLparDataExpsTransformList = new ArrayList();
+	  for(DataExceptionSoftwareLpar swLparDataExp : swLparDataExpsList){
+		  DataExceptionSoftwareLparView swLparDataExpView = new DataExceptionSoftwareLparView();
+		  swLparDataExpView.setDataExpId(swLparDataExp.getId());
+		  swLparDataExpView.setDataExpCreationTime(swLparDataExp.getCreationTime());
+		  swLparDataExpView.setDataExpAssignee(swLparDataExp.getAssignee());
+		  swLparDataExpView.setSwLparId(swLparDataExp.getSoftwareLpar().getId());
+		  swLparDataExpView.setSwLparName(swLparDataExp.getSoftwareLpar().getName());
+		  swLparDataExpView.setSwLparOSName(swLparDataExp.getSoftwareLpar().getOsName());
+		  swLparDataExpView.setSwLparScanTime(swLparDataExp.getSoftwareLpar().getScanTime());
+		  swLparDataExpView.setSwLparSerial(swLparDataExp.getSoftwareLpar().getSerial());
+		  swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccount());
+		  swLparDataExpsTransformList.add(swLparDataExpView);
+	  }
+	  return swLparDataExpsTransformList;
+	}
 }
