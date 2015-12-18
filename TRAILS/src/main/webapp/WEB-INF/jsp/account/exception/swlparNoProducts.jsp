@@ -48,7 +48,6 @@
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO LICENSABLE PRODUCTS">
 			<thead>
 				<tr>
-				<!-- 
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Action</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Scantime</span><span class="ibm-icon"></span></a></th>
@@ -56,7 +55,6 @@
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>OS Name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assignee</span><span class="ibm-icon"></span></a></th>
-				 -->
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Comments</span><span class="ibm-icon"></span></a></th>
 				</tr>
 			</thead>
@@ -91,13 +89,13 @@ function searchData(){
 				}else{
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
-						html += "<td><input value='"+list[i].id+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].softwareLpar.account.account + ",\""+ list[i].softwareLpar.name + "\","+list[i].softwareLpar.id + ");return false;'>"+list[i].softwareLpar.name+"</a></td>";
-						html += "<td>" + list[i].softwareLpar.name + "</td>";
-						html += "<td>" + list[i].softwareLpar.scanTime + "</td>";
-						html += "<td>" + list[i].softwareLpar.serial + "</td>";
-						html += "<td>" + list[i].softwareLpar.osName + "</td>";
-						html += "<td>" + list[i].assignee + "</td>";
+						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].dataExpId + ");return false;'>"+list[i].swLparName+"</a></td>";
+						html += "<td>" + list[i].swLparScanTime + "</td>";
+						html += "<td>" + list[i].dataExpCreationTime + "</td>";
+						html += "<td>" + list[i].swLparSerial + "</td>";
+						html += "<td>" + list[i].swLparOSName + "</td>";
+						html += "<td>" + list[i].dataExpAssignee + "</td>";
 						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOLP?exceptionId="+list[i].tableId+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
