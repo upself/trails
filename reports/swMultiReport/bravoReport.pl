@@ -56,7 +56,6 @@ my $date = $mday;
 $year = 1900 + $year;                                                                    
 my $month = $months[$mon];                                                               
 
-my $emptyFlag = undef;
 my $customer = undef;
 
 GetOptions(
@@ -88,16 +87,9 @@ my $dbh = Database::Connection->new('trailsst');
 logit( "Bravo Database handle acquired", $logFile ); 
 my $bravoSoftware;
 
-if(defined $emptyFlag){
-	logit( "generating empty swMultiReport (just headers)", $logFile ); 
-	logit( "searching for account number", $logFile ); 
-	getAccNumber();
-	logit( "account number found", $logFile ); 
-}else{
-	logit( "Acquiring data from trails DB", $logFile );
-	$bravoSoftware = getBravoSoftwareReport($dbh,$customer); 
-	logit( "Data axquired", $logFile );
-}
+logit( "Acquiring data from trails DB", $logFile );
+$bravoSoftware = getBravoSoftwareReport($dbh,$customer); 
+logit( "Data axquired", $logFile );
 
 logit( "Started generating xls file", $logFile );
 our $workbook = Spreadsheet::WriteExcel::Big->new("$reportDir/$accountNumber.xls");
@@ -243,9 +235,8 @@ select
 	);
 	
     $accsth->execute();
-    while ( $accsth->fetchrow_arrayref ) {
-    	$accountNumber = $accNumber;
-    }
+    $accsth->fetchrow_arrayref;
+    $accountNumber = $accNumber;
     
 	my $rc = $sth->execute();
 	
@@ -423,10 +414,6 @@ my $lineCount = 2;
 	$heartbeat->write( $lineCount, 19, "LPAR STATUS" );
 	$heartbeat->write( $lineCount, 20, "HARDWARE STATUS" );
 
-	if(defined $emptyFlag){
-		return;
-	}
-
 	$lineCount++;
 
 	foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
@@ -519,10 +506,6 @@ sub createSoftwareSheet {
 	$software->write( $lineCount, 13, "LICENSE" );
 	$software->write( $lineCount, 14, "BANK ACCOUNT" );
 	$software->write( $lineCount, 15, "SCOPE" );
-	
-	if(defined $emptyFlag){
-		return;
-	}
 
 	$lineCount++;
 	  foreach my $hostname ( sort keys %{ $bravoSoftware->{$accountNumber} } ) {
@@ -807,10 +790,6 @@ sub createProductCountSheet {
 	$prodCount->write( $pLineCount, 6, "PROCESSOR COUNT" );
     $prodCount->write( $pLineCount, 7, "CHIP COUNT" );
     
-    if(defined $emptyFlag){
-    	return;
-    }
-
 	$pLineCount++;
 
 	foreach my $osName ( sort keys %{$productCount} ) {
