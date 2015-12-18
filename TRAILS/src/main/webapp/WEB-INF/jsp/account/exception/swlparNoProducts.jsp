@@ -96,7 +96,7 @@ function searchData(){
 						html += "<td>" + list[i].swLparSerial + "</td>";
 						html += "<td>" + list[i].swLparOSName + "</td>";
 						html += "<td>" + list[i].dataExpAssignee + "</td>";
-						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOLP?exceptionId="+list[i].tableId+"\");return false;'>View</a></td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOLP/history?exceptionId="+list[i].dataExpId+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
 				}
@@ -132,7 +132,7 @@ function assignComments(type){
 	
 	if(type == 0){
 		//not assign all
-		url += 'assign/ids'
+		url += 'assign'
 		if($('#tb input:checked').length <= 0){
 			alert('Please select at least one column of data to assign comments ');
 			return;
@@ -177,7 +177,7 @@ function unassignComments(type){
 	
 	if(type == 0){
 		//not assign all
-		url += 'unassign/ids'
+		url += 'unassign'
 		if($('#tb input:checked').length <= 0){
 			alert('Please select at least one column of data to unassign comments ');
 			return;
