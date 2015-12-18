@@ -1,137 +1,241 @@
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-
-<h1>Active SW LPAR without Licensable Products:<s:property
-	value="account.name" />(<s:property value="account.account" />)</h1>
-<p class="confidential">IBM Confidential</p>
-<p>This page displays data exceptions for software lpars without
-active licensable products.</p>
-<br />
-<s:if test="%{data.list.size>0}">
-	<p>To assign/unassign a data exception simply click on the link in
-	the Action column, add your required comment in the box that displays
-	and click OK. The action link will switch between "assign" and
-	"unassign".</p>
-	<p>To assign/unassign all data exceptions displayed , click the
-	appropriate button, add your required comment in the box that displays
-	and click OK. All data exceptions will be switched based on the button
-	you select.</p>
-	<br />
-
-	<div class="hrule-dots"></div>
-	<br />
-	<div class="float-left" style="width: 100%;"><s:if
-		test="hasErrors()">
-		<s:actionerror theme="simple" />
-		<s:fielderror theme="simple" />
-	</s:if></div>
-
-	<s:form action="lparNOLP" method="post" theme="simple">
-		<s:hidden name="page" value="%{#attr.page}" />
-		<s:hidden name="dir" value="%{#attr.dir}" />
-		<s:hidden name="sort" value="%{#attr.sort}" />
-
-
-		<div class="clear"></div>
-		<div class="button-bar">
-		<div class="buttons"><span class="button-blue"> <input
-			type="button" value="Assign all"
-			onclick="javascript:showDx('exceptionSwlparAssignAll.htm')" />
-
-		<input type="button" value="Unassign all"
-			onclick="javascript:showDx('exceptionSwlparUnassignAll.htm')" />
-		</span></div>
-		<br />
+<!-- Search form -->
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<h6>IBM Confidential</h6>
+		<p>This page displays hardware lpars without an associated software lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
+	</div>
+	
+	<div class="ibm-col-1-1">
+		<div class="ibm-rule">
+				<hr />
 		</div>
-
-		<display:table name="data" class="basic-table" id="row"
-			summary="SoftwareLpar No Products"
-			decorator="org.displaytag.decorator.TotalTableDecorator"
-			cellspacing="2" cellpadding="0" requestURI="lparNOLP.htm">
-			<display:column title="Action<br>to be taken:">
-				<s:div id="id_assignment_action_%{#attr.row.id}">
-					<s:if test="%{#attr.row.assignee==userSession.remoteUser}">
-						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
-						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="true" id="lpar_list_beenAssigned_%{#attr.row.id}" />
-						<s:url id="unassign"
-							value="javascript:showDl('exceptionSwlparUnassign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
-							includeContext="false" includeParams="none" />
-						<s:a id="unassign_%{#attr.row.id}" href="%{unassign}">unassign</s:a>
-					</s:if>
-					<s:else>
-						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
-						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="false" id="lpar_list_beenAssigned_%{#attr.row.id}" />
-						<s:url id="assign"
-							value="javascript:showDl('exceptionSwlparAssign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
-							includeContext="false" includeParams="none" />
-						<s:a id="assign_%{#attr.row.id}" href="%{assign}">assign</s:a>
-					</s:else>
-				</s:div>
-			</display:column>
-			<display:column sortProperty="softwareLpar.name" title="Name"
-				sortable="true">
-				<s:url id="bravoUrl"
-					value="javascript:popupBravoSl(%{#attr.row.softwareLpar.account.account},'%{#attr.row.softwareLpar.name}',%{#attr.row.softwareLpar.id})"
-					includeContext="false" includeParams="none" />
-				<s:a id="softwarelpar_%{#attr.row.softwareLpar.id}" href="%{bravoUrl}">${row.softwareLpar.name}</s:a>
-			</display:column>
-			<display:column property="softwareLpar.scanTime" title="Scantime"
-				sortable="true" class="date" format="{0,date,MM-dd-yyyy}" />
-			<display:column property="creationTime" title="Create date"
-				sortable="true" class="date" format="{0,date,MM-dd-yyyy}" />
-
-			<display:column property="softwareLpar.serial" title="Serial"
-				sortable="true" />
-			<display:column property="softwareLpar.osName" title="OS Name"
-				sortable="true" />
-			<display:column title="Assignee" sortable="true"
-				sortProperty="assignee">
-				<s:div id="id_assignment_assignee_%{#attr.row.id}">
-					<s:property value="%{#attr.row.assignee}" />
-				</s:div>
-			</display:column>
-			<display:column title="Comments">
-				<s:url id="commentsUrl"
-					value="javascript:displayPopUp('exceptionSwlparHistory.htm?alertId=%{#attr.row.id}')"
-					includeContext="false" includeParams="none" />
-				<s:a id="view_%{#attr.row.id}" href="%{commentsUrl}">View</s:a>
-			</display:column>
-
-		</display:table>
-
-	</s:form>
-
-	<div id="popupDl" class="hideDlg" style=""><s:form theme="simple">
-		<table width="100%" style="height: 100%; width: 100%;" id="table1">
-			<tr>
-				<td height="10"></td>
-				<td></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><label for="id_comments">Comments:</label></td>
-				<td><textarea name="comments" cols="32" rows="4"
-					id="id_comments"></textarea></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><input type="hidden" name="url" value="" id="id_url" /> <input
-					type="hidden" name="alertId" value="" id="id_alert_id" /><input
-					type="hidden" name="rowNumber" value="" id=id_row_number /></td>
-				<td><input type="button" value="  OK   " id="submit_button"
-					size="10" /> <input type="button" value="Cancel"
-					id="cancel_button" size="10" onclick="hideDl();" /></td>
-				<td></td>
-			</tr>
+		<form onsubmit="return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
+			<p>
+				<label for="commons">
+					Comments:<span class="ibm-required">*</span>
+				</label> 
+                <span>
+					<textarea id="comments" cols="38" rows="7" name="message"></textarea>
+				</span>
+			</p>
+			
+			<div class="ibm-columns">
+				<div class="ibm-col-1-1" style="text-align:right">
+					<input type="submit" value="Assign/Update" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(0)" />
+					<input type="submit" value="Unassign" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(0)" />
+					<input type="submit" value="Assign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(1)" />
+					<input type="submit" value="Unassign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(1)" />
+				</div>
+			</div>
+		</form>
+		<div class="ibm-rule">
+			<hr />
+		</div>
+		
+		<div class="ibm-columns">
+			<div class="ibm-col-1-1" style="text-align:right">
+				<input type="submit" value="Select all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(true)" />
+				<input type="submit" value="Unselect all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(false)" />
+			</div>
+		</div>
+	</div>
+	
+	<!-- SORTABLE DATA TABLE -->
+	<div class="ibm-col-1-1">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO LICENSABLE PRODUCTS">
+			<thead>
+				<tr>
+				<!-- 
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Action</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Scantime</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Create date</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>OS Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assignee</span><span class="ibm-icon"></span></a></th>
+				 -->
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Comments</span><span class="ibm-icon"></span></a></th>
+				</tr>
+			</thead>
+			<tbody id="tb">
+				
+			</tbody>
 		</table>
-	</s:form></div>
-</s:if>
-<s:else>
-	<p>No records found. <a
-		href="${pageContext.request.contextPath}/account/exceptions/home.htm">back</a>
-	</p>
-</s:else>
+	</div>
+</div>
+<script>
+$(function(){
+	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
+	searchData();
+});
+
+function searchData(){
+	var params = {};
+	params['accountId'] = '${accountId}';
+	params['sort'] = 'id';
+	params['dir'] = 'desc';
+	
+	$("#page").paginationTable('destroy').paginationTable({
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/exceptions/NOLP/search",
+			type: "POST",
+			params: params,
+			success: function(result, pageIndex){
+				var html = '';
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='8' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
+						html += "<tr>";
+						html += "<td><input value='"+list[i].id+"' type='checkbox'></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].softwareLpar.account.account + ",\""+ list[i].softwareLpar.name + "\","+list[i].softwareLpar.id + ");return false;'>"+list[i].softwareLpar.name+"</a></td>";
+						html += "<td>" + list[i].softwareLpar.name + "</td>";
+						html += "<td>" + list[i].softwareLpar.scanTime + "</td>";
+						html += "<td>" + list[i].softwareLpar.serial + "</td>";
+						html += "<td>" + list[i].softwareLpar.osName + "</td>";
+						html += "<td>" + list[i].assignee + "</td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOLP?exceptionId="+list[i].tableId+"\");return false;'>View</a></td>";
+						html += "</tr>";
+					}
+				}
+				$("#tb").html(html);
+			}
+		},
+		orderColumns: ['id','softwareLpar.name','softwareLpar.scanTime','creationTime','softwareLpar.serial','softwareLpar.osName','assignee','id']
+	}); 
+};
+function assignComments(type){
+	
+	var comments = $('#comments').val();
+	var url = '${pageContext.request.contextPath}/ws/exceptions/NOLP/';
+	var params = {};
+	
+	//validate comments
+	if(comments.trim() == ''){
+		alert('Please input comments.');
+		return;
+	}
+	
+	if(comments.trim().length > 255){
+		alert('Comments must be less than 255 characters');
+		return;
+	}
+	
+	if(type == 1){
+		//assign all
+		url +=  'assign/all';
+		params['comments'] = comments;
+		params['accountId'] = '${accountId}';
+	}
+	
+	if(type == 0){
+		//not assign all
+		url += 'assign/ids'
+		if($('#tb input:checked').length <= 0){
+			alert('Please select at least one column of data to assign comments ');
+			return;
+		}else{
+			var assignIds = '';
+			$('#tb input:checked').each(function(){
+				assignIds += $(this).val() + ',';
+			});
+			assignIds = assignIds.substring(0,assignIds.length - 1);
+			
+			params['comments'] = comments;
+			params['assignIds'] = assignIds;
+		}
+	}
+	
+	assignOrNot(url,params);
+}
+
+function unassignComments(type){
+	
+	var comments = $('#comments').val();
+	var url = '${pageContext.request.contextPath}/ws/exceptions/NOLP/';
+	var params = {};
+	
+	//validate comments
+	if(comments.trim() == ''){
+		alert('Please input comments.');
+		return;
+	}
+	
+	if(comments.trim().length > 255){
+		alert('Comments must be less than 255 characters');
+		return;
+	}
+	
+	if(type == 1){
+		//assign all
+		url +=  'unassign/all';
+		params['comments'] = comments;
+		params['accountId'] = '${accountId}';
+	}
+	
+	if(type == 0){
+		//not assign all
+		url += 'unassign/ids'
+		if($('#tb input:checked').length <= 0){
+			alert('Please select at least one column of data to unassign comments ');
+			return;
+		}else{
+			var unassignIds = '';
+			$('#tb input:checked').each(function(){
+				unassignIds += $(this).val() + ',';
+			});
+			unassignIds = unassignIds.substring(0,unassignIds.length - 1);
+
+			params['comments'] = comments;
+			params['unassignIds'] = unassignIds;
+		}
+	}
+	
+	assignOrNot(url,params);
+}
+
+function assignOrNot(url,params){
+	$.ajax({
+		url: url,
+		data: params,
+		type: 'POST',
+		dataType: 'json',
+		beforeSend:function(){
+			$("#page").paginationTable('showLoading');
+		},
+		success: function(wsMsg){
+			if(wsMsg.status != '200'){
+				alert(wsMsg.msg);
+			}
+			$('#comments').val('');
+		},
+		error: function(response,status,error){
+			alert(error);
+		},
+		complete: function(){
+			searchData();
+		}
+	});
+}
+
+function popupBravoSl(accountId,lparName,swId) {
+	  newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&swId=' + swId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+	  newWin.focus(); 
+	  void(0);
+	}
+
+function displayPopUp(page) {
+	
+	window.open(page, 'PopUpWindow', 'left=200,top=180,resizable=yes,scrollbars=yes,width=840,height=500');
+}
+
+function toggleSelects(type){
+	$("#tb input[type='checkbox']").prop("checked", type); 
+}
+</script>
+
+
