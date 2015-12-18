@@ -161,6 +161,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		sq.select(masterAccount.get(Account_.id));
 		sq.where(cb.equal(memberAccount.get(Account_.id), accountId),
 				cb.equal(masterAccount.get(Account_.status), "ACTIVE"),
+				cb.equal(masterAccount.get(Account_.swlm), "YES"),
 				cb.isFalse(accountPool.get(AccountPool_.deleted)));
 		TypedQuery<Long> tq = entityManager.createQuery(sq);
 		List<Long> accountIds = tq.getResultList();
