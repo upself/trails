@@ -66,7 +66,7 @@
 </div>
 <script>
 $(function(){
-	$("#titleContent").text($("#titleContent").text() + " Alert: ${account.name}(${account.account})");
+	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
 	searchData();
 });
 
