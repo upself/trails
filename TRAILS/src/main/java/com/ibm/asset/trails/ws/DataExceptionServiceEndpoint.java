@@ -214,7 +214,12 @@ public class DataExceptionServiceEndpoint {
 		  DataExceptionSoftwareLparView swLparDataExpView = new DataExceptionSoftwareLparView();
 		  swLparDataExpView.setDataExpId(swLparDataExp.getId());
 		  swLparDataExpView.setDataExpCreationTime(swLparDataExp.getCreationTime());
-		  swLparDataExpView.setDataExpAssignee(swLparDataExp.getAssignee());
+		  if(swLparDataExp.getAssignee()!=null){
+		    swLparDataExpView.setDataExpAssignee(swLparDataExp.getAssignee());
+		  }
+		  else{
+			swLparDataExpView.setDataExpAssignee("");  
+		  }
 		  swLparDataExpView.setSwLparId(swLparDataExp.getSoftwareLpar().getId());
 		  swLparDataExpView.setSwLparName(swLparDataExp.getSoftwareLpar().getName());
 		  swLparDataExpView.setSwLparOSName(swLparDataExp.getSoftwareLpar().getOsName());
