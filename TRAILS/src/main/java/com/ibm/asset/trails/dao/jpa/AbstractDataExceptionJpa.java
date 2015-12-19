@@ -1,5 +1,7 @@
 package com.ibm.asset.trails.dao.jpa;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -44,4 +46,13 @@ public class AbstractDataExceptionJpa {
 		return count;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<Long> getOpenAlertIdsByCustomerIdAndAlertTypeId(Long customerId, Long alertTypeId){
+	  List<Long> openAlertIdsList = (List<Long>) getEntityManager().createNamedQuery(
+				"getOpenAlertIdsByCustomerIdAndAlertTypeId")
+				.setParameter("customerId",customerId)
+				.setParameter("alertTypeId", alertTypeId).getResultList();
+	  return openAlertIdsList;
+	}
 }

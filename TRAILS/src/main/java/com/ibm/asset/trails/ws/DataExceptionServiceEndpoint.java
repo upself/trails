@@ -50,11 +50,24 @@ public class DataExceptionServiceEndpoint {
 			@FormParam("dir") String dir){
 		
 		if(null == dataExpType || "".equals(dataExpType.trim())){
-		  return WSMsg.failMessage("Data Exception Type is required"); 	
+		   return WSMsg.failMessage("Data Exception Type is required"); 	
 		}
 		else if(null == accountId){
-		  return WSMsg.failMessage("Account ID is required");
-		}else{
+		   return WSMsg.failMessage("Account ID is required");
+		}
+		else if(null == currentPage){
+		   return WSMsg.failMessage("Current Page Parameter is required");
+		}
+		else if(null == pageSize){
+		   return WSMsg.failMessage("Page Size Parameter is required");
+		}
+		else if(null == sort || "".equals(sort.trim())){
+		   return WSMsg.failMessage("Sort Column Parameter is required"); 	
+		}
+		else if(null == dir || "".equals(dir.trim())){
+		   return WSMsg.failMessage("Sort Direction Parameter is required"); 	
+		}
+		else{
 			Account account = accountService.getAccount(accountId);
 			if(null == account){
 				return WSMsg.failMessage("Account doesn't exist");
@@ -67,14 +80,14 @@ public class DataExceptionServiceEndpoint {
 				dataExpType = dataExpType.trim().toUpperCase();
 				
 				if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
-					dataExpSoftwareLparService.setAlertTypeCode(dataExpType);
+				   dataExpSoftwareLparService.setAlertTypeCode(dataExpType);
 				   alertType = dataExpSoftwareLparService.getAlertType();
 				   total = new Long(dataExpSoftwareLparService.getAlertListSize(account, alertType));
 				   list = dataExpSoftwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
 				   list = this.swLparDataExpsTransformer(list);
 				}
 				else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
-					dataExpHardwareLparService.setAlertTypeCode(dataExpType);
+				   dataExpHardwareLparService.setAlertTypeCode(dataExpType);
 				   alertType = dataExpHardwareLparService.getAlertType();
 				   total = new Long(dataExpHardwareLparService.getAlertListSize(account, alertType));
 				   list = dataExpHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
@@ -103,7 +116,13 @@ public class DataExceptionServiceEndpoint {
 		
 		if(null == dataExpType || "".equals(dataExpType.trim())){
 			  return WSMsg.failMessage("Data Exception Type is required"); 	
-			}
+		}
+		else if(null == assignIds || "".equals(assignIds.trim())){
+			return WSMsg.failMessage("Assign Ids List is required");	
+		}
+		else if(null == comments || "".equals(comments.trim())){
+			return WSMsg.failMessage("Comment is required");	
+		}
 		else{
 			try{
 				List<Long> assignList = new ArrayList<Long>();
@@ -139,13 +158,19 @@ public class DataExceptionServiceEndpoint {
 			@Context HttpServletRequest request){
 		
 		if(null == dataExpType || "".equals(dataExpType.trim())){
-			  return WSMsg.failMessage("Data Exception Type is required"); 	
-			}
+			return WSMsg.failMessage("Data Exception Type is required"); 	
+		}
+		else if(null == unassignIds || "".equals(unassignIds.trim())){
+			return WSMsg.failMessage("Unassign Ids List is required");	
+		}
+		else if(null == comments || "".equals(comments.trim())){
+			return WSMsg.failMessage("Comment is required");	
+		}
 		else{
 			try{
 				List<Long> unassignList = new ArrayList<Long>();
 				for(String idStr : unassignIds.split(",")){
-					unassignList.add(Long.valueOf(idStr));
+					unassignList.add(Long.valueOf(idStr.trim()));
 				}
 				
 				dataExpType = dataExpType.trim().toUpperCase();
@@ -167,45 +192,97 @@ public class DataExceptionServiceEndpoint {
 		}	
  }
 	
-	/*@POST
+	@POST
 	@Path("/{dataExpType}/assignAll")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg assignAllAlertHardwareConfigCNDBIDList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
+	public WSMsg assignAllDataExceptionDataList(@PathParam("dataExpType") String dataExpType,
+			@FormParam("accountId") Long accountId,
+			@FormParam("comments") String comments,
 			@Context HttpServletRequest request){
-		try{
-			Account account = accountService.getAccount(accountId);
-			if(null == account){
-				return WSMsg.failMessage("Account doesn't exist");
-			}else{
-				alertService.assignAll(account, request.getRemoteUser(), comments);
-				return WSMsg.successMessage("Assign success");
+		
+		if(null == dataExpType || "".equals(dataExpType.trim())){
+		  return WSMsg.failMessage("Data Exception Type is required"); 	
+		}
+		else if(null == accountId){
+		  return WSMsg.failMessage("Account ID is required");
+		}
+		else if(null == comments || "".equals(comments.trim())){
+		  return WSMsg.failMessage("Comment is required");	
+		}
+		else{
+			try{
+				Account account = accountService.getAccount(accountId);
+				if(null == account){
+					return WSMsg.failMessage("Account doesn't exist");
+				}
+				else
+				{
+					Long customerId = account.getId();
+					dataExpType = dataExpType.trim().toUpperCase();
+					if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
+						dataExpSoftwareLparService.assignAll(customerId ,dataExpType, request.getRemoteUser(), comments);	  
+					}
+					else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
+						dataExpHardwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					}
+					else{
+						return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");	
+					}
+					
+					return WSMsg.successMessage("Assign success");
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+				return WSMsg.failMessage("Assign failed");
 			}
-		}catch(Exception e){
-			e.printStackTrace();
-			return WSMsg.failMessage("Assign failed");
 		}
 	}
 	
+	
 	@POST
 	@Path("/{dataExpType}/unassignAll")
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg unassignAllAlertHardwareConfigCNDBIDList(@FormParam("accountId") Long accountId, @FormParam("comments") String comments,
+	public WSMsg unassignAllDataExceptionDataList(@PathParam("dataExpType") String dataExpType,
+			@FormParam("accountId") Long accountId,
+			@FormParam("comments") String comments,
 			@Context HttpServletRequest request){
-		try{
-			Account account = accountService.getAccount(accountId);
-			if(null == account){
-				return WSMsg.failMessage("Account doesn't exist");
-			}else{
-				alertService.unassignAll(account, request.getRemoteUser(), comments);
-				return WSMsg.successMessage("Unassign success");
-			}
-			
-			
-		}catch(Exception e){
-			e.printStackTrace();
-			return WSMsg.failMessage("Unassign failed");
+		
+		if(null == dataExpType || "".equals(dataExpType.trim())){
+		  return WSMsg.failMessage("Data Exception Type is required"); 	
 		}
-	}*/
+		else if(null == accountId){
+		  return WSMsg.failMessage("Account ID is required");
+		}
+		else if(null == comments || "".equals(comments.trim())){
+		  return WSMsg.failMessage("Comment is required");	
+		}
+		else{
+			try{
+				Account account = accountService.getAccount(accountId);
+				if(null == account){
+					return WSMsg.failMessage("Account doesn't exist");
+				}
+				else
+				{
+					Long customerId = account.getId();
+					dataExpType = dataExpType.trim().toUpperCase();
+					if(SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Software Lpar Data Exception Type
+						dataExpSoftwareLparService.unassignAll(customerId ,dataExpType, request.getRemoteUser(), comments);	  
+					}
+					else if(HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType)!=-1){//Hardware Lpar Data Exception Type
+						dataExpHardwareLparService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					}
+					else{
+						return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");	
+					}
+					
+					return WSMsg.successMessage("Unassign success");
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+				return WSMsg.failMessage("Unassign failed");
+			}
+		}
+	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList){
@@ -220,11 +297,32 @@ public class DataExceptionServiceEndpoint {
 		  else{
 			swLparDataExpView.setDataExpAssignee("");  
 		  }
+	
 		  swLparDataExpView.setSwLparId(swLparDataExp.getSoftwareLpar().getId());
-		  swLparDataExpView.setSwLparName(swLparDataExp.getSoftwareLpar().getName());
-		  swLparDataExpView.setSwLparOSName(swLparDataExp.getSoftwareLpar().getOsName());
+		  
+		  if(swLparDataExp.getSoftwareLpar().getName()!=null){
+		    swLparDataExpView.setSwLparName(swLparDataExp.getSoftwareLpar().getName());
+		  }
+		  else{
+			swLparDataExpView.setSwLparName("");  
+		  }
+		  
+		  if(swLparDataExp.getSoftwareLpar().getOsName()!=null){
+		    swLparDataExpView.setSwLparOSName(swLparDataExp.getSoftwareLpar().getOsName());
+		  }
+		  else{
+			swLparDataExpView.setSwLparOSName("");  
+		  }
+		  
 		  swLparDataExpView.setSwLparScanTime(swLparDataExp.getSoftwareLpar().getScanTime());
-		  swLparDataExpView.setSwLparSerial(swLparDataExp.getSoftwareLpar().getSerial());
+		  
+		  if(swLparDataExp.getSoftwareLpar().getSerial()!=null){
+		    swLparDataExpView.setSwLparSerial(swLparDataExp.getSoftwareLpar().getSerial());
+		  }
+		  else{
+			swLparDataExpView.setSwLparSerial("");  
+		  }
+		  
 		  swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccount());
 		  swLparDataExpsTransformList.add(swLparDataExpView);
 	  }
