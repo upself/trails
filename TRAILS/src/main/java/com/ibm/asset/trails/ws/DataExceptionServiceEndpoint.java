@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -15,8 +16,11 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.ibm.asset.trails.dao.DataExceptionHistoryDao;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionHistory;
+import com.ibm.asset.trails.domain.DataExceptionHistoryView;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLparView;
 import com.ibm.asset.trails.service.AccountService;
@@ -34,6 +38,9 @@ public class DataExceptionServiceEndpoint {
 	
 	@Autowired
 	private AccountService accountService;
+	
+	@Autowired
+	private DataExceptionHistoryDao alertHistoryDao;
 	
 	private final String SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/NULLTIME/NOCUST/NOLP/NOOS/ZEROPROC/NOSW/";
 	private final String HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/HWNCHP/HWNPRC/NCPMDL/NPRCTYP/";
@@ -241,6 +248,7 @@ public class DataExceptionServiceEndpoint {
 	
 	@POST
 	@Path("/{dataExpType}/unassignAll")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg unassignAllDataExceptionDataList(@PathParam("dataExpType") String dataExpType,
 			@FormParam("accountId") Long accountId,
 			@FormParam("comments") String comments,
@@ -282,6 +290,51 @@ public class DataExceptionServiceEndpoint {
 				return WSMsg.failMessage("Unassign failed");
 			}
 		}
+	}
+	
+	@GET
+	@Path("/{dataExpType}/history/{exceptionId}")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg getDataException(@PathParam("dataExpType") String dataExpType,
+			@PathParam("exceptionId") Long exceptionId){
+		
+		if(null == dataExpType || "".equals(dataExpType.trim())){
+		  return WSMsg.failMessage("Data Exception Type is required"); 	
+		}
+		else if(null == exceptionId){
+		  return WSMsg.failMessage("Exception ID is required");
+		}
+		else{
+			List<DataExceptionHistory> dataExpHistoryList = alertHistoryDao.getByAlertId(exceptionId);
+			List<DataExceptionHistoryView> dataExpHistoryTransformList = this.dataExpHistoryTransformer(dataExpHistoryList);
+			return WSMsg.successMessage("SUCCESS", dataExpHistoryTransformList);	
+		}
+	}
+
+	private List<DataExceptionHistoryView> dataExpHistoryTransformer(List<DataExceptionHistory> dataExpHistoryList){
+		 List<DataExceptionHistoryView> dataExpHistoryTransformList = new ArrayList<DataExceptionHistoryView>();
+		 for(DataExceptionHistory dataExpHistory : dataExpHistoryList){
+			 DataExceptionHistoryView  dataExpHistoryView = new DataExceptionHistoryView();
+			 dataExpHistoryView.setCustomerId(dataExpHistory.getAccount().getId());
+			 dataExpHistoryView.setAccountNumber(dataExpHistory.getAccount().getAccount());
+			 dataExpHistoryView.setDataExpHistoryId(dataExpHistory.getId());
+			 dataExpHistoryView.setDataExpId(dataExpHistory.getAlert().getId());
+			 dataExpHistoryView.setDataExpTypeId(dataExpHistory.getAlertType().getId());
+			 dataExpHistoryView.setDataExpTypeName(dataExpHistory.getAlertType().getName());
+			 dataExpHistoryView.setCreationTime(dataExpHistory.getCreationTime());
+			 dataExpHistoryView.setRecordTime(dataExpHistory.getRecordTime());
+			 dataExpHistoryView.setRemoteUser(dataExpHistory.getRemoteUser());
+			 if(dataExpHistory.getAssignee()!=null){
+				 dataExpHistoryView.setAssignee(dataExpHistory.getAssignee());
+			 }
+			 else{
+				 dataExpHistoryView.setAssignee("");
+			 }
+			 dataExpHistoryView.setComment(dataExpHistory.getComment());
+			 dataExpHistoryTransformList.add(dataExpHistoryView);
+		 }
+		 
+		 return dataExpHistoryTransformList;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
