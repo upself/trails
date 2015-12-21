@@ -1,13 +1,13 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <div class="ibm-columns">
 	<div class="ibm-col-5-4">
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table" summary="Data Exception History">
+		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Data Exception History">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Comments</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Assignee</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Creation Time</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Record Time</span><span class="ibm-icon"></span></a></th>
+					<th scope="col">Comments</th>
+					<th scope="col">Assignee</th>
+					<th scope="col">Creation Time</th>
+					<th scope="col">Record Time</th>
 				</tr>
 			</thead>
 			<tbody id="data_exception_history_list">
