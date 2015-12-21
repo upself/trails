@@ -11,6 +11,7 @@ public class AlertHistoryAction extends BaseListAction {
 	private DataExceptionHistoryService historyService;
 
 	private Long alertId;
+	private String dataExpType;
 
 	@UserRole(userRole = UserRoleType.READER)
 	public String execute() {
@@ -35,5 +36,22 @@ public class AlertHistoryAction extends BaseListAction {
 	public void setAlertId(Long alertId) {
 		this.alertId = alertId;
 	}
+	
+	public Long getExceptionId() {
+		return alertId;
+	}
 
+	public void setExceptionId(Long alertId) {
+		this.alertId = alertId;
+	}
+
+	public String getDataExpType() {
+		return dataExpType;
+	}
+
+	public void setDataExpType(String dataExpType) {
+		this.dataExpType = dataExpType;
+	}
+
+	
 }

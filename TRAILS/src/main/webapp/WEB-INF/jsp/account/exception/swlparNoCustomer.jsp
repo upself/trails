@@ -96,7 +96,7 @@ function searchData(){
 						html += "<td>" + list[i].swLparSerial + "</td>";
 						html += "<td>" + list[i].swLparOSName + "</td>";
 						html += "<td>" + list[i].dataExpAssignee + "</td>";
-						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOCUST/history?exceptionId="+list[i].dataExpId+"\");return false;'>View</a></td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionSwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
 				}

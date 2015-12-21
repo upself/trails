@@ -1071,8 +1071,13 @@
 		<put-attribute name="description" value="TRAILS alert history" />
 		<put-attribute name="keywords" value="TRAILS alert history" />
 	</definition>
-
-	<definition name="tiles.exception.history.popup" extends="tiles.w3PopupLayout">
+	
+	<definition name="tiles.exception.swlpar.history.popup" extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS data exception history" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/exceptionSwlparHistoryPopup.jsp" />
+	</definition>
+	
+	<definition name="tiles.exception.hwlpar.history.popup" extends="tiles.w3PopupLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptiontHistoryPopup.jsp" />
 		<put-attribute name="description" value="TRAILS data exception history" />
