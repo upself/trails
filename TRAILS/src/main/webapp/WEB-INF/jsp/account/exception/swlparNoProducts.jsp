@@ -5,7 +5,7 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays the data exception record which is software lpars without licensable products, you can do assign/unassign/assign all/unassigne all operation with 
+		<p>This page displays the data exception record which is software lpars without licensable products, you can do assign/unassign/assign all/unassign all operation with 
 	clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	
@@ -73,8 +73,8 @@ $(function(){
 function searchData(){
 	var params = {};
 	params['accountId'] = '${accountId}';
-	params['sort'] = 'id';
-	params['dir'] = 'desc';
+	params['sort'] = 'softwareLpar.name';
+	params['dir'] = 'asc';
 	
 	$("#page").paginationTable('destroy').paginationTable({
 		remote: {
@@ -96,7 +96,7 @@ function searchData(){
 						html += "<td>" + list[i].swLparSerial + "</td>";
 						html += "<td>" + list[i].swLparOSName + "</td>";
 						html += "<td>" + list[i].dataExpAssignee + "</td>";
-						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/ws/exceptions/NOLP/history?exceptionId="+list[i].dataExpId+"\");return false;'>View</a></td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionSwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
 				}
