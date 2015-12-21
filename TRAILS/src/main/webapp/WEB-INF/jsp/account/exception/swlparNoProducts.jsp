@@ -73,8 +73,8 @@ $(function(){
 function searchData(){
 	var params = {};
 	params['accountId'] = '${accountId}';
-	params['sort'] = 'id';
-	params['dir'] = 'desc';
+	params['sort'] = 'softwareLpar.name';
+	params['dir'] = 'asc';
 	
 	$("#page").paginationTable('destroy').paginationTable({
 		remote: {
