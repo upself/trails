@@ -5,7 +5,8 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays hardware lpars without an associated software lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
+		<p>This page displays the data exception record which is software lpars without licensable products, you can do assign/unassign/assign all/unassigne all operation with 
+	clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	
 	<div class="ibm-col-1-1">
@@ -43,7 +44,6 @@
 		</div>
 	</div>
 	
-	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO LICENSABLE PRODUCTS">
 			<thead>
