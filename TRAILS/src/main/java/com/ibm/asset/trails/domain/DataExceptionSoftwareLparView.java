@@ -7,6 +7,7 @@ public class DataExceptionSoftwareLparView implements Serializable {
 	private static final long serialVersionUID = 4408421318829272538L;
 	
 	private Long dataExpId;
+	private String dataExpType;
 	private String dataExpAssignee;
 	private Date dataExpCreationTime;
 	private Long swLparId;
@@ -21,6 +22,12 @@ public class DataExceptionSoftwareLparView implements Serializable {
 	}
 	public void setDataExpId(Long dataExpId) {
 		this.dataExpId = dataExpId;
+	}
+	public String getDataExpType() {
+		return dataExpType;
+	}
+	public void setDataExpType(String dataExpType) {
+		this.dataExpType = dataExpType;
 	}
 	public String getDataExpAssignee() {
 		return dataExpAssignee;
