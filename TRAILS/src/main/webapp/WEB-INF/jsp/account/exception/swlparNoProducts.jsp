@@ -5,7 +5,8 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays hardware lpars without an associated software lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
+		<p>This page displays the data exception record which is software lpars without licensable products, you can do assign/unassign/assign all/unassigne all operation with 
+	clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	
 	<div class="ibm-col-1-1">
@@ -43,12 +44,11 @@
 		</div>
 	</div>
 	
-	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO LICENSABLE PRODUCTS">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Action</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Scantime</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Create date</span><span class="ibm-icon"></span></a></th>
@@ -125,7 +125,7 @@ function assignComments(type){
 	
 	if(type == 1){
 		//assign all
-		url +=  'assign/all';
+		url +=  'assignAll';
 		params['comments'] = comments;
 		params['accountId'] = '${accountId}';
 	}
@@ -170,7 +170,7 @@ function unassignComments(type){
 	
 	if(type == 1){
 		//assign all
-		url +=  'unassign/all';
+		url +=  'unassignAll';
 		params['comments'] = comments;
 		params['accountId'] = '${accountId}';
 	}
