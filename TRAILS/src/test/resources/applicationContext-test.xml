@@ -20,9 +20,9 @@
 		<property name="locations">
 			<list>
 				<value>
-					file:/opt/trails/conf/hibernate.properties
+					file:C:\\personal\\software\\Trails_props\\hibernate.properties
 				</value>
-				<value>file:/opt/trails/conf/trails.properties
+				<value>file:C:\\personal\\software\\Trails_props\\trails.properties
 				</value>
 			</list>
 		</property>

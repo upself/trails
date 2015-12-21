@@ -15,6 +15,9 @@ public interface DataExceptionService {
 
 	void updateAssignment(DataException alert, String sessionUser, String comments,
 			boolean assign);
+	
+	void updateAssignmentAndCreateHistory(DataException alert, String sessionUser, String comments,
+			boolean assign);
 
 	DataException getById(long id);
 
@@ -25,4 +28,8 @@ public interface DataExceptionService {
 	void assign(List<Long> dataExpIds, String remoteUser, String comments);
 	
 	void unassign(List<Long> dataExpIds, String remoteUser, String comments);
+	
+	void assignAll(Long customerId, String dataExpTypeCode, String remoteUser, String comments);
+	
+	void unassignAll(Long customerId, String dataExpTypeCode, String remoteUser, String comments);
 }

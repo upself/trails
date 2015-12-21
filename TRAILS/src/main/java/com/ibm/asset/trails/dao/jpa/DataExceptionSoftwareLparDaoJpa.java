@@ -73,7 +73,7 @@ public class DataExceptionSoftwareLparDaoJpa extends AbstractDataExceptionJpa
     }
 
     private void addOrder(String sortBy, String sortDirection, Criteria criteria) {
-        if ("asc".equals(sortDirection)) {
+        if ("asc".equalsIgnoreCase(sortDirection)) {
             criteria.addOrder(Order.asc(sortBy));
         } else {
             criteria.addOrder(Order.desc(sortBy));

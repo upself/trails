@@ -15,6 +15,7 @@ import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.DataException;
 import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
 import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionHistory;
 import com.ibm.asset.trails.service.DataExceptionService;
 
 @Service
@@ -110,11 +111,62 @@ public class DataExceptionHardwareLparServiceImpl implements
 
 	@Override
 	public void assign(List<Long> list, String remoteUser, String comments) {
-	 //TODO	
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void unassign(List<Long> alertIds, String remoteUser, String comments) {
-	  //TODO
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void assignAll(Long customerId, String dataExpTypeCode,
+			String remoteUser, String comments) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unassignAll(Long customerId, String dataExpTypeCode,
+			String remoteUser, String comments) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateAssignmentAndCreateHistory(DataException alert,
+			String sessionUser, String comments, boolean assign) {
+		
+		DataExceptionHistory alertHistory = this.transformToHistory(alert);
+		alertHistoryDao.save(alertHistory);
+		
+		if (assign) {
+            alert.setAssignee(sessionUser);
+        } else {
+            alert.setAssignee(null);
+        }
+
+        alert.setRemoteUser(sessionUser);
+        alert.setComment(comments);
+        alert.setRecordTime(new Date());
+
+        alertHardwareLparDao.update(alert);
+	}
+	
+	private DataExceptionHistory transformToHistory(DataException alert) {
+
+		DataExceptionHistory alertHistory = new DataExceptionHistory();
+		alertHistory.setAccount(alert.getAccount());
+		alertHistory.setAlert(alert);
+		alertHistory.setAlertCause(alert.getAlertCause());
+		alertHistory.setAlertType(alert.getAlertType());
+		alertHistory.setAssignee(alert.getAssignee());
+		alertHistory.setComment(alert.getComment());
+		alertHistory.setCreationTime(alert.getCreationTime());
+		alertHistory.setOpen(alert.isOpen());
+		alertHistory.setRecordTime(alert.getRecordTime());
+		alertHistory.setRemoteUser(alert.getRemoteUser());
+
+		return alertHistory;
 	}
 }
