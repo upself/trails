@@ -21,4 +21,6 @@ public interface DataExceptionDao {
 	
 	void setAlertTypeCode(String alertTypeCode);
 	String getAlertTypeCode();
+	
+	List<Long> getOpenAlertIdsByCustomerIdAndAlertTypeId(Long customerId, Long alertTypeId);
 }
