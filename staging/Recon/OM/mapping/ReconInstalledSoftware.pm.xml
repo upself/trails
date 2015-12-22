@@ -5,8 +5,7 @@
 		sql-name="installed_software_id" biz-key="true" />
 	<property name="customerId" type="scalar" equals="true"
 		sql-name="customer_id" />
-	<property name="action" type="scalar" equals="true" sql-name="action"
-		biz-key="true" />
+	<property name="action" type="scalar" equals="true" sql-name="action"/>
 	<property name="remoteUser" type="scalar" sql-name="remote_user"
 		default="STAGING" />
 	<property name="recordTime" type="scalar" sql-name="record_time" />
