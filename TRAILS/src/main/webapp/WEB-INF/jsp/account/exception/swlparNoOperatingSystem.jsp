@@ -5,7 +5,7 @@
 	<div class="ibm-col-1-1">
 	<h6>IBM Confidential</h6>
 	<p>This page displays data exceptions for software lpars without Operating System.</p>
-	<p>You can do <b>assign/unassign/assign all/unassign all</b> operations with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
+	<p>You can do assign/unassign/assign all/unassign all operations with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	<div class="ibm-col-1-1">
 		<div class="ibm-rule">
@@ -43,7 +43,7 @@
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO CUSTOM">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO OS">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
