@@ -125,8 +125,8 @@ sub keepTicking {
 			}
         }
         if ((scalar @customerIds == 0) && ( scalar(keys %children) == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
-			wlog("$rNo customer array empty and no children running, waiting 10 minutes before reloading the queue");
-			sleep 600;
+			wlog("$rNo customer array empty and no children running, sleeping 2 minutes before reloading the queue");
+			sleep 120;
 		}
     }
 }
