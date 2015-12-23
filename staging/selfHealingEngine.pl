@@ -466,16 +466,16 @@ sub coreOperationProcess{
   my $operationParameter9;
   my $operationParameter10;
 
-  $operationParameter1 = trim($operationParametersArray[1]);
-  $operationParameter2 = trim($operationParametersArray[2]);
-  $operationParameter3 = trim($operationParametersArray[3]);
-  $operationParameter4 = trim($operationParametersArray[4]);
-  $operationParameter5 = trim($operationParametersArray[5]);
-  $operationParameter6 = trim($operationParametersArray[6]);
-  $operationParameter7 = trim($operationParametersArray[7]);
-  $operationParameter8 = trim($operationParametersArray[8]);
-  $operationParameter9 = trim($operationParametersArray[9]);
-  $operationParameter10 = trim($operationParametersArray[10]);
+  $operationParameter1 = trim($operationParametersArray[0]);
+  $operationParameter2 = trim($operationParametersArray[1]);
+  $operationParameter3 = trim($operationParametersArray[2]);
+  $operationParameter4 = trim($operationParametersArray[3]);
+  $operationParameter5 = trim($operationParametersArray[4]);
+  $operationParameter6 = trim($operationParametersArray[5]);
+  $operationParameter7 = trim($operationParametersArray[6]);
+  $operationParameter8 = trim($operationParametersArray[7]);
+  $operationParameter9 = trim($operationParametersArray[8]);
+  $operationParameter10 = trim($operationParametersArray[9]);
 
   print LOG "The Operation Parameter 1: {$operationParameter1}\n";
   print LOG "The Operation Parameter 2: {$operationParameter2}\n";
@@ -492,8 +492,8 @@ sub coreOperationProcess{
   eval{
   
 	#############THE FOLLOWING PIECE OF CODE IS THE OPERATION CORE BUSINESS LOGIC!!!!!!################################
-    if(($operationNameCode eq $RESTART_LOADER_ON_TAP_SERVER)#RESTART_LOADER_ON_TAP_SERVER
-	 &&($HOSTNAME eq $TAP || $HOSTNAME eq $TAP2)){#TAP Server or Support TAP2 Testing Server Case
+    if($operationNameCode eq $RESTART_LOADER_ON_TAP_SERVER)#RESTART_LOADER_ON_TAP_SERVER
+	{
       
 	  if($selfHealingEngineInvokedMode eq $QUEUE_MODE){
         #Operation has been started to be processed
@@ -559,7 +559,7 @@ sub coreOperationProcess{
 		  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 End
 
           #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef| grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName | grep -v selfHeal |grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
@@ -591,7 +591,7 @@ sub coreOperationProcess{
 		  #1.1. If all the parent processes have not been fullly killed, then retry one time to kill all the remaining parent processes
 		  if($killLoaderFlag == $FAIL){
             $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
-            my @targetLoaderRemainingParentPids = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;
+            my @targetLoaderRemainingParentPids = `ps -ef| grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;
             my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
             if($targetLoaderRemainingParentPidsCnt == 0){
 		      print LOG "The Restart Loader on TAP Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -638,7 +638,7 @@ sub coreOperationProcess{
 			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
 			print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
             
-			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v selfHeal | grep -v grep|awk '{print \$2}'`;
             my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
 		    if($targetChildLoaderPidsCnt == 0){
 		      print LOG "The Restart Loader on TAP Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -667,7 +667,7 @@ sub coreOperationProcess{
             #1.3. If all the child processes have not been fullly killed, then retry one time to kill all the remaining child processes
 			if($killLoaderFlag == $FAIL){
 			  $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
-              my @targetLoaderRemainingChildPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+              my @targetLoaderRemainingChildPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
               my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
               if($targetLoaderRemainingChildPidsCnt == 0){
 			    print LOG "The Restart Loader on TAP Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -728,7 +728,7 @@ sub coreOperationProcess{
 			  sleep 10;
 		
 			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
-              my @loaderRunningProcessesMsg = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+              my @loaderRunningProcessesMsg = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 			  foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
                 chomp($loaderRunningProcessMsg); 
 			    print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
@@ -736,7 +736,7 @@ sub coreOperationProcess{
 			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 
 			  #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-			  my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|wc -l`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
+			  my $targetLoaderRunningProcessCnt = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|wc -l`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 			  chomp($targetLoaderRunningProcessCnt);#remove the return line char
 			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 Start
               #This is a bug. For Restart Loader on TAP Server Operation, there is no need to decrease 1 count.
@@ -841,7 +841,7 @@ sub coreOperationProcess{
 		}
 		else{#Restart Loader is a valid loader
 		  #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
-		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
+		  my @targetLoaderPids = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
 		    print LOG "The Restart Loader on TAP3 Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
@@ -873,7 +873,7 @@ sub coreOperationProcess{
 		  #1.1. If all the parent processes have not been fullly killed, then retry one time to kill all the remaining parent processes
 		  if($killLoaderFlag == $FAIL){
             $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
-            my @targetLoaderRemainingParentPids = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
+            my @targetLoaderRemainingParentPids = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
             my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
             if($targetLoaderRemainingParentPidsCnt == 0){
 		      print LOG "The Restart Loader on TAP3 Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -920,7 +920,7 @@ sub coreOperationProcess{
 			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
 			print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
             
-			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+			my @targetChildLoaderPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
             my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
 		    if($targetChildLoaderPidsCnt == 0){
 		      print LOG "The Restart Loader on TAP3 Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -949,7 +949,7 @@ sub coreOperationProcess{
             #1.3. If all the child processes have not been fullly killed, then retry one time to kill all the remaining child processes
 			if($killLoaderFlag == $FAIL){
 			  $killLoaderFlag = $SUCCESS;#Reset killLoaderFlag to $SUCCESS value
-              my @targetLoaderRemainingChildPids = `ps -ef|grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
+              my @targetLoaderRemainingChildPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
               my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
               if($targetLoaderRemainingChildPidsCnt == 0){
 			    print LOG "The Restart Loader on TAP3 Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
@@ -1014,7 +1014,7 @@ sub coreOperationProcess{
 			  #Sleep 120 seconds to give the target loader startup time
 			  sleep 120;
               #Add Post Check Support Feature to judge if the target loader has been restarted successfully or not
-			  my $targetLoaderRunningProcessCnt = `ps -ef|grep $restartLoaderName|grep start|grep -v grep|wc -l`;
+			  my $targetLoaderRunningProcessCnt = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep start|grep -v grep|wc -l`;
 			  chomp($targetLoaderRunningProcessCnt);#remove the return line char
               $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
 			  if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
@@ -1345,13 +1345,13 @@ sub coreOperationProcess{
 		
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
-           my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep | grep -v selfHeal |awk '{print \$2}'`;
-		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName | grep -v selfHeal | grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
+           my @targetChildLoaderPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
+		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
-             my $targetChildLoaderPidRunningCnt = `ps -ef|grep $targetChildLoaderPid|grep -v grep |  grep -v selfHeal |wc -l`;
+             my $targetChildLoaderPidRunningCnt = `ps -ef|grep -v selfHeal | grep $targetChildLoaderPid|grep -v grep|wc -l`;
 			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars
@@ -1444,8 +1444,8 @@ sub coreOperationProcess{
 		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.\n";
 		     }#end else
 
-		      #4. Change the group of the log file to 'users' to let the log file downloaded
-			  my $changeGroupCommand = "chgrp users $logFile";
+		      #4. Change the group of the log file to 'trailsgp' to let the log file downloaded
+			  my $changeGroupCommand = "chgrp trailsgp $logFile";
 		      my $logFileChangedGroupFlag = system("$changeGroupCommand");
               if($logFileChangedGroupFlag == 0){
                 print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
