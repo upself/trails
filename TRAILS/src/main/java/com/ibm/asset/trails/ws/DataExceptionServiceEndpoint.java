@@ -23,7 +23,9 @@ import com.ibm.asset.trails.domain.DataExceptionHistory;
 import com.ibm.asset.trails.domain.DataExceptionHistoryView;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLparView;
+import com.ibm.asset.trails.form.DataExceptionReportActionForm;
 import com.ibm.asset.trails.service.AccountService;
+import com.ibm.asset.trails.service.DataExceptionReportService;
 import com.ibm.asset.trails.service.DataExceptionService;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
@@ -34,7 +36,10 @@ public class DataExceptionServiceEndpoint {
 	private @Qualifier("alertSwlparService") DataExceptionService dataExpSoftwareLparService;
 	
 	@Autowired
-	private @Qualifier("alertHwlparService")DataExceptionService dataExpHardwareLparService;
+	private @Qualifier("alertHwlparService") DataExceptionService dataExpHardwareLparService;
+	
+	@Autowired
+	private DataExceptionReportService dataExceptionReportService;
 	
 	@Autowired
 	private AccountService accountService;
@@ -44,6 +49,25 @@ public class DataExceptionServiceEndpoint {
 	
 	private final String SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/NULLTIME/NOCUST/NOLP/NOOS/ZEROPROC/NOSW/";
 	private final String HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/HWNCHP/HWNPRC/NCPMDL/NPRCTYP/";
+	
+	@POST
+	@Path("/overview")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg exceptionOverview(@FormParam("accountId") Long accountId){
+		if(null == accountId){
+			return WSMsg.failMessage("Account ID is required");
+		}else{
+			Account account = accountService.getAccount(accountId);
+			if(null == account){
+				return WSMsg.failMessage("Account doesn't exist");
+			}else{
+				List<DataExceptionReportActionForm> dataList = dataExceptionReportService.getAlertsOverview(account);
+				return WSMsg.successMessage("SUCCESS", dataList);
+			}
+		}
+		
+	}
+	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@POST
