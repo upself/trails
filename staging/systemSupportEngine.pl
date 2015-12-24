@@ -10,6 +10,7 @@ use File::Basename;
 use Base::ConfigManager;
 use Sys::Hostname;
 
+###Globals
 my $HOSTNAME= hostname;
 my $systemSupportEnginePidFile    = "/tmp/systemSupportEngine.pid";
 my $systemSupportEngineConfigFile = "./config/systemSupportEngine.properties";
@@ -20,6 +21,12 @@ my $STYLE1 = 1;#YYYY-MM-DD-HH.MM.SS For Example: 2013-04-18-10.30.33
 my $STYLE2 = 2;#YYYYMMDDHHMMSS For Example: 20130418103033
 my $STYLE3 = 3;#YYYYMMDD For Example: 20130618 #Added by Larry for System Support And Self Healing Service Components - Phase 3
 
+###Initialize properties
+my $cfgMgr       = Base::ConfigManager->instance($systemSupportEngineConfigFile);
+my $db2Profile   = $cfgMgr->db2Profile;
+my $sleepPeriod  = $cfgMgr->sleepPeriod;
+my $logFile      = $cfgMgr->LogFile;
+
 ###Make a daemon.
 umask 0;
 defined( my $pid = fork )
@@ -27,6 +34,38 @@ or die "ERROR: Unable to fork: $!";
 exit if $pid;
 
 loaderStart(shift @ARGV, $systemSupportEnginePidFile);#Start System Support Engine Process
+
+###Close handles to avoid console output.
+open( STDIN, "/dev/null" )
+  or die "ERROR: Unable to direct STDIN to /dev/null: $!";
+open( STDOUT, "/dev/null" )
+  or die "ERROR: Unable to direct STDOUT to /dev/null: $!";
+open( STDERR, "/dev/null" )
+  or die "ERROR: Unable to direct STDERR to /dev/null: $!";
+
+###Setup Log Handler
+$logFile = get_log_path($logFile);
+open(LOG,">>$logFile");
+
+###Setup for forking children.
+my %children    = ();
+my $children    = 0;
+
+###Signal handler for dead children
+sub REAPER {
+	$SIG{CHLD} = \&REAPER;
+	while ( ( my $pid = waitpid( -1, &WNOHANG ) ) > 0 ) {
+		if ( exists( $children{$pid} ) ) {
+			print LOG "Removing Child Process {$pid}.\n";
+			$children--;
+			delete $children{$pid};
+		}
+		else {
+			print LOG "i should not hit this in the reaper sub.\n";
+		}
+	}
+}
+$SIG{CHLD} = \&REAPER;
 
 main();
 
@@ -36,25 +75,17 @@ sub main{
 }
 
 sub init{
-	my $config   = Base::ConfigManager->instance($systemSupportEngineConfigFile);
-	setupDB2Env($config->db2Profile);
+	setupDB2Env($db2Profile);
 }
 
 sub process{
-	my $config   = Base::ConfigManager->instance($systemSupportEngineConfigFile);
-	my $SleepPeriod = trim($config->sleepPeriod);
-	my $LogFile=get_log_path($config->LogFile);
 my @operationQueueRecords = ();
 
 	while (1){
-		my $staging_connection = Database::Connection->new('staging');      
-		
-		open(LOG,">>$LogFile");
-
 		eval{
-
-
-			@operationQueueRecords = getOperations($staging_connection,$config);
+	        my $staging_connection = Database::Connection->new('staging');      
+	
+			@operationQueueRecords = getOperations($staging_connection,$cfgMgr);
 			my $operationQueueRecordsCnt = scalar(@operationQueueRecords);
 			if($operationQueueRecordsCnt > 0){
 				print LOG "There are $operationQueueRecordsCnt new Operations which need to be processed in the new round on $HOSTNAME Server.\n";
@@ -85,16 +116,23 @@ my @operationQueueRecords = ();
 			newChildProcess($operationId,$operationNameCode,$operationParameters,$finalPerlScriptExecutionCommand);
 			print LOG "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 			}#end foreach my $operationQueueRecord (@operationQueueRecords)
+
+			###Wait till all children die.
+			while ( $children != 0 ) {
+				sleep 5;
+			}
+
+			$staging_connection->disconnect();
 		};
 
 		if($@){
 			print LOG "Exception happened due to reason: $@\n";
 		}
 
-		close LOG;
-		$staging_connection->disconnect();
-		sleep $SleepPeriod;
+		sleep $sleepPeriod;
 	}#end while(1)
+
+	close LOG;
 }
 
 sub get_log_path{
@@ -137,7 +175,7 @@ sub getAllOperationQueueNotDoneOperationsFunction{
 
 sub filterAllOperationQueueNotDoneOperationsForCertainServer{
 	my ($operationQueueRecordsRef ,$config) = @_;
-	my @allowedOperations = split(',',$config->allowedOperations);
+	#my @allowedOperations = split(',',$config->allowedOperations);
 	my @operationQueueRecords = @$operationQueueRecordsRef;
 	my $serverMode = shift;
 	my $operationQueueRecordRef;
@@ -194,27 +232,28 @@ sub newChildProcess {
 	my $finalExecutePerlCommand  = shift;
 	my $pid;
 
-	my $sigset = POSIX::SigSet->new(SIGINT);
-	sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
-	die "Cannot fork child: $!\n" unless defined( $pid = fork );
-	
-	if ($pid) {
-		$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
-		print LOG "[$currentTimeStamp]New Child Process {$pid} has bee created to process Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} + Operation Parameters Merged Value: {$operationParametersMergedValue}\n"; 
-		return;
+    unless ( defined( $pid = fork ) ) {
+		print LOG "ERROR: unable to fork child process!\n";
+		exit 1;
 	}
 
-		#Execute the final Perl Script Execution Command
-		#`$finalExecutePerlCommand`;#This method cannot be used due that the main process always hang up to wait for the child process to return even if the child process has actually be finished successfully!!!
-		my $finalExecutePerlCommandResult = system("$finalExecutePerlCommand");
-	$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
-	if($finalExecutePerlCommandResult == 0){#Execute Successfully
-		print LOG "[$currentTimeStamp]The Perl Command: {$finalExecutePerlCommand} has been executed successfully by Child Process\n";
+	if ($pid) {
+		###I am the parent process
+		$currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+		print LOG "[$currentTimeStamp]New Child Process {$pid} has bee created to process Operation ID: {$operationId} + Operation Name Code: {$operationNameCode} + Operation Parameters Merged Value: {$operationParametersMergedValue}\n"; 
+		$children{$pid}{'log'} = 1;
+		$children++;
+		return;
 	}
-	else{#Execute Failed
-		print LOG "[$currentTimeStamp]The Perl Command: {$finalExecutePerlCommand} has been executed failed by Child Process\n";
+    else {
+        ###I am the child process
+        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
+        print LOG "[$currentTimeStamp]Spawning Child Process: {$finalExecutePerlCommand}\n";
+	    `$finalExecutePerlCommand`;
+        print LOG "[$currentTimeStamp]Child Process Complete: {$finalExecutePerlCommand}\n";
+
+  	    exit 0;
 	}
-	exit;
 }
 
 
