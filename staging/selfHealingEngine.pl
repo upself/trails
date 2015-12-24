@@ -2,7 +2,7 @@
 #
 # This perl script is used to provide a Self Healing Engine Support Feature 
 
-
+use lib '/opt/staging/v2'; 
 use strict;
 use DBI;
 use Database::Connection;
@@ -515,38 +515,38 @@ sub coreOperationProcess{
       
       #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
       $relatedTicketNumber = trim($operationParametersArray[$RESTART_LOADER_ON_TAP_SERVER_RELATED_TICKET_NUMBER_INDEX]);#Related Ticket Number(Optional) - For example: TI30620-56800
-      print LOG "The Restart Loader on TAP Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
+      print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
 
       $restartLoaderName = trim($operationParametersArray[$RESTART_LOADER_ON_TAP_SERVER_LOADER_NAME_INDEX]);#Loader Name(Required) - For example: doranaToSwasset.pl
       if($restartLoaderName eq ""){
 	    $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
         $operationFailedComments.="The Operation Parameter - Loader Name is required. It cannot be empty. For example: {doranaToSwasset.pl}";
-		print LOG "The Restart Loader on TAP Server - The Operation Parameter - Loader Name is required. It cannot be empty. For example: {doranaToSwasset.pl}\n";
+		print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Loader Name is required. It cannot be empty. For example: {doranaToSwasset.pl}\n";
 	  }#end if($restartLoaderName eq "")
 	  else{
-	    print LOG "The Restart Loader on TAP Server - The Operation Parameter - Loader Name: {$restartLoaderName}\n";
+	    print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Loader Name: {$restartLoaderName}\n";
 	  }#end else
 	  #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
     
       if($operationResultFlag == $OPERATION_SUCCESS){#Only Operation Success case will go into the "Restart Loader" business logic
 	    foreach my $validLoaderName (@validLoaderList){
 		  if($restartLoaderName eq $validLoaderName){
-		    print LOG "The Restart Loader on TAP Server - The Restart Loader Name: {$restartLoaderName} is equal to the valid Loader Name: {$validLoaderName}\n";
-			print LOG "The Restart Loader on TAP Server - The Restart Loader Name: {$restartLoaderName} is a valid Loader Name on TAP Server.\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is equal to the valid Loader Name: {$validLoaderName}\n";
+			print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is a valid Loader Name on $HOSTNAME Server.\n";
             $validLoaderFlag = $TRUE;#Set 1(1 = True) to vaildLoaderFlag
 			last;
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP Server - The Restart Loader Name: {$restartLoaderName} is not equal to the valid Loader Name: {$validLoaderName}\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is not equal to the valid Loader Name: {$validLoaderName}\n";
 		  }
 		}#end foreach my $validLoaderName (@validLoaderList)
 
 		if($validLoaderFlag == $FALSE){#Restart Loader is not a valid loader
 		  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
 		  $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-          $operationFailedComments.="The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP Server.\n"; 
-		  print LOG "The Restart Loader on TAP Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP Server.\n";
+          $operationFailedComments.="The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on $HOSTNAME Server.\n"; 
+		  print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on $HOSTNAME Server.\n";
 		}
 		else{#Restart Loader is a valid loader
           #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7 Start
@@ -562,22 +562,22 @@ sub coreOperationProcess{
 		  my @targetLoaderPids = `ps -ef|grep $restartLoaderName | grep -v selfHeal |grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
-		    print LOG "The Restart Loader on TAP Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+		    print LOG "The Restart Loader on $HOSTNAME Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+		    print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 
 		    my $targetLoaderPidIndex = 1;
 		    foreach my $targetLoaderPid(@targetLoaderPids){
 		      chomp($targetLoaderPid);#remove the return line char
 		      trim($targetLoaderPid);#Remove space chars
-		      print LOG "The Restart Loader on TAP Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+		      print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
               my $cmdExecResult = system("kill -9 $targetLoaderPid");
 			  if($cmdExecResult == 0){
-                print LOG "The Restart Loader on TAP Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+                print LOG "The Restart Loader on $HOSTNAME Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
               }
 			  else{
-			    print LOG "The Restart Loader on TAP Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
+			    print LOG "The Restart Loader on $HOSTNAME Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
                 #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
                 $killLoaderFlag = $FAIL;
 				last;
@@ -594,23 +594,23 @@ sub coreOperationProcess{
             my @targetLoaderRemainingParentPids = `ps -ef| grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep|awk '{print \$2}'`;
             my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
             if($targetLoaderRemainingParentPidsCnt == 0){
-		      print LOG "The Restart Loader on TAP Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 		    }#end if ($targetLoaderRemainingParentPidsCnt == 0)
 		    else{
-		      print LOG "The Restart Loader on TAP Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
               
 			  my $targetLoaderRemainingParentPidIndex = 1;
 			  my $targetLoaderRemainingParentKilledFailPid = "";
 		      foreach my $targetLoaderRemainingParentPid(@targetLoaderRemainingParentPids){
 		        chomp($targetLoaderRemainingParentPid);#remove the return line char
 		        trim($targetLoaderRemainingParentPid);#Remove space chars
-		        print LOG "The Restart Loader on TAP Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+		        print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
                 my $cmdExecResult = system("kill -9 $targetLoaderRemainingParentPid");
 			    if($cmdExecResult == 0){
-                  print LOG "The Restart Loader on TAP Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                  print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
                 }
 			    else{
-			      print LOG "The Restart Loader on TAP Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+			      print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
                   $killLoaderFlag = $FAIL;
 				  $targetLoaderRemainingParentKilledFailPid = $targetLoaderRemainingParentPid;
 				  last;
@@ -636,27 +636,27 @@ sub coreOperationProcess{
           if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP_SERVER,$restartLoaderName)>-1)){
 		    $restartChildLoaderName = $restartLoaderName;
 			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
-			print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
+			print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
             
 			my @targetChildLoaderPids = `ps -ef|grep $restartChildLoaderName|grep -v selfHeal | grep -v grep|awk '{print \$2}'`;
             my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
 		    if($targetChildLoaderPidsCnt == 0){
-		      print LOG "The Restart Loader on TAP Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 		    }#end if($targetChildLoaderPidsCnt == 0)
 			else{
-			  print LOG "The Restart Loader on TAP Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+			  print LOG "The Restart Loader on $HOSTNAME Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
 
 		      my $targetChildLoaderPidIndex = 1;
 		      foreach my $targetChildLoaderPid(@targetChildLoaderPids){
 		        chomp($targetChildLoaderPid);#remove the return line char
 		        trim($targetChildLoaderPid);#Remove space chars
-		        print LOG "The Restart Loader on TAP Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+		        print LOG "The Restart Loader on $HOSTNAME Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                 my $cmdExecResult = system("kill -9 $targetChildLoaderPid");
 			    if($cmdExecResult == 0){
-                  print LOG "The Restart Loader on TAP Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  print LOG "The Restart Loader on $HOSTNAME Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                 }
 			    else{
-			      print LOG "The Restart Loader on TAP Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+			      print LOG "The Restart Loader on $HOSTNAME Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   $killLoaderFlag = $FAIL;
 				  last;
 			    }
@@ -670,23 +670,23 @@ sub coreOperationProcess{
               my @targetLoaderRemainingChildPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
               my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
               if($targetLoaderRemainingChildPidsCnt == 0){
-			    print LOG "The Restart Loader on TAP Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+			    print LOG "The Restart Loader on $HOSTNAME Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 			  }#end if($targetLoaderRemainingChildPidsCnt == 0)
 			  else{
-                print LOG "The Restart Loader on TAP Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+                print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
                 
 			    my $targetLoaderRemainingChildPidIndex = 1;
                 my $targetLoaderRemainingChildKilledFailPid = "";
 		        foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids){
 		          chomp($targetLoaderRemainingChildPid);#remove the return line char
 		          trim($targetLoaderRemainingChildPid);#Remove space chars
-		          print LOG "The Restart Loader on TAP Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+		          print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   my $cmdExecResult = system("kill -9 $targetLoaderRemainingChildPid");
 			      if($cmdExecResult == 0){
-                    print LOG "The Restart Loader on TAP Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                    print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   }
 			      else{
-			        print LOG "The Restart Loader on TAP Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+			        print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                     $killLoaderFlag = $FAIL;
 					$targetLoaderRemainingChildKilledFailPid = $targetLoaderRemainingChildPid;
 				    last;
@@ -714,14 +714,22 @@ sub coreOperationProcess{
           #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
 		  if($killLoaderFlag == $SUCCESS){
             #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
+            my $switchFolderCmdExecResult = system('cd $loaderExistingPath');
+			if($switchFolderCmdExecResult == 0){
+			  print LOG "The Restart Loader on $HOSTNAME Server - The Target Folder: {$loaderExistingPath} has been switched successfully.\n";
+			}
+			else{
+			  print LOG "The Restart Loader on $HOSTNAME Server - The Target Folder: {$loaderExistingPath} has been switched failed.\n";
+			}
+
 		    $restartLoaderFullCommand = $loaderExistingPath;
-            $restartLoaderFullCommand.= $restartLoaderName;
+			$restartLoaderFullCommand.= $restartLoaderName;
             $restartLoaderFullCommand.= " $loaderRunningMode";#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
-		    print LOG "The Restart Loader on TAP Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
 		    my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
-            print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
+            print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
 		    if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
-              print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
+              print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
 
 			  #Added by Larry for Self Healing Service Component - Phase 2 Start
 			  #Sleep 10 seconds to give the target loader startup time
@@ -731,7 +739,7 @@ sub coreOperationProcess{
               my @loaderRunningProcessesMsg = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep $loaderRunningMode|grep -v grep`;#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.7
 			  foreach my $loaderRunningProcessMsg (@loaderRunningProcessesMsg){
                 chomp($loaderRunningProcessMsg); 
-			    print LOG "The Restart Loader on TAP Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
+			    print LOG "The Restart Loader on $HOSTNAME Server - The Loader {$restartLoaderName} Running Process Message: {$loaderRunningProcessMsg}\n";
               }
 			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 
@@ -743,22 +751,22 @@ sub coreOperationProcess{
 			  #$targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
               #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.5 End
 			  if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
-			     print LOG "The Restart Loader on TAP Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
-			     print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
 			  }
 			  else{#The target loader has been started failed case
                  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
                  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 Start
 			     if($operationFailedComments ne ""){
-                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on $HOSTNAME Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
 			     }#end if($operationFailedComments ne "")
 			     else{
 		           $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
+                   $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on $HOSTNAME Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
 			     }#end else
 			     #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
-			     print LOG "The Restart Loader on TAP Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
-			     print LOG "The Restart Loader on TAP Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP Server.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on $HOSTNAME Server.\n";
 			  }
 			  #Added by Larry for Self Healing Service Component - Phase 2 End
 		    }
@@ -773,7 +781,7 @@ sub coreOperationProcess{
                 $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
 			  }   
 			  #Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9 End
-		      print LOG "The Restart Loader on TAP Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
 		    }
 		  }#end if($killLoaderFlag == $SUCCESS)#Added by Larry for System Support And Self Healing Service Components - Phase 1 - 1.0.9
 		}
@@ -806,30 +814,30 @@ sub coreOperationProcess{
     
       #Added by Larry for System Support And Self Healing Service Components - Phase 3 Start
       $relatedTicketNumber = trim($operationParametersArray[$RESTART_LOADER_ON_TAP3_SERVER_RELATED_TICKET_NUMBER_INDEX]);#Related Ticket Number(Optional) - For example: TI30620-56800
-      print LOG "The Restart Loader on TAP3 Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
+      print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
 
       $restartLoaderName = trim($operationParametersArray[$RESTART_LOADER_ON_TAP3_SERVER_LOADER_NAME_INDEX]);#Loader Name(Required) - For example: reconEngine.pl
       if($restartLoaderName eq ""){
 	    $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
         $operationFailedComments.="The Operation Parameter - Loader Name is required. It cannot be empty. For example: {reconEngine.pl}";
-		print LOG "The Restart Loader on TAP3 Server - The Operation Parameter - Loader Name is required. It cannot be empty. For example: {reconEngine.pl}\n";
+		print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Loader Name is required. It cannot be empty. For example: {reconEngine.pl}\n";
 	  }#end if($restartLoaderName eq "")
 	  else{
-	    print LOG "The Restart Loader on TAP3 Server - The Operation Parameter - Loader Name: {$restartLoaderName}\n";
+	    print LOG "The Restart Loader on $HOSTNAME Server - The Operation Parameter - Loader Name: {$restartLoaderName}\n";
 	  }#end else
 	  #Added by Larry for System Support And Self Healing Service Components - Phase 3 End
  
       if($operationResultFlag == $OPERATION_SUCCESS){#Only Operation Success case will go into the "Restart Loader" business logic
 	    foreach my $validLoaderName (@validLoaderList){
 		  if($restartLoaderName eq $validLoaderName){
-		    print LOG "The Restart Loader on TAP3 Server - The Restart Loader Name: {$restartLoaderName} is equal to the valid Loader Name: {$validLoaderName}\n";
-			print LOG "The Restart Loader on TAP3 Server - The Restart Loader Name: {$restartLoaderName} is a valid Loader Name on TAP3 Server.\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is equal to the valid Loader Name: {$validLoaderName}\n";
+			print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is a valid Loader Name on TAP3 Server.\n";
             $validLoaderFlag = $TRUE;#Set 1(1 = True) to vaildLoaderFlag
 			last;
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP3 Server - The Restart Loader Name: {$restartLoaderName} is not equal to the valid Loader Name: {$validLoaderName}\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is not equal to the valid Loader Name: {$validLoaderName}\n";
 		  }
 		}#end foreach my $validLoaderName (@validLoaderList)
 
@@ -837,29 +845,29 @@ sub coreOperationProcess{
 		  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
 		  $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
           $operationFailedComments.="The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP3 Server.\n"; 
-		  print LOG "The Restart Loader on TAP3 Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP3 Server.\n";
+		  print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Name: {$restartLoaderName} is not a valid Loader Name on TAP3 Server.\n";
 		}
 		else{#Restart Loader is a valid loader
 		  #1. Find out and Kill all the parent processes for the target loader name - For example: "reconEngine.pl"
 		  my @targetLoaderPids = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
           my $targetLoaderPidsCnt = scalar(@targetLoaderPids);
 		  if($targetLoaderPidsCnt == 0){
-		    print LOG "The Restart Loader on TAP3 Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+		    print LOG "The Restart Loader on $HOSTNAME Server - There is no parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 		  }
 		  else{
-		    print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+		    print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderPidsCnt parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 
             my $targetLoaderPidIndex = 1;
 		    foreach my $targetLoaderPid(@targetLoaderPids){
 		      chomp($targetLoaderPid);#remove the return line char
 		      trim($targetLoaderPid);#Remove space chars
-		      print LOG "The Restart Loader on TAP3 Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+		      print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderPidIndex]Parent PID: {$targetLoaderPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
               my $cmdExecResult = system("kill -9 $targetLoaderPid");
 			  if($cmdExecResult == 0){
-                print LOG "The Restart Loader on TAP3 Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+                print LOG "The Restart Loader on $HOSTNAME Server - The Parent PID: {$targetLoaderPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
               }
 			  else{
-			    print LOG "The Restart Loader on TAP3 Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
+			    print LOG "The Restart Loader on $HOSTNAME Server - The Parent PID: {$targetLoaderPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 				#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 Start
                 $killLoaderFlag = $FAIL;
 				last;
@@ -876,23 +884,23 @@ sub coreOperationProcess{
             my @targetLoaderRemainingParentPids = `ps -ef|grep -v selfHeal | grep $restartLoaderName|grep start|grep -v grep|awk '{print \$2}'`;
             my $targetLoaderRemainingParentPidsCnt = scalar(@targetLoaderRemainingParentPids);
             if($targetLoaderRemainingParentPidsCnt == 0){
-		      print LOG "The Restart Loader on TAP3 Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There is no remaining parent process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 		    }#end if ($targetLoaderRemainingParentPidsCnt == 0)
 		    else{
-		      print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderPidsCnt remaining parent processes running currently for the Restart Loader Name: {$restartLoaderName}.\n";
               
 			  my $targetLoaderRemainingParentPidIndex = 1;
 			  my $targetLoaderRemainingParentKilledFailPid = "";
 		      foreach my $targetLoaderRemainingParentPid(@targetLoaderRemainingParentPids){
 		        chomp($targetLoaderRemainingParentPid);#remove the return line char
 		        trim($targetLoaderRemainingParentPid);#Remove space chars
-		        print LOG "The Restart Loader on TAP3 Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
+		        print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderRemainingParentPidIndex]Remaining Parent PID: {$targetLoaderRemainingParentPid} needs to be killed for the Restart Loader Name: {$restartLoaderName}.\n";
                 my $cmdExecResult = system("kill -9 $targetLoaderRemainingParentPid");
 			    if($cmdExecResult == 0){
-                  print LOG "The Restart Loader on TAP3 Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
+                  print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed successfully for the Restart Loader Name: {$restartLoaderName}.\n";
                 }
 			    else{
-			      print LOG "The Restart Loader on TAP3 Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
+			      print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Parent PID: {$targetLoaderRemainingParentPid} has been killed failed for the Restart Loader Name: {$restartLoaderName}.\n";
                   $killLoaderFlag = $FAIL;
 				  $targetLoaderRemainingParentKilledFailPid = $targetLoaderRemainingParentPid;
 				  last;
@@ -918,27 +926,27 @@ sub coreOperationProcess{
           if(($killLoaderFlag == $SUCCESS)&&(index($HAS_CHILD_LOADER_LIST_ON_TAP3_SERVER,$restartLoaderName)>-1)){
 		    $restartChildLoaderName = $restartLoaderName;
 			$restartChildLoaderName =~ s/$LOADER_REPLACE_STRING/$LOADER_REPLACED_STRING/g;
-			print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
+			print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has Child Loader with name {$restartChildLoaderName}.\n";
             
 			my @targetChildLoaderPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
             my $targetChildLoaderPidsCnt = scalar(@targetChildLoaderPids);
 		    if($targetChildLoaderPidsCnt == 0){
-		      print LOG "The Restart Loader on TAP3 Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - There is no child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 		    }#end if($targetChildLoaderPidsCnt == 0)
 			else{
-			  print LOG "The Restart Loader on TAP3 Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+			  print LOG "The Restart Loader on $HOSTNAME Server - There are $targetChildLoaderPidsCnt child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
 
 		      my $targetChildLoaderPidIndex = 1;
 		      foreach my $targetChildLoaderPid(@targetChildLoaderPids){
 		        chomp($targetChildLoaderPid);#remove the return line char
 		        trim($targetChildLoaderPid);#Remove space chars
-		        print LOG "The Restart Loader on TAP3 Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+		        print LOG "The Restart Loader on $HOSTNAME Server - [$targetChildLoaderPidIndex]Child PID: {$targetChildLoaderPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                 my $cmdExecResult = system("kill -9 $targetChildLoaderPid");
 			    if($cmdExecResult == 0){
-                  print LOG "The Restart Loader on TAP3 Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                  print LOG "The Restart Loader on $HOSTNAME Server - The Child PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                 }
 			    else{
-			      print LOG "The Restart Loader on TAP3 Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+			      print LOG "The Restart Loader on $HOSTNAME Server - The Child PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   $killLoaderFlag = $FAIL;
 				  last;
 			    }
@@ -952,23 +960,23 @@ sub coreOperationProcess{
               my @targetLoaderRemainingChildPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep -v grep|awk '{print \$2}'`;
               my $targetLoaderRemainingChildPidsCnt = scalar(@targetLoaderRemainingChildPids);
               if($targetLoaderRemainingChildPidsCnt == 0){
-			    print LOG "The Restart Loader on TAP3 Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
+			    print LOG "The Restart Loader on $HOSTNAME Server - There is no remaining child process running currently for the Restart Loader Name: {$restartLoaderName}.\n";
 			  }#end if($targetLoaderRemainingChildPidsCnt == 0)
 			  else{
-                print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
+                print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderRemainingChildPidsCnt remaining child processes running currently with Restart Child Loader Name {$restartChildLoaderName} of the Restart Loader Name: {$restartLoaderName}.\n";
                 
 			    my $targetLoaderRemainingChildPidIndex = 1;
                 my $targetLoaderRemainingChildKilledFailPid = "";
 		        foreach my $targetLoaderRemainingChildPid(@targetLoaderRemainingChildPids){
 		          chomp($targetLoaderRemainingChildPid);#remove the return line char
 		          trim($targetLoaderRemainingChildPid);#Remove space chars
-		          print LOG "The Restart Loader on TAP3 Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+		          print LOG "The Restart Loader on $HOSTNAME Server - [$targetLoaderRemainingChildPidIndex]Remaining Child PID: {$targetLoaderRemainingChildPid} needs to be killed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   my $cmdExecResult = system("kill -9 $targetLoaderRemainingChildPid");
 			      if($cmdExecResult == 0){
-                    print LOG "The Restart Loader on TAP3 Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+                    print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                   }
 			      else{
-			        print LOG "The Restart Loader on TAP3 Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
+			        print LOG "The Restart Loader on $HOSTNAME Server - The Remaining Child PID: {$targetLoaderRemainingChildPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}.\n";
                     $killLoaderFlag = $FAIL;
 					$targetLoaderRemainingChildKilledFailPid = $targetLoaderRemainingChildPid;
 				    last;
@@ -1004,11 +1012,11 @@ sub coreOperationProcess{
 			#Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
 		    $restartLoaderFullCommand.= $loaderExistingPath;#Append the '/opt/staging/v2/' loader existing path
             $restartLoaderFullCommand.= "start-all.sh";#Append the 'start-all.sh' shell name
-		    print LOG "The Restart Loader on TAP3 Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
+		    print LOG "The Restart Loader on $HOSTNAME Server - The Restart Loader Full Unix Command: {$restartLoaderFullCommand}\n";
 		    my $restartLoaderFullCommandExecutedResult = system("$restartLoaderFullCommand");
-            print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
+            print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} executed result is {$restartLoaderFullCommandExecutedResult}\n";
 		    if($restartLoaderFullCommandExecutedResult == 0){#Execute Successfully
-              print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
+              print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} has been executed successfully.\n";
 
 			  #Added by Larry for Self Healing Service Component - Phase 2 Start
 			  #Sleep 120 seconds to give the target loader startup time
@@ -1018,8 +1026,8 @@ sub coreOperationProcess{
 			  chomp($targetLoaderRunningProcessCnt);#remove the return line char
               $targetLoaderRunningProcessCnt--;#decrease the unix command itself from the total calculated target loader running process count
 			  if($targetLoaderRunningProcessCnt > 0){#The target loader has been restarted successfully case
-			     print LOG "The Restart Loader on TAP3 Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
-			     print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - There are $targetLoaderRunningProcessCnt processes which have been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has been restarted successfully.\n";
 			  }
 			  else{#The target loader has been started failed case
 				 $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
@@ -1032,8 +1040,8 @@ sub coreOperationProcess{
                    $operationFailedComments.="The Target Loader {$restartLoaderName} has been restarted failed on TAP3 Server. Please contact AM developer to check this loader log to find the failed reason. Thanks!\n";
 			     }
 				 #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
-				 print LOG "The Restart Loader on TAP3 Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
-			     print LOG "The Restart Loader on TAP3 Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP3 Server.\n";
+				 print LOG "The Restart Loader on $HOSTNAME Server - There is no process which has been created for the target loader {$restartLoaderName} to run.\n";
+			     print LOG "The Restart Loader on $HOSTNAME Server - The Target Loader {$restartLoaderName} has been restarted failed. Please check this loader log to find the failed reason on TAP3 Server.\n";
 			  }
 			  #Added by Larry for Self Healing Service Component - Phase 2 End
 		    }
@@ -1048,7 +1056,7 @@ sub coreOperationProcess{
                 $operationFailedComments.="The Unix Command {$restartLoaderFullCommand} has been executed failed.\n"; 
 			  }
               #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3 End
-		      print LOG "The Restart Loader on TAP3 Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
+		      print LOG "The Restart Loader on $HOSTNAME Server - The Unix Command {$restartLoaderFullCommand} has been executed failed.\n";
 		    }
 		  }#end if($killLoaderFlag == $SUCCESS) #Added by Larry for System Support And Self Healing Service Components - Phase 2 - 1.2.3
 		}
@@ -1087,7 +1095,7 @@ sub coreOperationProcess{
 
        #Input Operation Parameter Values Check
        $relatedTicketNumber = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_RELATED_TICKET_NUMBER_INDEX]);#Related Ticket Number(Optional) - For example: TI30620-56800
-       print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
+       print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Related Ticket Number: {$relatedTicketNumber}\n";
 
        $restartChildLoaderName = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_CHILD_LOADER_NAME_INDEX]);#Child Loader Name(Required) - For example: softwareFilterToStagingChild.pl
        if($restartChildLoaderName eq ""){
@@ -1095,10 +1103,10 @@ sub coreOperationProcess{
 	     $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
          $operationFailedComments.="The Operation Parameter - Child Loader Name is required. It cannot be empty. For example: {softwareFilterToStagingChild.pl}<br>";
-		 print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Child Loader Name is required. It cannot be empty. For example: {softwareFilterToStagingChild.pl}\n";
+		 print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Child Loader Name is required. It cannot be empty. For example: {softwareFilterToStagingChild.pl}\n";
 	   }#end if($restartLoaderName eq "")
 	   else{
-	     print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Child Loader Name: {$restartChildLoaderName}\n";
+	     print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Child Loader Name: {$restartChildLoaderName}\n";
 	   }#end else
 	   
        $bankAccountName = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX]);#Bank Account Name(Required) - For example: GTAASCCM
@@ -1112,10 +1120,10 @@ sub coreOperationProcess{
 		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
            $operationFailedComments.="The Operation Parameter - Bank Account Name is required. It cannot be empty. For example: {GTAASCCM}<br>";
 		 }#end else
-  		 print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Bank Account Name is required. It cannot be empty. For example: {GTAASCCM}\n";
+  		 print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Bank Account Name is required. It cannot be empty. For example: {GTAASCCM}\n";
 	   }#end if($restartLoaderName eq "")
 	   else{
-	     print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Bank Account Name: {$bankAccountName}\n";
+	     print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Bank Account Name: {$bankAccountName}\n";
 	   }#end else
       
 	   $debugOption = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX]);#Debug Option(Required) - For example: YES or NO
@@ -1129,10 +1137,10 @@ sub coreOperationProcess{
 		   $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
            $operationFailedComments.="The Operation Parameter - Debug Option is required. It cannot be empty. For example: {YES}<br>";
 		 }#end else
-  		 print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Debug Option is required. It cannot be empty. For example: {YES}\n";
+  		 print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Debug Option is required. It cannot be empty. For example: {YES}\n";
 	   }#end if($restartLoaderName eq "")
 	   else{
-	     print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Debug Option: {$debugOption}\n";
+	     print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Debug Option: {$debugOption}\n";
 	   }#end else
 	  
 	   $logFile = trim($operationParametersArray[$RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX]);#Log File(Required) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCC
@@ -1141,13 +1149,13 @@ sub coreOperationProcess{
          #Restart Child Loader Validation Check  
 	     foreach my $validChildLoaderName (@validChildLoaderList){
 		   if($restartChildLoaderName eq $validChildLoaderName){
-		     print LOG "The Restart Child Loader on TAP Server - The Restart Child Loader Name: {$restartChildLoaderName} is equal to the valid Child Loader Name: {$validChildLoaderName}\n";
-			 print LOG "The Restart Child Loader on TAP Server - The Restart Child Loader Name: {$restartChildLoaderName} is a valid Child Loader Name on TAP Server.\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - The Restart Child Loader Name: {$restartChildLoaderName} is equal to the valid Child Loader Name: {$validChildLoaderName}\n";
+			 print LOG "The Restart Child Loader on $HOSTNAME Server - The Restart Child Loader Name: {$restartChildLoaderName} is a valid Child Loader Name on $HOSTNAME Server.\n";
              $validChildLoaderFlag = $TRUE;#Set 1(1 = True) to $validChildLoaderFlag
 			 last;
 		   }
 		   else{
-		     print LOG "The Restart Child Loader on TAP Server - The Restart Child Loader Name: {$restartChildLoaderName} is not equal to the valid Child Loader Name: {$validChildLoaderName}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - The Restart Child Loader Name: {$restartChildLoaderName} is not equal to the valid Child Loader Name: {$validChildLoaderName}\n";
 		   }
 		 }#end foreach my $validChildLoaderName (@validChildLoaderList)
          
@@ -1155,13 +1163,13 @@ sub coreOperationProcess{
            $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE 
 		   $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
 		   if($operationFailedComments ne ""){
-		     $operationFailedComments.="The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on TAP Server.<br>";   
+		     $operationFailedComments.="The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on $HOSTNAME Server.<br>";   
   		   }#end if($operationFailedComments ne "")
 		   else{
 		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-             $operationFailedComments.="The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on TAP Server.<br>";
+             $operationFailedComments.="The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on $HOSTNAME Server.<br>";
 		   }#end else
-		   print LOG "The Restart Child Loader on TAP Server - The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on TAP Server.\n";
+		   print LOG "The Restart Child Loader on $HOSTNAME Server - The Restart Child Loader Name: {$restartChildLoaderName} is not a valid Child Loader Name on $HOSTNAME Server.\n";
 		 }#end if($validChildLoaderFlag == $FALSE) 
 
 		 #Bank Account Name Validation Check
@@ -1176,7 +1184,7 @@ sub coreOperationProcess{
 		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
              $operationFailedComments.="There is no bank account defined with bank account name: {$bankAccountName}<br>";
 		   }#end else
-		   print LOG "The Restart Child Loader on TAP Server - There is no bank account defined with bank account name: {$bankAccountName}\n";
+		   print LOG "The Restart Child Loader on $HOSTNAME Server - There is no bank account defined with bank account name: {$bankAccountName}\n";
 		 }#end if(!defined $certainBankAccountNameCount)
 		 else{
 		   if($certainBankAccountNameCount == 0){
@@ -1189,10 +1197,10 @@ sub coreOperationProcess{
 		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                $operationFailedComments.="There is no bank account defined with bank account name: {$bankAccountName}<br>";
 		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - There is no bank account defined with bank account name: {$bankAccountName}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - There is no bank account defined with bank account name: {$bankAccountName}\n";
 		   }#end if($certainBankAccountNameCount == 0)
 		   elsif($certainBankAccountNameCount == 1){
-		     print LOG "The Restart Child Loader on TAP Server - There is one bank account defined with bank account name: {$bankAccountName}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - There is one bank account defined with bank account name: {$bankAccountName}\n";
 		   }#end elsif($certainBankAccountNameCount == 1)
 		   else{
              $inputParameterValuesValidationFlag = $FALSE;#Set input parameter values validation flag = FALSE
@@ -1204,7 +1212,7 @@ sub coreOperationProcess{
 		       $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                $operationFailedComments.="There are more than one bank account defined with bank account name: {$bankAccountName}<br>";
 		     }#end else
-		     print LOG "The Restart Child Loader on TAP Server - There are more than one bank account defined with bank account name: {$bankAccountName}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - There are more than one bank account defined with bank account name: {$bankAccountName}\n";
 		   }#end else
 		 }#end else
           
@@ -1220,7 +1228,7 @@ sub coreOperationProcess{
 		     $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
              $operationFailedComments.="The input debug option: {$debugOption} is not valid. The valid values are {YES} and {NO}.<br>";
 		   }#end else
-		   print LOG "The Restart Child Loader on TAP Server - The input debug option: {$debugOption} is not valid. The valid values are {YES} and {NO}.\n";
+		   print LOG "The Restart Child Loader on $HOSTNAME Server - The input debug option: {$debugOption} is not valid. The valid values are {YES} and {NO}.\n";
 		 }#end if($debugOption ne $DEBUG_OPTION_YES && $debugOption ne $DEBUG_OPTION_NO)
          
 		 #Log File Validation Check
@@ -1230,7 +1238,7 @@ sub coreOperationProcess{
 		   my $processedNonDebugLogFileName = $processedParentLoaderName.".log.".$bankAccountName;
 		   $nonDebugLogFile = $configNonDebugLogPath.$processedParentLoaderName."/".$processedNonDebugLogFileName;
 		   $logFile = $nonDebugLogFile;
-           print LOG "The Restart Child Loader on TAP Server - The Non Debug Fixed Log File: {$logFile}\n";
+           print LOG "The Restart Child Loader on $HOSTNAME Server - The Non Debug Fixed Log File: {$logFile}\n";
 	     }#end if($upperCaseDebugOption eq $DEBUG_OPTION_NO)
 		 else{
 		   my $logFileValidFlag = $TRUE;#var used to store the log file valid falg. set $TRUE as the initial default value
@@ -1242,10 +1250,10 @@ sub coreOperationProcess{
 		     my $processedDefaultDebugLogFileName = $processedParentLoaderName.".log.".$bankAccountName;
 		     $logFile = $configNonDebugLogPath.$processedParentLoaderName."/".$processedDefaultDebugLogFileName;
              $logFileValidFlag = $FALSE;#Set log file valid flag to FALSE for {Log File: '' + Debug Option: 'YES'} Case to bypass all the Log File Check Validations
-             print LOG "The Restart Child Loader on TAP Server - The Default Debug Log File {$logFile} has been set due that the Log File Value is empty for Debug Option {YES} Case.\n";    
+             print LOG "The Restart Child Loader on $HOSTNAME Server - The Default Debug Log File {$logFile} has been set due that the Log File Value is empty for Debug Option {YES} Case.\n";    
 		   }#end if($logFile eq "")
            else{
-             print LOG "The Restart Child Loader on TAP Server - The Operation Parameter - Log File: {$logFile}\n";
+             print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Parameter - Log File: {$logFile}\n";
            }#end else
     
            #Check if the log file includes the invalid file path char '\'
@@ -1263,7 +1271,7 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.<br>";
 		       }#end else
-		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.\n"; 
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Log File: {$logFile} is not valid. There is invalid file path char '\\' in it.\n"; 
 		     }#end if($backslashIndexPosition!=-1)
 		   }#end if($logFileValidFlag == $TRUE)
 
@@ -1281,7 +1289,7 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
 		       }#end else
-		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
 		     }#end if($subLogFileStr ne $HOME_PATH)
 		   }#end if($logFileValidFlag == $TRUE)
 
@@ -1298,7 +1306,7 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
 		       }#end else
-		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Log File: {$logFile} is not valid. The valid log file should be under {/home} in your personal account folder. For example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
 		     }#end if($subLogFileStr ne $HOME_PATH)
 		   }#end if($logFileValidFlag == $TRUE)
 
@@ -1315,7 +1323,7 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}<br>";
 		       }#end else
-		       print LOG "The Restart Child Loader on TAP Server - The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Log File: {$logFile} is not valid. The valid log file cannot be a file folder. It should like this example: {/home/liuhaidl/logs/sampleLog.txt}\n";  
 		     }#end if($subLogFileStr ne $HOME_PATH)
 		   }#end if($logFileValidFlag == $TRUE)
         
@@ -1323,9 +1331,9 @@ sub coreOperationProcess{
            if($logFileValidFlag == $TRUE){
 		     my $lastSlashIndexPosition = rindex($logFile,$SLASH);
 		     my $logPath = substr($logFile,0,$lastSlashIndexPosition);
-             print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath}\n";
+             print LOG "The Restart Child Loader on $HOSTNAME Server - The Target Output Log File Path: {$logPath}\n";
 		     if(-e $logPath){
-		       print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} exists.\n";    
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Target Output Log File Path: {$logPath} exists.\n";    
 		     }#end if(-e $logPath)
 		     else{
                $logFileValidFlag = $FALSE;
@@ -1338,7 +1346,7 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Target Output Log File Path: {$logPath} doesn't exist.<br>";
 		       }#end else
-		       print LOG "The Restart Child Loader on TAP Server - The Target Output Log File Path: {$logPath} doesn't exist.\n";
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Target Output Log File Path: {$logPath} doesn't exist.\n";
 		     }#end else
 		   }#end if($logFileValidFlag == $TRUE)
 		 }#end else
@@ -1346,25 +1354,25 @@ sub coreOperationProcess{
 	     if($inputParameterValuesValidationFlag == $TRUE){#Restart Child Loader when all the necessary parameters of the target loader are valid
            #1. Check if the target child loader is running or not. If so, kill it.
            my @targetChildLoaderPids = `ps -ef|grep -v selfHeal | grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}'`;
-		   print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
+		   print LOG "The Restart Child Loader on $HOSTNAME Server - The Unix Command `ps -ef|grep $restartChildLoaderName|grep $bankAccountName|grep -v grep|awk '{print \$2}' has been invoked.\n";
            foreach my $targetChildLoaderPid(@targetChildLoaderPids){
              chomp($targetChildLoaderPid);#remove the return line char
 		     trim($targetChildLoaderPid);#Remove space chars
 
              my $targetChildLoaderPidRunningCnt = `ps -ef|grep -v selfHeal | grep $targetChildLoaderPid|grep -v grep|wc -l`;
-			 print LOG "The Restart Child Loader on TAP Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
+			 print LOG "The Restart Child Loader on $HOSTNAME Server - The Unix Command `ps -ef|grep $targetChildLoaderPid|grep -v grep|wc -l` has been invoked.\n";
              chomp($targetChildLoaderPidRunningCnt);#remove the return line char
 		     trim($targetChildLoaderPidRunningCnt);#Remove space chars
 			 $targetChildLoaderPidRunningCnt--;
 			 if($targetChildLoaderPidRunningCnt <= 0){
-			   print LOG "The Restart Child Loader on TAP Server - There is no process which is running for pid: {$targetChildLoaderPid}\n";  
+			   print LOG "The Restart Child Loader on $HOSTNAME Server - There is no process which is running for pid: {$targetChildLoaderPid}\n";  
 			 }#end if($targetChildLoaderPidRunningCnt <= 0)
 			 else{
-			   print LOG "The Restart Child Loader on TAP Server - There is $targetChildLoaderPidRunningCnt process which is running for pid: {$targetChildLoaderPid}\n";
+			   print LOG "The Restart Child Loader on $HOSTNAME Server - There is $targetChildLoaderPidRunningCnt process which is running for pid: {$targetChildLoaderPid}\n";
                my $killTargetChildLoaderPidCmdExecResult = system('kill -9 $targetChildLoaderPid');
 
 			   if($killTargetChildLoaderPidCmdExecResult == 0){
-                 print LOG "The Restart Child Loader on TAP Server - PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}\n";
+                 print LOG "The Restart Child Loader on $HOSTNAME Server - PID: {$targetChildLoaderPid} has been killed successfully for the Restart Child Loader Name: {$restartChildLoaderName}\n";
                }#end if($killTargetChildLoaderPidCmdExecResult == 0)
 			   else{
                  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
@@ -1375,7 +1383,7 @@ sub coreOperationProcess{
 		           $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                    $operationFailedComments.="PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}<br>";
 		         }#end else
-			     print LOG "The Restart Child Loader on TAP Server - PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}\n";
+			     print LOG "The Restart Child Loader on $HOSTNAME Server - PID: {$targetChildLoaderPid} has been killed failed for the Restart Child Loader Name: {$restartChildLoaderName}\n";
 			   }#end else               
 		     }#end else
            }#end foreach my $targetChildLoaderPid(@targetChildLoaderPids)
@@ -1385,13 +1393,13 @@ sub coreOperationProcess{
 		     $processedInvokedCommand = $RESTART_CHILD_LOADER_INVOKED_COMMAND;
 		   
 		     $invokedCommandRestartChildLoaderFullName = "./".$restartChildLoaderName;#For example: ./softwareFilterToStagingChild.pl - Please note that we need to use the relative path './' to invoke perl loader, or some necessary packages cannot be found
-             print LOG "The Restart Child Loader on TAP Server - The Invoked Command Restart Child Loader Full Name: {$invokedCommandRestartChildLoaderFullName}\n";
+             print LOG "The Restart Child Loader on $HOSTNAME Server - The Invoked Command Restart Child Loader Full Name: {$invokedCommandRestartChildLoaderFullName}\n";
 
              $invokedCommandBankAccountName = $bankAccountName;#For example: GTAASCCM
-		     print LOG "The Restart Child Loader on TAP Server - The Invoked Command Bank Account Name: {$invokedCommandBankAccountName}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - The Invoked Command Bank Account Name: {$invokedCommandBankAccountName}\n";
 
              $invokedCommandLogFile = $logFile;#For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
-		     print LOG "The Restart Child Loader on TAP Server - The Invoked Command Log File: {$invokedCommandLogFile}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - The Invoked Command Log File: {$invokedCommandLogFile}\n";
 
              $invokedCommandLoaderConfigFile = $restartChildLoaderName;
              if($upperCaseDebugOption eq $DEBUG_OPTION_YES){
@@ -1402,23 +1410,23 @@ sub coreOperationProcess{
 		     }#end else
  
              $invokedCommandLoaderFullConfigFile = $LOADER_CONFIG_FILE_EXISTING_PATH.$invokedCommandLoaderConfigFile;
-		     print LOG "The Restart Child Loader on TAP Server - The Invoked Command Loader Full Configuration File: {$invokedCommandLoaderFullConfigFile}\n";
+		     print LOG "The Restart Child Loader on $HOSTNAME Server - The Invoked Command Loader Full Configuration File: {$invokedCommandLoaderFullConfigFile}\n";
 
              $processedInvokedCommand =~ s/$INVOKED_COMMAND_RESTART_CHILD_LOADER_NAME_REPLACE_STRING/$invokedCommandRestartChildLoaderFullName/g;
              $processedInvokedCommand =~ s/$INVOKED_COMMAND_RESTART_BANK_ACCOUNT_NAME_REPLACE_STRING/$invokedCommandBankAccountName/g;
 		     $processedInvokedCommand =~ s/$INVOKED_COMMAND_RESTART_LOG_FILE_REPLACE_STRING/$invokedCommandLogFile/g;
              $processedInvokedCommand =~ s/$INVOKED_COMMAND_RESTART_CONFIG_FILE_REPLACE_STRING/$invokedCommandLoaderFullConfigFile/g;
-             print LOG "The Restart Child Loader on TAP Server - The Processed Invoked Command: {$processedInvokedCommand}\n"; 
+             print LOG "The Restart Child Loader on $HOSTNAME Server - The Processed Invoked Command: {$processedInvokedCommand}\n"; 
        
              #3. Restart Child Loader
              #Switch to the /opt/staging/v2 folder first
 		     my $switchFolderCmdExecResult = system('cd $LOADER_EXISTING_PATH');
 		     if($switchFolderCmdExecResult == 0){
-               print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched successfully.\n";
+               print LOG "The Restart Child Loader on $HOSTNAME Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched successfully.\n";
 			   #Restart the target Child Loader
 		       my $restartChildLoaderCmdExecResult = system("$processedInvokedCommand");
                if($restartChildLoaderCmdExecResult == 0){
-                 print LOG "The Restart Child Loader on TAP Server - The Processed Invoked Command: {$processedInvokedCommand} has been executed successfully.\n";
+                 print LOG "The Restart Child Loader on $HOSTNAME Server - The Processed Invoked Command: {$processedInvokedCommand} has been executed successfully.\n";
                }#end if($restartChildLoaderCmdExecResult == 0)
 		       else{
                  $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
@@ -1429,7 +1437,7 @@ sub coreOperationProcess{
 		           $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                    $operationFailedComments.="The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.<br>";
 		         }#end else 
-		         print LOG "The Restart Child Loader on TAP Server - The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.\n";
+		         print LOG "The Restart Child Loader on $HOSTNAME Server - The Processed Invoked Command: {$processedInvokedCommand} has been executed failed.\n";
 		       }#end else   
 		     }#end if($switchFolderCmdExecResult == 0)
 		     else{
@@ -1441,14 +1449,14 @@ sub coreOperationProcess{
 		         $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                  $operationFailedComments.="The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.<br>";
 		       }#end else 
-		       print LOG "The Restart Child Loader on TAP Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.\n";
+		       print LOG "The Restart Child Loader on $HOSTNAME Server - The Target Folder: {$LOADER_EXISTING_PATH} has been switched failed.\n";
 		     }#end else
 
 		      #4. Change the group of the log file to 'trailsgp' to let the log file downloaded
 			  my $changeGroupCommand = "chgrp trailsgp $logFile";
 		      my $logFileChangedGroupFlag = system("$changeGroupCommand");
               if($logFileChangedGroupFlag == 0){
-                print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
+                print LOG "The Restart Child Loader on $HOSTNAME Server - The Group of the Log File: {$logFile} has been changed to 'users' successfully.\n";  
 		      }#end if($logFileChangedGroupFlag == 0)
 		      else{
 		        $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
@@ -1459,7 +1467,7 @@ sub coreOperationProcess{
 		          $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
                   $operationFailedComments.="The Group of the Log File: {$logFile} has been changed to 'users' failed.<br>";
 		        }#end else
-		        print LOG "The Restart Child Loader on TAP Server - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
+		        print LOG "The Restart Child Loader on $HOSTNAME Server - The Group of the Log File: {$logFile} has been changed to 'users' failed.\n";
 		      }#end else
 
 			  #5. Set Operation Success Specail Comments to include Log File Value
@@ -1467,7 +1475,7 @@ sub coreOperationProcess{
                 $operationSuccessSpecialFlag = $TRUE;
 			    $operationSuccessSpecialComments = "This Operation has been finished successfully."."<br>";
                 $operationSuccessSpecialComments.="The Log File {$logFile} has been successfully generated.";
-				print LOG "The Restart Child Loader on TAP Server - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
+				print LOG "The Restart Child Loader on $HOSTNAME Server - The Operation Success Special Comments: $operationSuccessSpecialComments\n";
     		  }#end if($operationResultFlag == $OPERATION_SUCCESS)
 		   }#end if($operationResultFlag == $OPERATION_SUCCESS)
 	     }#end if($inputParameterValuesValidationFlag == $TRUE)
@@ -1490,28 +1498,28 @@ sub coreOperationProcess{
        
 	   #1. Check if there are some running processes for IBM IHS Server, if so, then kill them first.
        $calculateIBMIHSRunningCount = `$CALCULATE_IBMIHS_RUNNING_COUNT`;
-	   print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
+	   print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
        chomp($calculateIBMIHSRunningCount);#Remove the return line char
 	   trim($calculateIBMIHSRunningCount);#Remove space chars 
        if($calculateIBMIHSRunningCount <=0){
-	     print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server is not running currently.\n";    
+	     print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The IBM HTTP Server is not running currently.\n";    
 	   }
 	   else{
-	     print LOG "The Restart IBM HTTP Server on TAP Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
+	     print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
 		 
 		 @ibmIHSRunningProcessIdList = `$GET_IBMIHS_RUNNING_PROCESS_ID_LIST`;
-		 print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$GET_IBMIHS_RUNNING_PROCESS_ID_LIST} has been executed.\n";    
+		 print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The Unix Command {$GET_IBMIHS_RUNNING_PROCESS_ID_LIST} has been executed.\n";    
 		 my $ibmIHSRunningPidIndex = 1;
 		 foreach my $ibmIHSRunningProcessId(@ibmIHSRunningProcessIdList){
 		   chomp($ibmIHSRunningProcessId);#remove the return line char
 		   trim($ibmIHSRunningProcessId);#Remove space chars
-		   print LOG "The Restart IBM HTTP Server on TAP Server - [$ibmIHSRunningPidIndex]PID: {$ibmIHSRunningProcessId} needs to be killed for IBM HTTP Server.\n";
+		   print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - [$ibmIHSRunningPidIndex]PID: {$ibmIHSRunningProcessId} needs to be killed for IBM HTTP Server.\n";
            my $cmdExecResult = system("kill -9 $ibmIHSRunningProcessId");
 		   if($cmdExecResult == 0){
-             print LOG "The Restart IBM HTTP Server on TAP Server - PID: {$ibmIHSRunningProcessId} has been killed successfully for IBM HTTP Server.\n";
+             print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - PID: {$ibmIHSRunningProcessId} has been killed successfully for IBM HTTP Server.\n";
            }
 		   else{
-			 print LOG "The Restart IBM HTTP Server on TAP Server - PID: {$ibmIHSRunningProcessId} has been killed failed for IBM HTTP Server.\n";
+			 print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - PID: {$ibmIHSRunningProcessId} has been killed failed for IBM HTTP Server.\n";
 		   }
            $ibmIHSRunningPidIndex++;
 	     }#end foreach my $ibmIHSRunningProcessId(@ibmIHSRunningProcessIdList)
@@ -1520,28 +1528,28 @@ sub coreOperationProcess{
        #2. Start IBMIHS Server
 	   if($HOSTNAME eq $TAP2){#TAP2 Testing Server
 	     `$START_IBMIHS_SERVER_ON_TAP2_SERVER`;
-         print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP2_SERVER} has been executed.\n";
+         print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP2_SERVER} has been executed.\n";
 	   }
 	   elsif($HOSTNAME eq $TAP){#TAP PROD Server
 	     `$START_IBMIHS_SERVER_ON_TAP_SERVER`;
-         print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP_SERVER} has been executed.\n";
+         print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The Unix Command {$START_IBMIHS_SERVER_ON_TAP_SERVER} has been executed.\n";
 	   }
        
 	   #3. Check if the IBMIHS Server has been restart successfully or not
        $calculateIBMIHSRunningCount = `$CALCULATE_IBMIHS_RUNNING_COUNT`;
-	   print LOG "The Restart IBM HTTP Server on TAP Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
+	   print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The Unix Command {$CALCULATE_IBMIHS_RUNNING_COUNT} has been executed.\n";    
        chomp($calculateIBMIHSRunningCount);#Remove the return line char
 	   trim($calculateIBMIHSRunningCount);#Remove space chars 
        if($calculateIBMIHSRunningCount <=0){
          $operationResultFlag = $OPERATION_FAIL;#Set operation result falg to "OPERATION_FAIL" value
 		 $operationFailedComments = $FAILED_COMMENTS;#"This Operatoin is failed due to reason: "
-         $operationFailedComments.="The IBM HTTP Server on TAP Server has been restarted failed.<br>";
+         $operationFailedComments.="The IBM HTTP Server on $HOSTNAME Server has been restarted failed.<br>";
 		 $operationFailedComments.="Please check the IBM HTTP Server log to find failed reason and fix issue."; 
-	     print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server on TAP Server has been restarted failed.\n";
+	     print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The IBM HTTP Server on $HOSTNAME Server has been restarted failed.\n";
 	   }
 	   else{
-		 print LOG "The Restart IBM HTTP Server on TAP Server - The IBM HTTP Server on TAP Server has been restarted successfully.\n";    
-	     print LOG "The Restart IBM HTTP Server on TAP Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
+		 print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - The IBM HTTP Server on $HOSTNAME Server has been restarted successfully.\n";    
+	     print LOG "The Restart IBM HTTP Server on $HOSTNAME Server - There are {$calculateIBMIHSRunningCount} IBM HTTP Server Processes are running.\n";
 	   }
 	  
        $currentTimeStamp = getCurrentTimeStamp($STYLE1);#Get the current full time using format YYYY-MM-DD-HH.MM.SS
