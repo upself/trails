@@ -2528,8 +2528,9 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"atpToStaging.pl";#22
   push @vaildLoaderList,"swcmToStaging.pl";#23
   push @vaildLoaderList,"capTypeToBravo.pl";#24
-  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#24
-  push @vaildLoaderList,"reconEngineLicensing.pl";#24
+  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#25
+  push @vaildLoaderList,"reconEngineLicensing.pl";#26
+  push @vaildLoaderList,"reconEngineInventory.pl";#27
   
   return @vaildLoaderList;
 }
