@@ -55,12 +55,12 @@ minage=800
 
 [SIGREPORTS]
 direction=loc2gsa # rem2loc - remote to local, or loc2rem
-srchostname=ehngsa.ibm.com
+tgthostname=ehngsa.ibm.com
 source=/opt/catalog/swkbt/reports/delta
 target=/projects/t/tad4dstandalone/html/tcr_reports
 filemask=.+\.csv$
-srcusr=[gsaUser] # for logging
-srcpwd=[gsaPassword]
+tgtusr=[gsaUser] # for logging
+tgtpwd=[gsaPassword]
 delsource=false
 minage=800
 
