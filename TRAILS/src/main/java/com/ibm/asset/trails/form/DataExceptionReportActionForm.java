@@ -39,11 +39,7 @@ public class DataExceptionReportActionForm {
 	}
 
 	private void initUrl() {
-		if (this.alertType.getId() < 13) {
-			this.url = "swlpar" + alertType.getCode();
-		} else {
-			this.url = "hwlpar" + alertType.getCode();
-		}
+		this.url = "lpar" + alertType.getCode();
 	}
 
 	public Long getId() {
