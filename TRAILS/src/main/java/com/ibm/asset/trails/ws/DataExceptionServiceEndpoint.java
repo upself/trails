@@ -50,10 +50,10 @@ public class DataExceptionServiceEndpoint {
 	private final String SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/NULLTIME/NOCUST/NOLP/NOOS/ZEROPROC/NOSW/";
 	private final String HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/HWNCHP/HWNPRC/NCPMDL/NPRCTYP/";
 	
-	@POST
-	@Path("/overview")
+	@GET
+	@Path("/overview/{accountId}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg exceptionOverview(@FormParam("accountId") Long accountId){
+	public WSMsg exceptionOverview(@PathParam("accountId") Long accountId){
 		if(null == accountId){
 			return WSMsg.failMessage("Account ID is required");
 		}else{
