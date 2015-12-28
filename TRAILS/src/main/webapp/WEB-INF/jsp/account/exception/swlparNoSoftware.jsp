@@ -88,7 +88,7 @@ function searchData(){
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].dataExpId + ");return false;'>"+list[i].swLparName+"</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].swLparId + ");return false;'>"+list[i].swLparName+"</a></td>";
 						html += "<td>" + list[i].swLparScanTime + "</td>";
 						html += "<td>" + list[i].dataExpCreationTime + "</td>";
 						html += "<td>" + list[i].swLparSerial + "</td>";

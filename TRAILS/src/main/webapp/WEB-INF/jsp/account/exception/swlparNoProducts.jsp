@@ -5,8 +5,8 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
-		<p>This page displays the data exception record which is software lpars without licensable products, you can do assign/unassign/assign all/unassign all operation with 
-	clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
+		<p>This page displays the data exception record which is software lpars without licensable products.</p>
+		<p> you can do assign/unassign/assign all/unassign all operation with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	
 	<div class="ibm-col-1-1">
@@ -90,7 +90,7 @@ function searchData(){
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].dataExpId + ");return false;'>"+list[i].swLparName+"</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].swLparId + ");return false;'>"+list[i].swLparName+"</a></td>";
 						html += "<td>" + list[i].swLparScanTime + "</td>";
 						html += "<td>" + list[i].dataExpCreationTime + "</td>";
 						html += "<td>" + list[i].swLparSerial + "</td>";
