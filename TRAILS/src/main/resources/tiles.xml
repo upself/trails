@@ -1657,6 +1657,7 @@
 		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.v17e.w3OneColumnLayout">
+	    <put-attribute name="contentTitle" value="Data exception overview" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/overview.jsp" />
 		<put-attribute name="description"
