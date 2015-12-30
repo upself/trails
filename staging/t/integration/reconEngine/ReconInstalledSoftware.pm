@@ -10,10 +10,10 @@ sub new {
   _installedSoftwareId => undef,
   _customerId          => undef,
   _action              => undef,
-  _remoteUser          => 'STAGING',
+  _remoteUser          => undef,
   _recordTime          => undef,
-  _table               => 'recon_installed_sw',
-  _idField             => 'id'
+  _table               => undef,
+  _idField             => undef    
  };
  bless $self, $class;
  return $self;
@@ -177,11 +177,8 @@ sub save {
  else {
   $connection->prepareSqlQuery( $self->queryUpdate );
   my $sth = $connection->sql->{updateReconInstalledSoftware};
-  $sth->execute(
-   $self->installedSoftwareId, $self->customerId, $self->action,
-   $self->remoteUser,          $self->recordTime, 
-   $self->id
-  );
+  $sth->execute( $self->installedSoftwareId, $self->customerId, $self->action,
+   $self->remoteUser, $self->recordTime, $self->id );
   $sth->finish;
  }
 }
