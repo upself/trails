@@ -1273,7 +1273,9 @@ sub attemptLicenseAllocationProcessorOrIFL {
     if ( ( !defined $licView->cpuSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   next
-    if ( ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
+    if ( defined $licView->cpuSerial 
+   && defined $self->installedSoftwareReconData->hSerial
+   &&( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   dlog("found matching license - hw specific");
   my $neededQuantity = $processorCount - $tempQuantityAllocated;
