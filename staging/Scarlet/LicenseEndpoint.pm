@@ -35,9 +35,9 @@ sub httpGet {
  $self->accountNo($accountNo);
  $self->guid($guid);
 
- $self->SUPER::httpGet;
-
-}
+ dlog("end of license httpGet");
+ return $self->SUPER::httpGet;
+}    
 
 sub assembleURI {
  my $self = shift;
@@ -54,16 +54,16 @@ sub assembleURI {
 sub validateJsonFeedback {
  my ( $self, $jsonObj ) = @_;
 
- if (
-  ( defined $jsonObj->{'match'} )    
+ if (( defined $jsonObj->{'match'} )
   && ( $jsonObj->{'match'} eq 'true' || $jsonObj->{'match'} == 1 )
   && ( defined $jsonObj->{'skus'} )
-  && ( scalar @{ $jsonObj->{'skus'} } >= 1 )
-   )
+  && ( scalar @{ $jsonObj->{'skus'} } >= 1 ) )
  {
+  dlog('license json looks good.');
   return 1;
  }
 
+ dlog('somthing wrong with the license json feedback.');
  return 0;
 }
 
@@ -73,11 +73,16 @@ sub parseJson {
  my $skus      = $jsonObj->{'skus'};
  my $licenseId = [];
 
+ dlog( ( defined $skus ? scalar @{$skus} : 0 ) . ' sku(s) found.' );
+
  foreach my $s ( @{$skus} ) {
   foreach my $extSrcId ( @{ $s->{'licenseIds'} } ) {
    push @{$licenseId}, 'SWCM_' . $extSrcId;
   }
  }
+
+ dlog( scalar @{$licenseId} . ' license(s) found.' );
+
  return $licenseId;
 }
 
