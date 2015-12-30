@@ -63,6 +63,7 @@ sub _05_isReconQueueReady : Test(1) {
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
+
 sub _06_launchReconEngineCheck : Test(8) {
  my $self = shift;
 
