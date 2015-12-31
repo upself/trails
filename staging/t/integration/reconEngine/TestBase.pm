@@ -12,13 +12,17 @@ use Config::Properties;
 
 use Base::Utils;
 use Base::ConfigManager;
+
 use Recon::LicensingReconEngineCustomer;
 use Recon::LicensingInstalledSoftware;
 use Recon::OM::Reconcile;
 use Recon::OM::ScarletReconcile;
 use Recon::Delegate::ReconDelegate;
+
 use Scarlet::LicenseEndpoint;
+
 use integration::reconEngine::ReconInstalledSoftware;
+use integration::TestUtils;
 
 sub _startup : Test(startup) {
  my $self  = shift;
@@ -143,23 +147,11 @@ sub singleResultQuery {
 sub changeFileProperty {
  my ( $self, $file, $key, $value ) = @_;
 
- open my $fileRead, '<', $file
-   or die "unable to open configuration file";
-
- my $properties = Config::Properties->new();
- $properties->load($fileRead);
- $properties->changeProperty( $key, $value );
- close $fileRead;
-
- open my $fh, '>', $file
-   or die 'unable to open file for writing';
- $properties->format('%s=%s');
- $properties->store($fh);
- close $fh;
+ integration::TestUtils->changeProperty( $file, $key, $value );    
 }
 
 sub launchReconEngine {
- my $self        = shift;    
+ my $self        = shift;
  my $reconEngine =
    new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
   $self->isPool );
