@@ -21,10 +21,10 @@ sub _01_reRunReconEngineAgainstClosedAlerts : Test(14) {
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
-
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 
  $self->launchReconEngine;
+ 
  integration::reconEngine::TestAlertClosed->new($self)->test;
  integration::reconEngine::TestLogReconQuitNoError->new($self)->test;
  integration::reconEngine::TestLogScarletSoftwareMap->new($self)->test;

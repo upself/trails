@@ -1,7 +1,11 @@
 package integration::reconEngine::TestBase;
 
 use strict;
-use base qw(Test::Class integration::reconEngine::Properties integration::LogManager);
+use base
+  qw(Test::Class
+  integration::reconEngine::Properties
+  integration::LogManager
+  integration::TestUtils);
 use Test::More;
 use Test::File;
 use Test::Cmd::Common;
@@ -19,9 +23,7 @@ use Recon::OM::Reconcile;
 use Recon::Delegate::ReconDelegate;
 
 use Scarlet::LicenseEndpoint;
-
 use integration::reconEngine::ReconInstalledSoftware;
-use integration::TestUtils;
 
 sub _startup : Test(startup) {
  my $self  = shift;
@@ -45,7 +47,7 @@ sub init : Test(startup) {
  $self->connection->connect;
  $self->configLog( $self->reconConfigFile, $self->logFile );
 
-}    
+}
 
 sub breakReconcile {
  my $self = shift;
@@ -133,13 +135,7 @@ sub singleResultQuery {
  $sth->finish;
 
  return $result;
-}
-
-sub changeFileProperty {
- my ( $self, $file, $key, $value ) = @_;
-
- integration::TestUtils->changeProperty( $file, $key, $value );
-}
+}    
 
 sub launchReconEngine {
  my $self        = shift;

@@ -1,7 +1,8 @@
-package integration::reconEngine::Story38372::TC1;
+package integration::reconEngine::Story38372::TestScarletReconcile;
 
 use strict;
-use base 'integration::reconEngine::TestBase';
+use base qw(integration::reconEngine::TestBase
+  integration::ScarletAPIManager);
 
 use Recon::ScarletReconcile;
 use integration::reconEngine::CmdCleanReconInstalledSoftware;
@@ -11,11 +12,10 @@ use Test::DatabaseRow;
 
 sub setup : Test(startup) {
  my $self = shift;
-
  $self->{connectionFile} = '/opt/staging/v2/config/connectionConfig.txt';
 }
 
-sub cleanConfig : Test(shutdown) {
+sub restoreConfigFile : Test(shutdown) {
  my $self = shift;
 
  $self->resetGuid;
@@ -44,7 +44,7 @@ sub _01_lastValidateTimeUpdated : Test(2) {
  row_ok(
   dbh => $self->connection->dbh,
   sql => [ "select * from scarlet_reconcile where id = ?", $reconcile->id ],
-  descrpition => 'scarlet reconcile exists'
+  description => 'scarlet reconcile exists'
  );
  ok( $timeBefore ne $timeAfter, 'last validate time updated' );
 
@@ -100,7 +100,7 @@ sub _03_lastValidateTimeUnchanged : Test(2) {
 
 }
 
-sub _04_scarletReconileWillBreak : Test(2) {    
+sub _04_scarletReconileWillBreak : Test(2) {
  my $self = shift;
 
  $self->mokeEmptyGuidAPI;
@@ -127,54 +127,6 @@ sub _04_scarletReconileWillBreak : Test(2) {
   description => 'appended to recon installed software'
  );
 
-}
-
-sub setParentOutOfService {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://prodpcrdsherlk3.w3-969.ibm.err:9300/guids';
- $self->changeFileProperty( $file, 'scarlet.guids.parents', $api );
-}
-
-sub resetParent {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://prodpcrdsherlk3.w3-969.ibm.com:9300/guids';
- $self->changeFileProperty( $file, 'scarlet.guids.parents', $api );
-}
-
-sub setGuidOutOfService {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://prodpcrdsherlk3.w3-969.ibm.err:9100/guids';
- $self->changeFileProperty( $file, 'scarlet.guids', $api );
-}
-
-sub mokeGuidAPI {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://localhost:8080/springrest/guid';
- $self->changeFileProperty( $file, 'scarlet.guids', $api );
-}
-
-sub mokeEmptyGuidAPI {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://localhost:8080/springrest/empty/guid';
- $self->changeFileProperty( $file, 'scarlet.guids', $api );
-}
-
-sub resetGuid {
- my $self = shift;
-
- my $file = $self->{connectionFile};
- my $api  = 'http://prodpcrdsherlk3.w3-969.ibm.com:9100/guids';
- $self->changeFileProperty( $file, 'scarlet.guids', $api );
 }
 
 1;

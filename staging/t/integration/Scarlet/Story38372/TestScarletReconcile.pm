@@ -1,12 +1,22 @@
-package integration::Scarlet::Story38372::ScarletProcess;
+package integration::Scarlet::Story38372::TestScarletReconcile;
 
 use strict;
 use base qw(Test::Class integration::LogManager);
 
 use Test::DatabaseRow;
+use Test::More;
 
 use Database::Connection;
 use Recon::ScarletReconcile;
+
+use integration::Scarlet::CmdCreateScarletReconcile;
+use integration::Scarlet::CmdDeleteScarletReconcile;    
+
+sub _startup : Test(startup) {
+ my $self  = shift;
+ my $class = ref($self);
+ diag("---start of $class---");
+}
 
 sub start : Test(startup) {
  my $self = shift;
@@ -18,7 +28,7 @@ sub clean : Test(shutdown) {
  integration::Scarlet::CmdDeleteScarletReconcile->new(999999)->execute;
 }
 
-sub _test : Test(2) {
+sub orphanScarletReconcileDeleted : Test(2) {
 
  my $id         = 999999;
  my $connection = Database::Connection->new('trails');
@@ -41,7 +51,7 @@ sub _test : Test(2) {
  );
 
  my $r = Recon::ScarletReconcile->new(0);
- $r->validate($id);    
+ $r->validate($id);
 
  not_row_ok(
   dbh => $connection->dbh,

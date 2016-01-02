@@ -3,7 +3,7 @@ package integration::TestUtils;
 use strict;
 use Config::Properties;
 
-sub changeProperty {
+sub changeFileProperty {    
  my ( $self, $file, $key, $value ) = @_;
 
  open my $fileRead, '<', $file
@@ -20,4 +20,4 @@ sub changeProperty {
  $properties->store($fh);
  close $fh;
 }
-1;    
+1;
