@@ -1,7 +1,7 @@
 package integration::reconEngine::TestBase;
 
 use strict;
-use base qw(Test::Class integration::reconEngine::Properties);
+use base qw(Test::Class integration::reconEngine::Properties integration::LogManager);
 use Test::More;
 use Test::File;
 use Test::Cmd::Common;
@@ -16,7 +16,6 @@ use Base::ConfigManager;
 use Recon::LicensingReconEngineCustomer;
 use Recon::LicensingInstalledSoftware;
 use Recon::OM::Reconcile;
-use Recon::OM::ScarletReconcile;
 use Recon::Delegate::ReconDelegate;
 
 use Scarlet::LicenseEndpoint;
@@ -46,15 +45,7 @@ sub init : Test(startup) {
  $self->connection->connect;
  $self->configLog( $self->reconConfigFile, $self->logFile );
 
-}
-
-sub configLog {
- my ( $self, $opt_f, $opt_l ) = @_;
-
- my $cfgMgr = Base::ConfigManager->instance($opt_f);
- logfile($opt_l);
- logging_level( $cfgMgr->debugLevel );
-}
+}    
 
 sub breakReconcile {
  my $self = shift;
@@ -147,7 +138,7 @@ sub singleResultQuery {
 sub changeFileProperty {
  my ( $self, $file, $key, $value ) = @_;
 
- integration::TestUtils->changeProperty( $file, $key, $value );    
+ integration::TestUtils->changeProperty( $file, $key, $value );
 }
 
 sub launchReconEngine {
