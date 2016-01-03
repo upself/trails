@@ -15,7 +15,8 @@ sub new {
   _config => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
   ),
-  _api => undef
+  _api    => undef,
+  _status => undef
  };
 
  bless $self, $class;
@@ -36,11 +37,18 @@ sub outOfService {
  my $serverError = '^5\d\d$';
 
  if ( $code =~ $serverError ) {
+
   #server error occured.
   return 1;
  }
 
  return 0;
+}
+
+sub status {
+ my $self = shift;
+ $self->{_status} = shift if scalar @_ == 1;
+ return $self->{_status};
 }
 
 sub config {
@@ -85,11 +93,16 @@ sub httpGet {
 
    $result = $self->parseJson($jsObj)
      if ( $self->validateJsonFeedback($jsObj) );
-
+     
+   $self->status('SUCCESS');    
     }
-    catch { wlog('no data found.') };
+    catch { 
+     wlog('no data found.');
+     $self->status('ERROR'); 
+    };
  }
  else {
+  $self->status('ERROR');
   wlog( 'scarlet requesting failed: ' . $response->status_line );
  }
 
