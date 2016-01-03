@@ -26,7 +26,7 @@ sub outOfService {
  my $self = shift;
 
  my $ua = LWP::UserAgent->new;
- $ua->timeout(10);
+ $ua->timeout(30);
  $ua->env_proxy;
  $ua->max_redirect(0);
 
@@ -77,7 +77,7 @@ sub httpGet {
  my $self = shift;
 
  my $ua = LWP::UserAgent->new;
- $ua->timeout(10);
+ $ua->timeout(30);
  $ua->env_proxy;
 
  my $uri = $self->assembleURI;
