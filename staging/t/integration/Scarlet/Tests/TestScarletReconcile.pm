@@ -1,4 +1,4 @@
-package integration::Scarlet::Story38372::TestScarletReconcile;
+package integration::Scarlet::Tests::TestScarletReconcile;
 
 use strict;
 use base qw(Test::Class integration::LogManager);
@@ -10,7 +10,7 @@ use Database::Connection;
 use Recon::ScarletReconcile;
 
 use integration::Scarlet::CmdCreateScarletReconcile;
-use integration::Scarlet::CmdDeleteScarletReconcile;    
+use integration::Scarlet::CmdDeleteScarletReconcile;
 
 sub _startup : Test(startup) {
  my $self  = shift;
@@ -28,7 +28,7 @@ sub clean : Test(shutdown) {
  integration::Scarlet::CmdDeleteScarletReconcile->new(999999)->execute;
 }
 
-sub orphanScarletReconcileDeleted : Test(2) {
+sub story38372_orphanScarletReconcileDeleted : Test(2) {
 
  my $id         = 999999;
  my $connection = Database::Connection->new('trails');
