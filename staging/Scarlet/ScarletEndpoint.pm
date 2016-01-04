@@ -97,13 +97,18 @@ sub httpGet {
    $self->status('SUCCESS');
     }
     catch {
-   wlog('no data found.');    
+   wlog('no data found.');
    $self->status('ERROR');
     };
  }
  else {
   $self->status('ERROR');
   elog( 'scarlet requesting failed: ' . $response->status_line );
+
+  my $code = $response->code;
+  if ( $code >= 500 ) {    
+   elog( $response->content );
+  }
  }
 
  return $result;
