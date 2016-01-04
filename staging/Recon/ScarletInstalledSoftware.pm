@@ -106,9 +106,15 @@ sub hardwareId {
 sub outOfService {
  my $self = shift;
 
- return ( $self->guidEndpoint->outOfService )
-   || ( $self->parentEndpoint->outOfService );
+ my $guidStatus   = $self->guidEndpoint->status;
+ my $parentStatus = $self->parentEndpoint->status;
 
+ if (( 'SUCCESS' eq $guidStatus && !defined $parentStatus )
+  || ( 'SUCCESS' eq $guidStatus && 'SUCCESS' eq $parentStatus ) )
+ {
+  return 0;
+ }
+ return 1;    
 }
 
 sub appendData {
@@ -208,8 +214,8 @@ sub setGuidsFromScarlet {
   }
 
   my $scarletGuids = $self->guidEndpoint->httpGet($swcmLicenseId);
-  $scarletGuids=[]
-      if(!defined $scarletGuids);
+  $scarletGuids = []
+    if ( !defined $scarletGuids );
 
   dlog( scalar @{$scarletGuids} . ' guid(s) found' );
   foreach my $id ( @{$scarletGuids} ) {
@@ -241,8 +247,8 @@ sub traverseUp {
   $self->cachedParentGuids->{$id} = 1;
 
   my $scarletParentsGuids = $self->parentEndpoint->httpGet($id);
-  $scarletParentsGuids=[]
-      if(!defined $scarletParentsGuids);
+  $scarletParentsGuids = []
+    if ( !defined $scarletParentsGuids );
 
   $self->traverseUp($scarletParentsGuids);
 
