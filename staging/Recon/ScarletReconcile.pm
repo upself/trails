@@ -29,7 +29,7 @@ sub gapHour {
  return $self->{_gapHour};
 }
 
-sub contains {    
+sub contains {
  my $self        = shift;
  my $reconcileId = shift;
 
@@ -55,6 +55,7 @@ sub contains {
 
 sub validate {
  my $self = shift;
+ my $id   = shift;    
 
  my $query = '
     select 
@@ -74,6 +75,9 @@ sub validate {
     where 
       TIMESTAMPDIFF(8, (current timestamp)-(sr.last_validate_time)) >=?'
    ;
+ if ( defined $id ) {
+  $query .= ' and sr.id = ' . $id;
+ }
 
  dlog( 'getObserveItems=' . $query );
 

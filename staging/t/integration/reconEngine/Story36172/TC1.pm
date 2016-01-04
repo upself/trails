@@ -27,7 +27,9 @@ use integration::reconEngine::TestScarletLicenseAPIDefined;
 use integration::reconEngine::TestLogReconQuitNoError;
 use integration::reconEngine::TestLogScarletBuilt;
 use integration::reconEngine::TestLogAlertClosed;
-use integration::reconEngine::TestLogFileClean;    
+use integration::reconEngine::TestLogFileClean;
+
+use integration::reconEngine::CmdCleanReconInstalledSoftware;    
 
 sub _01_checkConfiguration : Test(5) {
  my $self = shift;
@@ -59,10 +61,9 @@ sub _04_isReconcileValid : Test(2) {
 
 sub _05_isReconQueueReady : Test(1) {
  my $self = shift;
-
+ integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
-
 
 sub _06_launchReconEngineCheck : Test(8) {
  my $self = shift;
