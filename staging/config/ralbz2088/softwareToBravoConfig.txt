@@ -1,3 +1,4 @@
 server=ralbz2088
 debugLevel=warn
 sleepPeriod=10800
+waitForChildren=300

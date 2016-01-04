@@ -8,3 +8,4 @@ bravoFullLoadPeriodHours=36
 testBankAccounts=
 testCustomerIds=
 sleepPeriod=10800
+waitForChildren=300
