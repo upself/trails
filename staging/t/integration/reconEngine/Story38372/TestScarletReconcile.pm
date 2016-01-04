@@ -25,7 +25,7 @@ sub restoreConfigFile : Test(shutdown) {
 sub _01_lastValidateTimeUpdated : Test(2) {
  my $self = shift;
 
- $self->mokeGuidAPI;
+ $self->mockGuidAPI;
  $self->resetParent;
 
  my $reconcile = $self->findReconcile;
@@ -53,7 +53,7 @@ sub _01_lastValidateTimeUpdated : Test(2) {
 sub _02_lastValidateTimeUnchanged : Test(2) {
  my $self = shift;
 
- $self->mokeGuidAPI;
+ $self->mockGuidAPI;
  $self->setParentOutOfService;
 
  my $reconcile = $self->findReconcile;
@@ -103,7 +103,7 @@ sub _03_lastValidateTimeUnchanged : Test(2) {
 sub _04_scarletReconileWillBreak : Test(2) {
  my $self = shift;
 
- $self->mokeEmptyGuidAPI;
+ $self->mockEmptyGuidAPI;
  $self->resetParent;
 
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;

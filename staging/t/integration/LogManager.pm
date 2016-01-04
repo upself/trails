@@ -13,4 +13,11 @@ sub configLog {
  logging_level( $cfgMgr->debugLevel );
 }
 
-1;    
+sub configDebugLevel {
+ my ( $self, $logFile ) = @_;
+
+ logfile($logFile);    
+ logging_level('debug');
+}
+
+1;

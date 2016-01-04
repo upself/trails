@@ -93,17 +93,17 @@ sub httpGet {
 
    $result = $self->parseJson($jsObj)
      if ( $self->validateJsonFeedback($jsObj) );
-     
-   $self->status('SUCCESS');    
+
+   $self->status('SUCCESS');
     }
-    catch { 
-     wlog('no data found.');
-     $self->status('ERROR'); 
+    catch {
+   wlog('no data found.');    
+   $self->status('ERROR');
     };
  }
  else {
   $self->status('ERROR');
-  wlog( 'scarlet requesting failed: ' . $response->status_line );
+  elog( 'scarlet requesting failed: ' . $response->status_line );
  }
 
  return $result;
