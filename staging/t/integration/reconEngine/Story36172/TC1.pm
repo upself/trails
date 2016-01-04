@@ -1,75 +1,90 @@
-package integration::reconEngine::Story36172_TC1;
+package integration::reconEngine::Story36172::TC1;
 
-use base 'Test::Class';
+use strict;
+use base 'integration::reconEngine::TestBase';
 use Test::More;
 use Test::File;
-use Test::Cmd::Common;
 use Test::DatabaseRow;
+
+use File::Overwrite;
 
 use Base::Utils;
 use Base::ConfigManager;
 use Recon::LicensingReconEngineCustomer;
+use Recon::LicensingInstalledSoftware;
+use Recon::OM::Reconcile;
+use Recon::Delegate::ReconDelegate;
 use Scarlet::LicenseEndpoint;
+use integration::reconEngine::ReconInstalledSoftware;
 
-sub TC1 : Tests(7) {
+use integration::reconEngine::TestReconInstalledSoftwareExist;
+use integration::reconEngine::TestScarletReconcileExist;
+use integration::reconEngine::TestReconcileUsedLicenseExist;
+use integration::reconEngine::TestReconEngineConfig;
+use integration::reconEngine::TestReconInstalledSoftwareNotExist;
+use integration::reconEngine::TestAlertOpen;
+use integration::reconEngine::TestScarletLicenseAPIDefined;
+use integration::reconEngine::TestLogReconQuitNoError;
+use integration::reconEngine::TestLogScarletBuilt;
+use integration::reconEngine::TestLogAlertClosed;
+use integration::reconEngine::TestLogFileClean;    
+
+sub _01_checkConfiguration : Test(5) {
  my $self = shift;
 
- my $connectionConfig = '/opt/staging/v2/config/connectionConfig.txt';
- file_contains_like( $connectionConfig, qr{scarlet\.license\s*=\s*http} );
+ integration::reconEngine::TestScarletLicenseAPIDefined->new($self)->test;
 
- my $opt_f = 'integration/reconEngine/Story36172/reconEnginConf.txt';
+ my $accountNo       = '84690';
+ my $guid            = '96804d13f07b4d1d8371942fc6449ea7';
+ my $licenseEndpoint = Scarlet::LicenseEndpoint->new;
+ $licenseEndpoint->httpGet( $accountNo, $guid );
 
- #2 checkers here;
- file_contains_like( $opt_f,
-  [ qr{testMode\s*=\s*0}, qr{debugLevel\s*=\s*debug} ] );
+ ok(
+  $licenseEndpoint->outOfService eq 0,
+  'scarlet license endpoint function good'
+   )
+   or return 'scarlet not reachalbe';
 
- my $opt_c         = '7458';
- my $opt_d         = '2099-01-01';
- my $opt_p         = 0;
- my $opt_l         = '/tmp/reconEngine.log.child.7458';
- my $installedSwId = '240451553';
- my $guid          = '96804d13f07b4d1d8371942fc6449ea7';
+ integration::reconEngine::TestReconEngineConfig->new($self)->test;
+ integration::reconEngine::TestLogFileClean->new($self)->test;
+}
 
- $self->configLog( $opt_f, $opt_l );
+sub _04_isReconcileValid : Test(2) {
+ my $self = shift;
 
- my $scarletEndpoint = Scarlet::LicenseEndpoint->new;
- $scarletEndpoint->httpGet( $opt_c, $guid );
+ $self->breakReconcile;
 
- ok( not $scarletEndpoint->outOfService, 'scarlet status' );    
+ integration::reconEngine::TestAlertOpen->new($self)->test;
+}
 
- my $conn = Database::Connection->new('trails');
- $conn->connect;
+sub _05_isReconQueueReady : Test(1) {
+ my $self = shift;
 
- row_ok(
-  dbh => $conn->dbh,
-  sql => [
-   "SELECT 
-    action, date(record_time) as DATE, customer_id
-    FROM recon_installed_sw WHERE installed_software_id = ?",
-   $installedSwId
-  ],
-  tests => {
-   "eq" => { ACTION      => "LICENSING", DATE => $opt_d },
-   "==" => { CUSTOMER_ID => $opt_c }
-  },
-  description => "$installedSwId exist in recon qeuue"
- );
+ integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
+}
+
+
+sub _06_launchReconEngineCheck : Test(8) {
+ my $self = shift;
 
  my $reconEngine =
-   new Recon::LicensingReconEngineCustomer( $opt_c, $opt_d, $opt_p );
+   new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
+  $self->isPool );
  $reconEngine->recon;
 
- file_contains_like( $opt_l, qr{returning to caller} );
- file_contains_unlike( $opt_l, qr{ERROR} );
+ integration::reconEngine::TestReconcileUsedLicenseExist->new($self)->test;
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+
+ integration::reconEngine::TestLogScarletBuilt->new($self)->test;
+ integration::reconEngine::TestLogAlertClosed->new($self)->test;
+ integration::reconEngine::TestLogReconQuitNoError->new($self)->test;
 
 }
 
-sub configLog {
- my ( $self, $opt_f, $opt_l ) = @_;
-
- my $cfgMgr = Base::ConfigManager->instance($opt_f);
- logfile($opt_l);
- logging_level( $cfgMgr->debugLevel );
+sub shutdown : Test( shutdown => 2 ) {
+ my $self = shift;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
+ integration::reconEngine::TestLogFileClean->new($self)->test;
 }
 
 1;
