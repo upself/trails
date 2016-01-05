@@ -172,13 +172,12 @@ sub addInstalledSoftwareToQueue {
 	ilog("Checking for existing installed software in queue");
 	my $recon = new Recon::OM::ReconInstalledSoftware();
 	$recon->installedSoftwareId( $self->object->id );
+	$recon->getByBizKey( $self->connection );
 	if ( defined $self->action() ) {
 		$recon->action( $self->action() );
 	} else {
 		$recon->action('UPDATE');
 	}
-	$recon->getByBizKey( $self->connection );
-
 	if ( !defined $recon->id ) {
 		ilog("Installed Software does not exist in queue...saving");
 		$recon->customerId( $self->subObject->customerId );
