@@ -98,6 +98,11 @@ sub nonDebugLogPath {
     return $self->{_cfg}->getProperty('nonDebugLogPath');
 }
 
+sub waitForChildren {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('waitForChildren');
+}
+
 ###Returns an array of Test Bank Account names
 sub testBankAccounts {
     my $self = shift;

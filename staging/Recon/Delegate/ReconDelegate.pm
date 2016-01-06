@@ -14,6 +14,9 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 						   # returns number of processes deleted from hash, that weren't running
 	my $self = shift;
 	my $param = shift;
+	
+	return 0 unless defined $param;
+	
     my %prochash = %$param;
 	
 	my $toreturn=0;

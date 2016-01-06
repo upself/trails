@@ -12,11 +12,11 @@ use Try::Tiny;
 sub new {
  my ($class) = @_;
  my $self = {
-  _outOfService => 1,
-  _config       => Config::Properties::Simple->new(
+  _config => Config::Properties::Simple->new(
    file => '/opt/staging/v2/config/connectionConfig.txt'
   ),
-  _api => undef
+  _api    => undef,
+  _status => undef
  };
 
  bless $self, $class;
@@ -24,8 +24,31 @@ sub new {
 
 sub outOfService {
  my $self = shift;
- $self->{_outOfService} = shift if scalar @_ == 1;
- return $self->{_outOfService};
+
+ my $ua = LWP::UserAgent->new;
+ $ua->timeout(30);
+ $ua->env_proxy;
+ $ua->max_redirect(0);
+
+ my $request  = HTTP::Request->new( GET => $self->api );
+ my $response = $ua->request($request);
+
+ my $code        = $response->code;
+ my $serverError = '^5\d\d$';
+
+ if ( $code =~ $serverError ) {
+
+  #server error occured.
+  return 1;
+ }
+
+ return 0;
+}
+
+sub status {
+ my $self = shift;
+ $self->{_status} = shift if scalar @_ == 1;
+ return $self->{_status};
 }
 
 sub config {
@@ -54,30 +77,38 @@ sub httpGet {
  my $self = shift;
 
  my $ua = LWP::UserAgent->new;
- $ua->timeout(10);
+ $ua->timeout(30);
  $ua->env_proxy;
 
  my $uri = $self->assembleURI;
- dlog("GET $uri");
- my $response = $ua->get($uri);    
+ dlog(" GET $uri");
+ my $response = $ua->get($uri);
 
  my $result = undef;
  if ( $response->is_success ) {
-  $self->outOfService(0);
   my $json = new JSON;
   try {
-   local $SIG{__DIE__};            # No sigdie handler
+   local $SIG{__DIE__};    # No sigdie handler
    my $jsObj = $json->decode( $response->decoded_content );
 
    $result = $self->parseJson($jsObj)
      if ( $self->validateJsonFeedback($jsObj) );
 
+   $self->status('SUCCESS');
     }
-    catch { wlog('no data found.') };
+    catch {
+   wlog('no data found.');
+   $self->status('ERROR');
+    };
  }
  else {
-  $self->outOfService(1);
-  wlog( 'scarlet requesting failed: ' . $response->status_line );
+  $self->status('ERROR');
+  elog( 'scarlet requesting failed: ' . $response->status_line );
+
+  my $code = $response->code;
+  if ( $code >= 500 ) {    
+   elog( $response->content );
+  }
  }
 
  return $result;

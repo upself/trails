@@ -28,8 +28,12 @@
 				tiles.account.exception.lpar{1}
 			</result>
 		</action>
-		<action name="exception*History" class="alert{1}History">
-			<result type="tiles">tiles.exception.history.popup</result>
+		
+		<action name="exceptionSwlparHistory" class="alertSwlparHistory">
+			<result type="tiles">tiles.exception.swlpar.history.popup</result>
+		</action>
+		<action name="exceptionHwlparHistory" class="alertHwlparHistory">
+			<result type="tiles">tiles.exception.hwlpar.history.popup</result>
 		</action>
 
 		<action name="exception*Unassign" method="unassign"

@@ -1273,7 +1273,9 @@ sub attemptLicenseAllocationProcessorOrIFL {
     if ( ( !defined $licView->cpuSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   next
-    if ( ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
+    if ( defined $licView->cpuSerial 
+   && defined $self->installedSoftwareReconData->hSerial
+   &&( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   dlog("found matching license - hw specific");
   my $neededQuantity = $processorCount - $tempQuantityAllocated;
@@ -2119,7 +2121,9 @@ from
       left outer join hardware h 
            on h. id = hl. hardware_id 
       where
-           ( l.customer_id = ? or l.customer_id in (select master_account_id from account_pool where logical_delete_ind = 0 and member_account_id = ? ))
+            ( l.customer_id = ? or l.customer_id in
+				(select ap.master_account_id from account_pool ap join customer c on c.customer_id = ap.master_account_id
+				where ap.logical_delete_ind = 0 and ap.member_account_id = ? and c.status = \'ACTIVE\' and c.sw_license_mgmt = \'YES\' ))
             and ((l.cap_type in( 2, 13, 14, 17, 34, 48, 49 ) and l.try_and_buy = 0) or ( l.cap_type in ( 5, 9, 70 ) ) )
             and l.lic_type != \'SC\'   
             and s.software_id = ?

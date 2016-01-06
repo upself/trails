@@ -152,9 +152,9 @@ sub getIds {
     eval {
         $dbh = Database::Connection->new("trails");
         my $query = "select
-                      distinct customer_id
+                      customer_id
                   from
-                      software_lpar
+                      customer
                   where
                       status = 'ACTIVE'
                   and customer_id not in (999999)  
