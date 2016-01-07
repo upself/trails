@@ -3,8 +3,8 @@ direction=gsa2loc # rem2loc - remote to local, or loc2rem
 srchostname=bldgsa.ibm.com
 source=/projects/s/swdata/ftp/disconnected
 target=/var/ftp/staging
-filemask=^[A-Z0-9_-]+_(computer|processor|socket|software_filter|software_signature|computer_memory|endpoint|hdisk|ip_address|TAD4D_Versions)\.tsv(\.gz|)$
-filemask2=^[A-Z0-9_-]+\.(Z|gz|zip|TAR|gzip|tar|tar\.gz)$ 
+filemask=^[A-Z0-9_-]+_(computer|processor|socket|software_filter|software_signature|computer_memory|endpoint|hdisk|ip_address|mem_mod|TAD4D_Versions)\.tsv(\.gz|)$
+filemask2=^[A-Z0-9_-]+\.(Z|gz|zip|TAR|gzip|tar|tar\.gz)$
 srcusr=[gsa.swmulti.report.user] # for logging
 srcpwd=[gsa.swmulti.report.password]
 delsource=true
@@ -13,9 +13,9 @@ minage=5
 [TLCMZ]
 direction=gsa2loc # rem2loc - remote to local, or loc2rem
 srchostname=bldgsa.ibm.com
-source=/projects/s/swdata/ftp/tlcmz 
+source=/projects/s/swdata/ftp/tlcmz
 target=/var/ftp/mf_scan
-filemask=.+\.(asc|ASC|txt|TXT|xml|XML|csv)$ 
+filemask=.+\.(asc|ASC|txt|TXT|xml|XML|csv|CSV)$
 srcusr=[gsa.swmulti.report.user] # for logging
 srcpwd=[gsa.swmulti.report.password]
 delsource=true
@@ -31,3 +31,4 @@ minage=5
 # tgtftppwd=
 # delsource=true
 # flag=READY
+ 
