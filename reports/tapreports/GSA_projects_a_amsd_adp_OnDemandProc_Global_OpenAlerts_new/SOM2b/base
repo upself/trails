@@ -9,7 +9,7 @@ SELECT
 	 VA.Creation_Time as "Create date/time", 
 	 VA.Alert_Age as "Age", 
 	 VA.Remote_User as "Assignee", 
-	 VA.Comments as "Assignee comments", 
+	 REPLACE(VA.Comments, CHR(10), '') as "Assignee comments" ,
 	 VA.Record_Time as "Assigned date/time", 
 	 SL.OS_TYPE as "SWLPAR_OS_TYPE",
 	 SL.OS_NAME as "SWLPAR_OS_NAME",

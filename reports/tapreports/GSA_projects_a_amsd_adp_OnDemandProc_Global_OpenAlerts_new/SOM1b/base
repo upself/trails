@@ -20,7 +20,7 @@ SELECT
 			VA.Alert_Age as "Age", 
 			MT.Type as "Asset type", 
 			VA.Remote_User as "Assignee", 
-			VA.Comments as "Assignee comments", 
+			REPLACE(VA.Comments, CHR(10), '') as "Assignee comments" ,
 			VA.Record_Time as "Assigned date/time", 
 			AC.name as "Cause Code (CC)",
 			CC.target_date as "CC target date", 
