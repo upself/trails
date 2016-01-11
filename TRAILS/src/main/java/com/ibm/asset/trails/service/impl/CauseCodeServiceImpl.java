@@ -438,11 +438,29 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 			history.setRemoteUser(causeCode.getRemoteUser());
 
 			if (!strCompare(causeCodeName, colCauseCode)) {
-				AlertCause alertCause = (AlertCause) getEntityManager()
-						.createNamedQuery("findAlertCauseByName")
-						.setParameter("name", colCauseCode.trim().toUpperCase())
-						.getSingleResult();
-				causeCode.setAlertCause(alertCause);
+				try{
+					AlertCause alertCause = null;
+					
+					if("UNDEFINED".equals(colCauseCode.trim().toUpperCase())){
+						alertCause = (AlertCause) getEntityManager()
+								.createNamedQuery("findAlertCauseByNameWithoutShowInGui")
+								.setParameter("name", colCauseCode.trim().toUpperCase())
+								.getSingleResult();
+					}
+					else{
+						alertCause = (AlertCause) getEntityManager()
+								.createNamedQuery("findAlertCauseByName")
+								.setParameter("name", colCauseCode.trim().toUpperCase())
+								.getSingleResult();
+					}
+					
+					if(alertCause!=null){
+						causeCode.setAlertCause(alertCause);
+					}
+				}
+				catch(Exception e){
+					log.error(e.getMessage(), e);
+				}
 			}
 
 			if (!dateCompare(targetDate, colTargetDate)) {
