@@ -6,7 +6,7 @@
 	<div class="ibm-col-1-1">
 	<h6>IBM Confidential</h6>
 	<p>This page displays the data exception record which is software lpars without Customer.</p>
-	<p> you can do assign/unassign/assign all/unassign all operation with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
+	<p> You can do assign/unassign/assign all/unassign all operations with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
 	
 	<div class="ibm-col-1-1">

@@ -16,7 +16,7 @@ my $configFile = "/opt/staging/v2/config/manualRecoveryConfig.txt";
 
 ###Initialize properties
 my $cfgMgr    = Base::ConfigManager->instance($configFile);
-my $reportDir = '/var/http_reports/manualRecovery';
+my $reportDir = '/var/staging/logs/manualRecovery/recoveryReport';
 
 ###Validate server
 die "!!! ONLY RUN THIS LOADER ON " . $cfgMgr->server . "!!!\n"
