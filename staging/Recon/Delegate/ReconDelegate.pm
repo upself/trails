@@ -17,7 +17,7 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 	
 	return 0 unless defined $param;
 	
-    my %prochash = %$param;
+#    my %$param = %$param;
 	
 	my $toreturn=0;
 	
@@ -27,17 +27,17 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 		chomp $procId;
 #		$procId =~ /^[^ ]+[ ]+([^ ]+)/;
 #		$procId = $1;
-		$prochash{$procId} = 2 if exists $prochash{$procId}; # setting value to 2
+		$$param{$procId} = 2 if exists $$param{$procId}; # setting value to 2
 															 # if the process is found among actually running ones
 	}
 	
-	foreach my $hashnow ( keys %prochash ) {
-		if ( $prochash{$hashnow} == 1 ) { # anything in process hash still value 1 is NOT running
+	foreach my $hashnow ( keys %$param ) {
+		if ( $$param{$hashnow} == 1 ) { # anything in process hash still value 1 is NOT running
 			wlog("$hashnow is in process hash, but not running, deleting from hash!");
-			delete $prochash{$hashnow};
+			delete $$param{$hashnow};
 			$toreturn++;
 		} else {
-			$prochash{$hashnow}=1;
+			$$param{$hashnow}=1;
 		}
 	}
 	
