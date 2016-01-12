@@ -120,7 +120,7 @@ sub keepTicking {
 			my $nowrunning = scalar (keys %children);
 			Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
 			wlog("$rNo loop of customer array finished, will sleep till end of child") if ( scalar (keys %children) == $nowrunning );
-			while ( scalar (keys %children) == $nowrunning ) {
+			while (( scalar (keys %children) == $nowrunning ) && ( scalar (keys %children) > 0 )) {
 				sleep 10;
 				Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
 			}
