@@ -117,11 +117,12 @@ sub keepTicking {
         }
         
         if ((scalar @customerIds == 0) && ( scalar (keys %children) > 0 )) {
+			my $nowrunning = scalar (keys %children);
 			Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
-			if ( scalar (keys %children) > 0 ) {
-				wlog("$rNo loop of customer array finished will sleep till end of child");
-				sleep;
-				wlog("$rNo waked up");
+			wlog("$rNo loop of customer array finished, will sleep till end of child") if ( scalar (keys %children) == $nowrunning );
+			while ( scalar (keys %children) == $nowrunning ) {
+				sleep 10;
+				Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
 			}
         }
         elsif ((scalar @customerIds == 0) && ( scalar(keys %children) == 0 ) && ( loaderCheckForStop ( $pidFile ) == 0 )) {
