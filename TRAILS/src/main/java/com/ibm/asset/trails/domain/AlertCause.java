@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "ALERT_CAUSE")
 @org.hibernate.annotations.Entity
 @NamedQueries({
+	    @NamedQuery(name = "findAlertCauseByNameWithoutShowInGui", query = "FROM AlertCause WHERE upper(name) = :name"),
 		@NamedQuery(name = "findAlertCauseByName", query = "FROM AlertCause WHERE upper(name) = :name and showInGui = 1"),
 		@NamedQuery(name = "findAlertCauseByNameAndResponsibility", query = "FROM AlertCause WHERE upper(name) = :name and alertCauseResponsibility = :responsibility and showInGui = 1"),
 		@NamedQuery(name = "findAlertCauseByNameNotId", query = "FROM AlertCause WHERE name = :name AND id != :id"),
