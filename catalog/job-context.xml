@@ -16,79 +16,69 @@
 	</bean>
 
 	<batch:job id="swkbtLoadJob" job-repository="jobRepository">
-		<batch:step id="splitStep1" parent="split1.master" next="splitAndLoad1" />
-		<batch:split id="splitAndLoad1" next="splitAndLoad2"
-			task-executor="taskExecutor">
+
+		<batch:split id="splitsteps" task-executor="taskExecutor"
+			next="loadStep10">
+			<batch:flow>
+				<batch:step id="splitStep10" parent="split10.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep0" parent="split0.master" />
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="splitStep1" parent="split1.master" />
+			</batch:flow>
 			<batch:flow>
 				<batch:step id="splitStep2" parent="split2.master" />
 			</batch:flow>
 			<batch:flow>
-				<batch:step id="loadStep1" parent="load1.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:split id="splitAndLoad2" next="splitAndLoad3"
-			task-executor="taskExecutor">
-			<batch:flow>
 				<batch:step id="splitStep3" parent="split3.master" />
 			</batch:flow>
-			<batch:flow>
-				<batch:step id="loadStep2" parent="load2.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:split id="splitAndLoad3" task-executor="taskExecutor"
-			next="splitAndLoad4">
 			<batch:flow>
 				<batch:step id="splitStep4" parent="split4.master" />
 			</batch:flow>
 			<batch:flow>
-				<batch:step id="loadStep3" parent="load3.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:split id="splitAndLoad4" next="splitAndLoad5"
-			task-executor="taskExecutor">
-			<batch:flow>
 				<batch:step id="splitStep5" parent="split5.master" />
 			</batch:flow>
-			<batch:flow>
-				<batch:step id="loadStep4" parent="load4.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:split id="splitAndLoad5" next="splitAndLoad6"
-			task-executor="taskExecutor">
 			<batch:flow>
 				<batch:step id="splitStep6" parent="split6.master" />
 			</batch:flow>
 			<batch:flow>
-				<batch:step id="loadStep5" parent="load5.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:split id="splitAndLoad6" next="licensable"
-			task-executor="taskExecutor">
-			<batch:flow>
 				<batch:step id="splitStep7" parent="split7.master" />
 			</batch:flow>
 			<batch:flow>
-				<batch:step id="loadStep6" parent="load6.master" />
+				<batch:step id="splitStep8" parent="split8.master" />
 			</batch:flow>
 		</batch:split>
-		<batch:step id="licensable" next="splitAndLoad7">
+
+		<batch:step id="loadStep10" parent="load10.master" next="loadStep0" />
+
+		<batch:step id="loadStep0" parent="load0.master" next="loadStep1" />
+
+		<batch:step id="loadStep1" parent="load1.master" next="loadStep2" />
+
+		<batch:step id="loadStep2" parent="load2.master" next="loadStep3" />
+
+		<batch:step id="loadStep3" parent="load3.master" next="loadStep4" />
+
+		<batch:step id="loadStep4" parent="load4.master" next="loadStep5" />
+
+		<batch:step id="loadStep5" parent="load5.master" next="loadStep6" />
+
+		<batch:step id="loadStep6" parent="load6.master" next="loadStep7" />
+
+		<batch:step id="loadStep7" parent="load7.master" next="loadStep8" />
+
+		<batch:step id="loadStep8" parent="load8.master" next="licensable" />
+
+		<batch:step id="licensable" next="inactivate">
 			<batch:tasklet>
 				<batch:chunk reader="licensableReader" writer="licensableWriter"
 					commit-interval="100" />
 			</batch:tasklet>
 		</batch:step>
-		<batch:split id="splitAndLoad7" next="loadStep8"
-			task-executor="taskExecutor">
-			<batch:flow>
-				<batch:step id="splitStep8" parent="split8.master" />
-			</batch:flow>
-			<batch:flow>
-				<batch:step id="loadStep7" parent="load7.master" />
-			</batch:flow>
-		</batch:split>
-		<batch:step id="loadStep8" parent="load8.master" next="inactivate" />
-		<batch:split id="inactivate" task-executor="taskExecutor"
-			next="reports">
+
+		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
 			<batch:flow>
 				<batch:step id="inactivateSignatures">
 					<batch:tasklet>
@@ -106,7 +96,10 @@
 				</batch:step>
 			</batch:flow>
 		</batch:split>
-		<batch:split id="reports" task-executor="taskExecutor">
+
+
+		<batch:split id="reports" task-executor="taskExecutor"
+			next="moveFiles">
 			<batch:flow>
 				<batch:step id="signatureHit" next="filterDelta">
 					<batch:tasklet>
@@ -136,8 +129,59 @@
 					</batch:tasklet>
 				</batch:step>
 			</batch:flow>
+			<batch:flow>
+				<batch:step id="COTReport" >
+					<batch:tasklet>
+						<batch:chunk reader="swguidReader" processor="swguidReportProcessor"
+							writer="swguidReportWriter" commit-interval="100" />
+					</batch:tasklet>
+				</batch:step>
+			</batch:flow>
+		</batch:split>
+
+		<batch:split id="moveFiles" task-executor="taskExecutor">
+			<batch:flow>
+				<batch:step id="moveFiles1">
+					<batch:tasklet ref="moveFilesTasklet1"
+						transaction-manager="jobTransactionManager">
+					</batch:tasklet>
+				</batch:step>
+			</batch:flow>
+			<batch:flow>
+				<batch:step id="moveFiles2">
+					<batch:tasklet ref="moveFilesTasklet2"
+						transaction-manager="jobTransactionManager">
+					</batch:tasklet>
+				</batch:step>
+			</batch:flow>
 		</batch:split>
 	</batch:job>
+
+	<bean id="moveFilesTasklet1" class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
+		<property name="fromDirectory" ref="fromdirectory1" />
+		<property name="toDirectory" ref="todirectory1" />
+	</bean>
+
+	<bean id="fromdirectory1" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg value="${source1}" />
+	</bean>
+
+	<bean id="todirectory1" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg value="${target1}" />
+	</bean>
+
+	<bean id="moveFilesTasklet2" class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
+		<property name="fromDirectory" ref="fromdirectory2" />
+		<property name="toDirectory" ref="todirectory2" />
+	</bean>
+
+	<bean id="fromdirectory2" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg value="${source2}" />
+	</bean>
+
+	<bean id="todirectory2" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg value="${target2}" />
+	</bean>
 
 	<bean id="canonicalReader" scope="step"
 		class="org.springframework.batch.item.xml.StaxEventItemReader">
@@ -163,6 +207,11 @@
 
 	<bean id="domainWriter"
 		class="com.ibm.asset.trails.batch.swkbt.writer.TrailsSwkbtWriter"
+		scope="step">
+	</bean>
+
+	<bean id="swkbtSourceWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtSourceWriter"
 		scope="step">
 	</bean>
 
@@ -211,6 +260,7 @@
                             m.name in ('IBM', 'IBM FileNet','IBM Tivoli', 'Informix', 'Rational Software Corporation','Ascential Software','IBM WebSphere','Digital CandleWebSphere','IBM Rational','Lotus','Candle','Tivoli','COGNOS')
                             and m.id = p.manufacturer_id
                             and p.id = pi.id
+                            and pi.remote_user!='TADZMainframe'
                         group by
                             pi.id
                             ,pi.licensable
@@ -297,8 +347,7 @@
 		class="com.ibm.asset.trails.batch.swkbt.processor.SignatureProcessor" />
 
 	<bean id="signatureHitReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<property name="resource"
-			value="file:/home/alexmois/swkbt/reports/delta/signatureHitReport.csv" />
+		<property name="resource" value="${signatureHitWriterResource}" />
 		<property name="lineAggregator">
 			<bean
 				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
@@ -376,8 +425,7 @@
 		class="com.ibm.asset.trails.batch.swkbt.processor.FilterProcessor" />
 
 	<bean id="filterHitReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<property name="resource"
-			value="file:/home/alexmois/swkbt/reports/delta/filterHitReport.csv" />
+		<property name="resource" value="${filterHitWriterResource}" />
 		<property name="lineAggregator">
 			<bean
 				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
@@ -455,8 +503,7 @@
 		class="com.ibm.asset.trails.batch.swkbt.processor.SignatureDeltaProcessor" />
 
 	<bean id="signatureDeltaWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<property name="resource"
-			value="file:/home/alexmois/swkbt/reports/delta/signatureDelta.csv" />
+		<property name="resource" value="${signatureWriterResource}" />
 		<property name="lineAggregator">
 			<bean
 				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
@@ -534,8 +581,7 @@
 		class="com.ibm.asset.trails.batch.swkbt.processor.FilterDeltaProcessor" />
 
 	<bean id="filterDeltaWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<property name="resource"
-			value="file:/home/alexmois/swkbt/reports/delta/filterDelta.csv" />
+		<property name="resource" value="${filterWriterResource}" />
 		<property name="lineAggregator">
 			<bean
 				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
@@ -659,10 +705,96 @@
 			value="UPDATE software_filter set status = 'INACTIVE' where software_filter_id = ?" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-
+	
+	<bean id="swguidReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[ 
+                            guid
+                            ,softwareName
+                            ,manufacturer
+                            ,productRole
+                            ,status
+                            from (
+                            select
+                                kb.guid as guid
+                                ,s.name as softwareName
+                                ,m.name as manufacturer
+                                ,s.PRODUCT_ROLE as productRole
+                                ,case when kb.deleted = 1 then 'INACTIVE' else 'ACTIVE' end as status
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                                kb_definition kb
+                                ,software_item s
+                                ,product p
+                                ,manufacturer m
+                                where
+                                kb.id = s.id
+                                and s.id = p.id
+                                and p.manufacturer_id=m.id
+                                ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="guid" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+	
+	<bean id="swguidReportProcessor"
+		class="com.ibm.asset.trails.batch.swkbt.processor.SwguidReportProcessor" />
+		
+	<bean id="swguidReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource" value="${cotReportWriterResource}" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<property name="fieldExtractor">
+					<bean
+						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="headerCallback">
+			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
+				<property name="csvHeader"
+					value="GUID,COMPONENET,MANUFACTURER,PRODUCT ROLE,STATUS" />
+			</bean>
+		</property>
+	</bean>
+		
 	<bean id="fileNameListener"
 		class="com.ibm.asset.trails.batch.swkbt.listener.OutputFileListener"
 		scope="step" />
+	<bean id="errorListener"
+		class="com.ibm.asset.trails.batch.swkbt.listener.ItemFailureLoggerListener"
+		scope="step" />
+	<bean id="resourcesListener"
+		class="com.ibm.asset.trails.batch.swkbt.listener.ResourcesListener"
+		scope="step">
+		<property name="resources" value="${resourceLinsener}" />
+	</bean>
+
+
+	<bean id="promotionListener"
+		class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+		<property name="keys" value="sourceName" />
+	</bean>
 
 	<!-- Split steps -->
 	<batch:step id="split" abstract="true">
@@ -671,9 +803,12 @@
 				commit-interval="500" />
 			<batch:listeners>
 				<batch:listener ref="fileNameListener" />
+				<batch:listener ref="errorListener" />
 			</batch:listeners>
 		</batch:tasklet>
 	</batch:step>
+	<batch:step id="split10" parent="split" />
+	<batch:step id="split0" parent="split" />
 	<batch:step id="split1" parent="split" />
 	<batch:step id="split2" parent="split" />
 	<batch:step id="split3" parent="split" />
@@ -687,9 +822,22 @@
 	<batch:step id="load" abstract="true">
 		<batch:tasklet transaction-manager="jobTransactionManager">
 			<batch:chunk reader="canonicalReader2" writer="domainWriter"
-				commit-interval="100" />
+				commit-interval="1000" />
 		</batch:tasklet>
 	</batch:step>
+
+	<batch:step id="loadSource" abstract="true">
+		<batch:tasklet transaction-manager="jobTransactionManager">
+			<batch:chunk reader="canonicalReader2" writer="swkbtSourceWriter"
+				commit-interval="1000" />
+			<batch:listeners>
+				<batch:listener ref="promotionListener" />
+			</batch:listeners>
+		</batch:tasklet>
+	</batch:step>
+
+	<batch:step id="load10" parent="loadSource" />
+	<batch:step id="load0" parent="load" />
 	<batch:step id="load1" parent="load" />
 	<batch:step id="load2" parent="load" />
 	<batch:step id="load3" parent="load" />
@@ -700,6 +848,18 @@
 	<batch:step id="load8" parent="load" />
 
 	<!-- Split Step masters -->
+	<batch:step id="split10.master">
+		<batch:partition step="split10" partitioner="partitioner10">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="split0.master">
+		<batch:partition step="split0" partitioner="partitioner0">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
 	<batch:step id="split1.master">
 		<batch:partition step="split1" partitioner="partitioner1">
 			<batch:handler grid-size="10" task-executor="taskExecutor" />
@@ -749,6 +909,18 @@
 	</batch:step>
 
 	<!-- Load Step masters -->
+	<batch:step id="load10.master">
+		<batch:partition step="load10" partitioner="loadPartitioner10">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
+	<batch:step id="load0.master">
+		<batch:partition step="load0" partitioner="loadPartitioner0">
+			<batch:handler grid-size="10" task-executor="taskExecutor" />
+		</batch:partition>
+	</batch:step>
+
 	<batch:step id="load1.master">
 		<batch:partition step="load1" partitioner="loadPartitioner1">
 			<batch:handler grid-size="10" task-executor="taskExecutor" />
@@ -798,92 +970,114 @@
 	</batch:step>
 
 	<!-- Split Partitioners -->
-	<bean id="partitioner1"
+	<bean id="partitioner10" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList10" />
+	</bean>
+
+	<bean id="partitioner0" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
+		<property name="elementNames" ref="canonicalElementList0" />
+	</bean>
+
+	<bean id="partitioner1" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList1" />
 	</bean>
 
-	<bean id="partitioner2"
+	<bean id="partitioner2" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList2" />
 	</bean>
 
-	<bean id="partitioner3"
+	<bean id="partitioner3" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList3" />
 	</bean>
 
-	<bean id="partitioner4"
+	<bean id="partitioner4" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList4" />
 	</bean>
 
-	<bean id="partitioner5"
+	<bean id="partitioner5" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList5" />
 	</bean>
 
-	<bean id="partitioner6"
+	<bean id="partitioner6" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList6" />
 	</bean>
 
-	<bean id="partitioner7"
+	<bean id="partitioner7" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList7" />
 	</bean>
 
-	<bean id="partitioner8"
+	<bean id="partitioner8" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiCanonicalRootElementPartitioner">
 		<property name="elementNames" ref="canonicalElementList8" />
 	</bean>
 
 	<!-- Load step partitioners -->
-	<bean id="loadPartitioner1"
+	<bean id="loadPartitioner10" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList10" />
+	</bean>
+
+	<bean id="loadPartitioner0" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources" value="${loadPartitionerResources}" />
+		<property name="elementNames" ref="canonicalElementList0" />
+	</bean>
+
+	<bean id="loadPartitioner1" scope="step"
+		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList1" />
 	</bean>
 
-	<bean id="loadPartitioner2"
+	<bean id="loadPartitioner2" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList2" />
 	</bean>
 
-	<bean id="loadPartitioner3"
+	<bean id="loadPartitioner3" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList3" />
 	</bean>
 
-	<bean id="loadPartitioner4"
+	<bean id="loadPartitioner4" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList4" />
 	</bean>
 
-	<bean id="loadPartitioner5"
+	<bean id="loadPartitioner5" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList5" />
 	</bean>
 
-	<bean id="loadPartitioner6"
+	<bean id="loadPartitioner6" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList6" />
 	</bean>
 
-	<bean id="loadPartitioner7"
+	<bean id="loadPartitioner7" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList7" />
 	</bean>
 
-	<bean id="loadPartitioner8"
+	<bean id="loadPartitioner8" scope="step"
 		class="com.ibm.asset.trails.batch.swkbt.partitioner.MultiResourcePartitioner">
-		<property name="resources" value="file:/home/alexmois/swkbt/loader/*.xml" />
+		<property name="resources" value="${loadPartitionerResources}" />
 		<property name="elementNames" ref="canonicalElementList8" />
 	</bean>
 
