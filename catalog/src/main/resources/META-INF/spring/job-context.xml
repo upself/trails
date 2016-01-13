@@ -773,7 +773,7 @@
 		<property name="headerCallback">
 			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
 				<property name="csvHeader"
-					value="GUID,COMPONENET,MANUFACTURER,PRODUCT ROLE,STATUS" />
+					value="GUID,COMPONENT,MANUFACTURER,PRODUCT ROLE,STATUS" />
 			</bean>
 		</property>
 	</bean>
