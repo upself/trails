@@ -375,8 +375,12 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 					.setParameter("id", causeCodeId).getSingleResult();
 
 			String causeCodeName = causeCode.getAlertCause().getName();
-			String colCauseCode = row.getCell(colIndexes.getColCauseCode())
-					.getStringCellValue().trim();
+			
+			HSSFCell causeCodeCell = row.getCell(colIndexes.getColCauseCode());
+			String colCauseCode = null;
+			if(causeCodeCell!=null){
+			    colCauseCode =causeCodeCell.getStringCellValue().trim();
+			}
 
 			Date targetDate = causeCode.getTargetDate();
 			HSSFCell targetDateCell = row
@@ -392,8 +396,12 @@ public class CauseCodeServiceImpl implements CauseCodeService {
 				}
 			}
 			String owner = causeCode.getOwner();
-			String colOwner = row.getCell(colIndexes.getColOwner())
-					.getStringCellValue().trim();
+			
+			HSSFCell ownerCell = row.getCell(colIndexes.getColOwner());
+			String colOwner = null;
+			if(ownerCell!=null){
+				colOwner = ownerCell.getStringCellValue().trim();
+			}
 
 			//Assignee Comments Function Start
 			if (colIndexes.getColAssigneeComments() != -1) {
