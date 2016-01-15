@@ -33,24 +33,6 @@ public class HardwareLparExpAction extends AccountBaseAction {
 	@UserRole(userRole = UserRoleType.READER)
 	public void prepare() {
 		super.prepare();
-
-		DisplayTagList data = getData();
-		int pageNumber = data.getPageNumber();
-
-		// set the index zero start.
-		pageNumber = pageNumber < 0 ? 0 : --pageNumber;
-		int startIndex = pageNumber * data.getObjectsPerPage();
-
-		if (getSort() == null) {
-			setSort("hardwareLpar.name");
-		}
-
-		data.setList(alertHardwareLparService.paginatedList(getAccount(),
-				startIndex, data.getObjectsPerPage(), getSort(), getDir()));
-
-		data.setFullListSize((int) alertHardwareLparService.getAlertListSize(
-				getAccount(), getAlertType()));
-
 	}
 
 	private AlertType getAlertType() {
