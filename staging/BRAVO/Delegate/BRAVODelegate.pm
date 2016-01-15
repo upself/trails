@@ -1426,6 +1426,7 @@ sub queryCustomerData {
             swFinancialMgmt
             creationDateTime
             updateDateTime
+            sector_id
             )
     );
 
@@ -1462,6 +1463,7 @@ sub queryCustomerData {
         	,a.sw_financial_mgmt
             ,a.creation_date_time
             ,a.update_date_time
+            ,a.sector_id
         from
             customer a
     ';
