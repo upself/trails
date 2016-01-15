@@ -3,7 +3,7 @@ package integration::MockWebService;
 use strict;
 
 sub serviceURI {
- return 'http://localhost:8080/springrest';
+ return 'http://lexbz181197.cloud.dst.ibm.com:9001/springrest';
 }
 
 sub mockStatus400 {

@@ -1,7 +1,8 @@
 package integration::reconEngine::Tests::TC1;
 
 use strict;
-use base 'integration::reconEngine::TestBase';
+use base qw(integration::reconEngine::TestBase
+  integration::ScarletAPIManager);
 use Test::More;
 use Test::File;
 use Test::DatabaseRow;
@@ -29,11 +30,13 @@ use integration::reconEngine::TestLogScarletBuilt;
 use integration::reconEngine::TestLogAlertClosed;
 use integration::reconEngine::TestLogFileClean;
 
-use integration::reconEngine::CmdCleanReconInstalledSoftware;    
+use integration::reconEngine::CmdCleanReconInstalledSoftware;
 
 sub _01_story36172_checkConfiguration : Test(5) {
  my $self = shift;
 
+ $self->{connectionFile} = "/opt/staging/v2/config/connectionConfig.txt";
+ $self->resetLicenseAPI;
  integration::reconEngine::TestScarletLicenseAPIDefined->new($self)->test;
 
  my $accountNo       = '84690';
@@ -41,10 +44,8 @@ sub _01_story36172_checkConfiguration : Test(5) {
  my $licenseEndpoint = Scarlet::LicenseEndpoint->new;
  $licenseEndpoint->httpGet( $accountNo, $guid );
 
- ok(
-  $licenseEndpoint->outOfService eq 0,
-  'scarlet license endpoint function good'
-   )
+ is( $licenseEndpoint->outOfService,
+  0, 'scarlet license endpoint function good' )
    or return 'scarlet not reachalbe';
 
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
@@ -68,6 +69,8 @@ sub _05_story36172_isReconQueueReady : Test(1) {
 sub _06_story36172_launchReconEngineCheck : Test(8) {
  my $self = shift;
 
+ $self->mockGuidAPI;
+ $self->mockLicenseAPI;
  my $reconEngine =
    new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
   $self->isPool );
@@ -84,6 +87,9 @@ sub _06_story36172_launchReconEngineCheck : Test(8) {
 
 sub shutdown : Test( shutdown => 2 ) {
  my $self = shift;
+ $self->resetGuid;
+ $self->resetLicenseAPI;
+     
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }

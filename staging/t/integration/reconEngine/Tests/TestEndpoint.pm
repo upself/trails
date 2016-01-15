@@ -12,11 +12,6 @@ use Test::File;
 
 use Scarlet::GuidEndpoint;
 
-sub _startup : Test(startup) {
- my $self  = shift;
- my $class = ref($self);
- diag("---start of $class---");
-}
 
 sub setupLog : Test(startup) {
  my $self = shift;
