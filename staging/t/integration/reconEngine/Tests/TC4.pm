@@ -1,4 +1,4 @@
-package integration::reconEngine::Story36172::TC4;
+package integration::reconEngine::Tests::TC4;
 
 use strict;
 use base 'integration::reconEngine::TestBase';
@@ -13,7 +13,7 @@ use integration::reconEngine::TestReconEngineConfig;
 use integration::reconEngine::TestReconInstalledSoftwareExist;
 use integration::reconEngine::TestScarletLicenseAPIValid;
 
-sub _01_isScarletAPIInvalid : Test(12) {
+sub _01_story36172_isScarletAPIInvalid : Test(12) {
  my $self = shift;
 
  my $value = 'http://localhost:8080/springrest/license/invalid';

@@ -1,4 +1,4 @@
-package integration::reconEngine::Story36172::TC1;
+package integration::reconEngine::Tests::TC1;
 
 use strict;
 use base 'integration::reconEngine::TestBase';
@@ -31,7 +31,7 @@ use integration::reconEngine::TestLogFileClean;
 
 use integration::reconEngine::CmdCleanReconInstalledSoftware;    
 
-sub _01_checkConfiguration : Test(5) {
+sub _01_story36172_checkConfiguration : Test(5) {
  my $self = shift;
 
  integration::reconEngine::TestScarletLicenseAPIDefined->new($self)->test;
@@ -51,7 +51,7 @@ sub _01_checkConfiguration : Test(5) {
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }
 
-sub _04_isReconcileValid : Test(2) {
+sub _04_story36172_isReconcileValid : Test(2) {
  my $self = shift;
 
  $self->breakReconcile;
@@ -59,13 +59,13 @@ sub _04_isReconcileValid : Test(2) {
  integration::reconEngine::TestAlertOpen->new($self)->test;
 }
 
-sub _05_isReconQueueReady : Test(1) {
+sub _05_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
-sub _06_launchReconEngineCheck : Test(8) {
+sub _06_story36172_launchReconEngineCheck : Test(8) {
  my $self = shift;
 
  my $reconEngine =

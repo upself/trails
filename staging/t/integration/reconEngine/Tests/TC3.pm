@@ -1,4 +1,4 @@
-package integration::reconEngine::Story36172::TC3;
+package integration::reconEngine::Tests::TC3;
 
 use strict;
 use base 'integration::reconEngine::TestBase';
@@ -16,7 +16,7 @@ use integration::reconEngine::TestAlertOpen;
 use integration::reconEngine::TestLogReconQuitNoError;
 use integration::reconEngine::TestLogFileClean;
 
-sub _01_isScarletReconcileDelete : Test(3) {    
+sub _01_story36172_isScarletReconcileDelete : Test(3) {    
  my $self = shift;
 
  my $reconcile = $self->findReconcile;
@@ -29,7 +29,7 @@ sub _01_isScarletReconcileDelete : Test(3) {
 
 }
 
-sub _02_runAndCheck : Test(8) {
+sub _02_story36172_runAndCheck : Test(8) {
  my $self = shift;
 
  integration::reconEngine::TestReconEngineConfig->new($self)->test;

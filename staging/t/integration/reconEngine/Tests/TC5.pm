@@ -1,4 +1,4 @@
-package integration::reconEngine::Story36172::TC5;
+package integration::reconEngine::Tests::TC5;
 
 use strict;
 use base 'integration::reconEngine::TestBase';
@@ -14,7 +14,7 @@ use integration::reconEngine::TestScarletLicenseAPIValid;
 use integration::reconEngine::TestScarletReconcileExist;
 use integration::reconEngine::TestLogScarletSoftwareMap;
 
-sub _01_reRunReconEngineAgainstClosedAlerts : Test(14) {    
+sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {    
  my $self = shift;
 
  integration::reconEngine::TestAlertClosed->new($self)->test;

@@ -1,4 +1,4 @@
-package integration::reconEngine::Story36172::TC2;
+package integration::reconEngine::Tests::TC2;
 
 use strict;
 use base 'integration::reconEngine::TestBase';
@@ -14,18 +14,18 @@ use integration::reconEngine::TestLogAlertClosed;
 use integration::reconEngine::TestLogReconQuitNoError;
 
 
-sub _01_isScarletReconcileBuilt : Test(1) {
+sub _01_story36172_isScarletReconcileBuilt : Test(1) {
  my $self = shift;
 
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
 }
 
-sub _02_isReconQueueReady : Test(1) {
+sub _02_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
-sub _03_setInvalidAPIInConnectionConfig : Test(1) {
+sub _03_story36172_setInvalidAPIInConnectionConfig : Test(1) {
  my $self = shift;
 
  my $file  = '/opt/staging/v2/config/connectionConfig.txt';
@@ -39,7 +39,7 @@ sub _03_setInvalidAPIInConnectionConfig : Test(1) {
 
 }
 
-sub _04_launchReconEngine : Test(8) {
+sub _04_story36172_launchReconEngine : Test(8) {
  my $self = shift;
 
  my $reconEngine =
