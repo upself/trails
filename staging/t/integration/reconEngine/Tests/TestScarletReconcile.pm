@@ -12,12 +12,6 @@ use Recon::ScarletReconcile;
 use integration::reconEngine::CmdCreateScarletReconcile;
 use integration::reconEngine::CmdDeleteScarletReconcile;
 
-sub _startup : Test(startup) {
- my $self  = shift;
- my $class = ref($self);
- diag("---start of $class---");
-}
-
 sub start : Test(startup) {
  my $self = shift;
  $self->configLog( '/opt/staging/v2/config/scarletProcessConfig.txt',
