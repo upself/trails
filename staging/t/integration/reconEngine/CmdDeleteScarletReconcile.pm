@@ -1,4 +1,4 @@
-package integration::Scarlet::CmdDeleteScarletReconcile;
+package integration::reconEngine::CmdDeleteScarletReconcile;
 
 use strict;
 

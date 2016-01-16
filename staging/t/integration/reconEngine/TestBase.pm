@@ -25,12 +25,6 @@ use Recon::Delegate::ReconDelegate;
 use Scarlet::LicenseEndpoint;
 use integration::reconEngine::ReconInstalledSoftware;
 
-sub _startup : Test(startup) {
- my $self  = shift;
- my $class = ref($self);
- diag("---start of $class---");
-}
-
 sub init : Test(startup) {
  my $self = shift;
 
@@ -38,9 +32,8 @@ sub init : Test(startup) {
  $self->installedSoftwareId(240451553);
  $self->customerId(7458);
  $self->date('2099-01-01');
- $self->reconConfigFile(
-  'integration/reconEngine/Story36172/reconEnginConf.txt');
- $self->logFile('/tmp/reconEngine.log.child.7458');
+ $self->reconConfigFile('integration/reconEngine/Tests/reconEnginConf.txt');
+ $self->logFile('/tmp/reconEngine.log');    
  $self->connCfgFile('/opt/staging/v2/config/connectionConfig.txt');
  $self->connection( Database::Connection->new('trails') );
 
@@ -135,7 +128,7 @@ sub singleResultQuery {
  $sth->finish;
 
  return $result;
-}    
+}
 
 sub launchReconEngine {
  my $self        = shift;
