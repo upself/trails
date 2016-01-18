@@ -30,7 +30,11 @@ public class Account {
     @Column(name = "CUSTOMER_ID")
     private Long id;
 
-    @Column(name = "CUSTOMER_NAME")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SECTOR_ID", nullable = true)
+	private Sector sector;
+
+	@Column(name = "CUSTOMER_NAME")
     private String name;
 
     @Column(name = "ACCOUNT_NUMBER")
@@ -110,6 +114,14 @@ public class Account {
         this.account = account;
     }
 
+	public Sector getSector() {
+		return sector;
+	}
+
+	public void setSector(Sector sector) {
+		this.sector = sector;
+	}
+    
     public String getAccountStr() {
         return accountStr;
     }

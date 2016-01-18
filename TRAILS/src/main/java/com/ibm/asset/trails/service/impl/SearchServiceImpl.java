@@ -87,7 +87,8 @@ public class SearchServiceImpl implements SearchService {
                 .createAlias("industry", "i")
                 .createAlias("accountType", "a")
                 .createAlias("department", "dt")
-                .createAlias("industry.sector", "s")
+//                .createAlias("industry.sector", "s")
+                .createAlias("sector", "s")
                 .setProjection(
                         Projections
                                 .projectionList()

@@ -66,7 +66,7 @@ void(0);
 	</tr>
 	<tr>
 		<td><span class="caption">Sector</span></td>
-		<td><s:property value="account.industry.sector.name" /></td>
+		<td><s:property value="account.sector.name" /></td>
 	</tr>
 	<tr>
 		<td><span class="caption">Industry</span></td>
