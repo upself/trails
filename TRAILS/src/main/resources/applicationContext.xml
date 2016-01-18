@@ -557,12 +557,6 @@
 		<property name="historyService" ref="alertHwlparHistoryService" />
 	</bean>
 
-	<bean id="lparZEROPROCExpAction" scope="prototype"
-		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
-		<property name="accountService" ref="accountService" />
-		<property name="softwareLparExpService" ref="alertSwlparService" />
-		<property name="alertTypeCode" value="ZEROPROC" />
-	</bean>
 	<bean id="lparNULLTIMEExpAction" scope="prototype"
 		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">
 		<property name="accountService" ref="accountService" />
