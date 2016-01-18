@@ -1305,7 +1305,6 @@ sub queryIndustryData {
     my @fields = (
         qw(
             id
-            sectorId
             name
             creationDateTime
             updateDateTime
@@ -1315,7 +1314,6 @@ sub queryIndustryData {
     my $query = '
         select
         	a.industry_id
-            ,a.sector_id
             ,a.industry_name
             ,a.creation_date_time
             ,a.update_date_time
