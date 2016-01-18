@@ -1384,7 +1384,7 @@ sub queryCustomerData {
         	a.customer_id
         	,a.customer_type_id
         	,a.ASSET_ADMIN_DEPT_ID
-        	,a.indutry_id
+        	,a.industry_id
         	,a.account_number
         	,a.ACCOUNT_NAME
         	,a.DPE_CONTACT_ID
