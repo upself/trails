@@ -45,7 +45,7 @@
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR NO CUSTOM">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Hardware Box No Processor">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
