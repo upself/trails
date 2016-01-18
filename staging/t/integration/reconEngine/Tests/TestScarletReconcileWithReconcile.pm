@@ -1,4 +1,4 @@
-package integration::reconEngine::Story38372::TestScarletReconcile;
+package integration::reconEngine::Tests::TestScarletReconcileWithReconcile;
 
 use strict;
 use base qw(integration::reconEngine::TestBase
@@ -22,7 +22,7 @@ sub restoreConfigFile : Test(shutdown) {
  $self->resetParent;
 }
 
-sub _01_lastValidateTimeUpdated : Test(2) {
+sub _01_story38372_lastValidateTimeUpdated : Test(2) {
  my $self = shift;
 
  $self->mockGuidAPI;
@@ -50,7 +50,7 @@ sub _01_lastValidateTimeUpdated : Test(2) {
 
 }
 
-sub _02_lastValidateTimeUnchanged : Test(2) {
+sub _02_story38372_lastValidateTimeUnchanged : Test(2) {
  my $self = shift;
 
  $self->mockGuidAPI;
@@ -75,7 +75,7 @@ sub _02_lastValidateTimeUnchanged : Test(2) {
 
 }
 
-sub _03_lastValidateTimeUnchanged : Test(2) {
+sub _03_story38372_lastValidateTimeUnchanged : Test(2) {
  my $self = shift;
 
  $self->setGuidOutOfService;
@@ -100,7 +100,7 @@ sub _03_lastValidateTimeUnchanged : Test(2) {
 
 }
 
-sub _04_scarletReconileWillBreak : Test(2) {
+sub _04_story38372_scarletReconileWillBreak : Test(2) {
  my $self = shift;
 
  $self->mockEmptyGuidAPI;

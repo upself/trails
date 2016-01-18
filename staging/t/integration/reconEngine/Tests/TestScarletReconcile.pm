@@ -1,4 +1,4 @@
-package integration::Scarlet::Tests::TestScarletReconcile;
+package integration::reconEngine::Tests::TestScarletReconcile;
 
 use strict;
 use base qw(Test::Class integration::LogManager);
@@ -9,14 +9,8 @@ use Test::More;
 use Database::Connection;
 use Recon::ScarletReconcile;
 
-use integration::Scarlet::CmdCreateScarletReconcile;
-use integration::Scarlet::CmdDeleteScarletReconcile;
-
-sub _startup : Test(startup) {
- my $self  = shift;
- my $class = ref($self);
- diag("---start of $class---");
-}
+use integration::reconEngine::CmdCreateScarletReconcile;
+use integration::reconEngine::CmdDeleteScarletReconcile;
 
 sub start : Test(startup) {
  my $self = shift;
@@ -25,7 +19,7 @@ sub start : Test(startup) {
 }
 
 sub clean : Test(shutdown) {
- integration::Scarlet::CmdDeleteScarletReconcile->new(999999)->execute;
+ integration::reconEngine::CmdDeleteScarletReconcile->new(999999)->execute;
 }
 
 sub story38372_orphanScarletReconcileDeleted : Test(2) {
@@ -34,7 +28,7 @@ sub story38372_orphanScarletReconcileDeleted : Test(2) {
  my $connection = Database::Connection->new('trails');
 
  my $cmd =
-   integration::Scarlet::CmdCreateScarletReconcile->new( $id,
+   integration::reconEngine::CmdCreateScarletReconcile->new( $id,
   '2099-09-09 09:00:00' );
  $cmd->execute;
 
