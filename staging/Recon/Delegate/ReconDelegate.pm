@@ -17,7 +17,7 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 	
 	return 0 unless defined $param;
 	
-    my %prochash = %$param;
+#    my %$param = %$param;
 	
 	my $toreturn=0;
 	
@@ -27,17 +27,17 @@ sub checkRunningProcHash { # compares the hash of running process IDs with actua
 		chomp $procId;
 #		$procId =~ /^[^ ]+[ ]+([^ ]+)/;
 #		$procId = $1;
-		$prochash{$procId} = 2 if exists $prochash{$procId}; # setting value to 2
+		$$param{$procId} = 2 if exists $$param{$procId}; # setting value to 2
 															 # if the process is found among actually running ones
 	}
 	
-	foreach my $hashnow ( keys %prochash ) {
-		if ( $prochash{$hashnow} == 1 ) { # anything in process hash still value 1 is NOT running
+	foreach my $hashnow ( keys %$param ) {
+		if ( $$param{$hashnow} == 1 ) { # anything in process hash still value 1 is NOT running
 			wlog("$hashnow is in process hash, but not running, deleting from hash!");
-			delete $prochash{$hashnow};
+			delete $$param{$hashnow};
 			$toreturn++;
 		} else {
-			$prochash{$hashnow}=1;
+			$$param{$hashnow}=1;
 		}
 	}
 	
@@ -174,37 +174,72 @@ sub getScheduleFScope {
 	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
 	
 	while ( $sth->fetchrow_arrayref ) {
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 4 )) {
 			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 4 )) {
 			$scopeToReturn=$recc{scopeName};
-			$prioFound=3;
+			$prioFound=4;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 3 )) {
 			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 3 )) {
 			$scopeToReturn=$recc{scopeName};
-			$prioFound=2;
+			$prioFound=3;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 2 )) {
 			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 2 )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=2;
+		}
+		if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 1 )) {
+			wlog("ScheduleF PRODUCT  for customer=".$custId." and software=".$softName." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "PRODUCT" ) && ( $prioFound < 1 )) {
 			$scopeToReturn=$recc{scopeName};
 			$prioFound=1;
 		}
-		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+		if (( $recc{level} eq "MANUFACTURER" ) && ( $prioFound == 0 )) {
+			$scopeToReturn=$recc{scopeName};
+		}
 	}
 	
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound") if defined ($scopeToReturn);
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, no scopeName found") unless defined ($scopeToReturn);
 	
 	return ( $scopeToReturn, $prioFound );
+}
+
+sub getScheduleFScopeByISW {
+	my $self=shift;
+	my $swID=shift;
+	
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScheduleFSearch() );
+	my $sth = $connection->sql->{ScheduleFSearch};
+	my %recc;
+	$sth->bind_columns( map { \$recc{$_} }
+		  @{ $connection->sql->{ScheduleFSearchFields} } );
+	$sth->execute( $swId );
+	
+	$sth->fetchrow_arrayref;
+	
+	return ( undef, undef ) unless defined $recc{custId};
+	
+	my @ScheduleFlevels=( 'MANUFACTURER', 'PRODUCT', 'HWOWNER', 'HWBOX', 'HOSTNAME' );
+	my @toreturn=getScheduleFScope( ... );
+	
+	my $index=$toreturn[1];
+	
+	return ( $toreturn[0], $ScheduleFlevels[$index] );
+	
 }
 
 sub queryScheduleFScope {
