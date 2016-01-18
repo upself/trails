@@ -88,7 +88,7 @@ public class SearchServiceImpl implements SearchService {
                 .createAlias("accountType", "a")
                 .createAlias("department", "dt")
 //                .createAlias("industry.sector", "s")
-                .createAlias("sector", "s")
+                .createAlias("sector", "s", CriteriaSpecification.LEFT_JOIN)
                 .setProjection(
                         Projections
                                 .projectionList()
