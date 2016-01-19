@@ -89,7 +89,7 @@ function searchData(){
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].hwLparAccountNumber + ",\""+ list[i].hwLparName + "\","+list[i].hwLparId + ");return false;'>"+list[i].hwLparName+"</a></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoHL("+list[i].hwLparAccountNumber + ",\""+ list[i].hwLparName + "\","+list[i].hwLparId + ");return false;'>"+list[i].hwLparName+"</a></td>";
 						html += "<td>" + list[i].hwSerial + "</td>";
 						html += "<td>" + list[i].dataExpCreationTime + "</td>";
 						html += "<td>" + list[i].hwProcessors + "</td>";
@@ -220,7 +220,7 @@ function assignOrNot(url,params){
 	});
 }
 
-function popupBravoSl(accountId,lparName,hwId) {
+function popupBravoHL(accountId,lparName,hwId) {
 	  newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&hwId=' + hwId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 	  newWin.focus(); 
 	  void(0);
