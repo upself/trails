@@ -1,3 +1,6 @@
+--execute the command by 
+--db2 -td@ -f trigger_on_reconcile.sql 
+
 DROP TRIGGER eaadmin.update_reconcile_type;
 
 CREATE TRIGGER eaadmin.update_reconcile_type AFTER
@@ -32,16 +35,3 @@ BEGIN ATOMIC
 	END IF;
 END
 @
-
-
-select r.id,r.reconcile_type_id from reconcile r where exists (select 1 from scarlet_reconcile sr  
-where sr.id  = r.id) and r.reconcile_type_id  = 3
- 59501841                 3
-
-
-update reconcile set reconcile_type_id = 3 where id  = 59501841
- 
-
-select * from scarlet_reconcile where id  = 59501841
-
-select reconcile_type_id from reconcile where id  = 59501841
