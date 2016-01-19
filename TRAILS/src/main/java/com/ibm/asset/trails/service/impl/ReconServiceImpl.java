@@ -585,7 +585,7 @@ public class ReconServiceImpl implements ReconService {
 			ReconcileH reconcileH, AlertUnlicensedSw alert, String remoteUser) {
 		
 		Set<UsedLicenseHistory> usedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-		if (reconcile.getUsedLicenses() != null ||  reconcile.getUsedLicenses().isEmpty()){
+		if (reconcile.getUsedLicenses() != null &&  !reconcile.getUsedLicenses().isEmpty()){
 		Set<UsedLicense> usedLics = reconcile.getUsedLicenses();
 		for (UsedLicense ul : usedLics) {
 			UsedLicenseHistory ulh = new UsedLicenseHistory();
