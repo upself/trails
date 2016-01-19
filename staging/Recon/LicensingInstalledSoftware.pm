@@ -753,7 +753,7 @@ sub attemptLicenseAllocation {
  my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
  my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
   ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
     $self->attemptExistingMachineLevel(
@@ -773,7 +773,7 @@ sub attemptLicenseAllocation {
                  $self->installedSoftware->id);
  }
  
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: GARTNER MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 1 );
@@ -789,7 +789,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 1 );
@@ -805,7 +805,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: MSU, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 1 );
@@ -821,7 +821,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: hardware
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationHardware($freePoolData);
@@ -837,7 +837,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: hw specific processor
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 1 );
@@ -874,7 +874,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 3 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: processor
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 0 );

@@ -380,7 +380,7 @@ sub validateLicense {
  my ( $self, $licenseStatus, $reconcileId ) = @_;
  dlog("begin validateLicense");
 
- if ( $licenseStatus ne 'ACTIVE' ) {
+ if (( not defined $licenseStatus ) || ( $licenseStatus ne 'ACTIVE' )) {
   dlog("license is not active, adding to list to break");
   $self->addToReconcilesToBreak($reconcileId) if defined $reconcileId;
   $self->validationCode(0);

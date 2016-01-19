@@ -989,15 +989,15 @@ sub queryValidateLicenseAllocation {
             ,lsm.software_id
         from
             reconcile r
-            join reconcile_used_license rul on
+            left outer join reconcile_used_license rul on
               r.id =  rul.reconcile_id
-            join used_license ul on
+            left outer join used_license ul on
               ul.id = rul.used_license_id
-            join capacity_type ct on
+            left outer join capacity_type ct on
               ct.code = ul.capacity_type_id
-            join license l on 
+            left outer join license l on 
                 l.id = ul.license_id
-            join license_sw_map lsm on 
+            left outer join license_sw_map lsm on 
                 lsm.license_id = l.id
         where
             r.installed_software_id = ?

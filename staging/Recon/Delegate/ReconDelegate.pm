@@ -211,6 +211,8 @@ sub getScheduleFScope {
 		}
 	}
 	
+	$sth->finish;
+	
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound") if defined ($scopeToReturn);
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, no scopeName found") unless defined ($scopeToReturn);
 	
@@ -219,6 +221,7 @@ sub getScheduleFScope {
 
 sub getScheduleFScopeByISW {
 	my $self=shift;
+	my $connection=shift;
 	my $swID=shift;
 	
 	$connection->prepareSqlQueryAndFields(
@@ -227,18 +230,21 @@ sub getScheduleFScopeByISW {
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $connection->sql->{ScheduleFSearchFields} } );
-	$sth->execute( $swId );
+	$sth->execute( $swID );
 	
 	$sth->fetchrow_arrayref;
+	
+	$sth->finish;
 	
 	return ( undef, undef ) unless defined $recc{custId};
 	
 	my @ScheduleFlevels=( 'MANUFACTURER', 'PRODUCT', 'HWOWNER', 'HWBOX', 'HOSTNAME' );
-	my @toreturn=getScheduleFScope( ... );
+	my @toreturn=getScheduleFScope( $self, $connection, $recc{custId}, $recc{softName}, $recc{hwOwner}, $recc{hSerial},
+									$recc{hMachineTypeId}, $recc{slName}, $recc{swManufacturer} );
+									
+	return ( undef, undef ) unless defined $toreturn[0];
 	
-	my $index=$toreturn[1];
-	
-	return ( $toreturn[0], $ScheduleFlevels[$index] );
+	return ( $toreturn[0], $ScheduleFlevels[$toreturn[1]] );
 	
 }
 
@@ -267,13 +273,36 @@ sub queryScheduleFScope {
 	  where
 	    sf.customer_id = ?
 	  and
-	    sf.software_name = ?
+	    (( sf.software_name = ? and sf.level != \'MANUFACTURER\' ) )
 	  and
 	    sf.status_id = 2
 	  with ur
 	';
 	return('ScheduleFScope', $query, \@fields );
+}
+
+sub queryScheduleFSearch {
+	my @fields = qw(
+		custId
+		softName
+		hwOwner
+		hSerial
+		hMachineTypeId
+		slName
+		swManufacturer
+	);
 	
+	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, s.manufacturer_id
+	from ( ( ( ( ( eaadmin.installed_software is
+				   join eaadmin.software_lpar sl on sl.id = is.software_lpar_id )
+                   join eaadmin.hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
+                   join eaadmin.hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
+                   join eaadmin.hardware h on h.id = hl.hardware_id )
+                   join eaadmin.software s on s.software_id = is.software_id )
+                   where is.id = ?
+     with ur';
+     
+     return ('ScheduleFSearch', $query, \@fields );
 }
 
 sub breakReconcileById {
