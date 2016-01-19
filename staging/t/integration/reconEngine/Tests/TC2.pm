@@ -22,6 +22,8 @@ sub _01_story36172_isScarletReconcileBuilt : Test(1) {
 
 sub _02_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
+ 
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 

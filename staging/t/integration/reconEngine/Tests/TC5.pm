@@ -21,6 +21,8 @@ sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
+ 
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->test;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 
  $self->launchReconEngine;
