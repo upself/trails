@@ -28,7 +28,7 @@ sub _01_story36172_isScarletAPIInvalid : Test(12) {
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
 
- integration::reconEngine::CmdCreateReconInstalledSw->new($self)->test;    
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;    
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 
  $self->launchReconEngine;
