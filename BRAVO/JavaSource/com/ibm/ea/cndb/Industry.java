@@ -17,7 +17,6 @@ public class Industry implements Serializable {
 	private static final long serialVersionUID = 1L;
     private Long   industryId;
     private String industryName;
-    private Sector sector;
 
     /**
      * @return Returns the industryId.
@@ -47,20 +46,5 @@ public class Industry implements Serializable {
      */
     public void setIndustryName(String industryName) {
         this.industryName = industryName;
-    }
-
-    /**
-     * @return Returns the sector.
-     */
-    public Sector getSector() {
-        return sector;
-    }
-
-    /**
-     * @param sector
-     *            The sector to set.
-     */
-    public void setSector(Sector sector) {
-        this.sector = sector;
     }
 }

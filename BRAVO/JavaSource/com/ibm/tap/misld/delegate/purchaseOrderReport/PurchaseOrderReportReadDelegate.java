@@ -56,8 +56,7 @@ public class PurchaseOrderReportReadDelegate extends Delegate {
 						.getPodName());
 				tempList.add(purchaseOrderReport.getCustomer().getIndustry()
 						.getIndustryName());
-				tempList.add(purchaseOrderReport.getCustomer().getIndustry()
-						.getSector().getSectorName());
+				tempList.add(purchaseOrderReport.getCustomer().getSector().getSectorName());
 				tempList.add(purchaseOrderReport.getCustomer()
 						.getCustomerType().getCustomerTypeName());
 				tempList.add(purchaseOrderReport.getCustomer()
