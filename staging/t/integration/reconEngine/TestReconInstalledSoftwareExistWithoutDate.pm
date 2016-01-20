@@ -1,4 +1,4 @@
-package integration::reconEngine::TestReconInstalledSoftwareExist;
+package integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate;
 
 use strict;
 use base qw(integration::reconEngine::Properties);
@@ -17,7 +17,7 @@ sub new {
 }
 
 sub test {
- my $self = shift;
+ my $self = shift;    
 
  row_ok(
   dbh => $self->connection->dbh,
@@ -29,7 +29,7 @@ sub test {
    $self->installedSoftwareId
   ],
   tests => {
-   "eq" => { ACTION => "LICENSING", DATE => $self->date },    
+   "eq" => { ACTION      => "LICENSING" },
    "==" => { CUSTOMER_ID => $self->customerId }
   },
   description => "installed software exist in recon_installed_sw"
