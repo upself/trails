@@ -13,6 +13,7 @@ use integration::reconEngine::TestReconInstalledSoftwareExist;
 use integration::reconEngine::TestScarletLicenseAPIValid;
 use integration::reconEngine::TestScarletReconcileExist;
 use integration::reconEngine::TestLogScarletSoftwareMap;
+use integration::reconEngine::CmdCreateReconInstalledSw;
 
 sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {    
  my $self = shift;
@@ -21,6 +22,8 @@ sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
+ 
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 
  $self->launchReconEngine;

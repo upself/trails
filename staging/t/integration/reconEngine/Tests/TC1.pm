@@ -30,6 +30,7 @@ use integration::reconEngine::TestLogScarletBuilt;
 use integration::reconEngine::TestLogAlertClosed;
 use integration::reconEngine::TestLogFileClean;
 
+use integration::reconEngine::CmdCreateReconInstalledSw;
 use integration::reconEngine::CmdCleanReconInstalledSoftware;
 
 sub _01_story36172_checkConfiguration : Test(5) {
@@ -63,6 +64,8 @@ sub _04_story36172_isReconcileValid : Test(2) {
 sub _05_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
+ 
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
@@ -89,7 +92,7 @@ sub shutdown : Test( shutdown => 2 ) {
  my $self = shift;
  $self->resetGuid;
  $self->resetLicenseAPI;
-     
+
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }

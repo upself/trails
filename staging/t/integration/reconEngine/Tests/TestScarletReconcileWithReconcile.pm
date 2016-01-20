@@ -100,7 +100,7 @@ sub _03_story38372_lastValidateTimeUnchanged : Test(2) {
 
 }
 
-sub _04_story38372_scarletReconileWillBreak : Test(2) {
+sub _04_story38372_scarletReconileWillDelete : Test(2) {
  my $self = shift;
 
  $self->mockEmptyGuidAPI;

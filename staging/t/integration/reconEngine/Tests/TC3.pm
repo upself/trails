@@ -29,12 +29,14 @@ sub _01_story36172_isScarletReconcileDelete : Test(3) {
 
 }
 
-sub _02_story36172_launchReconEngineCheckAlertOpen : Test(8) {    
+sub _02_story36172_launchReconEngineCheckAlertOpen : Test(8) {
  my $self = shift;
 
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
+ 
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
- integration::reconEngine::TestLogFileClean->new($self)->test;
+ integration::reconEngine::TestLogFileClean->new($self)->test;    
 
  $self->launchReconEngine;
 
