@@ -11,13 +11,15 @@ sub configLog {
  my $cfgMgr = Base::ConfigManager->instance($opt_f);
  logfile($opt_l);
  logging_level( $cfgMgr->debugLevel );
+ init_log4perl;
 }
 
 sub configDebugLevel {
  my ( $self, $logFile ) = @_;
 
- logfile($logFile);    
+ logfile($logFile);
  logging_level('debug');
+ init_log4perl;
 }
 
 1;
