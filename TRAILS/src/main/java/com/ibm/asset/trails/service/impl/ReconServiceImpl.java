@@ -583,18 +583,6 @@ public class ReconServiceImpl implements ReconService {
 
 	private ReconcileH breakReconcileHistory(Reconcile reconcile,
 			ReconcileH reconcileH, AlertUnlicensedSw alert, String remoteUser) {
-		
-		Set<UsedLicenseHistory> usedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-		if (reconcile.getUsedLicenses() != null ||  reconcile.getUsedLicenses().isEmpty()){
-		Set<UsedLicense> usedLics = reconcile.getUsedLicenses();
-		for (UsedLicense ul : usedLics) {
-			UsedLicenseHistory ulh = new UsedLicenseHistory();
-			ulh.setLicense(ul.getLicense());
-			ulh.setUsedQuantity(ul.getUsedQuantity());
-			ulh.setCapacityType(ul.getCapacityType());
-			getEntityManager().persist(ulh);
-			usedLicenseHistorieSet.add(ulh);
-		}}
 		reconcileH.setComments(reconcile.getComments());
 		reconcileH.setInstalledSoftware(alert.getInstalledSoftware());
 		reconcileH.setMachineLevel(reconcile.getMachineLevel());
@@ -606,7 +594,6 @@ public class ReconServiceImpl implements ReconService {
 		reconcileH.setRemoteUser(remoteUser);
 		reconcileH.setAllocationMethodology(reconcile
 				.getAllocationMethodology());
-		reconcileH.setUsedLicenses(usedLicenseHistorieSet);
 		return getEntityManager().merge(reconcileH);
 	}
 
