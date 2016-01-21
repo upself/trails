@@ -48,7 +48,7 @@ in to complete the form.
 		<tr>
 			<td class="t1"><label for="fileName">*File name: </label></td>
 			<td>
-			<div class="input-note">maximum 128 characters. <font
+			<div class="input-note">maximum 255 characters. <font
 				color="red"> Windows signatures <br>
 			must be in all caps. Unix signatures are case sensitive.</font></div>
 			<html:text property="fileName" styleClass="input" /></td>
