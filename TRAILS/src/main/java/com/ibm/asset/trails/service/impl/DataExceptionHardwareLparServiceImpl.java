@@ -16,6 +16,7 @@ import com.ibm.asset.trails.domain.DataException;
 import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
 import com.ibm.asset.trails.domain.AlertType;
 import com.ibm.asset.trails.domain.DataExceptionHistory;
+import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
 import com.ibm.asset.trails.service.DataExceptionService;
 
 @Service
@@ -111,26 +112,40 @@ public class DataExceptionHardwareLparServiceImpl implements
 
 	@Override
 	public void assign(List<Long> list, String remoteUser, String comments) {
-		// TODO Auto-generated method stub
+		for(Long dataExpId: list){
+			DataExceptionHardwareLpar dataExpSwLpar = (DataExceptionHardwareLpar) alertHardwareLparDao.getById(dataExpId);
+            this.updateAssignmentAndCreateHistory(dataExpSwLpar, remoteUser,comments, true);
+        }	
 	}
 
 	@Override
 	public void unassign(List<Long> alertIds, String remoteUser, String comments) {
-		// TODO Auto-generated method stub
+		for(Long dataExpId: alertIds){
+			DataExceptionHardwareLpar dataExpSwLpar = (DataExceptionHardwareLpar) alertHardwareLparDao.getById(dataExpId);
+            this.updateAssignmentAndCreateHistory(dataExpSwLpar, remoteUser,comments, false);
+        }
 	}
 
 	@Override
 	public void assignAll(Long customerId, String dataExpTypeCode,
 			String remoteUser, String comments) {
-		// TODO Auto-generated method stub
-		
+		Long alertTypeId = alertTypeDao.getAlertTypeByCode(dataExpTypeCode).getId();
+	      List<Long> dataExpIds = alertHardwareLparDao.getOpenAlertIdsByCustomerIdAndAlertTypeId(customerId, alertTypeId);
+	      for(Long dataExpId: dataExpIds){
+	    	  DataExceptionHardwareLpar dataExpHwLpar = (DataExceptionHardwareLpar) alertHardwareLparDao.getById(dataExpId);
+	         this.updateAssignmentAndCreateHistory(dataExpHwLpar, remoteUser,comments, true);  
+	      }
 	}
 
 	@Override
 	public void unassignAll(Long customerId, String dataExpTypeCode,
 			String remoteUser, String comments) {
-		// TODO Auto-generated method stub
-		
+		Long alertTypeId = alertTypeDao.getAlertTypeByCode(dataExpTypeCode).getId();
+	      List<Long> dataExpIds = alertHardwareLparDao.getOpenAlertIdsByCustomerIdAndAlertTypeId(customerId, alertTypeId);
+	      for(Long dataExpId: dataExpIds){
+	    	  DataExceptionHardwareLpar dataExpHwLpar = (DataExceptionHardwareLpar) alertHardwareLparDao.getById(dataExpId);
+	         this.updateAssignmentAndCreateHistory(dataExpHwLpar, remoteUser,comments, false);  
+	      }		
 	}
 
 	@Override
