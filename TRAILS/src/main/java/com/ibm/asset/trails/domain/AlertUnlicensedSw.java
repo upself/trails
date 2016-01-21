@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @NamedQueries({
     	@NamedQuery(name = "alertUnlicensedSwTotalByAccountAndType2", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND ( AUS.type = :type OR AUS.type = :type2 ) AND AUS.open = 1"),
         @NamedQuery(name = "alertUnlicensedSwTotalByRemoteUserAndType2", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.remoteUser = :remoteUser AND ( AUS.type = :type OR AUS.type = :type2 ) AND AUS.open = 1"),
-
+        @NamedQuery(name = "findMachineLevelAffectedAlerts", query = "from AlertUnlicensedSw where id IN (select alert.id from AlertUnlicensedSw alert join alert.installedSoftware instSw join alert.reconcile reconcile join instSw.softwareLpar swLpar join swLpar.hardwareLpar hwLpar join hwLpar.hardware hardware join instSw.software sw where reconcile.machineLevel = 1 and sw.softwareId = :softwareId and hardware.id = :hardwareId)"),
 		@NamedQuery(name = "alertUnlicensedSwTotalByAccountAndType", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.installedSoftware.softwareLpar.account = :account AND AUS.type = :type  AND AUS.open = 1"),
         @NamedQuery(name = "alertUnlicensedSwTotalByRemoteUserAndType", query = "SELECT COUNT(DISTINCT AUS.installedSoftware.software) FROM AlertUnlicensedSw AUS WHERE AUS.remoteUser = :remoteUser AND AUS.type = :type AND AUS.open = 1"),
         @NamedQuery(name = "alertUnlicensedSwListSelected", query = "select aus.id FROM AlertUnlicensedSw AUS WHERE AUS.open = 1 AND AUS.id IN (:alertUnlicensedSwIdList)"),

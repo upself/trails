@@ -42,7 +42,7 @@ public class Reconcile extends AbstractDomainEntity {
 	@JoinColumn(name = "PARENT_INSTALLED_SOFTWARE_ID")
 	private InstalledSoftware parentInstalledSoftware;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "RECONCILE_USED_LICENSE", joinColumns = @JoinColumn(name = "RECONCILE_ID"), inverseJoinColumns = @JoinColumn(name = "USED_LICENSE_ID"))
 	private Set<UsedLicense> usedLicenses = new HashSet<UsedLicense>();
 

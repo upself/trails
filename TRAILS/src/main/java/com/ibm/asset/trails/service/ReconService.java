@@ -2,12 +2,15 @@ package com.ibm.asset.trails.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
+import com.ibm.asset.trails.domain.UsedLicense;
+import com.ibm.asset.trails.domain.UsedLicenseHistory;
 
 public interface ReconService {
 
@@ -19,9 +22,10 @@ public interface ReconService {
 			InstalledSoftware parentInstalledSoftware, Recon pRecon,
 			String remoteUser, String comments, Account account,
 			Map<License, Integer> pmLicenseApplied, String psMethod, int owner);
-
 	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
-			Account account, String remoteUser);
+			Account account, String remoteUser);	
+	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
+			Account account, String remoteUser, Set<UsedLicenseHistory> usedLicHis);
 
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);

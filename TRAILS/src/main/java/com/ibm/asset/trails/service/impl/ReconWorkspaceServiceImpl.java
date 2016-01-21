@@ -1,6 +1,7 @@
 package com.ibm.asset.trails.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,8 @@ import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.Reconcile;
 import com.ibm.asset.trails.domain.ReconcileType;
 import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.UsedLicense;
+import com.ibm.asset.trails.domain.UsedLicenseHistory;
 import com.ibm.asset.trails.domain.VSoftwareLpar;
 import com.ibm.asset.trails.service.ReconService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
@@ -815,6 +818,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		}
 	}
 
+	@SuppressWarnings({ "null", "unchecked" })
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	public void breakLicenseRecon(Account account, String remoteUser,
 			List<ReconWorkspace> reconWorkspaces, ReconcileType reconcileType) {
@@ -824,6 +828,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			alertDAO.refresh(alert);
 
 			List<Long> alertIds = new ArrayList<Long>();
+			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
 			if (alert.getReconcile().getMachineLevel() == 1) {
 				// User Story - 17236 - Manual License Allocation at HW level
 				// can automatically close Alerts on another account on the same
@@ -835,13 +840,37 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				 * .getSoftwareLpar().getHardwareLpar().getHardware()
 				 * .getId()));
 				 */
+				List<Long> alertIdList = new ArrayList<Long>();
+				Set<UsedLicense> usedLicenses = alert.getReconcile().getUsedLicenses();
+				List<AlertUnlicensedSw> AlertUnlicensedSwList = alertDAO.findMachineLevelAffectedAlerts(alert
+						.getInstalledSoftware().getSoftware()
+						.getSoftwareId(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar()
+						.getHardware().getId());
+				for (AlertUnlicensedSw affectedAlert : AlertUnlicensedSwList) {					
+					alertIdList.add(affectedAlert.getId());
+					if (affectedAlert.getReconcileH().getUsedLicenses() != null && !affectedAlert.getReconcileH().getUsedLicenses().isEmpty()){
+					Iterator<UsedLicenseHistory> UseLicenseH = null;
+					UseLicenseH = affectedAlert.getReconcileH().getUsedLicenses().iterator();
+					while (UseLicenseH.hasNext()){
+						existsUsedLicenseHistorieSet.add(UseLicenseH.next());
+					}
+					}					
+				}
+				
+				if (existsUsedLicenseHistorieSet == null || existsUsedLicenseHistorieSet.isEmpty()){
+					UsedLicenseHistory ulh = new UsedLicenseHistory();
+					for (UsedLicense ul : usedLicenses) {	
+							ulh.setLicense(ul.getLicense());
+							ulh.setUsedQuantity(ul.getUsedQuantity());
+							ulh.setCapacityType(ul.getCapacityType());
+							getEntityManager().persist(ulh);
+							existsUsedLicenseHistorieSet.add(ulh);
+						}				
+				}
+				
 				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-						alert,
-						alertDAO.findMachineLevelAffected(alert
-								.getInstalledSoftware().getSoftware()
-								.getSoftwareId(), alert.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getHardware().getId())));
+						alert,alertIdList));
 				// User Story - 17236 - Manual License Allocation at HW level
 				// can automatically close Alerts on another account on the same
 				// Shared HW as requested by users End
@@ -859,7 +888,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				AlertUnlicensedSw alertObj = alertDAO.findById(alertId);
 				reconService.breakReconcileByAlert(alertId, alertObj
 						.getInstalledSoftware().getSoftwareLpar().getAccount(),
-						remoteUser);
+						remoteUser,existsUsedLicenseHistorieSet);
 				// User Story - 17236 - Manual License Allocation at HW level
 				// can automatically close Alerts on another account on the same
 				// Shared HW as requested by users End

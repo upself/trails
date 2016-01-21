@@ -28,4 +28,7 @@ public interface AlertUnlicensedSoftwareDAO extends
 
     List<Long> findMachineLevelAffected(Long productInfoId, Long hardwareId);
 
+	List<AlertUnlicensedSw> findMachineLevelAffectedAlerts(long softwareId,
+			Long id);
+
 }
