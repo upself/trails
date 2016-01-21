@@ -87,20 +87,6 @@ public class ReconServiceImpl implements ReconService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
-			Account account, String remoteUser) {
-		AlertUnlicensedSw alert = findAlertById(alertId);
-		Reconcile reconcile = findReconcile(alert);
-		clearUsedLicenses(reconcile, remoteUser);
-		ReconcileH reconcileH = findReconcileHistory(alert);
-		breakReconcileHistory(reconcile, reconcileH, alert, remoteUser);
-		createAlertHistory(alert);
-		alert = openAlert(alert);
-		breakReconcile(alert.getReconcile(), account, remoteUser);
-		return alert;
-	}
-	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
 			Account account, String remoteUser, Set<UsedLicenseHistory> usedLicHis) {
 		AlertUnlicensedSw alert = findAlertById(alertId);
 		Reconcile reconcile = findReconcile(alert);
@@ -586,22 +572,6 @@ public class ReconServiceImpl implements ReconService {
 	}
 
 	private ReconcileH breakReconcileHistory(Reconcile reconcile,
-			ReconcileH reconcileH, AlertUnlicensedSw alert, String remoteUser) {
-		reconcileH.setComments(reconcile.getComments());
-		reconcileH.setInstalledSoftware(alert.getInstalledSoftware());
-		reconcileH.setMachineLevel(reconcile.getMachineLevel());
-		reconcileH.setManualBreak(true);
-		reconcileH.setParentInstalledSoftware(reconcile
-				.getParentInstalledSoftware());
-		reconcileH.setReconcileType(reconcile.getReconcileType());
-		reconcileH.setRecordTime(new Date());
-		reconcileH.setRemoteUser(remoteUser);
-		reconcileH.setAllocationMethodology(reconcile
-				.getAllocationMethodology());
-		return getEntityManager().merge(reconcileH);
-	}
-	
-	private ReconcileH breakReconcileHistory(Reconcile reconcile,
 			ReconcileH reconcileH, AlertUnlicensedSw alert, String remoteUser,
 			Set<UsedLicenseHistory> usedLicenseHistorieSet) {
 		reconcileH.setComments(reconcile.getComments());
@@ -615,9 +585,7 @@ public class ReconServiceImpl implements ReconService {
 		reconcileH.setRemoteUser(remoteUser);
 		reconcileH.setAllocationMethodology(reconcile
 				.getAllocationMethodology());
-		if(reconcileH.getUsedLicenses() == null || reconcileH.getUsedLicenses().isEmpty()){
-			reconcileH.setUsedLicenses(usedLicenseHistorieSet);
-		}
+		reconcileH.setUsedLicenses(usedLicenseHistorieSet);
 		return getEntityManager().merge(reconcileH);
 	}
 

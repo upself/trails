@@ -23,8 +23,6 @@ public interface ReconService {
 			String remoteUser, String comments, Account account,
 			Map<License, Integer> pmLicenseApplied, String psMethod, int owner);
 	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
-			Account account, String remoteUser);	
-	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
 			Account account, String remoteUser, Set<UsedLicenseHistory> usedLicHis);
 
 	// AB added2

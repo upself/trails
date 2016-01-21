@@ -704,42 +704,23 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		setAlertsTotal(alertList.size());
 		for (Long alertId : alertList) {
 			AlertUnlicensedSw alert = alertDAO.findById(alertId);
+			   if (alert.isOpen()){
+	            	continue;
+	            }
 			List<Long> alertIds = new ArrayList<Long>();
+			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
 			if (alert.getReconcile().getMachineLevel() == 1) {
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users Start
-				/*
-				 * alertIds.addAll(alertDAO.findMachineLevelAffected(alert
-				 * .getInstalledSoftware().getSoftware().getSoftwareId(),
-				 * alert.getInstalledSoftware().getSoftwareLpar()
-				 * .getHardwareLpar().getHardware().getId()));
-				 */
 				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-						alert,
-						alertDAO.findMachineLevelAffected(alert
-								.getInstalledSoftware().getSoftware()
-								.getSoftwareId(), alert.getInstalledSoftware()
-								.getSoftwareLpar().getHardwareLpar()
-								.getHardware().getId())));
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users End
+						alert, pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
 			} else {
 				alertIds.add(alertId);
 			}
 			for (Long id : alertIds) {
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users Start
-				// reconService.breakReconcileByAlert(id, account, remoteUser);
+
 				AlertUnlicensedSw alertObj = alertDAO.findById(id);
 				reconService.breakReconcileByAlert(id, alertObj
 						.getInstalledSoftware().getSoftwareLpar().getAccount(),
-						remoteUser);
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users End
+						remoteUser, existsUsedLicenseHistorieSet);
 			}
 		}
 		setAlertsProcessed(getAlertsProcessed() + 1);
@@ -769,56 +750,29 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			for (Long alertId : alertList) {
 				AlertUnlicensedSw alert = alertDAO.findById(alertId);
 				alertDAO.refresh(alert);
-				// bug fix for #166. alert may null under multi-threads.
-				if (alert == null || alert.getReconcile() == null) {
+					if (alert == null || alert.getReconcile() == null || alert.isOpen()) {
 					continue;
 				}
 				List<Long> alertIds = new ArrayList<Long>();
+				Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
 				if (alert.getReconcile().getMachineLevel() == 1) {
-					// User Story - 17236 - Manual License Allocation at HW
-					// level can automatically close Alerts on another account
-					// on the same Shared HW as requested by users Start
-					/*
-					 * alertIds.addAll(alertDAO.findMachineLevelAffected(alert
-					 * .getInstalledSoftware().getSoftware() .getSoftwareId(),
-					 * alert.getInstalledSoftware()
-					 * .getSoftwareLpar().getHardwareLpar().getHardware()
-					 * .getId()));
-					 */
 					alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-							alert,
-							alertDAO.findMachineLevelAffected(alert
-									.getInstalledSoftware().getSoftware()
-									.getSoftwareId(), alert
-									.getInstalledSoftware().getSoftwareLpar()
-									.getHardwareLpar().getHardware().getId())));
-					// User Story - 17236 - Manual License Allocation at HW
-					// level can automatically close Alerts on another account
-					// on the same Shared HW as requested by users End
+							alert, pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
 				} else {
 					alertIds.add(alertId);
 				}
 				for (Long id : alertIds) {
 
-					// User Story - 17236 - Manual License Allocation at HW
-					// level can automatically close Alerts on another account
-					// on the same Shared HW as requested by users Start
-					// reconService.breakReconcileByAlert(id, account,
-					// remoteUser);
 					AlertUnlicensedSw alertObj = alertDAO.findById(id);
 					reconService.breakReconcileByAlert(id, alertObj
 							.getInstalledSoftware().getSoftwareLpar()
-							.getAccount(), remoteUser);
-					// User Story - 17236 - Manual License Allocation at HW
-					// level can automatically close Alerts on another account
-					// on the same Shared HW as requested by users End
+							.getAccount(), remoteUser, existsUsedLicenseHistorieSet);
 				}
 			}
 			setAlertsProcessed(getAlertsProcessed() + 1);
 		}
 	}
 
-	@SuppressWarnings({ "null", "unchecked" })
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	public void breakLicenseRecon(Account account, String remoteUser,
 			List<ReconWorkspace> reconWorkspaces, ReconcileType reconcileType) {
@@ -826,78 +780,63 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			AlertUnlicensedSw alert = alertDAO.findById(reconWorkspace
 					.getAlertId());
 			alertDAO.refresh(alert);
-
+            if (alert.isOpen()){
+            	continue;
+            }
 			List<Long> alertIds = new ArrayList<Long>();
 			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-			if (alert.getReconcile().getMachineLevel() == 1) {
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users Start
-				/*
-				 * alertIds.addAll(alertDAO.findMachineLevelAffected(alert
-				 * .getInstalledSoftware().getSoftware() .getSoftwareId(),
-				 * alert.getInstalledSoftware()
-				 * .getSoftwareLpar().getHardwareLpar().getHardware()
-				 * .getId()));
-				 */
-				List<Long> alertIdList = new ArrayList<Long>();
-				Set<UsedLicense> usedLicenses = alert.getReconcile().getUsedLicenses();
-				List<AlertUnlicensedSw> AlertUnlicensedSwList = alertDAO.findMachineLevelAffectedAlerts(alert
-						.getInstalledSoftware().getSoftware()
-						.getSoftwareId(), alert.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar()
-						.getHardware().getId());
-				for (AlertUnlicensedSw affectedAlert : AlertUnlicensedSwList) {					
-					alertIdList.add(affectedAlert.getId());
-					if (affectedAlert.getReconcileH().getUsedLicenses() != null && !affectedAlert.getReconcileH().getUsedLicenses().isEmpty()){
-					Iterator<UsedLicenseHistory> UseLicenseH = null;
-					UseLicenseH = affectedAlert.getReconcileH().getUsedLicenses().iterator();
-					while (UseLicenseH.hasNext()){
-						existsUsedLicenseHistorieSet.add(UseLicenseH.next());
-					}
-					}					
-				}
-				
-				if (existsUsedLicenseHistorieSet == null || existsUsedLicenseHistorieSet.isEmpty()){
-					UsedLicenseHistory ulh = new UsedLicenseHistory();
-					for (UsedLicense ul : usedLicenses) {	
-							ulh.setLicense(ul.getLicense());
-							ulh.setUsedQuantity(ul.getUsedQuantity());
-							ulh.setCapacityType(ul.getCapacityType());
-							getEntityManager().persist(ulh);
-							existsUsedLicenseHistorieSet.add(ulh);
-						}				
-				}
-				
+			if (alert.getReconcile().getMachineLevel() == 1) {					
 				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-						alert,alertIdList));
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users End
+						alert,pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
 			} else {
 				alertIds.add(alert.getId());
 			}
 			setAlertsProcessed(0);
 			setAlertsTotal(alertIds.size());
 			for (Long alertId : alertIds) {
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users Start
-				// reconService.breakReconcileByAlert(alertId, account,
-				// remoteUser);
 				AlertUnlicensedSw alertObj = alertDAO.findById(alertId);
 				reconService.breakReconcileByAlert(alertId, alertObj
 						.getInstalledSoftware().getSoftwareLpar().getAccount(),
 						remoteUser,existsUsedLicenseHistorieSet);
-				// User Story - 17236 - Manual License Allocation at HW level
-				// can automatically close Alerts on another account on the same
-				// Shared HW as requested by users End
-
 				setAlertsProcessed(getAlertsProcessed() + 1);
 			}
 		}
 	}
 	// End break reconcile manual action
+	
+	public List<Long>  pullExistingUsedLicenses(AlertUnlicensedSw alert,Set<UsedLicenseHistory> existsUsedLicenseHistorieSet){
+		List<Long> alertIdList = new ArrayList<Long>();
+		Set<UsedLicense> usedLicenses = alert.getReconcile().getUsedLicenses();
+		List<AlertUnlicensedSw> AlertUnlicensedSwList = alertDAO.findMachineLevelAffectedAlerts(alert
+				.getInstalledSoftware().getSoftware()
+				.getSoftwareId(), alert.getInstalledSoftware()
+				.getSoftwareLpar().getHardwareLpar()
+				.getHardware().getId());
+		for (AlertUnlicensedSw affectedAlert : AlertUnlicensedSwList) {					
+			alertIdList.add(affectedAlert.getId());
+			if (affectedAlert.getReconcileH().getUsedLicenses() != null && !affectedAlert.getReconcileH().getUsedLicenses().isEmpty()){
+			Iterator<UsedLicenseHistory> UseLicenseH = null;
+			UseLicenseH = affectedAlert.getReconcileH().getUsedLicenses().iterator();
+			while (UseLicenseH.hasNext()){
+				existsUsedLicenseHistorieSet.add(UseLicenseH.next());
+			}
+			}					
+		}
+		
+		if (existsUsedLicenseHistorieSet == null || existsUsedLicenseHistorieSet.isEmpty()){
+			UsedLicenseHistory ulh = new UsedLicenseHistory();
+			for (UsedLicense ul : usedLicenses) {	
+					ulh.setLicense(ul.getLicense());
+					ulh.setUsedQuantity(ul.getUsedQuantity());
+					ulh.setCapacityType(ul.getCapacityType());
+					getEntityManager().persist(ulh);
+					existsUsedLicenseHistorieSet.add(ulh);
+				}				
+		}
+		
+		return alertIdList;
+
+	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public Long total(Account account, ReconSetting reconSetting) {
