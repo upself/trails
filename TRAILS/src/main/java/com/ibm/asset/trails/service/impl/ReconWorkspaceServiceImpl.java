@@ -34,6 +34,7 @@ import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconSetting;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.Reconcile;
+import com.ibm.asset.trails.domain.ReconcileH;
 import com.ibm.asset.trails.domain.ReconcileType;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
@@ -704,17 +705,13 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		setAlertsTotal(alertList.size());
 		for (Long alertId : alertList) {
 			AlertUnlicensedSw alert = alertDAO.findById(alertId);
+			alertDAO.refresh(alert);
 			   if (alert.isOpen()){
 	            	continue;
 	            }
 			List<Long> alertIds = new ArrayList<Long>();
 			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-			if (alert.getReconcile().getMachineLevel() == 1) {
-				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-						alert, pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
-			} else {
-				alertIds.add(alertId);
-			}
+			assembleAlertIdUsedLicHset(alertIds, alert, existsUsedLicenseHistorieSet);
 			for (Long id : alertIds) {
 
 				AlertUnlicensedSw alertObj = alertDAO.findById(id);
@@ -755,12 +752,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				}
 				List<Long> alertIds = new ArrayList<Long>();
 				Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-				if (alert.getReconcile().getMachineLevel() == 1) {
-					alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-							alert, pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
-				} else {
-					alertIds.add(alertId);
-				}
+				assembleAlertIdUsedLicHset(alertIds, alert, existsUsedLicenseHistorieSet);
 				for (Long id : alertIds) {
 
 					AlertUnlicensedSw alertObj = alertDAO.findById(id);
@@ -785,12 +777,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
             }
 			List<Long> alertIds = new ArrayList<Long>();
 			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
-			if (alert.getReconcile().getMachineLevel() == 1) {					
-				alertIds.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
-						alert,pullExistingUsedLicenses(alert,existsUsedLicenseHistorieSet)));
-			} else {
-				alertIds.add(alert.getId());
-			}
+			assembleAlertIdUsedLicHset(alertIds, alert, existsUsedLicenseHistorieSet);
 			setAlertsProcessed(0);
 			setAlertsTotal(alertIds.size());
 			for (Long alertId : alertIds) {
@@ -804,16 +791,28 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	}
 	// End break reconcile manual action
 	
-	public List<Long>  pullExistingUsedLicenses(AlertUnlicensedSw alert,Set<UsedLicenseHistory> existsUsedLicenseHistorieSet){
-		List<Long> alertIdList = new ArrayList<Long>();
-		Set<UsedLicense> usedLicenses = alert.getReconcile().getUsedLicenses();
-		List<AlertUnlicensedSw> AlertUnlicensedSwList = alertDAO.findMachineLevelAffectedAlerts(alert
+	public void  assembleAlertIdUsedLicHset(List<Long> alertIdList, AlertUnlicensedSw alert,Set<UsedLicenseHistory> existsUsedLicenseHistorieSet){
+		Set<UsedLicense> usedLicenses =  new HashSet<UsedLicense>();
+		if (alert.getReconcile().getUsedLicenses() != null && !alert.getReconcile().getUsedLicenses().isEmpty()){
+		usedLicenses = alert.getReconcile().getUsedLicenses();
+		}
+		List<AlertUnlicensedSw> AlertUnlicensedSwList = new ArrayList<AlertUnlicensedSw>();
+		if (alert.getReconcile().getMachineLevel() == 1) {	
+		 AlertUnlicensedSwList = alertDAO.findMachineLevelAffectedAlerts(alert
 				.getInstalledSoftware().getSoftware()
 				.getSoftwareId(), alert.getInstalledSoftware()
 				.getSoftwareLpar().getHardwareLpar()
 				.getHardware().getId());
-		for (AlertUnlicensedSw affectedAlert : AlertUnlicensedSwList) {					
-			alertIdList.add(affectedAlert.getId());
+		 alertIdList.addAll(filterTargetAffectedBreakAlertList4MachineLevel(
+					alert,AlertUnlicensedSwList));
+		} else {
+		 AlertUnlicensedSwList.add(alertDAO.findById(alert.getId()));
+		 alertIdList.add(alert.getId());
+		}
+		for (AlertUnlicensedSw affectedAlert : AlertUnlicensedSwList) {		
+			if (affectedAlert.getReconcileH() == null) {
+				affectedAlert.setReconcileH(new ReconcileH());
+			}
 			if (affectedAlert.getReconcileH().getUsedLicenses() != null && !affectedAlert.getReconcileH().getUsedLicenses().isEmpty()){
 			Iterator<UsedLicenseHistory> UseLicenseH = null;
 			UseLicenseH = affectedAlert.getReconcileH().getUsedLicenses().iterator();
@@ -823,18 +822,16 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			}					
 		}
 		
-		if (existsUsedLicenseHistorieSet == null || existsUsedLicenseHistorieSet.isEmpty()){
+		if ((existsUsedLicenseHistorieSet == null || existsUsedLicenseHistorieSet.isEmpty())&&(usedLicenses != null && !usedLicenses.isEmpty())){
 			UsedLicenseHistory ulh = new UsedLicenseHistory();
 			for (UsedLicense ul : usedLicenses) {	
 					ulh.setLicense(ul.getLicense());
 					ulh.setUsedQuantity(ul.getUsedQuantity());
 					ulh.setCapacityType(ul.getCapacityType());
-					getEntityManager().persist(ulh);
+					//getEntityManager().persist(ulh);
 					existsUsedLicenseHistorieSet.add(ulh);
 				}				
 		}
-		
-		return alertIdList;
 
 	}
 	
@@ -1011,21 +1008,19 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	// requested by users Start
 	private List<Long> filterTargetAffectedBreakAlertList4MachineLevel(
 			AlertUnlicensedSw workingAlert,
-			List<Long> affectedAlertList4MachineLevel) {
+			List<AlertUnlicensedSw> affectedAlertList4MachineLevel) {
 		List<Long> targetAffectedBreakAlertList4MachineLevel = new ArrayList<Long>();
 		if (workingAlert != null && affectedAlertList4MachineLevel != null) {
 			int workingAlertAccountId = workingAlert.getInstalledSoftware()
 					.getSoftwareLpar().getAccount().getId().intValue();
-			for (Long affectedAlertId : affectedAlertList4MachineLevel) {
-				AlertUnlicensedSw affectedAlertObj = alertDAO
-						.findById(affectedAlertId);
+			for (AlertUnlicensedSw affectedAlertObj : affectedAlertList4MachineLevel) {
 				int affectedAlertAccountId = affectedAlertObj
 						.getInstalledSoftware().getSoftwareLpar().getAccount()
 						.getId().intValue();
 				if (workingAlertAccountId == affectedAlertAccountId) {// Same
 																		// Acccount
 					targetAffectedBreakAlertList4MachineLevel
-							.add(affectedAlertId);
+							.add(affectedAlertObj.getId());
 				} else {// Cross Account
 					ScheduleF scheduleF4WorkingAlert = getScheduleFItem(
 							workingAlert.getInstalledSoftware()
@@ -1100,7 +1095,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 															// 'HWBOX','HWOWNER','PRODUCT')
 						) {
 							targetAffectedBreakAlertList4MachineLevel
-									.add(affectedAlertId);
+									.add(affectedAlertObj.getId());
 						}
 					}
 				}
