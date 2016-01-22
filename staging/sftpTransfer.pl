@@ -15,10 +15,11 @@ use File::stat;
 #### CONSTANTS TO CHANGE FOR USING IN A NEW TEAM
 use lib '/opt/staging/v2';
 use Base::Utils;
-our $useftp = ( hostname eq "tap.raleigh.ibm.com" ||  hostname eq "b03cxnp15029" ) ? "0" : "1"; # whether we can use the SFTP module
+our $useftp = 0; # whether we can use the SFTP module
 our $logfile    = "/var/staging/logs/sftpTransfer/sftpTransfer.log";
 our $connectionConfig = "/opt/staging/v2/config/connectionConfig.txt"; # from this file, passwords are taken - so they're not stored on multiple places
 our $tempdir = "/var/ftp/";
+our $attrs = undef;
 
 logging_level( "error" ); # detailed level of the logfile
 ###################################################
@@ -26,6 +27,10 @@ logging_level( "error" ); # detailed level of the logfile
 if ($useftp eq "1") { # stupid crappy TAP server doesn't have Perl SFTP modules and can't install them
     require Net::SFTP;
     Net::SFTP -> import if Net::SFTP -> can ("import");
+    require Net::SFTP::Attributes;
+    
+    $attrs = new Net::STFP::Attributes;
+    $attrs->perm ( 0666 );
 }
 
 # global variables
@@ -44,7 +49,7 @@ our $srcpwd; # source FTP password
 our $tgtusr; # target FTP user
 our $tgtpwd; # target FTP password
 
-our $flagispresent; # flag is present
+our $flagispresent; # flagfile is present in the source directory
 
 our %processednames; # hash of all the processed FTP sessions
 
@@ -277,10 +282,12 @@ sub getfile { # transfers the file from source to $tempdir, returns 0 on success
 	dlog "getting $srcdir/$srcfile";
 	
 	if ( defined $ftphandle ) {
+		$ftphandle->do_setstat($srcdir."/".$srcfile, $attrs);
 		$ftphandle->get($srcdir."/".$srcfile, $tempdir.$srcfile);
 		return ( $ftphandle->status != 0 );
 	}
 	
+	chmod 0666, $srcdir."/".$srcfile;
 	my $ret=copy($srcdir."/".$srcfile, $tempdir.$srcfile );
 	return 0 if ( $ret == 1 );
 	return 1;
