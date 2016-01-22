@@ -293,12 +293,12 @@ sub queryScheduleFSearch {
 	);
 	
 	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, s.manufacturer_id
-	from ( ( ( ( ( eaadmin.installed_software is
-				   join eaadmin.software_lpar sl on sl.id = is.software_lpar_id )
-                   join eaadmin.hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
-                   join eaadmin.hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
-                   join eaadmin.hardware h on h.id = hl.hardware_id )
-                   join eaadmin.software s on s.software_id = is.software_id )
+	from ( ( ( ( ( installed_software is
+				   join software_lpar sl on sl.id = is.software_lpar_id )
+                   join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
+                   join hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
+                   join hardware h on h.id = hl.hardware_id )
+                   join software s on s.software_id = is.software_id )
                    where is.id = ?
      with ur';
      
