@@ -130,7 +130,7 @@
 			<td><bean:write name="customer" property="pod.podName" /></td>
 			<td><bean:write name="customer" property="industry.industryName" /></td>
 			<td><bean:write name="customer"
-				property="industry.sector.sectorName" /></td>
+				property="sector.sectorName" /></td>
 			<td><bean:write name="customer" property="accountNumber" /></td>
 			</tr>
 		</logic:iterate>

@@ -15,6 +15,8 @@ public class Customer extends OrmBase {
     private static final long serialVersionUID = -2203998705895347981L;
 
     private Long customerId;
+    
+    private Sector sector;
 
 	private Pod pod;
 
@@ -58,6 +60,14 @@ public class Customer extends OrmBase {
 
 	public void setScanValidity(Integer scanValidity) {
 		this.scanValidity = scanValidity;
+	}
+	
+	public Sector getSector() {
+		return sector;
+	}
+
+	public void setSector(Sector sector) {
+		this.sector = sector;
 	}
 
 	/**

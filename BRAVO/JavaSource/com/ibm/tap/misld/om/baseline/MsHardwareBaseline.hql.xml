@@ -32,7 +32,7 @@
 		join fetch m.customer
 		join fetch m.customer.pod
 		join fetch m.customer.industry
-		join fetch m.customer.industry.sector
+		join fetch m.customer.sector
 		join fetch m.customer.customerType
 		left join fetch m.customer.misldAccountSettings
 		left join fetch m.customer.misldAccountSettings.licenseAgreementType
@@ -58,7 +58,7 @@
 		<![CDATA[
 		
 		select m.customer.pod.podName, m.customer.industry.industryName,
-		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.sector.sectorName,m.customer.customerType.customerTypeName,
 		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
 		m.machineType, m.machineModel, m.country, m.status
 		
@@ -69,7 +69,7 @@
 		
 		group by 
 		m.customer.pod.podName, m.customer.industry.industryName,
-		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.sector.sectorName,m.customer.customerType.customerTypeName,
 		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
 		m.machineType, m.machineModel, m.country, m.status
 		
@@ -82,7 +82,7 @@
 		<![CDATA[
 		
 		select m.customer.pod.podName, m.customer.industry.industryName,
-		m.customer.industry.sector.sectorName,m.customer.customerType.customerTypeName,
+		m.customer.sector.sectorName,m.customer.customerType.customerTypeName,
 		m.customer.accountNumber, m.customer.customerName, m.nodeName, m.serialNumber,
 		m.machineType, m.machineModel, m.country, m.status
 		

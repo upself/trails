@@ -10,6 +10,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Account.class)
 public class Account_ {
 	public static volatile SingularAttribute<Account, Long> id;
+	public static volatile SingularAttribute<Account, Sector> sector;
 	public static volatile SingularAttribute<Account, String> name;
 	public static volatile SingularAttribute<Account, Long> account;
 	public static volatile SingularAttribute<Account, String> status;

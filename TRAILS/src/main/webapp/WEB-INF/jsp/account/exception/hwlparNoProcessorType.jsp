@@ -1,139 +1,237 @@
-<%@ taglib prefix="s" uri="/struts-tags"%>
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-
-<h1>HW LPAR NO PROCESSOR TYPE:<s:property
-	value="account.name" />(<s:property value="account.account" />)</h1>
-<p class="confidential">IBM Confidential</p>
-<p>This page displays data exceptions for hardware  Lpar without Processor Type.</p>
-<br />
-<s:if test="%{data.list.size>0}">
-	<p>To assign/unassign a data exception simply click on the link in
-	the Action column, add your required comment in the box that displays
-	and click OK. The action link will switch between "assign" and
-	"unassign".</p>
-	<p>To assign/unassign all data exceptions displayed , click the
-	appropriate button, add your required comment in the box that displays
-	and click OK. All data exceptions will be switched based on the button
-	you select.</p>
-	<br />
-
-	<div class="hrule-dots"></div>
-	<br />
-	<div class="float-left" style="width: 100%;"><s:if
-		test="hasErrors()">
-		<s:actionerror theme="simple" />
-		<s:fielderror theme="simple" />
-	</s:if></div>
-
-	<s:form action="lparNPRCTYP" method="post" theme="simple">
-		<s:hidden name="page" value="%{#attr.page}" />
-		<s:hidden name="dir" value="%{#attr.dir}" />
-		<s:hidden name="sort" value="%{#attr.sort}" />
-
-
-		<div class="clear"></div>
-		<div class="button-bar">
-		<div class="buttons"><span class="button-blue"> <input
-			type="button" value="Assign all"
-			onclick="javascript:showDx('exceptionHwlparAssignAll.htm')" />
-
-		<input type="button" value="Unassign all"
-			onclick="javascript:showDx('exceptionHwlparUnassignAll.htm')" />
-		</span></div>
-		<br />
-		</div>
-
-		<display:table name="data" class="basic-table" id="row"
-			summary="Hardware Lpar  No Processor Type"
-			decorator="org.displaytag.decorator.TotalTableDecorator"
-			cellspacing="2" cellpadding="0" requestURI="lparNPRCTYP.htm">
-			<display:column title="Action<br>to be taken:">
-				<s:div id="id_assignment_action_%{#attr.row.id}">
-					<s:if test="%{#attr.row.assignee==userSession.remoteUser}">
-						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
-						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="true" id="lpar_list_beenAssigned_%{#attr.row.id}" />
-						<s:url id="unassign"
-							value="javascript:showDl('exceptionHwlparUnassign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
-							includeContext="false" includeParams="none" />
-						<s:a id="unassign_%{#attr.row.id}" href="%{unassign}">unassign</s:a>
-					</s:if>
-					<s:else>
-						<s:hidden name="list[%{#attr.row_rowNum-1}].id"
-							value="%{#attr.row.Id}" id="lpar_list_id_%{#attr.row.id}" />
-						<s:hidden name="list[%{#attr.row_rowNum-1}].beenAssigned"
-							value="false" id="lpar_list_beenAssigned_%{#attr.row.id}" />
-						<s:url id="assign"
-							value="javascript:showDl('exceptionHwlparAssign.htm',%{#attr.row.id},%{#attr.row_rowNum-1})"
-							includeContext="false" includeParams="none" />
-						<s:a id="assign_%{#attr.row.id}" href="%{assign}">assign</s:a>
-					</s:else>
-				</s:div>
-			</display:column>
-			<display:column sortProperty="hardwareLpar.name" title="Name"
-				sortable="true">
-				<s:url id="bravoUrl"
-					value="javascript:popupBravoHl(%{#attr.row.hardwareLpar.account.account},'%{#attr.row.hardwareLpar.name}',%{#attr.row.hardwareLpar.id})"
-					includeContext="false" includeParams="none" />
-				<s:a id="hardwareLpar_%{#attr.row.hardwareLpar.id}" href="%{bravoUrl}">${row.hardwareLpar.name}</s:a>
-			</display:column>
-			<display:column property="hardwareLpar.hardware.serial" title="Serial"
-				sortable="true" class="date" format="{0,date,MM-dd-yyyy}" />
-			<display:column property="creationTime" title="Creation Time"
-				sortable="true" class="date" format="{0,date,MM-dd-yyyy}" />
-            <display:column property="hardwareLpar.hardware.processorCount" title="HW Processors"
-				sortable="true" />
-			<display:column property="hardwareLpar.hardware.chips" title="HW Chips"
-				sortable="true" />
-			<display:column property="hardwareLpar.extId" title="HW EXT ID"
-				sortable="true" />
-			<display:column title="Assignee" sortable="true"
-				sortProperty="assignee">
-				<s:div id="id_assignment_assignee_%{#attr.row.id}">
-					<s:property value="%{#attr.row.assignee}" />
-				</s:div>
-			</display:column>
-			<display:column title="Comments">
-				<s:url id="commentsUrl"
-					value="javascript:displayPopUp('exceptionHwlparHistory.htm?alertId=%{#attr.row.id}')"
-					includeContext="false" includeParams="none" />
-				<s:a id="view_%{#attr.row.id}" href="%{commentsUrl}">View</s:a>
-			</display:column>
-
-		</display:table>
-
-	</s:form>
-
-	<div id="popupDl" class="hideDlg" style="">
-	<table width="100%" style="height: 100%; width: 100%;" id="table1">
-		<s:form theme="simple">
-			<tr>
-				<td height="10"></td>
-				<td></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><label for="comments">Comments:</label></td>
-				<td><textarea name="comments" cols="32" rows="4"
-					id="id_comments"></textarea></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><input type="hidden" name="url" value="" id="id_url" /> <input
-					type="hidden" name="alertId" value="" id="id_alert_id" /><input
-					type="hidden" name="rowNumber" value="" id=id_row_number /></td>
-				<td><input type="button" value="  OK   " id="submit_button"
-					size="10" /> <input type="button" value="Cancel"
-					id="cancel_button" size="10" onclick="hideDl();" /></td>
-				<td></td>
-			</tr>
-		</s:form>
-	</table>
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<!-- Search form -->
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+	<h6>IBM Confidential</h6>
+	<p>This page displays data exceptions for hardware Lpar without Processor Type.</p>
+	<p>You can do assign/unassign/assign all/unassign all operations with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	</div>
-</s:if>
-<s:else>
-	<p>No records found. <a
-		href="${pageContext.request.contextPath}/account/exceptions/home.htm">back</a>
-	</p>
-</s:else>
+	<div class="ibm-col-1-1">
+		<div class="ibm-rule">
+			<hr />
+		</div>
+		<form onsubmit="return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post">
+			<p>
+				<label for="commons">
+					Comments:<span class="ibm-required">*</span>
+				</label> 
+                <span>
+					<textarea id="comments" cols="38" rows="7" name="message"></textarea>
+				</span>
+			</p>
+			
+			<div class="ibm-columns">
+				<div class="ibm-col-1-1" style="text-align:right">
+					<input type="submit" value="Assign/Update" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(0)" />
+					<input type="submit" value="Unassign" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(0)" />
+					<input type="submit" value="Assign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="assignComments(1)" />
+					<input type="submit" value="Unassign All" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="unassignComments(1)" />
+				</div>
+			</div>
+		</form>
+		<div class="ibm-rule">
+			<hr />
+		</div>
+		
+		<div class="ibm-columns">
+			<div class="ibm-col-1-1" style="text-align:right">
+				<input type="submit" value="Select all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(true)" />
+				<input type="submit" value="Unselect all" name="ibm-cancel" class="ibm-btn-cancel-pri ibm-btn-small" onclick="toggleSelects(false)" />
+			</div>
+		</div>
+	</div>
+	
+	<div class="ibm-col-1-1">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="HW LPAR NO PROCESSOR TYPE">
+			<thead>
+				<tr>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Creation Time</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>HW Processors</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>HW Chips</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>HW EXT ID</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assignee</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Comments</span><span class="ibm-icon"></span></a></th>
+				</tr>
+			</thead>
+			<tbody id="tb">
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+$(function(){
+	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
+	searchData();
+});
+
+function searchData(){
+	var params = {};
+	params['accountId'] = '${accountId}';
+	params['sort'] = 'hardwareLpar.name';
+	params['dir'] = 'asc';
+	
+	$("#page").paginationTable('destroy').paginationTable({
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/exceptions/NPRCTYP/search",
+			type: "POST",
+			params: params,
+			success: function(result, pageIndex){
+				var html = '';
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='9' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
+						html += "<tr>";
+						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoHL("+list[i].hwLparAccountNumber + ",\""+ list[i].hwLparName + "\","+list[i].hwLparId + ");return false;'>"+list[i].hwLparName+"</a></td>";
+						html += "<td>" + list[i].hwSerial + "</td>";
+						html += "<td>" + list[i].dataExpCreationTime + "</td>";
+						html += "<td>" + list[i].hwProcessors + "</td>";
+						html += "<td>" + list[i].hwChips + "</td>";
+						html += "<td>" + list[i].hwLparExtId + "</td>";
+						html += "<td>" + list[i].dataExpAssignee + "</td>";
+						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionHwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
+						html += "</tr>";
+					}
+				}
+				$("#tb").html(html);
+			}
+		},
+		orderColumns: ['id','hardwareLpar.name','hardwareLpar.hardware.serial','creationTime','hardwareLpar.hardware.processorCount','hardwareLpar.hardware.chips','hardwareLpar.extId','assignee','id']
+	}); 
+};
+function assignComments(type){
+	
+	var comments = $('#comments').val();
+	var url = '${pageContext.request.contextPath}/ws/exceptions/NPRCTYP/';
+	var params = {};
+	
+	//validate comments
+	if(comments.trim() == ''){
+		alert('Please input comments.');
+		return;
+	}
+	
+	if(comments.trim().length > 255){
+		alert('Comments must be less than 255 characters');
+		return;
+	}
+	
+	if(type == 1){
+		//assign all
+		url +=  'assignAll';
+		params['comments'] = comments;
+		params['accountId'] = '${accountId}';
+	}
+	
+	if(type == 0){
+		//not assign all
+		url += 'assign'
+		if($('#tb input:checked').length <= 0){
+			alert('Please select at least one column of data to assign comments ');
+			return;
+		}else{
+			var assignIds = '';
+			$('#tb input:checked').each(function(){
+				assignIds += $(this).val() + ',';
+			});
+			assignIds = assignIds.substring(0,assignIds.length - 1);
+			
+			params['comments'] = comments;
+			params['assignIds'] = assignIds;
+		}
+	}
+	
+	assignOrNot(url,params);
+}
+
+function unassignComments(type){
+	
+	var comments = $('#comments').val();
+	var url = '${pageContext.request.contextPath}/ws/exceptions/NPRCTYP/';
+	var params = {};
+	
+	//validate comments
+	if(comments.trim() == ''){
+		alert('Please input comments.');
+		return;
+	}
+	
+	if(comments.trim().length > 255){
+		alert('Comments must be less than 255 characters');
+		return;
+	}
+	
+	if(type == 1){
+		//assign all
+		url +=  'unassignAll';
+		params['comments'] = comments;
+		params['accountId'] = '${accountId}';
+	}
+	
+	if(type == 0){
+		//not assign all
+		url += 'unassign'
+		if($('#tb input:checked').length <= 0){
+			alert('Please select at least one column of data to unassign comments ');
+			return;
+		}else{
+			var unassignIds = '';
+			$('#tb input:checked').each(function(){
+				unassignIds += $(this).val() + ',';
+			});
+			unassignIds = unassignIds.substring(0,unassignIds.length - 1);
+
+			params['comments'] = comments;
+			params['unassignIds'] = unassignIds;
+		}
+	}
+	
+	assignOrNot(url,params);
+}
+
+function assignOrNot(url,params){
+	$.ajax({
+		url: url,
+		data: params,
+		type: 'POST',
+		dataType: 'json',
+		beforeSend:function(){
+			$("#page").paginationTable('showLoading');
+		},
+		success: function(wsMsg){
+			if(wsMsg.status != '200'){
+				alert(wsMsg.msg);
+			}
+			$('#comments').val('');
+		},
+		error: function(response,status,error){
+			alert(error);
+		},
+		complete: function(){
+			searchData();
+		}
+	});
+}
+
+function popupBravoHL(accountId,lparName,hwId) {
+	  newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&hwId=' + hwId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+	  newWin.focus(); 
+	  void(0);
+	}
+
+function displayPopUp(page) {
+	
+	window.open(page, 'PopUpWindow', 'left=200,top=180,resizable=yes,scrollbars=yes,width=840,height=500');
+}
+
+function toggleSelects(type){
+	$("#tb input[type='checkbox']").prop("checked", type); 
+}
+</script>

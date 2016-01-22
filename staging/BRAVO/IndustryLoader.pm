@@ -155,7 +155,6 @@ sub doDelta {
         my $industry = new BRAVO::OM::Industry();
         $industry->id( $rec{id} );
         $industry->industryId( $rec{id} );
-        $industry->sectorId( $rec{sectorId} );
         $industry->name( $rec{name} );
         $industry->creationDateTime( $rec{creationDateTime} );
         $industry->updateDateTime( $rec{updateDateTime} );

@@ -129,7 +129,7 @@
 			<td><bean:write name="customer" property="pod.podName" /></td>
 			<td><bean:write name="customer" property="industry.industryName" /></td>
 			<td><bean:write name="customer"
-				property="industry.sector.sectorName" /></td>
+				property="sector.sectorName" /></td>
 			<td><bean:write name="customer" property="accountNumber" /></td>
 			<td><html:link action="/PriceReport" paramId="customer"
 				paramName="customer" paramProperty="customerId">View</html:link> - <html:link

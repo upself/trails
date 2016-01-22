@@ -6,7 +6,6 @@ use Carp qw( croak );
 use Recon::Lpar;
 use Recon::AlertSoftwareLpar;
 use Recon::AlertExpiredScan;
-use Recon::AlertZeroProcessorCount;
 use Recon::AlertInvalidScanTime;
 use Recon::AlertNoOperatingSystem;
 use Recon::AlertNoInstalledSoftware;
@@ -127,11 +126,6 @@ sub alertLogic {
 		$alert =
 		  Recon::AlertExpiredScan->new( $self->connection, $self->softwareLpar,
 			$isValidScantime );
-		$alert->recon;
-
-		$alert =
-		  Recon::AlertZeroProcessorCount->new( $self->connection,
-			$self->softwareLpar );
 		$alert->recon;
 
 		$alert =

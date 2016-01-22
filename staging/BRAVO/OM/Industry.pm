@@ -8,7 +8,6 @@ sub new {
     my $self = {
         _id => undef
         ,_industryId => undef
-        ,_sectorId => undef
         ,_name => undef
         ,_creationDateTime => undef
         ,_updateDateTime => undef
@@ -29,13 +28,6 @@ sub equals {
         $equal = 1 if $self->industryId eq $object->industryId;
     }
     $equal = 1 if (!defined $self->industryId && !defined $object->industryId);
-    return 0 if $equal == 0;
-
-    $equal = 0;
-    if (defined $self->sectorId && defined $object->sectorId) {
-        $equal = 1 if $self->sectorId eq $object->sectorId;
-    }
-    $equal = 1 if (!defined $self->sectorId && !defined $object->sectorId);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -72,12 +64,6 @@ sub industryId {
     my $self = shift;
     $self->{_industryId} = shift if scalar @_ == 1;
     return $self->{_industryId};
-}
-
-sub sectorId {
-    my $self = shift;
-    $self->{_sectorId} = shift if scalar @_ == 1;
-    return $self->{_sectorId};
 }
 
 sub name {
@@ -129,11 +115,6 @@ sub toString {
         $s .= $self->{_industryId};
     }
     $s .= ",";
-    $s .= "sectorId=";
-    if (defined $self->{_sectorId}) {
-        $s .= $self->{_sectorId};
-    }
-    $s .= ",";
     $s .= "name=";
     if (defined $self->{_name}) {
         $s .= $self->{_name};
@@ -178,7 +159,6 @@ sub save {
         $sth->bind_columns(\$id);
         $sth->execute(
             $self->industryId
-            ,$self->sectorId
             ,$self->name
             ,$self->creationDateTime
             ,$self->updateDateTime
@@ -192,7 +172,6 @@ sub save {
         my $sth = $connection->sql->{updateIndustry};
         $sth->execute(
             $self->industryId
-            ,$self->sectorId
             ,$self->name
             ,$self->creationDateTime
             ,$self->updateDateTime
@@ -210,13 +189,11 @@ sub queryInsert {
             final table (
         insert into industry (
             industry_id
-            ,sector_id
             ,industry_name
             ,creation_date_time
             ,update_date_time
         ) values (
             ?
-            ,?
             ,?
             ,?
             ,?
@@ -230,7 +207,6 @@ sub queryUpdate {
         update industry
         set
             industry_id = ?
-            ,sector_id = ?
             ,industry_name = ?
             ,creation_date_time = ?
             ,update_date_time = ?
@@ -267,13 +243,11 @@ sub getByBizKey {
     $connection->prepareSqlQuery($self->queryGetByBizKey());
     my $sth = $connection->sql->{getByBizKeyIndustry};
     my $id;
-    my $sectorId;
     my $name;
     my $creationDateTime;
     my $updateDateTime;
     $sth->bind_columns(
         \$id
-        ,\$sectorId
         ,\$name
         ,\$creationDateTime
         ,\$updateDateTime
@@ -284,7 +258,6 @@ sub getByBizKey {
     $sth->fetchrow_arrayref;
     $sth->finish;
     $self->id($id);
-    $self->sectorId($sectorId);
     $self->name($name);
     $self->creationDateTime($creationDateTime);
     $self->updateDateTime($updateDateTime);
@@ -294,7 +267,6 @@ sub queryGetByBizKey {
     my $query = '
         select
             industry_id
-            ,sector_id
             ,industry_name
             ,creation_date_time
             ,update_date_time
@@ -311,13 +283,11 @@ sub getById {
     $connection->prepareSqlQuery($self->queryGetById());
     my $sth = $connection->sql->{getByIdKeyIndustry};
     my $industryId;
-    my $sectorId;
     my $name;
     my $creationDateTime;
     my $updateDateTime;
     $sth->bind_columns(
         \$industryId
-        ,\$sectorId
         ,\$name
         ,\$creationDateTime
         ,\$updateDateTime
@@ -328,7 +298,6 @@ sub getById {
     my $found = $sth->fetchrow_arrayref;
     $sth->finish;
     $self->industryId($industryId);
-    $self->sectorId($sectorId);
     $self->name($name);
     $self->creationDateTime($creationDateTime);
     $self->updateDateTime($updateDateTime);
@@ -339,7 +308,6 @@ sub queryGetById {
     my $query = '
         select
             industry_id
-            ,sector_id
             ,industry_name
             ,creation_date_time
             ,update_date_time

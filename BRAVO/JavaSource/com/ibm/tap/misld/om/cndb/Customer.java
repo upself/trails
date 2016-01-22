@@ -15,6 +15,7 @@ import com.ibm.ea.cndb.CountryCode;
 import com.ibm.ea.cndb.CustomerType;
 import com.ibm.ea.cndb.Industry;
 import com.ibm.ea.cndb.Pod;
+import com.ibm.ea.cndb.Sector;
 import com.ibm.tap.misld.om.customerSettings.MisldAccountSettings;
 import com.ibm.tap.misld.om.customerSettings.MisldRegistration;
 import com.ibm.tap.misld.om.notification.Notification;
@@ -32,6 +33,8 @@ public class Customer extends ValidatorActionForm implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private Sector sector;
+	
 	private Long customerId;
 
 	private CustomerType customerType;
@@ -347,5 +350,13 @@ public class Customer extends ValidatorActionForm implements Serializable {
 	 */
 	public Notification getScanNotification() {
 		return scanNotification;
+	}
+
+	public Sector getSector() {
+		return sector;
+	}
+
+	public void setSector(Sector sector) {
+		this.sector = sector;
 	}
 }

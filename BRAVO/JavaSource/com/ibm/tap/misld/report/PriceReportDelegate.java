@@ -98,7 +98,7 @@ public class PriceReportDelegate extends Delegate {
 				.getCustomerTypeName());
 		priceReport.setIndustry(customer.getIndustry().getIndustryName());
 		priceReport.setPod(customer.getPod().getPodName());
-		priceReport.setSector(customer.getIndustry().getSector()
+		priceReport.setSector(customer.getSector()
 				.getSectorName());
 		priceReport.setPodId("" + customer.getPod().getPodId());
 		if (customer.getMisldAccountSettings().getDefaultLpid() != null) {
@@ -1682,7 +1682,7 @@ public class PriceReportDelegate extends Delegate {
 				.getCustomerTypeName());
 		priceReport.setIndustry(customer.getIndustry().getIndustryName());
 		priceReport.setPod(customer.getPod().getPodName());
-		priceReport.setSector(customer.getIndustry().getSector()
+		priceReport.setSector(customer.getSector()
 				.getSectorName());
 		priceReport.setPodId("" + customer.getPod().getPodId());
 		if (customer.getMisldAccountSettings().getDefaultLpid() != null) {
@@ -1825,7 +1825,7 @@ public class PriceReportDelegate extends Delegate {
 				.getCustomerTypeName());
 		priceReport.setIndustry(customer.getIndustry().getIndustryName());
 		priceReport.setPod(customer.getPod().getPodName());
-		priceReport.setSector(customer.getIndustry().getSector()
+		priceReport.setSector(customer.getSector()
 				.getSectorName());
 		priceReport.setPodId("" + customer.getPod().getPodId());
 		if (customer.getMisldAccountSettings().getDefaultLpid() != null) {

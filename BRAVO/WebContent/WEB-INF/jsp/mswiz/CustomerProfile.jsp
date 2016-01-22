@@ -115,7 +115,7 @@
 	<tr class="gray" style="font-size:8pt">
 		<td>Sector</td>
 		<td><bean:write name="user.container"
-			property="customer.industry.sector.sectorName" /></td>
+			property="customer.sector.sectorName" /></td>
 	</tr>
 	<tr class="gray" style="font-size:8pt">
 		<td>Account Id</td>
