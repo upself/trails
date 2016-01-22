@@ -658,7 +658,7 @@ public class ReconServiceImpl implements ReconService {
 
 		// Story 26012
 		int alertWithoutScheduleFcounter = 0;
-		boolean hasInvalidAlert = false;
+		int hasInvalidAlertcount = 0;
 		for (AlertUnlicensedSw affectedAlert : affectedAlertList) {
 			boolean bReconcileValidation = reconcileValidate(affectedAlert,
 					pRecon, totalUsedLicenses);
@@ -692,7 +692,7 @@ public class ReconServiceImpl implements ReconService {
 					|| (crossAccountAlertFlag == true && validateScheduleF4WorkingAlertAndCrossAccountAlertFlag == true)) {
 
 				if (!bReconcileValidation) {
-					hasInvalidAlert = true;
+					hasInvalidAlertcount++;
 					continue;
 				}
 				if (affectedAlert.isOpen()) {
@@ -737,7 +737,7 @@ public class ReconServiceImpl implements ReconService {
 			}
 		}// end of for
 		
-		if (hasInvalidAlert && affectedAlertList.size() <=1){
+		if (hasInvalidAlertcount == affectedAlertList.size()){
 			clearUsedLicenses(usedLicenseSet, usedLicenseHistorieSet,
 					remoteUser);
 		}
