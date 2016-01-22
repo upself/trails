@@ -64,7 +64,9 @@
 	<property name="updateDateTime" type="scalar" sql-name="update_date_time"
 		equals="true" />
 	<property name="tmeObjectId" type="scalar" sql-name="tme_object_id"
-		equals="true" />		
+		equals="true" />
+	<property name="sectorId" type="scalar" equals="true"
+		sql-name="sector_id" />		
 	<property name="action" type="scalar" equals="false" />
 	<property name="table" type="scalar" default="customer" />
 	<property name="idField" type="scalar" default="customer_id" />

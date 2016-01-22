@@ -1085,7 +1085,6 @@ sub getIndustryData {
 
         my $industry = new BRAVO::OM::Industry();
         $industry->industryId( $rec{id} );
-        $industry->sectorId( $rec{sectorId} );
         $industry->name( $rec{name} );
         $industry->creationDateTime( $rec{creationDateTime} );
         $industry->updateDateTime( $rec{updateDateTime} );
@@ -1106,7 +1105,6 @@ sub queryIndustryData {
     my @fields = (
         qw(
             id
-            sectorId
             name
             creationDateTime
             updateDateTime
@@ -1116,12 +1114,11 @@ sub queryIndustryData {
     my $query = '
         select
         	a.industry_id
-            ,a.sector_id
             ,a.industry_name
             ,a.creation_date_time
             ,a.update_date_time
         from
-            V_SOFTWARE_INDUSTRY a
+            LGCY_INDUSTRY a
         with ur
     ';
 
@@ -1329,6 +1326,7 @@ sub getCustomerData {
         $customer->creationDateTime( $rec{creationDateTime} );
         $customer->updateDateTime( $rec{updateDateTime} );
         $customer->tmeObjectId( $rec{tmeObjectId} );        
+        $customer->sectorId( $rec{sectorId} ); 
 
         $data{$key} = $customer;
     }
@@ -1377,6 +1375,7 @@ sub queryCustomerData {
             creationDateTime
             updateDateTime
             tmeObjectId
+            sectorId
             )
     );
 
@@ -1385,7 +1384,7 @@ sub queryCustomerData {
         	a.customer_id
         	,a.customer_type_id
         	,a.ASSET_ADMIN_DEPT_ID
-        	,SIref.id
+        	,a.industry_id
         	,a.account_number
         	,a.ACCOUNT_NAME
         	,a.DPE_CONTACT_ID
@@ -1414,9 +1413,9 @@ sub queryCustomerData {
             ,a.creation_date_time
             ,a.update_date_time
             ,a.tme_object_id
+            ,a.sector_id
         from
             LGCY_ACCOUNT a
-            join LGCY_SECTOR_INDUSTRY_REF SIref on (SIref.industry_id=a.industry_id and SIref.sector_id=a.sector_id)
         with ur
     ';
 
