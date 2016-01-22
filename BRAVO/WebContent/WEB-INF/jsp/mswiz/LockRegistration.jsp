@@ -109,7 +109,7 @@ registered SPLA or ESPLA.</p>
 			<td><bean:write name="customer" property="contactDPE.fullName" /></td>
 			<td><bean:write name="customer" property="pod.podName" /></td>
 			<td><bean:write name="customer" property="industry.industryName" /></td>
-			<td><bean:write name="customer" property="industry.sector.sectorName" /></td>
+			<td><bean:write name="customer" property="sector.sectorName" /></td>
 			<td><bean:write name="customer" property="accountNumber" /></td>
 			<td><html:radio name="customer" property="misldRegistration.status"
 				value="LOCKED" indexed="true" /></td>

@@ -45,7 +45,7 @@
 		<![CDATA[
 			from com.ibm.ea.cndb.Customer c
 				join fetch c.industry
-				join fetch c.industry.sector
+				join fetch c.sector
 				join fetch c.contactDPE
 				join fetch c.pod
 				join fetch c.customerType
@@ -60,7 +60,7 @@
 		<![CDATA[
 			from com.ibm.ea.cndb.Customer c
 				join fetch c.industry
-				join fetch c.industry.sector
+				join fetch c.sector
 				join fetch c.contactDPE
 				join fetch c.pod
 				join fetch c.customerType

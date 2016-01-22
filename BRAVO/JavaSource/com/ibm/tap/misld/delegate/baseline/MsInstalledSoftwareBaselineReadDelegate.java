@@ -333,8 +333,7 @@ public class MsInstalledSoftwareBaselineReadDelegate extends Delegate {
 						.getMsHardwareBaseline().getCustomer().getIndustry()
 						.getIndustryName());
 				tempList.add(msInstalledSoftwareBaseline
-						.getMsHardwareBaseline().getCustomer().getIndustry()
-						.getSector().getSectorName());
+						.getMsHardwareBaseline().getCustomer().getSector().getSectorName());
 				tempList.add(msInstalledSoftwareBaseline
 						.getMsHardwareBaseline().getCustomer()
 						.getCustomerType().getCustomerTypeName());

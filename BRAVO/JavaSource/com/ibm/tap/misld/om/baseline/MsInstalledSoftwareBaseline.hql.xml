@@ -62,7 +62,7 @@
 		join fetch m.msHardwareBaseline.customer
 		join fetch m.msHardwareBaseline.customer.pod
 		join fetch m.msHardwareBaseline.customer.industry
-		join fetch m.msHardwareBaseline.customer.industry.sector
+		join fetch m.msHardwareBaseline.customer.sector
 		join fetch m.msHardwareBaseline.customer.customerType
 		join fetch m.software
 		join fetch m.software.productInfo.softwareCategory
@@ -85,7 +85,7 @@
 		join fetch m.msHardwareBaseline.customer
 		join fetch m.msHardwareBaseline.customer.pod
 		join fetch m.msHardwareBaseline.customer.industry
-		join fetch m.msHardwareBaseline.customer.industry.sector
+		join fetch m.msHardwareBaseline.customer.sector
 		join fetch m.msHardwareBaseline.customer.customerType
 		join fetch m.software
 		join fetch m.software.softwareCategory
