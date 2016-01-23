@@ -12,6 +12,9 @@ use BRAVO::OM::ScheduleF;
 
 use integration::reconEngine::TestScheduleFOnHostDefinedActive;
 use integration::reconEngine::TestScarletReconcileNotExist;
+use integration::reconEngine::TestScarletReconcileExist;
+use integration::reconEngine::TestReconcileOnMachineLevel;    
+
 use integration::reconEngine::CmdDeleteScheduleFOnHostname;
 use integration::reconEngine::CmdCreateScheduleFOnHostname;
 
@@ -77,7 +80,7 @@ sub _01_story39096_reconcileShouldNotBuilt : Test(2) {
 
 }
 
-sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(3) {
+sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(5) {
  my $self = shift;
 
 #IBM License Metric Tool and Tivoli Asset Discovery for Distributed Agent/IWPPRN01
@@ -90,13 +93,17 @@ sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(3) {
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  $self->launchReconEngine;
 
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+ integration::reconEngine::TestReconcileOnMachineLevel->new($self)->test;
+
  $self->installedSoftwareId(260521374);
  integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
 
+#IBM License Metric Tool and Tivoli Asset Discovery for Distributed Agent/DM91GW026P
  $self->installedSoftwareId(258668102);
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
- 
-}    
+
+}
 
 sub restoreConfigFile : Test( shutdown => 3 ) {
  my $self = shift;
