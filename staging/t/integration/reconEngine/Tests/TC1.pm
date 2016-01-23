@@ -16,7 +16,6 @@ use Recon::LicensingInstalledSoftware;
 use Recon::OM::Reconcile;
 use Recon::Delegate::ReconDelegate;
 use Scarlet::LicenseEndpoint;
-use integration::reconEngine::ReconInstalledSoftware;
 
 use integration::reconEngine::TestReconInstalledSoftwareExist;
 use integration::reconEngine::TestScarletReconcileExist;
@@ -64,7 +63,7 @@ sub _04_story36172_isReconcileValid : Test(2) {
 sub _05_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
- 
+
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }

@@ -12,14 +12,14 @@ use Test::File;
 
 use Scarlet::GuidEndpoint;
 
-
 sub setupLog : Test(startup) {
  my $self = shift;
 
  $self->{logFile} = '/tmp/testEndpoint.txt';
  $self->configDebugLevel( $self->{logFile} );
-
+ 
  $self->{connectionFile} = '/opt/staging/v2/config/connectionConfig.txt';
+
 }
 
 sub shutdown : Test(shutdown) {

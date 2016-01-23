@@ -17,8 +17,7 @@ sub execute {
  my $self = shift;
 
  my $sql =
-   "delete from recon_installed_sw where installed_software_id = ? 
-    and action = 'LICENSING' ";
+   "delete from recon_installed_sw where installed_software_id = ?";   
 
  $self->connection->prepareSqlQuery( 'queryCleanReconInstalledSoftware', $sql );
  my $sth = $self->connection->sql->{queryCleanReconInstalledSoftware};

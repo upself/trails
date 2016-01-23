@@ -13,6 +13,7 @@ push @tcs, ( $tc1, $tc2 );    #tc2 rely on the result of tc1.
 push @tcs, integration::reconEngine::Tests::TestEndpoint->new;
 push @tcs, integration::reconEngine::Tests::TestScarletReconcile->new;
 push @tcs, integration::reconEngine::Tests::TC6->new;                  
+push @tcs, integration::reconEngine::Tests::TC7->new;
 
 Test::Class->runtests(@tcs);
 

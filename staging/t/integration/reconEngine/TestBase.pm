@@ -23,7 +23,6 @@ use Recon::OM::Reconcile;
 use Recon::Delegate::ReconDelegate;
 
 use Scarlet::LicenseEndpoint;
-use integration::reconEngine::ReconInstalledSoftware;
 
 sub init : Test(startup) {
  my $self = shift;
@@ -33,12 +32,12 @@ sub init : Test(startup) {
  $self->customerId(7458);
  $self->date('2099-01-01');
  $self->reconConfigFile('integration/reconEngine/Tests/reconEnginConf.txt');
- $self->logFile('/tmp/reconEngine.log');    
+ $self->logFile('/tmp/reconEngine.log');
  $self->connCfgFile('/opt/staging/v2/config/connectionConfig.txt');
  $self->connection( Database::Connection->new('trails') );
 
  $self->connection->connect;
- $self->configLog( $self->reconConfigFile, $self->logFile );
+ $self->configDebugLevel( $self->logFile );    
 
 }
 
