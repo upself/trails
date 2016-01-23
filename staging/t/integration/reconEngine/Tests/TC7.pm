@@ -13,7 +13,8 @@ use BRAVO::OM::ScheduleF;
 use integration::reconEngine::TestScheduleFOnHostDefinedActive;
 use integration::reconEngine::TestScarletReconcileNotExist;
 use integration::reconEngine::TestScarletReconcileExist;
-use integration::reconEngine::TestReconcileOnMachineLevel;    
+use integration::reconEngine::TestReconcileOnMachineLevel;
+use integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate;
 
 use integration::reconEngine::CmdDeleteScheduleFOnHostname;
 use integration::reconEngine::CmdCreateScheduleFOnHostname;
@@ -103,6 +104,41 @@ sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(5) {
  $self->installedSoftwareId(258668102);
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
 
+}
+
+sub _03_story39096_scarletReconcileDeleteAfterValidation : Test(9) {
+ my $self = shift;
+
+ #IBM Tivoli Monitoring - Windows OS Agent/IWPPRN01
+ $self->installedSoftwareId(240451553);
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
+ $self->launchReconEngine;
+
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+
+#IBM License Metric Tool and Tivoli Asset Discovery for Distributed Agent/DM91GW026P
+ $self->installedSoftwareId(258668102);
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+
+#IBM License Metric Tool and Tivoli Asset Discovery for Distributed Agent/IWPPRN01
+ $self->installedSoftwareId(260521374);
+ integration::reconEngine::CmdCreateScheduleFOnHostname->new($self)->execute;
+ integration::reconEngine::TestScheduleFOnHostDefinedActive->new($self)->test;
+ integration::reconEngine::TestReconcileOnMachineLevel->new($self)->test;
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+
+ my $reconcile = $self->findReconcile;
+ my $r         = Recon::ScarletReconcile->new(0);
+ $r->validate( $reconcile->id );
+
+ integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate->new($self)->test;
+ 
+ $self->installedSoftwareId(258668102);
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+ 
+ $self->installedSoftwareId(240451553);
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
 }
 
 sub restoreConfigFile : Test( shutdown => 3 ) {
