@@ -219,5 +219,14 @@ public class AlertUnlicensedSoftwareDAOJpa extends
 				.setParameter("softwareId", softwareId)
 				.setParameter("hardwareId", hardwareId).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AlertUnlicensedSw> findMachineLevelAffectedAlerts(
+			long softwareId, Long id) {
+		return entityManager.createNamedQuery("findMachineLevelAffectedAlerts")
+				.setParameter("softwareId", softwareId)
+				.setParameter("hardwareId", id).getResultList();
+	}
 
 }

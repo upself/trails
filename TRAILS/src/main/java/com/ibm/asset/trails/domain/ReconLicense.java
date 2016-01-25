@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -18,6 +19,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "RECON_LICENSE")
+@org.hibernate.annotations.Entity
+@NamedQuery(name = "getExistingReconLicense", query = "from ReconLicense a where a.license.id = :licenseId") 
 public class ReconLicense extends AbstractDomainEntity {
     private static final long serialVersionUID = 835189371182579732L;
 
