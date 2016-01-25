@@ -29,9 +29,9 @@ public class Account {
     @Id
     @Column(name = "CUSTOMER_ID")
     private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SECTOR_ID", nullable = true)
+	
+	@ManyToOne
+	@JoinColumn(name = "SECTOR_ID")
 	private Sector sector;
 
 	@Column(name = "CUSTOMER_NAME")
