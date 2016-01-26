@@ -13,7 +13,7 @@ sub new {
   _remoteUser          => undef,
   _recordTime          => undef,
   _table               => undef,
-  _idField             => undef    
+  _idField             => undef
  };
  bless $self, $class;
  return $self;
@@ -165,7 +165,7 @@ sub save {
  ilog( "saving: " . $self->toString() );
  if ( !defined $self->id ) {
   $connection->prepareSqlQuery( $self->queryInsert() );
-  my $sth = $connection->sql->{insertReconInstalledSoftware};
+  my $sth = $connection->sql->{insertReconInstalledSoftwareTest};
   my $id;
   $sth->bind_columns( \$id );
   $sth->execute( $self->installedSoftwareId, $self->customerId, $self->action,
@@ -176,7 +176,7 @@ sub save {
  }
  else {
   $connection->prepareSqlQuery( $self->queryUpdate );
-  my $sth = $connection->sql->{updateReconInstalledSoftware};
+  my $sth = $connection->sql->{updateReconInstalledSoftwareTest};    
   $sth->execute( $self->installedSoftwareId, $self->customerId, $self->action,
    $self->remoteUser, $self->recordTime, $self->id );
   $sth->finish;
@@ -203,7 +203,7 @@ sub queryInsert {
             ,?
         ))
     ';
- return ( 'insertReconInstalledSoftware', $query );
+ return ( 'insertReconInstalledSoftwareTest', $query );
 }
 
 sub queryUpdate {
@@ -218,7 +218,7 @@ sub queryUpdate {
         where
             id = ?
     ';
- return ( 'updateReconInstalledSoftware', $query );
+ return ( 'updateReconInstalledSoftwareTest', $query );
 }
 
 sub delete {
@@ -226,7 +226,7 @@ sub delete {
  ilog( "deleting: " . $self->toString() );
  if ( defined $self->id ) {
   $connection->prepareSqlQuery( $self->queryDelete() );
-  my $sth = $connection->sql->{deleteReconInstalledSoftware};
+  my $sth = $connection->sql->{deleteReconInstalledSoftwareTest};
   $sth->execute( $self->id );
   $sth->finish;
  }
@@ -238,13 +238,13 @@ sub queryDelete {
         where
             id = ?
     ';
- return ( 'deleteReconInstalledSoftware', $query );
+ return ( 'deleteReconInstalledSoftwareTest', $query );
 }
 
 sub getByBizKey {
  my ( $self, $connection ) = @_;
  $connection->prepareSqlQuery( $self->queryGetByBizKey() );
- my $sth = $connection->sql->{getByBizKeyReconInstalledSoftware};
+ my $sth = $connection->sql->{getByBizKeyReconInstalledSoftwareTest};
  my $id;
  my $customerId;
  my $remoteUser;
@@ -272,13 +272,13 @@ sub queryGetByBizKey {
             installed_software_id = ?
             and action = ?
      with ur';
- return ( 'getByBizKeyReconInstalledSoftware', $query );
+ return ( 'getByBizKeyReconInstalledSoftwareTest', $query );
 }
 
 sub getById {
  my ( $self, $connection ) = @_;
  $connection->prepareSqlQuery( $self->queryGetById() );
- my $sth = $connection->sql->{getByIdKeyReconInstalledSoftware};
+ my $sth = $connection->sql->{getByIdKeyReconInstalledSoftwareTest};
  my $installedSoftwareId;
  my $customerId;
  my $action;
@@ -310,7 +310,7 @@ sub queryGetById {
         where
             id = ?
      with ur';
- return ( 'getByIdKeyReconInstalledSoftware', $query );
+ return ( 'getByIdKeyReconInstalledSoftwareTest', $query );
 }
 
 1;

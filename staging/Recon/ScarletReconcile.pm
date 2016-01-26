@@ -55,11 +55,82 @@ sub contains {
 
 sub validate {
  my $self = shift;
- my $id   = shift;    
+ my $id   = shift;
+
+ $self->connection->prepareSqlQueryAndFields( $self->queryObserveItems($id) );
+ my $sth = $self->connection->sql->{getObserveItems};
+ my %recc;
+ $sth->bind_columns( map { \$recc{$_} }
+    @{ $self->connection->sql->{getObserveItemsFields} } );
+
+ $sth->execute( $self->gapHour );
+
+ while ( $sth->fetchrow_arrayref ) {
+  my $scarletIs = new Recon::ScarletInstalledSoftware();
+
+  if ( !defined $recc{installedSoftwareId} || !defined $recc{customerId} ) {
+   dlog("start delete scarlet reconcile ");
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id( $recc{reconcileId} );
+   $scarletReconcile->delete( $self->connection );
+   dlog("end delete scarlet reconcile ");
+  }
+  elsif ( $self->ruleFail( $scarletIs, \%recc ) ) {
+   dlog("item not in scarlet");
+   dlog("reconcileId=$recc{reconcileId}");
+   dlog("installedSoftwareId=$recc{installedSoftwareId}");
+
+   dlog("not exists in scarlet");
+   my $installedSoftware = new BRAVO::OM::InstalledSoftware();
+   $installedSoftware->id( $recc{installedSoftwareId} );
+
+   my $softwareLpar = new BRAVO::OM::SoftwareLpar();
+   $softwareLpar->customerId( $recc{customerId} );
+
+   my $queue =
+     Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar,
+    'LICENSING' );
+   $queue->add;
+
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id( $recc{reconcileId} );
+   $scarletReconcile->delete( $self->connection );
+
+   dlog("appened into licensing queue");
+  }
+  elsif ( $scarletIs->outOfService ) {
+   ##scarlet out of service do nothing.
+   wlog('scarlet out of service. ');
+  }
+  else {
+   dlog("item still valid in scarlet");
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id( $recc{reconcileId} );
+   $scarletReconcile->update( $self->connection );
+
+   dlog("last validation time reset.");
+  }
+ }
+
+ $sth->finish;
+}
+
+sub queryObserveItems {
+ my $self = shift;
+ my $id   = shift;
+
+ my @fileds = qw(reconcileId
+   machineLevel
+   installedSoftwareId
+   customerId
+   reconcileTypeId
+   softwareId
+ );
 
  my $query = '
     select 
       sr.id, 
+      r.machine_level,
       r.installed_software_id,
       sl.customer_id, 
       r.reconcile_type_id,
@@ -78,72 +149,39 @@ sub validate {
  if ( defined $id ) {
   $query .= ' and sr.id = ' . $id;
  }
-
  dlog( 'getObserveItems=' . $query );
 
- my $reconcileId;
- my $installedSoftwareId;
- my $customerId;
- my $reconcileTypeId;
- my $swIdOfInstalledSw;
- $self->connection->prepareSqlQuery( 'getObserveItems', $query );
- my $sth = $self->connection->sql->{getObserveItems};
- $sth->bind_columns( \$reconcileId, \$installedSoftwareId, \$customerId,
-  \$reconcileTypeId, \$swIdOfInstalledSw );
+ return ( 'getObserveItems', $query, \@fileds );
 
- $sth->execute( $self->gapHour );
+}
 
- while ( $sth->fetchrow_arrayref ) {
-  my $scarletIs = new Recon::ScarletInstalledSoftware();
+sub ruleFail {
+ my $self      = shift;
+ my $scarletIs = shift;
+ my $rs        = shift;
 
-  if ( !defined $installedSoftwareId || !defined $customerId ) {
-   dlog("reconcile already breaked ");
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcileId);
-   $scarletReconcile->delete( $self->connection );
-   dlog("scarlet reconcile deleted");
-  }
-  elsif (
-      ( not $scarletIs->existInScarlet( $reconcileId, $installedSoftwareId ) )
-   && ( not $scarletIs->outOfService ) )
-  {
-   dlog("item not in scarlet");
-   dlog("reconcileId=$reconcileId");
-   dlog("installedSoftwareId=$installedSoftwareId");
+ my %recc = %{$rs};
 
-   dlog("not exists in scarlet");
-   my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-   $installedSoftware->id($installedSoftwareId);
+ if ( $recc{machineLevel} ) {
+  my ( $scope, $level ) =
+    Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection,
+   $recc{installedSoftwareId} );
 
-   my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-   $softwareLpar->customerId($customerId);
-
-   my $queue =
-     Recon::Queue->new( $self->connection, $installedSoftware, $softwareLpar,
-    'LICENSING' );
-   $queue->add;
-
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcileId);
-   $scarletReconcile->delete( $self->connection );
-
-   dlog("appened into licensing queue");
-  }
-  elsif ( $scarletIs->outOfService ) {
-   ##scarlet out of service do nothing.
-   wlog('scarlet out of service. ');
-  }
-  else {
-   dlog("item still valid in scarlet");
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcileId);
-   $scarletReconcile->update( $self->connection );
-
-   dlog("last validation time reset.");
-  }
+  return 1 if ( "HOSTNAME" eq $level );
  }
 
- $sth->finish;
+ if (
+  (
+   not $scarletIs->existInScarlet( $recc{reconcileId},
+    $recc{installedSoftwareId} )
+  )
+  && ( not $scarletIs->outOfService )
+   )
+ {
+  return 1;    
+ }
+
+ return 0;
 }
 
 sub checkDataConstency {

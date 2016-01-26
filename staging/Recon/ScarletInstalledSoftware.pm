@@ -114,7 +114,7 @@ sub outOfService {
  {
   return 0;
  }
- return 1;    
+ return 1;
 }
 
 sub appendData {
@@ -374,6 +374,14 @@ and kbd.guid in(' . $guids . ') with ur ';
  }
 
  foreach my $isId (@isIds) {
+
+  if ( $self->machineLevel ) {
+   my ( $scope, $level ) =
+     Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection,
+    $isId );    
+   next if ( "HOSTNAME" eq $level );
+  }
+
   my $is = new BRAVO::OM::InstalledSoftware();
   $is->id($isId);
   $is->getById( $self->connection );

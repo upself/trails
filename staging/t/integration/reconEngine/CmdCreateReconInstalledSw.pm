@@ -3,6 +3,8 @@ package integration::reconEngine::CmdCreateReconInstalledSw;
 use strict;
 use base qw(integration::reconEngine::Properties);
 
+use integration::reconEngine::ReconInstalledSoftware;
+
 sub new {
  my ( $class, $properties ) = @_;
 
@@ -21,7 +23,7 @@ sub execute {
  $reconInstalledSoftware->installedSoftwareId( $self->installedSoftwareId );
  $reconInstalledSoftware->customerId( $self->customerId );
  $reconInstalledSoftware->recordTime( $self->date . ' 09:00:00' );
- $reconInstalledSoftware->remoteUser('TC1');
+ $reconInstalledSoftware->remoteUser('TestBase');
  $reconInstalledSoftware->action('LICENSING');
  $reconInstalledSoftware->save( $self->connection );
 
