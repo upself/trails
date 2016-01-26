@@ -2295,13 +2295,18 @@ sub getInstalledSoftwareReconData {
   my $tempBundleInstSwId;
 
   while ( $sth->fetchrow_arrayref ) {
-
+	  
    ###Perform category logic unless i am UNKNOWN.
    if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
 
     ###Does this inst sw match my category?
     if ( $rec{scName} eq $installedSoftwareReconData->scName ) {
      dlog("matches category");
+     
+     if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
+		dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
+		next;
+     }
 
      ###Is it a higher priority than me?
      if ( $rec{sPriority} < $installedSoftwareReconData->sPriority ) {
@@ -2342,6 +2347,12 @@ sub getInstalledSoftwareReconData {
 
     ###Is this inst sw in a bundle?
     if ( defined $rec{bSwId} ) {
+
+     if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
+		dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
+		next;
+     }
+
      dlog("in bundle");
 
      ###Am i parent of this inst sw's bundle?
@@ -2362,8 +2373,13 @@ sub getInstalledSoftwareReconData {
     ###Is this inst sw my parent?
     foreach my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } ) {
      if ( $rec{sId} == $bcSwId ) {
-      dlog("matches bundle, setting parent");
-      $tempBundleInstSwId = $rec{instSwId};
+		if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
+			dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
+			next;
+		}
+		 
+		dlog("matches bundle, setting parent");
+		$tempBundleInstSwId = $rec{instSwId};
      }
     }
    }
