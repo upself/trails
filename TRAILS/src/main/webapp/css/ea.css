@@ -13,7 +13,7 @@ Note: Do not use tables to format nontabular data
 
 a.sortable {
 	background:
-		url(//w3.ibm.com/ui/v8/images/icon-link-sort-u-light.gif) 2px 4px
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-link-sort-u-light.gif) 2px 4px
 		no-repeat;
 	color:white;
 	text-decoration: none;
@@ -21,13 +21,13 @@ a.sortable {
 
 th.sortable.sorted.order2 a.sortable {
 	background:
-		url(//w3.ibm.com/ui/v8/images/icon-link-sort-d-light.gif) 2px 4px
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-link-sort-d-light.gif) 2px 4px
 		no-repeat;
 }
 
 th.sortable.sorted.order1 a.sortable {
 	background:
-		url(//w3.ibm.com/ui/v8/images/icon-link-sort-a-light.gif) 2px 4px
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-link-sort-a-light.gif) 2px 4px
 		no-repeat;
 }
 table tr.total {
@@ -37,28 +37,28 @@ table tr.total {
 
 table tr.no td.scope {
 	background-image:
-		url(//w3.ibm.com/ui/v8/images/icon-system-status-na.gif);
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-system-status-na.gif);
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 table tr.yes td.scope {
 	background-image:
-		url(//w3.ibm.com/ui/v8/images/icon-system-status-ok.gif);
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-system-status-ok.gif);
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 table tr.no td.catalogMatch {
 	background-image:
-		url(//w3.ibm.com/ui/v8/images/icon-system-status-na.gif);
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-system-status-na.gif);
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 table tr.yes td.catalogMatch {
 	background-image:
-		url(//w3.ibm.com/ui/v8/images/icon-system-status-ok.gif);
+		url(//w3-workplace.ibm.com/ui/v8/images/icon-system-status-ok.gif);
 	background-repeat: no-repeat;
 	background-position: center;
 }

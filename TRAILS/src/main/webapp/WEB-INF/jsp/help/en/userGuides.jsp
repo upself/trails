@@ -20,7 +20,7 @@ function openUserGuide(url){
 	<!-- Application Demonstrations -->
 	<!-- Downloadable User Guides -->
 	<h2>Downloadable User Guides</h2>
-	<img src="//w3.ibm.com/ui/v8/images/icon-link-action.gif" alt="action link icon" width="17" height="15"/>
+	<img src="//w3-workplace.ibm.com/ui/v8/images/icon-link-action.gif" alt="action link icon" width="17" height="15"/>
 	<a href="#" onclick="openUserGuide()">TRAILS User Guide</a>
 		(<a href="//www.adobe.com/products/acrobat/readermain.html">PDF Viewer Application</a>)<br /><br />
 	<!-- Miscellaneous Downloads -->
