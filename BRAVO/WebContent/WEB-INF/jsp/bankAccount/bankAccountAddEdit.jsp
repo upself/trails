@@ -213,25 +213,28 @@ function setChange() {
 											<div class="input-note">Select one</div> <html:select
 												styleId="type" property="type" styleClass="input">
 												<html:option value="">-SELECT-</html:option>
-												<html:option value="TCM">TCM</html:option>
-												<html:option value="TLM">TLM</html:option>
-												<html:option value="SMS">SMS</html:option>
-												<html:option value="SNAPSHOT">SNAPSHOT</html:option>
-												<html:option value="EESM">EESM</html:option>
-												<html:option value="BLAZANT">BLAZANT</html:option>
 												<html:option value="ALTIRIS">ALTIRIS</html:option>
-												<html:option value="IDD">IDD</html:option>
-												<html:option value="TADZ">TADZ</html:option>
-												<logic:equal scope="request" name="bankAccountForm"
-													property="connectionType" value="DISCONNECTED">
-													<html:option value="FACTS">FACTS</html:option>
-													<html:option value="TAD4D">TAD4D</html:option>
-												</logic:equal>
 												<logic:equal scope="request" name="bankAccountForm"
 													property="connectionType" value="CONNECTED">
 													<html:option value="ATP">ATP</html:option>
 													<html:option value="SWCM">SWCM</html:option>
 												</logic:equal>
+												<html:option value="BFI">BFI</html:option>
+												<html:option value="BLAZANT">BLAZANT</html:option>
+												<html:option value="EESM">EESM</html:option>
+												<logic:equal scope="request" name="bankAccountForm"
+													property="connectionType" value="DISCONNECTED">
+													<html:option value="FACTS">FACTS</html:option>
+													<html:option value="TAD4D">TAD4D</html:option>
+												</logic:equal>
+												<html:option value="FLEXNET">FLEXNET</html:option>
+												<html:option value="IDD">IDD</html:option>
+												<html:option value="SMS">SMS</html:option>
+												<html:option value="SNAPSHOT">SNAPSHOT</html:option>
+												<html:option value="TADZ">TADZ</html:option>
+												<html:option value="TCM">TCM</html:option>
+												<html:option value="TLM">TLM</html:option>
+												<html:option value="ZENWORKS">ZENWORKS</html:option>												
 											</html:select>
 										</td>
 									</tr>
