@@ -91,7 +91,7 @@ public class ReportServiceImpl implements ReportService {
 			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
 			"Lpar Status", "Physical HW processor count", "Physical chips",
 			"Effective processor count", "Effective threads", "PVU/core",
-			"Primary Component", "PID", "SW Owner", "Alert assignee",
+			"Primary Component", "PID", "MF SW Last used", "SW Owner", "Alert assignee",
 			"Alert assignee comment", "Inst SW manufacturer",
 			"Inst SW validation status", "Reconciliation action",
 			"Allocation methodology", "Reconciliation user",
@@ -659,7 +659,8 @@ public class ReportServiceImpl implements ReportService {
 				+ "when h.nbr_cores_per_chip = 4 then 'QUAD-CORE' "
 				+ "when h.nbr_cores_per_chip > 0  then 'MULTI-CORE' else '' end) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode"
 				+ ",instS.software_name as primaryComponent "
-				+ ",instS.PID as pid ";
+				+ ",instS.PID as pid "
+				+ ",case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end "; 
 
 		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
 				+ "where sf.customer_id = :customerId "
@@ -719,6 +720,10 @@ public class ReportServiceImpl implements ReportService {
 				+ "is.discrepancy_type_id = dt.id "
 				+ "inner join eaadmin.alert_unlicensed_sw aus on "
 				+ "is.id = aus.installed_software_id "
+				+ "left outer join eaadmin.installed_tadz insTadz on "
+				+ "is.id = insTadz.installed_software_id "
+				+ "left outer join eaadmin.bank_account ba on "
+				+ "insTadz.bank_account_id =  ba.id "
 				+ "left outer join eaadmin.reconcile r on "
 				+ "is.id = r.installed_software_id "
 				+ "left outer join eaadmin.reconcile_type rt on "
