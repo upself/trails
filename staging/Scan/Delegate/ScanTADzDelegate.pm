@@ -20,8 +20,7 @@ sub insertTechImgId {
 }
 
 
-my $sqlAG = "   select
-  	       node.node_key
+my $sqlAG = "select  node.node_key
 	      ,lpar_name
 	      ,'' as objectId
 	      ,hw_model
@@ -83,57 +82,71 @@ my $sqlAG = "   select
 	where node_type = \'LPAR\' "; 
 
 
-my $sqlAG81 =     "select  node.node_key
-       ,node.lpar_name
-       ,'' as objectId
-       ,node.hw_model
-       ,node.hw_serial
-       ,audit_table.fiqdate as effective_scanTime
-       ,0 as users
-       ,2 as authenticated 
-       ,0 as isManual
-       ,0 as authProc
-       ,0 as processor
-       ,system.sid as osName
-       ,node.hw_type as osType
-       ,secnd_table.fosversion as osMajorVers
-       ,'' as osMinorVers
-       ,'' as osSubVers
-       ,node.last_update_time as osInstDate
-       ,'' as userName
-       ,'' as biosManufacturer
-       ,'' as biosModel 
-       ,'' as computerAlias
-       ,'' as physicalTotalKb
-       ,'' as virtTotalKb
-       ,'' as physicalFreeKb
-       ,'' as virtFreeKb
-       ,'' as biosDate
-       ,'' as biosSerial
-       ,'' as sysUuid
-       ,system.sysplex as boardSerNum 
-       ,'' as caseSerNum
-       ,system.smfid as caseAssetTag 
-       ,'' as extId
-       , system.sid as techImgId
- from system 
- join ( select system_key, max(last_update_time) as my_time from system_node group by system_key )  as m on m.system_key =system.system_key
- join system_node sn  on sn.system_key=m.system_key AND m.my_time=sn.last_update_time
- join node  on node.node_key=sn.node_key
+my $sqlAG81 = "select node.node_key
+                        ,node.lpar_name
+                        ,'' as objectId
+                        ,node.hw_model
+                        ,node.hw_serial
+                        ,audit_table.foqdate as effective_scanTime
+                        ,0 as users
+                        ,2 as authenticated
+                        ,0 as isManual
+                        ,0 as authProc
+                        ,0 as processor
+                        ,system.sid as osName
+                        ,node.hw_type as osType
+                        ,audit_table.osVers as osMajorVers
+                        ,'' as osMinorVers
+                        ,'' as osSubVers
+                        ,node.last_update_time as osInstDate
+                        ,'' as userName
+                        ,'' as biosManufacturer
+                        ,'' as biosModel
+                        ,'' as computerAlias
+                        ,'' as physicalTotalKb
+                        ,'' as virtTotalKb
+                        ,'' as physicalFreeKb
+                        ,'' as virtFreeKb
+                        ,'' as biosDate
+                        ,'' as biosSerial
+                        ,'' as sysUuid
+                        ,system.sysplex as boardSerNum
+                        ,'' as caseSerNum
+                        ,system.smfid as caseAssetTag
+                        ,'' as extId
+                        , audit_table2.TSID as techImgId
 
- left outer join ( select iq.fsid, iq.fostype, max(fiqdate) as fiqdate from tlogiq as iq
- where iq.fostype = 'z/OS'
- group by iq.fsid, iq.fostype
- order by iq.fsid, iq.fostype )
- as audit_table on audit_table.fsid = system.sid
+                        from system
 
- left outer join ( select qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate from tlogiq as qq
- where qq.fostype = 'z/OS'
- group by qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate
- order by qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate )
- as secnd_table on secnd_table.fsid = system.sid
+                        join (
+                        select system_key, max(last_update_time) as my_time from
+                        system_node
+                        group by system_key )
+                        as m on m.system_key = system.system_key
 
- where secnd_table.fiqdate = audit_table.fiqdate ";
+                        join system_node sn
+                        on sn.system_key=m.system_key AND m.my_time=sn.last_update_time
+
+                        join node
+                        on node.node_key=sn.node_key
+
+                        join ( select iq.fsid, iq.fostype, 
+                        max(fiqdate) as foqdate, MAX(iq.fosversion) as OsVers
+                        from tlogiq as iq
+                        where iq.fostype = \'z/OS\'
+                        and SUBSTR(iq.fversiongkb ,12 ,4) <> \'\'
+                        group by iq.fsid, iq.fostype
+                        order by iq.fsid, iq.fostype   )
+                        as audit_table on audit_table.fsid = system.sid
+
+
+                                                LEFT OUTER JOIN ( select iq2.fsid, iq2.fostype,
+                                                MAX(SUBSTR(iq2.fversiongkb ,12 ,4)) as TSID
+                                                from tlogiq as iq2
+                                                Where iq2.fostype = \'z/OS\' and SUBSTR(iq2.fversiongkb ,12 ,4) <> \'\'
+                                                group by iq2.fsid, iq2.fostype 
+                                                order by iq2.fsid, iq2.fostype )
+                                                as audit_table2 on audit_table2.fsid = system.sid";
 
 my $sqlEMEA = "select
         node.node_key
@@ -198,57 +211,62 @@ my $sqlEMEA = "select
 	where node_type = \'LPAR\' ";
 
 
-my $sqlEMEA81 = "select  node.node_key
-       ,node.lpar_name
-       ,'' as objectId
-       ,node.hw_model
-       ,node.hw_serial
-       ,audit_table.fiqdate as effective_scanTime
-       ,0 as users
-       ,2 as authenticated 
-       ,0 as isManual
-       ,0 as authProc
-       ,0 as processor
-       ,system.sid as osName
-       ,node.hw_type as osType
-       ,secnd_table.fosversion as osMajorVers
-       ,'' as osMinorVers
-       ,'' as osSubVers
-       ,node.last_update_time as osInstDate
-       ,'' as userName
-       ,'' as biosManufacturer
-       ,'' as biosModel 
-       ,'' as computerAlias
-       ,'' as physicalTotalKb
-       ,'' as virtTotalKb
-       ,'' as physicalFreeKb
-       ,'' as virtFreeKb
-       ,'' as biosDate
-       ,'' as biosSerial
-       ,'' as sysUuid
-       ,system.sysplex as boardSerNum 
-       ,'' as caseSerNum
-       ,system.smfid as caseAssetTag 
-       ,'' as extId
-       , system.sid as techImgId
- from system 
- join ( select system_key, max(last_update_time) as my_time from system_node group by system_key )  as m on m.system_key =system.system_key
- join system_node sn  on sn.system_key=m.system_key AND m.my_time=sn.last_update_time
- join node  on node.node_key=sn.node_key
+my $sqlEMEA81 = "select node.node_key
+                ,node.lpar_name
+                ,'' as objectId
+                ,node.hw_model
+                ,node.hw_serial
+                ,audit_table.foqdate
+                        as effective_scanTime
+                ,0 as users
+                ,2 as authenticated
+                ,0 as isManual
+                ,0 as authProc
+                ,0 as processor
+                ,system.sid as osName
+                ,node.hw_type as osType
+                ,audit_table.osVers as osMajorVers
+                ,'' as osMinorVers
+                ,'' as osSubVers
+                ,node.last_update_time as osInstDate
+                ,'' as userName
+                ,'' as biosManufacturer
+                ,'' as biosModel
+                ,'' as computerAlias
+                ,'' as physicalTotalKb
+                ,'' as virtTotalKb
+                ,'' as physicalFreeKb
+                ,'' as virtFreeKb
+                ,'' as biosDate
+                ,'' as biosSerial
+                ,'' as sysUuid
+                ,system.sysplex as boardSerNum
+                ,'' as caseSerNum
+                ,system.smfid as caseAssetTag
+                ,'' as extId
+                , system.sid as techImgId
+          from system
 
- left outer join ( select iq.fsid, iq.fostype, max(fiqdate) as fiqdate from tlogiq as iq
- where iq.fostype = 'z/OS'
- group by iq.fsid, iq.fostype
- order by iq.fsid, iq.fostype )
- as audit_table on audit_table.fsid = system.sid
+	join (
+	
+	select system_key, max(last_update_time) as my_time from system_node
+	group by system_key )
+	
+	as m on m.system_key =  system.system_key 
+	
+	join system_node sn
+	on sn.system_key=m.system_key AND m.my_time=sn.last_update_time
+	
+	join node
+	on node.node_key=sn.node_key     
 
- left outer join ( select qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate from tlogiq as qq
- where qq.fostype = 'z/OS'
- group by qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate
- order by qq.fsid, qq.fostype, qq.fosversion, qq.fiqdate )
- as secnd_table on secnd_table.fsid = system.sid
-
- where secnd_table.fiqdate = audit_table.fiqdate ";
+  	join ( select iq.fsid, iq.fostype, 
+                          max(fiqdate) as foqdate, MAX(IQ.FOSVERSION) as OsVers
+                   from tlogiq as iq
+                   where iq.fostype = /'z/OS/'
+                   group by iq.fsid, iq.fostype
+                   order by iq.fsid, iq.fostype )
+                   as audit_table on audit_table.fsid = system.sid";
 
 my $sqlANZ = "select  node.node_key
        ,node.lpar_name
