@@ -313,11 +313,9 @@ public class ShowConfirmation extends AccountBaseAction {
 							"You must select at least one available license");
 				}
 				else{
-					if(availableLicenseId.length > 1){//Only do check the capacity type of selected licenses when choose more than one license
-						if(hasSameCapacityType(availableLicenseId) == false){
-							addFieldError("availableLicenseId",
-									"You have selected two or more licenses with different capacity types. Please ensure that all selected licenses have the same capacity type");	
-						}
+					if(hasSameCapacityType(availableLicenseId,getRecon().getLicenseList()) == false){
+						addFieldError("availableLicenseId",
+								"You have selected two or more licenses with different capacity types. Please ensure that all selected licenses have the same capacity type");	
 					}
 				} 
 			} else if (lsMethod != null
@@ -622,7 +620,7 @@ public class ShowConfirmation extends AccountBaseAction {
 		this.allocationMethodologies = allocationMethodologies;
 	}
 	
-	private boolean hasSameCapacityType(String[] selectedLicenseIds){
+	private boolean hasSameCapacityType(String[] selectedLicenseIds, List<License> licenseListInReconWorkspace){
 		boolean sameCapacityTypeFlag = true;
 		
 		if(selectedLicenseIds!=null){
@@ -633,6 +631,10 @@ public class ShowConfirmation extends AccountBaseAction {
 					 selectedLicenseArray.add(selectedLicense);
 				 }
 			 }
+			
+			if(licenseListInReconWorkspace!=null && licenseListInReconWorkspace.size()>0){
+				selectedLicenseArray.addAll(licenseListInReconWorkspace);
+			}
 			
 			for(int index = 1; index < selectedLicenseArray.size(); index++){
 				 if(selectedLicenseArray.get(0).getCapacityType().getCode().intValue() 
