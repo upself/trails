@@ -23,21 +23,21 @@
 <meta name="IBM.Industry" scheme="IBM_IndustryTaxonomy" content="ZZ" />
 <title>TRAILS 4.0 | TRAILS</title>
 <script language="JavaScript" type="text/javaScript"
-	src="//w3.ibm.com/ui/v8/scripts/scripts.js"></script>
+	src="//w3-workplace.ibm.com/ui/v8/scripts/scripts.js"></script>
 <style type="text/css" media="all">
 	<!--
-@import url("//w3.ibm.com/ui/v8/css/screen.css"); 
-@import url("//w3.ibm.com/ui/v8/css/interior.css");
-@import url("//w3.ibm.com/ui/v8/css/icons.css"); 
-@import url("//w3.ibm.com/ui/v8/css/interior-no-nav.css");
-@import url("//w3.ibm.com/ui/v8/css/tables.css");
-@import url("//w3.ibm.com/ui/v8/css/search.css");
+@import url("//w3-workplace.ibm.com/ui/v8/css/screen.css"); 
+@import url("//w3-workplace.ibm.com/ui/v8/css/interior.css");
+@import url("//w3-workplace.ibm.com/ui/v8/css/icons.css"); 
+@import url("//w3-workplace.ibm.com/ui/v8/css/interior-no-nav.css");
+@import url("//w3-workplace.ibm.com/ui/v8/css/tables.css");
+@import url("//w3-workplace.ibm.com/ui/v8/css/search.css");
 @import url("${pageContext.request.contextPath}/css/ea.css");
 	-->
 	</style>
 <!-- print stylesheet MUST follow imported stylesheets -->
 <link rel="stylesheet" type="text/css" media="print"
-	href="//w3.ibm.com/ui/v8/css/print.css" />
+	href="//w3-workplace.ibm.com/ui/v8/css/print.css" />
 </head>
 <body id="w3-ibm-com" class="article">
 <!-- start accessibility prolog -->
@@ -65,13 +65,13 @@ the w3 Accessibility Statement page.</a></p>
 <div id="masthead">
 <h2 class="access">Start of masthead</h2>
 <div id="prt-w3-sitemark"><img
-	src="//w3.ibm.com/ui/v8/images/id-w3-sitemark-simple.gif" alt=""
+	src="//w3-workplace.ibm.com/ui/v8/images/id-w3-sitemark-simple.gif" alt=""
 	width="54" height="33" /></div>
 <div id="prt-ibm-logo"><img
-	src="//w3.ibm.com/ui/v8/images/id-ibm-logo-black.gif" alt=""
+	src="//w3-workplace.ibm.com/ui/v8/images/id-ibm-logo-black.gif" alt=""
 	width="44" height="15" /></div>
 <div id="w3-sitemark"><img
-	src="//w3.ibm.com/ui/v8/images/id-w3-sitemark-large.gif"
+	src="//w3-workplace.ibm.com/ui/v8/images/id-w3-sitemark-large.gif"
 	alt="IBM Logo" width="266" height="70" usemap="#sitemark_map" /><map
 	id="sitemark_map" name="sitemark_map">
 	<area shape="rect" alt="Link to W3 Home Page" coords="0,0,130,70"
@@ -79,7 +79,7 @@ the w3 Accessibility Statement page.</a></p>
 </map></div>
 <div id="site-title-only">TRAILS 4.0</div>
 <div id="ibm-logo"><img
-	src="//w3.ibm.com/ui/v8/images/id-ibm-logo.gif" alt="IBM Logo"
+	src="//w3-workplace.ibm.com/ui/v8/images/id-ibm-logo.gif" alt="IBM Logo"
 	width="44" height="15" /></div>
 <div id="persistent-nav"><a id="w3home" href="//w3.ibm.com/">
 w3 Home </a><a id="bluepages" href="//w3.ibm.com/bluepages/">
@@ -96,7 +96,7 @@ Feedback </a></div>
 		<td class="field"><input id="header-search-field" name="qt"
 			type="text" accesskey="4" /></td>
 		<td class="submit"><input id="header-search-btn" type="image"
-			alt="Go" src="//w3.ibm.com/ui/v8/images/btn-go-dark.gif" /></td>
+			alt="Go" src="//w3-workplace.ibm.com/ui/v8/images/btn-go-dark.gif" /></td>
 	</tr>
 </table>
 </form>
