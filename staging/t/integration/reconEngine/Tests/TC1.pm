@@ -68,7 +68,7 @@ sub _05_story36172_isReconQueueReady : Test(1) {
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
-sub _06_story36172_launchReconEngineCheck : Test(8) {
+sub _06_story36172_launchReconEngineCheck : Test(7) {
  my $self = shift;
 
  $self->mockGuidAPI;
@@ -83,8 +83,6 @@ sub _06_story36172_launchReconEngineCheck : Test(8) {
 
  integration::reconEngine::TestLogScarletBuilt->new($self)->test;
  integration::reconEngine::TestLogAlertClosed->new($self)->test;
- integration::reconEngine::TestLogReconQuitNoError->new($self)->test;
-
 }
 
 sub shutdown : Test( shutdown => 2 ) {
