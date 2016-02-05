@@ -7,7 +7,8 @@ sub new {
  my ($class) = @_;
  my $self = {
   _id               => undef,
-  _lastValidateTime => undef
+  _lastValidateTime => undef,
+  _reconcileMd5Hex  => undef
  };
  bless $self, $class;
  return $self;
@@ -32,6 +33,12 @@ sub lastValidateTime {
  return $self->{_lastValidateTime};
 }
 
+sub reconcileMd5Hex {
+ my $self = shift;
+ $self->{_reconcileMd5Hex} = shift if scalar @_ == 1;
+ return $self->{_reconcileMd5Hex};
+}
+
 sub toString {
  my ($self) = @_;
  my $s = "[ScarletReconcile] ";
@@ -45,6 +52,11 @@ sub toString {
   $s .= $self->{_lastValidateTime};
  }
  $s .= ",";
+ $s .= "reconcileMd5Hex=";
+ if ( defined $self->{_reconcileMd5Hex} ) {
+  $s .= $self->{_reconcileMd5Hex};
+ }
+ $s .= ",";
  chop $s;
  return $s;
 }
@@ -55,8 +67,21 @@ sub save {
 
  $connection->prepareSqlQuery( $self->queryInsert() );
  my $sth = $connection->sql->{insertScarletReconcile};
- $sth->execute( $self->id );    
+ $sth->execute( $self->id, $self->reconcileMd5Hex );
  $sth->finish;
+}
+
+sub queryInsert {
+ my $query = '
+        insert into scarlet_reconcile (
+            id,
+            last_validate_time,
+            reconcile_md5_hex
+        ) values (
+            ?, current timestamp,? 
+        )
+    ';
+ return ( 'insertScarletReconcile', $query );
 }
 
 sub update {
@@ -65,27 +90,16 @@ sub update {
 
  $connection->prepareSqlQuery( $self->queryUpdate );
  my $sth = $connection->sql->{updateScarletReconcile};
- $sth->execute( $self->id, );
+ $sth->execute( $self->reconcileMd5Hex, $self->id );
  $sth->finish;
-}
-
-sub queryInsert {
- my $query = '
-        insert into scarlet_reconcile (
-            id,
-            last_validate_time
-        ) values (
-            ?, current timestamp 
-        )
-    ';
- return ( 'insertScarletReconcile', $query );
 }
 
 sub queryUpdate {
  my $query = '
         update scarlet_reconcile
         set
-            last_validate_time = current timestamp
+            last_validate_time = current timestamp,
+            reconcile_md5_hex = ?
         where
           id =? 
     ';
@@ -117,17 +131,20 @@ sub getByBizKey {
  $connection->prepareSqlQuery( $self->queryGetByBizKey() );
  my $sth = $connection->sql->{getByBizKeyScarletReconcile};
  my $lastValidateTime;
- $sth->bind_columns( \$lastValidateTime );
+ my $reconcileMd5Hex;
+ $sth->bind_columns( \$lastValidateTime, \$reconcileMd5Hex );
  $sth->execute( $self->id );
  $sth->fetchrow_arrayref;
  $sth->finish;
  $self->lastValidateTime($lastValidateTime);
+ $self->reconcileMd5Hex($reconcileMd5Hex);    
 }
 
 sub queryGetByBizKey {
  my $query = '
         select
-            last_validate_time
+            last_validate_time,
+            reconcile_md5_hex
         from
             scarlet_reconcile
         where
