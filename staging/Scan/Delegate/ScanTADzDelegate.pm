@@ -40,7 +40,7 @@ my $sqlAG = "select  node.node_key
 	      ,'' as osMajorVers
 	      ,'' as osMinorVers
 	      ,'' as osSubVers
-	      ,node.last_update_time as osInstDate
+	      ,'' as osInstDate
 	      ,'' as userName
 	      ,'' as biosManufacturer
 	      ,'' as biosModel
@@ -98,7 +98,7 @@ my $sqlAG81 = "select node.node_key
                         ,audit_table.osVers as osMajorVers
                         ,'' as osMinorVers
                         ,'' as osSubVers
-                        ,node.last_update_time as osInstDate
+                        ,'' as osInstDate
                         ,'' as userName
                         ,'' as biosManufacturer
                         ,'' as biosModel
@@ -169,7 +169,7 @@ my $sqlEMEA = "select
 	      ,'' as osMajorVers
 	      ,'' as osMinorVers
 	      ,'' as osSubVers
-	      ,node.last_update_time as osInstDate
+	      ,'' as osInstDate
 	      ,'' as userName
 	      ,'' as biosManufacturer
 	      ,'' as biosModel
@@ -228,7 +228,7 @@ my $sqlEMEA81 = "select node.node_key
                 ,audit_table.osVers as osMajorVers
                 ,'' as osMinorVers
                 ,'' as osSubVers
-                ,node.last_update_time as osInstDate
+                ,'' as osInstDate
                 ,'' as userName
                 ,'' as biosManufacturer
                 ,'' as biosModel
@@ -284,7 +284,7 @@ my $sqlANZ = "select node.node_key
  		       ,audit_table.fosversion as osMajorVers
  		       ,'' as osMinorVers
  		       ,'' as osSubVers
- 		       ,node.last_update_time as osInstDate
+ 		       ,'' as osInstDate
  		       ,'' as userName
  		       ,'' as biosManufacturer
  		       ,'' as biosModel
