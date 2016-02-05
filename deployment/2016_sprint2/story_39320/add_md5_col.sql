@@ -1,0 +1,1 @@
+ALTER TABLE eaadmin.scarlet_reconcile ADD reconcile_md5_hex VARCHAR(50);
