@@ -37,8 +37,7 @@ print 'process done' . "\n";
 
 sub queryScarletReconcile {
  my @fields = qw(id);
- my $query  = "select id from scarlet_reconcile
-  where reconcile_md5_hex";
+ my $query  = "select id from scarlet_reconcile";
 
  return ( 'queryScarletReconcileId', $query, \@fields );
 }

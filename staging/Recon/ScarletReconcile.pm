@@ -7,6 +7,8 @@ use Recon::ScarletInstalledSoftware;
 use BRAVO::OM::InstalledSoftware;
 use BRAVO::OM::SoftwareLpar;
 use Recon::Queue;
+use Digest::MD5 qw(md5_hex);
+use Recon::OM::Reconcile;
 
 sub new {
  my ( $class, $gapHour ) = @_;
@@ -106,7 +108,7 @@ sub validate {
    dlog("item still valid in scarlet");
    my $scarletReconcile = new Recon::OM::ScarletReconcile();
    $scarletReconcile->id( $recc{reconcileId} );
-   $scarletReconcile->update( $self->connection );
+   $scarletReconcile->updateValidateTime( $self->connection );
 
    dlog("last validation time reset.");
   }
@@ -119,7 +121,9 @@ sub queryObserveItems {
  my $self = shift;
  my $id   = shift;
 
- my @fileds = qw(reconcileId
+ my @fileds = qw(
+   reconcileId
+   reconcileMd5Hex
    machineLevel
    installedSoftwareId
    customerId
@@ -129,7 +133,8 @@ sub queryObserveItems {
 
  my $query = '
     select 
-      sr.id, 
+      sr.id,
+      sr.reconcile_md5_hex, 
       r.machine_level,
       r.installed_software_id,
       sl.customer_id, 
@@ -178,7 +183,17 @@ sub ruleFail {
   && ( not $scarletIs->outOfService )
    )
  {
-  return 1;    
+  return 1;
+ }
+
+ #reconcile changed.
+ my $recon = Recon::OM::Reconcile->new;
+ $recon->id( $recc{reconcileId} );
+ $recon->getById( $self->connection );
+ my $reconMd5 = md5_hex( $recon->toString );
+
+ if ( $reconMd5 ne $recc{reconcileMd5Hex} ) {
+  return 1;
  }
 
  return 0;

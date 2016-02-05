@@ -10,6 +10,7 @@ use Test::More;
 use Test::DatabaseRow;
 use Recon::ScarletReconcile;
 use integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate;
+use integration::reconEngine::TestScarletReconcileExist;
 use integration::reconEngine::CmdCreateReconInstalledSw;
 use integration::reconEngine::CmdBreakReconcileIfExists;
 
@@ -24,7 +25,7 @@ sub restoreConfigFile : Test( shutdown => 1 ) {
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
 }
 
-sub _01_story39320_scarletReconileWillDelete : Test(6) {
+sub _01_story39320_scarletReconileWillDelete : Test(7) {
  my $self = shift;
 
  $self->mockLicenseAPI;
@@ -42,19 +43,24 @@ sub _01_story39320_scarletReconileWillDelete : Test(6) {
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
  is( $reconcile->reconcileTypeId, 5, 'reconile type id is 5' );
 
+ my $r = Recon::ScarletReconcile->new(0);
+ $r->validate( $reconcile->id );
+
+ #reconcile not changed scarlet reconcile should not deleted.
+ integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+
  #change reconcile type id from 5 to anyone else.
  $reconcile->reconcileTypeId(3);
  $reconcile->save( $self->connection );
 
- my $r = Recon::ScarletReconcile->new(0);
- $r->validate( $reconcile->id );    
+ my $r2 = Recon::ScarletReconcile->new(0);
+ $r2->validate( $reconcile->id );
 
- #validate reuslt.
+ #reconcile changed scarlet reconcile will deleted.
  integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
  integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate->new(
   $self)->test;
 
 }
-
 1;
 

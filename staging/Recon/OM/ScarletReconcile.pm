@@ -2,6 +2,7 @@ package Recon::OM::ScarletReconcile;
 
 use strict;
 use Base::Utils;
+use Digest::MD5 qw(md5_hex);
 
 sub new {
  my ($class) = @_;
@@ -65,6 +66,11 @@ sub save {
  my ( $self, $connection ) = @_;
  ilog( "saving: " . $self->toString() );
 
+ my $r = Recon::OM::Reconcile->new;
+ $r->id( $self->id );
+ $r->getById($connection);
+ $self->reconcileMd5Hex( md5_hex( $r->toString ) );
+
  $connection->prepareSqlQuery( $self->queryInsert() );
  my $sth = $connection->sql->{insertScarletReconcile};
  $sth->execute( $self->id, $self->reconcileMd5Hex );
@@ -82,6 +88,27 @@ sub queryInsert {
         )
     ';
  return ( 'insertScarletReconcile', $query );
+}
+
+sub updateValidateTime {
+ my ( $self, $connection ) = @_;
+ ilog( "updating: " . $self->toString() );
+
+ $connection->prepareSqlQuery( $self->queryUpdateValidateTime );
+ my $sth = $connection->sql->{updateScarletReconcileValidateTime};
+ $sth->execute( $self->id );    
+ $sth->finish;
+}
+
+sub queryUpdateValidateTime {
+ my $query = '
+        update scarlet_reconcile
+        set
+            last_validate_time = current timestamp
+        where
+          id =? 
+    ';
+ return ( 'updateScarletReconcileValidateTime', $query );
 }
 
 sub update {
@@ -137,7 +164,7 @@ sub getByBizKey {
  $sth->fetchrow_arrayref;
  $sth->finish;
  $self->lastValidateTime($lastValidateTime);
- $self->reconcileMd5Hex($reconcileMd5Hex);    
+ $self->reconcileMd5Hex($reconcileMd5Hex);
 }
 
 sub queryGetByBizKey {
