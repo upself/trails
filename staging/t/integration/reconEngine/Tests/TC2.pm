@@ -57,8 +57,10 @@ sub _04_story36172_launchReconEngine : Test(8) {
    ->test;
  integration::reconEngine::TestLogScarletSoftwareMap->new( $self, $label )
    ->test;
- integration::reconEngine::TestLogAlertClosed->new( $self, $label )->test;
- integration::reconEngine::TestLogReconQuitNoError->new($self), $label->test;
+ integration::reconEngine::TestLogAlertClosed->new( $self,      $label )->test;
+ integration::reconEngine::TestLogReconQuitNoError->new( $self, $label )->test;
+
+ 
 }
 
 sub restoreConnectionConfig : Test( shutdown => 1 ) {
@@ -75,8 +77,7 @@ sub shutdown : Test( shutdown => 1 ) {
  my $self  = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestLogFileClean->new( $self, $label )
-   ->test;    
+ integration::reconEngine::TestLogFileClean->new( $self, $label )->test;
 }
 
 1;
