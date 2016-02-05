@@ -18,6 +18,7 @@ use integration::reconEngine::TestLogFileClean;
 
 sub _01_story36172_isScarletReconcileDelete : Test(3) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  my $reconcile = $self->findReconcile;
  my $sr        = Recon::OM::ScarletReconcile->new();
@@ -31,6 +32,7 @@ sub _01_story36172_isScarletReconcileDelete : Test(3) {
 
 sub _02_story36172_launchReconEngineCheckAlertOpen : Test(8) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  
@@ -47,6 +49,7 @@ sub _02_story36172_launchReconEngineCheckAlertOpen : Test(8) {
 
 sub cleanLogFile : Test( shutdown => 1 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }

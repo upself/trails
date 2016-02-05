@@ -21,6 +21,7 @@ use integration::reconEngine::CmdCreateScheduleFOnHostname;
 
 sub setup : Test( setup => 12 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  #IBM Tivoli Monitoring - Windows OS Agent/IWPPRN01
  $self->installedSoftwareId(240451553);
@@ -40,6 +41,7 @@ sub setup : Test( setup => 12 ) {
 
 sub openAlerts {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  $self->breakReconcile;
 
@@ -52,6 +54,7 @@ sub openAlerts {
 
 sub teardown : Test(teardown) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  #IBM Tivoli Monitoring - Windows OS Agent/IWPPRN01
  $self->installedSoftwareId(240451553);
@@ -67,6 +70,7 @@ sub teardown : Test(teardown) {
 #when the Schedule F existed on the Hostname level
 sub _01_story39096_reconcileShouldNotBuilt : Test(2) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  #IBM Tivoli Monitoring - Windows OS Agent/IWPPRN01
  $self->installedSoftwareId(240451553);
@@ -83,6 +87,7 @@ sub _01_story39096_reconcileShouldNotBuilt : Test(2) {
 
 sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(5) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
 #IBM License Metric Tool and Tivoli Asset Discovery for Distributed Agent/IWPPRN01
  $self->installedSoftwareId(260521374);
@@ -108,6 +113,7 @@ sub _02_story39096_reconcileShouldNotBuiltWithBenifitRun : Test(5) {
 
 sub _03_story39096_scarletReconcileDeleteAfterValidation : Test(9) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  #IBM Tivoli Monitoring - Windows OS Agent/IWPPRN01
  $self->installedSoftwareId(240451553);
@@ -143,6 +149,7 @@ sub _03_story39096_scarletReconcileDeleteAfterValidation : Test(9) {
 
 sub restoreConfigFile : Test( shutdown => 3 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  $self->resetGuid;
  $self->resetLicenseAPI;

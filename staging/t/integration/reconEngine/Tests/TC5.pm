@@ -17,6 +17,7 @@ use integration::reconEngine::CmdCreateReconInstalledSw;
 
 sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {    
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  integration::reconEngine::TestAlertClosed->new($self)->test;
  integration::reconEngine::TestScarletReconcileExist->new($self)->test;
@@ -36,6 +37,7 @@ sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {
 
 sub sweep : Test( shutdown => 2 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  integration::reconEngine::TestLogFileClean->new($self)->test;
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;

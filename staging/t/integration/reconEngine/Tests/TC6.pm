@@ -16,6 +16,7 @@ use integration::reconEngine::CmdBreakReconcileIfExists;
 
 sub restoreConfigFile : Test( shutdown => 1 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  $self->resetGuid;
  $self->resetLicenseAPI;
@@ -27,6 +28,7 @@ sub restoreConfigFile : Test( shutdown => 1 ) {
 
 sub _01_story39320_scarletReconileWillDelete : Test(7) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  $self->mockLicenseAPI;
  $self->mockGuidAPI;

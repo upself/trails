@@ -33,11 +33,13 @@ use integration::reconEngine::CmdCreateReconInstalledSw;
 use integration::reconEngine::CmdCleanReconInstalledSoftware;
 
 sub _01_story36172_checkConfiguration : Test(5) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->{connectionFile} = "/opt/staging/v2/config/connectionConfig.txt";
  $self->resetLicenseAPI;
- integration::reconEngine::TestScarletLicenseAPIDefined->new($self)->test;
+ integration::reconEngine::TestScarletLicenseAPIDefined->new( $self, $label )
+   ->test;
 
  my $accountNo       = '84690';
  my $guid            = '96804d13f07b4d1d8371942fc6449ea7';
@@ -45,31 +47,36 @@ sub _01_story36172_checkConfiguration : Test(5) {
  $licenseEndpoint->httpGet( $accountNo, $guid );
 
  is( $licenseEndpoint->outOfService,
-  0, 'scarlet license endpoint function good' )
+  0, $label . ', scarlet license endpoint function good' )    
    or return 'scarlet not reachalbe';
 
- integration::reconEngine::TestReconEngineConfig->new($self)->test;
- integration::reconEngine::TestLogFileClean->new($self)->test;
+ integration::reconEngine::TestReconEngineConfig->new( $self, $label )->test;
+ integration::reconEngine::TestLogFileClean->new( $self,      $label )->test;
+
 }
 
 sub _04_story36172_isReconcileValid : Test(2) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->breakReconcile;
-
- integration::reconEngine::TestAlertOpen->new($self)->test;
+ integration::reconEngine::TestAlertOpen->new( $self, $label )->test;
 }
 
 sub _05_story36172_isReconQueueReady : Test(1) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
+
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
 
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
- integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareExist->new( $self, $label )
+   ->test;
 }
 
 sub _06_story36172_launchReconEngineCheck : Test(7) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->mockGuidAPI;
  $self->mockLicenseAPI;
@@ -78,20 +85,25 @@ sub _06_story36172_launchReconEngineCheck : Test(7) {
   $self->isPool );
  $reconEngine->recon;
 
- integration::reconEngine::TestReconcileUsedLicenseExist->new($self)->test;
- integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+ integration::reconEngine::TestReconcileUsedLicenseExist->new( $self, $label )
+   ->test;
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
 
- integration::reconEngine::TestLogScarletBuilt->new($self)->test;
- integration::reconEngine::TestLogAlertClosed->new($self)->test;
+ integration::reconEngine::TestLogScarletBuilt->new( $self, $label )->test;
+ integration::reconEngine::TestLogAlertClosed->new( $self,  $label )->test;
 }
 
 sub shutdown : Test( shutdown => 2 ) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
+
  $self->resetGuid;
  $self->resetLicenseAPI;
 
- integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
- integration::reconEngine::TestLogFileClean->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new( $self,
+  $label )->test;
+ integration::reconEngine::TestLogFileClean->new( $self, $label )->test;
 }
 
 1;

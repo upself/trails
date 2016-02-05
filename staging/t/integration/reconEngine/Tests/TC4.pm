@@ -17,6 +17,7 @@ use integration::reconEngine::TestLogReconQuitWithError;
 
 sub _01_story36172_isScarletAPIInvalid : Test(12) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  $self->connectionFile( $self->connCfgFile );
  $self->setLicenseAPIInvalid;
@@ -39,6 +40,7 @@ sub _01_story36172_isScarletAPIInvalid : Test(12) {
 
 sub sweep : Test( shutdown => 3 ) {
  my $self = shift;
+ my $label = ( caller(0) )[3];
 
  integration::reconEngine::TestLogFileClean->new($self)->test;
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;

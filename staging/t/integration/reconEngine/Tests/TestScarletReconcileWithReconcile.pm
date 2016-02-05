@@ -23,7 +23,8 @@ sub restoreConfigFile : Test(shutdown) {
 }
 
 sub _01_story38372_lastValidateTimeUpdated : Test(2) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->mockGuidAPI;
  $self->resetParent;
@@ -44,14 +45,15 @@ sub _01_story38372_lastValidateTimeUpdated : Test(2) {
  row_ok(
   dbh => $self->connection->dbh,
   sql => [ "select * from scarlet_reconcile where id = ?", $reconcile->id ],
-  description => 'scarlet reconcile exists'
+  description => $label . ', scarlet reconcile exists'    
  );
- ok( $timeBefore ne $timeAfter, 'last validate time updated' );
+ ok( $timeBefore ne $timeAfter, $label . ', last validate time updated' );
 
 }
 
 sub _02_story38372_lastValidateTimeUnchanged : Test(2) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->mockGuidAPI;
  $self->setParentOutOfService;
@@ -69,14 +71,18 @@ sub _02_story38372_lastValidateTimeUnchanged : Test(2) {
  $dataObj->getByBizKey( $self->connection );
  my $timeAfter = $dataObj->lastValidateTime();
 
- ok( defined $timeBefore && defined $timeAfter, 'scarlet reconcile defined' );
+ ok(
+  defined $timeBefore && defined $timeAfter,
+  $label . ', scarlet reconcile defined'
+ );
  ok( $timeBefore eq $timeAfter,
-  'last validate time unchange due to parent out of service' );
+  $label . ', last validate time unchange due to parent out of service' );
 
 }
 
 sub _03_story38372_lastValidateTimeUnchanged : Test(2) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->setGuidOutOfService;
  $self->resetParent;
@@ -94,14 +100,18 @@ sub _03_story38372_lastValidateTimeUnchanged : Test(2) {
  $dataObj->getByBizKey( $self->connection );
  my $timeAfter = $dataObj->lastValidateTime();
 
- ok( defined $timeBefore && defined $timeAfter, 'scarlet reconcile defined' );
+ ok(
+  defined $timeBefore && defined $timeAfter,
+  $label . ', scarlet reconcile defined'
+ );
  ok( $timeBefore eq $timeAfter,
-  'last validate time unchange due to guid out of service' );
+  $label . ', last validate time unchange due to guid out of service' );
 
 }
 
 sub _04_story38372_scarletReconileWillDelete : Test(2) {
- my $self = shift;
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
 
  $self->mockEmptyGuidAPI;
  $self->resetParent;
@@ -115,7 +125,7 @@ sub _04_story38372_scarletReconileWillDelete : Test(2) {
  local $Test::DatabaseRow::dbh = $self->connection->dbh;
  not_row_ok(
   sql => [ 'select * from scarlet_reconcile where id =?', $reconcile->id ],
-  description => 'scarlet reconcile deleted'
+  description => $label . ', scarlet reconcile deleted'
  );
 
  row_ok(
@@ -124,7 +134,7 @@ sub _04_story38372_scarletReconileWillDelete : Test(2) {
    and action='LICENSING'",
    $reconcile->installedSoftwareId
   ],
-  description => 'appended to recon installed software'
+  description => $label . ', appended to recon installed software'
  );
 
 }
