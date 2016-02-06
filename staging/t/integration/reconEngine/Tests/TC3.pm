@@ -25,8 +25,8 @@ sub _01_story36172_isScarletReconcileDelete : Test(3) {
  $sr->id( $reconcile->id );
  $sr->delete( $self->connection );
 
- integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
- integration::reconEngine::TestAlertClosed->new($self)->test;
+ integration::reconEngine::TestScarletReconcileNotExist->new($self,$label)->test;
+ integration::reconEngine::TestAlertClosed->new($self,$label)->test;
 
 }
 
@@ -34,16 +34,16 @@ sub _02_story36172_launchReconEngineCheckAlertOpen : Test(8) {
  my $self = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestReconEngineConfig->new($self)->test;
+ integration::reconEngine::TestReconEngineConfig->new($self,$label)->test;
  
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
- integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
- integration::reconEngine::TestLogFileClean->new($self)->test;    
+ integration::reconEngine::TestReconInstalledSoftwareExist->new($self,$label)->test;
+ integration::reconEngine::TestLogFileClean->new($self,$label)->test;    
 
  $self->launchReconEngine;
 
- integration::reconEngine::TestAlertOpen->new($self)->test;
- integration::reconEngine::TestLogReconQuitNoError->new($self)->test;
+ integration::reconEngine::TestAlertOpen->new($self,$label)->test;
+ integration::reconEngine::TestLogReconQuitNoError->new($self,$label)->test;
 
 }
 
@@ -51,7 +51,7 @@ sub cleanLogFile : Test( shutdown => 1 ) {
  my $self = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestLogFileClean->new($self)->test;
+ integration::reconEngine::TestLogFileClean->new($self,$label)->test;
 }
 
 1;

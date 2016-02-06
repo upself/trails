@@ -22,33 +22,33 @@ sub _01_story36172_isScarletAPIInvalid : Test(12) {
  $self->connectionFile( $self->connCfgFile );
  $self->setLicenseAPIInvalid;
 
- integration::reconEngine::TestScarletLicenseAPIInvalid->new($self)->test;
+ integration::reconEngine::TestScarletLicenseAPIInvalid->new($self,$label)->test;
 
  $self->breakReconcile;
- integration::reconEngine::TestAlertOpen->new($self)->test;
- integration::reconEngine::TestReconEngineConfig->new($self)->test;
- integration::reconEngine::TestLogFileClean->new($self)->test;
+ integration::reconEngine::TestAlertOpen->new($self,$label)->test;
+ integration::reconEngine::TestReconEngineConfig->new($self,$label)->test;
+ integration::reconEngine::TestLogFileClean->new($self,$label)->test;
 
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;    
- integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareExist->new($self,$label)->test;
 
  $self->launchReconEngine;
- integration::reconEngine::TestAlertOpen->new($self)->test;
- integration::reconEngine::TestLogReconQuitWithError->new($self)->test;
- integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
+ integration::reconEngine::TestAlertOpen->new($self,$label)->test;
+ integration::reconEngine::TestLogReconQuitWithError->new($self,$label)->test;
+ integration::reconEngine::TestScarletReconcileNotExist->new($self,$label)->test;
 }
 
 sub sweep : Test( shutdown => 3 ) {
  my $self = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestLogFileClean->new($self)->test;
- integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
+ integration::reconEngine::TestLogFileClean->new($self),$label->test;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self,$label)->test;
 
  $self->connectionFile( $self->connCfgFile );
  $self->resetLicenseAPI;
 
- integration::reconEngine::TestScarletLicenseAPIValid->new($self)->test;
+ integration::reconEngine::TestScarletLicenseAPIValid->new($self,$label)->test;
 }
 
 1;

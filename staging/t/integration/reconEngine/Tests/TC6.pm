@@ -23,7 +23,7 @@ sub restoreConfigFile : Test( shutdown => 1 ) {
  $self->resetParent;
 
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
- integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self,$label)->test;
 }
 
 sub _01_story39320_scarletReconileWillDelete : Test(7) {
@@ -40,16 +40,16 @@ sub _01_story39320_scarletReconileWillDelete : Test(7) {
  ok( $reconcile->id, 'reconcile found' );
 
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
- integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self,$label)->test;
 
- integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+ integration::reconEngine::TestScarletReconcileExist->new($self,$label)->test;
  is( $reconcile->reconcileTypeId, 5, 'reconile type id is 5' );
 
  my $r = Recon::ScarletReconcile->new(0);
  $r->validate( $reconcile->id );
 
  #reconcile not changed scarlet reconcile should not deleted.
- integration::reconEngine::TestScarletReconcileExist->new($self)->test;
+ integration::reconEngine::TestScarletReconcileExist->new($self,$label)->test;
 
  #change reconcile type id from 5 to anyone else.
  $reconcile->reconcileTypeId(3);
@@ -59,9 +59,9 @@ sub _01_story39320_scarletReconileWillDelete : Test(7) {
  $r2->validate( $reconcile->id );
 
  #reconcile changed scarlet reconcile will deleted.
- integration::reconEngine::TestScarletReconcileNotExist->new($self)->test;
+ integration::reconEngine::TestScarletReconcileNotExist->new($self,$label)->test;
  integration::reconEngine::TestReconInstalledSoftwareExistWithoutDate->new(
-  $self)->test;
+  $self,$label)->test;
 
 }
 1;
