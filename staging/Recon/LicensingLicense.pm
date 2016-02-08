@@ -317,7 +317,7 @@ sub getLicenseAllocationsData {
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
         $lav->guid( $rec{guid} );
         
-       	my ( $scopename_temp, undef ) = Recon::Delegate::ReconDelegate->getScheduleFScope( 	$self->connection,
+       	my ( $scopename_temp, $scopelevel_temp ) = Recon::Delegate::ReconDelegate->getScheduleFScope( 	$self->connection,
 															$rec{slCustomerId}, # customer ID from SW LPAR
 															$rec{swName}, # software name
 															$rec{hOwner}, # hardware owner ID
@@ -329,6 +329,7 @@ sub getLicenseAllocationsData {
 
 															  
 		$lav->scopeName ( $scopename_temp );
+		$lav->scopeLevel ( $scopelevel_temp );
 
         ###Add lic allocation view object to data hash.
         $data{ $rec{rId} } = $lav;

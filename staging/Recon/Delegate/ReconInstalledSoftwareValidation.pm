@@ -701,7 +701,8 @@ sub validateLicenseAllocation {
     $rec{ibmOwned},
     $self->customer->swComplianceMgmt,
     $self->installedSoftwareReconData->scopeName,
-    undef, 0
+    $self->installedSoftwareReconData->scheduleFlevel,
+    undef, 0, $machineLevel
    );
 
 

@@ -26,6 +26,7 @@
 	<property name="hlPartMSU" type="scalar" equals="true" />
 	<property name="mtType" type="scalar" equals="true" />
 	<property name="scopeName" type="scalar" equals="true" />
+	<property name="scopeLevel" type="scalar" equals="false" />
 	<property name="slComplianceMgmt" type="scalar" equals="true" />
 	<property name="guid" type="scalar" equals="false" />
 </class>

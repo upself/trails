@@ -225,8 +225,10 @@ sub validate {
    $self->license->ibmOwned,
    $licenseAllocationView->slComplianceMgmt,
    $licenseAllocationView->scopeName,
+   $licenseAllocationView->scopeLevel,
    $licenseAllocationView->rId,
-   $licenseAllocationView->rtIsManual
+   $licenseAllocationView->rtIsManual,
+   $licenseAllocationView->machineLevel
   );
   $rValid *= $self->validateProcessorChip(
    $licenseAllocationView->rtIsManual, $self->license->capType,
@@ -713,11 +715,22 @@ sub validateSubCapacity {
 }
 
 sub validateScheduleF {
- my ( $self, $ibmOwned, $swComplianceMgmt, $scopeName, $reconcileId, $isManual )
+# my ( $self, $ibmOwned, $swComplianceMgmt, $scopeName, $reconcileId, $isManual )
+my ( $self, $ibmOwned, $swComplianceMgmt, $scopeName, $scopeLevel, $reconcileId, $isManual, $isMachineLevel )
    = @_;
+   
+my %scheduleFlevelMap = Recon::Delegate::ReconDelegate->getScheduleFLevelMap();
 
  if ( defined $scopeName ) {
   ###Schedule f defined
+  if (( $scopeLevel == $scheduleFlevelMap{'HOSTNAME'} ) && ( defined $isMachineLevel ) && ( $isMachineLevel == 1 )) {
+	  dlog("Machine-level reconciles aren't allowed, when scheduleF scope is hostname-defined!");
+      $self->addToReconcilesToBreak($reconcileId)
+        if defined($reconcileId);
+      $self->validationCode(0);
+      return 0;
+  }
+  
   if ( $scopeName eq 'IBMOIBMM'
     )   # This must be IBM owned license, regardless whether manual or automatic
   {

@@ -32,6 +32,7 @@ sub new {
         ,_hlPartMSU => undef
         ,_mtType => undef
         ,_scopeName => undef
+        ,_scopeLevel => undef
         ,_slComplianceMgmt => undef
         ,_guid => undef
     };
@@ -391,6 +392,12 @@ sub scopeName {
     return $self->{_scopeName};
 }
 
+sub scopeLevel {
+    my $self = shift;
+    $self->{_scopeLevel} = shift if scalar @_ == 1;
+    return $self->{_scopeLevel};
+}
+
 sub slComplianceMgmt {
     my $self = shift;
     $self->{_slComplianceMgmt} = shift if scalar @_ == 1;
@@ -534,6 +541,11 @@ sub toString {
     $s .= "scopeName=";
     if (defined $self->{_scopeName}) {
         $s .= $self->{_scopeName};
+    }
+    $s .= ",";
+    $s .= "scopeLevel=";
+    if (defined $self->{_scopeLevel}) {
+        $s .= $self->{_scopeLevel};
     }
     $s .= ",";
     $s .= "slComplianceMgmt=";
