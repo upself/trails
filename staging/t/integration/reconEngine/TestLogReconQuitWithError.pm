@@ -7,13 +7,21 @@ use Test::File;
 use Test::More;
 
 sub new {
- my ( $class, $properties ) = @_;
+ my ( $class, $properties, $label ) = @_;
 
  my $self = $class->SUPER::new($properties);
+ $self->{_label} = $label;
 
  bless $self, $class;
  return $self;
 
+}
+
+sub label {
+ my $self = shift;
+ $self->{_label} = shift
+   if scalar @_ == 1;
+ return $self->{_label};
 }
 
 sub test {
@@ -22,10 +30,10 @@ sub test {
  file_contains_like(
   $self->logFile,
   qr{returning to caller},
-  'check log - return to caller'
+  $self->label . ', check log - return to caller'
  );
- file_contains_like( $self->logFile, qr{ERROR}, 'check log - no error' )
-   ;    
+ file_contains_like( $self->logFile, qr{ERROR},
+  $self->label . ', check log - no error' );    
 }
 
 1;
