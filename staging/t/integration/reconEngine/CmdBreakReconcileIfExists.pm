@@ -2,6 +2,7 @@ package integration::reconEngine::CmdBreakReconcileIfExists;
 
 use strict;
 use base qw(integration::reconEngine::Properties);
+use Recon::OM::AlertUnlicensedSoftware;
 
 sub new {
  my ( $class, $properties ) = @_;
@@ -18,21 +19,35 @@ sub execute {
 
  my $reconcile = $self->findReconcile();
 
- if ( defined $reconcile->id ) {
-  my $is = BRAVO::OM::InstalledSoftware->new();
-  $is->id( $self->installedSoftwareId );
-  $is->getById( $self->connection );
+ my $hadSetup = 0;
 
-  my $lis =
-    Recon::LicensingInstalledSoftware->new( $self->connection, $is,
-   $self->isPool );
+ my $is = BRAVO::OM::InstalledSoftware->new();
+ $is->id( $self->installedSoftwareId );
+ $is->getById( $self->connection );
+
+ my $lis =
+   Recon::LicensingInstalledSoftware->new( $self->connection, $is,
+  $self->isPool );
+
+ if ( defined $reconcile->id ) {
+
   $lis->setUp;
+  $hadSetup = 1;
 
   $self->breakMachineLevelReconcile($lis);
-
-  $lis->openAlertUnlicensedSoftware();
   Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection,
    $reconcile->id );
+ }
+
+ my $aus = Recon::OM::AlertUnlicensedSoftware->new;
+ $aus->installedSoftwareId( $is->id );
+ $aus->getByBizKey( $self->connection );
+
+ if ( not $aus->open ) {
+  if ( not $hadSetup ) {
+   $lis->setUp;
+  }
+  $lis->openAlertUnlicensedSoftware();    
  }
 
 }
@@ -73,7 +88,7 @@ sub breakMachineLevelReconcile {
   Recon::Delegate::ReconDelegate->breakReconcileById( $self->connection,
    $r->id );
  }
-}    
+}
 
 1;
 
