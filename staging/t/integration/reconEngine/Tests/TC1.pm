@@ -47,7 +47,7 @@ sub _01_story36172_checkConfiguration : Test(5) {
  $licenseEndpoint->httpGet( $accountNo, $guid );
 
  is( $licenseEndpoint->outOfService,
-  0, $label . ', scarlet license endpoint function good' )    
+  0, $label . ', scarlet license endpoint function good' )
    or return 'scarlet not reachalbe';
 
  integration::reconEngine::TestReconEngineConfig->new( $self, $label )->test;
@@ -74,11 +74,11 @@ sub _05_story36172_isReconQueueReady : Test(1) {
    ->test;
 }
 
-sub _06_story36172_launchReconEngineCheck : Test(7) {
+sub _06_story36172_launchReconEngineCheck : Test(6) {
  my $self  = shift;
  my $label = ( caller(0) )[3];
 
- $self->mockGuidAPI;
+ $self->mockGuidAPI;    
  $self->mockLicenseAPI;
  my $reconEngine =
    new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
@@ -89,7 +89,6 @@ sub _06_story36172_launchReconEngineCheck : Test(7) {
    ->test;
  integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
    ->test;
-
  integration::reconEngine::TestLogScarletBuilt->new( $self, $label )->test;
  integration::reconEngine::TestLogAlertClosed->new( $self,  $label )->test;
 }
