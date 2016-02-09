@@ -29,6 +29,7 @@ sub execute {
  is.software_id = si.id
  and is.software_lpar_id = sl.id
  and is.id = ?
+ and sf.level = 'HOSTNAME'
  and sf.software_id = si.id
  and sf.software_name = si.name
  and sf.customer_id = sl.customer_id
