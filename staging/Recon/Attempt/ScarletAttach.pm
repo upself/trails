@@ -6,6 +6,7 @@ use Database::Connection;
 
 use Recon::OM::Reconcile;
 use Recon::ScarletInstalledSoftware;
+use BRAVO::OM::InstalledSoftware;
 
 sub new {
  my ( $class, $installedSoftware ) = @_;
@@ -65,6 +66,15 @@ sub attempt {
 
   if ( defined $reconcile ) {
    dlog('matched reconcile found');
+
+   my $is = BRAVO::OM::InstalledSoftware->new;
+   $is->id( $reconcile->installedSoftwareId );
+   $is->getById( $self->connection );
+
+   my $isObj =
+     Recon::LicensingInstalledSoftware->new( $self->connection, $is, 0 );
+   $isObj->setUp();
+   
    $scarletIs->reconcileTypeId( $reconcile->reconcileTypeId );
    $scarletIs->machineLevel( $reconcile->machineLevel );
    $scarletIs->allocMethodId( $reconcile->allocationMethodologyId );
@@ -73,14 +83,15 @@ sub attempt {
    $scarletIs->usedLicenses($usedLicenseIds);
 
    $allocation =
-     $scarletIs->allocateOnInstalledSoftwareId( $self->installedSoftware->id );
+     $scarletIs->allocateOnInstalledSoftwareId( $self->installedSoftware->id,
+    $isObj );
    last;
   }
  }
 
  if ( defined $allocation ) {
   dlog('reconciled by scarlet attach attempt');
-  return 1;    
+  return 1;
  }
 
  dlog('did not reconcile by scarlet attach attempt');
