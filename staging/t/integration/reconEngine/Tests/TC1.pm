@@ -33,6 +33,7 @@ use integration::reconEngine::CmdCreateReconInstalledSw;
 use integration::reconEngine::CmdCleanReconInstalledSoftware;
 use integration::reconEngine::CmdCreateScheduleFOnProduct;
 use integration::reconEngine::CmdDeleteScheduleFOnProduct;
+use integration::reconEngine::CmdBreakReconcileIfExists;
 
 sub _01_story36172_checkConfiguration : Test(5) {
  my $self  = shift;
@@ -62,8 +63,9 @@ sub _04_story36172_isReconcileValid : Test(2) {
  my $self  = shift;
  my $label = ( caller(0) )[3];
 
- $self->breakReconcile;
- integration::reconEngine::TestAlertOpen->new( $self, $label )->test;
+ integration::reconEngine::CmdBreakReconcileIfExists->new($self)->execute;
+ integration::reconEngine::TestAlertOpen->new( $self, $label )->test;  
+
 }
 
 sub _05_story36172_isReconQueueReady : Test(1) {
@@ -99,7 +101,6 @@ sub _06_story36172_launchReconEngineCheck : Test(6) {
  integration::reconEngine::TestLogScarletBuilt->new( $self, $label )->test;
  integration::reconEngine::TestLogAlertClosed->new( $self,  $label )->test;
 
- 
 }
 
 sub shutdown : Test( shutdown => 2 ) {
