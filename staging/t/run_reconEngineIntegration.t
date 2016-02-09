@@ -16,6 +16,6 @@ push @tcs, $tc1;
 push @tcs, $tc5;
 push @tcs, $tc2;
 push @tcs, $tc3;
-push @tcs, $tc4;    
+push @tcs, $tc4;
 
-Test::Class->runtests(@tcs);
+Test::Class->runtests(@tcs);    

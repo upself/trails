@@ -15,32 +15,40 @@ use integration::reconEngine::TestScarletReconcileExist;
 use integration::reconEngine::TestLogScarletSoftwareMap;
 use integration::reconEngine::CmdCreateReconInstalledSw;
 
-sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {    
- my $self = shift;
+
+sub _01_story36172_reRunReconEngineAgainstClosedAlerts : Test(14) {
+ my $self  = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestAlertClosed->new($self,$label)->test;
- integration::reconEngine::TestScarletReconcileExist->new($self,$label)->test;
- integration::reconEngine::TestReconEngineConfig->new($self,$label)->test;
- integration::reconEngine::TestLogFileClean->new($self,$label)->test;
- 
+ integration::reconEngine::TestAlertClosed->new( $self, $label )->test;
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
+ integration::reconEngine::TestReconEngineConfig->new( $self, $label )->test;
+ integration::reconEngine::TestLogFileClean->new( $self,      $label )->test;
+
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
- integration::reconEngine::TestReconInstalledSoftwareExist->new($self,$label)->test;
+ integration::reconEngine::TestReconInstalledSoftwareExist->new( $self, $label )
+   ->test;
 
  $self->launchReconEngine;
- 
- integration::reconEngine::TestAlertClosed->new($self)->test;
- integration::reconEngine::TestLogReconQuitNoError->new($self,$label)->test;
- integration::reconEngine::TestLogScarletSoftwareMap->new($self,$label)->test;
- integration::reconEngine::TestScarletReconcileExist->new($self,$label)->test;
+
+ integration::reconEngine::TestAlertClosed->new( $self, $label )
+   ->test;    
+ integration::reconEngine::TestLogReconQuitNoError->new( $self, $label )->test;
+ integration::reconEngine::TestLogScarletSoftwareMap->new( $self, $label )
+   ->test;
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
 }
 
 sub sweep : Test( shutdown => 2 ) {
- my $self = shift;
+ my $self  = shift;
  my $label = ( caller(0) )[3];
 
- integration::reconEngine::TestLogFileClean->new($self,$label)->test;
- integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self,$label)->test;
+ integration::reconEngine::TestLogFileClean->new( $self, $label )->test;
+ integration::reconEngine::TestReconInstalledSoftwareNotExist->new( $self,
+  $label )->test;
+
 
 }
 

@@ -31,6 +31,8 @@ use integration::reconEngine::TestLogFileClean;
 
 use integration::reconEngine::CmdCreateReconInstalledSw;
 use integration::reconEngine::CmdCleanReconInstalledSoftware;
+use integration::reconEngine::CmdCreateScheduleFOnProduct;
+use integration::reconEngine::CmdDeleteScheduleFOnProduct;
 
 sub _01_story36172_checkConfiguration : Test(5) {
  my $self  = shift;
@@ -80,10 +82,16 @@ sub _06_story36172_launchReconEngineCheck : Test(6) {
 
  $self->mockGuidAPI;    
  $self->mockLicenseAPI;
+ 
+ integration::reconEngine::CmdDeleteScheduleFOnProduct->new($self)->execute;
+ integration::reconEngine::CmdCreateScheduleFOnProduct->new($self)->execute;
+
+ 
  my $reconEngine =
    new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
   $self->isPool );
  $reconEngine->recon;
+
 
  integration::reconEngine::TestReconcileUsedLicenseExist->new( $self, $label )
    ->test;
@@ -91,6 +99,8 @@ sub _06_story36172_launchReconEngineCheck : Test(6) {
    ->test;
  integration::reconEngine::TestLogScarletBuilt->new( $self, $label )->test;
  integration::reconEngine::TestLogAlertClosed->new( $self,  $label )->test;
+
+
 }
 
 sub shutdown : Test( shutdown => 2 ) {
