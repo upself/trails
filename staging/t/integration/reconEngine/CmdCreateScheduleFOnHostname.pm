@@ -1,4 +1,4 @@
-package integration::reconEngine::CmdCreateScheduleFOnProduct;
+package integration::reconEngine::CmdCreateScheduleFOnHostname;
 
 use strict;
 use base qw(integration::reconEngine::Properties);
@@ -19,11 +19,11 @@ sub execute {
  my $sql = "
  insert into schedule_f (customer_id, software_id, software_title,  software_name, 
  manufacturer, scope_id, source_id, source_location, status_id, business_justification,
- remote_user, record_time, level, sw_financial_resp)
+ remote_user, record_time, level,hostname, sw_financial_resp)
  select 
  sl.customer_id, is.software_id, si.name, si.name, 
  'IBM',3,1, 'Test', 2, 'Test',
- 'AUTO Test',current timestamp,'PRODUCT','IBM'
+ 'AUTO Test',current timestamp,'HOSTNAME',sl.name,'IBM'
  from installed_software is, 
  software_lpar sl, 
  software_item si
