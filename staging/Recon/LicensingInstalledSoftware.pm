@@ -24,6 +24,7 @@ use Recon::SoftwareLpar;
 use Recon::CauseCode;
 use Recon::ScarletInstalledSoftware;
 use Scarlet::LicenseService;
+use Recon::Attempt::ScarletAttach;
 
 sub new {
  my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -173,10 +174,11 @@ sub recon {
 
   if ( $returnCode == 1 ) {
    $self->closeAlertUnlicensedSoftware(1);
-  
-   #try scarlet allocation to see if there's more beneift. 
+
+   #try scarlet allocation to see if there's more beneift.
    $scarletInstalledSoftware->tryToReconcile( $self->installedSoftware )
-     if ( defined $scarletInstalledSoftware ); # added by myyysha - some reconciles do not init scarlet class
+     if ( defined $scarletInstalledSoftware )
+     ;    # added by myyysha - some reconciles do not init scarlet class
   }
   elsif ( $returnCode == 2 ) {
    return $returnCode;
@@ -283,6 +285,7 @@ sub reconcile {
 
  return 0 if $self->validateScheduleFScope == 0;
 
+ return 1 if $self->attemptScarletAttach == 1;
  return 1 if $self->attemptVendorManaged == 1;
  return 1 if $self->attemptSoftwareCategory == 1;
  return 1 if $self->attemptBundled == 1;
@@ -310,11 +313,14 @@ sub reconcile {
    )
    = $self->attemptLicenseAllocation('legacy');
 
- if(!defined $licsToAllocate){
-   dlog('start attempt license allocation through scarlet');
-   ($licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
-    $allocMethodId, $freePoolData) = $self->attemptLicenseAllocation('scarlet');
-   dlog('end attempt license allocation through scarlet');
+ if ( !defined $licsToAllocate ) {
+  dlog('start attempt license allocation through scarlet');
+  (
+   $licsToAllocate, $reconcileTypeId, $machineLevel,
+   $reconcileIdForMachineLevel, $allocMethodId, $freePoolData
+    )
+    = $self->attemptLicenseAllocation('scarlet');
+  dlog('end attempt license allocation through scarlet');
  }
 
  if ( defined $licsToAllocate ) {
@@ -324,23 +330,24 @@ sub reconcile {
    $reconcileTypeId,             $machineLevel,
    $self->installedSoftware->id, $allocMethodId
   );
-  
-  if($self->isFreePoolFromScarlet($licsToAllocate,$freePoolData)
-    ||$self->isMachineAttemptFromScarlet($reconcileIdForMachineLevel))
+
+  if ($self->isFreePoolFromScarlet( $licsToAllocate, $freePoolData )
+   || $self->isMachineAttemptFromScarlet($reconcileIdForMachineLevel) )
   {
-       dlog('build scarlet reconcile');
-       my $scarletReconcile = new Recon::OM::ScarletReconcile();
-       $scarletReconcile->id($rId);
-       $scarletReconcile->save( $self->connection );
-       dlog('scarlet reconcile built');
-  }     
-       
+   dlog('build scarlet reconcile');
+   my $scarletReconcile = new Recon::OM::ScarletReconcile();
+   $scarletReconcile->id($rId);
+   $scarletReconcile->save( $self->connection );
+   dlog('scarlet reconcile built');
+  }
+
   my $scarletInstalledSw =
     new Recon::ScarletInstalledSoftware( $reconcileTypeId, $machineLevel,
    $allocMethodId, $self->installedSoftwareReconData->hId );
 
   foreach my $lId ( keys %{$licsToAllocate} ) {
-   dlog("allocating license id=$lId, using quantity=" . $licsToAllocate->{$lId} );
+   dlog(
+    "allocating license id=$lId, using quantity=" . $licsToAllocate->{$lId} );
 
    ###Create lic recon map.
    my $rul =
@@ -361,52 +368,58 @@ sub reconcile {
  return ( 0, undef );
 }
 
-sub isFreePoolFromScarlet{
- my $self = shift;
+sub isFreePoolFromScarlet {
+ my $self           = shift;
  my $licsToAllocate = shift;
- my $freePoolData = shift;
- 
- 
- if(!defined $freePoolData){
-   dlog('free pool not defiend.');
-   return 0;
- }
- 
- foreach my $lId ( keys %{$licsToAllocate} ) {
-    if(!defined $freePoolData->{$lId}){
-       next;
-    }
-    
-    if($freePoolData->{$lId}->from eq 'scarlet'){
-       return 1;
-    }
-  }
-  
-  dlog('free pool not from scarlet.');
+ my $freePoolData   = shift;
+
+ if ( !defined $freePoolData ) {
+  dlog('free pool not defiend.');
   return 0;
+ }
+
+ foreach my $lId ( keys %{$licsToAllocate} ) {
+  if ( !defined $freePoolData->{$lId} ) {
+   next;
+  }
+
+  if ( $freePoolData->{$lId}->from eq 'scarlet' ) {
+   return 1;
+  }
+ }
+
+ dlog('free pool not from scarlet.');
+ return 0;
 }
 
-sub isMachineAttemptFromScarlet{
-   my $self = shift;
-   my $reconcileId = shift;
-   
-   if(!defined $reconcileId){
-      dlog('not machine level attempt');
-      return 0;
-   }
-   
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcileId);
-   $scarletReconcile->getByBizKey( $self->connection );
-   
-   if(defined $scarletReconcile->lastValidateTime){
-     dlog('machie level attempt from scarlet');
-     return 1;
-   }
-   
-   dlog('machie level attempt not from scarlet');
-   return 0;
+sub isMachineAttemptFromScarlet {
+ my $self        = shift;
+ my $reconcileId = shift;
+
+ if ( !defined $reconcileId ) {
+  dlog('not machine level attempt');
+  return 0;
+ }
+
+ my $scarletReconcile = new Recon::OM::ScarletReconcile();
+ $scarletReconcile->id($reconcileId);
+ $scarletReconcile->getByBizKey( $self->connection );
+
+ if ( defined $scarletReconcile->lastValidateTime ) {
+  dlog('machie level attempt from scarlet');
+  return 1;
+ }
+
+ dlog('machie level attempt not from scarlet');
+ return 0;
 }
+
+sub attemptScarletAttach {
+ my $self = shift;
+
+ my $attach = Recon::Attempt::ScarletAttach->new( $self->installedSoftware );
+ return $attach->attempt;
+}    
 
 sub attemptVendorManaged {
  my $self = shift;
@@ -730,7 +743,6 @@ sub attemptExistingMachineLevel {
  if ( defined $reconcileTypeId && defined $reconcileIdForUsedLicense ) {
   dlog("allocated");
 
-
   return (
    \%licsToAllocate,           $reconcileTypeId,
    $reconcileIdForUsedLicense, $allocMethodId
@@ -743,7 +755,7 @@ sub attemptExistingMachineLevel {
 }
 
 sub attemptLicenseAllocation {
- my $self = shift;
+ my $self    = shift;
  my $through = shift;
  dlog("being attempt license allocation");
 
@@ -765,14 +777,17 @@ sub attemptLicenseAllocation {
 
  ###Get license free pool by customer id and software id.
  my $freePoolData = undef;
- if($through eq 'legacy'){
-   $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
- }else{
-   my $scarletLicSev = new Scarlet::LicenseService();
-   $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
-                 $self->installedSoftware->id);
+ if ( $through eq 'legacy' ) {
+  $freePoolData =
+    $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }
- 
+ else {
+  my $scarletLicSev = new Scarlet::LicenseService();
+  $freePoolData =
+    $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,
+   $self->customer, $self->installedSoftware->id );
+ }
+
  if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
   ###License type: GARTNER MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
@@ -909,10 +924,10 @@ sub getFreePoolData {
 
  $self->connection->prepareSqlQueryAndFields(
   $self->queryFreePoolData($scopeName) );
- my $sth = $self->connection->sql->{"freePoolData".$scopeName};
+ my $sth = $self->connection->sql->{ "freePoolData" . $scopeName };
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{"freePoolData".$scopeName."Fields"} } );
+    @{ $self->connection->sql->{ "freePoolData" . $scopeName . "Fields" } } );
  $sth->execute(
   $self->installedSoftwareReconData->cId,
   $self->installedSoftwareReconData->cId,
@@ -954,7 +969,7 @@ sub getFreePoolData {
    $licView->lparName( $rec{lparName} );
    $licView->environment( $rec{lEnvironment} );
    $licView->extSrcId( $rec{extSrcId} );
-   $licView->from($rec{from});
+   $licView->from( $rec{from} );
    dlog( $licView->toString );
 
    if ( defined $rec{usedQuantity} ) {
@@ -1273,9 +1288,9 @@ sub attemptLicenseAllocationProcessorOrIFL {
     if ( ( !defined $licView->cpuSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   next
-    if ( defined $licView->cpuSerial 
+    if ( defined $licView->cpuSerial
    && defined $self->installedSoftwareReconData->hSerial
-   &&( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
+   && ( $licView->cpuSerial ne $self->installedSoftwareReconData->hSerial )
    && ( $licView->licenseType eq "NAMED CPU" ) );
   dlog("found matching license - hw specific");
   my $neededQuantity = $processorCount - $tempQuantityAllocated;
@@ -1844,20 +1859,20 @@ sub getValueUnitsPerProcessor {
  if ( defined $pvuMap->id ) {
 
   my $processorSql = '';
-  my $sqlname = "M";
+  my $sqlname      = "M";
 
   if ( $nbrCoresPerChip == 1 ) {
    $processorSql =
      " (processor_type = 'SINGLE-CORE' or processor_type like '%ONE%') ";
-   $sqlname="1";
+   $sqlname = "1";
   }
   elsif ( $nbrCoresPerChip == 2 ) {
    $processorSql = " processor_type = 'DUAL-CORE' ";
-   $sqlname="2";
+   $sqlname      = "2";
   }
   elsif ( $nbrCoresPerChip == 4 ) {
    $processorSql = " processor_type like '%QUAD-CORE%' ";
-   $sqlname="4";
+   $sqlname      = "4";
   }
 
   if ( $processorSql ne '' ) {
@@ -1886,8 +1901,8 @@ sub getValueUnitsPerCore {
  my ( $self, $sql, $sqlname, $pvuId ) = @_;
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryValueUnitsPerCore($sql,$sqlname) );
- my $sth   = $self->connection->sql->{"valueUnitsPerCore".$sqlname};
+  $self->queryValueUnitsPerCore( $sql, $sqlname ) );
+ my $sth   = $self->connection->sql->{ "valueUnitsPerCore" . $sqlname };
  my $count = 0;
  $sth->bind_columns( \$count );
  $sth->execute($pvuId);
@@ -1908,7 +1923,7 @@ sub queryValueUnitsPerCore {
             pvu_id = ?
             and ' . $sql;
 
- return ( 'valueUnitsPerCore'.$sqlname, $query );
+ return ( 'valueUnitsPerCore' . $sqlname, $query );
 }
 
 sub attemptLicenseAllocationChip {
@@ -2144,7 +2159,7 @@ from
 
  dlog("Reading licenses query: $query");    # debug
 
- return ( 'freePoolData'.$scopeName, $query, \@fields );
+ return ( 'freePoolData' . $scopeName, $query, \@fields );
 }
 
 sub getInstalledSoftwareReconData {
@@ -2295,17 +2310,26 @@ sub getInstalledSoftwareReconData {
   my $tempBundleInstSwId;
 
   while ( $sth->fetchrow_arrayref ) {
-	  
+
    ###Perform category logic unless i am UNKNOWN.
    if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
 
     ###Does this inst sw match my category?
     if ( $rec{scName} eq $installedSoftwareReconData->scName ) {
      dlog("matches category");
-     
-     if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
-		dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
-		next;
+
+     if (
+      (
+       Recon::Delegate::ReconDelegate->getScheduleFScopeByISW(
+        $self->connection, $rec{instSwId}
+       )
+      )[0] ne $installedSoftwareReconData->scopeName
+       )
+     {
+      dlog( $rec{instSwID}
+         . " as potential SW category / bundle skipped, inequal ScheduleF level"
+      );
+      next;
      }
 
      ###Is it a higher priority than me?
@@ -2348,9 +2372,18 @@ sub getInstalledSoftwareReconData {
     ###Is this inst sw in a bundle?
     if ( defined $rec{bSwId} ) {
 
-     if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
-		dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
-		next;
+     if (
+      (
+       Recon::Delegate::ReconDelegate->getScheduleFScopeByISW(
+        $self->connection, $rec{instSwId}
+       )
+      )[0] ne $installedSoftwareReconData->scopeName
+       )
+     {
+      dlog( $rec{instSwID}
+         . " as potential SW category / bundle skipped, inequal ScheduleF level"
+      );
+      next;
      }
 
      dlog("in bundle");
@@ -2373,13 +2406,22 @@ sub getInstalledSoftwareReconData {
     ###Is this inst sw my parent?
     foreach my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } ) {
      if ( $rec{sId} == $bcSwId ) {
-		if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
-			dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
-			next;
-		}
-		 
-		dlog("matches bundle, setting parent");
-		$tempBundleInstSwId = $rec{instSwId};
+      if (
+       (
+        Recon::Delegate::ReconDelegate->getScheduleFScopeByISW(
+         $self->connection, $rec{instSwId}
+        )
+       )[0] ne $installedSoftwareReconData->scopeName
+        )
+      {
+       dlog( $rec{instSwID}
+          . " as potential SW category / bundle skipped, inequal ScheduleF level"
+       );
+       next;
+      }
+
+      dlog("matches bundle, setting parent");
+      $tempBundleInstSwId = $rec{instSwId};
      }
     }
    }

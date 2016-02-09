@@ -13,7 +13,7 @@ sub testSkuHttpGet : Test(2) {
  $self->mockLicenseAPI();
 
  my $endpoint = Scarlet::SkuEndpoint->new;
- my $skus     = $endpoint->httpGet( 35400, '48cf4c5bfb5a46eb9f71bf8bcb14f47d' );
+ my $skus     = $endpoint->httpGet( 35400, '152bff38a573430482bc30f8be9ee1fd' );
 
  is( $endpoint->status, 'SUCCESS', 'status success' );
  ok( defined $skus, 'skus defined' );
@@ -25,9 +25,9 @@ sub validateData : Test(3) {
  $self->mockLicenseAPI();
 
  my $endpoint = Scarlet::SkuEndpoint->new;
- my $skus     = $endpoint->httpGet( 35400, '48cf4c5bfb5a46eb9f71bf8bcb14f47d' );
+ my $skus     = $endpoint->httpGet( 35400, '152bff38a573430482bc30f8be9ee1fd' );
 
- is( scalar @{$skus}, 2, '2 sku found' );
+ is( scalar @{$skus}, 3, '3 sku found' );
  is( $skus->[1]->{licenseIds}->[0], 860683, 'license correct' );
  is(
   $skus->[1]->{guids}->[1],

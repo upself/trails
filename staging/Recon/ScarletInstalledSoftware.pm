@@ -352,7 +352,7 @@ and kbd.guid in(' . $guids . ') with ur ';
  my $installedSwId;
  if ( $self->machineLevel == 1 ) {
   $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQueryMachineLevel',
-   $query );    
+   $query );
   $sth = $self->connection->sql->{getInstalledSoftwareIdQueryMachineLevel};
   $sth->bind_columns( \$installedSwId );
   $sth->execute( $self->hardwareId, $isObj->id );
@@ -377,56 +377,68 @@ and kbd.guid in(' . $guids . ') with ur ';
  }
 
  foreach my $isId (@isIds) {
-
-  if ( $self->machineLevel ) {
-   my ( $scope, $level ) =
-     Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection,
-    $isId );
-   next if ( "HOSTNAME" eq $level );
-  }
-
-  my $is = new BRAVO::OM::InstalledSoftware();
-  $is->id($isId);
-  $is->getById( $self->connection );
-
-  my $licensingInstalledSoftware =
-    new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
-
-  ###reuse the validate of installed software to check if it's in scope.
-  my $validation = $licensingInstalledSoftware->validateScope();
-
-  #validate code 1, in scope installed software without any reconcile.
-  if ( $validation->validationCode == 1 ) {
-
-   if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
-    $self->info(
-     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
-    next;
-   }
-   dlog("ScheduleF defined and matched");
-
-   my $reconcile =
-     $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
-    $self->machineLevel, $isId, $self->allocMethodId );
-
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcile);
-   $scarletReconcile->save( $self->connection );
-
-   $self->info( 'SUCCESS:' . $reconcile . ' ref ' . $isObj->toString );
-
-   foreach my $ulId ( @{ $self->usedLicenses } ) {
-    $licensingInstalledSoftware->createReconcileUsedLicenseMap( $reconcile,
-     $ulId );
-   }
-
-   $licensingInstalledSoftware->closeAlertUnlicensedSoftware(1);
-
-  }
-  else {
-   $self->info( 'VALIDATE_FAIL:' . $is->toString . ' ref ' . $isObj->toString );
-  }
+  $self->allocateOnInstalledSoftwareId($isId);
  }
+
+}
+
+sub allocateOnInstalledSoftwareId {
+ my $self = shift;
+ my $isId = shift;
+
+ if ( $self->machineLevel ) {
+  my ( $scope, $level ) =
+    Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection,
+   $isId );
+  return if ( "HOSTNAME" eq $level );
+ }
+
+ my $is = new BRAVO::OM::InstalledSoftware();
+ $is->id($isId);
+ $is->getById( $self->connection );
+
+ my $licensingInstalledSoftware =
+   new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
+
+ ###reuse the validate of installed software to check if it's in scope.
+ my $validation = $licensingInstalledSoftware->validateScope();
+
+ #validate code 1, in scope installed software without any reconcile.
+ if ( defined $validation->validationCode
+  && $validation->validationCode == 1 )
+ {
+
+  if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
+   $self->info( 'NO_SCHEDULE_F:' . $is->toString );
+   next;
+  }
+  dlog("ScheduleF defined and matched");
+
+  my $reconcile =
+    $licensingInstalledSoftware->createReconcile( $self->reconcileTypeId,
+   $self->machineLevel, $isId, $self->allocMethodId );
+
+  my $scarletReconcile = new Recon::OM::ScarletReconcile();
+  $scarletReconcile->id($reconcile);
+  $scarletReconcile->save( $self->connection );
+
+  $self->info( 'SUCCESS:' . $reconcile );
+
+  foreach my $ulId ( @{ $self->usedLicenses } ) {
+   $licensingInstalledSoftware->createReconcileUsedLicenseMap( $reconcile,
+    $ulId );
+  }
+
+  $licensingInstalledSoftware->closeAlertUnlicensedSoftware(1);
+
+  return $reconcile;
+ }
+ else {
+  $self->info( 'VALIDATE_FAIL:' . $is->toString );
+ }
+
+ dlog('validation fail');    
+ return undef;
 
 }
 

@@ -12,7 +12,7 @@ sub configLog {
  logfile($opt_l);
  logging_level( $cfgMgr->debugLevel );
 
- #$self->checkAndInitLog($opt_l);    
+ $self->checkAndInitLog($opt_l);    
 
 }
 
@@ -22,7 +22,7 @@ sub configDebugLevel {
  logfile($logFile);
  logging_level('debug');
 
- #$self->checkAndInitLog($logFile);
+ $self->checkAndInitLog($logFile);
 }
 
 sub checkAndInitLog {
