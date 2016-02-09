@@ -410,7 +410,7 @@ sub allocateOnInstalledSoftwareId {
 
   if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
    $self->info( 'NO_SCHEDULE_F:' . $is->toString );
-   next;
+   return;    
   }
   dlog("ScheduleF defined and matched");
 
@@ -437,7 +437,7 @@ sub allocateOnInstalledSoftwareId {
   $self->info( 'VALIDATE_FAIL:' . $is->toString );
  }
 
- dlog('validation fail');    
+ dlog('validation fail');
  return undef;
 
 }
