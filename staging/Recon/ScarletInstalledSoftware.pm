@@ -400,6 +400,10 @@ and kbd.guid in(' . $guids . ') with ur ';
      'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
    }
+   if ( $isObj->installedSoftwareReconData->scopeName ne $licensingInstalledSoftware->installedSoftwareReconData->scopeName ) {
+	   dlog("ScheduleF scope of myself and found iSW unmatched, skipping...");
+	   next;
+   }
    dlog("ScheduleF defined and matched");
 
    my $reconcile =

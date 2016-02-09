@@ -662,11 +662,16 @@ sub queryPotentialHWboxAlloc {
 sub attemptExistingMachineLevel {
  my $self  = shift;
  my $scope = shift;
+ my $through = shift;
+ my $freePoolData = shift;
  dlog("attempt existing machine level");
 
  my %licsToAllocate;
- my $reconciles = $self->getExistingMachineLevelRecon($scope);
-
+ my $reconciles = undef;
+ 
+ $reconciles = $self->getExistingMachineLevelReconLegacy($scope) if ( $through eq 'legacy' );
+ $reconciles = $self->getExistingMachineLevelReconScarlet($scope, $freePoolData) if ( $through eq 'scarlet' );
+ 
  my $reconcileTypeId;
  my $reconcileIdForUsedLicense;
  my $allocMethodId;
@@ -689,9 +694,7 @@ sub attemptExistingMachineLevel {
    $installedSoftware );
   $recon->setUp;
 
-  next
-    if ( ( $scope eq "IBMOIBMM" )
-   && ( $recon->installedSoftwareReconData->scopeName ne "IBMOIBMM" ) );
+  next if ( $scope ne $recon->installedSoftwareReconData->scopeName );
 
   my $validation = new Recon::Delegate::ReconInstalledSoftwareValidation();
   $validation->customer( $recon->customer );
@@ -753,11 +756,11 @@ sub attemptLicenseAllocation {
  my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
  my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if (( $scheduleFlevel < 4 ) && ( $through eq 'legacy' )) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
   ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
     $self->attemptExistingMachineLevel(
-   $self->installedSoftwareReconData->scopeName );
+   $self->installedSoftwareReconData->scopeName, 'legacy' );
   return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId,
    undef )
     if defined $licsToAllocate;
@@ -771,6 +774,16 @@ sub attemptLicenseAllocation {
    my $scarletLicSev = new Scarlet::LicenseService();
    $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
                  $self->installedSoftware->id);
+ }
+
+ if (( $scheduleFlevel < 4 ) && ( $through eq 'scarlet' )) {    # skip for hostname-specific scheduleF
+  ###Attempt to reconcile at machine level if one is already reconciled at machine level
+  ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
+    $self->attemptExistingMachineLevel(
+   $self->installedSoftwareReconData->scopeName, 'scarlet', $freePoolData );
+  return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId,
+   undef )
+    if defined $licsToAllocate;
  }
  
  if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
@@ -2682,34 +2695,90 @@ sub addChildrenToQueue {
  }
 }
 
-sub getExistingMachineLevelRecon {
+sub getExistingMachineLevelReconLegacy {
  my $self  = shift;
  my $scope = shift;
 
- dlog("Getting existing machine level recon, scope $scope.");
+ dlog("Getting existing machine level recon by the legacy method, scope $scope.");
 
  my %data;
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryExistingMachineLevelRecon($scope) );
+  $self->queryExistingMachineLevelReconLegacy($scope) );
  my $sth;
  my %rec;
  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
-  $sth = $self->connection->sql->{existingMachineLevelRecon};
+  $sth = $self->connection->sql->{existingMachineLevelReconLegacy};
   $sth->bind_columns( map { \$rec{$_} }
-     @{ $self->connection->sql->{existingMachineLevelReconFields} } );
+     @{ $self->connection->sql->{existingMachineLevelReconLegacyFields} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
+   $self->installedSoftware->softwareId,
    $self->installedSoftware->softwareId,
    $self->customer->id, $self->customer->id
   );
  }
  elsif ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) ) {
-  $sth = $self->connection->sql->{existingMachineLevelReconAll};
+  $sth = $self->connection->sql->{existingMachineLevelReconAllLegacy};
   $sth->bind_columns( map { \$rec{$_} }
-     @{ $self->connection->sql->{existingMachineLevelReconAllFields} } );
+     @{ $self->connection->sql->{existingMachineLevelReconAllLegacyFields} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
+   $self->installedSoftware->softwareId,
    $self->installedSoftware->softwareId
+  );
+ }
+
+ while ( $sth->fetchrow_arrayref ) {
+  logRec( 'dlog', \%rec );
+
+  $data{ $rec{reconcileId} }{ $rec{licenseId} }{'usedQuantity'} =
+    $rec{usedQuantity};
+  $data{ $rec{reconcileId} }{ $rec{licenseId} }{'reconcileTypeId'} =
+    $rec{reconcileTypeId};
+ }
+ $sth->finish;
+
+ return \%data;
+}
+
+sub getExistingMachineLevelReconScarlet {
+ my $self  = shift;
+ my $scope = shift;
+ my $freePoolData = shift;
+ 
+ my $LicIdsToQuery = "( ";
+ 
+ foreach my $lId ( keys %{$freePoolData} ) {
+	 $LicIdsToQuery.=$lId.", ";
+ }
+ 
+ $LicIdsToQuery =~ s/, $/ )/;
+
+ dlog("Getting existing machine level recon by the Scarlet method, scope $scope.");
+ dlog("Searching for license IDs used on machine-level-allocation: $LicIdsToQuery");
+
+ my %data;
+ $self->connection->prepareSqlQueryAndFields(
+  $self->queryExistingMachineLevelReconScarlet($scope) );
+ my $sth;
+ my %rec;
+ if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
+  $sth = $self->connection->sql->{existingMachineLevelReconScarlet};
+  $sth->bind_columns( map { \$rec{$_} }
+     @{ $self->connection->sql->{existingMachineLevelReconScarletFields} } );
+  $sth->execute(
+   $self->installedSoftwareReconData->hId,
+   $LicIdsToQuery,
+   $self->customer->id, $self->customer->id
+  );
+ }
+ elsif ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) ) {
+  $sth = $self->connection->sql->{existingMachineLevelReconAllScarlet};
+  $sth->bind_columns( map { \$rec{$_} }
+     @{ $self->connection->sql->{existingMachineLevelReconAllScarletFields} } );
+  $sth->execute(
+   $self->installedSoftwareReconData->hId,
+   $LicIdsToQuery
   );
  }
 
@@ -2849,11 +2918,11 @@ sub queryProductionHwlparCount {
  return ( 'productionHwlparCount', $query, \@fields );
 }
 
-sub queryExistingMachineLevelRecon {
+sub queryExistingMachineLevelReconLegacy {
  my $self  = shift;
  my $scope = shift;
 
- dlog("Searching for machinelevel recon accross all customers, IBMOIBMM")
+ dlog("Searching for machinelevel legacy recon accross all customers, IBMOIBMM")
    if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
 
  my @fields = qw(
@@ -2871,40 +2940,79 @@ sub queryExistingMachineLevelRecon {
             ,l.environment
             ,ul.used_quantity
         from
-            hardware h
-            ,hardware_lpar hl
-            ,hw_sw_composite hsc
-            ,software_lpar sl
-            ,installed_software is
-            ,reconcile r
-            ,reconcile_used_license rul
-            ,used_license ul
-            ,license l
+            hardware h join hardware_lpar hl on ( h.id = hl.hardware_id and hl.status = \'ACTIVE\' )
+            join hw_sw_composite hsc on ( hsc.hardware_lpar_id = hl.id )
+            join software_lpar sl on ( sl.id = hsc.software_lpar_id and sl.status = \'ACTIVE\' )
+            join installed_software is on ( sl.id = is.software_lpar_id )
+            join reconcile r on ( is.id = r.installed_software_id )
+            join reconcile_used_license rul on ( r.id = rul.reconcile_id )
+            join used_license ul on ( ul.id = rul.used_license_id )
+            join license l on ( l.id = ul.license_id )
+            join license_sw_map lsm on ( lsm.license_id = l.id )
         where
             h.id = ?
-            and hl.status = \'ACTIVE\'
-            and sl.status = \'ACTIVE\'
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
-            and is.software_id = ?';
+            and is.software_id = ?
+            and lsm.software_id = ?';
  $query .=
 '   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
- $query .= '   and h.id = hl.hardware_id
-            and hsc.software_lpar_id = sl.id
-            and hsc.hardware_lpar_id = hl.id
-            and sl.id = is.software_lpar_id
-            and is.id = r.installed_software_id
-            and r.id = rul.reconcile_id
-            and r.machine_level = 1
-            and ul.license_id = l.id
-            and rul.used_license_id = ul.id
+ $query .= '   and r.machine_level = 1
         with ur
     ';
 
- return ( 'existingMachineLevelRecon', $query, \@fields )
+ return ( 'existingMachineLevelReconLegacy', $query, \@fields )
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
- return ( 'existingMachineLevelReconAll', $query, \@fields )
+ return ( 'existingMachineLevelReconAllLegacy', $query, \@fields )
+   if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
+}
+
+sub queryExistingMachineLevelReconScarlet {
+ my $self  = shift;
+ my $scope = shift;
+
+ dlog("Searching for machinelevel Scarlet recon accross all customers, IBMOIBMM")
+   if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
+
+ my @fields = qw(
+   reconcileId
+   reconcileTypeId
+   licenseId
+   licenseEnvironment
+   usedQuantity
+ );
+ my $query = '
+        select
+            r.id
+            ,r.reconcile_type_id
+            ,l.id
+            ,l.environment
+            ,ul.used_quantity
+        from
+            hardware h join hardware_lpar hl on ( h.id = hl.hardware_id and hl.status = \'ACTIVE\' )
+            join hw_sw_composite hsc on ( hsc.hardware_lpar_id = hl.id )
+            join software_lpar sl on ( sl.id = hsc.software_lpar_id and sl.status = \'ACTIVE\' )
+            join installed_software is on ( sl.id = is.software_lpar_id )
+            join reconcile r on ( is.id = r.installed_software_id )
+            join reconcile_used_license rul on ( r.id = rul.reconcile_id )
+            join used_license ul on ( ul.id = rul.used_license_id )
+            join license l on ( l.id = ul.license_id )
+        where
+            h.id = ?
+            and is.status = \'ACTIVE\'
+            and l.status = \'ACTIVE\'
+            and l.id in ?';
+ $query .=
+'   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
+   if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
+ $query .= '   and r.machine_level = 1
+        with ur
+    ';
+
+ return ( 'existingMachineLevelReconScarlet', $query, \@fields )
+   if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
+ return ( 'existingMachineLevelReconAllScarlet', $query, \@fields )
    if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
 }
 
