@@ -9,21 +9,25 @@ use Recon::ScarletReconcile;
 use Test::More;
 use Test::DatabaseRow;
 
+use Recon::ScarletReconcile;
+
 use integration::reconEngine::CmdCreateScheduleFOnProduct;
 use integration::reconEngine::CmdDeleteScheduleFOnProduct;
 use integration::reconEngine::CmdCreateReconInstalledSw;
+
+sub startup : Test(startup) {
+ my $self = shift;
+
+ $self->mockLicenseAPI;
+}
 
 sub _01_story39347_attachedToManual : Test(1) {
  my $self  = shift;
  my $label = ( caller(0) )[3];
 
- # $self->createScheduleF;
- # $self->deleteScheduleF;
-
  #Tivoli Inventory / 35400
  $self->installedSoftwareId(151728581);
 
- $self->mockLicenseAPI;
  integration::reconEngine::CmdBreakReconcileIfExists->new($self)->execute;
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
  integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
@@ -31,8 +35,47 @@ sub _01_story39347_attachedToManual : Test(1) {
 
  integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
    ->test;
- 
- 
+
+}
+
+sub _02_story39347_runReconAgainAgainstTheClosedAlert : Test(1) {
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
+
+ #Tivoli Inventory / 35400
+ $self->installedSoftwareId(151728581);
+
+ integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
+ $self->launchReconEngine;
+
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
+
+}
+
+sub _03_story39347_validationWonTDeleteScraletReconcile : Test(1) {
+ my $self  = shift;
+ my $label = ( caller(0) )[3];
+
+ #Tivoli Inventory / 35400
+ $self->installedSoftwareId(151728581);
+
+ my $reconcile = $self->findReconcile;
+
+ my $sr = Recon::ScarletReconcile->new(0);
+ $sr->validate( $reconcile->id );
+
+ $TODO = "protential defects of alerts open/close issue. \
+http://prodpcrdsherlk3.w3-969.ibm.com:9100/uids?licenseId=611249 \
+returned nothing";    
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
+}
+
+sub shutdown : Test(shutdown) {
+ my $self = shift;
+
  $self->resetLicenseAPI;
 }
 
