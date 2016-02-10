@@ -2748,6 +2748,10 @@ sub getExistingMachineLevelReconScarlet {
  my $scope = shift;
  my $freePoolData = shift;
  
+ my %data;
+ 
+ return \%data if scalar ( ( keys %{$freePoolData} ) == 0 );
+ 
  my $LicIdsToQuery = "( ";
  
  foreach my $lId ( keys %{$freePoolData} ) {
@@ -2759,7 +2763,6 @@ sub getExistingMachineLevelReconScarlet {
  dlog("Getting existing machine level recon by the Scarlet method, scope $scope.");
  dlog("Searching for license IDs used on machine-level-allocation: $LicIdsToQuery");
 
- my %data;
  $self->connection->prepareSqlQueryAndFields(
   $self->queryExistingMachineLevelReconScarlet($scope) );
  my $sth;
