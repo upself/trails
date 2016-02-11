@@ -23,6 +23,7 @@ sub clean : Test(shutdown) {
 }
 
 sub story38372_orphanScarletReconcileDeleted : Test(2) {
+ my $label = ( caller(0) )[3];
 
  my $id         = 999999;
  my $connection = Database::Connection->new('trails');
@@ -41,7 +42,7 @@ sub story38372_orphanScarletReconcileDeleted : Test(2) {
    $id
   ],
   tests       => { ">" => { QTY => 0 } },
-  description => "scarlet reconcile exists"
+  description => $label . ", scarlet reconcile exists" 
  );
 
  my $r = Recon::ScarletReconcile->new(0);
@@ -55,7 +56,7 @@ sub story38372_orphanScarletReconcileDeleted : Test(2) {
     where sr.id = ?',
    $id
   ],
-  description => "scarlet reconcile deleted"
+  description => $label . ", scarlet reconcile deleted"
  );
 
 }
