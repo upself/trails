@@ -5,8 +5,9 @@ use Base::Utils;
 use Database::Connection;
 
 use Recon::OM::Reconcile;
+use BRAVO::OM::InstalledSoftware;    
 use Recon::ScarletInstalledSoftware;
-use BRAVO::OM::InstalledSoftware;
+use Scarlet::SkuEndpoint;
 
 sub new {
  my ( $class, $installedSoftware ) = @_;
@@ -74,7 +75,7 @@ sub attempt {
    my $isObj =
      Recon::LicensingInstalledSoftware->new( $self->connection, $is, 0 );
    $isObj->setUp();
-   
+
    $scarletIs->reconcileTypeId( $reconcile->reconcileTypeId );
    $scarletIs->machineLevel( $reconcile->machineLevel );
    $scarletIs->allocMethodId( $reconcile->allocationMethodologyId );

@@ -449,7 +449,7 @@ sub validateProcCount {
  
  my $allocMethodologyMap = Recon::Delegate::ReconDelegate::getAllocationMethodologyMap();
 
- if ( (( $licenseCapType eq '17' ) && ( $rtIsManual == 0 )) ||
+ if ( ((defined $licenseCapType && $licenseCapType eq '17' ) && ( $rtIsManual == 0 )) ||
 	 (( $allocMethodology eq $allocMethodologyMap->{'Per PVU'} ) && ( $rtIsManual == 1 )) ) {
   if (( defined $hProcessorCount )
    && ( ( $hProcessorCount == 0 ) || ( $hProcessorCount < 0 ) ) )
