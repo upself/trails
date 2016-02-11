@@ -24,7 +24,7 @@
 <meta name="IBM.Industry" scheme="IBM_IndustryTaxonomy" content="ZZ" />
 <title>w3 v8 | Pop-Up Window</title>
 <script language="JavaScript" type="text/javaScript"
-	src="//w3.ibm.com/ui/v8/scripts/scripts.js"></script>
+	src="//w3-workplace.ibm.com/ui/v8/scripts/scripts.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.js"
 	type="text/javascript"></script>
 <style type="text/css" media="all">
@@ -56,7 +56,7 @@ font-size:22px}
 <body id="w3-ibm-com" onblur="confirmExist()">
 <!-- start popup masthead //////////////////////////////////////////// -->
 <div id="popup-masthead"><img id="popup-w3-sitemark"
-	src="//w3.ibm.com/ui/v8/images/id-w3-sitemark-small.gif" alt=""
+	src="//w3-workplace.ibm.com/ui/v8/images/id-w3-sitemark-small.gif" alt=""
 	width="182" height="26" /></div>
 
 <!-- stop popup masthead //////////////////////////////////////////// -->

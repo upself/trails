@@ -2,19 +2,20 @@
 
 use FindBin;
 use lib "$FindBin::Bin/..";
-use Test::Class::Load qw(integration/Scarlet/Tests);    
-use integration::reconEngine::Story38372::TestScarletReconcile;
-use integration::reconEngine::Story36172::TC1;
+use Test::Class::Load qw(integration/reconEngine/Tests);
 
 my @tcs;
 
-my $tc1 = integration::reconEngine::Story36172::TC1->new;
-my $tc2 = integration::reconEngine::Story38372::TestScarletReconcile->new;
-
+my $tc1 = integration::reconEngine::Tests::TC1->new;
+my $tc2 = integration::reconEngine::Tests::TestScarletReconcile->new;
 push @tcs, ( $tc1, $tc2 );    #tc2 rely on the result of tc1.
 
-push @tcs, integration::Scarlet::Tests::TestEndpoint->new;
-push @tcs, integration::Scarlet::Tests::TestScarletReconcile->new;
+push @tcs, integration::reconEngine::Tests::TestEndpoint->new;
+push @tcs, integration::reconEngine::Tests::TestScarletReconcile->new;
+push @tcs, integration::reconEngine::Tests::TC6->new;                  
+push @tcs, integration::reconEngine::Tests::TC7->new;
 
+
+#$ENV{TEST_METHOD} = '.*http.*';
 Test::Class->runtests(@tcs);
 

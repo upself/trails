@@ -61,6 +61,7 @@ my $tmpLogFile = "/tmp/";
     validateServer
     currentTimeStamp
     dbstamp
+    init_log4perl
 );
 
 #

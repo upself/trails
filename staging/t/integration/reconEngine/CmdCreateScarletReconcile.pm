@@ -1,4 +1,4 @@
-package integration::Scarlet::CmdCreateScarletReconcile;
+package integration::reconEngine::CmdCreateScarletReconcile;
 
 use strict;
 
@@ -9,7 +9,7 @@ sub new {
  my ( $class, $id, $time ) = @_;
  my $self = {
   _id         => $id,
-  _time       => $time,                                
+  _time       => $time,
   _connection => Database::Connection->new('trails')
 
  };
@@ -25,8 +25,18 @@ sub execute {
 
  my $r = Recon::OM::ScarletReconcile->new();
  $r->id( $self->{_id} );
- $r->lastValidateTime( $self->{_time} );
- $r->save($connection);
+ $r->getByBizKey($connection);
+
+ if ( !defined $r->lastValidateTime ) {
+  $r->lastValidateTime( $self->{_time} );
+  $r->save($connection);
+ }
+ elsif ( $r->lastValidateTime ne $self->{_time} ) {
+  $r->delete($connection);
+
+  $r->lastValidateTime( $self->{_time} );
+  $r->save($connection);    
+ }
 
 }
 

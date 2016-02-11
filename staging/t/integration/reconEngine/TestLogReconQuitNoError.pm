@@ -24,8 +24,9 @@ sub test {
   qr{returning to caller},
   'check log - return to caller'
  );
- file_contains_unlike( $self->logFile, qr{ERROR}, 'check log - no error' )
-   ;    
+ file_contains_unlike( $self->logFile, qr{ERROR},
+  'check log - no error' )    
+   ;
 }
 
 1;

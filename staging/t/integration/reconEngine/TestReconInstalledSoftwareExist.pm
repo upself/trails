@@ -19,15 +19,6 @@ sub new {
 sub test {
  my $self = shift;
 
- my $reconInstalledSoftware =
-   integration::reconEngine::ReconInstalledSoftware->new();
- $reconInstalledSoftware->installedSoftwareId( $self->installedSoftwareId );
- $reconInstalledSoftware->customerId( $self->customerId );
- $reconInstalledSoftware->recordTime( $self->date . ' 09:00:00' );
- $reconInstalledSoftware->remoteUser('TC1');
- $reconInstalledSoftware->action('LICENSING');
- $reconInstalledSoftware->save( $self->connection );    
-
  row_ok(
   dbh => $self->connection->dbh,
   sql => [
@@ -38,7 +29,7 @@ sub test {
    $self->installedSoftwareId
   ],
   tests => {
-   "eq" => { ACTION      => "LICENSING", DATE => $self->date },
+   "eq" => { ACTION => "LICENSING", DATE => $self->date },    
    "==" => { CUSTOMER_ID => $self->customerId }
   },
   description => "installed software exist in recon_installed_sw"

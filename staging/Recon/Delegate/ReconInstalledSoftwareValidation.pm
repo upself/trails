@@ -3,6 +3,7 @@ package Recon::Delegate::ReconInstalledSoftwareValidation;
 use strict;
 use Base::Utils;
 use Recon::Delegate::ReconLicenseValidation;
+use Recon::Delegate::ReconDelegate;
 
 sub new {
  my ($class) = @_;
@@ -152,6 +153,7 @@ sub validate {
  elsif ( $self->validateVendorManaged == 0
   || $self->validateSoftwareCategory == 0
   || $self->validateBundle == 0
+  || $self->validateIncludedWithOtherProduct == 0
   || $self->validateScheduleFdefined == 0
   || $self->validateCustomerOwnedAndManaged == 0
   || $self->validateIBMOwned3rdManaged == 0
@@ -360,6 +362,28 @@ sub validateParentInstalledSW {
 
 }
 
+sub validateIncludedWithOtherProduct {
+	my $self = shift;
+
+ if ( $self->installedSoftwareReconData->rTypeId ==
+  $self->reconcileTypeMap->{'Included with other product'} )
+ {
+	dlog("reconciled as manually included with other product");
+
+	return 0 unless defined $self->installedSoftwareReconData->rParentInstSwId;
+  
+	if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection, $self->installedSoftwareReconData->rParentInstSwId ))[0]
+				ne $self->installedSoftwareReconData->scopeName ) {
+			dlog("Other product ScheduleF scope not equal to self, inclusion invalid!");
+			return 0;
+	}
+	
+	dlog("reconcile validated.");
+  }
+
+ return 1;
+}
+
 sub validateSoftwareCategory {
  my $self = shift;
 
@@ -373,8 +397,14 @@ sub validateSoftwareCategory {
    if ( $self->installedSoftwareReconData->rParentInstSwId ==
     $self->installedSoftwareReconData->scParent )
    {
-    dlog("reconcile validated");
-    return 1;
+	    dlog("Software category parent found.");
+		if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection, $self->installedSoftwareReconData->rParentInstSwId ))[0]
+						ne $self->installedSoftwareReconData->scopeName ) {
+		dlog("SW category parent ScheduleF scope not equal to self, SW category invalid!");
+		return 0;
+		}
+		dlog("reconcile validated");
+		return 1;
    }
    else {
     dlog("reconcile parent different, invalid reconcile");
@@ -403,6 +433,12 @@ sub validateBundle {
    if ( $self->installedSoftwareReconData->rParentInstSwId ==
     $self->installedSoftwareReconData->bParent )
    {
+	dlog("Bundle parent found.");
+	if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection, $self->installedSoftwareReconData->rParentInstSwId ))[0]
+						ne $self->installedSoftwareReconData->scopeName ) {
+		dlog("Bundle parent ScheduleF scope not equal to self, bundle invalid!");
+		return 0;
+	}
     dlog("reconcile validated");
     return 1;
    }
@@ -616,16 +652,15 @@ sub validateCustOwnedIBMManagedCons {
 }
 
 sub validateScheduleFdefined
-{ # since 20.5.2015, scheduleF must be defined for any auto-recon whatsoever (not just license recon)
+{ # since 20.1.2016, scheduleF must be defined for any reconcile whatsoever, automatic and manual (not just license recon)
  my $self = shift;
  dlog("begin validateScheduleFdefined");
  if (( not defined $self->installedSoftwareReconData->scopeName )
   || ( $self->installedSoftwareReconData->scopeName eq "" ) )
  {
-  if (( defined $self->installedSoftwareReconData->rIsManual )
-   && ( $self->installedSoftwareReconData->rIsManual == 0 ) )
+  if ( defined $self->installedSoftwareReconData->rId )
   {
-   dlog("reconcile automatic, scheduleF not defined");
+   dlog("reconcile present, scheduleF not defined");
    return 0;
   }
  }
@@ -666,7 +701,8 @@ sub validateLicenseAllocation {
     $rec{ibmOwned},
     $self->customer->swComplianceMgmt,
     $self->installedSoftwareReconData->scopeName,
-    undef, 0
+    $self->installedSoftwareReconData->scheduleFlevel,
+    undef, 0, $machineLevel
    );
 
 
@@ -989,15 +1025,15 @@ sub queryValidateLicenseAllocation {
             ,lsm.software_id
         from
             reconcile r
-            join reconcile_used_license rul on
+            left outer join reconcile_used_license rul on
               r.id =  rul.reconcile_id
-            join used_license ul on
+            left outer join used_license ul on
               ul.id = rul.used_license_id
-            join capacity_type ct on
+            left outer join capacity_type ct on
               ct.code = ul.capacity_type_id
-            join license l on 
+            left outer join license l on 
                 l.id = ul.license_id
-            join license_sw_map lsm on 
+            left outer join license_sw_map lsm on 
                 lsm.license_id = l.id
         where
             r.installed_software_id = ?

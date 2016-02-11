@@ -182,8 +182,7 @@ public class MsHardwareBaselineReadDelegate extends Delegate {
 						.getPodName());
 				tempList.add(msHardwareBaseline.getCustomer().getIndustry()
 						.getIndustryName());
-				tempList.add(msHardwareBaseline.getCustomer().getIndustry()
-						.getSector().getSectorName());
+				tempList.add(msHardwareBaseline.getCustomer().getSector().getSectorName());
 				tempList.add(msHardwareBaseline.getCustomer().getCustomerType()
 						.getCustomerTypeName());
 

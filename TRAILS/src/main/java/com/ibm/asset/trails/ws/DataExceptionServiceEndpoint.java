@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.ibm.asset.trails.dao.DataExceptionHistoryDao;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
+import com.ibm.asset.trails.domain.DataExceptionHardwareLparView;
 import com.ibm.asset.trails.domain.DataExceptionHistory;
 import com.ibm.asset.trails.domain.DataExceptionHistoryView;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
@@ -122,6 +124,7 @@ public class DataExceptionServiceEndpoint {
 				   alertType = dataExpHardwareLparService.getAlertType();
 				   total = new Long(dataExpHardwareLparService.getAlertListSize(account, alertType));
 				   list = dataExpHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
+				   list=this.hwLparDataExpsTransformer(list);
 				}
 				else{
 				  return WSMsg.failMessage("Data Exception Type {"+dataExpType+"} doesn't exist");
@@ -406,4 +409,61 @@ public class DataExceptionServiceEndpoint {
 	  }
 	  return swLparDataExpsTransformList;
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List hwLparDataExpsTransformer(List<DataExceptionHardwareLpar> hwLparDataExpsList){
+		  List hwLparDataExpsTransformList = new ArrayList();
+		  
+		  for(DataExceptionHardwareLpar hwLparDataExp : hwLparDataExpsList){
+			  
+			  DataExceptionHardwareLparView hwLparDataExpView = new DataExceptionHardwareLparView();
+			  
+			  hwLparDataExpView.setDataExpId(hwLparDataExp.getId());
+			  hwLparDataExpView.setDataExpType(hwLparDataExp.getAlertType().getCode());
+			  hwLparDataExpView.setDataExpCreationTime(hwLparDataExp.getCreationTime());
+			  
+			  if(hwLparDataExp.getAssignee()!=null){
+			    hwLparDataExpView.setDataExpAssignee(hwLparDataExp.getAssignee());
+			  }
+			  else{
+				hwLparDataExpView.setDataExpAssignee("");  
+			  }
+		
+			  hwLparDataExpView.setHwLparId(hwLparDataExp.getHardwareLpar().getId());
+			  
+			  if(hwLparDataExp.getHardwareLpar().getName()!=null){
+			    hwLparDataExpView.setHwLparName(hwLparDataExp.getHardwareLpar().getName());
+			  }
+			  else{
+				hwLparDataExpView.setHwLparName("");  
+			  }
+			  
+			  if(hwLparDataExp.getHardwareLpar().getHardware().getSerial()!=null){
+			    hwLparDataExpView.setHwSerial(hwLparDataExp.getHardwareLpar().getHardware().getSerial());
+			  }
+			  else{
+				hwLparDataExpView.setHwSerial("");  
+			  }
+			  
+			  if(hwLparDataExp.getHardwareLpar().getExtId()!=null){
+				  hwLparDataExpView.setHwLparExtId(hwLparDataExp.getHardwareLpar().getExtId());
+			  }else{
+				  hwLparDataExpView.setHwLparExtId("");
+			  }
+			  
+			  if(hwLparDataExp.getHardwareLpar().getHardware().getChips()!=null){
+				  hwLparDataExpView.setHwChips(String.valueOf(hwLparDataExp.getHardwareLpar().getHardware().getChips()));
+			  }else{
+				  hwLparDataExpView.setHwChips("");
+			  }
+			  if(hwLparDataExp.getHardwareLpar().getHardware().getProcessorCount()!=null){
+				  hwLparDataExpView.setHwProcessors(String.valueOf(hwLparDataExp.getHardwareLpar().getHardware().getProcessorCount()));
+			  }else{
+				  hwLparDataExpView.setHwProcessors("");
+			  }
+			  hwLparDataExpView.setHwLparAccountNumber(hwLparDataExp.getHardwareLpar().getAccount().getAccount());
+			  hwLparDataExpsTransformList.add(hwLparDataExpView);
+		  }
+		  return hwLparDataExpsTransformList;
+		}
 }

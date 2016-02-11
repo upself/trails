@@ -218,11 +218,11 @@ public class HardwareLpar {
 	}
 
 	public String getLparStatus() {
-		return status;
+		return lparStatus;
 	}
 
 	public void setLparStatus(String lparStatus) {
-		this.status = lparStatus;
+		this.lparStatus = lparStatus;
 	}
 
 	public String getSpla() {

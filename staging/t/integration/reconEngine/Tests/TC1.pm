@@ -1,7 +1,8 @@
-package integration::reconEngine::Story36172::TC1;
+package integration::reconEngine::Tests::TC1;
 
 use strict;
-use base 'integration::reconEngine::TestBase';
+use base qw(integration::reconEngine::TestBase
+  integration::ScarletAPIManager);
 use Test::More;
 use Test::File;
 use Test::DatabaseRow;
@@ -15,7 +16,6 @@ use Recon::LicensingInstalledSoftware;
 use Recon::OM::Reconcile;
 use Recon::Delegate::ReconDelegate;
 use Scarlet::LicenseEndpoint;
-use integration::reconEngine::ReconInstalledSoftware;
 
 use integration::reconEngine::TestReconInstalledSoftwareExist;
 use integration::reconEngine::TestScarletReconcileExist;
@@ -29,11 +29,16 @@ use integration::reconEngine::TestLogScarletBuilt;
 use integration::reconEngine::TestLogAlertClosed;
 use integration::reconEngine::TestLogFileClean;
 
-use integration::reconEngine::CmdCleanReconInstalledSoftware;    
+use integration::reconEngine::CmdCreateReconInstalledSw;
+use integration::reconEngine::CmdCleanReconInstalledSoftware;
+use integration::reconEngine::CmdCreateScheduleFOnProduct;
+use integration::reconEngine::CmdDeleteScheduleFOnProduct;
 
-sub _01_checkConfiguration : Test(5) {
+sub _01_story36172_checkConfiguration : Test(5) {
  my $self = shift;
 
+ $self->{connectionFile} = "/opt/staging/v2/config/connectionConfig.txt";
+ $self->resetLicenseAPI;
  integration::reconEngine::TestScarletLicenseAPIDefined->new($self)->test;
 
  my $accountNo       = '84690';
@@ -41,17 +46,15 @@ sub _01_checkConfiguration : Test(5) {
  my $licenseEndpoint = Scarlet::LicenseEndpoint->new;
  $licenseEndpoint->httpGet( $accountNo, $guid );
 
- ok(
-  $licenseEndpoint->outOfService eq 0,
-  'scarlet license endpoint function good'
-   )
+ is( $licenseEndpoint->outOfService,
+  0, 'scarlet license endpoint function good' )
    or return 'scarlet not reachalbe';
 
  integration::reconEngine::TestReconEngineConfig->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }
 
-sub _04_isReconcileValid : Test(2) {
+sub _04_story36172_isReconcileValid : Test(2) {
  my $self = shift;
 
  $self->breakReconcile;
@@ -59,31 +62,44 @@ sub _04_isReconcileValid : Test(2) {
  integration::reconEngine::TestAlertOpen->new($self)->test;
 }
 
-sub _05_isReconQueueReady : Test(1) {
+sub _05_story36172_isReconQueueReady : Test(1) {
  my $self = shift;
  integration::reconEngine::CmdCleanReconInstalledSoftware->new($self)->execute;
+
+ integration::reconEngine::CmdCreateReconInstalledSw->new($self)->execute;
  integration::reconEngine::TestReconInstalledSoftwareExist->new($self)->test;
 }
 
-sub _06_launchReconEngineCheck : Test(8) {
+sub _06_story36172_launchReconEngineCheck : Test(8) {
  my $self = shift;
 
+ $self->mockGuidAPI;
+ $self->mockLicenseAPI;
+ 
+ integration::reconEngine::CmdDeleteScheduleFOnProduct->new($self)->execute;
+ integration::reconEngine::CmdCreateScheduleFOnProduct->new($self)->execute;
+
+ 
  my $reconEngine =
    new Recon::LicensingReconEngineCustomer( $self->customerId, $self->date,
   $self->isPool );
  $reconEngine->recon;
 
- integration::reconEngine::TestReconcileUsedLicenseExist->new($self)->test;
- integration::reconEngine::TestScarletReconcileExist->new($self)->test;
 
- integration::reconEngine::TestLogScarletBuilt->new($self)->test;
- integration::reconEngine::TestLogAlertClosed->new($self)->test;
- integration::reconEngine::TestLogReconQuitNoError->new($self)->test;
+ integration::reconEngine::TestReconcileUsedLicenseExist->new( $self, $label )
+   ->test;
+ integration::reconEngine::TestScarletReconcileExist->new( $self, $label )
+   ->test;
+ integration::reconEngine::TestLogScarletBuilt->new( $self, $label )->test;
+ integration::reconEngine::TestLogAlertClosed->new( $self,  $label )->test;
 
 }
 
 sub shutdown : Test( shutdown => 2 ) {
  my $self = shift;
+ $self->resetGuid;
+ $self->resetLicenseAPI;
+
  integration::reconEngine::TestReconInstalledSoftwareNotExist->new($self)->test;
  integration::reconEngine::TestLogFileClean->new($self)->test;
 }

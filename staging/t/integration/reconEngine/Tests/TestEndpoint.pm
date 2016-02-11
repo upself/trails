@@ -1,4 +1,4 @@
-package integration::Scarlet::Tests::TestEndpoint;
+package integration::reconEngine::Tests::TestEndpoint;
 
 use base qw(
   Test::Class
@@ -12,19 +12,14 @@ use Test::File;
 
 use Scarlet::GuidEndpoint;
 
-sub _startup : Test(startup) {
- my $self  = shift;
- my $class = ref($self);
- diag("---start of $class---");
-}
-
 sub setupLog : Test(startup) {
  my $self = shift;
 
  $self->{logFile} = '/tmp/testEndpoint.txt';
  $self->configDebugLevel( $self->{logFile} );
-
+ 
  $self->{connectionFile} = '/opt/staging/v2/config/connectionConfig.txt';
+
 }
 
 sub shutdown : Test(shutdown) {
@@ -130,7 +125,7 @@ sub story38636_http505 : Test(1) {
  $endpoint->httpGet(999999);
 
  $self->checkLog('505 HTTP Version Not Supported');
-}    
+}
 
 sub checkLog {
  my $self    = shift;

@@ -103,11 +103,12 @@ sub httpGet {
  }
  else {
   $self->status('ERROR');
-  elog( 'scarlet requesting failed: ' . $response->status_line );
+  elog(
+   'scarlet requesting failed: ' . $response->status_line . ' uri=' . $uri );
 
-  my $code = $response->code;
-  if ( $code >= 500 ) {    
-   elog( $response->content );
+  my $code = $response->code;    
+  if ( $code >= 500 ) {
+   elog( $response->content . ' uri=' . $uri );
   }
  }
 

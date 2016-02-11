@@ -48,7 +48,7 @@ add when complete.</p>
 			<td class="t1"><label for="softwareCategory">*Signature
 			name: </label></td>
 			<td>
-			<div class="input-note">max 128 characters</div>
+			<div class="input-note">max 255 characters</div>
 			<html:text property="fileName" styleClass="input" /></td>
 		</tr>
 	</table>

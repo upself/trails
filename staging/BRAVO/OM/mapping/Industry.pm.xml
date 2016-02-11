@@ -4,8 +4,6 @@
 		sql-key="true" />
 	<property name="industryId" type="scalar" equals="true"
 		sql-name="industry_id" biz-key="true" />
-	<property name="sectorId" type="scalar" equals="true"
-		sql-name="sector_id" />
 	<property name="name" type="scalar" equals="true" sql-name="industry_name" />
 	<property name="creationDateTime" type="scalar" sql-name="creation_date_time"
 		equals="true" />

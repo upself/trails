@@ -20,7 +20,7 @@
 		join fetch c.customerType
 		join fetch c.pod
         join fetch c.industry
-		join fetch c.industry.sector
+		join fetch c.sector
 		join fetch c.contactDPE
 		left join fetch c.misldRegistration
 		left join fetch c.misldAccountSettings
@@ -43,7 +43,7 @@
 		join fetch c.pod
 		join fetch c.countryCode
         join fetch c.industry
-		join fetch c.industry.sector
+		join fetch c.sector
 		join fetch c.contactDPE
 		join fetch c.misldRegistration
 		join fetch c.misldAccountSettings
@@ -102,7 +102,7 @@
 		join fetch c.customerType
 		join fetch c.pod
         join fetch c.industry
-		join fetch c.industry.sector
+		join fetch c.sector
 		join fetch c.contactDPE
 		join fetch c.misldRegistration
 		join fetch c.misldAccountSettings
@@ -141,7 +141,7 @@
 		join fetch c.customerType
 		join fetch c.pod
         join fetch c.industry
-		join fetch c.industry.sector
+		join fetch c.sector
 		join fetch c.contactDPE
 		join fetch c.countryCode
 		left join fetch c.misldRegistration
@@ -163,7 +163,7 @@
 		join fetch c.customerType
 		join fetch c.pod
         join fetch c.industry
-		join fetch c.industry.sector
+		left join fetch c.sector
 		join fetch c.contactDPE
 		left join fetch c.misldRegistration
 		left join fetch c.misldAccountSettings

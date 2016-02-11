@@ -3,7 +3,7 @@ SELECT
 	 ccode.name as "Country",
 	 c.customer_name as "Account Name",
 	 c.account_number as "Account Number", 
-	 CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, 
+	 CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END as "Status", 
 	 HL.Name AS "Hostname", 
 	 H.Serial as "Serial", 
 	 MT.Name AS "Machine type", 

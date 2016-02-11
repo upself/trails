@@ -8,9 +8,9 @@ import org.displaytag.properties.MediaTypeEnum;
 
 public class LicenseCatalogColumnDecorator implements DisplaytagColumnDecorator {
 
-	private static final String MATCH = "//w3.ibm.com/ui/v8/images/icon-system-status-ok.gif";
+	private static final String MATCH = "//w3-workplace.ibm.com/ui/v8/images/icon-system-status-ok.gif";
 
-	private static final String NO_MATCH = "//w3.ibm.com/ui/v8/images/icon-system-status-na.gif";
+	private static final String NO_MATCH = "//w3-workplace.ibm.com/ui/v8/images/icon-system-status-na.gif";
 
 	public Object decorate(Object columnValue, PageContext pageContext,
 			MediaTypeEnum media) throws DecoratorException {

@@ -104,6 +104,20 @@ sub getAllocationMethodologyMap {
 	return \%data;
 }
 
+sub getScheduleFLevelMap {
+	my $self=shift;
+	
+	my %data;
+	
+	$data{'MANUFACTURER'} = 0;
+	$data{'PRODUCT'} = 1;
+	$data{'HWOWNER'} = 2;
+	$data{'HWBOX'} = 3;
+	$data{'HOSTNAME'} = 4;
+	
+	return %data;
+}
+
 sub getIBMISVprio {
 	my ( $self, $conn, $manu_id, $cust_id ) = @_;
 	
@@ -160,7 +174,9 @@ sub getScheduleFScope {
 	my $hMachineTypeId=shift;
 	my $slName=shift;
 	
-	my $prioFound=0; # temporary value with the priority of schedule F found, so we don't have to run several cycles
+	my %scheduleFlevels=getScheduleFLevelMap();
+	
+	my $prioFound=$scheduleFlevels{'MANUFACTURER'}; # temporary value with the priority of schedule F found, so we don't have to run several cycles
 	my $scopeToReturn=undef;
 	
 	$connection->prepareSqlQueryAndFields(
@@ -174,37 +190,81 @@ sub getScheduleFScope {
 	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
 	
 	while ( $sth->fetchrow_arrayref ) {
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == 3 )) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound == $scheduleFlevels{'HOSTNAME'} )) {
 			wlog("ScheduleF HOSTNAME = ".$slName." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < 3 )) {
+		if (( $recc{level} eq "HOSTNAME" ) && ( $slName eq $recc{hostname} ) && ( $prioFound < $scheduleFlevels{'HOSTNAME'} )) {
 			$scopeToReturn=$recc{scopeName};
-			$prioFound=3;
+			$prioFound=4;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == 2 )) {
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound == $scheduleFlevels{'HWBOX'} )) {
 			wlog("ScheduleF HWBOX = ".$hSerial." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < 2 )) {
+		if (( $recc{level} eq "HWBOX" ) && ( $hSerial eq $recc{hSerial} ) && ( $hMachineTypeId eq $recc{hMachineTypeId} ) && ( $prioFound < $scheduleFlevels{'HWBOX'} )) {
 			$scopeToReturn=$recc{scopeName};
-			$prioFound=2;
+			$prioFound=3;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == 1 )) {
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound == $scheduleFlevels{'HWOWNER'} )) {
 			wlog("ScheduleF HWOWNER =".$hwOwner." for customer=".$custId." and software=".$softName." found twice!");
 			return undef;
 		}
-		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < 1 )) {
+		if (( $recc{level} eq "HWOWNER" ) && ( $hwOwner eq $recc{hwOwner} ) && ( $prioFound < $scheduleFlevels{'HWOWNER'} )) {
+			$scopeToReturn=$recc{scopeName};
+			$prioFound=2;
+		}
+		if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == $scheduleFlevels{'PRODUCT'} )) {
+			wlog("ScheduleF PRODUCT  for customer=".$custId." and software=".$softName." found twice!");
+			return undef;
+		}
+		if (( $recc{level} eq "PRODUCT" ) && ( $prioFound < $scheduleFlevels{'PRODUCT'} )) {
 			$scopeToReturn=$recc{scopeName};
 			$prioFound=1;
 		}
-		$scopeToReturn=$recc{scopeName} if (( $recc{level} eq "PRODUCT" ) && ( $prioFound == 0 ));
+		if (( $recc{level} eq "MANUFACTURER" ) && ( $prioFound == $scheduleFlevels{'MANUFACTURER'} )) {
+			$scopeToReturn=$recc{scopeName};
+		}
 	}
+	
+	$sth->finish;
 	
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, scopeName= $scopeToReturn, prioFound = $prioFound") if defined ($scopeToReturn);
 	dlog("custId= $custId, softName=$softName, hostname=$slName, serial=$hSerial, no scopeName found") unless defined ($scopeToReturn);
 	
 	return ( $scopeToReturn, $prioFound );
+}
+
+sub getScheduleFScopeByISW {
+	my $self=shift;
+	my $connection=shift;
+	my $swID=shift;
+	
+	$connection->prepareSqlQueryAndFields(
+		$self->queryScheduleFSearch() );
+	my $sth = $connection->sql->{ScheduleFSearch};
+	my %recc;
+	$sth->bind_columns( map { \$recc{$_} }
+		  @{ $connection->sql->{ScheduleFSearchFields} } );
+	$sth->execute( $swID );
+	
+	$sth->fetchrow_arrayref;
+	
+	$sth->finish;
+	
+	return ( undef, undef ) unless defined $recc{custId};
+	
+	my @toreturn=getScheduleFScope( $self, $connection, $recc{custId}, $recc{softName}, $recc{hwOwner}, $recc{hSerial},
+									$recc{hMachineTypeId}, $recc{slName}, $recc{swManufacturer} );
+									
+	return ( undef, undef ) unless defined $toreturn[0];
+	
+	my %ScheduleFlevels=getScheduleFLevelMap();
+	
+	foreach my $lvl (keys %ScheduleFlevels) { $toreturn[1] = $lvl if ( $ScheduleFlevels{$lvl} eq $toreturn[1] ); }
+	
+	return ( $toreturn[0], $toreturn[1] );
+	
 }
 
 sub queryScheduleFScope {
@@ -232,13 +292,36 @@ sub queryScheduleFScope {
 	  where
 	    sf.customer_id = ?
 	  and
-	    sf.software_name = ?
+	    (( sf.software_name = ? and sf.level != \'MANUFACTURER\' ) )
 	  and
 	    sf.status_id = 2
 	  with ur
 	';
 	return('ScheduleFScope', $query, \@fields );
+}
+
+sub queryScheduleFSearch {
+	my @fields = qw(
+		custId
+		softName
+		hwOwner
+		hSerial
+		hMachineTypeId
+		slName
+		swManufacturer
+	);
 	
+	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, s.manufacturer_id
+	from ( ( ( ( ( installed_software is
+				   join software_lpar sl on sl.id = is.software_lpar_id )
+                   join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
+                   join hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
+                   join hardware h on h.id = hl.hardware_id )
+                   join software s on s.software_id = is.software_id )
+                   where is.id = ?
+     with ur';
+     
+     return ('ScheduleFSearch', $query, \@fields );
 }
 
 sub breakReconcileById {

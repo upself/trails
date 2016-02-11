@@ -67,6 +67,7 @@ when h.nbr_cores_per_chip > 0 then 'MULTI-CORE'
 else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base data missing') else 'Non_IBM Product' end as pvuPerCode 
 ,s.software_name as primaryComponent 
 ,s.pid as pid 
+, case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end as MFSwlastUsed 
 , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id 
 where sf.customer_id = lparCust.customer_id 
 and sf.status_id=2 
@@ -116,7 +117,9 @@ from
  
  inner join eaadmin.manufacturer instSwMan on s.manufacturer_id = instSwMan.id 
  inner join eaadmin.discrepancy_type dt on is.discrepancy_type_id = dt.id 
- inner join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id 
+ inner join eaadmin.alert_unlicensed_sw aus on is.id = aus.installed_software_id
+ left outer join eaadmin.installed_tadz insTadz on is.id = insTadz.installed_software_id
+ left outer join eaadmin.bank_account ba on insTadz.bank_account_id = ba.id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id 
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id 
  left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id = am.id 

@@ -114,7 +114,7 @@ sub outOfService {
  {
   return 0;
  }
- return 1;    
+ return 1;
 }
 
 sub appendData {
@@ -348,16 +348,19 @@ and kbd.guid in(' . $guids . ') with ur ';
  }
 
  dlog( ' getInstalledSoftwareIdQuery = ' . $query );
-
+ my $sth = undef;
  my $installedSwId;
- $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
- my $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
- $sth->bind_columns( \$installedSwId );
-
  if ( $self->machineLevel == 1 ) {
+  $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQueryMachineLevel',
+   $query );    
+  $sth = $self->connection->sql->{getInstalledSoftwareIdQueryMachineLevel};
+  $sth->bind_columns( \$installedSwId );
   $sth->execute( $self->hardwareId, $isObj->id );
  }
  else {
+  $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
+  $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
+  $sth->bind_columns( \$installedSwId );
   $sth->execute( $isObj->softwareLparId, $isObj->id );
  }
 
@@ -374,6 +377,14 @@ and kbd.guid in(' . $guids . ') with ur ';
  }
 
  foreach my $isId (@isIds) {
+
+  if ( $self->machineLevel ) {
+   my ( $scope, $level ) =
+     Recon::Delegate::ReconDelegate->getScheduleFScopeByISW( $self->connection,
+    $isId );
+   next if ( "HOSTNAME" eq $level );
+  }
+
   my $is = new BRAVO::OM::InstalledSoftware();
   $is->id($isId);
   $is->getById( $self->connection );
@@ -391,6 +402,10 @@ and kbd.guid in(' . $guids . ') with ur ';
     $self->info(
      'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
     next;
+   }
+   if ( $isObj->installedSoftwareReconData->scopeName ne $licensingInstalledSoftware->installedSoftwareReconData->scopeName ) {
+	   dlog("ScheduleF scope of myself and found iSW unmatched, skipping...");
+	   next;
    }
    dlog("ScheduleF defined and matched");
 

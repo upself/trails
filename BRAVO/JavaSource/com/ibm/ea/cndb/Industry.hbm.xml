@@ -6,10 +6,7 @@
         <id name="industryId" type="long" column="INDUSTRY_ID">
             <generator class="increment"/>
         </id>
-        
-        <many-to-one name="sector" column="SECTOR_ID" class="com.ibm.ea.cndb.Sector" not-null="true" index="IDX_INDS"/>
-        
-<!--        <property name="industryName" column="INDUSTRY_NAME" not-null="true" index="IDX_INDN"/>-->
+
         <property name="industryName" column="INDUSTRY_NAME" not-null="true"/>
 
     </class>
