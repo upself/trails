@@ -1,4 +1,4 @@
-package integration::reconEngine::TestScarletReconcileExist;
+package integration::reconEngine::TestReconcileOnMachineLevel;
 
 use strict;
 use base qw(integration::reconEngine::Properties);
@@ -30,13 +30,13 @@ sub test {
  row_ok(
   dbh => $self->connection->dbh,
   sql => [
-   'select count(*) as QTY 
-    from reconcile r, scarlet_reconcile sr
-    where r.id = sr.id and r.installed_software_id =?',
+   'select machine_level as LEVEL 
+    from reconcile r
+    where r.installed_software_id =?',
    $self->installedSoftwareId
   ],
-  tests       => { ">" => { QTY => 0 } },
-  description => $self->label . ", scarlet reconcile exists" 
+  tests => { "==" => { LEVEL => 1 } },
+  description => $self->label . ", reconciled on machie level"    
  );
 }
 
