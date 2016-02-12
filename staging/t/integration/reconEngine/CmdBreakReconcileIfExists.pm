@@ -81,7 +81,7 @@ sub breakMachineLevelReconcile {
 
   my $recon =
     Recon::LicensingInstalledSoftware->new( $self->connection,
-   $installedSoftware );
+   $installedSoftware ,$self->isPool);
   $recon->setUp;
 
   $recon->openAlertUnlicensedSoftware();

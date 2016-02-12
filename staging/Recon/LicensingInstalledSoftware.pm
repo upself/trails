@@ -2315,6 +2315,8 @@ sub getInstalledSoftwareReconData {
   my $tempBundleInstSwId;
 
   while ( $sth->fetchrow_arrayref ) {
+   
+     
 	  
    ###Perform category logic unless i am UNKNOWN.
    if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
@@ -2323,8 +2325,9 @@ sub getInstalledSoftwareReconData {
     if (( defined $rec{scName} ) && ( $rec{scName} eq $installedSoftwareReconData->scName )) {
      dlog("matches category");
      
-     if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
-		dlog($rec{instSwID}." as potential SW category / bundle skipped, inequal ScheduleF level");
+     my $s =(Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0];
+     if ((!defined $s) || ($s ne $installedSoftwareReconData->scopeName) ) {
+		dlog(defined $rec{instSwID}?$rec{instSwID}:'empty instSwId'." as potential SW category / bundle skipped, inequal ScheduleF level");
 		next;
      }
 
