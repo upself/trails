@@ -16,6 +16,7 @@ push @tcs, integration::reconEngine::Tests::TC6->new;
 push @tcs, integration::reconEngine::Tests::TC7->new;
 
 
-#$ENV{TEST_METHOD} = '.*http.*';
+
+#$ENV{TEST_METHOD} = '.*39320.*';
 Test::Class->runtests(@tcs);
 
