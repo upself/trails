@@ -789,7 +789,7 @@ sub attemptLicenseAllocation {
     $self->attemptExistingMachineLevel(
    $self->installedSoftwareReconData->scopeName, 'scarlet', $freePoolData );
   return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId,
-   undef )
+   $freePoolData )
     if defined $licsToAllocate;
  }
  
