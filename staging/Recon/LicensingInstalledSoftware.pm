@@ -2747,41 +2747,34 @@ sub getExistingMachineLevelReconScarlet {
  my $freePoolData = shift;
  
  my %data;
+ my $numbOfLicenses = scalar ( keys %{$freePoolData} );
  
- return \%data if scalar ( ( keys %{$freePoolData} ) == 0 );
+ return \%data if scalar ( $numbOfLicenses == 0 );
  
- my $LicIdsToQuery = "( ";
- 
- foreach my $lId ( keys %{$freePoolData} ) {
-	 $LicIdsToQuery.=$lId.", ";
- }
- 
- $LicIdsToQuery =~ s/, $/ )/;
-
  dlog("Getting existing machine level recon by the Scarlet method, scope $scope.");
  dlog("Searching for license IDs used on machine-level-allocation: $LicIdsToQuery");
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryExistingMachineLevelReconScarlet($scope) );
+  $self->queryExistingMachineLevelReconScarlet($scope, $numbOfLicenses) ) );
  my $sth;
  my %rec;
  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
-  $sth = $self->connection->sql->{existingMachineLevelReconScarlet};
+  $sth = $self->connection->sql->{"existingMachineLevelReconScarlet".$numbOfLicenses};
   $sth->bind_columns( map { \$rec{$_} }
-     @{ $self->connection->sql->{existingMachineLevelReconScarletFields} } );
+     @{ $self->connection->sql->{"existingMachineLevelReconScarlet".$numbOfLicenses."Fields"} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
-   $LicIdsToQuery,
+   ( keys %{$freePoolData} ),
    $self->customer->id, $self->customer->id
   );
  }
  elsif ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) ) {
-  $sth = $self->connection->sql->{existingMachineLevelReconAllScarlet};
+  $sth = $self->connection->sql->{"existingMachineLevelReconAllScarlet".$numbOfLicenses};
   $sth->bind_columns( map { \$rec{$_} }
-     @{ $self->connection->sql->{existingMachineLevelReconAllScarletFields} } );
+     @{ $self->connection->sql->{"existingMachineLevelReconAllScarlet".$numbOfLicenses."Fields"} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
-   $LicIdsToQuery
+   ( keys %{$freePoolData} )
   );
  }
 
@@ -2974,6 +2967,7 @@ sub queryExistingMachineLevelReconLegacy {
 sub queryExistingMachineLevelReconScarlet {
  my $self  = shift;
  my $scope = shift;
+ my $numberOfVariables = shift;
 
  dlog("Searching for machinelevel Scarlet recon accross all customers, IBMOIBMM")
    if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
@@ -3005,17 +2999,19 @@ sub queryExistingMachineLevelReconScarlet {
             h.id = ?
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
-            and l.id in ?';
+            and l.id in ( ';
+ for ( my $i = 1; $i < $numberOfVariables; $i++ ) { $query.="?, "; }
+ $query .= " ? )";
  $query .=
-'   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
+' and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
  $query .= '   and r.machine_level = 1
         with ur
     ';
 
- return ( 'existingMachineLevelReconScarlet', $query, \@fields )
+ return ( 'existingMachineLevelReconScarlet'.$numberOfVariables, $query, \@fields )
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
- return ( 'existingMachineLevelReconAllScarlet', $query, \@fields )
+ return ( 'existingMachineLevelReconAllScarlet'.$numberOfVariables, $query, \@fields )
    if ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) );
 }
 
