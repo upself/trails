@@ -2709,7 +2709,7 @@ sub getExistingMachineLevelReconLegacy {
  my $self  = shift;
  my $scope = shift;
 
- dlog("Getting existing machine level recon by the legacy method, scope $scope.");
+ dlog("Getting existing machine level recon by the legacy method, scope ".defined $scope?$scope:' undefined.');
 
  my %data;
  $self->connection->prepareSqlQueryAndFields(
