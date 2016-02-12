@@ -2383,7 +2383,7 @@ sub getInstalledSoftwareReconData {
 
    ###Perform bundle child logic if i am in a bundle.
    if ( defined $installedSoftwareReconData->bcSwIds ) {
-    dlog("performing bundle child logic");
+#    dlog("performing bundle child logic");
 
     ###Is this inst sw my parent?
     foreach my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } ) {
@@ -2754,10 +2754,10 @@ sub getExistingMachineLevelReconScarlet {
  return \%data if scalar ( $numbOfLicenses == 0 );
  
  dlog("Getting existing machine level recon by the Scarlet method, scope $scope.");
- dlog("Searching for license IDs used on machine-level-allocation: $LicIdsToQuery");
+ dlog("Searching for license IDs used on machine-level-allocation: ".keys %{$freePoolData} );
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryExistingMachineLevelReconScarlet($scope, $numbOfLicenses) ) );
+  $self->queryExistingMachineLevelReconScarlet($scope, $numbOfLicenses) );
  my $sth;
  my %rec;
  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
@@ -3010,6 +3010,8 @@ sub queryExistingMachineLevelReconScarlet {
  $query .= '   and r.machine_level = 1
         with ur
     ';
+    
+ dlog("Query for Scarlet machine-level search: \n$query"); # debug
 
  return ( 'existingMachineLevelReconScarlet'.$numberOfVariables, $query, \@fields )
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
