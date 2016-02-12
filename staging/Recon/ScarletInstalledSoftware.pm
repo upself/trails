@@ -284,7 +284,9 @@ sub getGuiIdByInstalledSoftwareId {
 
 sub tryToReconcile {
 
- my ( $self, $isObj ) = @_;
+ my ( $self, $orginLicInstSw ) = @_;
+
+ my $isObj = $orginLicInstSw->installedSoftware;
 
  if ( $self->reconcileTypeId != 5 ) {
   $self->info( 'NOT_AUTO:' . $isObj->toString );
@@ -292,7 +294,7 @@ sub tryToReconcile {
  }
 
  #set guids exclude guid of $isObj.
- $self->setGuidsFromScarlet( $isObj->installedSoftware->id, 1 );
+ $self->setGuidsFromScarlet( $isObj->id, 1 );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {
@@ -352,16 +354,17 @@ and kbd.guid in(' . $guids . ') with ur ';
  my $installedSwId;
  if ( $self->machineLevel == 1 ) {
   $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQueryMachineLevel',
-   $query );    
+   $query );
   $sth = $self->connection->sql->{getInstalledSoftwareIdQueryMachineLevel};
   $sth->bind_columns( \$installedSwId );
-  $sth->execute( $self->hardwareId, $isObj->installedSoftware->id );
+  $sth->execute( $self->hardwareId, $isObj->id );
  }
  else {
   $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
   $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
   $sth->bind_columns( \$installedSwId );
-  $sth->execute( $isObj->installedSoftware->softwareLparId, $isObj->installedSoftware->id );
+  $sth->execute( $isObj->softwareLparId,
+   $isObj->id );
  }
 
  my @isIds;
@@ -373,7 +376,8 @@ and kbd.guid in(' . $guids . ') with ur ';
  dlog( scalar @isIds . ' matched installed software found' );
 
  if ( scalar @isIds == 0 ) {
-  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $isObj->installedSoftware->toString );
+  $self->info(
+   'ZERO_INSTALLED_SW_FOUND:' . $isObj->toString );
  }
 
  foreach my $isId (@isIds) {
@@ -391,6 +395,7 @@ and kbd.guid in(' . $guids . ') with ur ';
 
   my $licensingInstalledSoftware =
     new Recon::LicensingInstalledSoftware( $self->connection, $is, 0 );
+  $licensingInstalledSoftware->setUp;
 
   ###reuse the validate of installed software to check if it's in scope.
   my $validation = $licensingInstalledSoftware->validateScope();
@@ -399,13 +404,18 @@ and kbd.guid in(' . $guids . ') with ur ';
   if ( $validation->validationCode == 1 ) {
 
    if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
-    $self->info(
-     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->installedSoftware->toString );
+    $self->info( 'NO_SCHEDULE_F:'
+       . $is->toString . ' ref '
+       . $isObj->toString );
     next;
    }
-   if ( $isObj->installedSoftwareReconData->scopeName ne $licensingInstalledSoftware->installedSoftwareReconData->scopeName ) {
-	   dlog("ScheduleF scope of myself and found iSW unmatched, skipping...");
-	   next;
+   if (
+    $orginLicInstSw->installedSoftwareReconData->scopeName ne    
+    $licensingInstalledSoftware->installedSoftwareReconData->scopeName
+     )
+   {
+    dlog("ScheduleF scope of myself and found iSW unmatched, skipping...");
+    next;
    }
    dlog("ScheduleF defined and matched");
 
