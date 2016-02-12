@@ -777,6 +777,11 @@ sub attemptLicenseAllocation {
    $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
                  $self->installedSoftware->id);
  }
+ 
+ if ( scalar keys (%{$freePoolData} ) == 0 ) {
+	 dlog("No licenses found, shortcutting attempts to allocate.");
+	 return ( undef, undef, undef, undef, undef, undef );
+ }
 
  if (( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) && ( $through eq 'scarlet' )) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
