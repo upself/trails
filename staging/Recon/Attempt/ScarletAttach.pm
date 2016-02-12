@@ -183,7 +183,7 @@ sub getMatchedReconcile {
  my $inExtSrcIds = join( ', ', ('?') x @extSrcIds );
 
  my $queryName =
-   'queryMatchedReconciledIDs' . ( scalar @guids ) . ( scalar @extSrcIds );
+   'queryMatchedReconciledIDs' . ( scalar @guids ) .'_'. ( scalar @extSrcIds );
  dlog($queryName);
 
  $self->connection->prepareSqlQuery(
