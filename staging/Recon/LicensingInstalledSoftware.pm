@@ -2320,7 +2320,7 @@ sub getInstalledSoftwareReconData {
    if ( $installedSoftwareReconData->scName ne 'UNKNOWN' ) {
 
     ###Does this inst sw match my category?
-    if ( $rec{scName} eq $installedSoftwareReconData->scName ) {
+    if (( defined $rec{scName} ) && ( $rec{scName} eq $installedSoftwareReconData->scName )) {
      dlog("matches category");
      
      if ( (Recon::Delegate::ReconDelegate->getScheduleFScopeByISW($self->connection, $rec{instSwId}))[0] ne $installedSoftwareReconData->scopeName ) {
