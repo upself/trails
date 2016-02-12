@@ -368,6 +368,7 @@ sub doDelta {
                      $action = 10**8 + $action if ( $hardwareLpar->serverType ne $self->hardwareLpar->{$lparKey}->serverType );
                      $action = 10**10 + $action if ( $hardwareLpar->effectiveThreads ne $self->hardwareLpar->{$lparKey}->effectiveThreads );
                      $action = 10**11 + $action if ( $hardwareLpar->osType ne $self->hardwareLpar->{$lparKey}->osType ); 
+                     $action = 10**12 + $action if ( $hardwareLpar->hardwareKey ne $self->hardwareLpar->{$lparKey}->hardwareKey );
 
                 if ( $hardwareLpar->action eq '0' ) {                    	                	           	
                     ###Set lpar to update if it is complete              
