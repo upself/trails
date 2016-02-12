@@ -752,11 +752,13 @@ sub attemptLicenseAllocation {
 
  ###Get reconcile type map.
  my $reconcileTypeMap = Recon::Delegate::ReconDelegate->getReconcileTypeMap();
+ my %scheduleFlevelMap = Recon::Delegate::ReconDelegate->getScheduleFLevelMap();
+ 
  my $machineLevel;
  my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
  my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
 
- if (( $scheduleFlevel < 4 ) && ( $through eq 'legacy' )) {    # skip for hostname-specific scheduleF
+ if (( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) && ( $through eq 'legacy' )) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
   ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
     $self->attemptExistingMachineLevel(
@@ -776,7 +778,7 @@ sub attemptLicenseAllocation {
                  $self->installedSoftware->id);
  }
 
- if (( $scheduleFlevel < 4 ) && ( $through eq 'scarlet' )) {    # skip for hostname-specific scheduleF
+ if (( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) && ( $through eq 'scarlet' )) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
   ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
     $self->attemptExistingMachineLevel(
@@ -786,7 +788,7 @@ sub attemptLicenseAllocation {
     if defined $licsToAllocate;
  }
  
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: GARTNER MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '70', 1 );
@@ -802,7 +804,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: MIPS, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '5', 1 );
@@ -818,7 +820,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: MSU, machine level
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationMipsMsuGartner( $freePoolData, '9', 1 );
@@ -834,7 +836,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: hardware
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationHardware($freePoolData);
@@ -850,7 +852,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: hw specific processor
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 1 );
@@ -887,7 +889,7 @@ sub attemptLicenseAllocation {
   $machineLevel, undef, undef, $freePoolData )
    if defined $licsToAllocate;
 
- if ( $scheduleFlevel < 4 ) {    # skip for hostname-specific scheduleF
+ if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
   ###License type: processor
   ( $licsToAllocate, $machineLevel ) =
     $self->attemptLicenseAllocationProcessorOrIFL( $freePoolData, '2', 0 );
@@ -2381,7 +2383,7 @@ sub getInstalledSoftwareReconData {
 
    ###Perform bundle child logic if i am in a bundle.
    if ( defined $installedSoftwareReconData->bcSwIds ) {
-    dlog("performing bundle child logic");
+#    dlog("performing bundle child logic");
 
     ###Is this inst sw my parent?
     foreach my $bcSwId ( keys %{ $installedSoftwareReconData->bcSwIds } ) {
@@ -2752,10 +2754,10 @@ sub getExistingMachineLevelReconScarlet {
  return \%data if scalar ( $numbOfLicenses == 0 );
  
  dlog("Getting existing machine level recon by the Scarlet method, scope $scope.");
- dlog("Searching for license IDs used on machine-level-allocation: $LicIdsToQuery");
+ dlog("Searching for license IDs used on machine-level-allocation: ".keys %{$freePoolData} );
 
  $self->connection->prepareSqlQueryAndFields(
-  $self->queryExistingMachineLevelReconScarlet($scope, $numbOfLicenses) ) );
+  $self->queryExistingMachineLevelReconScarlet($scope, $numbOfLicenses) );
  my $sth;
  my %rec;
  if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) ) {
@@ -3008,6 +3010,8 @@ sub queryExistingMachineLevelReconScarlet {
  $query .= '   and r.machine_level = 1
         with ur
     ';
+    
+ dlog("Query for Scarlet machine-level search: \n$query"); # debug
 
  return ( 'existingMachineLevelReconScarlet'.$numberOfVariables, $query, \@fields )
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
