@@ -7,13 +7,21 @@ use Test::DatabaseRow;
 use Test::More;
 
 sub new {
- my ( $class, $properties ) = @_;
+ my ( $class, $properties, $label ) = @_;
 
  my $self = $class->SUPER::new($properties);
+ $self->{_label} = $label;
 
  bless $self, $class;
  return $self;
 
+}
+
+sub label {
+ my $self = shift;
+ $self->{_label} = shift
+   if scalar @_ == 1;
+ return $self->{_label};
 }
 
 sub test {
@@ -38,8 +46,9 @@ sub test {
  and sf.hostname = sl.name",
    $self->installedSoftwareId
   ],
-  tests => { "==" => { STATUS => 2 } },
-  description => "schedule f on host name level defiend and active"
+  tests       => { "==" => { STATUS => 2 } },
+  description => $self->label
+    . ", schedule f on host name level defiend and active"    
  );
 }
 
