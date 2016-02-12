@@ -292,7 +292,7 @@ sub tryToReconcile {
  }
 
  #set guids exclude guid of $isObj.
- $self->setGuidsFromScarlet( $isObj->id, 1 );
+ $self->setGuidsFromScarlet( $isObj->installedSoftware->id, 1 );
 
  my $foundQty = scalar keys %{ $self->guids };
  if ( $foundQty <= 0 ) {
@@ -355,13 +355,13 @@ and kbd.guid in(' . $guids . ') with ur ';
    $query );    
   $sth = $self->connection->sql->{getInstalledSoftwareIdQueryMachineLevel};
   $sth->bind_columns( \$installedSwId );
-  $sth->execute( $self->hardwareId, $isObj->id );
+  $sth->execute( $self->hardwareId, $isObj->installedSoftware->id );
  }
  else {
   $self->connection->prepareSqlQuery( 'getInstalledSoftwareIdQuery', $query );
   $sth = $self->connection->sql->{getInstalledSoftwareIdQuery};
   $sth->bind_columns( \$installedSwId );
-  $sth->execute( $isObj->softwareLparId, $isObj->id );
+  $sth->execute( $isObj->installedSoftware->softwareLparId, $isObj->installedSoftware->id );
  }
 
  my @isIds;
@@ -373,7 +373,7 @@ and kbd.guid in(' . $guids . ') with ur ';
  dlog( scalar @isIds . ' matched installed software found' );
 
  if ( scalar @isIds == 0 ) {
-  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $isObj->toString );
+  $self->info( 'ZERO_INSTALLED_SW_FOUND:' . $isObj->installedSoftware->toString );
  }
 
  foreach my $isId (@isIds) {
@@ -400,7 +400,7 @@ and kbd.guid in(' . $guids . ') with ur ';
 
    if ( $licensingInstalledSoftware->validateScheduleFScope == 0 ) {
     $self->info(
-     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->toString );
+     'NO_SCHEDULE_F:' . $is->toString . ' ref ' . $isObj->installedSoftware->toString );
     next;
    }
    if ( $isObj->installedSoftwareReconData->scopeName ne $licensingInstalledSoftware->installedSoftwareReconData->scopeName ) {
