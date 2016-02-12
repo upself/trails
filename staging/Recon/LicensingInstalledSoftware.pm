@@ -151,7 +151,7 @@ sub recon {
    $scarletIs->hardwareId( $self->installedSoftwareReconData->hId );
    $scarletIs->initByReconcileId( $self->installedSoftwareReconData->rId );
 
-   $scarletIs->tryToReconcile( $self->installedSoftware );
+   $scarletIs->tryToReconcile( $self );
   }
 
   dlog("returning to caller");
@@ -175,7 +175,7 @@ sub recon {
    $self->closeAlertUnlicensedSoftware(1);
   
    #try scarlet allocation to see if there's more beneift. 
-   $scarletInstalledSoftware->tryToReconcile( $self->installedSoftware )
+   $scarletInstalledSoftware->tryToReconcile( $self )
      if ( defined $scarletInstalledSoftware ); # added by myyysha - some reconciles do not init scarlet class
   }
   elsif ( $returnCode == 2 ) {
