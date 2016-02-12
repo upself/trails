@@ -39,7 +39,8 @@ sub _01_story36172_checkConfiguration : Test(5) {
  my $label = ( caller(0) )[3];
 
  $self->{connectionFile} = "/opt/staging/v2/config/connectionConfig.txt";
- $self->resetLicenseAPI;
+ 
+ $self->mockLicenseAPI;
  integration::reconEngine::TestScarletLicenseAPIDefined->new( $self, $label )
    ->test;
 

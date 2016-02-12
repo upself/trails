@@ -4,6 +4,7 @@ use base qw(
   Test::Class
   integration::ScarletAPIManager
   integration::LogManager
+  integration::reconEngine::TestBase
 );
 
 use strict;
@@ -12,15 +13,6 @@ use Test::File;
 
 use Scarlet::GuidEndpoint;
 
-sub setupLog : Test(startup) {
- my $self = shift;
-
- $self->{logFile} = '/tmp/testEndpoint.txt';
- $self->configDebugLevel( $self->{logFile} );
-
- $self->{connectionFile} = '/opt/staging/v2/config/connectionConfig.txt';
-
-}
 
 sub shutdown : Test(shutdown) {
  my $self = shift;
@@ -129,7 +121,6 @@ sub story38636_http505 : Test(1) {
  my $self  = shift;
  my $label = ( caller(0) )[3];
 
- 
  $self->setGuid505;
  my $endpoint = Scarlet::GuidEndpoint->new();
  $endpoint->httpGet(999999);
@@ -142,13 +133,13 @@ sub checkLog {
  my $label   = shift;
  my $pattern = shift;
 
- file_contains_like( $self->{logFile}, qr{$pattern},
+ file_contains_like( $self->logFile, qr{$pattern},
   $label . ', check log - ' . $pattern );
 }
 
 sub deleteLogFile {
  my $self = shift;
- unlink( $self->{logFile} ) if ( -e $self->{logFile} );
+ unlink( $self->logFile ) if ( -e $self->logFile );
 }
 
 1;

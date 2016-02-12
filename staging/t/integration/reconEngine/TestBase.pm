@@ -70,7 +70,7 @@ sub breakMachineLevelReconcile {
  my $lis  = shift;
 
  my $reconciles =
-   $lis->getExistingMachineLevelRecon(
+   $lis->getExistingMachineLevelReconLegacy(
   $lis->installedSoftwareReconData->scopeName );
 
  foreach my $reconcileId ( sort keys %{$reconciles} ) {
