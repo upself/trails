@@ -293,7 +293,7 @@ sub validate {
   $self->machineLevelOnly(1);
  }
 
- $self->isLicenseSoftwareMapValidToReconcile;
+ $self->isLicenseSoftwareMapValidToReconcile ( $licenseAllocationView->scarletMD5 );
  if ( $self->freeCapacity <= 0 && $self->machineLevelOnly == 0 ) {
   $self->validationCode(0);
   dlog("Free capacity is less than 0 and this is not machine level only");
@@ -813,8 +813,9 @@ my %scheduleFlevelMap = Recon::Delegate::ReconDelegate->getScheduleFLevelMap();
 
 sub isLicenseSoftwareMapValidToReconcile {
  my $self = shift;
+ my $scarletMD5 = shift;
  
- if ( defined $self->licenseAllocationData->scarletMD5 ) {
+ if ( defined $scarletMD5 ) {
 	 dlog("Scarlet reconcile, SW map is irrelevant.");
 	 return;
  }
