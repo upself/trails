@@ -745,7 +745,7 @@ sub validateLicenseAllocation {
    ###Validate license software map
    $validation->validateLicenseSoftwareMap( $rec{sId}, 0,
     $self->installedSoftware->softwareId,
-    $rec{reconcileId}, undef, $self->installedSoftware->id );
+    $rec{reconcileId}, undef, $self->installedSoftware->id, $rec{scarletMD5} );
    $self->scarletAllocation( $validation->scarletAllocation );    
 
    ###Validate try and buy
@@ -1000,6 +1000,7 @@ sub queryValidateLicenseAllocation {
    licEnvironment
    extSrcId
    sId
+   scarletMD5
  );
  my $query = '
         select
@@ -1023,6 +1024,7 @@ sub queryValidateLicenseAllocation {
             ,l.environment
             ,l.ext_src_id
             ,lsm.software_id
+            ,sr.reconcile_md5_hex
         from
             reconcile r
             left outer join reconcile_used_license rul on
@@ -1035,6 +1037,8 @@ sub queryValidateLicenseAllocation {
                 l.id = ul.license_id
             left outer join license_sw_map lsm on 
                 lsm.license_id = l.id
+            left outer join scarlet_reconcile sr on
+				sr.id = r.id
         where
             r.installed_software_id = ?
         with ur

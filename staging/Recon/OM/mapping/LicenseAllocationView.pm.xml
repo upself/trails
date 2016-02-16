@@ -29,4 +29,5 @@
 	<property name="scopeLevel" type="scalar" equals="false" />
 	<property name="slComplianceMgmt" type="scalar" equals="true" />
 	<property name="guid" type="scalar" equals="false" />
+	<property name="scarletMD5" type="scalar" equals="false" />
 </class>

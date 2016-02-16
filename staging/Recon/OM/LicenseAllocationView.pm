@@ -35,6 +35,7 @@ sub new {
         ,_scopeLevel => undef
         ,_slComplianceMgmt => undef
         ,_guid => undef
+        ,_scarletMD5 => undef
     };
     bless $self, $class;
     return $self;
@@ -410,6 +411,12 @@ sub guid {
     return $self->{_guid};
 }
 
+sub scarletMD5 {
+    my $self = shift;
+    $self->{_scarletMD5} = shift if scalar @_ == 1;
+    return $self->{_scarletMD5};
+}
+
 sub toString {
     my ($self) = @_;
     my $s = "[LicenseAllocationView] ";
@@ -556,6 +563,11 @@ sub toString {
     $s .= "guid=";
     if (defined $self->{_guid}) {
         $s .= $self->{_guid};
+    }
+    $s .= ",";
+    $s .= "scarletMD5=";
+    if (defined $self->{_scarletMD5}) {
+        $s .= $self->{_scarletMD5};
     }
     $s .= ",";
     chop $s;

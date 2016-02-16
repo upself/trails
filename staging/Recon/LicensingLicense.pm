@@ -316,6 +316,7 @@ sub getLicenseAllocationsData {
 #        $lav->scopeName( $rec{scopeName} );
         $lav->slComplianceMgmt( $rec{slComplianceMgmt} );
         $lav->guid( $rec{guid} );
+        $lav->scarletMD5 ( $rec{scarletMD5} );
         
        	my ( $scopename_temp, $scopelevel_temp ) = Recon::Delegate::ReconDelegate->getScheduleFScope( 	$self->connection,
 															$rec{slCustomerId}, # customer ID from SW LPAR
@@ -372,6 +373,7 @@ sub queryLicenseAllocationsData {
 	  mtType
 	  slComplianceMgmt
 	  guid
+	  scarletMD5
 	);
 	my $query = '
         select
@@ -405,6 +407,7 @@ sub queryLicenseAllocationsData {
             ,mt.type
             ,c.sw_compliance_mgmt
             ,kbd.guid
+            ,sr.reconcile_md5_hex
         from
         	used_license ul
         	join license l on l.id = ul.license_id
@@ -420,6 +423,7 @@ sub queryLicenseAllocationsData {
             join hardware h on h.id = hl.hardware_id
             join machine_type mt on mt.id = h.machine_type_id
             join kb_definition kbd on kbd.id = is.software_id
+            left outer join scarlet_reconcile sr on sr.id = r.id
         where
             ul.license_id = ?
         with ur

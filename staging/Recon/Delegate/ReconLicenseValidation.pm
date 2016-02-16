@@ -4,7 +4,6 @@ use strict;
 use Base::Utils;
 use Recon::Delegate::ReconDelegate;
 use Recon::Pvu;
-use Recon::ScarletReconcile;
 
 sub new {
  my ($class) = @_;
@@ -214,7 +213,8 @@ sub validate {
   $rValid *= $self->validateLicenseSoftwareMap(
    $self->licSwMap->softwareId,          $licenseAllocationView->rtIsManual,
    $licenseAllocationView->isSoftwareId, $licenseAllocationView->rId,
-   $self->license->id,                   $licenseAllocationView->isId
+   $self->license->id,                   $licenseAllocationView->isId,
+   $licenseAllocationView->scarletMD5
   );
   $rValid *= $self->validateMaintenanceExpiration(
    $licenseAllocationView->mtType,     $self->license->capType,
@@ -601,7 +601,7 @@ sub validateMachineTypeMatch {
 
 sub validateLicenseSoftwareMap {
  my ( $self, $swMapSoftwareId, $isManual, $isSoftwareId, $reconcileId,
-  $licenseId, $isId )
+  $licenseId, $isId, $scarletMD5 )
    = @_;
   dlog('begin validateLicenseSoftwareMap');
   dlog('$swMapSoftwareId='.$swMapSoftwareId.' $isManual='.$isManual.
@@ -613,9 +613,7 @@ sub validateLicenseSoftwareMap {
   && $isSoftwareId != $swMapSoftwareId )
  {
 
-  my $scarletReconcile = new Recon::ScarletReconcile();
-  
-  if ( not ($scarletReconcile->contains($reconcileId)) )    
+  if ( not defined $scarletMD5 )    
   {
    dlog("software not match and not in scarlet reconcile, add to break");
    dlog("isSoftwareId=$isSoftwareId");
@@ -815,6 +813,11 @@ my %scheduleFlevelMap = Recon::Delegate::ReconDelegate->getScheduleFLevelMap();
 
 sub isLicenseSoftwareMapValidToReconcile {
  my $self = shift;
+ 
+ if ( defined $self->licenseAllocationData->scarletMD5 ) {
+	 dlog("Scarlet reconcile, SW map is irrelevant.");
+	 return;
+ }
 
  if ( !defined $self->licSwMap->id ) {
   dlog("license software map does not exist");
