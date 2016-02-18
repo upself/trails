@@ -689,8 +689,41 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			pdtlData.setFullListSize(0);
 			lsrList.close();
 		}
+		
 	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
+		
+		Session lSession = (Session) getEntityManager().getDelegate();
+		ScrollableResults lsrList = lSession.createQuery(
+						lSession.getNamedQuery("scheduleFList")
+								.getQueryString()
+								+ " ORDER BY "
+								+ psSort
+								+ " "
+								+ psDir).setParameter("account", pAccount).scroll();
+		ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
 
+		lsrList.beforeFirst();
+		if (lsrList.next()) {
+			int liCounter = 0;
+
+			lsrList.scroll(piStartIndex);
+
+			while (piObjectsPerPage > liCounter++) {
+				schfList.add((ScheduleF) lsrList.get(0));
+				if (!lsrList.next())
+					break;
+			}
+			lsrList.close();
+			return schfList;
+		} else {
+			lsrList.close();
+			return null;
+		}
+	}
+	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	private ScheduleF findScheduleF(Long plId) {
 		@SuppressWarnings("unchecked")

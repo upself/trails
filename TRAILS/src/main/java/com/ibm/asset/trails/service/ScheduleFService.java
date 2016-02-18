@@ -19,8 +19,7 @@ public interface ScheduleFService {
 
 	ScheduleF findScheduleF(Account pAccount, Software pSoftware);
 
-	ScheduleF findScheduleF(Long plScheduleFId, Account pAccount,
-			Software pSoftware);
+	ScheduleF findScheduleF(Long plScheduleFId, Account pAccount, Software pSoftware);
 	List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware, String level);
 
 	ArrayList<Software> findSoftwareBySoftwareName(String psSoftwareName);
@@ -35,13 +34,13 @@ public interface ScheduleFService {
 	
 	ArrayList<String> getLevelList();
 
-	ByteArrayOutputStream loadSpreadsheet(File file, String remoteUser)
-			throws IOException;
+	ByteArrayOutputStream loadSpreadsheet(File file, String remoteUser) throws IOException;
 
-	void paginatedList(DisplayTagList pdtlData, Account pAccount,
-			int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
+	void paginatedList(DisplayTagList pdtlData, Account pAccount, int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
 
 	void saveScheduleF(ScheduleF psfSave, String psRemoteUser);
 
 	List<MachineType> findMachineTypebyName(String string);
+	
+	List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
 }
