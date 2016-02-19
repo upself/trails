@@ -1,4 +1,15 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<script src="${pageContext.request.contextPath}/js/jquery.js"
+	type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	 $("#clearButton").click(function(){
+		$("input:text").val("");
+		$("select :first-child").attr("selected",true);
+	 });
+	
+})
+</script>
 
 <h1>Reconciliation workspace settings</h1>
 <br />
@@ -151,7 +162,13 @@ settings. All fields are optional.</p>
 	<div class="clear"></div>
 	<div class="hrule-dots"></div>
 	<div class="button-bar">
-	<div class="buttons"><span class="button-blue"> <s:submit
-		value="Submit" method="update" alt="Submit" /> </span></div>
+	<div class="buttons">
+		<span class="button-blue"> 
+			<input type="button" value="Clear" id="clearButton" alt="clear filter"/>
+		</span>
+		<span class="button-blue"> 
+			<s:submit value="Submit" method="update" alt="Submit" /> 
+		</span>
+	</div>
 	</div>
 </s:form>
