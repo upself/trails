@@ -25,15 +25,20 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.hibernate.Criteria;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.MachineType;
 import com.ibm.asset.trails.domain.ReconCustomerSoftware;
@@ -657,7 +662,48 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 	}
+	
+    @SuppressWarnings("unchecked")
+	public List<ScheduleF> paginatedList(Account pAccount,
+			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
 
+        Session session = (Session) getEntityManager().getDelegate();
+        Criteria criteria = session
+                .createCriteria(ScheduleF.class);
+        criteria.add(Restrictions.eq("account", pAccount));
+
+        String[] associations = psSort.split("\\.");
+
+        if (associations.length > 1) {
+
+            Criteria subCriteria = null;
+
+            for (int i = 0; i < associations.length - 1; i++) {
+                if (subCriteria == null) {
+                    subCriteria = criteria.createCriteria(associations[i]);
+                } else {
+                    subCriteria = subCriteria.createCriteria(associations[i]);
+                }
+            }
+            addOrder(associations[associations.length - 1], psDir,
+                    subCriteria);
+        } else {
+            addOrder(psSort, psDir, criteria);
+        }
+        criteria.setFirstResult(piStartIndex);
+        criteria.setMaxResults(piObjectsPerPage);
+
+        return criteria.list();
+    }
+
+    private void addOrder(String sortBy, String sortDirection, Criteria criteria) {
+        if ("asc".equalsIgnoreCase(sortDirection)) {
+            criteria.addOrder(Order.asc(sortBy));
+        } else {
+            criteria.addOrder(Order.desc(sortBy));
+        }
+    }
+//    
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public void paginatedList(DisplayTagList pdtlData, Account pAccount,
 			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
@@ -689,31 +735,30 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		
 	}
 	
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
-		
-		Session lSession = (Session) getEntityManager().getDelegate();
-		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
-	System.out.println(lSession.toString());
-	      ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
-		lsrList.beforeFirst();
-		if (lsrList.next()) {
-			int liCounter = 0;
-
-			lsrList.scroll(piStartIndex);
-
-			while (piObjectsPerPage > liCounter++) {
-				schfList.add((ScheduleF) lsrList.get(0));
-				if (!lsrList.next())
-					break;
-			}
-			lsrList.close();
-			return schfList;
-		} else {
-			lsrList.close();
-			return null;
-		}
-	}
+//	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+//	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
+//		
+//		Session lSession = (Session) getEntityManager().getDelegate();
+//		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
+//        ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
+//		lsrList.beforeFirst();
+//		if (lsrList.next()) {
+//			int liCounter = 0;
+//
+//			lsrList.scroll(piStartIndex);
+//
+//			while (piObjectsPerPage > liCounter++) {
+//				schfList.add((ScheduleF) lsrList.get(0));
+//				if (!lsrList.next())
+//					break;
+//			}
+//			lsrList.close();
+//			return schfList;
+//		} else {
+//			lsrList.close();
+//			return null;
+//		}
+//	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	private ScheduleF findScheduleF(Long plId) {

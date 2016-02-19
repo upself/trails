@@ -258,7 +258,7 @@
 }
 </style>
  -->
-<div id="reportTrackingHistory" style="width:120%">
+<div id="reportTrackingHistory" style="width:110%">
 	<h2>Report Delivery Tracking History</h2>
 	<div id="historyContent" class="ibm-data-table" style="max-height:180px"></div>
 
@@ -266,13 +266,17 @@
 <div class="hrule-dots"></div>
 <h2 class="oneline">Schedule F</h2>
 	<p>To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add link.</p>
-	<div style="float: right">
-		<p class="ibm-button-link">
-		    <a class="ibm-btn-small" id="download" href="#">Export Schedule F Report</a>
-		</p>
-		<p class="ibm-button-link">
-		    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
-		</p>
+	<div style="width:110%">
+		<div id="addScheFdiv" style="float: right;width:10%">
+			<p class="ibm-button-link">
+			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
+			</p>
+		</div>
+		<div id="downloadDiv" style="float: right;width:15%">
+			<p class="ibm-button-link">
+			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
+			</p>
+		</div>
 	</div>
 <br />
 <br />
