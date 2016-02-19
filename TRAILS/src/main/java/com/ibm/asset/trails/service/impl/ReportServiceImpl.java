@@ -1378,6 +1378,29 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 
+	private final String[] SCHEDULE_F_REPORT_COLUMN_HEADERS = {"Level","Hw Owner","Hostname","Serial","Machine Type","Account Number","Software title","Software name","Manufacturer","Scope","SW Financial Resp","Source","Source location","Status","Business Justification","Compliance"};
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getScheduleFReport(Account account, PrintWriter pPrintWriter) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("select sf.Level,sf.hw_Owner,sf.hostname,sf.serial,Machine_Type, c.account_number,sf.software_title,sf.software_name,sf.manufacturer,scope.description,sf.sw_financial_resp,source.description,sf.source_location,status.description,sf.business_justification,c.SW_COMPLIANCE_MGMT ")
+		.append(" from schedule_f sf ")
+		.append("left join scope scope on scope.id=sf.scope_id ")
+		.append("left join status status on status.id=sf.status_id ")
+		.append("left join source source on source.id=sf.source_id ")
+		.append("left join customer c on c.customer_id=sf.customer_id ")
+		.append("where c.customer_id=")
+		.append(account.getId());
+		
+		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate()).createSQLQuery(sql.toString()).scroll(ScrollMode.FORWARD_ONLY);
+
+		pPrintWriter.println(outputData(SCHEDULE_F_REPORT_COLUMN_HEADERS));
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+
+		lsrReport.close();
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
 		// TODO Auto-generated method stub

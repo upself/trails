@@ -1,15 +1,22 @@
 package com.ibm.asset.trails.ws;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +24,7 @@ import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFView;
 import com.ibm.asset.trails.service.AccountService;
+import com.ibm.asset.trails.service.ReportService;
 import com.ibm.asset.trails.service.ScheduleFService;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
@@ -27,6 +35,9 @@ public class ScheduleFServiceEndpoint {
 	
 	@Autowired
 	private AccountService accountService;
+	
+	@Autowired
+	private ReportService reportService;
 	
 	@POST
 	@Path("/scheduleF/all/")
@@ -60,6 +71,7 @@ public class ScheduleFServiceEndpoint {
 				if(null == account){
 					return WSMsg.failMessage("Account doesn't exist");
 				}
+				currentPage=currentPage-1;
 				schFlist = getScheduleFService().paginatedList(account, Integer.valueOf(currentPage), Integer.valueOf(pageSize), sort,dir);
 				schFViewList = scheduleFtransformer(schFlist);
 				total = Long.valueOf(schFViewList.size());
@@ -72,6 +84,25 @@ public class ScheduleFServiceEndpoint {
 		page.setList(schFViewList);
 		return WSMsg.successMessage("SUCCESS", page);
 	}
+	
+	@GET
+	@Path("/scheduleF/download/{accountId}")
+	public Response downloadScheduleFReport(@PathParam("accountId") Long accountId) throws IOException {
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos, "utf-8"), true);
+		Account account = accountService.getAccount(accountId);
+		getReportService().getScheduleFReport(account,pw);
+
+		ResponseBuilder responseBuilder = Response.ok(bos.toByteArray());
+		responseBuilder.header("Content-Type",
+				"application/vnd.ms-excel;charset=UTF-8");
+		responseBuilder.header("Content-Disposition",
+				"attachment; filename=ScheduleF_View.xls");
+
+		return responseBuilder.build();
+	}
+	
 	
 	public List<ScheduleFView> scheduleFtransformer(List<ScheduleF> scheFlist){
 		List<ScheduleFView> scheFViewList = new ArrayList<ScheduleFView>();
@@ -168,5 +199,13 @@ public class ScheduleFServiceEndpoint {
 
 	public void setScheduleFService(ScheduleFService scheduleFService) {
 		this.scheduleFService = scheduleFService;
+	}
+	
+	public ReportService getReportService() {
+		return reportService;
+	}
+
+	public void setReportService(ReportService reportService) {
+		this.reportService = reportService;
 	}
 }

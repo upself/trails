@@ -267,7 +267,12 @@
 <h2 class="oneline">Schedule F</h2>
 	<p>To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add link.</p>
 	<div style="float: right">
-		<input type="button" value="Add" id="addScheduleF"/>
+		<p class="ibm-button-link">
+		    <a class="ibm-btn-small" id="download" href="#">Export Schedule F Report</a>
+		</p>
+		<p class="ibm-button-link">
+		    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
+		</p>
 	</div>
 <br />
 <br />
@@ -292,7 +297,7 @@
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source location</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Compliance</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><span>Compliance</span></th>
 				</tr>
 			</thead>
 			<tbody id="schedule_f_list" />
@@ -300,6 +305,15 @@
 </div>
 
 <script type="text/javascript">
+
+
+$("#download").click(function() {
+			$(this).attr("href","${pageContext.request.contextPath}/ws/scheduleF/download/${account.id}")
+		});
+$("#addScheduleF").click(function() {
+	$(this).attr("href","${pageContext.request.contextPath}/admin/scheduleF/manage.htm")
+});		
+		
 $(function() {
 	searchData();
 });
@@ -324,7 +338,7 @@ function searchData() {
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].softwareName + "</a></td>";		
-						html += "<td id='level_td'>" + list[i].level + "</td>";
+						html += "<td>" + list[i].level + "</td>";
 						html += "<td>" + list[i].hwOwner + "</td>";
 						html += "<td>" + list[i].hostName + "</td>"
 						html += "<td>" + list[i].serial + "</td>";
@@ -332,13 +346,11 @@ function searchData() {
 						html += "<td>" + list[i].softwareTitle + "</td>";
 						html += "<td>" + list[i].manufacturer + "</td>";
 						html += "<td>" + list[i].scopeDescription + "</td>";
-						html += "<td>" + list[i].SWFinanceResp + "</td>";
-						html += "<td>" + list[i].SourceDescription + "</td>";
+						html += "<td>" + list[i].swfinanceResp + "</td>";
+						html += "<td>" + list[i].sourceDescription + "</td>";
 						html += "<td>" + list[i].sourceLocation + "</td>";
-						
 						html += "<td>" + list[i].statusDescription + "</td>";
-						var yes='YES';
-						if(list[i].softwareComplianceManagement== yes){
+						if(list[i].softwareComplianceManagement== 'YES'){
 							html += "<td>YES</td>";						
 						}else{
 							html += "<td>NO</td>";		
@@ -349,7 +361,7 @@ function searchData() {
 				$("#schedule_f_list").html(html);
 			}
 		},
-		orderColumns: ['softwarename','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','status.description']
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','source.location','status.description','account.softwareComplianceManagement']
 	});
 }
 

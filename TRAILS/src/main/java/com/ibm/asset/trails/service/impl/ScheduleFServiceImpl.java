@@ -4,10 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +25,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +36,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.MachineType;
-import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.ReconCustomerSoftware;
 import com.ibm.asset.trails.domain.ReconInstalledSoftware;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFH;
+import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.Scope;
+import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
 import com.ibm.asset.trails.domain.Status;
-import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ScheduleFService;
 import com.ibm.tap.trails.framework.DisplayTagList;
@@ -657,15 +662,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	public void paginatedList(DisplayTagList pdtlData, Account pAccount,
 			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
 		Session lSession = (Session) getEntityManager().getDelegate();
-		ScrollableResults lsrList = lSession
-				.createQuery(
-						lSession.getNamedQuery("scheduleFList")
-								.getQueryString()
-								+ " ORDER BY "
-								+ psSort
-								+ " "
-								+ psDir).setParameter("account", pAccount)
-				.scroll();
+		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
 		ArrayList<ScheduleF> lalScheduleF = new ArrayList<ScheduleF>();
 
 		lsrList.beforeFirst();
@@ -696,15 +693,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
 		
 		Session lSession = (Session) getEntityManager().getDelegate();
-		ScrollableResults lsrList = lSession.createQuery(
-						lSession.getNamedQuery("scheduleFList")
-								.getQueryString()
-								+ " ORDER BY "
-								+ psSort
-								+ " "
-								+ psDir).setParameter("account", pAccount).scroll();
-		ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
-
+		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
+	System.out.println(lSession.toString());
+	      ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
 		lsrList.beforeFirst();
 		if (lsrList.next()) {
 			int liCounter = 0;
