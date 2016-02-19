@@ -70,6 +70,8 @@ public class ReconWorkspace implements Serializable {
 	private String osType;
 
 	private String scope;
+	
+	private Long scopeId;
 
 	private String assetName;
 
@@ -87,6 +89,14 @@ public class ReconWorkspace implements Serializable {
 
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+
+	public Long getScopeId() {
+		return scopeId;
+	}
+
+	public void setScopeId(Long scopeId) {
+		this.scopeId = scopeId;
 	}
 
 	public String getPid() {

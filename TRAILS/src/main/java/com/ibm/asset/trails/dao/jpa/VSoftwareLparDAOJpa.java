@@ -394,8 +394,10 @@ public class VSoftwareLparDAOJpa extends
 			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getSl_hostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial());
 			if(sf!=null){
 				rw.setScope(sf.getScope().getDescription());
+				rw.setScopeId(sf.getScope().getId());
 			}else{
 				rw.setScope("Not specified");
+				rw.setScopeId(null);
 			}
 		}
 	}

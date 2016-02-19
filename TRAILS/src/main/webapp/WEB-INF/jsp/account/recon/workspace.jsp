@@ -284,6 +284,7 @@
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
 				value="%{#attr.row.assetName}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].scope" value="%{#attr.row.scope}"/>
+			<s:hidden name="list[%{#attr.row_rowNum-1}].scopeId" value="%{#attr.row.scopeId}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
