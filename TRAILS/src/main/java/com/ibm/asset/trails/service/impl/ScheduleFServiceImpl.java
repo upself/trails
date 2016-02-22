@@ -655,14 +655,6 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 	}
-	
-    private void addOrder(String sortBy, String sortDirection, Criteria criteria) {
-        if ("asc".equalsIgnoreCase(sortDirection)) {
-            criteria.addOrder(Order.asc(sortBy));
-        } else {
-            criteria.addOrder(Order.desc(sortBy));
-        }
-    }
 
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public void paginatedList(DisplayTagList pdtlData, Account pAccount,
