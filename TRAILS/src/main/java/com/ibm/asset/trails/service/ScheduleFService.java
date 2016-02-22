@@ -43,4 +43,5 @@ public interface ScheduleFService {
 	List<MachineType> findMachineTypebyName(String string);
 	
 	List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
+	Long getAllScheduleFSize(Account pAccount);
 }

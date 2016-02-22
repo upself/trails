@@ -20,6 +20,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "SCHEDULE_F")
 @NamedQueries({
+		@NamedQuery(name = "findScheduleFTotal",query="select count(*) from ScheduleF where account=:account"),
 		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName AND id = :id"),
 		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),

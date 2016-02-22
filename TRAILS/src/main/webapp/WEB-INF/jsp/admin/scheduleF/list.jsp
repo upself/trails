@@ -1,7 +1,6 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
 <%@ taglib prefix="s" uri="/struts-tags"%>
 	
@@ -199,11 +198,14 @@
 	<s:property value="account.account" />
 	)
 </div>
-<p class="confidential">IBM Confidential</p>
+<p style="font-weight:bold">IBM Confidential</p>
 <br />
-<h3>Software License Management Report Delivery Tracking</h3>
-<p>Track the required report delivery cycle and most recent report delivery date.</p>
-<div class="hrule-dots"></div>
+<div class="ibm-rule" style="width:110%"><hr><hr></div>
+<div style="font-size: 18px;">
+<h2>Software License Management Report Delivery Tracking</h2>
+</div>
+<p style="font-size: 16px;">Track the required report delivery cycle and most recent report delivery date.</p>
+<br>
 	<form id="reportTracking">
 		<div id="firstline" style="width:100%;float:left">
 		   <div id="line1col1" style="width:30%; float:left">
@@ -245,45 +247,56 @@
 			</div>
 		</div>	
 	</form>
-	<div style="clear:both">
-		<input type="button" id="reportTrackingUpdateBtn" value="Update">
-		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
+	<div style="width:110%">
+		<div id="addRTdiv" style="float: left;width:10%">
+			<p class="ibm-button-link-alternate ibm-btn-small">
+			    <a class="ibm-btn-small" id="reportTrackingUpdateBtn" href="#">Add</a>
+			</p>
+		</div>
+		<div id="updateRTdiv" style="float: left;width:5%">
+			<p class="ibm-button-link-alternate ibm-btn-small">
+			    <a class="ibm-btn-small" id="reportTrackingRestoreBtn" href="#">Restore</a>
+			</p>
+		</div>
 	</div>
 <br>
-<!-- 
 <style>
 #reportTrackingHistory table, #reportTrackingHistory th,
 	#reportTrackingHistory td {
 	border: 1px solid black;
 }
 </style>
- -->
-<div id="reportTrackingHistory" style="width:110%">
+<div id="reportTrackingHistory" style="width:110%;float:left">
 	<h2>Report Delivery Tracking History</h2>
 	<div id="historyContent" class="ibm-data-table" style="max-height:180px"></div>
-
 </div>
-<div class="hrule-dots"></div>
+<br>
+<div class="ibm-rule" style="width:110%"><hr><hr></div>
+<div style="float: left">
+<div style="font-size: 18px;">
 <h2 class="oneline">Schedule F</h2>
-	<p>To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add link.</p>
+</div>
+<p style="font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add link.</p>
 	<div style="width:110%">
 		<div id="addScheFdiv" style="float: right;width:10%">
-			<p class="ibm-button-link">
+			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
 			</p>
 		</div>
 		<div id="downloadDiv" style="float: right;width:15%">
-			<p class="ibm-button-link">
+			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
 			</p>
 		</div>
 	</div>
+</div>
 <br />
 <br />
-
+<!-- 
 <s:hidden name="page" value="%{#attr.page}" />
 <s:hidden name="dir" value="%{#attr.dir}" />
 <s:hidden name="sort" value="%{#attr.sort}" />
+ -->
 <div class="ibm-col-1-1">
 		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
 			<thead>
@@ -365,7 +378,7 @@ function searchData() {
 				$("#schedule_f_list").html(html);
 			}
 		},
-		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','source.location','status.description','account.softwareComplianceManagement']
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
 	});
 }
 
