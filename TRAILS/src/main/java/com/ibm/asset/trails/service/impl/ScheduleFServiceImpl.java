@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -663,38 +664,38 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 	}
 	
+	
     @SuppressWarnings("unchecked")
-	public List<ScheduleF> paginatedList(Account pAccount,
-			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
-
-        Session session = (Session) getEntityManager().getDelegate();
-        Criteria criteria = session
-                .createCriteria(ScheduleF.class);
-        criteria.add(Restrictions.eq("account", pAccount));
-
-        String[] associations = psSort.split("\\.");
-
-        if (associations.length > 1) {
-
-            Criteria subCriteria = null;
-
-            for (int i = 0; i < associations.length - 1; i++) {
-                if (subCriteria == null) {
-                    subCriteria = criteria.createCriteria(associations[i]);
-                } else {
-                    subCriteria = subCriteria.createCriteria(associations[i]);
-                }
-            }
-            addOrder(associations[associations.length - 1], psDir,
-                    subCriteria);
-        } else {
-            addOrder(psSort, psDir, criteria);
-        }
-        criteria.setFirstResult(piStartIndex);
-        criteria.setMaxResults(piObjectsPerPage);
-
-        return criteria.list();
-    }
+//	public List<ScheduleF> paginatedList(Account pAccount,
+//			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
+//
+//        Session session = (Session) getEntityManager().getDelegate();
+//        Criteria criteria = session.createCriteria(ScheduleF.class);
+//        criteria.add(Restrictions.eq("account", pAccount));
+//
+//        String[] associations = psSort.split("\\.");
+//
+//        if (associations.length > 1) {
+//
+//            Criteria subCriteria = null;
+//
+//            for (int i = 0; i < associations.length - 1; i++) {
+//                if (subCriteria == null) {
+//                    subCriteria = criteria.createCriteria(associations[i]);
+//                } else {
+//                    subCriteria = subCriteria.createCriteria(associations[i]);
+//                }
+//            }
+//            addOrder(associations[associations.length - 1], psDir,
+//                    subCriteria);
+//        } else {
+//            addOrder(psSort, psDir, criteria);
+//        }
+//        criteria.setFirstResult(piStartIndex);
+//        criteria.setMaxResults(piObjectsPerPage);
+//
+//        return criteria.list();
+//    }
 
     private void addOrder(String sortBy, String sortDirection, Criteria criteria) {
         if ("asc".equalsIgnoreCase(sortDirection)) {
@@ -703,8 +704,24 @@ public class ScheduleFServiceImpl implements ScheduleFService {
             criteria.addOrder(Order.desc(sortBy));
         }
     }
-//    
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+
+    
+//	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+//	public List<ScheduleF> paginatedList(Account account, int startIndex,
+//			int objectsPerPage, String sort, String dir) {
+//		
+//		StringBuffer query = new StringBuffer(
+//				"from ScheduleF sf where sf.account = :account order by sf.")
+//				.append(sort).append(" ").append(dir);
+//		
+//		Query q = getEntityManager().createQuery(query.toString());
+//		q.setParameter("account", account);
+//		q.setFirstResult(startIndex);
+//		q.setMaxResults(objectsPerPage);
+//		return (ArrayList) q.getResultList();
+//	}
+    
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public void paginatedList(DisplayTagList pdtlData, Account pAccount,
 			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
 		Session lSession = (Session) getEntityManager().getDelegate();
@@ -735,30 +752,30 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		
 	}
 	
-//	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-//	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
-//		
-//		Session lSession = (Session) getEntityManager().getDelegate();
-//		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
-//        ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
-//		lsrList.beforeFirst();
-//		if (lsrList.next()) {
-//			int liCounter = 0;
-//
-//			lsrList.scroll(piStartIndex);
-//
-//			while (piObjectsPerPage > liCounter++) {
-//				schfList.add((ScheduleF) lsrList.get(0));
-//				if (!lsrList.next())
-//					break;
-//			}
-//			lsrList.close();
-//			return schfList;
-//		} else {
-//			lsrList.close();
-//			return null;
-//		}
-//	}
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
+		
+		Session lSession = (Session) getEntityManager().getDelegate();
+		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFList").getQueryString() + " ORDER BY " + psSort + " " + psDir).setParameter("account", pAccount).scroll();
+        ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
+		lsrList.beforeFirst();
+		if (lsrList.next()) {
+			int liCounter = 0;
+
+			lsrList.scroll(piStartIndex);
+
+			while (piObjectsPerPage > liCounter++) {
+				schfList.add((ScheduleF) lsrList.get(0));
+				if (!lsrList.next())
+					break;
+			}
+			lsrList.close();
+			return schfList;
+		} else {
+			lsrList.close();
+			return null;
+		}
+	}
 	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	private ScheduleF findScheduleF(Long plId) {
