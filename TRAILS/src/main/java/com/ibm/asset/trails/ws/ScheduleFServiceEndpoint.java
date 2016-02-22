@@ -1,12 +1,20 @@
 package com.ibm.asset.trails.ws;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataHandler;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,10 +22,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.Account;
@@ -183,6 +194,93 @@ public class ScheduleFServiceEndpoint {
 			}
 		}
 		return scheFViewList;
+	}
+	
+	@POST
+	@Path("/scheduleF/upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/vnd.ms-excel")
+	public Response uploadFile(Attachment attachment, @Context HttpServletRequest request) {
+		ByteArrayOutputStream bos = null;
+		File file = null;
+		Boolean error = false;
+	
+		//resolve file
+		DataHandler handler = attachment.getDataHandler();
+		try {
+			InputStream stream = handler.getInputStream();
+			
+			//check file name
+			MultivaluedMap<String, String> map = attachment.getHeaders();
+			String filename = getFileName(map);
+			String extension = filename.substring(filename.lastIndexOf('.'));
+			if (!(extension.toLowerCase().equals(".xls") || extension.toLowerCase().equals(".cvs") || extension.toLowerCase().equals(".xlsx"))) {
+				error = true;
+			}
+			
+			//save a tmp file
+			file = new File("/tmp/" + filename);
+			if(file.exists()){
+				file.delete();
+			}
+			
+			OutputStream out = new FileOutputStream(file);
+			int read = 0;
+			byte[] bytes = new byte[1024];
+			while ((read = stream.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+			stream.close();
+			out.flush();
+			out.close();
+			
+			//if save tmp file failed, set error flag
+			if (!file.exists()) {
+				error = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//parse scheduleF from file
+		if (!error) {
+			try {
+				bos = scheduleFService.loadSpreadsheet(file, request.getRemoteUser());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				bos = new ByteArrayOutputStream();
+				PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos,"UTF-8"), true);
+				pw.println("SEEMS YOU ARE LOADING A FILE WITH NOT ACCEPTABLE FORMAT!");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//delete uploaded file
+		if(file.exists()){
+			file.delete();
+		}	
+		
+		ResponseBuilder responseBuilder = Response.ok((Object) bos.toByteArray());
+		responseBuilder.type("application/vnd.ms-excel; charset=UTF-8");
+		responseBuilder.header("Content-Disposition","attachment; filename=results.xls;");
+		return responseBuilder.build();
+	}
+
+	private String getFileName(MultivaluedMap<String, String> header) {
+		String[] contentDisposition = header.getFirst("Content-Disposition")
+				.split(";");
+		for (String filename : contentDisposition) {
+			if ((filename.trim().startsWith("filename"))) {
+				String[] name = filename.split("=");
+				String exactFileName = name[1].trim().replaceAll("\"", "");
+				return exactFileName;
+			}
+		}
+		return "unknown";
 	}
 	
 	public AccountService getAccountService() {
