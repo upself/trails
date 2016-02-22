@@ -200,7 +200,7 @@
 </div>
 <p style="font-weight:bold">IBM Confidential</p>
 <br />
-<div class="ibm-rule" style="width:110%"><hr><hr></div>
+<div class="ibm-rule" style="width:108%"><hr><hr></div>
 <div style="font-size: 18px;">
 <h2>Software License Management Report Delivery Tracking</h2>
 </div>
@@ -271,12 +271,12 @@
 	<div id="historyContent" class="ibm-data-table" style="max-height:180px"></div>
 </div>
 <br>
-<div class="ibm-rule" style="width:110%"><hr><hr></div>
+<div class="ibm-rule" style="width:108%"><hr><hr></div>
 <div style="float: left">
 <div style="font-size: 18px;">
 <h2 class="oneline">Schedule F</h2>
 </div>
-<p style="font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add link.</p>
+<p style="width:110%;font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
 	<div style="width:110%">
 		<div id="addScheFdiv" style="float: right;width:10%">
 			<p class="ibm-button-link-alternate ibm-btn-small">

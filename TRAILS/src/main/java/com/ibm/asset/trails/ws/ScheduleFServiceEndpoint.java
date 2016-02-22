@@ -71,10 +71,10 @@ public class ScheduleFServiceEndpoint {
 				if(null == account){
 					return WSMsg.failMessage("Account doesn't exist");
 				}
-				currentPage=currentPage-1;
-				schFlist = getScheduleFService().paginatedList(account, Integer.valueOf(currentPage), Integer.valueOf(pageSize), sort,dir);
+				int startIndex = (currentPage-1)*pageSize;
+				total=getScheduleFService().getAllScheduleFSize(account);
+				schFlist = getScheduleFService().paginatedList(account, Integer.valueOf(startIndex), Integer.valueOf(pageSize), sort,dir);
 				schFViewList = scheduleFtransformer(schFlist);
-				total = Long.valueOf(schFViewList.size());
 			}
 		
 		Pagination page = new Pagination();
