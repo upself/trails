@@ -28,8 +28,8 @@ my $connRetrySleepPeriod = $cfgMgr->connRetrySleepPeriod;
 #my $applyChanges = $cfgMgr->applyChanges;
 
 ##Validate server
-# die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
-#    unless validateServer($server);
+die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
+   unless validateServer($server);
 
 logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
@@ -45,7 +45,7 @@ my %children           = ();
 # my $children;
 
 my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
-my @customerIds=(); # debug my @customerIds = getReconCustomerQueue( $connection, $testMode );
+my @customerIds = getReconCustomerQueue( $connection, $testMode );
 my @softwareIds = getReconSoftwareQueue($connection);
 $connection->disconnect;
 
@@ -85,8 +85,6 @@ sub keepTicking {
              @softwareIds = getReconSoftwareQueue($connection) if ( scalar @softwareIds == 0 );
              $connection->disconnect;
              Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
-             
-             die; # debug
         }
         if ( scalar (keys (%children)) >= $maxChildren ) {
 			if ( Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children) == 0 ) {

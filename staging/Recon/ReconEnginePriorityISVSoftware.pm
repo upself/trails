@@ -13,6 +13,7 @@ use Recon::Queue;
 ###Object constructor.
 sub new {
  my ($class) = @_;
+ 
  my $self = {
   _connection => Database::Connection->new('trails')
  };
@@ -138,7 +139,7 @@ sub retrieveSoftwareIds {
     my $manufacturerId = shift;
     my @toreturn=();
    
-    $self->connection->prepareSqlQueryAndFields(querySoftwareByManufacturerId() );
+    $self->connection->prepareSqlQueryAndFields($self->querySoftwareByManufacturerId() );
     my $sth = $self->connection->sql->{SoftwareByManufacturerId};
     my %rec;
     $sth->bind_columns(
@@ -185,7 +186,7 @@ sub pushToReconCustomerSoftware {
 		$software->id($swId);
 		$software->getById($self->connection);
 
-		my $queue = Recon::Queue->(new $self->connection, $customer, $software);
+		my $queue = Recon::Queue->new ($self->connection, $customer, $software);
 		$queue->add;
 	}	
 }
@@ -199,7 +200,7 @@ sub pushToReconSoftware {
 		$software->id($swId);
 		$software->getById($self->connection);
 
-		my $queue = Recon::Queue->(new $self->connection, $software);
+		my $queue = Recon::Queue->new ($self->connection, $software);
 		$queue->add;
 	}	
 }
