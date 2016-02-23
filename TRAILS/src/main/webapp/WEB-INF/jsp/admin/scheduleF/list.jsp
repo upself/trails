@@ -159,8 +159,9 @@
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table id='historytable' class='ibm-data-table'><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></table>");
+			historySection.append("<table id='historytable' class='ibm-data-table'><thead><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></thead>");
 			
+			var newRow;
 			for (var i = 0; i < data.length; i++) {
 				var cyc;
 				if(data[i].cycle==7){
@@ -178,10 +179,10 @@
 				}else if(data[i].cycle==365){
 					cyc="Annualy";
 				}
-				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
+				newRow=newRow + ("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
 						+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
-				$("#historytable tr:last").after(newRow);
 			}
+				$("#historytable").append("<tbody>"+newRow+"</tbody></table>");
 		}		
 
 	});
@@ -268,7 +269,7 @@
 </style>
 <div id="reportTrackingHistory" style="width:110%;float:left">
 	<h2>Report Delivery Tracking History</h2>
-	<div id="historyContent" class="ibm-data-table" style="max-height:180px"></div>
+	<div id="historyContent" style="max-height:180px"></div>
 </div>
 <br>
 <div class="ibm-rule" style="width:108%"><hr><hr></div>
