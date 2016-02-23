@@ -17,7 +17,7 @@ out to complete the upload.</p>
 			<td><label for="upload">*File:</label></td>
 			<td><input id="uploadedFile" type="file" name="uploadedFile"/></td>
 			<td style="padding-left:20px;">
-				<input  name="ibm-submit" type="submit" value="Upload It"  class="ibm-btn-pri" />
+				<input  name="ibm-submit" type="submit" value="Submit"  class="ibm-btn-pri" />
 			</td>
 		</tr>
 	</table>
