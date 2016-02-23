@@ -178,6 +178,10 @@ sub getMatchedReconcile {
 
  my @guids     = @{ $param->{guids} };
  my @extSrcIds = @{ $param->{extSrcIds} };
+ 
+ if((scalar @guids * scalar @extSrcIds) eq 0){
+   return undef;
+ }
 
  my $inGuids     = join( ', ', ('?') x @guids );
  my $inExtSrcIds = join( ', ', ('?') x @extSrcIds );

@@ -381,7 +381,7 @@ and kbd.guid in(' . $guids . ') with ur ';
  }
 
  foreach my $isId (@isIds) {
-  $self->allocateOnInstalledSoftwareId( $isId, $isObj );    
+  $self->allocateOnInstalledSoftwareId( $isId, $orginLicInstSw );    
  }
 
 }
@@ -389,7 +389,10 @@ and kbd.guid in(' . $guids . ') with ur ';
 sub allocateOnInstalledSoftwareId {
  my $self  = shift;
  my $isId  = shift;
- my $isObj = shift;
+ my $orginLicInstSw = shift;
+ 
+ my $isObj = $orginLicInstSw->installedSoftware;
+ 
 
  if ( $self->machineLevel ) {
   my ( $scope, $level ) =
@@ -417,7 +420,7 @@ sub allocateOnInstalledSoftwareId {
    $self->info( 'NO_SCHEDULE_F:' . $is->toString );
    return;
   }
-  if ( $isObj->installedSoftwareReconData->scopeName ne
+  if ( $orginLicInstSw->installedSoftwareReconData->scopeName ne
    $licensingInstalledSoftware->installedSoftwareReconData->scopeName )
   {
    dlog("ScheduleF scope of myself and found iSW unmatched, skipping...");
