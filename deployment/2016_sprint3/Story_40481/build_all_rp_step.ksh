@@ -20,6 +20,10 @@ if test ! -r add_md5_col_rp.sql;then
   echo "  Missing add_md5_col_rp.sql file. ERROR!"
   errorind=1
 fi
+if test ! -r v_installed_sw_rp.sql;then
+  echo "  Missing v_installed_sw_rp.sql file. ERROR!"
+  errorind=1
+fi
 
 
 if [ $errorind -eq 1 ];then
@@ -43,6 +47,12 @@ echo "Working on step2  add_md5_col_rp `date`"|tee -a $LOG
 db2 -tvf add_md5_col_rp.sql>>$LOG
 if [ "$?" -gt 3 ];then
   echo "  Step2 has. ERROR!"|tee -a $LOG
+  echo " --- Check output in $LOG"|tee -a $LOG
+fi
+echo "Working on step3  v_installed_sw_rp `date`"|tee -a $LOG
+db2 -tvf v_installed_sw_rp.sql>>$LOG
+if [ "$?" -gt 3 ];then
+  echo "  Step3 has. ERROR!"|tee -a $LOG
   echo " --- Check output in $LOG"|tee -a $LOG
 fi
 
