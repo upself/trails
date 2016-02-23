@@ -159,7 +159,7 @@
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table id='historytable' class='ibm-data-table'><thead><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></thead>");
+			historySection.append("<table id='historytable' class='ibm-data-table'><thead><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Record Date</th><th>User</th></tr></thead>");
 			
 			var newRow;
 			for (var i = 0; i < data.length; i++) {
