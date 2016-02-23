@@ -3,6 +3,7 @@ package Recon::ReconEnginePriorityISVSoftware;
 use strict;
 use Base::Utils;
 use Carp qw( croak );
+
 use Database::Connection;
 use Recon::OM::ReconPriorityISVSoftware;
 use BRAVO::OM::Customer;
@@ -11,16 +12,16 @@ use Recon::Queue;
 
 ###Object constructor.
 sub new {
-	my ($class) = @_;
-	my $self = {
-		_connection => Database::Connection->new('trails')
-	};
-	bless $self, $class;
-	dlog("instantiated self");
+ my ($class) = @_;
+ my $self = {
+  _connection => Database::Connection->new('trails')
+ };
+ bless $self, $class;
+ dlog("instantiated self");
 
-	$self->validate;
+ $self->validate;
 
-	return $self;
+ return $self;
 }
 
 sub validate {
