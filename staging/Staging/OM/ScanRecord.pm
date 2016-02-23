@@ -43,6 +43,7 @@ sub new {
         ,_lparCapacity => undef
         ,_biosDate => undef
         ,_biosSerialNumber => undef
+        ,_sysplex => undef
         ,_biosUniqueId => undef
         ,_boardSerial => undef
         ,_caseSerial => undef
@@ -315,6 +316,13 @@ sub equals {
         $equal = 1 if $self->biosSerialNumber eq $object->biosSerialNumber;
     }
     $equal = 1 if (!defined $self->biosSerialNumber && !defined $object->biosSerialNumber);
+    return 0 if $equal == 0;
+
+    $equal = 0;
+    if (defined $self->sysplex && defined $object->sysplex) {
+        $equal = 1 if $self->sysplex eq $object->sysplex;
+    }
+    $equal = 1 if (!defined $self->sysplex && !defined $object->sysplex);
     return 0 if $equal == 0;
 
     $equal = 0;
@@ -612,6 +620,12 @@ sub biosSerialNumber {
     return $self->{_biosSerialNumber};
 }
 
+sub sysplex {
+    my $self = shift;
+    $self->{_sysplex} = shift if scalar @_ == 1;
+    return $self->{_sysplex};
+}
+
 sub biosUniqueId {
     my $self = shift;
     $self->{_biosUniqueId} = shift if scalar @_ == 1;
@@ -878,6 +892,11 @@ sub toString {
         $s .= $self->{_biosSerialNumber};
     }
     $s .= ",";
+    $s .= "sysplex=";
+    if (defined $self->{_sysplex}) {
+        $s .= $self->{_sysplex};
+    }
+    $s .= ",";
     $s .= "biosUniqueId=";
     if (defined $self->{_biosUniqueId}) {
         $s .= $self->{_biosUniqueId};
@@ -992,6 +1011,7 @@ sub save {
             ,$self->lparCapacity
             ,$self->biosDate
             ,$self->biosSerialNumber
+            ,$self->sysplex
             ,$self->biosUniqueId
             ,$self->boardSerial
             ,$self->caseSerial
@@ -1048,6 +1068,7 @@ sub save {
             ,$self->lparCapacity
             ,$self->biosDate
             ,$self->biosSerialNumber
+            ,$self->sysplex
             ,$self->biosUniqueId
             ,$self->boardSerial
             ,$self->caseSerial
@@ -1108,6 +1129,7 @@ sub queryInsert {
             ,lpar_capacity
             ,bios_date
             ,bios_serial_number
+            ,SYSPLEX
             ,bios_unique_id
             ,board_serial
             ,case_serial
@@ -1121,6 +1143,7 @@ sub queryInsert {
             ,is_manual
         ) values (
             ?
+            ,?
             ,?
             ,?
             ,?
@@ -1212,6 +1235,7 @@ sub queryUpdate {
             ,lpar_capacity = ?
             ,bios_date = ?
             ,bios_serial_number = ?
+            ,SYSPLEX = ?
             ,bios_unique_id = ?
             ,board_serial = ?
             ,case_serial = ?
@@ -1291,6 +1315,7 @@ sub getById {
     my $lparCapacity;
     my $biosDate;
     my $biosSerialNumber;
+    my $sysplex;
     my $biosUniqueId;
     my $boardSerial;
     my $caseSerial;
@@ -1339,6 +1364,7 @@ sub getById {
         ,\$lparCapacity
         ,\$biosDate
         ,\$biosSerialNumber
+        ,\$sysplex
         ,\$biosUniqueId
         ,\$boardSerial
         ,\$caseSerial
@@ -1392,6 +1418,7 @@ sub getById {
     $self->lparCapacity($lparCapacity);
     $self->biosDate($biosDate);
     $self->biosSerialNumber($biosSerialNumber);
+    $self->sysplex($sysplex);
     $self->biosUniqueId($biosUniqueId);
     $self->boardSerial($boardSerial);
     $self->caseSerial($caseSerial);
@@ -1445,6 +1472,7 @@ sub queryGetById {
             ,lpar_capacity
             ,bios_date
             ,bios_serial_number
+            ,SYSPLEX
             ,bios_unique_id
             ,board_serial
             ,case_serial
