@@ -153,7 +153,7 @@ sub getInstalledSoftwareReconData {
 #		$installedSoftwareReconData->sPriority( $rec{sPriority} );
 		$installedSoftwareReconData->sLevel( $rec{sLevel} );
 #		$installedSoftwareReconData->sVendorMgd( $rec{sVendorMgd} );
-		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
+#		$installedSoftwareReconData->sMfgId ( $rec{sMfgId} );
 		$installedSoftwareReconData->sMfg( $rec{sMfg} );
 #		$installedSoftwareReconData->scName( $rec{scName} );
 		$installedSoftwareReconData->rId( $rec{rId} );
@@ -168,7 +168,7 @@ sub getInstalledSoftwareReconData {
 
 		$installedSoftwareReconData->expectedAlertType (
 					Recon::Delegate::ReconDelegate->getIBMISVprio( $self->connection,
-																	$installedSoftwareReconData->sMfgId,
+																	$installedSoftwareReconData->sMfg,
 																	$installedSoftwareReconData->cId ) );
 
 	}
@@ -195,7 +195,6 @@ sub queryReconInstalledSoftwareBaseData {
 	  sName
 	  sStatus
 	  sLevel
-	  sMfgId
 	  sMfg
 	  rId
 	);
@@ -214,7 +213,6 @@ sub queryReconInstalledSoftwareBaseData {
             ,s.software_name
             ,s.status
             ,s.level
-            ,m.id
             ,m.name
             ,r.id
         from

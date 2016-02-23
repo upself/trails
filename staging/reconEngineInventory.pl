@@ -12,6 +12,7 @@ use Tap::NewPerl;
 use Recon::InventoryReconEngineCustomer;
 use Recon::ReconEngineSoftware;
 use Recon::ReconEnginePvu;
+use Recon::ReconEnginePriorityISVSoftware;
 use Recon::Delegate::ReconDelegate;
 
 my $logfile    = "/var/staging/logs/reconEngineInventory/reconEngineInventory.log";
@@ -27,8 +28,8 @@ my $connRetrySleepPeriod = $cfgMgr->connRetrySleepPeriod;
 #my $applyChanges = $cfgMgr->applyChanges;
 
 ##Validate server
- die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
-    unless validateServer($server);
+# die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
+#    unless validateServer($server);
 
 logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
@@ -44,7 +45,7 @@ my %children           = ();
 # my $children;
 
 my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
-my @customerIds = getReconCustomerQueue( $connection, $testMode );
+my @customerIds=(); # debug my @customerIds = getReconCustomerQueue( $connection, $testMode );
 my @softwareIds = getReconSoftwareQueue($connection);
 $connection->disconnect;
 
@@ -84,6 +85,8 @@ sub keepTicking {
              @softwareIds = getReconSoftwareQueue($connection) if ( scalar @softwareIds == 0 );
              $connection->disconnect;
              Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
+             
+             die; # debug
         }
         if ( scalar (keys (%children)) >= $maxChildren ) {
 			if ( Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children) == 0 ) {
@@ -245,7 +248,7 @@ sub newPriorityISVChild {
     }
 
    	my $prioISVEngine = new Recon::ReconEnginePriorityISVSoftware;
-	$prioISVEngine->recon; # spawning one PVU job... the called entity will read the PVU queue by itself and process one record of it, or die if none found
+	$prioISVEngine->recon; # spawning one prioISV job... the called entity will read the prioISV queue by itself and process one record of it, or die if none found
 	
 	wlog("$rNo PriorityISV child complete");
 

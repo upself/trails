@@ -11,9 +11,9 @@ use Recon::Queue;
 
 ###Object constructor.
 sub new {
-	my ( $class) = @_;
+	my ($class) = @_;
 	my $self = {
-		_connection => Database::Connection->new('trails'),
+		_connection => Database::Connection->new('trails')
 	};
 	bless $self, $class;
 	dlog("instantiated self");
@@ -40,18 +40,20 @@ sub recon {
 	eval {
 	    #Load records from RECON_PRIORITY_ISV_SW db table
 		$prioID=$self->loadReconPISVSWQueue;
+		
+		exit unless defined($prioID);
 
         #Find all the related installed software instances and add them into the memory
 	    #Get the Recon Priority ISV Software record based on id value
 	    my $reconPISVSW = new Recon::OM::ReconPriorityISVSoftware();
-		$reconPISVSW->id($id);
+		$reconPISVSW->id($prioID);
 	    $reconPISVSW->getById( $self->connection );
 		    
-	    my @softwareIds=retrieveSoftwareIds($reconPISVSW->manufacturerId() );
+	    my @softwareIds=$self->retrieveSoftwareIds($reconPISVSW->manufacturerId() );
 		    
         # push the software records to queue RECON_CUSTOMER_SOFTWARE or RECON_SOFTWARE
-	    pushToReconCustomerSoftware($reconPISVSW->customerId() ,@softwareIds) if ( defined $reconPISVSW->customerId() );
-	    pushToReconSoftware(@softwareIds) unless ( defined $customerId );
+	    $self->pushToReconCustomerSoftware($reconPISVSW->customerId() ,@softwareIds) if ( defined $reconPISVSW->customerId() );
+	    $self->pushToReconSoftware(@softwareIds) unless ( defined $reconPISVSW->customerId() );
 		        
 	    #Remove the Recon Priority ISV Software Record from DB Queue
 		$reconPISVSW->delete( $self->connection);
@@ -77,7 +79,7 @@ sub loadReconPISVSWQueue {
 	dlog('Begin loadReconPISVSWQueue method of ReconEnginePriorityISVSoftware');
 
 	my @queue;
-	my $toreturn;
+	my $toreturn=undef;
 	
 	###Prepare the query
 	$self->connection->prepareSqlQueryAndFields(
@@ -131,6 +133,7 @@ sub queryReconPriorityISVSoftwareQueue {
 
 
 sub retrieveSoftwareIds {
+	my $self = shift;
     my $manufacturerId = @_;
     my @toreturn=();
    
@@ -153,7 +156,7 @@ sub querySoftwareByManufacturerId {
     my @fields = ( 'softwareId' );
     my $query  = qq{
         select
-        	s.id
+        	s.software_id
         from
             software s
             join manufacturer m on m.id = s.manufacturer_id
@@ -168,6 +171,7 @@ sub querySoftwareByManufacturerId {
 }
 
 sub pushToReconCustomerSoftware {
+	my $self=shift;
 	my $customerId=shift;
 	my @softwareIds=@_;
 	
@@ -186,6 +190,7 @@ sub pushToReconCustomerSoftware {
 }
 
 sub pushToReconSoftware {
+	my $self=shift;
 	my @softwareIds=@_;
 	
 	foreach my $swId (@softwareIds) {
