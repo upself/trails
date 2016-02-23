@@ -52,7 +52,8 @@ my $sqlAG = "select  node.node_key
               ,'' as biosDate
  	      ,'' as biosSerial
 	      ,'' as sysUuid
-	      ,system.sysplex as boardSerNum
+	      ,'' as boardSerNum
+	      ,system.sysplex as sysplex
 	      ,'' as caseSerNum
 	      ,system.smfid as caseAssetTag
 	      , '' as extId
@@ -110,7 +111,8 @@ my $sqlAG81 = "select node.node_key
                         ,'' as biosDate
                         ,'' as biosSerial
                         ,'' as sysUuid
-                        ,system.sysplex as boardSerNum
+                        ,'' as boardSerNum
+                        ,system.sysplex as sysplex
                         ,'' as caseSerNum
                         ,system.smfid as caseAssetTag
                         ,'' as extId
@@ -181,7 +183,8 @@ my $sqlEMEA = "select
               ,'' as biosDate
  	      ,'' as biosSerial
 	      ,'' as sysUuid
-	      ,system.sysplex as boardSerNum
+	      ,'' as boardSerNum
+	      ,system.sysplex as sysplex
 	      ,'' as caseSerNum
 	      ,system.smfid as caseAssetTag
 	      , '' as extId
@@ -240,7 +243,8 @@ my $sqlEMEA81 = "select node.node_key
                 ,'' as biosDate
                 ,'' as biosSerial
                 ,'' as sysUuid
-                ,system.sysplex as boardSerNum
+                ,'' as boardSerNum
+                ,system.sysplex as sysplex
                 ,'' as caseSerNum
                 ,system.smfid as caseAssetTag
                 ,'' as extId
@@ -296,7 +300,8 @@ my $sqlANZ = "select node.node_key
  		       ,'' as biosDate
  		       ,'' as biosSerial
  		       ,'' as sysUuid
- 		       ,system.sysplex as boardSerNum
+ 		       ,'' as boardSerNum
+ 		       ,system.sysplex as sysplex
  		       ,'' as caseSerNum
  		       ,system.smfid as caseAssetTag
  		       ,'' as extId

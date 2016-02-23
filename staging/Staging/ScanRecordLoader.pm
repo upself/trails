@@ -221,6 +221,7 @@ sub doDelta {
         $scanRecord->biosSerialNumber( $rec{biosSerialNumber} );
         $scanRecord->biosUniqueId( $rec{biosUniqueId} );
         $scanRecord->boardSerial( $rec{boardSerial} );
+        $scanRecord->sysplex( $rec{sysplex} );
         $scanRecord->caseSerial( $rec{caseSerial} );
         $scanRecord->caseAssetTag( $rec{caseAssetTag} );
         $scanRecord->powerOnPassword( $rec{powerOnPassword} );
