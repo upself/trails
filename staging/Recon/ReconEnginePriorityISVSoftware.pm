@@ -134,7 +134,7 @@ sub queryReconPriorityISVSoftwareQueue {
 
 sub retrieveSoftwareIds {
 	my $self = shift;
-    my $manufacturerId = @_;
+    my $manufacturerId = shift;
     my @toreturn=();
    
     $self->connection->prepareSqlQueryAndFields(querySoftwareByManufacturerId() );
