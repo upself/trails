@@ -1384,10 +1384,6 @@ public class ReportServiceImpl implements ReportService {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select sf.Level,sf.hw_Owner,sf.hostname,sf.serial,sf.Machine_Type, c.account_number,sf.software_title,sf.software_name,sf.manufacturer,sc.description as Scope,sf.sw_financial_resp,so.description as Source,sf.source_location,st.description as Status,sf.business_justification,c.SW_COMPLIANCE_MGMT ")
 		.append(" from eaadmin.schedule_f sf,eaadmin.scope sc, eaadmin.status st,eaadmin.source so,eaadmin.customer c ")
-//		.append("left join eaadmin.scope scope on scope.id=sf.scope_id ")
-//		.append("left join eaadmin.status status on status.id=sf.status_id ")
-//		.append("left join eaadmin.source source on source.id=sf.source_id ")
-//		.append("left join eaadmin.customer c on c.customer_id=sf.customer_id ")
 		.append(" where sc.id=sf.scope_id and st.id=sf.status_id and so.id=sf.source_id and c.customer_id=sf.customer_id and")
 		.append(" c.customer_id=")
 		.append(account.getId());
