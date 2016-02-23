@@ -70,6 +70,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Virtual Flag"
 		,"Virtual Mobility Restriction"
 		,"sysplex"
+		,"MF sysplex"
 		,"Cluster type"
 		,"Backup method"
 		,"Internet Acc Flag"
