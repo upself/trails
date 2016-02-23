@@ -78,6 +78,7 @@ sub keepTicking {
     while ( loaderCheckForStop ( $pidFile ) == 0 ) {
         if ( scalar @customerIds == 0 ) {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
+             newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 20 );
              newPvuChild();
              newPriorityISVChild();
              my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
