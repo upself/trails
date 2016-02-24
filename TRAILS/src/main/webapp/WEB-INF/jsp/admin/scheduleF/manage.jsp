@@ -1,11 +1,7 @@
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
-<script src="${pageContext.request.contextPath}/js/jquery.js"
-	type="text/javascript"></script>
-<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
-	type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $( document ).ready(function() {
     	var flag='${scheduleFId}';
@@ -285,6 +281,321 @@ var lastValue = '';
 	}
 	
 </script>
+
+<!-- manage ScheduleF -->
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
+<%-- 			<s:if test="#request.nonInstanceDisplay != null"> --%>
+<%-- 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" /> --%>
+<%-- 			</s:if> --%>
+			<p>
+				<label style="width:30%" for="softwareTitle">Software title:
+					<span class="ibm-required">*</span> 
+				</label> 
+				<span>
+					<input name="softwareTitle" id="softwareTitle" value="<s:property value='#request.scheduleF.softwareTitle'/>" size="40" type="text" onKeyUp="keyup(this)">
+				</span>
+			</p>
+			<p>
+				<label style="width:30%" for="softwareName"> Software name:
+					<span class="ibm-required">*</span> 
+				</label> 
+				<span> 
+					<input name="softwareName" id="softwareName" value="<s:property value='#request.scheduleF.softwareName'/>" size="40" type="text" onKeyUp="keyup(this)">
+				</span>
+			</p>
+			
+			<p>
+				<label style="width:30%" for="manufacturer"> Manufacturer:
+					<span class="ibm-required">*</span>
+				</label> 
+				<span> 
+					<input name="manufacturer" id="manufacturer" value="<s:property value='#request.scheduleF.manufacturer'/>" size="40" type="text" onKeyUp="keyup(this)">
+				</span>
+			</p>
+			
+			<p>
+				<label style="width:30%" for="level"> Level:
+					<span class="ibm-required">*</span>
+				</label> 
+				<span> 
+					<select name="level" id="level">
+						<option value="PRODUCT" <s:if test="#request.scheduleF.level eq 'PRODUCT'">selected="selected"</s:if> >PRODUCT</option>
+						<option value="HWOWNER" <s:if test="#request.scheduleF.level eq eq 'HWOWNER'">selected="selected"</s:if> >HWOWNER</option>
+						<option value="HWBOX" <s:if test="#request.scheduleF.level eq eq 'HWBOX'">selected="selected"</s:if>>HWBOX</option>
+						<option value="HOSTNAME" <s:if test="##request.scheduleF.level eq eq 'HOSTNAME'">selected="selected"</s:if>>HOSTNAME</option>
+					</select>
+				</span>
+			</p>
+			
+			<p>
+				<label style="width:30%" for="hwOwner"> Hwowner:
+					<span class="ibm-required">*</span>
+				</label> 
+				<span> 
+					<select name="hwOwner" id="hwOwner">
+						<option value="IBM" <s:if test="#request.scheduleF.hwOwner eq 'IBM'">selected="selected"</s:if> >IBM</option>
+						<option value="CUSTO" <s:if test="#request.scheduleF.hwOwner eq eq 'CUSTO'">selected="selected"</s:if> >CUSTO</option>
+					</select>
+				</span>
+			</p>
+			
+			<p>
+				<label style="width:30%" for="scope"> Level:
+					<span class="ibm-required">*</span>
+				</label> 
+				<span> 
+					<select name="scope" id="scope">
+						<option value="PRODUCT" <s:if test="#request.scheduleF.scope eq 'PRODUCT'">selected="selected"</s:if> >PRODUCT</option>
+						<option value="HWOWNER" <s:if test="#request.scheduleF.level eq eq 'HWOWNER'">selected="selected"</s:if> >HWOWNER</option>
+						<option value="HWBOX" <s:if test="#request.scheduleF.level eq eq 'HWBOX'">selected="selected"</s:if>>HWBOX</option>
+						<option value="HOSTNAME" <s:if test="##request.scheduleF.level eq eq 'HOSTNAME'">selected="selected"</s:if>>HOSTNAME</option>
+						<option value="PRODUCT" <s:if test="#request.scheduleF.scope eq 'PRODUCT'">selected="selected"</s:if> >PRODUCT</option>
+						<option value="PRODUCT" <s:if test="#request.scheduleF.scope eq 'PRODUCT'">selected="selected"</s:if> >PRODUCT</option>
+						<option value="PRODUCT" <s:if test="#request.scheduleF.scope eq 'PRODUCT'">selected="selected"</s:if> >PRODUCT</option>	
+					</select>
+				</span>
+			</p>
+			
+			<p>
+				<label style="width:30%" for="baseOnly_id"> Non Instance based only :<span class="ibm-required">*</span>
+				</label> <span> <select name="baseOnly" id="baseOnly_id">
+						<option value="">Please select one</option>
+						<option value="1" <s:if test="#request.nonInstanceDisplay.baseOnly eq 1">selected="selected"</s:if> >Y</option>
+						<option value="0" <s:if test="#request.nonInstanceDisplay.baseOnly eq 0">selected="selected"</s:if> >N</option>
+				</select>
+				</span>
+
+			</p>
+			<p>
+				<label style="width:30%" for="capacityDesc_id"> Non Instance capacity type:<span class="ibm-required">*</span>
+				</label> 
+				<span>
+					<select name="capacityCode" id="capacityCode_id" style="max-width:270px;">
+						<option value="">Please select one</option>
+						<s:iterator value="#request.capacityTypeList" id="capacityType">
+							<option value="<s:property value='#capacityType.code'/>" <s:if test="#request.nonInstanceDisplay.capacityCode eq #capacityType.code">selected="selected"</s:if> ><s:property value='#capacityType.description'/></option>
+						</s:iterator>
+					</select>  
+				</span>
+			</p>
+			<p>
+				<label style="width:30%" for="statusId_id"> Status:<span class="ibm-required">*</span>
+				</label> <span> <select name="statusId" id="statusId_id">
+						<option value="">Please select one</option>
+						<option value="2" <s:if test="#request.nonInstanceDisplay.statusId eq 2">selected="selected"</s:if> >ACTIVE</option>
+						<option value="1" <s:if test="#request.nonInstanceDisplay.statusId eq 1">selected="selected"</s:if> >INACTIVE</option>
+				</select>
+				</span>
+			</p>
+			<span class="ibm-spinner-large" id="loading" style="display:none"></span>
+			<div class="ibm-rule">
+				<hr />
+			</div>
+			<div class="ibm-columns">
+				<div class="ibm-col-6-3">
+					<p>
+						<input value="Save" name="ibm-submit" class="ibm-btn-pri" type="submit">
+					</p>
+				</div>
+			</div>
+		</form>
+		<!-- FORM_END -->
+	</div>
+</div>
+<script>
+function submitForm(){
+	if(validateForm()){
+		$.ajax({
+	        cache: true,
+	        type: "POST",
+	        url: '${pageContext.request.contextPath}/ws/noninstance/saveOrUpdate',
+	        data: $('#myForm').serialize(),
+	        dataType:'json',
+	        async: false,
+	        beforeSend: function (XMLHttpRequest) {
+            	$("#loading").show();
+            },
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	            alert(textStatus);
+	        },
+	        success: function(data) {
+	            alert(data.msg);
+	        },
+	        complete: function (XMLHttpRequest, textStatu) {
+            	$("#loading").hide();
+            }
+	    });
+	} 
+}
+
+function validateForm(){
+	var softwareName = $("#softwareName_id").val();
+	var manufacturerName = $("#manufacturerName_id").val();
+	var restriction = $("#restriction_id").val();
+	var baseOnly = $("#baseOnly_id").val();
+	var capacityCode = $("#capacityCode_id").val();
+	var statusId = $("#statusId_id").val();
+
+	if(softwareName.trim() == ''){
+		alert('Software component is required');
+		return false;
+	}
+	
+	if(manufacturerName.trim() == ''){
+		alert('Manufacturer is required');
+		return false;
+	}
+	
+	if(restriction.trim() == ''){
+		alert('Restriction is required');
+		return false;
+	}
+	
+	if(baseOnly.trim() == ''){
+		alert('Non Instance based only is required');
+		return false;
+	}
+	
+	if(capacityCode.trim() == ''){
+		alert('Non Instance capacity type is required');
+		return false;
+	}
+	
+	if(statusId.trim() == ''){
+		alert('Status is required');
+		return false;
+	}
+	
+	return true;
+}
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<%@ taglib prefix="s" uri="/struts-tags"%>
+
+<script src="${pageContext.request.contextPath}/js/jquery.js"
+	type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
+	type="text/javascript"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <h1 class="oneline">Manage</h1><div style="font-size:22px; display:inline">&nbsp;Schedule F: <s:property value="account.name" />(<s:property
 	value="account.account" />)</div>
 <p class="confidential">IBM Confidential</p>
