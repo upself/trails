@@ -18,7 +18,7 @@ public class InstalledSoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Install
 		implements InstalledSoftwareDAO {
 	
 	@SuppressWarnings("unchecked")
-	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId, Account account, Long scopeId) {
+	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId, String hostname, Account account, Long scopeId) {
 		
 		List<InstalledSoftware> result = new ArrayList<InstalledSoftware>();
 		
@@ -34,10 +34,11 @@ public class InstalledSoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Install
 		for(InstalledSoftware insw : InstalledSwList){
 			@SuppressWarnings("unchecked")
 			List<ScheduleF> scheduleFList = entityManager.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname and a.level =:level")
+							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname and a.level =:level and a.hostname =:hostname")
 					.setParameter("account", account)
 					.setParameter("swname", insw.getSoftware().getSoftwareName())
-					.setParameter("level", "HOSTNAME").getResultList();
+					.setParameter("level", "HOSTNAME")
+					.setParameter("hostname", hostname).getResultList();
 			
 			for(ScheduleF scheduleF : scheduleFList){
 				if(scheduleF.getScope().getId().equals(scopeId)){
