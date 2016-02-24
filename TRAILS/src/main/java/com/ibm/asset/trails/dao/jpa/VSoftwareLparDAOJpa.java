@@ -412,7 +412,7 @@ public class VSoftwareLparDAOJpa extends
 	private EntityManager getEntityManager() {
 		return em;
 	}
-	private ScheduleF getScheduleFItem(Account account, String swname,
+	public ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial) {
 	
 		@SuppressWarnings("unchecked")

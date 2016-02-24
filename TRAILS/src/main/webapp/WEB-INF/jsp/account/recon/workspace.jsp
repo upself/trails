@@ -272,6 +272,9 @@
 				value="%{#attr.row.alertAgeI}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hostname"
 				value="%{#attr.row.hostname}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].sl_hostname"
+				value="%{#attr.row.sl_hostname}" />
+				
 			<s:hidden name="list[%{#attr.row_rowNum-1}].serial"
 				value="%{#attr.row.serial}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].country"

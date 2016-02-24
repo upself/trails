@@ -18,11 +18,8 @@ public class InstalledSoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Install
 		implements InstalledSoftwareDAO {
 	
 	@SuppressWarnings("unchecked")
-	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId, String hostname, Account account, Long scopeId) {
+	public List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId) {
 		
-		List<InstalledSoftware> result = new ArrayList<InstalledSoftware>();
-		
-		//search all installed software from the same software lpar
 		List<InstalledSoftware> InstalledSwList =  entityManager
 		.createQuery(
 				"from InstalledSoftware a join fetch a.software where a.softwareLpar.id = :softwareLparId and a.status = 'ACTIVE' and a.software.id != :softwareId and a.status = 'ACTIVE' and a.software.level = 'LICENSABLE' and a.discrepancyType.name != 'INVALID' and a.discrepancyType.name != 'FALSE HIT' ORDER BY a.software.softwareName")
@@ -30,25 +27,7 @@ public class InstalledSoftwareDAOJpa extends AbstractGenericEntityDAOJpa<Install
 		.setParameter("softwareId", softwareId)
 		.getResultList();
 		
-		//filter socpe
-		for(InstalledSoftware insw : InstalledSwList){
-			@SuppressWarnings("unchecked")
-			List<ScheduleF> scheduleFList = entityManager.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname and a.level =:level and a.hostname =:hostname")
-					.setParameter("account", account)
-					.setParameter("swname", insw.getSoftware().getSoftwareName())
-					.setParameter("level", "HOSTNAME")
-					.setParameter("hostname", hostname).getResultList();
-			
-			for(ScheduleF scheduleF : scheduleFList){
-				if(scheduleF.getScope().getId().equals(scopeId)){
-					result.add(insw);
-					break;
-				}
-			}
-		}
-		
-		return result;
+		return InstalledSwList;
 	}
 
 	public InstalledSoftware getInstalledSoftware(Long installedSoftwareId) {
