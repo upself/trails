@@ -62,6 +62,8 @@
 		sql-name="bios_date" />
 	<property name="biosSerialNumber" type="scalar" equals="true"
 		sql-name="bios_serial_number" />
+	<property name="sysplex" type="scalar" equals="true"
+		sql-name="SYSPLEX" />
 	<property name="biosUniqueId" type="scalar" equals="true"
 		sql-name="bios_unique_id" />
 	<property name="boardSerial" type="scalar" equals="true"
