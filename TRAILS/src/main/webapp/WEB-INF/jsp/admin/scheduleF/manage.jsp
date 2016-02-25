@@ -95,19 +95,20 @@
 		}
 		if (value == 'HWBOX') {
 			if ($('#serial').length && $('#machineType').length) {
-<<<<<<< HEAD
 // 				$("#p_hwowner").show();
 // 				$("#hwowerid").show();	
 			$("#p_serial").show();//
 // 			$("#serial").show();
 			$("#p_machineType").show();//
 // 			$("#machineType").show();
-=======
 			$("#serialLabel").show();//
 			$("#serial").show();//
 			$("#machineTypeLabel").show();//
 			$("#machineType").show();//
->>>>>>> branch 'Story_40959' of https://hub.jazz.net/git/googer/bravotrails_master
+			$("#serialLabel").show();//
+			$("#serial").show();//
+			$("#machineTypeLabel").show();//
+			$("#machineType").show();//
 			/*$("div.serialLb").show();
 			$("div.serialva").show();
 			$("div.machinetLb").show();
@@ -365,8 +366,7 @@ var lastValue = '';
 					<input name="serial" id="serial" value="<s:property value='#request.scheduleF.serial'/>" size="40" type="text" onKeyUp="keyup(this)">
 				</span>
 			</p>
-			
-<<<<<<< HEAD
+
 			<p id="p_machineType">
 				<label style="width:30%" for="machineType"> Machine Type:
 					<span class="ibm-required">*</span>
@@ -385,17 +385,6 @@ var lastValue = '';
 				</span>
 			</p>
 
-=======
-			
-			
-			
-			
-			
-			
-			
-			
-			
->>>>>>> branch 'Story_40959' of https://hub.jazz.net/git/googer/bravotrails_master
 			<p>
 				<label style="width:30%" for="scope"> Scope:
 					<span class="ibm-required">*</span>
@@ -415,15 +404,15 @@ var lastValue = '';
 				</label> 
 				<span> 
 					<select name="swFinanceArrayList" id="swFinanceArrayList"<!-- onchange="levelSltChng(this) "-->>
-<<<<<<< HEAD
 <!-- 						<option value="N/A" <s:if test="#request.scheduleF.level eq 'N/A'">selected="selected"</s:if> >N/A</option> -->
 <!-- 						<option value="IBM" <s:if test="#request.scheduleF.level eq eq 'IBM'">selected="selected"</s:if> >IBM</option> -->
 <!-- 						<option value="CUSTO" <s:if test="#request.scheduleF.level eq eq 'CUSTO'">selected="selected"</s:if> >CUSTO</option> -->
-=======
 						<option value="N/A" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >N/A</option>
 						<option value="IBM" <s:if test=<!--"#request.scheduleF.level eq eq 'IBM'"-->>selected="selected"</s:if> >IBM</option>
 						<option value="CUSTO" <s:if test=<!--"#request.scheduleF.level eq eq 'CUSTO'"-->>selected="selected"</s:if> >CUSTO</option>
->>>>>>> branch 'Story_40959' of https://hub.jazz.net/git/googer/bravotrails_master
+						<option value="N/A" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >N/A</option>
+						<option value="IBM" <s:if test=<!--"#request.scheduleF.level eq eq 'IBM'"-->>selected="selected"</s:if> >IBM</option>
+						<option value="CUSTO" <s:if test=<!--"#request.scheduleF.level eq eq 'CUSTO'"-->>selected="selected"</s:if> >CUSTO</option>
 					</select>
 				</span>
 			</p>
@@ -467,13 +456,12 @@ var lastValue = '';
 				<span> 
 					<select name="status" id="status">
 <!-- 						in the old code, there is statusArrayList, so I suppose these active/inactive values are not set? and shall be loaded instead -->
-<<<<<<< HEAD
 						<option value="ACTIVE" <s:if test="#request.scheduleF.level eq 'N/A'">selected="selected"</s:if> >ACTIVE</option>
 						<option value="INACTIVE" <s:if test="#request.scheduleF.level eq eq 'INACTIVE'">selected="selected"</s:if> >INACTIVE</option>
-=======
 						<option value="ACTIVE" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >ACTIVE</option>
 						<option value="INACTIVE" <s:if test=<!--"#request.scheduleF.level eq eq 'INACTIVE'"-->>selected="selected"</s:if> >INACTIVE</option>
->>>>>>> branch 'Story_40959' of https://hub.jazz.net/git/googer/bravotrails_master
+						<option value="ACTIVE" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >ACTIVE</option>
+						<option value="INACTIVE" <s:if test=<!--"#request.scheduleF.level eq eq 'INACTIVE'"-->>selected="selected"</s:if> >INACTIVE</option>
 					</select>
 				</span>
 			</p>
