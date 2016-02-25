@@ -479,6 +479,7 @@
 				,hardware_lpar.virtual_flag as virtualFlag
 				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
 				,hardware_lpar.sysplex as sysplex
+				,software_lpar.sysplex as mf_sysplex
 				,hardware_lpar.cluster_type as clusterType
 				,hardware_lpar.backupmethod as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
@@ -554,6 +555,7 @@
 				,hardware_lpar.virtual_flag as virtualFlag
 				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
 				,hardware_lpar.sysplex as sysplex
+				,'' as mf_sysplex
 				,hardware_lpar.cluster_type  as clusterType
 				,hardware_lpar.backupmethod  as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
@@ -624,6 +626,7 @@
 				,'' as virtualFlag
 				,'' as vMobilRestrict
 				,'' as sysplex
+				,'' as mf_sysplex
 				,'' as clusterType
 				,'' as backupMethod
 				,'' as internetIccFlag

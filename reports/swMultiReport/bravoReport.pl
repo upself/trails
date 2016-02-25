@@ -126,6 +126,7 @@ sub getBravoSoftwareReport {
 	my $name;
 	my $model;
 	my $biosSerial;
+	my $sysplex;
 	my $processorCount;
 	my $chipCount;
 	my $scantime;
@@ -159,6 +160,7 @@ select
                       ,v_isw.nodename
                       ,v_isw.model
                       ,v_isw.bios_serial
+                      ,v_isw.sysplex
                       ,v_isw.processor_count
                       ,COALESCE(hw.chips, 0)
                       ,v_isw.scantime
@@ -221,7 +223,7 @@ select
 
 	$sth->bind_columns(
 		\$accountNumber,   	\$name,           	\$model,
-		\$biosSerial,      	\$processorCount, 	\$chipCount,
+		\$biosSerial,       \$sysplex,     	\$processorCount, 	\$chipCount,
 		\$scantime,        	\$softwareName,		\$pid,	
 		\$softwareManufacturer,					\$level,
 		\$priority, 	   	\$softwareVersion, 	\$bankAccount,    
@@ -246,6 +248,7 @@ select
 
 		$data{$accountNumber}{$name}{'model'}          = $model;
 		$data{$accountNumber}{$name}{'biosSerial'}     = $biosSerial;
+		$data{$accountNumber}{$name}{'sysplex'}     = $sysplex;
 		$data{$accountNumber}{$name}{'processorCount'} = $processorCount;
 		$data{$accountNumber}{$name}{'chipCount'} = $chipCount;
 		$data{$accountNumber}{$name}{'scantime'}       = $scantime;
@@ -341,6 +344,7 @@ select
        
        	$data{$accountNumber}{$name}{'model'}          = $model;
 		$data{$accountNumber}{$name}{'biosSerial'}     = $biosSerial;
+		$data{$accountNumber}{$name}{'sysplex'}     = $sysplex;
 		$data{$accountNumber}{$name}{'processorCount'} = $processorCount;
 		$data{$accountNumber}{$name}{'chipCount'} = $chipCount;
 		$data{$accountNumber}{$name}{'scantime'}       = $scantime;
@@ -395,24 +399,25 @@ my $lineCount = 2;
 	$heartbeat->write( $lineCount, 0, "HOSTNAME" );
 	$heartbeat->write( $lineCount, 1, "MODEL" );
 	$heartbeat->write( $lineCount, 2, "SERIAL NUMBER" );
-	$heartbeat->write( $lineCount, 3, "PROCESSOR COUNT" );
-	$heartbeat->write( $lineCount, 4, "CHIP COUNT" );	
-	$heartbeat->write( $lineCount, 5, "OS" );
-	$heartbeat->write( $lineCount, 6, "OS VERSION" );
-	$heartbeat->write( $lineCount, 7, "OS MINOR VERSION" );
-	$heartbeat->write( $lineCount, 8, "OS SUB VERSION" );
-	$heartbeat->write( $lineCount, 9, "OS INST DATE" );
-	$heartbeat->write( $lineCount, 10, "SCANTIME" );
-	$heartbeat->write( $lineCount, 11, "BANK ACCOUNT" );
-	$heartbeat->write( $lineCount, 12, "SERVER TYPE" );
-	$heartbeat->write( $lineCount, 13, "CPU IBM LSPR MIPS" );
-	$heartbeat->write( $lineCount, 14, "CPU Gartner MIPS" );
-	$heartbeat->write( $lineCount, 15, "CPU MSU" );
-	$heartbeat->write( $lineCount, 16, "PART IBM LSPR MIPS" );
-	$heartbeat->write( $lineCount, 17, "PART Gartner MIPS" );
-	$heartbeat->write( $lineCount, 18, "PART MSU" );
-	$heartbeat->write( $lineCount, 19, "LPAR STATUS" );
-	$heartbeat->write( $lineCount, 20, "HARDWARE STATUS" );
+	$heartbeat->write( $lineCount, 3, "MF sysplex" );
+	$heartbeat->write( $lineCount, 4, "PROCESSOR COUNT" );
+	$heartbeat->write( $lineCount, 5, "CHIP COUNT" );	
+	$heartbeat->write( $lineCount, 6, "OS" );
+	$heartbeat->write( $lineCount, 7, "OS VERSION" );
+	$heartbeat->write( $lineCount, 8, "OS MINOR VERSION" );
+	$heartbeat->write( $lineCount, 9, "OS SUB VERSION" );
+	$heartbeat->write( $lineCount, 10, "OS INST DATE" );
+	$heartbeat->write( $lineCount, 11, "SCANTIME" );
+	$heartbeat->write( $lineCount, 12, "BANK ACCOUNT" );
+	$heartbeat->write( $lineCount, 13, "SERVER TYPE" );
+	$heartbeat->write( $lineCount, 14, "CPU IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 15, "CPU Gartner MIPS" );
+	$heartbeat->write( $lineCount, 16, "CPU MSU" );
+	$heartbeat->write( $lineCount, 17, "PART IBM LSPR MIPS" );
+	$heartbeat->write( $lineCount, 18, "PART Gartner MIPS" );
+	$heartbeat->write( $lineCount, 19, "PART MSU" );
+	$heartbeat->write( $lineCount, 20, "LPAR STATUS" );
+	$heartbeat->write( $lineCount, 21, "HARDWARE STATUS" );
 
 	$lineCount++;
 
@@ -443,38 +448,40 @@ my $lineCount = 2;
 			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'biosSerial'}
 			  . "\"" );
 		$heartbeat->write( $lineCount, 3,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'} );
+			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'sysplex'} );
 		$heartbeat->write( $lineCount, 4,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'} );
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'} );
 		$heartbeat->write( $lineCount, 5,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'chipCount'} );
+		$heartbeat->write( $lineCount, 6,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'osName'} );
-		$heartbeat->write_string( $lineCount, 6, $osVersion );
-		$heartbeat->write( $lineCount, 7,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osMinorVers'} );
+		$heartbeat->write_string( $lineCount, 7, $osVersion );
 		$heartbeat->write( $lineCount, 8,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osSubVers'} );
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osMinorVers'} );
 		$heartbeat->write( $lineCount, 9,
-			$bravoSoftware->{$accountNumber}->{$hostname}->{'osInstDate'} );
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osSubVers'} );
 		$heartbeat->write( $lineCount, 10,
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'osInstDate'} );
+		$heartbeat->write( $lineCount, 11,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'scantime'} );
-		$heartbeat->write( $lineCount, 11, $hBankAccounts );
-		$heartbeat->write( $lineCount, 12,
+		$heartbeat->write( $lineCount, 12, $hBankAccounts );
+		$heartbeat->write( $lineCount, 13,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'serverType'} );
-        $heartbeat->write( $lineCount, 13,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
         $heartbeat->write( $lineCount, 14,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMIPS'} );
         $heartbeat->write( $lineCount, 15,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuGartnerMIPS'} );
         $heartbeat->write( $lineCount, 16,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'cpuMSU'} );
         $heartbeat->write( $lineCount, 17,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMIPS'} );
         $heartbeat->write( $lineCount, 18,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partGartnerMIPS'} );
         $heartbeat->write( $lineCount, 19,
-            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'partMSU'} );
         $heartbeat->write( $lineCount, 20,
+            $bravoSoftware->{$accountNumber}->{$hostname}->{'lparStatus'} );
+        $heartbeat->write( $lineCount, 21,
             $bravoSoftware->{$accountNumber}->{$hostname}->{'hardwareStatus'} );
 		$lineCount++;
 	}                                                                                         
