@@ -8,7 +8,7 @@ import com.ibm.asset.trails.domain.InstalledSoftware;
 public interface InstalledSoftwareDAO extends
         BaseEntityDAO<InstalledSoftware, Long> {
 
-    List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId, Account account, Long scopeId);
+    List<InstalledSoftware> installedSoftwareList(Long softwareLparId, Long softwareId);
 
     InstalledSoftware getInstalledSoftware(Long installedSoftwareId);
 
