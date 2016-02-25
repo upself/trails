@@ -57,7 +57,7 @@ public class ScheduleFServiceEndpoint {
 	@Autowired
 	private ReportService reportService;
 	
-	@GET
+	@POST
 	@Path("/scheduleF/{id}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getPriorityISVSoftwareDisplayById(@PathParam("id") Long id,@FormParam("accountId") Long accountId){
@@ -98,6 +98,7 @@ public class ScheduleFServiceEndpoint {
 	
 	@POST
 	@Path("/scheduleF/save")
+	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg saveUpdateScheduleF(ScheduleFView scheduleFView,@FormParam("accountId") Long accountId,
 			@Context HttpServletRequest request) {	
