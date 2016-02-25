@@ -4,8 +4,6 @@
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script src="${pageContext.request.contextPath}/js/jquery.js"
 	type="text/javascript"></script>
-<script src="${pageContext.request.contextPath}/js/jquery.liveSearch.js"
-	type="text/javascript"></script>
 <script type="text/javascript">
     $( document ).ready(function() {
     	var flag='${scheduleFId}';
@@ -69,92 +67,51 @@
     function levelChange(value){
 //     	alert($('#hwowerid').length);
     	if (value == 'HWOWNER') {
-			if ($('#hwowerid').length){
-			/*$("div.hwownerLb").show();
-			$("#hwownerLabel").show();
-			$("div.hwownerva").show();*/
-			$("#p_hwowner").show();
-			$("#hwowerid").show();
+			if ($('#p_hwowner').length){
+				$("#p_hwowner").show();
 			} else {
+				var hwOwnerHtml = '<p id="p_hwowner"><label style="width:30%" for="hwOwner"> Hwowner:<span class="ibm-required">*</span></label>';
+					hwOwnerHtml += '<span><select name="hwOwner" id="hwOwner">';
+					hwOwnerHtml += '<option value="IBM" <s:if test="#request.scheduleF.hwOwner eq 'IBM'">selected="selected"</s:if> >IBM</option>';
+					hwOwnerHtml += '<option value="CUSTO" <s:if test="#request.scheduleF.hwOwner eq eq 'CUSTO'">selected="selected"</s:if> >CUSTO</option>';
+					hwOwnerHtml += '</span></p>'
 				$("#levelSpan")
-				.after(
-						  '<div id="hwownerLb" class="float-left" style="width:30%;"><label id="hwownerLabel" for="hwowerid">Hwowner:</label></div>'
-						+ '<div id="hwownerva" class="float-left" style="width:70%;"><select name="scheduleFForm.hwowner" id="hwowerid"  onChange="hwowerChng()"><option value="IBM" selected="selected">IBM</option><option value="CUSTO">CUSTO</option></select></div>');
+				.after(hwOwnerHtml);
 			}
 		} else {
-			/*$("div.hwownerLb").hide();
-			$("#hwownerLabel").hide();
-			$("div.hwownerva").hide();*/
-			
 			$("#p_hwowner").hide();
-			$("#hwowerid").hide();
-			$("#alertLabel1").remove();
-			$("div.alert1").empty();
-			$("#alertLabel2").remove();
-			$("div.alert2").empty();
 		}
 		if (value == 'HWBOX') {
 			if ($('#serial').length && $('#machineType').length) {
-// 				$("#p_hwowner").show();
-// 				$("#hwowerid").show();	
-			$("#p_serial").show();//
-// 			$("#serial").show();
-			$("#p_machineType").show();//
-// 			$("#machineType").show();
-			$("#serialLabel").show();//
-			$("#serial").show();//
-			$("#machineTypeLabel").show();//
-			$("#machineType").show();//
-			$("#serialLabel").show();//
-			$("#serial").show();//
-			$("#machineTypeLabel").show();//
-			$("#machineType").show();//
-			/*$("div.serialLb").show();
-			$("div.serialva").show();
-			$("div.machinetLb").show();
-			$("div.machietva").show();*/
+				$("#p_serial").show();
+				$("#p_machineType").show();
 			} else {
+				var serialHtml = '<p id="p_serial"><label style="width:30%" for="serial"> Serial:<span class="ibm-required">*</span></label>';
+					serialHtml += '<span><input name="serial" id="serial" value="<s:property value='#request.scheduleF.serial'/>"';
+					serialHtml += 'size="40" type="text" onKeyUp="keyup(this)"></span></p>'
+				var machineTypeHtml = '<p id="p_machineType"><label style="width:30%" for="machineType"> Machine Type:<span class="ibm-required">';
+					machineTypeHtml += '*</span></label><span><input name="machineType" id="machineType"  value="<s:property value='#request.scheduleF.machineType'/>"';
+					machineTypeHtml += 'size="40" type="text" onKeyUp="keyup(this)"></span></p>'
+
 				$("#levelSpan")
-				.after(
-						  '<div id="serialLb" class="float-left" style="width:30%;"><label id="serialLabel" for="serialNumber">Serial:</label></div>'
-						+ '<div id="serialva" class="float-left" style="width:70%;"><input type="text" name="scheduleFForm.serial" value="" id="serial"/></div>'
-						+ '<div id="machinetLb" class="float-left" style="width:30%;"><label id="machineTypeLabel" for="machineType">MachineType:</label></div>'
-						+ '<div id="machietva" class="float-left" style="width:70%;"><input type="text" name="scheduleFForm.machineType" value="" id="machineType" onKeyUp="keyup(this)"/></div>');
+				.after(serialHtml+machineTypeHtml);
 			}
 		} else {
 			$("#p_serial").hide();
-// 			$("#serial").hide();
 			$("#p_machineType").hide();
-			/*$("#machineType").hide();
-			$("div.serialLb").hide();
-			$("div.serialva").hide();
-			$("div.machinetLb").hide();
-			$("div.machietva").hide();*/
-			$("#alertLabel1").remove();
-			$("div.alert1").empty();
-			$("#alertLabel2").remove();
-			$("div.alert2").empty();
 		}
 		if (value == 'HOSTNAME') {
 			if ($('#hostname').length) {
 			$("#p_hostName").show();
-// 			$("#hostname").show();
-			/*$("div.hwownerLb").show();
-			$("div.hwownerva").show();*/
 			} else {
+				var hostNameHtml = '<p id="p_hostName"><label style="width:30%" for="hostName"> Hostname:<span class="ibm-required">*</span></label>';
+					hostNameHtml += '<span><input name="hostName" id="hostName" value="<s:property value='#request.scheduleF.hostName'/>"';
+					hostNameHtml += ' size="40" type="text" onKeyUp="keyup(this)"></span></p>'
 				$("#levelSpan")
-				.after(  '<div id="hostnameLb" class="float-left" style="width:30%;"><label id="hostnameLabel" for="hostname">Hostname:</label></div>'
-						+ '<div id="hostnameva" class="float-left" style="width:70%;"><input type="text" name="scheduleFForm.hostname" value="" id="hostname"/></div>');
+				.after(hostNameHtml);
 			}
 		} else {
 			$("#p_hostName").hide();
-			/*$("#hostname").hide();
-			$("div.hwownerLb").hide();
-			$("div.hwownerva").hide();*/
-			$("#alertLabel1").remove();
-			$("div.alert1").empty();
-			$("#alertLabel2").remove();
-			$("div.alert2").empty();
 		}
     }
     
@@ -350,7 +307,7 @@ var lastValue = '';
 				<label style="width:30%" for="hwOwner"> Hwowner:
 					<span class="ibm-required">*</span>
 				</label> 
-				<span> 
+				<span size="40"> 
 					<select name="hwOwner" id="hwOwner">
 						<option value="IBM" <s:if test="#request.scheduleF.hwOwner eq 'IBM'">selected="selected"</s:if> >IBM</option>
 						<option value="CUSTO" <s:if test="#request.scheduleF.hwOwner eq eq 'CUSTO'">selected="selected"</s:if> >CUSTO</option>
@@ -407,12 +364,6 @@ var lastValue = '';
 <!-- 						<option value="N/A" <s:if test="#request.scheduleF.level eq 'N/A'">selected="selected"</s:if> >N/A</option> -->
 <!-- 						<option value="IBM" <s:if test="#request.scheduleF.level eq eq 'IBM'">selected="selected"</s:if> >IBM</option> -->
 <!-- 						<option value="CUSTO" <s:if test="#request.scheduleF.level eq eq 'CUSTO'">selected="selected"</s:if> >CUSTO</option> -->
-						<option value="N/A" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >N/A</option>
-						<option value="IBM" <s:if test=<!--"#request.scheduleF.level eq eq 'IBM'"-->>selected="selected"</s:if> >IBM</option>
-						<option value="CUSTO" <s:if test=<!--"#request.scheduleF.level eq eq 'CUSTO'"-->>selected="selected"</s:if> >CUSTO</option>
-						<option value="N/A" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >N/A</option>
-						<option value="IBM" <s:if test=<!--"#request.scheduleF.level eq eq 'IBM'"-->>selected="selected"</s:if> >IBM</option>
-						<option value="CUSTO" <s:if test=<!--"#request.scheduleF.level eq eq 'CUSTO'"-->>selected="selected"</s:if> >CUSTO</option>
 					</select>
 				</span>
 			</p>
@@ -423,7 +374,7 @@ var lastValue = '';
 				</label> 
 				<span> 
 <!-- 					no example for text only display, all other elements are textfield, so the next line is nonsense -->
-					<text name="complianceReporting" id="complianceReporting" value="<s:property value='#request.scheduleF.manufacturer'/>" size="40" type="text" onKeyUp="keyup(this)">
+					<text name="complianceReporting" id="complianceReporting" value="<s:property value='#account.softwareComplianceManagement'/>" size="40" type="text" onKeyUp="keyup(this)">
 				</span>
 			</p>
 
@@ -458,10 +409,6 @@ var lastValue = '';
 <!-- 						in the old code, there is statusArrayList, so I suppose these active/inactive values are not set? and shall be loaded instead -->
 						<option value="ACTIVE" <s:if test="#request.scheduleF.level eq 'N/A'">selected="selected"</s:if> >ACTIVE</option>
 						<option value="INACTIVE" <s:if test="#request.scheduleF.level eq eq 'INACTIVE'">selected="selected"</s:if> >INACTIVE</option>
-						<option value="ACTIVE" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >ACTIVE</option>
-						<option value="INACTIVE" <s:if test=<!--"#request.scheduleF.level eq eq 'INACTIVE'"-->>selected="selected"</s:if> >INACTIVE</option>
-						<option value="ACTIVE" <s:if test=<!--"#request.scheduleF.level eq 'N/A'"-->>selected="selected"</s:if> >ACTIVE</option>
-						<option value="INACTIVE" <s:if test=<!--"#request.scheduleF.level eq eq 'INACTIVE'"-->>selected="selected"</s:if> >INACTIVE</option>
 					</select>
 				</span>
 			</p>
