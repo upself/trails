@@ -16,6 +16,9 @@ public class ScheduleFView {
   private String sourceLocation;
   private String statusDescription;
   private String softwareComplianceManagement;
+  private long statusId;
+  private boolean softwareStatus;
+  private String businessJustification;
   
 public long getId() {
 	return id;
@@ -107,7 +110,24 @@ public String getSoftwareComplianceManagement() {
 public void setSoftwareComplianceManagement(String softwareComplianceManagement) {
 	this.softwareComplianceManagement = softwareComplianceManagement;
 }
-  
-  
+public long getStatusId() {
+	return statusId;
+}
+public void setStatusId(long statusId) {
+	this.statusId = statusId;
+}
+public boolean isSoftwareStatus() {
+	return softwareStatus;
+}
+public void setSoftwareStatus(boolean softwareStatus) {
+	this.softwareStatus = softwareStatus;
+}
+public String getBusinessJustification() {
+	return businessJustification;
+}
+public void setBusinessJustification(String businessJustification) {
+	this.businessJustification = businessJustification;
+}
+   
   
 }
