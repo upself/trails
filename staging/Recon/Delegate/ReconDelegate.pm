@@ -173,6 +173,7 @@ sub getScheduleFScope {
 	my $hSerial=shift;
 	my $hMachineTypeId=shift;
 	my $slName=shift;
+	my $manuName=shift;
 	
 	my %scheduleFlevels=getScheduleFLevelMap();
 	
@@ -185,7 +186,7 @@ sub getScheduleFScope {
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $connection->sql->{ScheduleFScopeFields} } );
-	$sth->execute( $custId, $softName );
+	$sth->execute( $custId, $softName, $manuName );
 	
 	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
 	
@@ -292,7 +293,10 @@ sub queryScheduleFScope {
 	  where
 	    sf.customer_id = ?
 	  and
-	    (( sf.software_name = ? and sf.level != \'MANUFACTURER\' ) )
+	    ( ( sf.software_name = ? and sf.level != \'MANUFACTURER\' )
+	         or
+	      ( sf.manufacturer = ? and sf.level = \'MANUFACTURER\' )
+	    )
 	  and
 	    sf.status_id = 2
 	  with ur
