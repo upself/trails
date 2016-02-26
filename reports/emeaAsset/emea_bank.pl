@@ -59,7 +59,7 @@ and installed_filter.installed_software_id = installed_software.id
 and customer.customer_id in 
 (select customer_id from customer where country_code_id in (select id from 
 eaadmin.country_code where region_id in (select id from eaadmin.region where 
-geography_id = 2)))
+geography_id in (2,6))))
 
 union
 select software_lpar.id, account_number, customer_name, software_lpar.name, 
@@ -76,7 +76,7 @@ and installed_sa_product.installed_software_id = installed_software.id
 and customer.customer_id in 
 (select customer_id from customer where country_code_id in (select id from 
 eaadmin.country_code where region_id in (select id from eaadmin.region where 
-geography_id = 2)))
+geography_id in (2,6))))
 
 union
 select software_lpar.id, account_number, customer_name, software_lpar.name, 
@@ -93,7 +93,7 @@ and installed_signature.installed_software_id = installed_software.id
 and customer.customer_id in 
 (select customer_id from customer where country_code_id in (select id from 
 eaadmin.country_code where region_id in (select id from eaadmin.region where 
-geography_id = 2)))
+geography_id in (2,6))))
 )
 as t 
 with ur;
