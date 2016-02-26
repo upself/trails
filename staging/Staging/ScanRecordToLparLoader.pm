@@ -240,7 +240,7 @@ sub doDelta {
         $sr->biosSerialNumber( $rec{scanRecordBiosSerialNumber} );
         $sr->biosUniqueId( $rec{scanRecordBiosUniqueId} );
         $sr->boardSerial( $rec{scanRecordBoardSerial} );
-        $sr->sysplex( $rec{sysplex} );
+        $sr->sysplex( $rec{scanRecordSysplex} );
         $sr->caseSerial( $rec{scanRecordCaseSerial} );
         $sr->caseAssetTag( $rec{scanRecordCaseAssetTag} );
         $sr->powerOnPassword( $rec{scanRecordPowerOnPassword} );
@@ -345,7 +345,7 @@ sub doDelta {
         $oldSl->biosSerialNumber( $rec{softwareLparBiosSerialNumber} );
         $oldSl->biosUniqueId( $rec{softwareLparBiosUniqueId} );
         $oldSl->boardSerial( $rec{softwareLparBoardSerial} );
-        $oldSl->sysplex( $rec{sysplex} );
+        $oldSl->sysplex( $rec{softwareLparSysplex} );
         $oldSl->caseSerial( $rec{softwareLparCaseSerial} );
         $oldSl->caseAssetTag( $rec{softwareLparCaseAssetTag} );
         $oldSl->powerOnPassword( $rec{softwareLparPowerOnPassword} );
