@@ -448,7 +448,7 @@ my $lineCount = 2;
 			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'biosSerial'}
 			  . "\"" );
 		$heartbeat->write( $lineCount, 3,
-			  . $bravoSoftware->{$accountNumber}->{$hostname}->{'sysplex'} );
+			$bravoSoftware->{$accountNumber}->{$hostname}->{'sysplex'} );
 		$heartbeat->write( $lineCount, 4,
 			$bravoSoftware->{$accountNumber}->{$hostname}->{'processorCount'} );
 		$heartbeat->write( $lineCount, 5,
