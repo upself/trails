@@ -45,112 +45,6 @@
 
 		initPage();
 
-		$("#level").change(function() {
-			var levelVal = $("#level").val();
-			if (levelVal == 'account') {
-				$('#inputAccount').css("display", "block");
-			} else {
-				$('#inputAccount').css("display", "none");
-			}
-		});
-
-		var searchAccountJsonURI = "${pageContext.request.contextPath}/search/accountJson.htm";
-		$("#account").autocomplete(
-				{
-					change : function(event, ui) {
-						if (ui.item == null) {
-							$("#customerId").val('');
-						}
-					},
-					source : function(request, response) {
-						$.ajax({
-							url : searchAccountJsonURI,
-							dataType : "json",
-							data : {
-								q : request.term
-							},
-							success : function(data) {
-								if (isArray(data)) {
-									var result = new Array()
-									for (i = 0; i < data.length; i++) {
-										var obj = {
-											"id" : data[i].accountId,
-											"label" : data[i].account + "-"
-													+ data[i].accountName,
-											"value" : data[i].account + "-"
-													+ data[i].accountName
-										};
-										result.push(obj);
-									}
-									response(result);
-								} else {
-									response(data);
-								}
-							}
-						});
-					},
-					minLength : 3,
-					select : function(event, ui) {
-						$("#customerId").val(ui.item.id);
-					}
-				});
-
-		var manufacturerJsonURI = "${pageContext.request.contextPath}/admin/priorityISV/manufacturer.htm";
-		$("#manufacturer").autocomplete(
-				{
-					change : function(event, ui) {
-						if (ui.item == null) {
-							$("#manufacturerId").val('');
-						}
-					},
-					source : function(request, response) {
-						$.ajax({
-							url : manufacturerJsonURI,
-							dataType : "json",
-							data : {
-								q : request.term
-							},
-							success : function(data) {
-								if (isArray(data)) {
-									var result = new Array()
-									for (i = 0; i < data.length; i++) {
-										var obj = {
-											"id" : data[i].id,
-											"label" : data[i].manufacturerName
-													+ "-" + data[i].definitionSource,
-											"value" : data[i].manufacturerName
-													+ "-" + data[i].definitionSource,
-										};
-										result.push(obj);
-									}
-									response(result);
-								} else {
-									response(data);
-								}
-							}
-						});
-					},
-					minLength : 3,
-					select : function(event, ui) {
-						$("#manufacturerId").val(ui.item.id);
-					}
-				});
-
-		$("#btnSubmit").click(function() {
-			resetErrors();
-			if (validateEmpty()) {
-				callRestApi();
-			}
-
-			return false;
-		});
-
-		$("#btnCancel")
-				.click(
-						function() {
-							window.location.href = "${pageContext.request.contextPath}/admin/priorityISV/list.htm";
-						});
-
 	});
 
 	function initPage() {
@@ -169,25 +63,19 @@
 			buttons : {}
 		});
 
-		var urlRequest = "${pageContext.request.contextPath}/ws/priorityISV/isv/<s:property value='id' />";
+		var urlRequest = "${pageContext.request.contextPath}/ws/scheduleF/1270157";
+		var params = {};
+		params['accountId'] = '${account.id}';
 		jQuery.ajax({
 			url : urlRequest,
-			method : "GET",
+			method : "POST",
+			params: params,
 			success : function(result) {
 				var level = result.data.level.toLowerCase();
-				$("#level").val(level);
-				if (level == 'account') {
-					$('#inputAccount').css("display", "block");
-					$("#account").val(
-							result.data.accountNumber + "-"
-									+ result.data.accountName);
-					$("#customerId").val(result.data.customerId);
-				}
-
-				$("#manufacturerId").val(result.data.manufacturerId);
-				$("#manufacturer").val(result.data.manufacturerName);
-				$("#evidenceLocation").val(result.data.evidenceLocation);
-				$("#status").val(result.data.statusId);
+				$("#scheduleFid").val(result.data.id);
+				$("#softwareTitle").val(result.data.softwareTitle);
+				$("#softwareName").val(result.data.softwareName);
+			
 				$("#businessJustification").val(
 						result.data.businessJustification);
 				$("#dialog").dialog("close");
@@ -706,7 +594,7 @@
 		
 			<s:if test="#request.scheduleFView != null">
 				<p>
-				<input name="id"
+				<input name="scheduleFid"
 					value="<s:property value='#request.scheduleFView.id'/>"
 					type="hidden" />
 					</p>
