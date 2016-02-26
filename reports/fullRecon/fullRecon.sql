@@ -81,8 +81,10 @@ order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) a
 ,aus.comments as alertAssComments 
 ,instSwMan.name as instSwManName 
 ,dt.name as instSwDiscrepName 
-,case when rt.is_manual = 0 then rt.name || '(AUTO)' 
-when rt.is_manual = 1 then rt.name || '(MANUAL)' end 
+,case when rt.is_manual = 0 and sr.id is not null then rt.name || '(SCARLET)' 
+when rt.is_manual = 0 and sr.id is null then rt.name || '(AUTO)' 
+when rt.is_manual = 1 and sr.id is not null then rt.name || '(SCARLET)' 
+when rt.is_manual = 1 and sr.id is null then rt.name || '(MANUAL)' end 
 ,am.name as allocationMethod 
 ,r.remote_user as reconUser 
 ,r.record_time as reconTime 
@@ -122,6 +124,7 @@ from
  left outer join eaadmin.bank_account ba on insTadz.bank_account_id = ba.id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id 
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id 
+ left outer join eaadmin.scarlet_reconcile sr on r.id = sr.id 
  left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id = am.id 
  left outer join eaadmin.installed_software parent on r.parent_installed_software_id = parent.id 
  left outer join eaadmin.software parentS on parent.software_id = parentS.software_id 
