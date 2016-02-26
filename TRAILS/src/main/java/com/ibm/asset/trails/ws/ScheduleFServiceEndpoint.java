@@ -104,7 +104,6 @@ public class ScheduleFServiceEndpoint {
 
 	@POST
 	@Path("/scheduleF/save")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg saveUpdateScheduleF(@FormParam("accountId") Long accountId,
 			@FormParam("id") Long shceduleFid,
