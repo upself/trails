@@ -253,12 +253,12 @@ sub getScheduleFScopeByISW {
 	
 	$sth->finish;
 	
-	return ( undef, undef ) unless defined $recc{custId};
+#	return ( undef, undef ) unless defined $recc{custId};
 	
 	my @toreturn=getScheduleFScope( $self, $connection, $recc{custId}, $recc{softName}, $recc{hwOwner}, $recc{hSerial},
 									$recc{hMachineTypeId}, $recc{slName}, $recc{swManufacturer} );
 									
-	return ( undef, undef ) unless defined $toreturn[0];
+#	return ( undef, undef ) unless defined $toreturn[0];
 	
 	my %ScheduleFlevels=getScheduleFLevelMap();
 	
@@ -315,13 +315,14 @@ sub queryScheduleFSearch {
 		swManufacturer
 	);
 	
-	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, s.manufacturer_id
-	from ( ( ( ( ( installed_software is
+	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, m.name
+	from ( ( ( ( ( ( installed_software is
 				   join software_lpar sl on sl.id = is.software_lpar_id )
                    join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
                    join hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
                    join hardware h on h.id = hl.hardware_id )
                    join software s on s.software_id = is.software_id )
+                   join manufacturer m on m.id = s.manufacturer_id )
                    where is.id = ?
      with ur';
      
