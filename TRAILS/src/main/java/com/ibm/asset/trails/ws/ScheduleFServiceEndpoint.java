@@ -22,6 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -33,6 +34,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.NonInstanceH;
 import com.ibm.asset.trails.domain.PriorityISVSoftwareDisplay;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
@@ -56,11 +58,39 @@ public class ScheduleFServiceEndpoint {
 
 	@Autowired
 	private ReportService reportService;
+	
+	@GET
+	@Path("/scheduleF/scopes")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg scopes() {
+		List<Scope> scopeList = new ArrayList<Scope>();
+	    scopeList = getScheduleFService().getScopeList();
+		return WSMsg.successMessage("SUCCESS", scopeList);
+	}
+	
+	@GET
+	@Path("/scheduleF/sources")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg sources() {
+		List<Source> scourceList = new ArrayList<Source>();
+		scourceList = getScheduleFService().getSourceList();
+		return WSMsg.successMessage("SUCCESS", scourceList);
+	}
+
+	@GET
+	@Path("/scheduleF/status")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg status() {
+		List<Status> statusList = new ArrayList<Status>();
+		statusList = getScheduleFService().getStatusList();
+		return WSMsg.successMessage("SUCCESS", statusList);
+	}
+
 
 	@POST
 	@Path("/scheduleF/{id}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg getPriorityISVSoftwareDisplayById(@PathParam("id") Long id,
+	public WSMsg getScheduleFViewById(@PathParam("id") Long id,
 			@FormParam("accountId") Long accountId) {
 		ArrayList<ScheduleF> schfList = new ArrayList<ScheduleF>();
 		List<ScheduleFView> schFViewList = new ArrayList<ScheduleFView>();
@@ -70,6 +100,9 @@ public class ScheduleFServiceEndpoint {
 			return WSMsg.failMessage("No ScheduleF item found for id = " + id
 					+ "!");
 		} else {
+			if (result.getAccount().getId().longValue() != accountId.longValue()){
+			return WSMsg.failMessage("Seems you are not loading the scheduleF item for current account !");
+			}
 			schfList.add(result);
 			schFViewList = scheduleFtransformer(schfList);
 			ScheduleFView sfView = schFViewList.get(0);
@@ -106,7 +139,7 @@ public class ScheduleFServiceEndpoint {
 	@Path("/scheduleF/save")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg saveUpdateScheduleF(@FormParam("accountId") Long accountId,
-			@FormParam("id") Long shceduleFid,
+			@FormParam("id") Long id,
 			@FormParam("softwareName") String softwareName,
 			@FormParam("level") String level,
 			@FormParam("hwOwner") String hwOwner,
@@ -127,7 +160,7 @@ public class ScheduleFServiceEndpoint {
 			@Context HttpServletRequest request) {
 		
 		ScheduleFView scheduleFView = new ScheduleFView();
-		scheduleFView.setId(shceduleFid);
+		scheduleFView.setId(id);
 		scheduleFView.setSoftwareName(softwareName);
 		scheduleFView.setLevel(level);
 		scheduleFView.setHwOwner(hwOwner);
