@@ -25,9 +25,15 @@
 
 		} else {
 			feedPage(scheduleFId);
+			searchData(scheduleFId);
 		}
 
 		scopeFlip();
+		
+		$("#statusDescription").change(function() {
+		   var statusId =	$('#statusDescription option:selected').attr("id");
+		        $("#statusId").val(statusId);
+		});
 
 		$("#scopeDescription").change(
 				function() {
@@ -185,7 +191,7 @@
 	}
 
 	function submitForm() {
-		if (true) {
+		if (validateForm()) {
 			$.ajax({
 				cache : true,
 				type : "POST",
@@ -212,7 +218,37 @@
 	}
 
 	function validateForm() {
+		var softwareName = $("#softwareName").val();
+		var softwareTitle = $("#softwareTitle").val();
+		var manufacturerName = $("#manufacturer").val();
+		var sourceLocation = $("#sourceLocation").val();
+		var businessJustification = $("#businessJustification").val();
 
+		if(softwareName.trim() == ''){
+			alert('Software Name is required');
+			return false;
+		}
+			
+		if(softwareTitle.trim() == ''){
+			alert('Software Title is required');
+			return false;
+		}
+		
+		if(manufacturerName.trim() == ''){
+			alert('Manufacturer is required');
+			return false;
+		}
+		
+		if(sourceLocation.trim() == ''){
+			alert('SourceLocation is required');
+			return false;
+		}
+		
+		if(businessJustification.trim() == ''){
+			alert('businessJustification is required');
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -470,6 +506,51 @@
 				}, 1000);
 
 	}
+	
+	function searchData(scheduleFId) {
+		var params = {};
+		params['sort'] = 'id';
+		params['dir'] = 'desc';
+		
+		$("#schFhTable").paginationTable('destroy').paginationTable({
+			remote: {
+				url: "${pageContext.request.contextPath}/ws/scheduleF/history/" + scheduleFId +"",
+				type: "POST",
+				params: params,
+				success: function(result, pageIndex){
+					var html = '';
+					var list = result.data.list;
+					if(null == list || list == undefined || list.length == 0){
+						html += "<tr><td colspan='16' align='center'>No data found</td></tr>"
+					}else{
+						for(var i = 0; i < list.length; i++){
+							html += "<tr>";
+							html += "<td>" + list[i].softwareName + "</td>";
+							html += "<td>" + list[i].level + "</td>";
+							html += "<td>" + list[i].hwOwner + "</td>";
+							html += "<td>" + list[i].hostname  + "</td>";
+							html += "<td>" + list[i].serial + "</td>";
+							html += "<td>" + list[i].machineType + "</td>";
+							html += "<td>" + list[i].softwareTitle+ "</td>";
+							html += "<td>" + list[i].manufacturer + "</td>";
+							html += "<td>" + list[i].scopeDescription + "</td>";
+							html += "<td>" + list[i].SWFinanceResp + "</td>";
+							html += "<td>" + list[i].sourceDescription + "</td>";
+							html += "<td>" + list[i].sourceLocation + "</td>";
+							html += "<td>" + list[i].statusDescription + "</td>";
+							html += "<td>" + list[i].businessJustification + "</td>";
+							html += "<td>" + list[i].remoteUser + "</td>";
+							html += "<td>" + list[i].recordTime + "</td>";
+							html += "</tr>"; 
+						}
+					}
+					$("#scheduleF_history_list").html(html);
+				}
+			},
+			orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer']
+		});
+	}
+
 </script>
 
 <div class="ibm-container">
@@ -487,12 +568,14 @@
 			</p>
 
 			<p>
-				<label for="softwareTitle">Software title:</label> <span><input
+				<label for="softwareTitle">Software title:<span
+					class="ibm-required">*</span></label> <span><input
 					name="softwareTitle" id="softwareTitle" value="" size="40" /></span>
 			</p>
 
 			<p>
-				<label for="softwareName">Software name:</label><span> <input
+				<label for="softwareName">Software name:<span
+					class="ibm-required">*</span></label><span> <input
 					name="softwareName" id="softwareName" size="40"
 					onKeyUp="keyup(this)" /></span> <span> <input
 					name="softwareStatus" id="softwareStatus" value="" type="hidden" />
@@ -583,4 +666,32 @@
 	</div>
 </div>
 
-
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+			summary="ScheduleF history table">
+			<thead>
+				<tr>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hw owner</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hostname</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Machine Type</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Scope</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SW Financial Resp</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source location</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Business justification</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote User</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>date</span><span class="ibm-icon"></span></a></th>
+				</tr>
+			</thead>
+			<tbody id="scheduleF_history_list">
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -712,8 +712,38 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 	}
 	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<ScheduleFH> paginatedList(Long scheduleFId,int piStartIndex, int piObjectsPerPage, String psSort, String psDir){
+		
+		Session lSession = (Session) getEntityManager().getDelegate();
+		ScrollableResults lsrList = lSession.createQuery(lSession.getNamedQuery("scheduleFHList").getQueryString() + " ORDER BY SH." + psSort + " " + psDir).setParameter("scheduleFId", scheduleFId).scroll();
+        ArrayList<ScheduleFH> schhfList = new ArrayList<ScheduleFH>();
+		lsrList.beforeFirst();
+		if (lsrList.next()) {
+			int liCounter = 0;
+
+			lsrList.scroll(piStartIndex);
+
+			while (piObjectsPerPage > liCounter++) {
+				schhfList.add((ScheduleFH) lsrList.get(0));
+				if (!lsrList.next())
+					break;
+			}
+			lsrList.close();
+			return schhfList;
+		} else {
+			lsrList.close();
+			return null;
+		}
+	}
+	
 	public Long getAllScheduleFSize(Account pAccount){
 		Long total = (Long)getEntityManager().createNamedQuery("findScheduleFTotal").setParameter("account", pAccount).getSingleResult();
+		return total;
+	}
+	
+	public Long getScheduleFHSize(ScheduleF scheduleF){
+		Long total = (Long)getEntityManager().createNamedQuery("findscheduleFHIdTotal").setParameter("scheduleF", scheduleF).getSingleResult();
 		return total;
 	}
 	

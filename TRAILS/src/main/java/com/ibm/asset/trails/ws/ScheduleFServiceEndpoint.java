@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.ScheduleFH;
 import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
 import com.ibm.asset.trails.domain.ScheduleFView;
 import com.ibm.asset.trails.domain.Scope;
@@ -391,6 +392,50 @@ public class ScheduleFServiceEndpoint {
 		page.setList(schFViewList);
 		return WSMsg.successMessage("SUCCESS", page);
 	}
+	
+	@POST
+	@Path("/scheduleF/history/{shfid}")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg getScheduleFHBySchId(@PathParam("shfid") Long shfid,
+			@FormParam("currentPage") Integer currentPage,
+			@FormParam("pageSize") Integer pageSize,
+			@FormParam("sort") String sort, @FormParam("dir") String dir
+			) {
+
+		List<ScheduleFH> schFHlist = new ArrayList<ScheduleFH>();
+		List<ScheduleFView> schFViewList = new ArrayList<ScheduleFView>();
+		Long total = Long.valueOf(0);
+
+		if (null == shfid) {
+			return WSMsg.failMessage("ScheduleF ID is required");
+		} else if (null == currentPage) {
+			return WSMsg.failMessage("Current Page Parameter is required");
+		} else if (null == pageSize) {
+			return WSMsg.failMessage("Page Size Parameter is required");
+		} else if (null == sort || "".equals(sort.trim())) {
+			return WSMsg.failMessage("Sort Column Parameter is required");
+		} else if (null == dir || "".equals(dir.trim())) {
+			return WSMsg.failMessage("Sort Direction Parameter is required");
+		} else {
+			ScheduleF schedulF = getScheduleFService().getScheduleFDetails(shfid);
+			if (null == schedulF) {
+				return WSMsg.failMessage("SchedulF doesn't exist any more");
+			}
+			int startIndex = (currentPage - 1) * pageSize;
+			total = getScheduleFService().getScheduleFHSize(schedulF);
+			schFHlist = getScheduleFService().paginatedList(shfid,
+					Integer.valueOf(startIndex), Integer.valueOf(pageSize),
+					sort, dir);
+			schFViewList = scheduleFHtransformer(schFHlist);
+		}
+
+		Pagination page = new Pagination();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(schFViewList);
+		return WSMsg.successMessage("SUCCESS", page);
+	}
 
 	@GET
 	@Path("/scheduleF/download/{accountId}")
@@ -506,6 +551,104 @@ public class ScheduleFServiceEndpoint {
 						schFView.setSoftwareComplianceManagement("");
 					}
 
+					scheFViewList.add(schFView);
+				}
+			}
+		}
+		return scheFViewList;
+	}
+	
+	public List<ScheduleFView> scheduleFHtransformer(List<ScheduleFH> scheFhlist) {
+		List<ScheduleFView> scheFViewList = new ArrayList<ScheduleFView>();
+		if (scheFhlist != null && scheFhlist.size() > 0) {
+			for (ScheduleFH scheduleFH : scheFhlist) {
+				if (scheduleFH != null) {
+					ScheduleFView schFView = new ScheduleFView();
+
+					schFView.setId(scheduleFH.getId());
+					schFView.setSoftwareName(scheduleFH.getSoftwareName());
+					schFView.setLevel(scheduleFH.getLevel());
+
+					if (null != scheduleFH.getHwOwner()) {
+						schFView.setHwOwner(scheduleFH.getHwOwner());
+					} else {
+						schFView.setHwOwner("");
+					}
+					if (null != scheduleFH.getHostname()) {
+						schFView.setHostName(scheduleFH.getHostname());
+					} else {
+						schFView.setHostName("");
+					}
+					if (null != scheduleFH.getSerial()) {
+						schFView.setSerial(scheduleFH.getSerial());
+					} else {
+						schFView.setSerial("");
+					}
+					if (null != scheduleFH.getMachineType()) {
+						schFView.setMachineType(scheduleFH.getMachineType());
+					} else {
+						schFView.setMachineType("");
+					}
+					if (null != scheduleFH.getSoftwareTitle()) {
+						schFView.setSoftwareTitle(scheduleFH.getSoftwareTitle());
+					} else {
+						schFView.setSoftwareTitle("");
+					}
+					if (null != scheduleFH.getManufacturer()) {
+						schFView.setManufacturer(scheduleFH.getManufacturer());
+					} else {
+						schFView.setManufacturer("");
+					}
+					if (null != scheduleFH.getSWFinanceResp()) {
+						schFView.setSWFinanceResp(scheduleFH.getSWFinanceResp());
+					} else {
+						schFView.setSWFinanceResp("");
+					}
+					if (null != scheduleFH.getStatus()) {
+						schFView.setStatusId(scheduleFH.getStatus().getId());
+					} else {
+						schFView.setStatusId(1);
+					}
+					if (null != scheduleFH.getBusinessJustification()) {
+						schFView.setBusinessJustification(scheduleFH
+								.getBusinessJustification());
+					} else {
+						schFView.setBusinessJustification("");
+					}
+					if (null != scheduleFH.getSourceLocation()) {
+						schFView.setSourceLocation(scheduleFH
+								.getSourceLocation());
+					} else {
+						schFView.setSourceLocation("");
+					}
+
+					if (null != scheduleFH.getScope()
+							&& null != scheduleFH.getScope().getDescription()) {
+						schFView.setScopeDescription(scheduleFH.getScope()
+								.getDescription());
+					} else {
+						schFView.setScopeDescription("");
+					}
+					if (null != scheduleFH.getSource()
+							&& null != scheduleFH.getSource().getDescription()) {
+						schFView.setSourceDescription(scheduleFH.getSource()
+								.getDescription());
+					} else {
+						schFView.setSourceDescription("");
+					}
+					if (null != scheduleFH.getStatus()
+							&& null != scheduleFH.getStatus().getDescription()) {
+						schFView.setStatusDescription(scheduleFH.getStatus()
+								.getDescription());
+					} else {
+						schFView.setStatusDescription("");
+					}
+					if (null != scheduleFH.getRemoteUser()) {
+						schFView.setRemoteUser(scheduleFH.getRemoteUser());
+					} else {
+						schFView.setRemoteUser("");
+					}
+						schFView.setRecordTime(scheduleFH.getRecordTime());			
 					scheFViewList.add(schFView);
 				}
 			}
