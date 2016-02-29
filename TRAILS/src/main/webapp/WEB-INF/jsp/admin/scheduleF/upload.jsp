@@ -1,4 +1,3 @@
-<meta charset="utf-8"/>
 <script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
 <p class="confidential">IBM Confidential</p>
 <p>Use <a href="/TRAILS/template/scheduleFUploadTemplate.xls">this
@@ -12,7 +11,7 @@ Please correct the data in red and reload.</p>
 out to complete the upload.</p>
 
 <br />
-<form id="uploadForm" action="${pageContext.request.contextPath}/ws/scheduleF/upload" method="POST" onSubmit="return doValidation()" enctype="multipart/form-data">
+<form id="uploadForm" action="${pageContext.request.contextPath}/ws/schedulef/upload" method="POST" onSubmit="return doValidation()" enctype="multipart/form-data">
 	<table>
 		<tr>
 			<td><label for="upload">*File:</label></td>

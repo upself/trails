@@ -657,7 +657,7 @@ public class ScheduleFServiceEndpoint {
 	}
 
 	@POST
-	@Path("/scheduleF/upload")
+	@Path("/schedulef/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces("application/vnd.ms-excel")
 	public Response uploadFile(Attachment attachment,
