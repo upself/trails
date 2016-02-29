@@ -10,11 +10,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "SCHEDULE_F_H")
+@NamedQueries({
+	@NamedQuery(name = "findscheduleFHIdTotal",query="select count(*) from ScheduleFH  where scheduleF =:scheduleF"),
+	@NamedQuery(name = "scheduleFHList", query = "FROM ScheduleFH SH JOIN FETCH SH.scheduleF WHERE SH.scheduleF.id =:scheduleFId ") })
 public class ScheduleFH {
 
 	@Id

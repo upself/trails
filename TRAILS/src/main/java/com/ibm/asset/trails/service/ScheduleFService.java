@@ -9,6 +9,7 @@ import java.util.List;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.MachineType;
 import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.ScheduleFH;
 import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Source;
@@ -43,5 +44,7 @@ public interface ScheduleFService {
 	List<MachineType> findMachineTypebyName(String string);
 	
 	List<ScheduleF> paginatedList(Account pAccount,int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
+	List<ScheduleFH> paginatedList(Long scheduleFId,int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
 	Long getAllScheduleFSize(Account pAccount);
+	Long getScheduleFHSize(ScheduleF scheduleF);
 }

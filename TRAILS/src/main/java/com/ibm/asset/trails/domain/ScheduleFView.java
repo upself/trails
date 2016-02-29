@@ -1,5 +1,7 @@
 package com.ibm.asset.trails.domain;
 
+import java.util.Date;
+
 public class ScheduleFView {
   private long id;
   private String softwareName;
@@ -16,6 +18,11 @@ public class ScheduleFView {
   private String sourceLocation;
   private String statusDescription;
   private String softwareComplianceManagement;
+  private long statusId;
+  private boolean softwareStatus;
+  private String businessJustification;
+  private String remoteUser;
+  private Date recordTime;
   
 public long getId() {
 	return id;
@@ -107,7 +114,35 @@ public String getSoftwareComplianceManagement() {
 public void setSoftwareComplianceManagement(String softwareComplianceManagement) {
 	this.softwareComplianceManagement = softwareComplianceManagement;
 }
-  
-  
+public long getStatusId() {
+	return statusId;
+}
+public void setStatusId(long statusId) {
+	this.statusId = statusId;
+}
+public boolean isSoftwareStatus() {
+	return softwareStatus;
+}
+public void setSoftwareStatus(boolean softwareStatus) {
+	this.softwareStatus = softwareStatus;
+}
+public String getBusinessJustification() {
+	return businessJustification;
+}
+public void setBusinessJustification(String businessJustification) {
+	this.businessJustification = businessJustification;
+}
+public String getRemoteUser() {
+	return remoteUser;
+}
+public void setRemoteUser(String remoteUser) {
+	this.remoteUser = remoteUser;
+}
+public Date getRecordTime() {
+	return recordTime;
+}
+public void setRecordTime(Date recordTime) {
+	this.recordTime = recordTime;
+} 
   
 }
