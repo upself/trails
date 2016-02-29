@@ -252,17 +252,9 @@
 			</div>
 		</div>	
 	</form>
-	<div style="width:110%">
-		<div id="addRTdiv" style="float: left;width:10%">
-			<p class="ibm-button-link-alternate ibm-btn-small">
-			    <a class="ibm-btn-small" id="reportTrackingUpdateBtn" href="#">Update</a>
-			</p>
-		</div>
-		<div id="updateRTdiv" style="float: left;width:5%">
-			<p class="ibm-button-link-alternate ibm-btn-small">
-			    <a class="ibm-btn-small" id="reportTrackingRestoreBtn" href="#">Restore</a>
-			</p>
-		</div>
+	<div style="clear:both">
+		<input type="button" id="reportTrackingUpdateBtn" value="Update">
+		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
 	</div>
 <br>
 <style>
@@ -302,7 +294,7 @@
 <s:hidden name="dir" value="%{#attr.dir}" />
 <s:hidden name="sort" value="%{#attr.sort}" />
  -->
-<div class="ibm-col-1-1">
+<div class="ibm-col-1-1" style="margin-left: 0px;">
 		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
 			<thead>
 				<tr>
