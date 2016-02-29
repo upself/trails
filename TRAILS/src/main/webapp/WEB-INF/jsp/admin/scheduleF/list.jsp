@@ -1,41 +1,14 @@
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
-
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<%@ taglib prefix="s" uri="/struts-tags"%>
 	
-<style type="text/css">
-table.gridtable {
-	font-family: verdana,arial,sans-serif;
-	font-size:11px;
-	color:#333333;
-	width:100%;
-	border-width: 1px;
-	border-color: #666666;
-	border-collapse: collapse;
-}
-
-table.gridtable th {
-	border-width: 1px;
-	padding: 8px;
-	border-style: solid;
-	border-color: #666666;
-	background-color: #dedede;
-}
-table.gridtable td {
-	border-width: 1px;
-	padding: 8px;
-	border-style: solid;
-	border-color: #666666;
-	background-color: #ffffff;
-}
-</style>
-
 <script>
 	$(function() {
+		
+		$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
+		
 		function caculateNextDeliveryDate(date, cycle) {
 			var lastDeliveryTime = date.getTime();
 			var nextDeliveryTime = lastDeliveryTime + cycle * 24 * 60 * 60
@@ -189,8 +162,9 @@ table.gridtable td {
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table id='historytable' class='gridtable'><tr><th>Last Date</th><th>Cycle</th><th>Next Date</th><th>QMX</th><th>Record Date</th><th>User</th></tr></table>");
+			historySection.append("<table id='historytable' class='ibm-data-table' cellspacing='0' cellpadding='0' border='0'><thead><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></thead>");
 			
+			var newRow;
 			for (var i = 0; i < data.length; i++) {
 				var cyc;
 				if(data[i].cycle==7){
@@ -208,11 +182,11 @@ table.gridtable td {
 				}else if(data[i].cycle==365){
 					cyc="Annualy";
 				}
-				var newRow=("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
+				newRow=newRow + ("<tr>"+"<td>" + data[i].lastDate + "</td>"+"<td>" + cyc + "</td>"+"<td>" + data[i].nextDate 
 						+ "</td>"+"<td>" + data[i].qmx + "</td>"+"<td>" + data[i].createdDate + "</td>"+"<td>" + data[i].user + "</td>"+"</tr>");
-				$("#historytable tr:last").after(newRow);
 			}
-		}
+				$("#historytable").append("<tbody>"+newRow+"</tbody></table>");
+		}		
 
 	});
 </script>
@@ -221,20 +195,24 @@ table.gridtable td {
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
-
+<!-- 
 <div style="font-size: 22px; display: inline">
 	<s:property value="account.name" />
 	(
 	<s:property value="account.account" />
 	)
 </div>
-<p class="confidential">IBM Confidential</p>
+ -->
+<p style="font-weight:bold">IBM Confidential</p>
 <br />
-<h1>Software License Management Report Delivery Tracking</h1>
-<p>Track the required report delivery cycle and most recent report delivery date.</p>
-<div class="hrule-dots"></div>
+<div class="ibm-rule" style="width:108%"><hr><hr></div>
+<div style="font-size: 18px;">
+<h2>Software License Management Report Delivery Tracking</h2>
+</div>
+<p style="font-size: 16px;">Track the required report delivery cycle and most recent report delivery date.</p>
+<br>
 	<form id="reportTracking">
-		<div id="firstline" style="width:60%;float:left">
+		<div id="firstline" style="width:100%;float:left">
 		   <div id="line1col1" style="width:30%; float:left">
 			<label>Report Delivery Cycle:</label> 
 		   </div>
@@ -259,7 +237,7 @@ table.gridtable td {
 		</div>
 		
 		<br /> 
-		<div id="secondline" style="width:60%;float:left;margin-top:10px">
+		<div id="secondline" style="width:100%;float:left;margin-top:10px">
 			<div id="line2col1" style="width:30%; float:left">
 				<label>Last Report Delivery Date:</label> 
 			</div>
@@ -285,77 +263,120 @@ table.gridtable td {
 	border: 1px solid black;
 }
 </style>
-<div id="reportTrackingHistory" style="width:60%">
-	<h3>Report Delivery Tracking History</h3>
+<div id="reportTrackingHistory" style="width:110%;float:left">
+	<h2>Report Delivery Tracking History</h2>
 	<div id="historyContent" style="max-height:180px"></div>
-
 </div>
-<div class="hrule-dots"></div>
-<h1 class="oneline">Schedule F</h1>
-<p>To edit a schedule F record, press one of the links below. If you
-	want to add a new record, press the Add link.</p>
-<div style="float: right">
-	<input type="button" value="Add" id="addScheduleF"/>
+<br>
+<div class="ibm-rule" style="width:108%"><hr><hr></div>
+<div style="float: left">
+<div style="font-size: 18px;">
+<h2 class="oneline">Schedule F</h2>
+</div>
+<p style="width:110%;font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
+	<div style="width:110%">
+		<div id="addScheFdiv" style="float: right;width:10%">
+			<p class="ibm-button-link-alternate ibm-btn-small">
+			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
+			</p>
+		</div>
+		<div id="downloadDiv" style="float: right;width:15%">
+			<p class="ibm-button-link-alternate ibm-btn-small">
+			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
+			</p>
+		</div>
+	</div>
 </div>
 <br />
 <br />
-
+<!-- 
 <s:hidden name="page" value="%{#attr.page}" />
 <s:hidden name="dir" value="%{#attr.dir}" />
 <s:hidden name="sort" value="%{#attr.sort}" />
+ -->
+<div class="ibm-col-1-1" style="margin-left: 0px;">
+		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
+			<thead>
+				<tr>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hw Owner</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hostname</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Machine Type</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Scope</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SW Financial Resp</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source location</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+					<th scope="col" class="ibm-sort"><span>Compliance</span></th>
+				</tr>
+			</thead>
+			<tbody id="schedule_f_list" />
+		</table>
+</div>
 
-<display:table name="data" class="basic-table" id="row"
-	summary="scheduleF View"
-	decorator="org.displaytag.decorator.TotalTableDecorator"
-	cellspacing="1" cellpadding="0" requestURI="list.htm" defaultsort="1"
-	export="true">
-	<display:setProperty name="export.excel.filename"
-		value="ScheduleF_View.xls" />
-	<display:column property="softwareName" sortProperty="SF.softwareName"
-		title="Software name" sortable="true"
-		href="/TRAILS/admin/scheduleF/manage.htm" paramProperty="id"
-		paramId="scheduleFId" media="html" />
-	<display:column property="level" sortProperty="SF.level" title="Level"
-		sortable="true" />
-	<display:column property="hwOwner" sortProperty="SF.hwOwner"
-		title="Hw Owner" sortable="true" />
-	<display:column property="hostname" sortProperty="SF.hostname"
-		title="Hostname" sortable="true" />
-	<display:column property="serial" sortProperty="SF.serial"
-		title="Serial" sortable="true" />
-	<display:column property="machineType" sortProperty="SF.machineType"
-		title="Machine Type" sortable="true" />
-	<display:column property="account.account" title="Account Number"
-		media="excel" />
-	<display:column property="softwareTitle" title="Software title"
-		media="excel" />
-	<display:column property="softwareName" title="Software name"
-		media="excel" />
-	<display:column property="softwareTitle"
-		sortProperty="SF.softwareTitle" title="Software title" sortable="true"
-		media="html" />
-	<display:column property="manufacturer" sortProperty="SF.manufacturer"
-		title="Manufacturer" sortable="true" />
-	<display:column property="scope.description"
-		sortProperty="SF.scope.description" title="Scope" sortable="true" />
-	<!-- AB added -->
-	<display:column property="SWFinanceResp"
-		sortProperty="SF.SWFinanceResp" title="SW Financial Resp"
-		sortable="true" />
-	<display:column property="source.description"
-		sortProperty="SF.source.description" title="Source" sortable="true" />
+<script type="text/javascript">
 
-	<display:column property="sourceLocation"
-		sortProperty="SF.sourceLocation" title="Source location"
-		sortable="true" />
-	<display:column property="status.description"
-		sortProperty="SF.status.description" title="Status" sortable="true" />
-	<display:column property="businessJustification"
-		title="Business Justification" media="excel" />
-	<s:if test="account.softwareComplianceManagement == 'YES'">
-		<display:column value="YES" title="Compliance" sortable="false" />
-	</s:if>
-	<s:else>
-		<display:column value="NO" title="Compliance" sortable="false" />
-	</s:else>
-</display:table>
+
+$("#download").click(function() {
+			$(this).attr("href","${pageContext.request.contextPath}/ws/scheduleF/download/${account.id}")
+		});
+$("#addScheduleF").click(function() {
+	$(this).attr("href","${pageContext.request.contextPath}/admin/scheduleF/manage.htm")
+});		
+		
+$(function() {
+	searchData();
+});
+
+function searchData() {
+	var params = {};
+	params['accountId'] = '${account.id}';
+	params['sort'] = 'id';
+	params['dir'] = 'desc';
+	
+	$("#schFTable").paginationTable('destroy').paginationTable({
+		remote: {
+			url: "${pageContext.request.contextPath}/ws/scheduleF/all",
+			type: "POST",
+			params: params,
+			success: function(result, pageIndex){
+				var html = '';
+				var list = result.data.list;
+				if(null == list || list == undefined || list.length == 0){
+					html += "<tr><td colspan='14' align='center'>No data found</td></tr>"
+				}else{
+					for(var i = 0; i < list.length; i++){
+						html += "<tr>";
+						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].softwareName + "</a></td>";		
+						html += "<td>" + list[i].level + "</td>";
+						html += "<td>" + list[i].hwOwner + "</td>";
+						html += "<td>" + list[i].hostName + "</td>"
+						html += "<td>" + list[i].serial + "</td>";
+						html += "<td>" + list[i].machineType + "</td>";
+						html += "<td>" + list[i].softwareTitle + "</td>";
+						html += "<td>" + list[i].manufacturer + "</td>";
+						html += "<td>" + list[i].scopeDescription + "</td>";
+						html += "<td>" + list[i].swfinanceResp + "</td>";
+						html += "<td>" + list[i].sourceDescription + "</td>";
+						html += "<td>" + list[i].sourceLocation + "</td>";
+						html += "<td>" + list[i].statusDescription + "</td>";
+						if(list[i].softwareComplianceManagement== 'YES'){
+							html += "<td>YES</td>";						
+						}else{
+							html += "<td>NO</td>";		
+						}
+						html += "</tr>"; 
+					}
+				}
+				$("#schedule_f_list").html(html);
+			}
+		},
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
+	});
+}
+
+</script>

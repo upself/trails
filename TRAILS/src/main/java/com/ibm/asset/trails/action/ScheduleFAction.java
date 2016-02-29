@@ -71,10 +71,6 @@ public class ScheduleFAction extends AccountBaseAction {
 		if (getAccount() == null) {
 			return ERROR;
 		} else {
-			getScheduleFService().paginatedList(getData(), getAccount(),
-					getStartIndex(), getData().getObjectsPerPage(), getSort(),
-					getDir());
-
 			return SUCCESS;
 		}
 	}

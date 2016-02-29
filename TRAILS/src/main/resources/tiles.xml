@@ -1391,39 +1391,38 @@
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>
-
-	<definition name="tiles.admin.scheduleF.upload" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+	
+	<definition name="tiles.admin.scheduleF.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Upload Schedule F" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.upload.success"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+	<definition name="tiles.admin.scheduleF.upload.success" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F Upload Result" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload success" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload success" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.list" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
+	<definition name="tiles.admin.scheduleF.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F List" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list" />
 		<put-attribute name="keywords" value="TRAILS schedule F list" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.listError" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
+	<definition name="tiles.admin.scheduleF.listError" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F List" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list error" />
 		<put-attribute name="keywords" value="TRAILS schedule F list error" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.manage" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
+	<definition name="tiles.admin.scheduleF.manage" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F Manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
 		<put-attribute name="description" value="TRAILS manage schedule F" />
 		<put-attribute name="keywords" value="TRAILS manage schedule F" />
 	</definition>
