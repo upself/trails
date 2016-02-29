@@ -1,3 +1,4 @@
+<meta charset="utf-8"/>
 <script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
 <p class="confidential">IBM Confidential</p>
 <p>Use <a href="/TRAILS/template/scheduleFUploadTemplate.xls">this
