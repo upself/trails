@@ -119,17 +119,17 @@ sub getScheduleFLevelMap {
 }
 
 sub getIBMISVprio {
-	my ( $self, $conn, $manu_id, $cust_id ) = @_;
+	my ( $self, $conn, $manu_name, $cust_id ) = @_;
 	
 	dlog("Detecting expected alert type IBM / ISVPRIO / ISVNOPRIO...");
 	
 	# reading whether SW manufacturer is considered an IBM brand
 		
-	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ? with ur";
+	my $IBMquery = "select 1 from ibm_brand where manufacturer_id in ( select id from manufacturer where name = ? ) with ur";
 	
 	$conn->prepareSqlQuery( 'IBMquery', $IBMquery );
 	my $sth = $conn->sql->{IBMquery};
-	$sth->execute ( $manu_id );
+	$sth->execute ( $manu_name );
 	my ($result) = $sth->fetchrow_array;
 	$sth->finish;
 	
@@ -142,7 +142,7 @@ sub getIBMISVprio {
 	
 	my $ISVquery = "select 1 from priority_isv_sw
 						where
-							manufacturer_id = ?
+							manufacturer_id in ( select id from manufacturer where name = ? )
 						and
 							( ( level = 'GLOBAL' and customer_id is null )
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
@@ -152,7 +152,7 @@ sub getIBMISVprio {
 	
 	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
 	my $sth2 = $conn->sql->{ISVquery};
-	$sth2->execute ( $manu_id, $cust_id );
+	$sth2->execute ( $manu_name, $cust_id );
 	($result) = $sth2->fetchrow_array;
 	$sth2->finish;
 

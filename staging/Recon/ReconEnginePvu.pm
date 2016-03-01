@@ -12,6 +12,7 @@ use Recon::Delegate::ReconDelegate;
 ###Object constructor.
 sub new {
  my ($class) = @_;
+ 
  my $self = {
   _connection => Database::Connection->new('trails'),
   _queue      => undef,

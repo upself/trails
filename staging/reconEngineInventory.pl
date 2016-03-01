@@ -12,6 +12,7 @@ use Tap::NewPerl;
 use Recon::InventoryReconEngineCustomer;
 use Recon::ReconEngineSoftware;
 use Recon::ReconEnginePvu;
+use Recon::ReconEnginePriorityISVSoftware;
 use Recon::Delegate::ReconDelegate;
 
 my $logfile    = "/var/staging/logs/reconEngineInventory/reconEngineInventory.log";
@@ -27,8 +28,8 @@ my $connRetrySleepPeriod = $cfgMgr->connRetrySleepPeriod;
 #my $applyChanges = $cfgMgr->applyChanges;
 
 ##Validate server
- die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
-    unless validateServer($server);
+die "!!! ONLY RUN THIS LOADER ON $server !!!\n"
+   unless validateServer($server);
 
 logging_level( $cfgMgr->debugLevel );
 logfile($logfile);
@@ -77,9 +78,12 @@ sub keepTicking {
     while ( loaderCheckForStop ( $pidFile ) == 0 ) {
         if ( scalar @customerIds == 0 ) {
              newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 0 );
+             newSoftwareChild(shift @softwareIds) if ( scalar @softwareIds > 20 );
              newPvuChild();
+             newPriorityISVChild();
              my $connection = Database::Connection->new('trails',$connRetryTimes,$connRetrySleepPeriod);
              @customerIds = getReconCustomerQueue( $connection, $testMode );
+             @softwareIds = getReconSoftwareQueue($connection) if ( scalar @softwareIds == 0 );
              $connection->disconnect;
              Recon::Delegate::ReconDelegate->checkRunningProcHash(\%children);
         }
@@ -225,6 +229,27 @@ sub newPvuChild {
 	$pvuEngine->recon; # spawning one PVU job... the called entity will read the PVU queue by itself and process one record of it, or die if none found
 	
 	wlog("$rNo PVU child complete");
+
+    exit;
+}
+
+sub newPriorityISVChild {
+    my $pid;
+
+    wlog("$rNo spawning PriorityISV child");
+    my $sigset = POSIX::SigSet->new(SIGINT);
+    sigprocmask( SIG_BLOCK, $sigset ) or die "Can't block SIGINT for fork: $!";
+    die "Cannot fork child: $!\n" unless defined( $pid = fork );
+    if ($pid) {
+        $children{$pid} = 1;
+        ilog("forked new child, we now have ".scalar(keys %children)." children");
+        return;
+    }
+
+   	my $prioISVEngine = new Recon::ReconEnginePriorityISVSoftware;
+	$prioISVEngine->recon; # spawning one prioISV job... the called entity will read the prioISV queue by itself and process one record of it, or die if none found
+	
+	wlog("$rNo PriorityISV child complete");
 
     exit;
 }
