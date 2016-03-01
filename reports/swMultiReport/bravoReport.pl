@@ -399,7 +399,7 @@ my $lineCount = 2;
 	$heartbeat->write( $lineCount, 0, "HOSTNAME" );
 	$heartbeat->write( $lineCount, 1, "MODEL" );
 	$heartbeat->write( $lineCount, 2, "SERIAL NUMBER" );
-	$heartbeat->write( $lineCount, 3, "MF sysplex" );
+	$heartbeat->write( $lineCount, 3, "MF SYSPLEX" );
 	$heartbeat->write( $lineCount, 4, "PROCESSOR COUNT" );
 	$heartbeat->write( $lineCount, 5, "CHIP COUNT" );	
 	$heartbeat->write( $lineCount, 6, "OS" );
