@@ -94,7 +94,7 @@ sub recon0101 {
 		$namequery="-HWchange";
 	}
 		
-	return if (($manquery == "") && ( $namequery !~ /HWchange/ );
+	return if (($manquery == "") && ( $namequery !~ /HWchange/ ));
 	
 	$manquery =~ s/, $//; # removing the closing ", " in the $manquery
 	$autoquery =~ s/, $//; # the same for autoquery
