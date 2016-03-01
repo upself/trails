@@ -274,13 +274,13 @@
 <h2 class="oneline">Schedule F</h2>
 </div>
 <p style="width:110%;font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
-	<div style="width:110%">
-		<div id="addScheFdiv" style="float: right;width:10%">
+	<div style="width:110%;">
+		<div id="addScheFdiv" style="float: right;width:10%;margin:10px">
 			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
 			</p>
 		</div>
-		<div id="downloadDiv" style="float: right;width:15%">
+		<div id="downloadDiv" style="float: right;width:15%;margin:10px">
 			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
 			</p>
@@ -295,7 +295,7 @@
 <s:hidden name="sort" value="%{#attr.sort}" />
  -->
 <div class="ibm-col-1-1" style="margin-left: 0px;">
-		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
+		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="Schedule F list">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
