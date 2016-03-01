@@ -91,10 +91,10 @@ sub recon0101 {
 	catchRight(\$action); # 10^11 ignored
 	
 	if ( catchRight(\$action) == "1" ){ # 10^12
-		$namequery.="-HWchange";
+		$namequery="-HWchange";
 	}
 		
-	return if ($manquery == "");
+	return if (($manquery == "") && ( $namequery !~ /HWchange/ );
 	
 	$manquery =~ s/, $//; # removing the closing ", " in the $manquery
 	$autoquery =~ s/, $//; # the same for autoquery
@@ -242,12 +242,13 @@ sub queryGetReconcilesByMethodology {
 		  join used_license ul on rul.used_license_id = ul.id
       where
           hsc.hardware_lpar_id = ?
-          and (
-				( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id in ( $methodologies ) ) )
+          and ( ";
+	$query.="			( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id in ( $methodologies ) ) )
 			or
 				( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id in ( $captypes ) ) )
-	";
-	$query.= "or ( r.machine_level = 1 )" if ( $namequery =~ /HWchange/ );
+	" if ( $methodologies ne "" );
+	$query.= "or " if (( $namequery =~ /HWchange/ ) && ( $methodologies ne "" ));
+	$query.= "( r.machine_level = 1 )" if ( $namequery =~ /HWchange/ );
 	$query.="
 		  )
 	  with ur";
