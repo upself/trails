@@ -1414,7 +1414,7 @@
 	</definition>
 
 	<definition name="tiles.admin.scheduleF.listError" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Schedule F Upload Result" />
+		<put-attribute name="contentTitle" value="Schedule F List" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list error" />
 		<put-attribute name="keywords" value="TRAILS schedule F list error" />
