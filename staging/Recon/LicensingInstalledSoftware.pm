@@ -2960,7 +2960,7 @@ sub queryExistingMachineLevelReconLegacy {
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
             and is.software_id = ?
-            and lsm.software_id = ?';
+            and ( ( lsm.software_id = ? ) or ( r.reconcile_type_id = 1 ) )';
  $query .=
 '   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
