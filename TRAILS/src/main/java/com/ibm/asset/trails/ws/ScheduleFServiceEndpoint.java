@@ -137,7 +137,7 @@ public class ScheduleFServiceEndpoint {
 	@Path("/scheduleF/save")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg saveUpdateScheduleF(@FormParam("accountId") Long accountId,
-			@FormParam("id") Long id,
+			@FormParam("id") String id,
 			@FormParam("softwareName") String softwareName,
 			@FormParam("level") String level,
 			@FormParam("hwOwner") String hwOwner,
@@ -158,7 +158,6 @@ public class ScheduleFServiceEndpoint {
 			@Context HttpServletRequest request) {
 		
 		ScheduleFView scheduleFView = new ScheduleFView();
-		scheduleFView.setId(id);
 		scheduleFView.setSoftwareName(softwareName);
 		scheduleFView.setLevel(level);
 		scheduleFView.setHwOwner(hwOwner);
@@ -177,22 +176,22 @@ public class ScheduleFServiceEndpoint {
 		scheduleFView.setSourceDescription(sourceDescription);
 		scheduleFView.setBusinessJustification(businessJustification);
 		
-
 		ArrayList<Software> laSoftware = getScheduleFService()
 				.findSoftwareBySoftwareName(scheduleFView.getSoftwareName());
-		Long llScheduleFId = scheduleFView.getId();
 		List<ScheduleF> lsfExists = null;
+		Long llScheduleFId = null ;
 		ScheduleF sfoExists = null;
 		ScheduleF sfiExists = null;
 		ScheduleF bjScheduleF = null;
 		Account account = accountService.getAccount(accountId);
-		if (llScheduleFId != null) {
+		if (id != null && StringUtils.isNotEmpty(id) && id != "") {		
+			llScheduleFId =Long.parseLong(id);
 			bjScheduleF = getScheduleFService().getScheduleFDetails(
 					llScheduleFId);
 		} else {
 			bjScheduleF = new ScheduleF();
 		}
-
+		
 		if (laSoftware.size() == 0) {
 			if (statusId != 1) {
 				WSMsg.failMessage("Software does not exist in catalog. It may already been removed in SWKB Toolkit.");
@@ -299,7 +298,7 @@ public class ScheduleFServiceEndpoint {
 		}
 
 		bjScheduleF.setSource(findSourceInList(scheduleFView
-				.getScopeDescription(), getScheduleFService().getSourceList()));
+				.getSourceDescription(), getScheduleFService().getSourceList()));
 
 		// AB added
 		String sfr = scheduleFView.getSWFinanceResp();
@@ -331,12 +330,12 @@ public class ScheduleFServiceEndpoint {
 
 		if (sfiExists != null && sfiExists.equals(bjScheduleF)) {
 			return WSMsg
-					.failMessage("Same entry with the given software name already exists.");
+					.failMessage("C1 - Same entry with the given software name already exists.");
 		}
 		if (sfiExists == null && sfoExists != null
 				&& sfoExists.Keyquals(bjScheduleF)) {
 			return WSMsg
-					.failMessage("Same entry with the given software name already exists.");
+					.failMessage("C2 - Same entry with the given software name already exists.");
 		}
 		try {
 			getScheduleFService().saveScheduleF(bjScheduleF,

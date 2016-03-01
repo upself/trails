@@ -22,7 +22,8 @@
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
 			$("#swfinanceResp").val("IBM");
-
+			$("#statusId").val(2);
+            $("#schFhTable").hide();
 		} else {
 			feedPage(scheduleFId);
 			searchData(scheduleFId);
