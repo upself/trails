@@ -324,7 +324,8 @@ sub getLicenseAllocationsData {
 															$rec{hOwner}, # hardware owner ID
 															$rec{hSerial}, # hardware serial
 															$rec{mtId}, #machine type ID
-															$rec{slName} #hostname
+															$rec{slName}, #hostname
+															$rec{swManufact} #sw manufacturer
 															  );
 
 
@@ -357,6 +358,7 @@ sub queryLicenseAllocationsData {
 	  slCustomerId
 	  slName
 	  swName
+	  swManufact
 	  hId
 	  hSerial
 	  hProcessorCount
@@ -391,6 +393,8 @@ sub queryLicenseAllocationsData {
             ,sl.customer_id
             ,sl.name
             ,cast ( ( select sw.software_name from software sw where sw.software_id = is.software_id ) as varchar(255) ) as software_name
+            ,cast ( ( select m.name from manufacturer m where m.id = ( select sw.manufacturer_id from software sw where sw.software_id = is.software_id )
+							) as varchar(255) ) as manufacturer_name
             ,h.id
             ,h.serial
             ,h.processor_count

@@ -2270,7 +2270,8 @@ sub getInstalledSoftwareReconData {
   $installedSoftwareReconData->hOwner,            # hardware owner ID
   $installedSoftwareReconData->hSerial,           # hardware serial
   $installedSoftwareReconData->hMachineTypeId,    #machine type
-  $installedSoftwareReconData->slName             #hostname
+  $installedSoftwareReconData->slName,             #hostname
+  $installedSoftwareReconData->sMfg
    );
 
  $installedSoftwareReconData->scopeName($scopename_temp);
