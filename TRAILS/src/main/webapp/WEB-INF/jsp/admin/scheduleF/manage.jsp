@@ -16,12 +16,12 @@
 	}
 	$(function() {
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
+		populateArraryList();
+		setTimeout(function (){  
 		if (scheduleFId == null || scheduleFId == ""
 				|| scheduleFId == undefined) {
-			populateArraryList();
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
-			$("#swfinanceResp").val("IBM");
 			$("#statusId").val(2);
             $("#schFhTable").hide();
 		} else {
@@ -48,8 +48,7 @@
 						$("#swfinanceResp").find("option[value='CUSTO']").css({
 							display : "none"
 						});
-						$('#swfinanceResp option[value="IBM"]').attr(
-								"selected", true);
+						$("#swfinanceResp").val("IBM");
 					} else {
 						$("#swfinanceResp").find("option[value='CUSTO']").css({
 							display : ""
@@ -81,6 +80,7 @@
 
 		var value = $('#level').val();
 		levelChange(value);
+	 }, 5000); 
 	});
 
 	function feedPage(scheduleFId) {
@@ -98,7 +98,6 @@
 			beforeSend : function() {
 				$("#spinner").show();
 				$("#btnSubmit").attr('disabled', true);
-				populateArraryList();
 			},
 			complete : function(XMLHttpRequest, status) {
 				$("#spinner").hide();
@@ -264,7 +263,7 @@
 			$("#swfinanceResp").find("option[value='CUSTO']").css({
 				display : "none"
 			});
-			$('#swfinanceResp option[value="IBM"]').attr("selected", true);
+			$("#swfinanceResp").val("IBM");
 		}
 		if (scopeLoad != 'Customer owned Customer managed') {
 			$('#swfinanceResp option[value="N/A"]').css({
