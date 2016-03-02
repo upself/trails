@@ -16,6 +16,8 @@
 	}
 	$(function() {
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
+		 $("#schFhTable").hide();
+		 $("#btnSubmit").attr('disabled', true);
 		populateArraryList();
 		setTimeout(function (){  
 		if (scheduleFId == null || scheduleFId == ""
@@ -23,7 +25,7 @@
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
 			$("#statusId").val(2);
-            $("#schFhTable").hide();
+			$("#btnSubmit").attr('disabled', false);
 		} else {
 			feedPage(scheduleFId);
 			searchData(scheduleFId);
@@ -80,7 +82,7 @@
 
 		var value = $('#level').val();
 		levelChange(value);
-	 }, 5000); 
+	 }, 1000); 
 	});
 
 	function feedPage(scheduleFId) {
@@ -517,6 +519,9 @@
 				url: "${pageContext.request.contextPath}/ws/scheduleF/history/" + scheduleFId +"",
 				type: "POST",
 				params: params,
+				beforeSend : function(XMLHttpRequest) {
+					 $("#schFhTable").show();
+				},
 				success: function(result, pageIndex){
 					var html = '';
 					var list = result.data.list;
