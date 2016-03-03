@@ -21,7 +21,7 @@ func shostHandler(w http.ResponseWriter, r *http.Request) {
 	const htmlHeader string= `<html><head></head><body>`
 	const htmlFooter string= ` </body></html>`
 	const htmlInvalid string= `INVALID username/password`
-	const LoginScreen string = `<form method="post" action="/operationGUI">
+	const LoginScreen string = `<form method="post" action="/shost">
 	<input type="text" name="username"required>
 	<input type="password" name="password" required>
 	<input type="submit" value="Login"></form>`
@@ -160,7 +160,7 @@ func shostHandler(w http.ResponseWriter, r *http.Request) {
         const htmlHeader string= `<html><head></head><body>`
         const htmlFooter string= ` </body></html>`
         const htmlInvalid string= `INVALID username/password`
-        const LoginScreen string = `<form method="post" action="/operationGUI">
+        const LoginScreen string = `<form method="post" action="/queryqueue.pl">
         <input type="text" name="username"required>
         <input type="password" name="password" required>
         <input type="submit" value="Login"></form>`

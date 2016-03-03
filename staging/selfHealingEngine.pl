@@ -125,7 +125,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX     = 2;#Bank Acc
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX          = 3;#Debug Option(Required) - For example: YES or NO
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Optional) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
 
-my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
+my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 0 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
 #Invoked Command Parameter Definition Indexes
 my $INVOKED_COMMAND_RESTART_CHILD_LOADER_NAME_REPLACE_STRING = "#1";
 my $INVOKED_COMMAND_RESTART_BANK_ACCOUNT_NAME_REPLACE_STRING = "#2";
