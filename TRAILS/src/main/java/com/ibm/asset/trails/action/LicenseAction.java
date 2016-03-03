@@ -29,9 +29,6 @@ public class LicenseAction extends AccountReportBaseAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doLicense() {
-        getLicenseService().paginatedList(getData(), getAccount(),
-                getStartIndex(), getData().getObjectsPerPage(), getSort(),
-                getDir());
 
         setRequestURI("license.htm");
         return Action.SUCCESS;

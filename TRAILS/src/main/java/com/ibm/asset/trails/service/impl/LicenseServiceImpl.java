@@ -60,6 +60,13 @@ public class LicenseServiceImpl extends
 		dao.paginatedList(data, pAccount.getId(), piStartIndex,
 				piObjectsPerPage, psSort, psDir);
 	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<License> paginatedList(Long accountId,
+			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
+		return dao.paginatedList (accountId, piStartIndex,
+				piObjectsPerPage, psSort, psDir);
+	}
 
 	public List<String> getProductNameByAccount(Account pAccount, String key) {
 		return dao.getProductNameByAccount(pAccount.getId(), key);

@@ -28,5 +28,6 @@ public interface LicenseService extends BaseEntityService<License, Long> {
 	List<String> getProductNameByAccount(Account pAccount, String key);
 
 	List<String> getManufacturerNameByAccount(Account pAccount, String key);
-
+	List<License> paginatedList(Long accountId,
+			int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
 }

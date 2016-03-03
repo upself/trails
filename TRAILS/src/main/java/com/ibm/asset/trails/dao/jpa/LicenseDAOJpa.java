@@ -453,6 +453,20 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				.setFirstResult(startIndex).setMaxResults(objectsPerPage)
 				.list());
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<License> paginatedList(Long accountId,
+			int startIndex, int objectsPerPage, String psSort, String psDir) {
+		psSort = decodeSort(psSort) + " " + psDir;
+		List<License> licList = new ArrayList<License>();
+		Session session = (Session) entityManager.getDelegate();
+
+		licList=session.createQuery(session.getNamedQuery("licenseBaseline").getQueryString() + " order by " + psSort)
+				.setParameter("account", accountId)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+				.setFirstResult(startIndex).setMaxResults(objectsPerPage).list();
+		return licList;
+	}
 
 	private String decodeSort(String psSort) {
 		if (psSort.equalsIgnoreCase("productName")) {
