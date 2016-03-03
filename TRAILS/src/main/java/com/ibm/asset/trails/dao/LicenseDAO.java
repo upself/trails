@@ -30,4 +30,5 @@ public interface LicenseDAO extends BaseEntityDAO<License, Long> {
 	List<String> getManufacturerNameByAccount(Long id, String key);
 	List<License> paginatedList(Long accountId,
 			int piStartIndex, int piObjectsPerPage, String psSort, String psDir);
+	int getLicBaselineSize(Long accountId);
 }

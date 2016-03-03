@@ -67,7 +67,10 @@ public class LicenseServiceImpl extends
 		return dao.paginatedList (accountId, piStartIndex,
 				piObjectsPerPage, psSort, psDir);
 	}
-
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public int getLicBaselineSize(Long accountId){
+		return dao.getLicBaselineSize(accountId);
+	}
 	public List<String> getProductNameByAccount(Account pAccount, String key) {
 		return dao.getProductNameByAccount(pAccount.getId(), key);
 	}

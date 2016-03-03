@@ -30,14 +30,23 @@ $(function() {
 					}else{
 						for(var i = 0; i < list.length; i++){
 							html += "<tr>"; 
-							html += "<td>" +Y+ "</td>";
+							html += "<td>" +list[i].catalogMatch+ "</td>";
 							html += "<td>" + list[i].fullDesc + "</td>";
 							html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
 							html += "<td>" + list[i].swproPID + "</td>"
-							html += "<td>" + list[i].capTypeCode + "</td>";
+							if(list[i].capTypeCode==0){
+								html += "<td></td>";
+							}else{
+								html += "<td>" + list[i].capTypeCode + "</td>";
+							}
+							
 							html += "<td>" + list[i].availableQty + "</td>";
 							html += "<td>" + list[i].quantity + "</td>";
-							html += "<td>" + list[i].expireDate + "</td>";
+							if(list[i].expireDate!=null){
+								html += "<td>" + list[i].expireDate + "</td>";							
+							}else{
+								html += "<td></td>";		
+							}
 							html += "<td>" + list[i].cpuSerial + "</td>";
 							html += "<td>" + list[i].extSrcId + "</td>";
 							html += "</tr>"; 
@@ -74,7 +83,7 @@ $(function() {
 		<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
 			<thead>
 				<tr>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Catalog match</span><span class="ibm-icon"></span></a></th>
+					<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
