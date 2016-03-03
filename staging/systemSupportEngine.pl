@@ -72,6 +72,11 @@ main();
 sub main{
 	init();
 	process();
+	
+	###Wait till all children die.
+	while ( $children != 0 ) {
+		sleep 5;
+	}
 }
 
 sub init{
@@ -116,11 +121,6 @@ my @operationQueueRecords = ();
 			newChildProcess($operationId,$operationNameCode,$operationParameters,$finalPerlScriptExecutionCommand);
 			print LOG "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 			}#end foreach my $operationQueueRecord (@operationQueueRecords)
-
-			###Wait till all children die.
-			while ( $children != 0 ) {
-				sleep 5;
-			}
 
 			$staging_connection->disconnect();
 		};
