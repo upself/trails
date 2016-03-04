@@ -8,7 +8,7 @@
 <script type="text/javascript">
 $(function() {
 	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
-	
+
 	searchData();
 });
 	function searchData() {
@@ -23,6 +23,8 @@ $(function() {
 				type: "GET",
 				params: params,
 				success: function(result, pageIndex){
+					
+					
 					var html = '';
 					var list = result.data.list;
 					if(null == list || list == undefined || list.length == 0){
@@ -37,13 +39,14 @@ $(function() {
 							if(list[i].capTypeCode==0){
 								html += "<td></td>";
 							}else{
-								html += "<td>" + list[i].capTypeCode + "</td>";
+								html += "<td>" + list[i].capTypeDesc + "</td>";
 							}
 							
 							html += "<td>" + list[i].availableQty + "</td>";
 							html += "<td>" + list[i].quantity + "</td>";
 							if(list[i].expireDate!=null){
-								html += "<td>" + list[i].expireDate + "</td>";							
+								var str=list[i].expireDate;
+								html += "<td>" + str.substring(0,10) + "</td>";							
 							}else{
 								html += "<td></td>";		
 							}
@@ -55,30 +58,28 @@ $(function() {
 					$("#license_list").html(html);
 				}
 			},
-			orderColumns: ['licenseId','fullDesc','productName','swproPID','capTypeCode','availableQty','quantity','expireDate','cpuSerial','extSrcId']
+			orderColumns: ['licenseId','fullDesc','productName','swproPID','capTypeDesc','availableQty','quantity','expireDate','cpuSerial','extSrcId']
 		});
 	}	
+	
 </script>
 <s:if test="hasErrors()">
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
+<div>
+<p style="font-weight:bold">IBM Confidential</p>
+</div>
 
-<p class="confidential">IBM Confidential</p>
+<div style="width:130%">
+<div style="float: right;margin:10px">
+	<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
+	<s:a href="/TRAILS/report/download/licenseBaseline%{#attr.account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</s:a>
+</div>
+</div>
 <br />
 <br />
 
-<div style="float: right">
-<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
-<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download License baseline report</s:a> <br>
-	</div>
-<br />
-<br />
-<!-- 
-<s:hidden name="page" value="%{#attr.page}" />
-<s:hidden name="dir" value="%{#attr.dir}" />
-<s:hidden name="sort" value="%{#attr.sort}" />
- -->
 <div class="ibm-col-1-1" style="margin-left: 0px;">
 		<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
 			<thead>

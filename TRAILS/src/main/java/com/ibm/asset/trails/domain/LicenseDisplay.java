@@ -103,13 +103,7 @@ public class LicenseDisplay {
     }
 
     public String getCatalogMatch() {
-        String result;
-        if (product == null) {
-            result = "No";
-        } else {
-            result = "Yes";
-        }
-        return result;
+        return catalogMatch;
     }
 
     public void setCatalogMatch(String catalogMatch) {
