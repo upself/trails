@@ -155,9 +155,6 @@ loaded successfully' in a separate pop-up window.
 			<td><label for="upload">*File:</label></td>
 			<td><s:file id="upload" name="upload" label="File" /></td>
 			<td>
-			<!-- 
-				<span class="button-blue"><s:submit alt="Submit" class="ibm-btn-pri"/></span>
-			 -->
 				<input  name="ibm-submit" type="submit" value="Submit"  class="ibm-btn-pri" />
 			</td>
 		</tr>
