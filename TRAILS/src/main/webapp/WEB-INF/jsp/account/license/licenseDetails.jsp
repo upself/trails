@@ -9,20 +9,53 @@
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
-// 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
+$(function() {
+	
+	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
 
-// 	function isArray(obj) {
-// 		return Object.prototype.toString.call(obj) === '[object Array]';
-// 	}
-	$(function() {
-		var licenseId = '${scheduleFForm.licenseId}';
-function (){
-		if (licenseId == null || licenseId == ""
-				|| licenseId == undefined) {
-		} else {
-			feedPage(licenseId);
-		}
+	feedPage(licenseId);
+	}
+// 		var licenseId = '${scheduleFForm.licenseId}';
+// // 		function (){
+// 		if (licenseId == null || licenseId == ""
+// 				|| licenseId == undefined) {
+// 		} else {
+// 			feedPage(licenseId);
+// // 		}
 
+//////////////////////
+			function initPage() {
+				var url = "${pageContext.request.contextPath}/ws/adminCauseCode/cause/<s:property value='alertCauseId' />/type/<s:property value='alertTypeId' />";
+				$
+						.ajax({
+							url : url,
+							type : "GET",
+							dataType : 'json',
+							error : function(XMLHttpRequest, textStatus, errorThrown) {
+								alert(textStatus);
+							},
+							beforeSend : function() {
+								showLoading();
+							},
+							success : function(result) {
+								$("#alertTypeId").val(result.data.pk.alertType.id);
+								$("#alertTypename").text(result.data.pk.alertType.name);
+								$("#causeTypeId").val(result.data.pk.alertCause.id);
+								$("#causeType").val(result.data.pk.alertCause.name);
+								$("#responsibilityId")
+										.val(
+												result.data.pk.alertCause.alertCauseResponsibility.id);
+								$("#responsibility")
+										.val(
+												result.data.pk.alertCause.alertCauseResponsibility.name);
+								$("#status").val(result.data.status);
+							},
+							complete : function() {
+								hideLoading();
+							}
+						});
+			}
+			///////////////////////////////////////
 
 	function feedPage(licenseId) {
 		var urlRequest = "${pageContext.request.contextPath}/ws/license/"
@@ -30,21 +63,23 @@ function (){
 		var accountId = '${account.id}';
 		jQuery.ajax({
 			url : urlRequest,
-			type : "POST",
+			type : "GET",
 			data : {
 				"accountId" : accountId
 			},
 			dataType : 'json',
 			timeout : 180000,
-			beforeSend : function() {
-			},
-			complete : function(XMLHttpRequest, status) {
+			/*beforeSend : function() {
+			}*/,
+			/*complete : function(XMLHttpRequest, status) {
 				if (status == 'timeout') {
 					alert("Request Timeout !");
 					this.abort();
 				}
-			},
+			}*/,
 			success : function(result) {
+				$("#swproPID").text(result.data.swproPID);
+				$("#productName").text(result.data.productName);
 				if (result.status != '200') {
 					alert(result.msg);
 			},
@@ -68,9 +103,6 @@ function (){
 		<form id="myLicenseForm" onsubmit="submitForm(); return false;"
 			action="/" class="ibm-column-form" enctype="multipart/form-data"
 			method="post">
-<!-- 			<div id="spinner"> -->
-<%-- 				<span class="ibm-spinner-large"></span> --%>
-<!-- 			</div> -->
 			<p>
 				<input name="id" id="id" value="" type="hidden" />
 			</p>
@@ -80,6 +112,11 @@ function (){
 						name="license.productName" /></span>
 			</p>
 			<p>
+				<label for=productName>RESTPrimary component:</label>
+				<span> <label id="productName" name="productName"></label>
+				</span> <input type="hidden" id="productName" />
+			</p>
+			<p>
 				<label for="catalogMatch">Catalog match:</label> <span><s:text
 						name="license.catalogMatch" /></span>
 			</p>
@@ -87,9 +124,16 @@ function (){
 				<label for="licenseName">License name:</label> <span><s:text
 						name="license.fullDesc" /></span>
 			</p>
+			
+			<p>
+				<label for=swproPID>RESTSoftware product PID:</label>
+				<span> <label id="swproPID" name="swproPID"></label>
+				</span> <input type="hidden" id="swproPID" />
+			</p>
+			
 			<p>
 				<label for="softwareProductPID">Software product PID:</label> <span><s:text
-						name="license.PID" /></span>
+						name="license.swproPID" /></span>
 			</p>
 			<p>
 				<label for="capacityType">Capacity type:</label>
