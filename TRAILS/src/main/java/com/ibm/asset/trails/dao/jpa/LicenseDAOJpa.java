@@ -147,6 +147,34 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		q.where(cb.in(licenseOuter.get(License_.id)).value(sq));
 		return entityManager.createQuery(q).getResultList().get(0);
 	}
+	
+	public List freePoolWithParentPaginatedList(Long accountId, int startIndex, int objectsPerPage, String sort,
+			String dir, List<LicenseFilter> filters){ 
+		DisplayTagList data = new DisplayTagList();
+		freePoolWithParentPaginatedList( data, accountId, startIndex, objectsPerPage, sort, dir, filters);
+		return data.getList();	
+	}
+	
+	public int getLicFreePoolSizeWithoutFilters(Long accountId){
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> sq = cb.createQuery(Long.class);
+		Root<AccountPool> accountPool = sq.from(AccountPool.class);
+		Join<AccountPool, Account> memberAccount = accountPool
+				.join(AccountPool_.memberAccount);
+		Join<AccountPool, Account> masterAccount = accountPool
+				.join(AccountPool_.masterAccount);
+		sq.select(masterAccount.get(Account_.id));
+		sq.where(cb.equal(memberAccount.get(Account_.id), accountId),
+				cb.equal(masterAccount.get(Account_.status), "ACTIVE"),
+				cb.equal(masterAccount.get(Account_.swlm), "YES"),
+				cb.isFalse(accountPool.get(AccountPool_.deleted)));
+		TypedQuery<Long> tq = entityManager.createQuery(sq);
+		List<Long> accountIds = tq.getResultList();
+		accountIds.add(accountId);
+
+		Long total = findFreePoolWithParentTotal(accountIds, accountId, null);
+		return total.intValue();
+	}
 
 	public void freePoolWithParentPaginatedList(DisplayTagList data,
 			Long accountId, int startIndex, int objectsPerPage, String sort,

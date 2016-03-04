@@ -1277,15 +1277,22 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace unassignment confirmation" />
 	</definition>
-
+	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS license freepool" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="description" value="TRAILS license freepool" />
+		<put-attribute name="navigation" value="" />
+		<put-attribute name="keywords" value="TRAILS license freepool" />
+	</definition>
+<!-- 
 	<definition name="tiles.account.license.freepool" extends="tiles.w3OneColumnLayoutNoNav">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
-		<put-attribute name="legend" type="template"
-			value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
+		<put-attribute name="legend" type="template" value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
 		<put-attribute name="description" value="TRAILS license freepool" />
 		<put-attribute name="keywords" value="TRAILS license freepool" />
 	</definition>
+ -->
 
 	<definition name="tiles.account.reports.home" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"

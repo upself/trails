@@ -43,6 +43,18 @@ public class LicenseServiceImpl extends
 		dao.freePoolWithParentPaginatedList(data, account.getId(), startIndex,
 				objectsPerPage, sort, dir, filter);
 	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<License> freePoolWithParentPaginatedList( Long accountId, int startIndex, int objectsPerPage, String sort,
+			String dir, List<LicenseFilter> filter) {
+		return dao.freePoolWithParentPaginatedList(accountId, startIndex,
+				objectsPerPage, sort, dir, filter);
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public int getLicFreePoolSizeWithoutFilters(Long accountId){
+		return dao.getLicFreePoolSizeWithoutFilters(accountId);
+	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<CapacityType> getCapacityTypeList() {

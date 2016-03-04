@@ -11,12 +11,14 @@ import java.util.Map;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibm.asset.trails.domain.License;
+import com.ibm.asset.trails.domain.LicenseBaselineDisplay;
 import com.ibm.asset.trails.domain.LicenseDisplay;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.ws.common.Pagination;
@@ -29,17 +31,15 @@ public class LicenseServiceEndpoint {
 	private LicenseService licenseService;
 
 	@GET
-	@Path("/all")
+	@Path("/all/licenseBaseline")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getAllLicenseByAccount(@FormParam("currentPage") Integer currentPage,
 			@FormParam("pageSize") Integer pageSize, @FormParam("sort") String sort, @FormParam("dir") String dir,
 			@FormParam("accountId") Long accountId) {
 
-		List liclist = new ArrayList<License>();
-		List<LicenseDisplay> licDList = null;
-		// List<ScheduleFView> schFViewList = new ArrayList<ScheduleFView>();
+		List liclist = new ArrayList();
+		List<LicenseBaselineDisplay> licDList = null;
 		Long total = Long.valueOf(0);
-
 		if (null == accountId) {
 			return WSMsg.failMessage("Account ID is required");
 		} else if (null == currentPage) {
@@ -52,13 +52,11 @@ public class LicenseServiceEndpoint {
 			return WSMsg.failMessage("Sort Direction Parameter is required");
 		} else {
 			int startIndex = (currentPage - 1) * pageSize;
-			liclist = getLicenseService().paginatedList(accountId, Integer.valueOf(startIndex),
-					Integer.valueOf(pageSize), sort, dir);
-			
-			licDList = licTransformer(liclist);
-			if (licDList != null && !licDList.isEmpty()) {
-				total = Long.valueOf(getLicenseService().getLicBaselineSize(accountId));
-			}
+				liclist = getLicenseService().paginatedList(accountId, Integer.valueOf(startIndex), Integer.valueOf(pageSize), sort, dir);
+				licDList = licTransformer(liclist);
+				if (licDList != null && !licDList.isEmpty()) {
+					total = Long.valueOf(getLicenseService().getLicBaselineSize(accountId));
+				}	
 		}
 
 		Pagination page = new Pagination();
@@ -68,14 +66,52 @@ public class LicenseServiceEndpoint {
 		page.setList(licDList);
 		return WSMsg.successMessage("SUCCESS", page);
 	}
+	
+	@GET
+	@Path("/all/licenseFreePool")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg getAllLicenseFreePoolByAccount(@FormParam("currentPage") Integer currentPage,
+			@FormParam("pageSize") Integer pageSize, @FormParam("sort") String sort, @FormParam("dir") String dir,
+			@FormParam("accountId") Long accountId) {
 
-	private List<LicenseDisplay> licTransformer(List<Map<String, Object>> licList) {
+		List liclist = new ArrayList();
+		List<LicenseBaselineDisplay> licDList = null;
+		Long total = Long.valueOf(0);
+		Pagination page = new Pagination();
+		
+		if (null == accountId) {
+			return WSMsg.failMessage("Account ID is required");
+		} else if (null == currentPage) {
+			return WSMsg.failMessage("Current Page Parameter is required");
+		} else if (null == pageSize) {
+			return WSMsg.failMessage("Page Size Parameter is required");
+		} else if (null == sort || "".equals(sort.trim())) {
+			return WSMsg.failMessage("Sort Column Parameter is required");
+		} else if (null == dir || "".equals(dir.trim())) {
+			return WSMsg.failMessage("Sort Direction Parameter is required");
+		} else {
+			int startIndex = (currentPage - 1) * pageSize;
+				liclist = getLicenseService().freePoolWithParentPaginatedList(accountId, Integer.valueOf(startIndex), Integer.valueOf(pageSize), sort, dir,null);
+//				licDList = licTransformer(liclist);
+				if (licDList != null && !licDList.isEmpty()) {
+					total = Long.valueOf(getLicenseService().getLicFreePoolSizeWithoutFilters(accountId));
+				}	
+		}
 
-		List<LicenseDisplay> licViewList = new ArrayList<LicenseDisplay>();
+		page.setPageSize(pageSize.longValue());
+		page.setTotal(total);
+		page.setCurrentPage(currentPage.longValue());
+		page.setList(liclist);
+		return WSMsg.successMessage("SUCCESS", page);
+	}
+
+	private List<LicenseBaselineDisplay> licTransformer(List<Map<String, Object>> licList) {
+
+		List<LicenseBaselineDisplay> licViewList = new ArrayList<LicenseBaselineDisplay>();
 		if (licList != null && licList.size() > 0) {
 
 			for (Map<String, Object> licmap : licList) {
-				LicenseDisplay lisd = new LicenseDisplay();
+				LicenseBaselineDisplay lisd = new LicenseBaselineDisplay();
 				if (licmap.get("licenseId") != null) {
 					lisd.setLicenseId(Long.valueOf(licmap.get("licenseId").toString()));
 				} else {

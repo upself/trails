@@ -16,10 +16,16 @@ $(function() {
 		params['accountId'] = '${account.id}';
 		params['sort'] = 'id';
 		params['dir'] = 'desc';
-		
+		var requestURI="${requestURI}";
+		var restUrl=null;
+		if(requestURI=="license.htm"){
+			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseBaseline";
+		}else{
+			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseFreePool";//licenseFreePool.htm
+		}
 		$("#licTable").paginationTable('destroy').paginationTable({
 			remote: {
-				url: "${pageContext.request.contextPath}/ws/license/all",
+				url: restUrl,
 				type: "GET",
 				params: params,
 				success: function(result, pageIndex){
