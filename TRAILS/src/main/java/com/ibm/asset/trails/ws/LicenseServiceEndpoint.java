@@ -16,7 +16,7 @@ import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 public class LicenseServiceEndpoint {
-
+	
 	@Autowired
 	private LicenseService licenseService;
 
@@ -38,9 +38,10 @@ public class LicenseServiceEndpoint {
 	@GET
 	@Path("/license/{id}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg getLicenseById(@PathParam("id") Long id,
-			@FormParam("accountId") Long accountId) {
+	public WSMsg getLicenseById(@PathParam("id") Long id/*,
+			@FormParam("accountId") Long accountId*/) {
 		License licenseResult = getLicenseService().getLicenseDetails(id);
+		System.out.println("===license endpoint /license/{id}");
 		
 		if (licenseResult == null) {
 			return WSMsg
@@ -57,6 +58,7 @@ public class LicenseServiceEndpoint {
 	}
 
 	public LicenseService getLicenseService() {
+		System.out.println("===LicenseServiceEndpoint - getLicenseService : " + licenseService);
 		return licenseService;
 	}
 

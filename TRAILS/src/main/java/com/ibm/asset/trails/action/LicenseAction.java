@@ -40,8 +40,12 @@ public class LicenseAction extends AccountReportBaseAction {
     @UserRole(userRole = UserRoleType.READER)
     public String doLicenseDetails() {
         if (getLicenseId() == null) {
+        	System.out.println(
+					"===LicenseAction - doLicenseDetails, getLicenseId = null");
             return Action.ERROR;
         } else {
+        	System.out.println(
+					"===LicenseAction - doLicenseDetails, getLicenseId != null!");
             setLicense(getLicenseService().getLicenseDetails(getLicenseId()));
         }
 

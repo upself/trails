@@ -10,56 +10,14 @@
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
 $(function() {
-	
+
+// 	var licenseId = 490363;
+	feedPage(/*licenseId*/);
 	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
-
-	feedPage(licenseId);
 	}
-// 		var licenseId = '${scheduleFForm.licenseId}';
-// // 		function (){
-// 		if (licenseId == null || licenseId == ""
-// 				|| licenseId == undefined) {
-// 		} else {
-// 			feedPage(licenseId);
-// // 		}
 
-//////////////////////
-			function initPage() {
-				var url = "${pageContext.request.contextPath}/ws/adminCauseCode/cause/<s:property value='alertCauseId' />/type/<s:property value='alertTypeId' />";
-				$
-						.ajax({
-							url : url,
-							type : "GET",
-							dataType : 'json',
-							error : function(XMLHttpRequest, textStatus, errorThrown) {
-								alert(textStatus);
-							},
-							beforeSend : function() {
-								showLoading();
-							},
-							success : function(result) {
-								$("#alertTypeId").val(result.data.pk.alertType.id);
-								$("#alertTypename").text(result.data.pk.alertType.name);
-								$("#causeTypeId").val(result.data.pk.alertCause.id);
-								$("#causeType").val(result.data.pk.alertCause.name);
-								$("#responsibilityId")
-										.val(
-												result.data.pk.alertCause.alertCauseResponsibility.id);
-								$("#responsibility")
-										.val(
-												result.data.pk.alertCause.alertCauseResponsibility.name);
-								$("#status").val(result.data.status);
-							},
-							complete : function() {
-								hideLoading();
-							}
-						});
-			}
-			///////////////////////////////////////
-
-	function feedPage(licenseId) {
-		var urlRequest = "${pageContext.request.contextPath}/ws/license/"
-				+ licenseId + "";
+	function feedPage(/*licenseId*/) {
+		var urlRequest = "${pageContext.request.contextPath}/ws/license/<s:property value='licenseId' />";
 		var accountId = '${account.id}';
 		jQuery.ajax({
 			url : urlRequest,
@@ -69,19 +27,13 @@ $(function() {
 			},
 			dataType : 'json',
 			timeout : 180000,
-			/*beforeSend : function() {
-			}*/,
-			/*complete : function(XMLHttpRequest, status) {
-				if (status == 'timeout') {
-					alert("Request Timeout !");
-					this.abort();
-				}
-			}*/,
 			success : function(result) {
+				alert(result.data + ":" + status);
 				$("#swproPID").text(result.data.swproPID);
 				$("#productName").text(result.data.productName);
 				if (result.status != '200') {
 					alert(result.msg);
+				}
 			},
 			error : function(jqXHR, status, error) {
 				alert(status + ":" + error);
