@@ -28,7 +28,7 @@ public interface ReconWorkspaceService extends BaseService {
 
 	public ReconcileType findReconcileType(Long id);
 
-	public List<InstalledSoftware> installedSoftwareList(Long installedSoftwareId, Account account, String hostName, String hwOwner, String machineType, String serial, Long scopeId);
+	public List<InstalledSoftware> installedSoftwareList(Long installedSoftwareId, Account account, String hostName, String hwOwner, String machineType, String serial, Long scopeId, String manufacturerName);
 
 	public InstalledSoftware getInstalledSoftware(Long installedSoftwareId);
 

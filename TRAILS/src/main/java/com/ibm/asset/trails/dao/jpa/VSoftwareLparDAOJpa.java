@@ -184,6 +184,7 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
+				.createAlias("sw.manufacturer", "mf", CriteriaSpecification.LEFT_JOIN)
 				.add(Restrictions.eq("account", account));
 
 		if (reconSetting.getReconcileType() != null) {
@@ -337,6 +338,7 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("sw.softwareName").as("productInfoName"))
 				.add(Projections.property("sw.softwareId").as("productInfoId"))
 				.add(Projections.property("sw.pid").as("pid"))
+				.add(Projections.property("mf.manufacturerName").as("manufacturerName"))
 				.add(Projections.property("rt.name").as("reconcileTypeName"))
 				.add(Projections.property("rt.id").as("reconcileTypeId"))
 				.add(Projections.property("aus.remoteUser").as("assignee"))
@@ -391,7 +393,7 @@ public class VSoftwareLparDAOJpa extends
 	
 	private void addSchedulef2List(Account account, List<ReconWorkspace> list){
 		for(ReconWorkspace rw:list){
-			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getSl_hostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial());
+			ScheduleF sf = getScheduleFItem(account, rw.getProductInfoName(), rw.getSl_hostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial(), rw.getManufacturerName());
 			if(sf!=null){
 				rw.setScope(sf.getScope().getDescription());
 				rw.setScopeId(sf.getScope().getId());
@@ -413,7 +415,7 @@ public class VSoftwareLparDAOJpa extends
 		return em;
 	}
 	public ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial) {
+			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
 	
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
@@ -431,6 +433,7 @@ public class VSoftwareLparDAOJpa extends
 		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> manufacturerLevel = new ArrayList<ScheduleF>();
 
 		for (ScheduleF sf : results) {
 			String level = sf.getLevel();
@@ -440,6 +443,8 @@ public class VSoftwareLparDAOJpa extends
 				hwboxLevel.add(sf);
 			} else if ("HWOWNER".equals(level)) {
 				hwOwnerLevel.add(sf);
+			} else if ("MANUFACTURER".equals(level)){
+				manufacturerLevel.add(sf);
 			} else {
 				proudctLevel.add(sf);
 			}
@@ -466,6 +471,12 @@ public class VSoftwareLparDAOJpa extends
 
 		for (ScheduleF sf : proudctLevel) {
 			if (sf.getSoftwareName().equals(swname)) {
+				return sf;
+			}
+		}
+		
+		for (ScheduleF sf : manufacturerLevel) {
+			if (sf.getManufacturer().equals(manufacturerName)) {
 				return sf;
 			}
 		}

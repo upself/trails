@@ -204,7 +204,8 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), alert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(),alert.getInstalledSoftware().getSoftware()
+						.getManufacturerId().getManufacturerName());
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
@@ -282,7 +283,10 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), workingAlert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(), 
+				workingAlert.getInstalledSoftware().getSoftware()
+						.getManufacturerId()
+						.getManufacturerName());
 
 		ScheduleF scheduleF4RelatedAlert = getScheduleFItem(relatedAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
@@ -295,7 +299,10 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), relatedAlert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(),
+				relatedAlert.getInstalledSoftware().getSoftware()
+						.getManufacturerId()
+						.getManufacturerName());
 
 		if (scheduleF4WorkingAlert != null && scheduleF4RelatedAlert != null) {
 			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope()
@@ -334,7 +341,7 @@ public class ReconServiceImpl implements ReconService {
 	// requested by users End
 
 	private ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial) {
+			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
 
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
@@ -351,7 +358,8 @@ public class ReconServiceImpl implements ReconService {
 		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
-
+		List<ScheduleF> manufacturerLevel = new ArrayList<ScheduleF>();
+		
 		for (ScheduleF sf : results) {
 			String level = sf.getLevel();
 			if ("HOSTNAME".equals(level)) {
@@ -360,6 +368,8 @@ public class ReconServiceImpl implements ReconService {
 				hwboxLevel.add(sf);
 			} else if ("HWOWNER".equals(level)) {
 				hwOwnerLevel.add(sf);
+			} else if ("MANUFACTURER".equals(level)){
+				manufacturerLevel.add(sf);
 			} else {
 				proudctLevel.add(sf);
 			}
@@ -390,6 +400,11 @@ public class ReconServiceImpl implements ReconService {
 			}
 		}
 
+		for (ScheduleF sf : manufacturerLevel) {
+			if (sf.getManufacturer().equals(manufacturerName)) {
+				return sf;
+			}
+		}
 		return null;
 	}
 

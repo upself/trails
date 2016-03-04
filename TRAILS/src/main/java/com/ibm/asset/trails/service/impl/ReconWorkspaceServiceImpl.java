@@ -212,7 +212,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public List<InstalledSoftware> installedSoftwareList(
-			Long installedSoftwareId, Account account, String hostName, String hwOwner, String machineType, String serial, Long scopeId) {
+			Long installedSoftwareId, Account account, String hostName, String hwOwner, String machineType, String serial, Long scopeId, String manufacturerName) {
 		
 		List<InstalledSoftware> result = new ArrayList<InstalledSoftware>();
 		
@@ -221,7 +221,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		
 		//filter socpe
 		for(InstalledSoftware insw : isList){
-			ScheduleF scheduleF = vSwLparDAO.getScheduleFItem(account, insw.getSoftware().getSoftwareName(), hostName, hwOwner, machineType, serial);
+			ScheduleF scheduleF = vSwLparDAO.getScheduleFItem(account, insw.getSoftware().getSoftwareName(), hostName, hwOwner, machineType, serial, manufacturerName);
 			if(null != scheduleF && scheduleF.getScope().getId().equals(scopeId)){
 				result.add(insw);
 			}

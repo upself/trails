@@ -356,6 +356,8 @@
 				value="%{#attr.row.productInfoId}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].chips"
 				value="%{#attr.row.chips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].manufacturerName"
+				value="%{#attr.row.manufacturerName}" />
 		</display:column>
 		<display:column property="alertStatus" title="" />
 		<display:column property="alertAgeI" title="Age" sortable="true"
