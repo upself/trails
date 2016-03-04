@@ -368,40 +368,42 @@ public class ReconServiceImpl implements ReconService {
 				hwboxLevel.add(sf);
 			} else if ("HWOWNER".equals(level)) {
 				hwOwnerLevel.add(sf);
+			} else if("PRODUCT".equals(level)) {
+				proudctLevel.add(sf);
 			} else if ("MANUFACTURER".equals(level)){
 				manufacturerLevel.add(sf);
 			} else {
-				proudctLevel.add(sf);
+				
 			}
 		}
 
 		for (ScheduleF sf : hostNameLevel) {
-			if (sf.getHostname().equals(hostName)) {
+			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwboxLevel) {
-			if (sf.getSerial().equals(serial)
-					&& sf.getMachineType().equals(machineType)) {
+			if (null != sf.getSerial() && sf.getSerial().equals(serial)
+					&& null != sf.getMachineType() && sf.getMachineType().equals(machineType)) {
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwOwnerLevel) {
-			if (sf.getHwOwner().equals(hwOwner)) {
+			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : proudctLevel) {
-			if (sf.getSoftwareName().equals(swname)) {
+			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : manufacturerLevel) {
-			if (sf.getManufacturer().equals(manufacturerName)) {
+			if (null != sf.getManufacturerName() && sf.getManufacturerName().equals(manufacturerName)) {
 				return sf;
 			}
 		}

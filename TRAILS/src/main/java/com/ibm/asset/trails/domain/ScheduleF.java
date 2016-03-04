@@ -65,6 +65,9 @@ public class ScheduleF {
 
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
+	
+	@Column(name = "MANUFACTURER_NAME")
+	private String manufacturerName;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SCOPE_ID")
@@ -136,6 +139,14 @@ public class ScheduleF {
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
+	}
+	
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 
 	public Date getRecordTime() {
@@ -273,6 +284,10 @@ public class ScheduleF {
 			}
 
 			if (!this.getManufacturer().equals(other.getManufacturer())) {
+				return false;
+			}
+			
+			if (!this.getManufacturerName().equals(other.getManufacturerName())) {
 				return false;
 			}
 
