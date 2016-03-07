@@ -11,7 +11,7 @@
 $(function() {
  	var licenseId = ${licenseId};
 	feedPage(licenseId);
-	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
+	$("#titleContent").text("License details: ${account.name}(${account.account})");
 	});
 
 	function feedPage(licenseId) {
@@ -23,18 +23,18 @@ $(function() {
 			success : function(result) {				
 				$("#productName").text(result.data.productName);
 				$("#catalogMatch").text(result.data.catalogMatch);
-				$("#licenseName").text(result.data.licenseName);
+				$("#fullDesc").text(result.data.fullDesc);
 				$("#swproPID").text(result.data.swproPID);
 				$("#capacityType").text(result.data.capacityType);
-				$("#totalQty").text(result.data.totalQty);
-				$("#availableQty").text(result.data.availableQty);
-				$("#expirationDate").text(result.data.expirationDate);
+				$("#totalQtyString").text(result.data.totalQtyString);
+				$("#availableQtyString").text(result.data.availableQtyString);
+				$("#expireDateString").text(result.data.expireDateString);
 				$("#poNumber").text(result.data.poNumber);
-				$("#serialNumber").text(result.data.serialNumber);
+				$("#cpuSerial").text(result.data.cpuSerial);
 				$("#licenseOwner").text(result.data.licenseOwner);
-				$("#pool").text(result.data.pool);
-				$("#swcmId").text(result.data.swcmId);
-				$("#recordDateTime").text(result.data.recordDateTime);
+				$("#poolAsString").text(result.data.poolAsString);
+				$("#extSrcId").text(result.data.extSrcId);
+				$("#recordTimeAsString").text(result.data.recordTimeAsString);
 				if (result.status != '200') {
 					alert(result.msg);
 				}
@@ -57,108 +57,62 @@ $(function() {
 			method="post">
 
 			<p>
-				<label for="primaryComponent">Primary component:</label> <span></span>
-			</p>
-			<p>
-				<label for=productName>RESTPrimary component:</label>
+				<label for=productName>Primary component:</label>
 				<span> <label id="productName"></label></span> 
 			</p>
 			<p>
-				<label for=catalogMatch>RESTCatalog match:</label>
+				<label for=catalogMatch>Catalog match:</label>
 				<span> <label id="catalogMatch"></label></span> 
 			</p>			
 			<p>
-				<label for="catalogMatch">Catalog match:</label> <span></span>
+				<label for=fullDesc>License name:</label>
+				<span> <label id="fullDesc"></label></span> 
 			</p>
 			<p>
-				<label for=licenseName>RESTLicense name:</label>
-				<span> <label id="licenseName"></label></span> 
-			</p>
-			<p>
-				<label for="licenseName">License name:</label> <span></span>
-			</p>
-			
-			<p>
-				<label for=swproPID>RESTSoftware product PID:</label>
+				<label for=swproPID>Software product PID:</label>
 				<span> <label id="swproPID" ></label>
 				</span> 
 			</p>
-			
 			<p>
-				<label for="softwareProductPID">Software product PID:</label> <span></span>
-			</p>
-			<p>
-				<label for=capacityType>RESTCapacity type:</label>
+				<label for=capacityType>Capacity type:</label>
 				<span> <label id="capacityType" ></label>
 				</span> 
 			</p>
 			<p>
-				<label for="capacityType">Capacity type:</label>
-					<span> - </span>
+				<label for=totalQtyString>Total qty:</label>
+				<span> <label id="totalQtyString"></label></span> 
 			</p>
 			<p>
-				<label for=totalQty>RESTTotal qty:</label>
-				<span> <label id="totalQty"></label></span> 
+				<label for=availableQtyString>Available qty:</label>
+				<span> <label id="availableQtyString"></label></span> 
 			</p>
 			<p>
-				<label for="totalQty">Total qty:</label> <span></span>
+				<label for=expireDateString>Expiration date:</label>
+				<span> <label id="expireDateString"></label></span> 
 			</p>
 			<p>
-				<label for=availableQty>RESTAvailable qty:</label>
-				<span> <label id="availableQty"></label></span> 
-			</p>
-			<p>
-				<label for="availableQty">Available qty:</label> <span></span>
-			</p>
-			<p>
-				<label for=expirationDate>RESTExpiration date:</label>
-				<span> <label id="expirationDate"></label></span> 
-			</p>
-			<p>
-				<label for="expirationDate">Expiration date:</label> <span></span>
-			</p>
-			<p>
-				<label for=poNumber>RESTPO number:</label>
+				<label for=poNumber>PO number:</label>
 				<span> <label id="poNumber"></label></span> 
 			</p>
 			<p>
-				<label for="poNumber">PO number:</label> <span></span>
+				<label for=cpuSerial>Serial number:</label>
+				<span> <label id="cpuSerial"></label></span> 
 			</p>
 			<p>
-				<label for=serialNumber>RESTSerial number:</label>
-				<span> <label id="serialNumber"></label></span> 
-			</p>
-			<p>
-				<label for="serialNumber">Serial number:</label> <span></span>
-			</p>
-			<p>
-				<label for=licenseOwner>RESTLicense owner:</label>
+				<label for=licenseOwner>License owner:</label>
 				<span> <label id="licenseOwner"></label></span> 
 			</p>
 			<p>
-				<label for="licenseOwner">License owner:</label> 
-				<span></span>
+				<label for=poolAsString>Pool:</label>
+				<span> <label id="poolAsString"></label></span> 
 			</p>
 			<p>
-				<label for=pool>RESTPool:</label>
-				<span> <label id="pool"></label></span> 
+				<label for=extSrcId>SWCM ID:</label>
+				<span> <label id="extSrcId"></label></span> 
 			</p>
 			<p>
-				<label for="pool">Pool:</label> <span></span>
-			</p>
-			<p>
-				<label for=swcmId>RESTSWCM ID:</label>
-				<span> <label id="swcmId"></label></span> 
-			</p>
-			<p>
-				<label for="swcmId">SWCM ID:</label> <span></span>
-			</p>
-			<p>
-				<label for=recordDateTime>RESTRecord date/time:</label>
-				<span> <label id="recordDateTime"></label></span> 
-			</p>
-			<p>
-				<label for="recordDateTime">Record date/time:</label> <span></span>
+				<label for=recordTimeAsString>Record date/time:</label>
+				<span> <label id="recordTimeAsString"></label></span> 
 			</p>
 			
 		</form>
