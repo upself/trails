@@ -18,10 +18,13 @@ $(function() {
 		params['dir'] = 'desc';
 		var requestURI="${requestURI}";
 		var restUrl=null;
+		var order=null;
 		if(requestURI=="license.htm"){
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseBaseline";
+			orders=['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId'];
 		}else{
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseFreePool";//licenseFreePool.htm
+			orders=['licenseId','license.fullDesc','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId'];
 		}
 		$("#licTable").paginationTable('destroy').paginationTable({
 			remote: {
@@ -62,7 +65,7 @@ $(function() {
 					$("#license_list").html(html);
 				}
 			},
-			orderColumns: ['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId']
+			orderColumns: orders
 		});
 		
 			/* $("#licTable").paginationTable('destroy').paginationTable({
