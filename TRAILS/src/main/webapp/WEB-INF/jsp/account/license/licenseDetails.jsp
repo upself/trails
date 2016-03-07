@@ -1,4 +1,3 @@
-<%@ taglib prefix="s" uri="/struts-tags"%>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
@@ -10,25 +9,18 @@
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
 $(function() {
-
-// 	var licenseId = 490363;
-	feedPage(/*licenseId*/);
+ 	var licenseId = ${licenseId};
+	feedPage(licenseId);
 	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
-	}
+	});
 
-	function feedPage(/*licenseId*/) {
-		var urlRequest = "${pageContext.request.contextPath}/ws/license/<s:property value='licenseId' />";
-		var accountId = '${account.id}';
+	function feedPage(licenseId) {
+		var urlRequest = "${pageContext.request.contextPath}/ws/license/detail/"+licenseId+"";
 		jQuery.ajax({
 			url : urlRequest,
 			type : "GET",
-			data : {
-				"accountId" : accountId
-			},
-			dataType : 'json',
 			timeout : 180000,
 			success : function(result) {
-				alert(result.data + ":" + status);
 				$("#swproPID").text(result.data.swproPID);
 				$("#productName").text(result.data.productName);
 				if (result.status != '200') {
@@ -42,10 +34,6 @@ $(function() {
 	}
 
 	
-
-	
-	
-	
 	
 
 </script>
@@ -55,79 +43,64 @@ $(function() {
 		<form id="myLicenseForm" onsubmit="submitForm(); return false;"
 			action="/" class="ibm-column-form" enctype="multipart/form-data"
 			method="post">
-			<p>
-				<input name="id" id="id" value="" type="hidden" />
-			</p>
 
 			<p>
-				<label for="primaryComponent">Primary component:</label> <span><s:text
-						name="license.productName" /></span>
+				<label for="primaryComponent">Primary component:</label> <span></span>
 			</p>
 			<p>
 				<label for=productName>RESTPrimary component:</label>
-				<span> <label id="productName" name="productName"></label>
-				</span> <input type="hidden" id="productName" />
+				<span> <label id="productName"></label>
+				</span> 
 			</p>
 			<p>
-				<label for="catalogMatch">Catalog match:</label> <span><s:text
-						name="license.catalogMatch" /></span>
+				<label for="catalogMatch">Catalog match:</label> <span></span>
 			</p>
 			<p>
-				<label for="licenseName">License name:</label> <span><s:text
-						name="license.fullDesc" /></span>
+				<label for="licenseName">License name:</label> <span></span>
 			</p>
 			
 			<p>
 				<label for=swproPID>RESTSoftware product PID:</label>
-				<span> <label id="swproPID" name="swproPID"></label>
-				</span> <input type="hidden" id="swproPID" />
+				<span> <label id="swproPID" ></label>
+				</span> 
 			</p>
 			
 			<p>
-				<label for="softwareProductPID">Software product PID:</label> <span><s:text
-						name="license.swproPID" /></span>
+				<label for="softwareProductPID">Software product PID:</label> <span></span>
 			</p>
 			<p>
 				<label for="capacityType">Capacity type:</label>
-					<span><s:text	name="license.capacityType.code" /> - <s:text name="license.capacityType.description" /></span>
+					<span> - </span>
 			</p>
 			
 			<p>
-				<label for="totalQty">Total qty:</label> <span><s:text
-						name="license.quantity" /></span>
+				<label for="totalQty">Total qty:</label> <span></span>
 			</p>
 			<p>
-				<label for="availableQty">Available qty:</label> <span><s:text
-						name="license.availableQty" /></span>
+				<label for="availableQty">Available qty:</label> <span></span>
 			</p>
 			<p>
-				<label for="expirationDate">Expiration date:</label> <span><s:text
-						name="license.expireDate" /></span>
+				<label for="expirationDate">Expiration date:</label> <span></span>
 			</p>
 			<p>
-				<label for="poNumber">PO number:</label> <span><s:text
-						name="license.poNumber" /></span>
+				<label for="poNumber">PO number:</label> <span></span>
 			</p>
 			<p>
-				<label for="serialNumber">Serial number:</label> <span><s:text
-						name="license.cpuSerial" /></span>
+				<label for="serialNumber">Serial number:</label> <span></span>
 			</p>
 			<p>
 				<label for="licenseOwner">License owner:</label> 
-				<span><s:if test="license.ibmOwned == true">IBM</s:if> <s:else>Customer</s:else></span>
+				<span></span>
 			</p>
-<%-- 			<td><s:if test="license.ibmOwned == true">IBM</s:if> <s:else>Customer</s:else> --%>
+
 			<p>
-				<label for="pool">Pool:</label> <span><s:text
-						name="license.poolAsString" /></span>
-			</p>
-			<p>
-				<label for="swcmId">SWCM ID:</label> <span><s:text
-						name="license.extSrcId" /></span>
+				<label for="pool">Pool:</label> <span></span>
 			</p>
 			<p>
-				<label for="recordDateTime">Record date/time:</label> <span><s:text
-						name="license.recordTime" /></span>
+				<label for="swcmId">SWCM ID:</label> <span></span>
+			</p>
+			<p>
+				<label for="recordDateTime">Record date/time:</label> <span></span>
 			</p>
 			
 		</form>
