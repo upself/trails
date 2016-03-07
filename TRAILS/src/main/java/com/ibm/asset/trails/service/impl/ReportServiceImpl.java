@@ -666,10 +666,12 @@ public class ReportServiceImpl implements ReportService {
 				+ "where sf.customer_id = :customerId "
 				+ "and sf.status_id=2 "
 				+ "and sf.software_name = instS.software_name "
-				+ "and ( ( sf.level = 'PRODUCT' ) "
-				+ "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
+				
+				+ "and ( (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
 				+ "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
-				+ "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
+				+ "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) "
+				+ "or ( sf.level = 'PRODUCT' ) "
+				+ "or (( sf.manufacturer_name = instSwMan.name ) and ( sf.level ='MANUFACTURER' )) )"
 				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
 		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner ";
 		String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
