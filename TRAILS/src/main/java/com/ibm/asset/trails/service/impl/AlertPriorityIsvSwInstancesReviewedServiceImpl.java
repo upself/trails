@@ -58,9 +58,7 @@ public class AlertPriorityIsvSwInstancesReviewedServiceImpl extends
 
         lQuery.setParameter("account", account);
         lQuery.setParameter("type", "ISVPRIO");
-
-        System.out.println("alertUnlicensedSwTotalByAccountAndType total: "
-				+ ((Long) lQuery.getSingleResult())); 
+        
         return ((Long) lQuery.getSingleResult());
     }
 
@@ -71,9 +69,6 @@ public class AlertPriorityIsvSwInstancesReviewedServiceImpl extends
 
         lQuery.setParameter("remoteUser", remoteUser);
         lQuery.setParameter("type", "ISVPRIO");
-
-        System.out.println("alertUnlicensedSwTotalByRemoteUserAndType total: "
-				+ ((Long) lQuery.getSingleResult())); 
         
         return ((Long) lQuery.getSingleResult());
     }

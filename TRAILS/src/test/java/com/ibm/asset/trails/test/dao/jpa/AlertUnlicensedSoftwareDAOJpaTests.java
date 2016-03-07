@@ -31,7 +31,6 @@ public class AlertUnlicensedSoftwareDAOJpaTests {
         List<Long> alertIds = alertUnlicensedSoftwareDAO.findAffectedLicenseAlertList(accountId,
                 alertId);
         for (Long alert : alertIds) {
-            System.out.println(alert);
         }
         assertEquals(alertIds.size(), 1);
     }

@@ -207,7 +207,6 @@ public class ScheduleFServiceEndpoint {
 							request.getRemoteUser());
 					return WSMsg.successMessage("Update Schedule F success");
 				} catch (Exception e) {
-					System.out.println(e.getCause());
 					return WSMsg
 							.failMessage("Encounter Exception while updating Schedule F ");
 				}
@@ -341,7 +340,6 @@ public class ScheduleFServiceEndpoint {
 			getScheduleFService().saveScheduleF(bjScheduleF,
 					request.getRemoteUser());
 		} catch (Exception e) {
-			System.out.println(e.getCause());
 			return WSMsg
 					.failMessage("Encounter Exception while updating Schedule F ");
 		}

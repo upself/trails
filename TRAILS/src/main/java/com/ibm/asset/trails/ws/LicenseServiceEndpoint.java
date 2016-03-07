@@ -312,25 +312,17 @@ public class LicenseServiceEndpoint {
 	@Path("/detail/{id}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public WSMsg getLicenseById(@PathParam("id") Long id) {
-		License licenseResult = getLicenseService().getLicenseDetails(id);
-		System.out.println("===license endpoint /license/{id}");
-		
+		License licenseResult = getLicenseService().getLicenseDetails(id);		
 		if (licenseResult == null) {
 			return WSMsg
 					.failMessage("No License item found for id = " + id + "!");
 		} else {
-			/*if (licenseResult.getAccount().getId().longValue() != accountId
-					.longValue()) {
-				return WSMsg.failMessage(
-						"It seems you are not loading the License item for the current account !");
-			}*/
 			return WSMsg
 					.successMessage("The License item found for id = " + id, licenseResult);
 		}
 	}
 
 	public LicenseService getLicenseService() {
-		System.out.println("===LicenseServiceEndpoint - getLicenseService : " + licenseService);
 		return licenseService;
 	}
 

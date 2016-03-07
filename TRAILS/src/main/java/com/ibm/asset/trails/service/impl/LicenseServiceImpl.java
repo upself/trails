@@ -62,12 +62,7 @@ public class LicenseServiceImpl extends
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public License getLicenseDetails(Long id) {
-		System.out.println("===LicenseServiceImpl - getLicenseDetails init");
-		System.out.println("===LicenseServiceImpl - getLicenseDetails id: " + id);
-		System.out.println("===LicenseServiceImpl - dao.getLicenseDetails(id): "
-				+ dao.getLicenseDetails(id));
-		
+	public License getLicenseDetails(Long id) {	
 		return dao.getLicenseDetails(id);
 	}
 
