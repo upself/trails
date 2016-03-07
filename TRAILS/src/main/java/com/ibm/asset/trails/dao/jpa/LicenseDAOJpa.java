@@ -289,13 +289,13 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			orderBy = "";
 		}
 		if (sort.startsWith("account")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(account.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(account.get(orderBy)));
 			}
 		} else if (sort.startsWith("software")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(cb.coalesce(software.get(orderBy),
 						license.get("fullDesc"))));
 			} else {
@@ -303,19 +303,19 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						license.get("fullDesc"))));
 			}
 		} else if (sort.startsWith("license")){
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(license.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(license.get(orderBy)));
 			}
 		}else if(sort.startsWith("capacityType")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(capacityType.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(capacityType.get(orderBy)));
 			}
 		} else {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				if (sort == "availableQty") {
 					q.orderBy(cb.asc(expression));
 				} else {

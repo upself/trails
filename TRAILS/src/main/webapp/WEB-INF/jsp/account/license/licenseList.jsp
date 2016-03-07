@@ -29,8 +29,6 @@ $(function() {
 				type: "GET",
 				params: params,
 				success: function(result, pageIndex){
-					
-					
 					var html = '';
 					var list = result.data.list;
 					if(null == list || list == undefined || list.length == 0){
@@ -42,7 +40,7 @@ $(function() {
 							html += "<td>" + list[i].fullDesc + "</td>";
 							html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
 							html += "<td>" + list[i].swproPID + "</td>"
-							if(list[i].capTypeCode==0){
+							if(list[i].capTypeDesc==""){
 								html += "<td></td>";
 							}else{
 								html += "<td>" + list[i].capTypeDesc + "</td>";
@@ -64,8 +62,51 @@ $(function() {
 					$("#license_list").html(html);
 				}
 			},
-			orderColumns: ['licenseId','fullDesc','productName','swproPID','capTypeDesc','availableQty','quantity','expireDate','cpuSerial','extSrcId']
+			orderColumns: ['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId']
 		});
+		
+			/* $("#licTable").paginationTable('destroy').paginationTable({
+				remote: {
+					url: restUrl,
+					type: "GET",
+					params: params,
+					success: function(result, pageIndex){
+						var html = '';
+						var list = result.data.list;
+						if(null == list || list == undefined || list.length == 0){
+							html += "<tr><td colspan='10' align='center'>No data found</td></tr>"
+						}else{
+							for(var i = 0; i < list.length; i++){
+								html += "<tr>"; 
+								html += "<td>" +list[i].catalogMatch+ "</td>";
+								html += "<td>" + list[i].fullDesc + "</td>";
+								html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
+								html += "<td>" + list[i].swproPID + "</td>"
+								if(list[i].capTypeDesc==""){
+									html += "<td></td>";
+								}else{
+									html += "<td>" + list[i].capTypeDesc + "</td>";
+								}
+								
+								html += "<td>" + list[i].availableQty + "</td>";
+								html += "<td>" + list[i].quantity + "</td>";
+								if(list[i].expireDate!=null){
+									var str=list[i].expireDate;
+									html += "<td>" + str.substring(0,10) + "</td>";							
+								}else{
+									html += "<td></td>";		
+								}
+								html += "<td>" + list[i].cpuSerial + "</td>";
+								html += "<td>" + list[i].extSrcId + "</td>";
+								html += "</tr>"; 
+							}
+						}
+						$("#license_list").html(html);
+					}
+				},
+				orderColumns: ['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId']
+			}); 
+		}*/
 	}	
 	
 </script>

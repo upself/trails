@@ -92,7 +92,7 @@ public class LicenseServiceEndpoint {
 		} else {
 			int startIndex = (currentPage - 1) * pageSize;
 				liclist = getLicenseService().freePoolWithParentPaginatedList(accountId, Integer.valueOf(startIndex), Integer.valueOf(pageSize), sort, dir,null);
-//				licDList = licTransformer(liclist);
+				licDList = licDTransformer(liclist);
 				if (licDList != null && !licDList.isEmpty()) {
 					total = Long.valueOf(getLicenseService().getLicFreePoolSizeWithoutFilters(accountId));
 				}	
@@ -101,10 +101,107 @@ public class LicenseServiceEndpoint {
 		page.setPageSize(pageSize.longValue());
 		page.setTotal(total);
 		page.setCurrentPage(currentPage.longValue());
-		page.setList(liclist);
+		page.setList(licDList);
 		return WSMsg.successMessage("SUCCESS", page);
 	}
+	
+	private List<LicenseBaselineDisplay> licDTransformer(List<LicenseDisplay> licList){
+		List<LicenseBaselineDisplay> licViewList = new ArrayList<LicenseBaselineDisplay>();
+		if (licList != null && licList.size() > 0) {
+			for(LicenseDisplay licD:licList){
+				LicenseBaselineDisplay lisd = new LicenseBaselineDisplay();
+				
+				if (licD.getLicenseId() != null) {
+					lisd.setLicenseId(licD.getLicenseId());
+				} else {
+					lisd.setLicenseId(Long.valueOf(0));
+				}
 
+				if (licD.getAvailableQty()!= null) {
+					lisd.setAvailableQty(licD.getAvailableQty());
+				} else {
+					lisd.setAvailableQty(0);
+				}
+				
+				if (licD.getFullDesc() != null) {
+					lisd.setFullDesc(licD.getFullDesc());
+				} else {
+					lisd.setFullDesc("");
+				}
+				
+				if (licD.getProductName() != null) {
+					lisd.setProductName(licD.getProductName());
+				} else {
+					lisd.setProductName("");
+				}
+				
+				if (licD.getCatalogMatch() != null) {
+					if(licD.getCatalogMatch().equalsIgnoreCase("Yes")){
+						lisd.setCatalogMatch("Y");
+					}else{
+						lisd.setCatalogMatch("N");
+					}
+				} else {
+					lisd.setCatalogMatch("N");
+				}
+				
+				if (licD.getExtSrcId() != null) {
+					lisd.setExtSrcId(licD.getExtSrcId());
+				} else {
+					lisd.setExtSrcId("");
+				}
+				
+				if (licD.getCpuSerial() != null) {
+					lisd.setCpuSerial(licD.getCpuSerial());
+				} else {
+					lisd.setCpuSerial("");
+				}
+				
+				if (licD.getCapTypeDesc() != null) {
+					lisd.setCapTypeDesc(licD.getCapTypeDesc());
+				} else {
+					lisd.setCapTypeDesc("");
+				}
+				
+				if (licD.getSwproPID() != null) {
+					lisd.setSwproPID(licD.getSwproPID());
+				} else {
+					lisd.setSwproPID("");
+				}
+
+				if (licD.getCapTypeCode() != null) {
+					lisd.setCapTypeCode(licD.getCapTypeCode());
+				} else {
+					lisd.setCapTypeCode(0);
+				}
+				
+				if (licD.getQuantity() != null) {
+					lisd.setQuantity(licD.getQuantity());
+				} else {
+					lisd.setQuantity(0);
+				}
+				
+				if (licD.getExpireDate() != null) {
+//					String expDate = licmap.get("expireDate").toString();
+//					DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//					format.setLenient(false);
+//					Date date=null;
+//					try {
+//						date = format.parse(expDate);
+//					} catch (ParseException e) {
+//						e.printStackTrace();
+//					}
+					lisd.setExpireDate(licD.getExpireDate());
+				} else {
+					lisd.setExpireDate(null);
+				}
+				
+				licViewList.add(lisd);				
+			}
+		}
+		return licViewList;
+	}
+	
 	private List<LicenseBaselineDisplay> licTransformer(List<Map<String, Object>> licList) {
 
 		List<LicenseBaselineDisplay> licViewList = new ArrayList<LicenseBaselineDisplay>();
