@@ -2,7 +2,7 @@ package com.ibm.asset.trails.domain;
 
 import java.util.Date;
 
-public class LicenseDisplay {
+public class LicenseBaselineDisplay {
 
     private Long licenseId;
 
@@ -34,10 +34,10 @@ public class LicenseDisplay {
     
     private String swproPID;
 
-    public LicenseDisplay() {
+    public LicenseBaselineDisplay() {
     }
 
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    public LicenseBaselineDisplay(Long licenseId, String productName, String product, String fullDesc,
             Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -57,7 +57,7 @@ public class LicenseDisplay {
         this.ownerAccountNumber = ownerAccountNumber;
     }
     
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    public LicenseBaselineDisplay(Long licenseId, String productName, String product, String fullDesc,
     		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -103,13 +103,7 @@ public class LicenseDisplay {
     }
 
     public String getCatalogMatch() {
-    	String result;
-        if (product == null) {
-            result = "No";
-        } else {
-            result = "Yes";
-        }
-        return result;
+        return catalogMatch;
     }
 
     public void setCatalogMatch(String catalogMatch) {

@@ -147,6 +147,34 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 		q.where(cb.in(licenseOuter.get(License_.id)).value(sq));
 		return entityManager.createQuery(q).getResultList().get(0);
 	}
+	
+	public List freePoolWithParentPaginatedList(Long accountId, int startIndex, int objectsPerPage, String sort,
+			String dir, List<LicenseFilter> filters){ 
+		DisplayTagList data = new DisplayTagList();
+		freePoolWithParentPaginatedList( data, accountId, startIndex, objectsPerPage, sort, dir, filters);
+		return data.getList();	
+	}
+	
+	public int getLicFreePoolSizeWithoutFilters(Long accountId){
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> sq = cb.createQuery(Long.class);
+		Root<AccountPool> accountPool = sq.from(AccountPool.class);
+		Join<AccountPool, Account> memberAccount = accountPool
+				.join(AccountPool_.memberAccount);
+		Join<AccountPool, Account> masterAccount = accountPool
+				.join(AccountPool_.masterAccount);
+		sq.select(masterAccount.get(Account_.id));
+		sq.where(cb.equal(memberAccount.get(Account_.id), accountId),
+				cb.equal(masterAccount.get(Account_.status), "ACTIVE"),
+				cb.equal(masterAccount.get(Account_.swlm), "YES"),
+				cb.isFalse(accountPool.get(AccountPool_.deleted)));
+		TypedQuery<Long> tq = entityManager.createQuery(sq);
+		List<Long> accountIds = tq.getResultList();
+		accountIds.add(accountId);
+
+		Long total = findFreePoolWithParentTotal(accountIds, accountId, null);
+		return total.intValue();
+	}
 
 	public void freePoolWithParentPaginatedList(DisplayTagList data,
 			Long accountId, int startIndex, int objectsPerPage, String sort,
@@ -261,13 +289,13 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 			orderBy = "";
 		}
 		if (sort.startsWith("account")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(account.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(account.get(orderBy)));
 			}
 		} else if (sort.startsWith("software")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(cb.coalesce(software.get(orderBy),
 						license.get("fullDesc"))));
 			} else {
@@ -275,19 +303,19 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						license.get("fullDesc"))));
 			}
 		} else if (sort.startsWith("license")){
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(license.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(license.get(orderBy)));
 			}
 		}else if(sort.startsWith("capacityType")) {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				q.orderBy(cb.asc(capacityType.get(orderBy)));
 			} else {
 				q.orderBy(cb.desc(capacityType.get(orderBy)));
 			}
 		} else {
-			if (dir.equals("asc")) {
+			if (dir.equalsIgnoreCase("asc")) {
 				if (sort == "availableQty") {
 					q.orderBy(cb.asc(expression));
 				} else {
@@ -452,6 +480,34 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
 				.setFirstResult(startIndex).setMaxResults(objectsPerPage)
 				.list());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<License> paginatedList(Long accountId,
+			int startIndex, int objectsPerPage, String psSort, String psDir) {
+		psSort = decodeSort(psSort) + " " + psDir;
+		List<License> licList = new ArrayList<License>();
+		Session session = (Session) entityManager.getDelegate();
+
+		licList=session.createQuery(session.getNamedQuery("licenseBaseline").getQueryString() + " order by " + psSort)
+				.setParameter("account", accountId)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+				.setFirstResult(startIndex).setMaxResults(objectsPerPage).list();
+		return licList;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public int getLicBaselineSize(Long accountId) {
+		List<License> licList = new ArrayList<License>();
+		Session session = (Session) entityManager.getDelegate();
+
+		licList=session.createQuery(session.getNamedQuery("licenseBaseline").getQueryString())
+				.setParameter("account", accountId)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+		if(licList!=null){
+			return licList.size();
+		}
+		return 0;
 	}
 
 	private String decodeSort(String psSort) {

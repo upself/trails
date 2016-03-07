@@ -43,6 +43,18 @@ public class LicenseServiceImpl extends
 		dao.freePoolWithParentPaginatedList(data, account.getId(), startIndex,
 				objectsPerPage, sort, dir, filter);
 	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<License> freePoolWithParentPaginatedList( Long accountId, int startIndex, int objectsPerPage, String sort,
+			String dir, List<LicenseFilter> filter) {
+		return dao.freePoolWithParentPaginatedList(accountId, startIndex,
+				objectsPerPage, sort, dir, filter);
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public int getLicFreePoolSizeWithoutFilters(Long accountId){
+		return dao.getLicFreePoolSizeWithoutFilters(accountId);
+	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public List<CapacityType> getCapacityTypeList() {
@@ -65,7 +77,17 @@ public class LicenseServiceImpl extends
 		dao.paginatedList(data, pAccount.getId(), piStartIndex,
 				piObjectsPerPage, psSort, psDir);
 	}
-
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<License> paginatedList(Long accountId,
+			int piStartIndex, int piObjectsPerPage, String psSort, String psDir) {
+		return dao.paginatedList (accountId, piStartIndex,
+				piObjectsPerPage, psSort, psDir);
+	}
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public int getLicBaselineSize(Long accountId){
+		return dao.getLicBaselineSize(accountId);
+	}
 	public List<String> getProductNameByAccount(Account pAccount, String key) {
 		return dao.getProductNameByAccount(pAccount.getId(), key);
 	}
