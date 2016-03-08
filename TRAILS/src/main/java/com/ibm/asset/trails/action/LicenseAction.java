@@ -46,10 +46,6 @@ public class LicenseAction extends AccountReportBaseAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doFreePool() {
-//        getLicenseService().freePoolWithParentPaginatedList(getData(),
-//                getAccount(), getStartIndex(), getData().getObjectsPerPage(),
-//                getSort(), getDir(),null);
-
         setRequestURI("licenseFreePool.htm");
         return "freepool";
     }
