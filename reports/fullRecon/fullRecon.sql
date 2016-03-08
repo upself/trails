@@ -68,7 +68,7 @@ else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base 
 ,s.software_name as primaryComponent 
 ,s.pid as pid 
 , case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end as MFSwlastUsed 
-, COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id 
+, COALESCE( COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id 
 where sf.customer_id = lparCust.customer_id 
 and sf.status_id=2 
 and sf.software_name = s.software_name 
@@ -76,7 +76,13 @@ and ( ( sf.level = 'PRODUCT' )
 or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) 
 or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) 
 or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) 
-order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner 
+order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 
+CAST ((select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id  
+where sf.customer_id = lparCust.customer_id  
+and sf.status_id=2  
+and sf.manufacturer_name = instSwMan.name  
+and sf.level ='MANUFACTURER')as varchar(64)) 
+), 'Not specified' ) as swOwner  
 ,aus.remote_user as alertAssignee 
 ,aus.comments as alertAssComments 
 ,instSwMan.name as instSwManName 
