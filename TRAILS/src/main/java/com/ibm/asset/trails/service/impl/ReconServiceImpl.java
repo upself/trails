@@ -342,24 +342,23 @@ public class ReconServiceImpl implements ReconService {
 
 	private ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
-
+	
+		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
 						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
 				.setParameter("account", account)
 				.setParameter("swname", swname).getResultList();
-
-		if (results == null || results.isEmpty()) {
-			return null;
-		}
+		
+		boolean isExist = false;
 
 		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> manufacturerLevel = new ArrayList<ScheduleF>();
 		
+
 		for (ScheduleF sf : results) {
 			String level = sf.getLevel();
 			if ("HOSTNAME".equals(level)) {
@@ -370,8 +369,6 @@ public class ReconServiceImpl implements ReconService {
 				hwOwnerLevel.add(sf);
 			} else if("PRODUCT".equals(level)) {
 				proudctLevel.add(sf);
-			} else if ("MANUFACTURER".equals(level)){
-				manufacturerLevel.add(sf);
 			} else {
 				
 			}
@@ -379,34 +376,52 @@ public class ReconServiceImpl implements ReconService {
 
 		for (ScheduleF sf : hostNameLevel) {
 			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwboxLevel) {
-			if (null != sf.getSerial() && sf.getSerial().equals(serial)
-					&& null != sf.getMachineType() && sf.getMachineType().equals(machineType)) {
+			if (null != sf.getSerial() 
+					&& sf.getSerial().equals(serial)
+					&& null != sf.getMachineType() 
+					&& sf.getMachineType().equals(machineType)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwOwnerLevel) {
 			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : proudctLevel) {
 			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
+				isExist = true;
 				return sf;
+			}
+		}
+		
+		// Manufacture level
+		if(!isExist){
+			@SuppressWarnings("unchecked")
+			List<ScheduleF> manufactureResults = getEntityManager()
+					.createQuery(
+							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
+					.setParameter("account", account)
+					.setParameter("manufacturerName", manufacturerName)
+					.getResultList();
+			
+			if(null == manufactureResults || manufactureResults.size() == 0){
+				return null;
+			}else{
+				return manufactureResults.get(0);
 			}
 		}
 
-		for (ScheduleF sf : manufacturerLevel) {
-			if (null != sf.getManufacturerName() && sf.getManufacturerName().equals(manufacturerName)) {
-				return sf;
-			}
-		}
 		return null;
 	}
 
