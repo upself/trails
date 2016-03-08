@@ -155,7 +155,7 @@ sub getBravoSoftwareReport {
 	my %data;
 
 	my $query = "
-select
+                select
 					   c.account_number
                       ,v_isw.nodename
                       ,v_isw.model
@@ -176,15 +176,23 @@ select
                       ,v_isw.os_sub_vers
                       ,v_isw.os_inst_date
                       ,dt.name
-                      , COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
+                      ,COALESCE( 
+	                     COALESCE ( 
+	                        CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
 							where sf.customer_id = $customerId
 							and sf.status_id=2
 							and sf.software_name = sw.software_name
 							and ( ( sf.level = 'PRODUCT' )
-							or (( sf.hostname = v_isw.nodename ) and ( level = 'HOSTNAME' ))
+							or (( sf.hostname = v_isw.nodename ) and ( sf.level = 'HOSTNAME' ))
 							or (( sf.serial = hw.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' ))
 							or (( sf.hw_owner = hw.owner ) and ( sf.level ='HWOWNER' )) )
-							order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner
+							order by sf.level fetch first 1 rows only) as varchar(64))
+	                       ,CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id
+							where sf.customer_id = $customerId
+							and sf.status_id=2
+							and sf.manufacturer_name = man.name 
+	                        and sf.level ='MANUFACTURER') as varchar(64))) 
+                       , 'Not specified') as swOwner
                       ,hw.server_type
                       ,hw.cpu_mips
                       ,hw.cpu_gartner_mips
@@ -202,16 +210,12 @@ select
 		join eaadmin.software_category sw_sc on ( sw_sc.software_category_id = sw.software_category_id and sw_sc.status = 'ACTIVE' )
 		join eaadmin.discrepancy_type dt on ( dt.id = v_isw.discrepancy_type_id )
 		join eaadmin.bank_account ba on ( ba.id =  v_isw.bank_account_id )
-						
 		left outer join eaadmin.hw_sw_composite hwsw on ( hwsw.software_lpar_id = v_isw.software_lpar_id )
 		left outer join eaadmin.hardware_lpar hl on ( hl.id = hwsw.hardware_lpar_id )
 		left outer join eaadmin.hardware hw on ( hw.id = hl.hardware_id )
-						
 		left outer join eaadmin.machine_type mt on ( mt.id = hw.machine_type_id )
-	
 	where c.customer_id = $customerId
- 
-	order by sw.priority ASC";
+    order by sw.priority ASC";
 
     $dbh->prepareSqlQuery( 'bravoreport', $query);
     $dbh->prepareSqlQuery('simplereport',"SELECT account_number from eaadmin.customer where customer_id=$customerId and status='ACTIVE' with ur");
