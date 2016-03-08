@@ -462,9 +462,9 @@
 		<put-attribute name="keywords" value="TRAILS account home" />
 	</definition>
 
-	<definition name="tiles.account.alerts.overview" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/alerts/overview.jsp" />
+	<definition name="tiles.account.alerts.overview" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Alert overview" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/alerts/overview.jsp" />
 		<put-attribute name="description" value="TRAILS alert overview" />
 		<put-attribute name="keywords" value="TRAILS alert overview" />
 	</definition>
