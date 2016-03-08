@@ -11,6 +11,7 @@ use Net::Telnet;
 use Net::SCP::Expect;
 use Config::Properties::Simple;
 use Sys::Hostname;
+use Sigbank::Delegate::SystemScheduleStatusDelegate;
 my $HOSTNAME= hostname;
 
 #Globals
@@ -2271,6 +2272,7 @@ sub coreOperationProcess{
        my $bankAccountID = getBankAccountID($bankAccountName,$connectionType,$bravoConnection);
        if($bankAccountID ne ""){ # there is exactly one bank account in the database
 	   		print LOG "Bank account ID found\n";
+	   		waitForScanRecordToLpar();
        		deleteBankAccountFromStaging($bankAccountID);
        		deleteBankAccountFromTrails($bankAccountName);
        		if($connectionType eq "DISCONNECTED"){
@@ -2825,4 +2827,13 @@ sub exec_sql_rc {
    
     return $rc;
 }
+
+sub waitForScanRecordToLpar {
+	while (SystemScheduleStatusDelegate->status("SCAN RECORD TO LPAR") == "PENDING") {
+		print LOG "Waiting for scanRecordToLpar. Sleep for 5 minutes.";
+		sleep 300;
+	}
+}
+
+
 
