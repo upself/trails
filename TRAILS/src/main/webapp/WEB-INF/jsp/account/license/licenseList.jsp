@@ -67,49 +67,6 @@ $(function() {
 			},
 			orderColumns: orders
 		});
-		
-			/* $("#licTable").paginationTable('destroy').paginationTable({
-				remote: {
-					url: restUrl,
-					type: "GET",
-					params: params,
-					success: function(result, pageIndex){
-						var html = '';
-						var list = result.data.list;
-						if(null == list || list == undefined || list.length == 0){
-							html += "<tr><td colspan='10' align='center'>No data found</td></tr>"
-						}else{
-							for(var i = 0; i < list.length; i++){
-								html += "<tr>"; 
-								html += "<td>" +list[i].catalogMatch+ "</td>";
-								html += "<td>" + list[i].fullDesc + "</td>";
-								html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
-								html += "<td>" + list[i].swproPID + "</td>"
-								if(list[i].capTypeDesc==""){
-									html += "<td></td>";
-								}else{
-									html += "<td>" + list[i].capTypeDesc + "</td>";
-								}
-								
-								html += "<td>" + list[i].availableQty + "</td>";
-								html += "<td>" + list[i].quantity + "</td>";
-								if(list[i].expireDate!=null){
-									var str=list[i].expireDate;
-									html += "<td>" + str.substring(0,10) + "</td>";							
-								}else{
-									html += "<td></td>";		
-								}
-								html += "<td>" + list[i].cpuSerial + "</td>";
-								html += "<td>" + list[i].extSrcId + "</td>";
-								html += "</tr>"; 
-							}
-						}
-						$("#license_list").html(html);
-					}
-				},
-				orderColumns: ['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId']
-			}); 
-		}*/
 	}	
 	
 </script>
@@ -117,35 +74,35 @@ $(function() {
 	<s:actionerror />
 	<s:fielderror />
 </s:if>
-<div>
-<p style="font-weight:bold">IBM Confidential</p>
-</div>
-
-<div style="width:130%">
-<div style="float: right;margin:10px">
-	<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
-	<s:a href="/TRAILS/report/download/licenseBaseline%{#attr.account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</s:a>
-</div>
-</div>
-<br />
-<br />
-
-<div class="ibm-col-1-1" style="margin-left: 0px;">
-		<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
-			<thead>
-				<tr>
-					<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Avail qty</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Total qty</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Exp date</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SWCM ID</span><span class="ibm-icon"></span></a></th>
-				</tr>
-			</thead>
-			<tbody id="license_list" />
-		</table>
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+	<p style="font-weight:bold">IBM Confidential</p>
+	</div>
+	
+	<div class="ibm-col-1-1">
+		<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
+		<s:a href="/TRAILS/report/download/licenseBaseline%{#attr.account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</s:a>
+	</div>
+	<br />
+	<br />
+	
+	<div class="ibm-col-1-1" style="margin-left: 0px;">
+			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
+				<thead>
+					<tr>
+						<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Avail qty</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Total qty</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Exp date</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SWCM ID</span><span class="ibm-icon"></span></a></th>
+					</tr>
+				</thead>
+				<tbody id="license_list" />
+			</table>
+	</div>
 </div>
