@@ -362,7 +362,7 @@ my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEn
   $configNonDebugLogPath = trim($cfgMgr->nonDebugLogPath);
   print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
   
-  $checkScanRecordToLparPeriod = $cfgMgr->checkScanRecordToLparPeriod
+  $checkScanRecordToLparPeriod = $cfgMgr->checkScanRecordToLparPeriod;
   
   #set db2 env path
   $DB_ENV= $cfgMgr->db2Profile;
@@ -2834,9 +2834,9 @@ sub exec_sql_rc {
 }
 
 sub waitForScanRecordToLpar {
-	my ($waitInSeconds) = @_
+	my ($waitInSeconds) = @_;
 	while (SystemScheduleStatusDelegate->status("SCAN RECORD TO LPAR") eq "PENDING") {
-		print LOG "Waiting for scanRecordToLpar. Sleep for $waitInSeconds seconds.";
+		print LOG "Waiting for scanRecordToLpar. Sleep for $waitInSeconds seconds.\n";
 		sleep $waitInSeconds;
 	}
 }
