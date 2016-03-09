@@ -287,8 +287,10 @@ public class ScheduleF {
 				return false;
 			}
 			
-			if (!this.getManufacturerName().equals(other.getManufacturerName())) {
-				return false;
+			if(null != this.getManufacturerName() && null != other.getManufacturerName()){
+				if (!this.getManufacturerName().equals(other.getManufacturerName())) {
+					return false;
+				}
 			}
 
 			if (!this.getScope().getId().equals(other.getScope().getId())) {
