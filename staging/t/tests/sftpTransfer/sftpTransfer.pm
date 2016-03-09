@@ -1,5 +1,8 @@
 package sftpTransfer::sftpTransfer;
 
+use Test::More;
+use base 'Test::Class';
+
 require '../../sftpTransfer.pl';
 
 sub sftp_test : Tests(5) {
