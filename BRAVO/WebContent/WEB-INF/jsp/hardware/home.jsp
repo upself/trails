@@ -367,7 +367,7 @@
 				<h2 class="ibm-access">Content navigation</h2>
 				<ul id="ibm-primary-links">
 
-					<li id="ibm-parent-link"><a href="https://w3-connections.ibm.com/communities/service/html/communitystart?communityUuid=85cfd34a-2938-4667-8823-bf4743894fbc">Asset
+					<li id="ibm-parent-link"><a href="https://ibm.biz/gamwiki">Asset
 							Tools Home</a></li>
 					<li id="ibm-overview"><a href="/BRAVO/home.do">BRAVO</a> <a
 						href="/BRAVO/mswiz.do">MS Wizard</a> <a href="/BRAVO/help/help.do">Help</a>
