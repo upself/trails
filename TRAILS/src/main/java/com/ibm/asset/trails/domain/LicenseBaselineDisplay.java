@@ -2,7 +2,7 @@ package com.ibm.asset.trails.domain;
 
 import java.util.Date;
 
-public class LicenseDisplay {
+public class LicenseBaselineDisplay {
 
     private Long licenseId;
 
@@ -12,18 +12,14 @@ public class LicenseDisplay {
     
     private String product;
     
-    private String fullDesc; //License Name
-    
-    private String capacityType;
+    private String fullDesc;
 
     private Integer capTypeCode;
 
     private String capTypeDesc;
 
     private Integer availableQty;
-    
-    private String totalQtyString;
-    
+
     private Integer quantity;
 
     private Date expireDate;
@@ -37,23 +33,11 @@ public class LicenseDisplay {
     private Long ownerAccountNumber;
     
     private String swproPID;
-    
-    private String poNumber;
-    
-    private String poolAsString;
-    
-    private String recordTimeAsString;
-    
-    private String expireDateString;
 
-	private String availableQtyString;
-
-	private String licenseOwner;
-
-	public LicenseDisplay() {
+    public LicenseBaselineDisplay() {
     }
 
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    public LicenseBaselineDisplay(Long licenseId, String productName, String product, String fullDesc,
             Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -73,7 +57,7 @@ public class LicenseDisplay {
         this.ownerAccountNumber = ownerAccountNumber;
     }
     
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    public LicenseBaselineDisplay(Long licenseId, String productName, String product, String fullDesc,
     		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -92,28 +76,6 @@ public class LicenseDisplay {
         this.extSrcId = extSrcId;
         this.environment = environment;
         this.ownerAccountNumber = ownerAccountNumber;
-    }
-    
-    public LicenseDisplay(String productName, String catalogMatch, String fullDesc, String swproPID, String capacityType, 
-    		String totalQtyString, String availableQtyString, String expireDateString, String poNumber, String cpuSerial,
-    		String licenseOwner, String poolAsString, String extSrcId, String recordTimeAsString) {
-        super();
-        this.productName = productName;
-        System.out.println("=== received catalogMatch: " + catalogMatch);
-        System.out.println("=== getCatalogMatch() result : " + getCatalogMatch());
-        this.catalogMatch = catalogMatch;
-        this.fullDesc =  fullDesc;
-        this.swproPID = swproPID;
-        this.capacityType = capacityType;
-        this.totalQtyString = totalQtyString;
-        this.availableQtyString = availableQtyString;
-        this.expireDateString = expireDateString;
-        this.poNumber = poNumber;
-        this.cpuSerial = cpuSerial;
-        this.licenseOwner = licenseOwner;
-        this.poolAsString = poolAsString;
-        this.extSrcId = extSrcId; //SWCM ID
-        this.recordTimeAsString = recordTimeAsString;
     }
 
 	public Integer getAvailableQty() {
@@ -141,13 +103,7 @@ public class LicenseDisplay {
     }
 
     public String getCatalogMatch() {
-    	String result;
-        if (product == null) {
-            result = "No";
-        } else {
-            result = "Yes";
-        }
-        return result;
+        return catalogMatch;
     }
 
     public void setCatalogMatch(String catalogMatch) {
@@ -240,78 +196,6 @@ public class LicenseDisplay {
 
 	public void setSwproPID(String swproPID) {
 		this.swproPID = swproPID;
-	}
-
-	public String getTotalQty() {
-		return totalQtyString;
-	}
-
-	public void setTotalQty(String totalQty) {
-		this.totalQtyString = totalQty;
-	}
-
-	public String getPoNumber() {
-		return poNumber;
-	}
-
-	public void setPoNumber(String poNumber) {
-		this.poNumber = poNumber;
-	}
-
-	public String getPoolAsString() {
-		return poolAsString;
-	}
-
-	public void setPoolAsString(String poolAsString) {
-		this.poolAsString = poolAsString;
-	}
-
-	public String getRecordTimeAsString() {
-		return recordTimeAsString;
-	}
-
-	public void setRecordTimeAsString(String recordTimeAsString) {
-		this.recordTimeAsString = recordTimeAsString;
-	}
-
-	public String getCapacityType() {
-		return capacityType;
-	}
-
-	public void setCapacityType(String capacityType) {
-		this.capacityType = capacityType;
-	}
-
-	public String getExpireDateString() {
-		return expireDateString;
-	}
-
-	public void setExpireDateString(String expireDateString) {
-		this.expireDateString = expireDateString;
-	}
-	
-    public String getTotalQtyString() {
-		return totalQtyString;
-	}
-
-	public void setTotalQtyString(String totalQtyString) {
-		this.totalQtyString = totalQtyString;
-	}
-
-	public String getAvailableQtyString() {
-		return availableQtyString;
-	}
-
-	public void setAvailableQtyString(String availableQtyString) {
-		this.availableQtyString = availableQtyString;
-	}
-
-	public String getLicenseOwner() {
-		return licenseOwner;
-	}
-
-	public void setLicenseOwner(String licenseOwner) {
-		this.licenseOwner = licenseOwner;
 	}
 	
 	

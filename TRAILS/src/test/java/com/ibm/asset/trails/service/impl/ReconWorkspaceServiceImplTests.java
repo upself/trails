@@ -146,7 +146,6 @@ public class ReconWorkspaceServiceImplTests {
 		License license = licenseService.findById(Long.valueOf(294658));
 		// force to get the cap type, since it's lazy loading. avoid hibernate
 		// session exception thrown.
-		System.out.println(license.getCapacityType().getDescription());
 
 		List<License> licenseList = new ArrayList<License>();
 		licenseList.add(license);
@@ -249,7 +248,6 @@ public class ReconWorkspaceServiceImplTests {
 		License license = licenseService.findById(Long.valueOf(337239));
 		// force to get the cap type, since it's lazy loading. avoid hibernate
 		// session exception thrown.
-		System.out.println(license.getCapacityType().getDescription());
 
 		List<License> licenseList = new ArrayList<License>();
 		licenseList.add(license);

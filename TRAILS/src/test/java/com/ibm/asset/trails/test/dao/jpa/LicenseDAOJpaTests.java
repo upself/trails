@@ -40,7 +40,6 @@ public class LicenseDAOJpaTests {
 
         List list = data.getList();
         for (Object o : list) {
-            System.out.println(o.getClass());
         }
 
         assertEquals(data.getFullListSize(), 3072);
