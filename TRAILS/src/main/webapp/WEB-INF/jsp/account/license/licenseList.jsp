@@ -86,7 +86,7 @@ $(function() {
 	<br />
 	<br />
 	
-	<div class="ibm-col-1-1" style="margin-left: 0px;">
+	<div class="ibm-col-1-1">
 			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
 				<thead>
 					<tr>
