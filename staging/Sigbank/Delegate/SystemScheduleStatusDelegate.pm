@@ -167,7 +167,7 @@ sub queryFullLoadDiff {
 sub status {
     my ( $self, $name ) = @_;
 
-    dlog("In start method of SystemScheduleStatusDelegate");
+    dlog("In status method of SystemScheduleStatusDelegate");
 
     dlog("Connecting to trails");
     my $connection = Database::Connection->new('trails');
