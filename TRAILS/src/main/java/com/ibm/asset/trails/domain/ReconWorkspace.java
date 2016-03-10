@@ -74,6 +74,8 @@ public class ReconWorkspace implements Serializable {
 	private Long scopeId;
 
 	private String assetName;
+	
+	private String manufacturerName;
 
 	public String getAssetName() {
 		return assetName;
@@ -529,5 +531,13 @@ public class ReconWorkspace implements Serializable {
 
 	public void setEffectiveThreads(BigDecimal effectiveThreads) {
 		this.effectiveThreads = effectiveThreads;
+	}
+
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 }
