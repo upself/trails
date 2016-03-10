@@ -1709,15 +1709,6 @@ sub getCustomerId {
 		$acceptFlag = 1;
 	}
 
-	if ( $sr->isManual == 1 ) {
-		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
-			return $self->customerAcctMap->{ $sr->objectId };
-		}
-
-		dlog('NO MATCHING ACCOUNT');
-		return 999999;
-	}
-
 	my $shortName = ( split( /\./, $sr->name ) )[0];
 	$shortName = $sr->name if ( !defined $shortName );
 
@@ -2007,6 +1998,15 @@ sub getCustomerId {
 				return $self->objectIdMap->{ ( split( /\./, uc( $sr->objectId ) ) )[0] };
 			}
 		}
+	}
+	
+	if ( $sr->isManual == 1 ) {
+		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
+			return $self->customerAcctMap->{ $sr->objectId };
+		}
+
+		dlog('NO MATCHING ACCOUNT');
+		return 999999;
 	}
 
 	dlog("End getCustomerId method");
