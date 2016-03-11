@@ -1632,9 +1632,9 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception hardware lpar no cpu model" />
 	</definition>
-	<definition name="tiles.account.causecodes.upload" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
+	<definition name="tiles.account.causecodes.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Upload Cause Codes" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
 		<put-attribute name="description" value="TRAILS account cause codes upload" />
 		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>
