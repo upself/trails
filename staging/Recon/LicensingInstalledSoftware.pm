@@ -2687,7 +2687,6 @@ sub getExistingMachineLevelReconLegacy {
   $sth->execute(
    $self->installedSoftwareReconData->hId,
    $self->installedSoftware->softwareId,
-   $self->installedSoftware->softwareId,
    $self->customer->id, $self->customer->id
   );
  }
@@ -2697,7 +2696,6 @@ sub getExistingMachineLevelReconLegacy {
      @{ $self->connection->sql->{existingMachineLevelReconAllLegacyFields} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
-   $self->installedSoftware->softwareId,
    $self->installedSoftware->softwareId
   );
  }
