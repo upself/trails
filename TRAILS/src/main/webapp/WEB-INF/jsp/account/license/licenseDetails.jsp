@@ -57,16 +57,13 @@
 		});
 	}
 </script>
-
-<div>
+<div class="ibm-container" style="margin-left: 0px;">
+<div class="ibm-container-body">
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
 <p style="font-weight:bold">IBM Confidential</p>
 </div>
-<br>
-<div class="ibm-container">
-	<div class="ibm-container-body">
-		<div class="ibm-columns">
-			<div class="ibm-col-1-1"  style="margin-left: 0px;">
-			<br>
+			<div class="ibm-col-1-1">
 				<span id="spinner" class="ibm-spinner-large"></span>
 				<form id="myForm" class="ibm-column-form">
 					<p style="padding: 3px;">
@@ -128,5 +125,5 @@
 				</form>
 			</div>
 		</div>
-	</div>
+  </div>
 </div>
