@@ -662,7 +662,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",instS.PID as pid "
 				+ ",case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end "; 
 
-		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
+		String lsBaseSelectClauseTwo = ",COALESCE( COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
 				+ "where sf.customer_id = :customerId "
 				+ "and sf.status_id=2 "
 				+ "and sf.software_name = instS.software_name "
@@ -670,7 +670,13 @@ public class ReportServiceImpl implements ReportService {
 				+ "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
 				+ "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
 				+ "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
-				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
+				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ),"
+				+ "CAST ((select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
+				+ "where sf.customer_id = :customerId and sf.status_id=2 "
+				+ "and sf.manufacturer_name = instSwMan.name and sf.level ='MANUFACTURER')as varchar(64)) "
+				+ "), 'Not specified' ) as swOwner ";
+				
+			
 		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner ";
 		String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
 				+ ",aus.comments as alertAssComments "
