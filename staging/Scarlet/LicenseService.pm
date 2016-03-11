@@ -72,10 +72,10 @@ sub getFreePoolData {
    $installedSoftwareReconData->scopeName, $wherestmt
   )
  );
- my $sth = $self->connection->sql->{freePoolData};
+ my $sth = $self->connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt};
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{freePoolDataFields} } );
+    @{ $self->connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt."Fields"} } );
 
  $sth->execute();
 
@@ -280,7 +280,7 @@ from
 
  dlog("Reading licenses query: $query");    # debug
 
- return ( 'freePoolData', $query, \@fields );
+ return ( 'freePoolData'.$scopeName.$inStmt, $query, \@fields );
 }
 
 1;
