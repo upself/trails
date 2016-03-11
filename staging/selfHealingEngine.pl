@@ -11,6 +11,7 @@ use Net::Telnet;
 use Net::SCP::Expect;
 use Config::Properties::Simple;
 use Sys::Hostname;
+use Sigbank::Delegate::SystemScheduleStatusDelegate;
 my $HOSTNAME= hostname;
 
 #Globals
@@ -329,6 +330,9 @@ my $QUERY_CLEAN_HISTORY = "DELETE FROM EAADMIN.BANK_ACCOUNT_JOB WHERE ID IN(SELE
 my $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS = "CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS";
 #Added by Tomas for System Support And Self Healing Service Components - Phase 9 - End
 
+
+my $checkScanRecordToLparPeriod;
+
 main();
 
 #This is the main method of Self Healing Engine
@@ -357,6 +361,8 @@ my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEn
   #Get the config Non Debug Log Path
   $configNonDebugLogPath = trim($cfgMgr->nonDebugLogPath);
   print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
+  
+  $checkScanRecordToLparPeriod = $cfgMgr->checkScanRecordToLparPeriod;
   
   #set db2 env path
   $DB_ENV= $cfgMgr->db2Profile;
@@ -2271,6 +2277,7 @@ sub coreOperationProcess{
        my $bankAccountID = getBankAccountID($bankAccountName,$connectionType,$bravoConnection);
        if($bankAccountID ne ""){ # there is exactly one bank account in the database
 	   		print LOG "Bank account ID found\n";
+	   		waitForScanRecordToLpar($checkScanRecordToLparPeriod);
        		deleteBankAccountFromStaging($bankAccountID);
        		deleteBankAccountFromTrails($bankAccountName);
        		if($connectionType eq "DISCONNECTED"){
@@ -2825,4 +2832,14 @@ sub exec_sql_rc {
    
     return $rc;
 }
+
+sub waitForScanRecordToLpar {
+	my ($waitInSeconds) = @_;
+	while (SystemScheduleStatusDelegate->status("SCAN RECORD TO LPAR") eq "PENDING") {
+		print LOG "Waiting for scanRecordToLpar. Sleep for $waitInSeconds seconds.\n";
+		sleep $waitInSeconds;
+	}
+}
+
+
 
