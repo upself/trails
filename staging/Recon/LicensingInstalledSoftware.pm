@@ -24,6 +24,7 @@ use Recon::SoftwareLpar;
 use Recon::CauseCode;
 use Recon::ScarletInstalledSoftware;
 use Scarlet::LicenseService;
+use Scarlet::ReconciliationAbort;
 
 sub new {
  my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -737,13 +738,32 @@ sub attemptLicenseAllocation {
    $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }else{
    my $scarletLicSev = new Scarlet::LicenseService();
-   $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
+   $freePoolData = $scarletLicSev->getFreePoolData( $self->connection, $self->installedSoftwareReconData,$self->customer, 
                  $self->installedSoftware->id);
  }
  
  if ( scalar keys (%{$freePoolData} ) == 0 ) {
 	 dlog("No licenses found, shortcutting attempts to allocate.");
 	 return ( undef, undef, undef, undef, undef, undef );
+ }
+ 
+ if ( $through eq 'scarlet' ) { # check for GUIDs returned by Scarlet to be linked to unknown licenses - we abort, if they are
+	 my $scarletAbort = new Scarlet::ReconciliationAbort();
+	 my $abortnow = $scarletAbort->scarletAbort( 	$self->connection,
+													0,
+													$self->installedSoftwareReconData->hId,
+													$self->installedSoftwareReconData->slId,
+													$self->customer->accountNumber,
+													$self->installedSoftware->id,
+													$freePoolData  ) if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} );
+	 my $abortnow = $scarletAbort->scarletAbort( 	$self->connection,
+													1,
+													$self->installedSoftwareReconData->hId,
+													$self->installedSoftwareReconData->slId,
+													$self->customer->accountNumber,
+													$self->installedSoftware->id,
+													$freePoolData  ) if ( $scheduleFlevel >= $scheduleFlevelMap{'HOSTNAME'} );
+	 return ( undef, undef, undef, undef, undef, undef ) if ( $abortnow );
  }
 
  if ( $through eq 'scarlet' ) {    # skip for hostname-specific scheduleF
