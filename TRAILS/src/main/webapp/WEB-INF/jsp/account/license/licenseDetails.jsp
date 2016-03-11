@@ -57,11 +57,14 @@
 		});
 	}
 </script>
-
-<div class="ibm-container">
-	<div class="ibm-container-body">
-		<div class="ibm-columns">
-			<div class="ibm-col-1-1">
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
+<p style="font-weight:bold">IBM Confidential</p>
+</div>
+		<div class="ibm-col-1-1">
+		      <div class="ibm-rule">
+			    <hr />
+		      </div>
 				<span id="spinner" class="ibm-spinner-large"></span>
 				<form id="myForm" class="ibm-column-form">
 					<p style="padding: 3px;">
@@ -121,7 +124,6 @@
 							date/time:</label> <span id="recordTimeAsString"> </span>
 					</p>
 				</form>
-			</div>
 		</div>
-	</div>
 </div>
+
