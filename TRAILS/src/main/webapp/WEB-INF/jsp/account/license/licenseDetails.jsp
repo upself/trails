@@ -57,7 +57,7 @@
 		});
 	}
 </script>
-<div class="ibm-container" style="margin-left: 0px;">
+<div class="ibm-container">
 <div class="ibm-container-body">
 <div class="ibm-columns">
 <div class="ibm-col-1-1">
