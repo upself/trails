@@ -44,7 +44,8 @@ $users{'martin.kacor@cz.ibm.com'}++;
 $users{'petr_soufek@cz.ibm.com'}++;
 $users{'zengqh@cn.ibm.com'}++;
 $users{'shaodsz@cn.ibm.com'}++;
-$users{'tomas.sima@cz.ibm.com'}++;
+$users{'ondrej_zivnustka@cz.ibm.com'}++;
+$users{'Z28805@cz.ibm.com'}++;
 
 my $cgi = new CGI;
 my $self = "shost";

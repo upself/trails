@@ -139,7 +139,7 @@ $authorizedUserList{'petr_soufek@cz.ibm.com'}++;
 $authorizedUserList{'zhysz@cn.ibm.com'}++;
 $authorizedUserList{'bobrutig@us.ibm.com'}++;
 $authorizedUserList{'HDRUST@de.ibm.com'}++;
-$authorizedUserList{'tomas.sima@cz.ibm.com'}++;
+$authorizedUserList{'ondrej_zivnustka@cz.ibm.com'}++;
 #AM Suppot Team
 $authorizedUserList{'gonght@cn.ibm.com'}++;
 $authorizedUserList{'evazeng@cn.ibm.com'}++;
@@ -151,6 +151,7 @@ $authorizedUserList{'y99xwu@cz.ibm.com'}++;
 $authorizedUserList{'marek.adamka@cz.ibm.com'}++;
 $authorizedUserList{'liukaid@cn.ibm.com'}++;
 $authorizedUserList{'inesa_strugare@cz.ibm.com'}++;
+$authorizedUserList{'Z28805@cz.ibm.com'}++;
 #Others
 $authorizedUserList{'jiri.sterba@cz.ibm.com'}++;
 $authorizedUserList{'petra.povolna@cz.ibm.com'}++;
