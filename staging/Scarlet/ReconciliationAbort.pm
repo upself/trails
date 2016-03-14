@@ -54,13 +54,14 @@ sub scarletAbort {
  $sth->execute($hwId, $slId);
 
  while ( $sth->fetchrow_arrayref ) {
+    next unless ( grep ( $_ eq $rec{GUID}, @{$GUIDs} ) ); # this isn't one of the GUIDs returned by JSON, so not our concern
+
     dlog("GUID = ".$rec{GUID}.", licenseID = ".$rec{lID});
   
-    next unless ( grep ( $_ eq $rec{GUID}, @{$GUIDs} ) ); # this isn't one of the GUIDs returned by JSON, so not our concern
-  
-    $TORETURN=1 unless ( exists ${$freePoolData}{ $rec{lID} } ); # this IS one of the GUIDs from JSON, but the license used to it is not in our freePoolData!
-    
-    dlog("GUID ".$rec{GUID}." closed by licenseID ".$rec{lID}.", aborting Scarlet!");
+    if ( not exists ${$freePoolData}{ $rec{lID} } ) { # this IS one of the GUIDs from JSON, but the license used to it is not in our freePoolData!
+		dlog("GUID ".$rec{GUID}." closed by licenseID ".$rec{lID}.", aborting Scarlet!");
+		$TORETURN=1;
+	}
  }
  $sth->finish;
  
@@ -73,7 +74,7 @@ sub queryUsedGUIDs {
  my $hostnameonly = shift;
 
  my @fields = qw(
-   lId
+   lID
    GUID
  );
  my $query = "
