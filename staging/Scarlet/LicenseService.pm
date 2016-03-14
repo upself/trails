@@ -74,7 +74,6 @@ sub getFreePoolData {
  $sth->execute();
 
  while ( $sth->fetchrow_arrayref ) {
-  dlog("lId =$rec{lId}");
 
   ###I should centralize this check
   if ( defined $customer->swComplianceMgmt
@@ -127,7 +126,6 @@ sub getFreePoolData {
   else {
    ###Subsequent row for license view object.
    if ( defined $rec{usedQuantity} ) {
-    dlog( $rec{usedQuantity} );
     if ( $rec{machineLevel} == 1 ) {
      if ( exists $machineLevel{ $rec{ulId} } ) {
       next;
@@ -139,7 +137,6 @@ sub getFreePoolData {
 
     $data{ $rec{lId} }
       ->quantity( $data{ $rec{lId} }->quantity - $rec{usedQuantity} );
-    dlog( $data{ $rec{lId} }->quantity );
    }
   }
  }

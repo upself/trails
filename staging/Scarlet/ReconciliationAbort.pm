@@ -2,7 +2,7 @@ package Scarlet::ReconciliationAbort;
 
 use strict;
 use Base::Utils;
-use Scarlet::LicenseEndpoint;
+use Scarlet::SkuEndpoint;
 use Database::Connection;
 use BRAVO::OM::Customer;
 use Recon::ScarletInstalledSoftware;
@@ -44,23 +44,23 @@ sub scarletAbort {
 
  dlog( scalar @{$GUIDs} . ' GUID(s) found from scarlet.' );
  
- print $GUIDs[0]."   ".$GUIDs[1]."\n"; # debug
- 
- $self->connection->prepareSqlQueryAndFields(
+ $connection->prepareSqlQueryAndFields(
   $self->queryUsedGUIDs( $hostnameonly ) );
- my $sth = $self->connection->sql->{"usedGUIDs".$hostnameonly};
+ my $sth = $connection->sql->{"usedGUIDs".$hostnameonly};
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{"usedGUIDs".$hostnameonly."Fields"} } );
+    @{ $connection->sql->{"usedGUIDs".$hostnameonly."Fields"} } );
 
  $sth->execute($hwId, $slId);
 
  while ( $sth->fetchrow_arrayref ) {
     dlog("GUID = ".$rec{GUID}.", licenseID = ".$rec{lID});
   
-    next unless ( grep ( $_ eq $rec{GUID}, @GUIDs ) ); # this isn't one of the GUIDs returned by JSON, so not our concern
+    next unless ( grep ( $_ eq $rec{GUID}, @{$GUIDs} ) ); # this isn't one of the GUIDs returned by JSON, so not our concern
   
-    $TORETURN=1 unless ( exists $freePoolData{ $rec{lID} } ); # this IS one of the GUIDs from JSON, but the license used to it is not in our freePoolData!
+    $TORETURN=1 unless ( exists ${$freePoolData}{ $rec{lID} } ); # this IS one of the GUIDs from JSON, but the license used to it is not in our freePoolData!
+    
+    dlog("GUID ".$rec{GUID}." closed by licenseID ".$rec{lID}.", aborting Scarlet!");
  }
  $sth->finish;
  
@@ -81,12 +81,12 @@ select
        ul.license_id, 
        kbd.guid 
 from 
-      used_license
+      used_license ul
       join reconcile_used_license rul
          on rul.used_license_id  =  ul.id
       join reconcile r 
          on rul . reconcile_id= r. id 
-      installed_software is
+      join installed_software is
          on is . id= r. installed_software_id 
       join software_lpar sl 
          on sl. id = is. software_lpar_id 
@@ -97,12 +97,12 @@ from
       join hardware h 
            on h. id = hl. hardware_id 
       join kb_definition kbd
-		   on kbd.software_id = is.software_id
+		   on kbd.id = is.software_id
       where ";
-  $query.="( h.id = ? and r.machine_level = 1 ) or " if ( $hostnameonly == 0 )
+  $query.="( h.id = ? and r.machine_level = 1 ) or " if ( $hostnameonly == 0 );
   $query.="sl.id = ?
         order by
-        	l.id
+        	ul.license_id
         with ur
     ";
 

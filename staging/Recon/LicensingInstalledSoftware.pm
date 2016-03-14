@@ -749,14 +749,15 @@ sub attemptLicenseAllocation {
  
  if ( $through eq 'scarlet' ) { # check for GUIDs returned by Scarlet to be linked to unknown licenses - we abort, if they are
 	 my $scarletAbort = new Scarlet::ReconciliationAbort();
-	 my $abortnow = $scarletAbort->scarletAbort( 	$self->connection,
+	 my $abortnow;
+	 $abortnow = $scarletAbort->scarletAbort( 		$self->connection,
 													0,
 													$self->installedSoftwareReconData->hId,
 													$self->installedSoftwareReconData->slId,
 													$self->customer->accountNumber,
 													$self->installedSoftware->id,
 													$freePoolData  ) if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} );
-	 my $abortnow = $scarletAbort->scarletAbort( 	$self->connection,
+	 $abortnow = $scarletAbort->scarletAbort( 		$self->connection,
 													1,
 													$self->installedSoftwareReconData->hId,
 													$self->installedSoftwareReconData->slId,
@@ -2944,7 +2945,7 @@ sub queryExistingMachineLevelReconLegacy {
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
             join license_sw_map lsm on ( lsm.license_id = l.id )
-            left outer join scarlet_reconcile on ( sl.id = r.id )
+            left outer join scarlet_reconcile sr on ( sr.id = r.id )
         where
             h.id = ?
             and is.status = \'ACTIVE\'
