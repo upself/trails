@@ -303,17 +303,19 @@ sub reconcile {
  my $reconcileIdForMachineLevel;
  my $allocMethodId;
  my $freePoolData;
+ my $through='legacy';
 
  (
   $licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
   $allocMethodId, $freePoolData
    )
-   = $self->attemptLicenseAllocation('legacy');
+   = $self->attemptLicenseAllocation($through);
 
  if(!defined $licsToAllocate){
+   $through='scarlet';
    dlog('start attempt license allocation through scarlet');
    ($licsToAllocate, $reconcileTypeId, $machineLevel, $reconcileIdForMachineLevel,
-    $allocMethodId, $freePoolData) = $self->attemptLicenseAllocation('scarlet');
+    $allocMethodId, $freePoolData) = $self->attemptLicenseAllocation($through);
    dlog('end attempt license allocation through scarlet');
  }
 
@@ -325,8 +327,7 @@ sub reconcile {
    $self->installedSoftware->id, $allocMethodId
   );
   
-  if($self->isFreePoolFromScarlet($licsToAllocate,$freePoolData)
-    ||$self->isMachineAttemptFromScarlet($reconcileIdForMachineLevel))
+  if($through eq 'scarlet')
   {
        dlog('build scarlet reconcile');
        my $scarletReconcile = new Recon::OM::ScarletReconcile();
@@ -359,53 +360,6 @@ sub reconcile {
  }
 
  return ( 0, undef );
-}
-
-sub isFreePoolFromScarlet{
- my $self = shift;
- my $licsToAllocate = shift;
- my $freePoolData = shift;
- 
- 
- if(!defined $freePoolData){
-   dlog('free pool not defiend.');
-   return 0;
- }
- 
- foreach my $lId ( keys %{$licsToAllocate} ) {
-    if(!defined $freePoolData->{$lId}){
-       next;
-    }
-    
-    if($freePoolData->{$lId}->from eq 'scarlet'){
-       return 1;
-    }
-  }
-  
-  dlog('free pool not from scarlet.');
-  return 0;
-}
-
-sub isMachineAttemptFromScarlet{
-   my $self = shift;
-   my $reconcileId = shift;
-   
-   if(!defined $reconcileId){
-      dlog('not machine level attempt');
-      return 0;
-   }
-   
-   my $scarletReconcile = new Recon::OM::ScarletReconcile();
-   $scarletReconcile->id($reconcileId);
-   $scarletReconcile->getByBizKey( $self->connection );
-   
-   if(defined $scarletReconcile->lastValidateTime){
-     dlog('machie level attempt from scarlet');
-     return 1;
-   }
-   
-   dlog('machie level attempt not from scarlet');
-   return 0;
 }
 
 sub attemptVendorManaged {
@@ -663,6 +617,7 @@ sub attemptExistingMachineLevel {
  my $self  = shift;
  my $scope = shift;
  my $through = shift;
+ my $hostnameonly = shift;
  my $freePoolData = shift;
  dlog("attempt existing machine level");
 
@@ -670,11 +625,12 @@ sub attemptExistingMachineLevel {
  my $reconciles = undef;
  
  $reconciles = $self->getExistingMachineLevelReconLegacy($scope) if ( $through eq 'legacy' );
- $reconciles = $self->getExistingMachineLevelReconScarlet($scope, $freePoolData) if ( $through eq 'scarlet' );
+ $reconciles = $self->getExistingMachineLevelReconScarlet($scope, $hostnameonly, $freePoolData) if ( $through eq 'scarlet' );
  
  my $reconcileTypeId;
  my $reconcileIdForUsedLicense;
  my $allocMethodId;
+ my $wasMachineLevel; # returns whether the found allocation was machine level. Always 1 for legacy.
 
  foreach my $reconcileId ( sort keys %{$reconciles} ) {
   dlog( "reconcileId=" . $reconcileId );
@@ -707,6 +663,10 @@ sub attemptExistingMachineLevel {
    Recon::Delegate::ReconDelegate->getReconcileTypeMap() );
   $validation->poolParentCustomers( $recon->poolParentCustomers );
   $validation->valueUnitsPerCore( $self->pvuValue );
+  if ( $through eq 'scarlet' ) { # for joining of Scarlet reconcile, the reconciliation should follow the rules of auto-reconcilliation, even though it's manual
+	  $validation->installedSoftwareReconData->rTypeId ( $validation->reconcileTypeMap->{'Automatic license allocation'} );
+	  $validation->installedSoftwareReconData->rIsManual ( 0 );
+  }
   $validation->validate;
 
   next if ( $validation->isValid != 1 );
@@ -723,6 +683,9 @@ sub attemptExistingMachineLevel {
    $reconcileTypeId =
      $reconciles->{$reconcileId}->{$licenseId}->{'reconcileTypeId'};
    dlog( "reconcileTypeId=" . $reconcileTypeId );
+   
+   $wasMachineLevel =
+     $reconciles->{$reconcileId}->{$licenseId}->{'machineLevel'};
 
   }
   $reconcileIdForUsedLicense = $reconcileId;
@@ -736,12 +699,12 @@ sub attemptExistingMachineLevel {
 
   return (
    \%licsToAllocate,           $reconcileTypeId,
-   $reconcileIdForUsedLicense, $allocMethodId
+   $reconcileIdForUsedLicense, $allocMethodId, $wasMachineLevel
   );
  }
  else {
   dlog("unable to allocate");
-  return ( undef, undef, undef, undef );
+  return ( undef, undef, undef, undef, undef );
  }
 }
 
@@ -756,7 +719,7 @@ sub attemptLicenseAllocation {
  
  my $machineLevel;
  my $scheduleFlevel = $self->installedSoftwareReconData->scheduleFlevel;
- my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId );
+ my ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId, $wasMachineLevel );
 
  if (( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) && ( $through eq 'legacy' )) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
@@ -783,14 +746,17 @@ sub attemptLicenseAllocation {
 	 return ( undef, undef, undef, undef, undef, undef );
  }
 
- if (( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) && ( $through eq 'scarlet' )) {    # skip for hostname-specific scheduleF
+ if ( $through eq 'scarlet' ) {    # skip for hostname-specific scheduleF
   ###Attempt to reconcile at machine level if one is already reconciled at machine level
-  ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId ) =
+  ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId, $wasMachineLevel ) =
     $self->attemptExistingMachineLevel(
-   $self->installedSoftwareReconData->scopeName, 'scarlet', $freePoolData );
-  return ( $licsToAllocate, $reconcileTypeId, 1, $reconcileId, $allocMethodId,
-   $freePoolData )
-    if defined $licsToAllocate;
+   $self->installedSoftwareReconData->scopeName, 'scarlet', 0, $freePoolData ) if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} );
+   
+  ( $licsToAllocate, $reconcileTypeId, $reconcileId, $allocMethodId, $wasMachineLevel ) =
+    $self->attemptExistingMachineLevel(
+   $self->installedSoftwareReconData->scopeName, 'scarlet', 1, $freePoolData ) if ( $scheduleFlevel >= $scheduleFlevelMap{'HOSTNAME'} );
+   
+  return ( $licsToAllocate, $reconcileTypeId, $wasMachineLevel, $reconcileId, $allocMethodId,  $freePoolData ) if defined $licsToAllocate;
  }
  
  if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} ) {    # skip for hostname-specific scheduleF
@@ -2743,6 +2709,7 @@ sub getExistingMachineLevelReconLegacy {
     $rec{usedQuantity};
   $data{ $rec{reconcileId} }{ $rec{licenseId} }{'reconcileTypeId'} =
     $rec{reconcileTypeId};
+  $data{ $rec{reconcileId} }{ $rec{licenseId} }{'machineLevel'} = 1;
  }
  $sth->finish;
 
@@ -2752,6 +2719,7 @@ sub getExistingMachineLevelReconLegacy {
 sub getExistingMachineLevelReconScarlet {
  my $self  = shift;
  my $scope = shift;
+ my $hostnameonly = shift;
  my $freePoolData = shift;
  
  my %data;
@@ -2773,7 +2741,7 @@ sub getExistingMachineLevelReconScarlet {
   $sth->execute(
    $self->installedSoftwareReconData->hId,
    ( keys %{$freePoolData} ),
-   $self->customer->id, $self->customer->id
+   $self->customer->id, $self->customer->id, $self->installedSoftwareReconData->slId
   );
  }
  elsif ( ( defined $scope ) && ( $scope eq "IBMOIBMM" ) ) {
@@ -2782,17 +2750,22 @@ sub getExistingMachineLevelReconScarlet {
      @{ $self->connection->sql->{"existingMachineLevelReconAllScarlet".$numbOfLicenses."Fields"} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
-   ( keys %{$freePoolData} )
+   ( keys %{$freePoolData} ),
+   $self->installedSoftwareReconData->slId
   );
  }
 
  while ( $sth->fetchrow_arrayref ) {
   logRec( 'dlog', \%rec );
+  
+  next if (( $rec{machineLevel} == 1 ) && ( $hostnameonly ));
 
   $data{ $rec{reconcileId} }{ $rec{licenseId} }{'usedQuantity'} =
     $rec{usedQuantity};
   $data{ $rec{reconcileId} }{ $rec{licenseId} }{'reconcileTypeId'} =
     $rec{reconcileTypeId};
+  $data{ $rec{reconcileId} }{ $rec{licenseId} }{'machineLevel'} =
+    $rec{machineLevel};
  }
  $sth->finish;
 
@@ -2953,12 +2926,13 @@ sub queryExistingMachineLevelReconLegacy {
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
             join license_sw_map lsm on ( lsm.license_id = l.id )
+            left outer join scarlet_reconcile on ( sl.id = r.id )
         where
             h.id = ?
             and is.status = \'ACTIVE\'
             and l.status = \'ACTIVE\'
             and is.software_id = ?
-            and ( ( lsm.software_id = ? ) or ( r.reconcile_type_id = 1 ) )';
+            and sr.id is null';
  $query .=
 '   and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
@@ -2983,6 +2957,7 @@ sub queryExistingMachineLevelReconScarlet {
  my @fields = qw(
    reconcileId
    reconcileTypeId
+   machineLevel
    licenseId
    licenseEnvironment
    usedQuantity
@@ -2991,6 +2966,7 @@ sub queryExistingMachineLevelReconScarlet {
         select
             r.id
             ,r.reconcile_type_id
+            ,r.machine_level
             ,l.id
             ,l.environment
             ,ul.used_quantity
@@ -3001,6 +2977,7 @@ sub queryExistingMachineLevelReconScarlet {
             join installed_software is on ( sl.id = is.software_lpar_id )
             join reconcile r on ( is.id = r.installed_software_id )
             join reconcile_used_license rul on ( r.id = rul.reconcile_id )
+            join scarlet_reconcile sr on ( sr.id = r.id )
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
         where
@@ -3013,7 +2990,7 @@ sub queryExistingMachineLevelReconScarlet {
  $query .=
 ' and (l.customer_id = ? or (l.customer_id in (select master_account_id from account_pool where member_account_id = ?) and l.pool = 1))'
    if ( ( not defined $scope ) || ( $scope ne "IBMOIBMM" ) );
- $query .= '   and r.machine_level = 1
+ $query .= '   and (( r.machine_level = 1 ) or ( sl.id = ? ))
         with ur
     ';
     
