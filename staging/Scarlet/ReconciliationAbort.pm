@@ -52,7 +52,7 @@ sub scarletAbort {
     @{ $connection->sql->{"usedGUIDs".$hostnameonly."Fields"} } );
 
  $sth->execute($hwId, $slId) if ( $hostnameonly == 0 );
- $sth->execute($hwId) if ( $hostnameonly == 1 );
+ $sth->execute($slId) if ( $hostnameonly == 1 );
 
  while ( $sth->fetchrow_arrayref ) {
     next unless ( grep ( $_ eq $rec{GUID}, @{$GUIDs} ) ); # this isn't one of the GUIDs returned by JSON, so not our concern
