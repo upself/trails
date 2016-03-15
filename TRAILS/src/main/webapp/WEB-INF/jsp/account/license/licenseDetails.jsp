@@ -11,7 +11,7 @@
 	$(function() {
 		var licenseId = ${licenseId};
 		feedPage(licenseId);
-		$("#titleContent").text("License details: ${account.name}(${account.account})");
+		$("#titleContent").text("License Details: ${account.name}(${account.account})");
 	});
 
 	function feedPage(licenseId) {
