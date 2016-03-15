@@ -1079,14 +1079,14 @@
 	</definition>
 
 	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="TRAILS account license View" />
+		<put-attribute name="contentTitle" value="TRAILS Account License View" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS account license" />
 		<put-attribute name="keywords" value="TRAILS account license" />
 	</definition>
 
 	<definition name="tiles.account.license.details" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="TRAILS account license Details" />
+		<put-attribute name="contentTitle" value="TRAILS Account License Details" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseDetails.jsp" />
 		<put-attribute name="description" value="TRAILS account license detail" />
 		<put-attribute name="keywords" value="TRAILS account license detail" />
