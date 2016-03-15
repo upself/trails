@@ -2944,7 +2944,6 @@ sub queryExistingMachineLevelReconLegacy {
             join reconcile_used_license rul on ( r.id = rul.reconcile_id )
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
-            join license_sw_map lsm on ( lsm.license_id = l.id )
             left outer join scarlet_reconcile sr on ( sr.id = r.id )
         where
             h.id = ?
