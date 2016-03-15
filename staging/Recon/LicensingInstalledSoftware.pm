@@ -2996,7 +2996,6 @@ sub queryExistingMachineLevelReconScarlet {
             join installed_software is on ( sl.id = is.software_lpar_id )
             join reconcile r on ( is.id = r.installed_software_id )
             join reconcile_used_license rul on ( r.id = rul.reconcile_id )
-            join scarlet_reconcile sr on ( sr.id = r.id )
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
         where
