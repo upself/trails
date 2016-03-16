@@ -101,6 +101,14 @@ sub getData {
   else {
    wlog("unable to get acct num from file name");
   }
+ } elsif (basename($inputFile) =~ m/\.(txt|TXT)$/) {
+  	$fileAcctNum = ( split( /_/, basename($inputFile) ) )[0];
+	  if ( defined $fileAcctNum ) {
+	   dlog( "acct num from .txt file name: " . $fileAcctNum );
+	  }
+	  else {
+	   wlog("unable to get acct num from .txt file name");
+	  }
  }
 
  ###Get the cndb account number based on serial and lpar
