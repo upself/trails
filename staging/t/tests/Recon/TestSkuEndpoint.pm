@@ -2,8 +2,7 @@ package Scarlet::TestSkuEndpoint;
 
 use strict;
 use Base::Utils;
-use base qw(Test::Class
-  integration::ScarletAPIManager);
+use t::integration::ScarletAPIManager;
 use Scarlet::SkuEndpoint;
 use Test::More;
 

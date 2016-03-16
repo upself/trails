@@ -1,6 +1,7 @@
 #!/usr/bin/env perl -T
 
 use lib '/opt/staging/v2/';
+use lib '/opt/staging/v2/t';
 
 use t::tests::Recon::ExpiredMaints;
 use t::tests::Recon::IBMISVprio;
