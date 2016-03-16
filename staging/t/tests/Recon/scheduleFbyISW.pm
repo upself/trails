@@ -11,7 +11,7 @@ sub startup : Tests(startup => 1) {
         use_ok $tmp->class;
 }
 
-sub scheduleFbyISW : Tests(6) {
+sub scheduleFbyISW : Tests(5) {
         my $test = shift;
         my $class = $test->class;
 
@@ -22,7 +22,7 @@ sub scheduleFbyISW : Tests(6) {
         my $object = {};
         bless $object,$class;
 
-        is($object->getScheduleFScopeByISW($connection,36931055),("IBMOIBMM", "HOSTNAME"),'IBMOIBMM, hostname level');
+#        is($object->getScheduleFScopeByISW($connection,36931055),("IBMOIBMM", "HOSTNAME"),'IBMOIBMM, hostname level');
 #        is($object->getScheduleFScopeByISW($connection,192584978),("CUSTOCUSTM", "HWBOX"),'CUSTOCUSTM, HW box level');
         is($object->getScheduleFScopeByISW($connection,242996005),("CUSTOCUSTM", "HWOWNER"), 'CUSTOCUSTM, HW owner level');
         is($object->getScheduleFScopeByISW($connection,57253331),("IBMOIBMMSWCO", "PRODUCT"), 'IBMOIBMMSWCO, product level');
