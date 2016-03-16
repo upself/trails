@@ -284,15 +284,15 @@ sub reconcile {
 
  return 0 if $self->validateScheduleFScope == 0;
 
- return 1 if $self->attemptVendorManaged == 1;
- return 1 if $self->attemptSoftwareCategory == 1;
- return 1 if $self->attemptBundled == 1;
-
  return 1 if $self->attemptCustomerOwnedAndManaged == 1;
  return 1 if $self->attemptIBMOwned3rdManaged == 1;
  return 1 if $self->attemptCustomerOwned3rdManaged == 1;
  return 1 if $self->attemptIBMOwnedIBMManagedCons == 1;
  return 1 if $self->attemptCustOwnedIBMManagedCons == 1;
+
+ return 1 if $self->attemptVendorManaged == 1;
+ return 1 if $self->attemptSoftwareCategory == 1;
+ return 1 if $self->attemptBundled == 1;
 
  if ( $self->poolRunning == 1 ) {
   return 2;
