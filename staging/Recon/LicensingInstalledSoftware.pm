@@ -24,6 +24,7 @@ use Recon::SoftwareLpar;
 use Recon::CauseCode;
 use Recon::ScarletInstalledSoftware;
 use Scarlet::LicenseService;
+use Scarlet::ReconciliationAbort;
 
 sub new {
  my ( $class, $connection, $installedSoftware, $poolRunning ) = @_;
@@ -283,15 +284,15 @@ sub reconcile {
 
  return 0 if $self->validateScheduleFScope == 0;
 
- return 1 if $self->attemptVendorManaged == 1;
- return 1 if $self->attemptSoftwareCategory == 1;
- return 1 if $self->attemptBundled == 1;
-
  return 1 if $self->attemptCustomerOwnedAndManaged == 1;
  return 1 if $self->attemptIBMOwned3rdManaged == 1;
  return 1 if $self->attemptCustomerOwned3rdManaged == 1;
  return 1 if $self->attemptIBMOwnedIBMManagedCons == 1;
  return 1 if $self->attemptCustOwnedIBMManagedCons == 1;
+
+ return 1 if $self->attemptVendorManaged == 1;
+ return 1 if $self->attemptSoftwareCategory == 1;
+ return 1 if $self->attemptBundled == 1;
 
  if ( $self->poolRunning == 1 ) {
   return 2;
@@ -737,13 +738,33 @@ sub attemptLicenseAllocation {
    $freePoolData = $self->getFreePoolData( $self->installedSoftwareReconData->scopeName );
  }else{
    my $scarletLicSev = new Scarlet::LicenseService();
-   $freePoolData = $scarletLicSev->getFreePoolData( $self->installedSoftwareReconData,$self->customer, 
+   $freePoolData = $scarletLicSev->getFreePoolData( $self->connection, $self->installedSoftwareReconData,$self->customer, 
                  $self->installedSoftware->id);
  }
  
  if ( scalar keys (%{$freePoolData} ) == 0 ) {
 	 dlog("No licenses found, shortcutting attempts to allocate.");
 	 return ( undef, undef, undef, undef, undef, undef );
+ }
+ 
+ if ( $through eq 'scarlet' ) { # check for GUIDs returned by Scarlet to be linked to unknown licenses - we abort, if they are
+	 my $scarletAbort = new Scarlet::ReconciliationAbort();
+	 my $abortnow;
+	 $abortnow = $scarletAbort->scarletAbort( 		$self->connection,
+													0,
+													$self->installedSoftwareReconData->hId,
+													$self->installedSoftwareReconData->slId,
+													$self->customer->accountNumber,
+													$self->installedSoftware->id,
+													$freePoolData  ) if ( $scheduleFlevel < $scheduleFlevelMap{'HOSTNAME'} );
+	 $abortnow = $scarletAbort->scarletAbort( 		$self->connection,
+													1,
+													$self->installedSoftwareReconData->hId,
+													$self->installedSoftwareReconData->slId,
+													$self->customer->accountNumber,
+													$self->installedSoftware->id,
+													$freePoolData  ) if ( $scheduleFlevel >= $scheduleFlevelMap{'HOSTNAME'} );
+	 return ( undef, undef, undef, undef, undef, undef ) if ( $abortnow );
  }
 
  if ( $through eq 'scarlet' ) {    # skip for hostname-specific scheduleF
@@ -2687,7 +2708,6 @@ sub getExistingMachineLevelReconLegacy {
   $sth->execute(
    $self->installedSoftwareReconData->hId,
    $self->installedSoftware->softwareId,
-   $self->installedSoftware->softwareId,
    $self->customer->id, $self->customer->id
   );
  }
@@ -2697,7 +2717,6 @@ sub getExistingMachineLevelReconLegacy {
      @{ $self->connection->sql->{existingMachineLevelReconAllLegacyFields} } );
   $sth->execute(
    $self->installedSoftwareReconData->hId,
-   $self->installedSoftware->softwareId,
    $self->installedSoftware->softwareId
   );
  }
@@ -2925,8 +2944,7 @@ sub queryExistingMachineLevelReconLegacy {
             join reconcile_used_license rul on ( r.id = rul.reconcile_id )
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
-            join license_sw_map lsm on ( lsm.license_id = l.id )
-            left outer join scarlet_reconcile on ( sl.id = r.id )
+            left outer join scarlet_reconcile sr on ( sr.id = r.id )
         where
             h.id = ?
             and is.status = \'ACTIVE\'
@@ -2977,7 +2995,6 @@ sub queryExistingMachineLevelReconScarlet {
             join installed_software is on ( sl.id = is.software_lpar_id )
             join reconcile r on ( is.id = r.installed_software_id )
             join reconcile_used_license rul on ( r.id = rul.reconcile_id )
-            join scarlet_reconcile sr on ( sr.id = r.id )
             join used_license ul on ( ul.id = rul.used_license_id )
             join license l on ( l.id = ul.license_id )
         where
