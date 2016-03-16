@@ -1,16 +1,22 @@
 package Scarlet::TestSkuEndpoint;
 
 use strict;
-use Base::Utils;
-use base qw(Test::Class
-  integration::ScarletAPIManager);
-use Scarlet::SkuEndpoint;
 use Test::More;
+use base 'Test::Class';
+use Base::Utils;
+use t::integration::ScarletAPIManager;
+
+sub class { 'Scarlet::SkuEndpoint' };
+
+sub startup : Tests(startup => 1) {
+        my $tmp = shift;
+        use_ok $tmp->class;
+}
 
 sub testSkuHttpGet : Test(2) {
  my $self = shift;
 
- $self->mockLicenseAPI();
+ $t::integration::ScarletAPIManager->mockLicenseAPI();
 
  my $endpoint = Scarlet::SkuEndpoint->new;
  my $skus     = $endpoint->httpGet( 35400, '152bff38a573430482bc30f8be9ee1fd' );
@@ -22,7 +28,7 @@ sub testSkuHttpGet : Test(2) {
 sub validateData : Test(3) {
  my $self = shift;
 
- $self->mockLicenseAPI();
+ $t::integration::ScarletAPIManager->mockLicenseAPI();
 
  my $endpoint = Scarlet::SkuEndpoint->new;
  my $skus     = $endpoint->httpGet( 35400, '152bff38a573430482bc30f8be9ee1fd' );
@@ -38,7 +44,7 @@ sub validateData : Test(3) {
 
 sub teardown : Test(shutdown) {
  my $self = shift;
- $self->resetLicenseAPI;
+ $t::integration::ScarletAPIManager->resetLicenseAPI;
 }
 
 1;
