@@ -40,7 +40,6 @@ sub new {
         ,_sPriority => undef
         ,_sLevel => undef
         ,_sVendorMgd => undef
-        ,_sMfgId => undef
         ,_sMfg => undef
         ,_scName => undef
         ,_scParent => undef
@@ -625,12 +624,6 @@ sub sVendorMgd {
     return $self->{_sVendorMgd};
 }
 
-sub sMfgId {
-    my $self = shift;
-    $self->{_sMfgId} = shift if scalar @_ == 1;
-    return $self->{_sMfgId};
-}
-
 sub sMfg {
     my $self = shift;
     $self->{_sMfg} = shift if scalar @_ == 1;
@@ -910,11 +903,6 @@ sub toString {
     $s .= "sVendorMgd=";
     if (defined $self->{_sVendorMgd}) {
         $s .= $self->{_sVendorMgd};
-    }
-    $s .= ",";
-    $s .= "sMfgId=";
-    if (defined $self->{_sMfgId}) {
-        $s .= $self->{_sMfgId};
     }
     $s .= ",";
     $s .= "sMfg=";

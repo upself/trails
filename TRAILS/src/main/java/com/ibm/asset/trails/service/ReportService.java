@@ -115,4 +115,5 @@ public interface ReportService {
 	void getAlertUnlicensed(Account pAccount, String remoteUser, String lsName,
 			HSSFWorkbook phwb, OutputStream pOutputStream, String type,
 			String code, String reportName, String sheetName ) throws HibernateException, Exception;
+	void getScheduleFReport(Account account,PrintWriter pPrintWriter);
 }

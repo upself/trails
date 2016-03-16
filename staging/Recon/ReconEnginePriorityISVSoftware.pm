@@ -3,27 +3,26 @@ package Recon::ReconEnginePriorityISVSoftware;
 use strict;
 use Base::Utils;
 use Carp qw( croak );
+
 use Database::Connection;
 use Recon::OM::ReconPriorityISVSoftware;
-use BRAVO::OM::InstalledSoftware;
 use BRAVO::OM::Customer;
+use BRAVO::OM::Software;
 use Recon::Queue;
-use BRAVO::OM::SoftwareLpar;
 
 ###Object constructor.
 sub new {
-	my ( $class) = @_;
-	my $self = {
-		_connection => Database::Connection->new('trails'),
-		_queue      => undef,
-		_installedSoftwares => {}
-	};
-	bless $self, $class;
-	dlog("instantiated self");
+ my ($class) = @_;
+ 
+ my $self = {
+  _connection => Database::Connection->new('trails')
+ };
+ bless $self, $class;
+ dlog("instantiated self");
 
-	$self->validate;
+ $self->validate;
 
-	return $self;
+ return $self;
 }
 
 sub validate {
@@ -38,32 +37,28 @@ sub recon {
 	my $self = shift;
 
 	my $dieMsg;
-
+	my $prioID; # the ID of job in the table PRIORITY_ISV_SW, which needs to be checked by Recon
+	
 	eval {
 	    #Load records from RECON_PRIORITY_ISV_SW db table
-		$self->loadReconPISVSWQueue;
+		$prioID=$self->loadReconPISVSWQueue;
+		
+		exit unless defined($prioID);
 
         #Find all the related installed software instances and add them into the memory
-		foreach my $id ( @{ $self->queue } ) {
-		    #Get the Recon Priority ISV Software record based on id value
-		    my $reconPISVSW = new Recon::OM::ReconPriorityISVSoftware();
-			$reconPISVSW->id($id);
-		    $reconPISVSW->getById( $self->connection );
+	    #Get the Recon Priority ISV Software record based on id value
+	    my $reconPISVSW = new Recon::OM::ReconPriorityISVSoftware();
+		$reconPISVSW->id($prioID);
+	    $reconPISVSW->getById( $self->connection );
 		    
-		    my $customerId =  $reconPISVSW->customerId();
-		    my $manufacturerId = $reconPISVSW->manufacturerId();
-		    dlog("Customer Id: {$customerId} + Manufacturer Id: {$manufacturerId} for Recon Priority ISV SW Id: {$id}.");
+	    my @softwareIds=$self->retrieveSoftwareIds($reconPISVSW->manufacturerId() );
 		    
-	        #Get all the related installed software instances based on customerId and manufacturerId values
-		    $self->retrieveInstalledSoftwareRecordsByConditions($customerId,$manufacturerId);
+        # push the software records to queue RECON_CUSTOMER_SOFTWARE or RECON_SOFTWARE
+	    $self->pushToReconCustomerSoftware($reconPISVSW->customerId() ,@softwareIds) if ( defined $reconPISVSW->customerId() );
+	    $self->pushToReconSoftware(@softwareIds) unless ( defined $reconPISVSW->customerId() );
 		        
-		    #Remove the Recon Priority ISV Software Record from DB Queue
-			$reconPISVSW->delete( $self->connection);
-		}
-		
-		#Generate recon_installed_sw records based on installed ids and insert into RECON_INSTALLED_SW db table
-		$self->queueReconInSWs;
-		
+	    #Remove the Recon Priority ISV Software Record from DB Queue
+		$reconPISVSW->delete( $self->connection);
 	};
 	if ($@) {
 		###Something died in the eval, set dieMsg so
@@ -72,10 +67,10 @@ sub recon {
 		$dieMsg = $@;
 	}
 
-	###Close the bravo connection
-	ilog("disconnecting bravo db connection");
-	$self->connection->disconnect;
-	ilog("disconnected bravo db connection");
+#	###Close the bravo connection
+#	ilog("disconnecting bravo db connection");
+#	$self->connection->disconnect;
+#	ilog("disconnected bravo db connection");
 
 	###die if dieMsg is defined
 	die $dieMsg if defined $dieMsg;
@@ -86,6 +81,7 @@ sub loadReconPISVSWQueue {
 	dlog('Begin loadReconPISVSWQueue method of ReconEnginePriorityISVSoftware');
 
 	my @queue;
+	my $toreturn=undef;
 	
 	###Prepare the query
 	$self->connection->prepareSqlQueryAndFields(
@@ -113,12 +109,11 @@ sub loadReconPISVSWQueue {
 
 		###Add to our queue hash
 		dlog("Recon Priority ISV Software Id :{$rec{id}} has been found from queue");
-		push @queue, $rec{id};
+		$toreturn=$rec{id};
 	}
 	$sth->finish;
 
-	###Set our queue attribute
-	$self->queue( \@queue );
+	return $toreturn;
 }
 
 sub queryReconPriorityISVSoftwareQueue {
@@ -130,6 +125,8 @@ sub queryReconPriorityISVSoftwareQueue {
             r.id
         from
             recon_priority_isv_sw r
+        order by r.record_time
+        fetch first 1 rows only
         with ur
     ';
 	dlog("queryReconPriorityISVSoftwareQueue=$query");
@@ -137,149 +134,75 @@ sub queryReconPriorityISVSoftwareQueue {
 }
 
 
-sub retrieveInstalledSoftwareRecordsByConditions {
-    my ($self,$customerId,$manufacturerId) = @_;
-   
-    if(defined $customerId){
-       $self->connection->prepareSqlQueryAndFields(
-	            queryInstalledSoftwareRecordsByManufacturerIdAndCustomerId() );
-	    my $sth = $self->connection->sql
-	        ->{installedSoftwareRecordsByManufacturerIdAndCustomerId};
-	    my %rec;
-	    $sth->bind_columns(
-	           map { \$rec{$_} } @{
-	               $self->connection->sql
-	                   ->{installedSoftwareRecordsByManufacturerIdAndCustomerIdFields}
-	               }
-	    );
-	    $sth->execute($customerId, $manufacturerId);
-	    while ( $sth->fetchrow_arrayref ) {
-	        my $inswId = $rec{installedSoftwareId};
-	        $self->addToInstalledSoftwaresCache($inswId);
-	        dlog("Installed Software Id: {$inswId} has been stored into memory cache.");
-	    }
-	    $sth->finish;
-    }
-    else
-    {
-        $self->connection->prepareSqlQueryAndFields(
-	            queryInstalledSoftwareRecordsByManufacturerId() );
-	    my $sth = $self->connection->sql
-	        ->{installedSoftwareRecordsByManufacturerId};
-	    my %rec;
-	    $sth->bind_columns(
-	           map { \$rec{$_} } @{
-	               $self->connection->sql
-	                   ->{installedSoftwareRecordsByManufacturerIdFields}
-	               }
-	    );
-	    $sth->execute($manufacturerId);
-	    while ( $sth->fetchrow_arrayref ) {
-	        my $inswId = $rec{installedSoftwareId};
-	        $self->addToInstalledSoftwaresCache($inswId);
-	        dlog("Installed Software Id: {$inswId} has been stored into memory cache.");
-	    }
-	    $sth->finish;
-    }
-
-}
-
-sub addToInstalledSoftwaresCache {
-    my ( $self, $id) = @_;
-    $self->installedSoftwares->{$id} = 1;
-}
-
-sub installedSoftwares {
-    my $self = shift;
-    $self->{_installedSoftwares} = shift if scalar @_ == 1;
-    return $self->{_installedSoftwares};
-}
-
-sub queryInstalledSoftwareRecordsByManufacturerIdAndCustomerId {
-    my @fields = (qw( installedSoftwareId ));
-    my $query  = qq{
-        select
-        	is.id
-        from
-            customer c
-            ,software_lpar sl
-        	,installed_software is
-        	,software s
-        where
-            c.customer_id = ?
-            and c.status = 'ACTIVE'
-            and c.sw_license_mgmt = 'YES'
-            and c.customer_id = sl.customer_id
-            and sl.id = is.software_lpar_id
-            and sl.status = 'ACTIVE'
-        	and is.status = 'ACTIVE'
-        	and s.manufacturer_id = ?
-        	and s.status = 'ACTIVE'
-        	and s.software_id = is.software_id       	
-        with ur
-    };
-    
-    dlog("queryInstalledSoftwareRecordsByManufacturerIdAndCustomerId = $query");
-    return ( 'installedSoftwareRecordsByManufacturerIdAndCustomerId',
-             $query, \@fields );
-}
-
-sub queryInstalledSoftwareRecordsByManufacturerId {
-    my @fields = (qw( installedSoftwareId ));
-    my $query  = qq{
-        select
-        	is.id
-        from
-            software_lpar sl
-        	,installed_software is
-        	,software s
-        where
-            sl.id = is.software_lpar_id
-            and sl.status = 'ACTIVE'
-        	and is.status = 'ACTIVE'
-        	and s.manufacturer_id = ?
-        	and s.status = 'ACTIVE'
-        	and s.software_id = is.software_id       	
-        with ur
-    };
-    
-    dlog("queryInstalledSoftwareRecordsByManufacturerId = $query");
-    return ( 'installedSoftwareRecordsByManufacturerId',
-             $query, \@fields );
-}
-
-sub queueReconInSWs{
-    my $self = shift;
-    dlog('Begin queueReconInSWs method of ReconEnginePriorityISVSoftware');
-    
-    foreach my $installedSoftwareId ( keys %{ $self->installedSoftwares } ) {
-        dlog("Get Installed Software Id: {$installedSoftwareId} from memory cache.");
-        ##Get the installed software
-        my $installedSoftware = new BRAVO::OM::InstalledSoftware();
-        $installedSoftware->id($installedSoftwareId);
-        $installedSoftware->getById($self->connection);
-        
-        #Get the software lpar
-        my $softwareLpar = new BRAVO::OM::SoftwareLpar();
-        $softwareLpar->id($installedSoftware->softwareLparId);
-        $softwareLpar->getById($self->connection);
-        
-        ###Get the customer
-        my $customer = new BRAVO::OM::Customer();
-        my $customerId = $softwareLpar->customerId;
-        dlog("Customer Id: {$customerId} for installed software id: {$installedSoftwareId}.");
-        $customer->id($customerId);
-        $customer->getById( $self->connection );
-        
-        my $queue = Recon::Queue->new( $self->connection, $installedSoftware, $customer);
-        $queue->add;
-    }
-}
-
-sub queue {
+sub retrieveSoftwareIds {
 	my $self = shift;
-	$self->{_queue} = shift if scalar @_ == 1;
-	return $self->{_queue};
+    my $manufacturerId = shift;
+    my @toreturn=();
+   
+    $self->connection->prepareSqlQueryAndFields($self->querySoftwareByManufacturerId() );
+    my $sth = $self->connection->sql->{SoftwareByManufacturerId};
+    my %rec;
+    $sth->bind_columns(
+           map { \$rec{$_} } @{ $self->connection->sql->{SoftwareByManufacturerIdFields} }
+    );
+	$sth->execute($manufacturerId);
+	while ( $sth->fetchrow_arrayref ) {
+		push ( @toreturn, $rec{softwareId} );
+    }
+    $sth->finish;
+    
+    return @toreturn;
+}
+
+sub querySoftwareByManufacturerId {
+    my @fields = ( 'softwareId' );
+    my $query  = qq{
+        select
+        	s.software_id
+        from
+            software s
+            join manufacturer m on m.id = s.manufacturer_id
+        where
+            m.name in ( select mm.name from manufacturer mm where mm.id = ? )
+        with ur
+    };
+    
+    dlog("querySoftwareByManufacturerId = $query");
+    return ( 'SoftwareByManufacturerId',
+             $query, \@fields );
+}
+
+sub pushToReconCustomerSoftware {
+	my $self=shift;
+	my $customerId=shift;
+	my @softwareIds=@_;
+	
+	my $customer = new BRAVO::OM::Customer();
+	$customer->id($customerId);
+	$customer->getById( $self->connection );
+	
+	foreach my $swId (@softwareIds) {
+		my $software = new BRAVO::OM::Software();
+		$software->id($swId);
+		$software->getById($self->connection);
+
+		my $queue = Recon::Queue->new ($self->connection, $customer, $software);
+		$queue->add;
+	}	
+}
+
+sub pushToReconSoftware {
+	my $self=shift;
+	my @softwareIds=@_;
+	
+	foreach my $swId (@softwareIds) {
+		my $software = new BRAVO::OM::Software();
+		$software->id($swId);
+		$software->getById($self->connection);
+
+		my $queue = Recon::Queue->new ($self->connection, $software);
+		$queue->add;
+	}	
 }
 
 sub connection {

@@ -121,7 +121,14 @@
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>com.ibm.tap.trails4</role-name>
+			<role-name>com.ibm.tap.admin</role-name>
+			<role-name>com.ibm.tap.asset</role-name>
+			<role-name>com.ibm.ea.asset.secure.michelin</role-name>
+			<role-name>com.ibm.tap.asset.ap</role-name>
+			<role-name>com.ibm.tap.asset.emea</role-name>
+			<role-name>com.ibm.tap.asset.group</role-name>
+			<role-name>com.ibm.tap.asset.helpdesk</role-name>
+			<role-name>com.ibm.tap.asset.la</role-name>
 			<role-name>com.ibm.tap.bravo.user</role-name>
 		</auth-constraint>
 		<user-data-constraint>
@@ -136,7 +143,14 @@
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>com.ibm.tap.trails4</role-name>
+			<role-name>com.ibm.tap.admin</role-name>
+			<role-name>com.ibm.tap.asset</role-name>
+			<role-name>com.ibm.ea.asset.secure.michelin</role-name>
+			<role-name>com.ibm.tap.asset.ap</role-name>
+			<role-name>com.ibm.tap.asset.emea</role-name>
+			<role-name>com.ibm.tap.asset.group</role-name>
+			<role-name>com.ibm.tap.asset.helpdesk</role-name>
+			<role-name>com.ibm.tap.asset.la</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
@@ -147,8 +161,36 @@
 		<realm-name>Default</realm-name>
 	</login-config>
 	<security-role>
-		<description>com.ibm.tap.trails4</description>
-		<role-name>com.ibm.tap.trails4</role-name>
+		<description>com.ibm.tap.admin</description>
+		<role-name>com.ibm.tap.admin</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset</description>
+		<role-name>com.ibm.tap.asset</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.ea.asset.secure.michelin</description>
+		<role-name>com.ibm.ea.asset.secure.michelin</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.ap</description>
+		<role-name>com.ibm.tap.asset.ap</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.emea</description>
+		<role-name>com.ibm.tap.asset.emea</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.group</description>
+		<role-name>com.ibm.tap.asset.group</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.helpdesk</description>
+		<role-name>com.ibm.tap.asset.helpdesk</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.asset.la</description>
+		<role-name>com.ibm.tap.asset.la</role-name>
 	</security-role>
 	<security-role>
 		<description>com.ibm.tap.bravo.user</description>

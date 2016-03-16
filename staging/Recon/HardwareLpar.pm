@@ -57,7 +57,7 @@ sub recon0101 {
 	
 	my $manquery = "";
 	my $autoquery= "";
-	my $namequery;
+	my $namequery="";
 	
 	return unless $action =~ /^[01]+[0123]$/ ; # action is not composed of 0's and 1's (with 0123 at the end)
 	
@@ -86,12 +86,19 @@ sub recon0101 {
 		$manquery.=$allocMethodologyMap->{'Per processor'};
 		$autoquery.="2, ";
 	}
+	
+	catchRight(\$action); # 10^10 ignored
+	catchRight(\$action); # 10^11 ignored
+	
+	if ( catchRight(\$action) == "1" ){ # 10^12
+		$namequery="-HWchange";
+	}
 		
-	return if ($manquery == "");
+	return if (($manquery == "") && ( $namequery !~ /HWchange/ ));
 	
 	$manquery =~ s/, $//; # removing the closing ", " in the $manquery
 	$autoquery =~ s/, $//; # the same for autoquery
-	$namequery = $manquery;
+	$namequery = $manquery.$namequery;
 	$namequery =~ s/, /-/;
 	
 	wlog("Breaking these allocation methodologies: $manquery, captypes: $autoquery");
@@ -224,7 +231,7 @@ sub queryGetReconcilesByMethodology {
       rId
     );
 
-    my $query = qq{
+    my $query = "
       select
           r.id
       from
@@ -235,13 +242,18 @@ sub queryGetReconcilesByMethodology {
 		  join used_license ul on rul.used_license_id = ul.id
       where
           hsc.hardware_lpar_id = ?
-          and (
-				( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id in ( $methodologies ) ) )
+          and ( ";
+	$query.="			( ( r.reconcile_type_id = 1 ) and ( r.allocation_methodology_id in ( $methodologies ) ) )
 			or
 				( ( r.reconcile_type_id = 5 ) and ( ul.capacity_type_id in ( $captypes ) ) )
+	" if ( $methodologies ne "" );
+	$query.= "or " if (( $namequery =~ /HWchange/ ) && ( $methodologies ne "" ));
+	$query.= "( r.machine_level = 1 )" if ( $namequery =~ /HWchange/ );
+	$query.="
 		  )
-	  with ur
-    };
+	  with ur";
+	  
+	dlog($query); # debug
 
     return ( 'getReconcilesByMethodologyLpar-'.$namequery, $query, \@fields );
 }

@@ -29,9 +29,6 @@ public class LicenseAction extends AccountReportBaseAction {
 
     @UserRole(userRole = UserRoleType.READER)
     public String doLicense() {
-        getLicenseService().paginatedList(getData(), getAccount(),
-                getStartIndex(), getData().getObjectsPerPage(), getSort(),
-                getDir());
 
         setRequestURI("license.htm");
         return Action.SUCCESS;
@@ -40,20 +37,15 @@ public class LicenseAction extends AccountReportBaseAction {
     @UserRole(userRole = UserRoleType.READER)
     public String doLicenseDetails() {
         if (getLicenseId() == null) {
+
             return Action.ERROR;
         } else {
-            setLicense(getLicenseService().getLicenseDetails(getLicenseId()));
+            return Action.SUCCESS;
         }
-
-        return Action.SUCCESS;
     }
 
     @UserRole(userRole = UserRoleType.READER)
     public String doFreePool() {
-        getLicenseService().freePoolWithParentPaginatedList(getData(),
-                getAccount(), getStartIndex(), getData().getObjectsPerPage(),
-                getSort(), getDir(),null);
-
         setRequestURI("licenseFreePool.htm");
         return "freepool";
     }

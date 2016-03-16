@@ -240,6 +240,7 @@ sub doDelta {
         $sr->biosSerialNumber( $rec{scanRecordBiosSerialNumber} );
         $sr->biosUniqueId( $rec{scanRecordBiosUniqueId} );
         $sr->boardSerial( $rec{scanRecordBoardSerial} );
+        $sr->sysplex( $rec{scanRecordSysplex} );
         $sr->caseSerial( $rec{scanRecordCaseSerial} );
         $sr->caseAssetTag( $rec{scanRecordCaseAssetTag} );
         $sr->powerOnPassword( $rec{scanRecordPowerOnPassword} );
@@ -290,6 +291,7 @@ sub doDelta {
         $newSl->biosSerialNumber( $sr->biosSerialNumber );
         $newSl->biosUniqueId( $sr->biosUniqueId );
         $newSl->boardSerial( $sr->boardSerial );
+        $newSl->sysplex( $sr->sysplex );
         $newSl->caseSerial( $sr->caseSerial );
         $newSl->caseAssetTag( $sr->caseAssetTag );
         $newSl->powerOnPassword( $sr->powerOnPassword );
@@ -343,6 +345,7 @@ sub doDelta {
         $oldSl->biosSerialNumber( $rec{softwareLparBiosSerialNumber} );
         $oldSl->biosUniqueId( $rec{softwareLparBiosUniqueId} );
         $oldSl->boardSerial( $rec{softwareLparBoardSerial} );
+        $oldSl->sysplex( $rec{softwareLparSysplex} );
         $oldSl->caseSerial( $rec{softwareLparCaseSerial} );
         $oldSl->caseAssetTag( $rec{softwareLparCaseAssetTag} );
         $oldSl->powerOnPassword( $rec{softwareLparPowerOnPassword} );
@@ -1706,15 +1709,6 @@ sub getCustomerId {
 		$acceptFlag = 1;
 	}
 
-	if ( $sr->isManual == 1 ) {
-		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
-			return $self->customerAcctMap->{ $sr->objectId };
-		}
-
-		dlog('NO MATCHING ACCOUNT');
-		return 999999;
-	}
-
 	my $shortName = ( split( /\./, $sr->name ) )[0];
 	$shortName = $sr->name if ( !defined $shortName );
 
@@ -1954,7 +1948,7 @@ sub getCustomerId {
 	}
 
 	# if account is swasset, only use if an account matches what is in swasset
-	if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' ) {
+	if ( $sr->bankAccountId eq '5' || $sr->bankAccountId eq '410' || $sr->isManual == 1 ) {
 		if ( exists $self->customerAcctMap->{ $sr->objectId } ) {
 			return $self->customerAcctMap->{ $sr->objectId };
 		}

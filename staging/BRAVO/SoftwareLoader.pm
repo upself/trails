@@ -274,6 +274,7 @@ sub load {
                 $stagingSoftwareLpar->biosSerialNumber( $rec{biosSerialNumber} );
                 $stagingSoftwareLpar->biosUniqueId( $rec{biosUniqueId} );
                 $stagingSoftwareLpar->boardSerial( $rec{boardSerial} );
+                $stagingSoftwareLpar->sysplex( $rec{sysplex} );
                 $stagingSoftwareLpar->caseSerial( $rec{caseSerial} );
                 $stagingSoftwareLpar->caseAssetTag( $rec{caseAssetTag} );
                 $stagingSoftwareLpar->powerOnPassword( $rec{powerOnPassword} );
@@ -486,6 +487,7 @@ sub load {
                         $bravoSoftwareLpar->biosSerialNumber( $stagingSoftwareLpar->biosSerialNumber );
                         $bravoSoftwareLpar->biosUniqueId( $stagingSoftwareLpar->biosUniqueId );
                         $bravoSoftwareLpar->boardSerial( $stagingSoftwareLpar->boardSerial );
+                        $bravoSoftwareLpar->sysplex( $stagingSoftwareLpar->sysplex );
                         $bravoSoftwareLpar->caseSerial( $stagingSoftwareLpar->caseSerial );
                         $bravoSoftwareLpar->caseAssetTag( $stagingSoftwareLpar->caseAssetTag );
                         $bravoSoftwareLpar->powerOnPassword( $stagingSoftwareLpar->powerOnPassword );
@@ -1517,6 +1519,7 @@ sub querySoftwareLparDataByCustomerId {
             biosSerialNumber
             biosUniqueId
             boardSerial
+            sysplex
             caseSerial
             caseAssetTag
             powerOnPassword
@@ -1623,6 +1626,7 @@ sub getManualQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                
@@ -1699,6 +1703,7 @@ sub getSignatureQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                     
@@ -1775,6 +1780,7 @@ sub getFilterQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                     
@@ -1851,6 +1857,7 @@ sub getTlcmzQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                     
@@ -1927,6 +1934,7 @@ sub getDoranaQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                     
@@ -2003,6 +2011,7 @@ sub getTad4zQuery {
                 ,a.bios_serial_number
                 ,a.bios_unique_id
                 ,a.board_serial
+                ,a.sysplex
                 ,a.case_serial
                 ,a.case_asset_tag
                 ,a.power_on_password                     

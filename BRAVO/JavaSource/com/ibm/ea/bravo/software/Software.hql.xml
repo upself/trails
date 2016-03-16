@@ -130,7 +130,7 @@
 			where
 				s.softwareName = :name
 				and s.status= 'ACTIVE'
-			order by s.productRole desc
+			order by s.productRole desc, s.comments asc
 		]]>
 	</query>
 	
@@ -141,7 +141,7 @@
 			where
 				upper(s.softwareName) = :name
 				and s.status= 'ACTIVE'
-			order by s.productRole desc
+			order by s.productRole desc, s.comments asc
 		]]>
 	</query>
 	

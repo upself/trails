@@ -272,6 +272,9 @@
 				value="%{#attr.row.alertAgeI}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].hostname"
 				value="%{#attr.row.hostname}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].sl_hostname"
+				value="%{#attr.row.sl_hostname}" />
+				
 			<s:hidden name="list[%{#attr.row_rowNum-1}].serial"
 				value="%{#attr.row.serial}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].country"
@@ -284,6 +287,7 @@
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
 				value="%{#attr.row.assetName}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].scope" value="%{#attr.row.scope}"/>
+			<s:hidden name="list[%{#attr.row_rowNum-1}].scopeId" value="%{#attr.row.scopeId}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
@@ -352,6 +356,8 @@
 				value="%{#attr.row.productInfoId}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].chips"
 				value="%{#attr.row.chips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].manufacturerName"
+				value="%{#attr.row.manufacturerName}" />
 		</display:column>
 		<display:column property="alertStatus" title="" />
 		<display:column property="alertAgeI" title="Age" sortable="true"

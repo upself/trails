@@ -103,6 +103,11 @@ sub waitForChildren {
     return $self->{_cfg}->getProperty('waitForChildren');
 }
 
+sub checkScanRecordToLparPeriod {
+    my $self = shift;
+    return $self->{_cfg}->getProperty('checkScanRecordToLparPeriod');
+}
+
 ###Returns an array of Test Bank Account names
 sub testBankAccounts {
     my $self = shift;

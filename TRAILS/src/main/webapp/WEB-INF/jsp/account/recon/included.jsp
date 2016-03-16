@@ -7,11 +7,10 @@
 
 <h2>Action: Included with other product</h2>
 <br />
-<p>Choose which systems to mark as included with other product and
-whether or not to overwrite both manual and automated reconciliations
-that have the selected software products shown in the list below. When
-you are finished, click on the "Next" button to be taken to a
-confirmation page. Click on cancel to return to the workspace.</p>
+<p>Choose which component to use as the parent component for the Included with other product reconciliation action. 
+The list of available components is filtered to only show components which match the Schedule F scope of the selected alert. 
+When you are finished, click on the "Next" button to be taken to a confirmation page. 
+Click on cancel to return to the workspace.</p>
 <br />
 <div class="hrule-dots"></div>
 <br />

@@ -149,7 +149,7 @@ public class ShowQuestion extends AccountBaseAction {
 			// included with other product
 			ReconWorkspace rw = recon.getList().get(0);
 			recon.setInstalledSoftwareList(getReconWorkspaceService()
-					.installedSoftwareList(rw.getInstalledSoftwareId()));
+					.installedSoftwareList(rw.getInstalledSoftwareId(), getAccount(), rw.getSl_hostname(), rw.getOwner(), rw.getAssetName(), rw.getSerial(), rw.getScopeId(), rw.getManufacturerName()));
 		} else if (recon.getReconcileType().getId().intValue() == 9) {
 			// break manual recon
 		} else if (recon.getReconcileType().getId().intValue() == 12) {

@@ -20,6 +20,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "SCHEDULE_F")
 @NamedQueries({
+		@NamedQuery(name = "findScheduleFTotal",query="select count(*) from ScheduleF where account=:account"),
 		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName AND id = :id"),
 		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
@@ -64,6 +65,9 @@ public class ScheduleF {
 
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
+	
+	@Column(name = "MANUFACTURER_NAME")
+	private String manufacturerName;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SCOPE_ID")
@@ -135,6 +139,14 @@ public class ScheduleF {
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
+	}
+	
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 
 	public Date getRecordTime() {
@@ -273,6 +285,12 @@ public class ScheduleF {
 
 			if (!this.getManufacturer().equals(other.getManufacturer())) {
 				return false;
+			}
+			
+			if(null != this.getManufacturerName() && null != other.getManufacturerName()){
+				if (!this.getManufacturerName().equals(other.getManufacturerName())) {
+					return false;
+				}
 			}
 
 			if (!this.getScope().getId().equals(other.getScope().getId())) {

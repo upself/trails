@@ -70,8 +70,12 @@ public class ReconWorkspace implements Serializable {
 	private String osType;
 
 	private String scope;
+	
+	private Long scopeId;
 
 	private String assetName;
+	
+	private String manufacturerName;
 
 	public String getAssetName() {
 		return assetName;
@@ -87,6 +91,14 @@ public class ReconWorkspace implements Serializable {
 
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+
+	public Long getScopeId() {
+		return scopeId;
+	}
+
+	public void setScopeId(Long scopeId) {
+		this.scopeId = scopeId;
 	}
 
 	public String getPid() {
@@ -519,5 +531,13 @@ public class ReconWorkspace implements Serializable {
 
 	public void setEffectiveThreads(BigDecimal effectiveThreads) {
 		this.effectiveThreads = effectiveThreads;
+	}
+
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 }

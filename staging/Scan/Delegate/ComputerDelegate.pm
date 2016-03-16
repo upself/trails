@@ -386,7 +386,7 @@ sub getConnectedScanRecordData {
         @fields = (
             qw (computerId name objectId model serialNumber scanTime users authenticated isManual authProcessorCount processorCount
                 osName osType osMajor osMinor osSub osInstDate userName manufacture biosModel alias physicalTotalKb
-                virtualMemory physicalFreeMemory virtualFreeMemory biosDate biosSerialNumber biosUniqueId boardSerial
+                virtualMemory physicalFreeMemory virtualFreeMemory biosDate biosSerialNumber biosUniqueId boardSerial sysplex
                 caseSerial caseAssetTag extId techImgId )
         );
     }
@@ -538,6 +538,9 @@ sub buildScanRecord {
         if ( length( $rec->{boardSerial} ) > 64 ) {
             $rec->{boardSerial} = undef;
         }
+        if ( length( $rec->{sysplex} ) > 8 ) {
+            $rec->{sysplex} = undef;
+        }
         if ( length( $rec->{caseSerial} ) > 64 ) {
             $rec->{caseSerial} = undef;
         }
@@ -632,6 +635,7 @@ sub buildScanRecord {
     $scanRecord->biosSerialNumber( $rec->{biosSerialNumber} );
     $scanRecord->biosUniqueId( $rec->{biosUniqueId} );
     $scanRecord->boardSerial( $rec->{boardSerial} );
+    $scanRecord->sysplex( $rec->{sysplex} );
     $scanRecord->caseSerial( $rec->{caseSerial} );
     $scanRecord->caseAssetTag( $rec->{caseAssetTag} );
     $scanRecord->powerOnPassword( $rec->{powerOnPassword} );

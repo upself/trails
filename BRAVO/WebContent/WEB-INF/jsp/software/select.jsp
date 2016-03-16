@@ -212,7 +212,7 @@
 				<h2 class="ibm-access">Content navigation</h2>
 				<ul id="ibm-primary-links">
 
-					<li id="ibm-parent-link"><a href="https://w3-connections.ibm.com/communities/service/html/communitystart?communityUuid=85cfd34a-2938-4667-8823-bf4743894fbc">Asset
+					<li id="ibm-parent-link"><a href="https://ibm.biz/gamwiki">Asset
 							Tools Home</a></li>
 					<li id="ibm-overview"><a href="/BRAVO/home.do">BRAVO</a> <a
 						href="/BRAVO/mswiz.do">MS Wizard</a> <a href="/BRAVO/help/help.do">Help</a>
@@ -353,5 +353,5 @@
 			</script>
 		</div>
 	</div>
- <script type="text/javascript"> var _paq = _paq || []; _paq.push(['trackPageView']); _paq.push(['enableLinkTracking']); (function() { var u="http://lexbz181197.cloud.dst.ibm.com:8085/"; _paq.push(['setTrackerUrl', u+'piwik.php']); _paq.push(['setSiteId', 1]); var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s); })(); </script> <noscript><p><img src="http://lexbz181197.cloud.dst.ibm.com:8085/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript> </body>
+  </body>
 </html>

@@ -163,4 +163,25 @@ sub queryFullLoadDiff {
     dlog("queryFullLoadDiff=$query");
     return ( 'fullLoadDiff', $query, \@fields );
 }
+
+sub status {
+    my ( $self, $name ) = @_;
+
+    dlog("In status method of SystemScheduleStatusDelegate");
+
+    dlog("Connecting to trails");
+    my $connection = Database::Connection->new('trails');
+    dlog("Connected to trails");
+
+    ###Set our fields
+    my $sss = new Sigbank::OM::SystemScheduleStatus();
+    $sss->name($name);
+    
+    dlog("Acquiring $name from database");
+    $sss->getByBizKey($connection);
+    
+    return $sss->status;
+}
+
+
 1;

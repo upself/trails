@@ -204,7 +204,8 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), alert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(),alert.getInstalledSoftware().getSoftware()
+						.getManufacturerId().getManufacturerName());
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
@@ -282,7 +283,10 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), workingAlert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(), 
+				workingAlert.getInstalledSoftware().getSoftware()
+						.getManufacturerId()
+						.getManufacturerName());
 
 		ScheduleF scheduleF4RelatedAlert = getScheduleFItem(relatedAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
@@ -295,7 +299,10 @@ public class ReconServiceImpl implements ReconService {
 						.getHardwareLpar().getHardware().getMachineType()
 						.getName(), relatedAlert.getInstalledSoftware()
 						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial());
+						.getSerial(),
+				relatedAlert.getInstalledSoftware().getSoftware()
+						.getManufacturerId()
+						.getManufacturerName());
 
 		if (scheduleF4WorkingAlert != null && scheduleF4RelatedAlert != null) {
 			Long scopeId4WorkingAlert = scheduleF4WorkingAlert.getScope()
@@ -334,23 +341,23 @@ public class ReconServiceImpl implements ReconService {
 	// requested by users End
 
 	private ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial) {
-
+			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
+	
+		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createQuery(
 						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
 				.setParameter("account", account)
 				.setParameter("swname", swname).getResultList();
-
-		if (results == null || results.isEmpty()) {
-			return null;
-		}
+		
+		boolean isExist = false;
 
 		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
 		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
+		
 
 		for (ScheduleF sf : results) {
 			String level = sf.getLevel();
@@ -360,33 +367,58 @@ public class ReconServiceImpl implements ReconService {
 				hwboxLevel.add(sf);
 			} else if ("HWOWNER".equals(level)) {
 				hwOwnerLevel.add(sf);
-			} else {
+			} else if("PRODUCT".equals(level)) {
 				proudctLevel.add(sf);
+			} else {
+				
 			}
 		}
 
 		for (ScheduleF sf : hostNameLevel) {
-			if (sf.getHostname().equals(hostName)) {
+			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwboxLevel) {
-			if (sf.getSerial().equals(serial)
+			if (null != sf.getSerial() 
+					&& sf.getSerial().equals(serial)
+					&& null != sf.getMachineType() 
 					&& sf.getMachineType().equals(machineType)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : hwOwnerLevel) {
-			if (sf.getHwOwner().equals(hwOwner)) {
+			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
+				isExist = true;
 				return sf;
 			}
 		}
 
 		for (ScheduleF sf : proudctLevel) {
-			if (sf.getSoftwareName().equals(swname)) {
+			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
+				isExist = true;
 				return sf;
+			}
+		}
+		
+		// Manufacture level
+		if(!isExist){
+			@SuppressWarnings("unchecked")
+			List<ScheduleF> manufactureResults = getEntityManager()
+					.createQuery(
+							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
+					.setParameter("account", account)
+					.setParameter("manufacturerName", manufacturerName)
+					.getResultList();
+			
+			if(null == manufactureResults || manufactureResults.size() == 0){
+				return null;
+			}else{
+				return manufactureResults.get(0);
 			}
 		}
 

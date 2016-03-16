@@ -119,17 +119,17 @@ sub getScheduleFLevelMap {
 }
 
 sub getIBMISVprio {
-	my ( $self, $conn, $manu_id, $cust_id ) = @_;
+	my ( $self, $conn, $manu_name, $cust_id ) = @_;
 	
 	dlog("Detecting expected alert type IBM / ISVPRIO / ISVNOPRIO...");
 	
 	# reading whether SW manufacturer is considered an IBM brand
 		
-	my $IBMquery = "select 1 from ibm_brand where manufacturer_id = ? with ur";
+	my $IBMquery = "select 1 from ibm_brand where manufacturer_id in ( select id from manufacturer where name = ? ) with ur";
 	
 	$conn->prepareSqlQuery( 'IBMquery', $IBMquery );
 	my $sth = $conn->sql->{IBMquery};
-	$sth->execute ( $manu_id );
+	$sth->execute ( $manu_name );
 	my ($result) = $sth->fetchrow_array;
 	$sth->finish;
 	
@@ -142,7 +142,7 @@ sub getIBMISVprio {
 	
 	my $ISVquery = "select 1 from priority_isv_sw
 						where
-							manufacturer_id = ?
+							manufacturer_id in ( select id from manufacturer where name = ? )
 						and
 							( ( level = 'GLOBAL' and customer_id is null )
 							or ( level = 'ACCOUNT' and customer_id = ? ) )
@@ -152,7 +152,7 @@ sub getIBMISVprio {
 	
 	$conn->prepareSqlQuery( 'ISVquery', $ISVquery );
 	my $sth2 = $conn->sql->{ISVquery};
-	$sth2->execute ( $manu_id, $cust_id );
+	$sth2->execute ( $manu_name, $cust_id );
 	($result) = $sth2->fetchrow_array;
 	$sth2->finish;
 
@@ -173,6 +173,7 @@ sub getScheduleFScope {
 	my $hSerial=shift;
 	my $hMachineTypeId=shift;
 	my $slName=shift;
+	my $manuName=shift;
 	
 	my %scheduleFlevels=getScheduleFLevelMap();
 	
@@ -185,7 +186,7 @@ sub getScheduleFScope {
 	my %recc;
 	$sth->bind_columns( map { \$recc{$_} }
 		  @{ $connection->sql->{ScheduleFScopeFields} } );
-	$sth->execute( $custId, $softName );
+	$sth->execute( $custId, $softName, $manuName );
 	
 	dlog("Searching for ScheduleF scope, customer=".$custId.", software=".$softName);
 	
@@ -252,12 +253,12 @@ sub getScheduleFScopeByISW {
 	
 	$sth->finish;
 	
-	return ( undef, undef ) unless defined $recc{custId};
+#	return ( undef, undef ) unless defined $recc{custId};
 	
 	my @toreturn=getScheduleFScope( $self, $connection, $recc{custId}, $recc{softName}, $recc{hwOwner}, $recc{hSerial},
 									$recc{hMachineTypeId}, $recc{slName}, $recc{swManufacturer} );
 									
-	return ( undef, undef ) unless defined $toreturn[0];
+#	return ( undef, undef ) unless defined $toreturn[0];
 	
 	my %ScheduleFlevels=getScheduleFLevelMap();
 	
@@ -292,7 +293,10 @@ sub queryScheduleFScope {
 	  where
 	    sf.customer_id = ?
 	  and
-	    (( sf.software_name = ? and sf.level != \'MANUFACTURER\' ) )
+	    ( ( sf.software_name = ? and sf.level != \'MANUFACTURER\' )
+	         or
+	      ( sf.manufacturer = ? and sf.level = \'MANUFACTURER\' )
+	    )
 	  and
 	    sf.status_id = 2
 	  with ur
@@ -311,13 +315,14 @@ sub queryScheduleFSearch {
 		swManufacturer
 	);
 	
-	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, s.manufacturer_id
-	from ( ( ( ( ( installed_software is
+	my $query = 'select sl.customer_id, s.software_name, h.owner, h.serial, h.machine_type_id, sl.name, m.name
+	from ( ( ( ( ( ( installed_software is
 				   join software_lpar sl on sl.id = is.software_lpar_id )
                    join hw_sw_composite hsc on hsc.software_lpar_id = is.software_lpar_id )
                    join hardware_lpar hl on hl.id = hsc.hardware_lpar_id )
                    join hardware h on h.id = hl.hardware_id )
                    join software s on s.software_id = is.software_id )
+                   join manufacturer m on m.id = s.manufacturer_id )
                    where is.id = ?
      with ur';
      

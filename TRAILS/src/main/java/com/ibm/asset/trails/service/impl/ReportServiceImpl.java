@@ -662,7 +662,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",instS.PID as pid "
 				+ ",case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end "; 
 
-		String lsBaseSelectClauseTwo = ", COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
+		String lsBaseSelectClauseTwo = ",COALESCE( COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
 				+ "where sf.customer_id = :customerId "
 				+ "and sf.status_id=2 "
 				+ "and sf.software_name = instS.software_name "
@@ -670,13 +670,22 @@ public class ReportServiceImpl implements ReportService {
 				+ "or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) "
 				+ "or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) "
 				+ "or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) "
-				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner ";
+				+ "order by sf.LEVEL fetch first 1 rows only) as varchar(64) ),"
+				+ "CAST ((select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id "
+				+ "where sf.customer_id = :customerId and sf.status_id=2 "
+				+ "and sf.manufacturer_name = instSwMan.name and sf.level ='MANUFACTURER')as varchar(64)) "
+				+ "), 'Not specified' ) as swOwner ";
+				
+			
 		String lsBaseSelectClauseThree = ", 'Not specified' as swOwner ";
 		String lsBaseSelectClauseFour = ",aus.remote_user as alertAssignee "
 				+ ",aus.comments as alertAssComments "
 				+ ",instSwMan.name as instSwManName "
 				+ ",dt.name as instSwDiscrepName "
-				+ ",case when rt.is_manual = 0 then rt.name || '(AUTO)' when rt.is_manual = 1 then rt.name || '(MANUAL)' end "
+				+ ",case when rt.is_manual = 0 and sr.id is not null then rt.name || '(SCARLET)' "
+				+ "when rt.is_manual = 0 and sr.id is null then rt.name || '(AUTO)' "
+				+ "when rt.is_manual = 1 and sr.id is not null then rt.name || '(SCARLET)' "
+				+ "when rt.is_manual = 1 and sr.id is null then rt.name || '(MANUAL)' end "
 				+ ",am.name as reconAllocMethod "
 				+ ",r.remote_user as reconUser "
 				+ ",r.record_time as reconTime "
@@ -728,6 +737,8 @@ public class ReportServiceImpl implements ReportService {
 				+ "is.id = r.installed_software_id "
 				+ "left outer join eaadmin.reconcile_type rt on "
 				+ "r.reconcile_type_id = rt.id "
+				+ "left outer join eaadmin.scarlet_reconcile sr on "
+				+ "r.id = sr.id "
 				+ "left outer join eaadmin.installed_software parent on "
 				+ "r.parent_installed_software_id = parent.id "
 				+ "left outer join eaadmin.software parentS on "
@@ -1378,6 +1389,26 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 
+	private final String[] SCHEDULE_F_REPORT_COLUMN_HEADERS = {"Level","Hw Owner","Hostname","Serial","Machine Type","Account Number","Software title","Software name","Manufacturer","Scope","SW Financial Resp","Source","Source location","Status","Business Justification","Compliance"};
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+	public void getScheduleFReport(Account account, PrintWriter pPrintWriter) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("select sf.Level,sf.hw_Owner,sf.hostname,sf.serial,sf.Machine_Type, c.account_number,sf.software_title,sf.software_name,sf.manufacturer,sc.description as Scope,sf.sw_financial_resp,so.description as Source,sf.source_location,st.description as Status,sf.business_justification,c.SW_COMPLIANCE_MGMT ")
+		.append(" from eaadmin.schedule_f sf,eaadmin.scope sc, eaadmin.status st,eaadmin.source so,eaadmin.customer c ")
+		.append(" where sc.id=sf.scope_id and st.id=sf.status_id and so.id=sf.source_id and c.customer_id=sf.customer_id and")
+		.append(" c.customer_id=")
+		.append(account.getId());
+		
+		ScrollableResults lsrReport = ((Session) getEntityManager().getDelegate()).createSQLQuery(sql.toString()).scroll(ScrollMode.FORWARD_ONLY);
+
+		pPrintWriter.println(outputData(SCHEDULE_F_REPORT_COLUMN_HEADERS));
+		while (lsrReport.next()) {
+			pPrintWriter.println(outputData(lsrReport.get()));
+		}
+
+		lsrReport.close();
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getNonInstanceBasedSWReport(PrintWriter pPrintWriter) {
 		// TODO Auto-generated method stub

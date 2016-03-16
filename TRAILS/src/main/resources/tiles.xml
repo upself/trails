@@ -14,7 +14,7 @@
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
 			<item value="Help" link="/help/home.htm" icon="false" />
-			<item value="Asset home" link="https://w3-connections.ibm.com/communities/service/html/communitystart?communityUuid=85cfd34a-2938-4667-8823-bf4743894fbc"
+			<item value="Asset home" link="https://ibm.biz/gamwiki"
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/home.htm">
@@ -234,7 +234,7 @@
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
 			<item value="Help" link="/help/home.htm" icon="false" />
-			<item value="Asset home" link="https://w3-connections.ibm.com/communities/service/html/communitystart?communityUuid=85cfd34a-2938-4667-8823-bf4743894fbc"
+			<item value="Asset home" link="https://ibm.biz/gamwiki"
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/home.htm">
@@ -462,9 +462,9 @@
 		<put-attribute name="keywords" value="TRAILS account home" />
 	</definition>
 
-	<definition name="tiles.account.alerts.overview" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/alerts/overview.jsp" />
+	<definition name="tiles.account.alerts.overview" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Alert overview" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/alerts/overview.jsp" />
 		<put-attribute name="description" value="TRAILS alert overview" />
 		<put-attribute name="keywords" value="TRAILS alert overview" />
 	</definition>
@@ -1078,18 +1078,16 @@
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
 	</definition>
 
-	<definition name="tiles.account.license.list" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
-		<put-attribute name="legend" type="template"
-			value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
+	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS Account License View" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS account license" />
 		<put-attribute name="keywords" value="TRAILS account license" />
 	</definition>
 
-	<definition name="tiles.account.license.details" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/license/licenseDetails.jsp" />
+	<definition name="tiles.account.license.details" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS Account License Details" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseDetails.jsp" />
 		<put-attribute name="description" value="TRAILS account license detail" />
 		<put-attribute name="keywords" value="TRAILS account license detail" />
 	</definition>
@@ -1279,15 +1277,22 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace unassignment confirmation" />
 	</definition>
-
+	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS license freepool" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="description" value="TRAILS license freepool" />
+		<put-attribute name="navigation" value="" />
+		<put-attribute name="keywords" value="TRAILS license freepool" />
+	</definition>
+<!-- 
 	<definition name="tiles.account.license.freepool" extends="tiles.w3OneColumnLayoutNoNav">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
-		<put-attribute name="legend" type="template"
-			value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
+		<put-attribute name="legend" type="template" value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
 		<put-attribute name="description" value="TRAILS license freepool" />
 		<put-attribute name="keywords" value="TRAILS license freepool" />
 	</definition>
+ -->
 
 	<definition name="tiles.account.reports.home" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
@@ -1391,39 +1396,38 @@
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>
-
-	<definition name="tiles.admin.scheduleF.upload" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+	
+	<definition name="tiles.admin.scheduleF.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Upload Schedule F" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.upload.success"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+	<definition name="tiles.admin.scheduleF.upload.success" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F Upload Result" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload success" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload success" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.list" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
+	<definition name="tiles.admin.scheduleF.list" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F List" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list" />
 		<put-attribute name="keywords" value="TRAILS schedule F list" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.listError" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
+	<definition name="tiles.admin.scheduleF.listError" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F List" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list error" />
 		<put-attribute name="keywords" value="TRAILS schedule F list error" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.manage" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
+	<definition name="tiles.admin.scheduleF.manage" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Schedule F Manage" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
 		<put-attribute name="description" value="TRAILS manage schedule F" />
 		<put-attribute name="keywords" value="TRAILS manage schedule F" />
 	</definition>
@@ -1628,9 +1632,9 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception hardware lpar no cpu model" />
 	</definition>
-	<definition name="tiles.account.causecodes.upload" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
+	<definition name="tiles.account.causecodes.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Upload Cause Codes" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
 		<put-attribute name="description" value="TRAILS account cause codes upload" />
 		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>

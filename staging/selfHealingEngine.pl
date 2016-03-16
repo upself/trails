@@ -11,6 +11,7 @@ use Net::Telnet;
 use Net::SCP::Expect;
 use Config::Properties::Simple;
 use Sys::Hostname;
+use Sigbank::Delegate::SystemScheduleStatusDelegate;
 my $HOSTNAME= hostname;
 
 #Globals
@@ -125,7 +126,7 @@ my $RESTART_CHILD_LOADER_ON_TAP_SERVER_BANK_ACCOUNT_NAME_INDEX     = 2;#Bank Acc
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_DEBUG_OPTION_INDEX          = 3;#Debug Option(Required) - For example: YES or NO
 my $RESTART_CHILD_LOADER_ON_TAP_SERVER_LOG_FILE_INDEX              = 4;#Log File(Optional) - For example: /var/staging/logs/softwareFilterToStaging/softwareFilterToStaging.log.GTAASCCM
 
-my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 1 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
+my $RESTART_CHILD_LOADER_INVOKED_COMMAND = "#1 -b #2 -f 1 -t 0 -d 0 -a 1 -l #3 -c #4";#var used to store Restart Child Loader Invoked Command #Added by Larry for System Support And Self Healing Service Components - Phase 3 - 1.3.3
 #Invoked Command Parameter Definition Indexes
 my $INVOKED_COMMAND_RESTART_CHILD_LOADER_NAME_REPLACE_STRING = "#1";
 my $INVOKED_COMMAND_RESTART_BANK_ACCOUNT_NAME_REPLACE_STRING = "#2";
@@ -329,6 +330,9 @@ my $QUERY_CLEAN_HISTORY = "DELETE FROM EAADMIN.BANK_ACCOUNT_JOB WHERE ID IN(SELE
 my $CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS = "CLEAN_HISTORY_DATA_FOR_ALL_RENAMED_BANK_ACCOUNTS";
 #Added by Tomas for System Support And Self Healing Service Components - Phase 9 - End
 
+
+my $checkScanRecordToLparPeriod;
+
 main();
 
 #This is the main method of Self Healing Engine
@@ -357,6 +361,8 @@ my $selfHealingEngineLogFile    = "/var/staging/logs/systemSupport/selfHealingEn
   #Get the config Non Debug Log Path
   $configNonDebugLogPath = trim($cfgMgr->nonDebugLogPath);
   print LOG "Config Non Debug Log Path: {$configNonDebugLogPath}\n";
+  
+  $checkScanRecordToLparPeriod = $cfgMgr->checkScanRecordToLparPeriod;
   
   #set db2 env path
   $DB_ENV= $cfgMgr->db2Profile;
@@ -2271,6 +2277,7 @@ sub coreOperationProcess{
        my $bankAccountID = getBankAccountID($bankAccountName,$connectionType,$bravoConnection);
        if($bankAccountID ne ""){ # there is exactly one bank account in the database
 	   		print LOG "Bank account ID found\n";
+	   		waitForScanRecordToLpar($checkScanRecordToLparPeriod);
        		deleteBankAccountFromStaging($bankAccountID);
        		deleteBankAccountFromTrails($bankAccountName);
        		if($connectionType eq "DISCONNECTED"){
@@ -2528,7 +2535,7 @@ sub getValidLoaderListOnTAPServer{
   push @vaildLoaderList,"atpToStaging.pl";#22
   push @vaildLoaderList,"swcmToStaging.pl";#23
   push @vaildLoaderList,"capTypeToBravo.pl";#24
-  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#25
+#  push @vaildLoaderList,"reconEnginePriorityISVSoftware.pl";#25
   push @vaildLoaderList,"reconEngineLicensing.pl";#26
   push @vaildLoaderList,"reconEngineInventory.pl";#27
   
@@ -2825,4 +2832,14 @@ sub exec_sql_rc {
    
     return $rc;
 }
+
+sub waitForScanRecordToLpar {
+	my ($waitInSeconds) = @_;
+	while (SystemScheduleStatusDelegate->status("SCAN RECORD TO LPAR") eq "PENDING") {
+		print LOG "Waiting for scanRecordToLpar. Sleep for $waitInSeconds seconds.\n";
+		sleep $waitInSeconds;
+	}
+}
+
+
 

@@ -850,6 +850,7 @@ sub queryScanRecordData {
             biosSerialNumber
             biosUniqueId
             boardSerial
+            sysplex
             caseSerial
             caseAssetTag
             powerOnPassword
@@ -901,6 +902,7 @@ sub queryScanRecordData {
             ,a.bios_serial_number
             ,a.bios_unique_id
             ,a.board_serial
+            ,a.sysplex
             ,a.case_serial
             ,a.case_asset_tag
             ,a.power_on_password
@@ -2306,6 +2308,7 @@ sub queryLparMaps {
             scanRecordBiosSerialNumber
             scanRecordBiosUniqueId
             scanRecordBoardSerial
+            scanRecordSysplex
             scanRecordCaseSerial
             scanRecordCaseAssetTag
             scanRecordPowerOnPassword
@@ -2354,6 +2357,7 @@ sub queryLparMaps {
             softwareLparBiosSerialNumber
             softwareLparBiosUniqueId
             softwareLparBoardSerial
+            softwareLparSysplex
             softwareLparCaseSerial
             softwareLparCaseAssetTag
             softwareLparPowerOnPassword
@@ -2406,6 +2410,7 @@ sub queryLparMaps {
             ,T.sr_bios_serial_number
             ,T.sr_bios_unique_id
             ,T.sr_board_serial
+            ,T.sr_sysplex
             ,T.sr_case_serial
             ,T.sr_case_asset_tag
             ,T.sr_power_on_password            
@@ -2454,6 +2459,7 @@ sub queryLparMaps {
             ,T.sl_bios_serial_number
             ,T.sl_bios_unique_id
             ,T.sl_board_serial
+            ,T.sl_sysplex
             ,T.sl_case_serial
             ,T.sl_case_asset_tag
             ,T.sl_power_on_password                        
@@ -2504,6 +2510,7 @@ sub queryLparMaps {
             ,a.bios_serial_number as sr_bios_serial_number
             ,a.bios_unique_id as sr_bios_unique_id
             ,a.board_serial as sr_board_serial
+            ,a.sysplex as sr_sysplex
             ,a.case_serial as sr_case_serial
             ,a.case_asset_tag as sr_case_asset_tag
             ,a.power_on_password as sr_power_on_password              
@@ -2552,6 +2559,7 @@ sub queryLparMaps {
             ,b.bios_serial_number as sl_bios_serial_number
             ,b.bios_unique_id as sl_bios_unique_id
             ,b.board_serial as sl_board_serial
+            ,b.sysplex as sl_sysplex
             ,b.case_serial as sl_case_serial
             ,b.case_asset_tag as sl_case_asset_tag
             ,b.power_on_password as sl_power_on_password                          
@@ -2608,6 +2616,7 @@ sub queryLparMaps {
             ,a.bios_serial_number as sr_bios_serial_number
             ,a.bios_unique_id as sr_bios_unique_id
             ,a.board_serial as sr_board_serial
+            ,a.sysplex as sr_sysplex
             ,a.case_serial as sr_case_serial
             ,a.case_asset_tag as sr_case_asset_tag
             ,a.power_on_password as sr_power_on_password              
@@ -2656,6 +2665,7 @@ sub queryLparMaps {
             ,b.bios_serial_number as sl_bios_serial_number
             ,b.bios_unique_id as sl_bios_unique_id
             ,b.board_serial as sl_board_serial
+            ,b.sysplex as sl_sysplex
             ,b.case_serial as sl_case_serial
             ,b.case_asset_tag as sl_case_asset_tag
             ,b.power_on_password as sl_power_on_password                          

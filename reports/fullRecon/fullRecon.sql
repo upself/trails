@@ -68,7 +68,7 @@ else '' end ) = pvui.PROCESSOR_TYPE  fetch first 1 row only ) as CHAR(8)),'base 
 ,s.software_name as primaryComponent 
 ,s.pid as pid 
 , case when ba.version != '8.1' then 'N/A' when insTadz.last_used is null or insTadz.last_used = '1970-01-01' then 'Not used' else cast(insTadz.last_used as char(16)) end as MFSwlastUsed 
-, COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id 
+, COALESCE( COALESCE ( CAST ( (select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id 
 where sf.customer_id = lparCust.customer_id 
 and sf.status_id=2 
 and sf.software_name = s.software_name 
@@ -76,13 +76,21 @@ and ( ( sf.level = 'PRODUCT' )
 or (( sf.hostname = sl.name ) and ( level = 'HOSTNAME' )) 
 or (( sf.serial = h.serial ) and ( sf.machine_type = mt.name ) and ( sf.level = 'HWBOX' )) 
 or (( sf.hw_owner = h.owner ) and ( sf.level ='HWOWNER' )) ) 
-order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 'Not specified' ) as swOwner 
+order by sf.LEVEL fetch first 1 rows only) as varchar(64) ), 
+CAST ((select scop.description from eaadmin.scope scop join eaadmin.schedule_f sf on sf.scope_id = scop.id  
+where sf.customer_id = lparCust.customer_id  
+and sf.status_id=2  
+and sf.manufacturer_name = instSwMan.name  
+and sf.level ='MANUFACTURER')as varchar(64)) 
+), 'Not specified' ) as swOwner  
 ,aus.remote_user as alertAssignee 
 ,aus.comments as alertAssComments 
 ,instSwMan.name as instSwManName 
 ,dt.name as instSwDiscrepName 
-,case when rt.is_manual = 0 then rt.name || '(AUTO)' 
-when rt.is_manual = 1 then rt.name || '(MANUAL)' end 
+,case when rt.is_manual = 0 and sr.id is not null then rt.name || '(SCARLET)' 
+when rt.is_manual = 0 and sr.id is null then rt.name || '(AUTO)' 
+when rt.is_manual = 1 and sr.id is not null then rt.name || '(SCARLET)' 
+when rt.is_manual = 1 and sr.id is null then rt.name || '(MANUAL)' end 
 ,am.name as allocationMethod 
 ,r.remote_user as reconUser 
 ,r.record_time as reconTime 
@@ -122,6 +130,7 @@ from
  left outer join eaadmin.bank_account ba on insTadz.bank_account_id = ba.id
  left outer join eaadmin.reconcile r on is.id = r.installed_software_id 
  left outer join eaadmin.reconcile_type rt on r.reconcile_type_id = rt.id 
+ left outer join eaadmin.scarlet_reconcile sr on r.id = sr.id 
  left outer join eaadmin.allocation_methodology am on r.allocation_methodology_id = am.id 
  left outer join eaadmin.installed_software parent on r.parent_installed_software_id = parent.id 
  left outer join eaadmin.software parentS on parent.software_id = parentS.software_id 
