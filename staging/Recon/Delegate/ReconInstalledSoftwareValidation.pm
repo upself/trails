@@ -150,17 +150,17 @@ sub validate {
  elsif ( $self->isInstalledSoftwareReconciled == 0 ) {
   $self->validationCode(1);
  }
- elsif ( $self->validateVendorManaged == 0
-  || $self->validateSoftwareCategory == 0
-  || $self->validateBundle == 0
-  || $self->validateIncludedWithOtherProduct == 0
-  || $self->validateScheduleFdefined == 0
+ elsif ( $self->validateScheduleFdefined == 0
   || $self->validateCustomerOwnedAndManaged == 0
   || $self->validateIBMOwned3rdManaged == 0
   || $self->validateCustomerOwned3rdManaged == 0
   || $self->validateIBMOwnedIBMManagedCons == 0
   || $self->validateCustOwnedIBMManagedCons == 0
   || $self->validateManualCustomerOwnedAndManaged == 0
+  || $self->validateVendorManaged == 0
+  || $self->validateSoftwareCategory == 0
+  || $self->validateBundle == 0
+  || $self->validateIncludedWithOtherProduct == 0
   || $self->validateParentInstalledSW == 0
   || $self->validateLicenseAllocation == 0 )
  {

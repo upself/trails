@@ -10,17 +10,10 @@ use Recon::ScarletInstalledSoftware;
 sub new {
  my $class = shift;
  my $self  = {
-  _connection      => Database::Connection->new('trails'),
   _licenseEndpoint => new Scarlet::LicenseEndpoint()
  };
 
  bless $self, $class;
-}
-
-sub connection {
- my $self = shift;
- $self->{_connection} = shift if scalar @_ == 1;
- return $self->{_connection};
 }
 
 sub licenseEndpoint {
@@ -31,6 +24,7 @@ sub licenseEndpoint {
 
 sub getFreePoolData {
  my $self                       = shift;
+ my $connection					= shift;
  my $installedSoftwareReconData = shift;
  my $customer                   = shift;
  my $installedSoftwareId        = shift;
@@ -67,20 +61,19 @@ sub getFreePoolData {
   }
  }
 
- $self->connection->prepareSqlQueryAndFields(
+ $connection->prepareSqlQueryAndFields(
   $self->queryFreePoolData(
    $installedSoftwareReconData->scopeName, $wherestmt
   )
  );
- my $sth = $self->connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt};
+ my $sth = $connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt};
  my %rec;
  $sth->bind_columns( map { \$rec{$_} }
-    @{ $self->connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt."Fields"} } );
+    @{ $connection->sql->{"freePoolData".$installedSoftwareReconData->scopeName.$wherestmt."Fields"} } );
 
  $sth->execute();
 
  while ( $sth->fetchrow_arrayref ) {
-  dlog("lId =$rec{lId}");
 
   ###I should centralize this check
   if ( defined $customer->swComplianceMgmt
@@ -133,7 +126,6 @@ sub getFreePoolData {
   else {
    ###Subsequent row for license view object.
    if ( defined $rec{usedQuantity} ) {
-    dlog( $rec{usedQuantity} );
     if ( $rec{machineLevel} == 1 ) {
      if ( exists $machineLevel{ $rec{ulId} } ) {
       next;
@@ -145,7 +137,6 @@ sub getFreePoolData {
 
     $data{ $rec{lId} }
       ->quantity( $data{ $rec{lId} }->quantity - $rec{usedQuantity} );
-    dlog( $data{ $rec{lId} }->quantity );
    }
   }
  }
@@ -186,10 +177,10 @@ sub getFreePoolData {
    }
   }
 
-  if ( $licView->quantity <= 0 ) {
-   dlog( "lic fully allocated, removing from free pool hash: id=" . $lId );
-   $validation->validationCode(0);
-  }
+#  if ( $licView->quantity <= 0 ) {   # We need even licenses with 0 free quantity in pool, due to the new method of "machine-level" search
+#   dlog( "lic fully allocated, removing from free pool hash: id=" . $lId );
+#   $validation->validationCode(0);
+#  }
 
   delete $data{$lId} if $validation->validationCode == 0;
  }
