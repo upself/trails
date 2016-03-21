@@ -18,6 +18,7 @@ public enum UserRoleType {
 			+ "com.ibm.tap.asset.helpdesk,"
 			+ "com.ibm.tap.asset.la,"
 			+ "com.ibm.tap.bravo.user,"
+			+ "com.ibm.tap.bravo.user.division,"
 			+ "com.ibm.tap.admin"),
 	EDITOR("com.ibm.tap.asset,com.ibm.tap.admin"), ADMIN("com.ibm.tap.admin");
 

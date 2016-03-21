@@ -130,6 +130,7 @@
 			<role-name>com.ibm.tap.asset.helpdesk</role-name>
 			<role-name>com.ibm.tap.asset.la</role-name>
 			<role-name>com.ibm.tap.bravo.user</role-name>
+			<role-name>com.ibm.tap.bravo.user.division</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
@@ -195,5 +196,9 @@
 	<security-role>
 		<description>com.ibm.tap.bravo.user</description>
 		<role-name>com.ibm.tap.bravo.user</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.bravo.user.division</description>
+		<role-name>com.ibm.tap.bravo.user.division</role-name>
 	</security-role>
 </web-app>
