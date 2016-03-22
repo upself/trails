@@ -1,4 +1,0 @@
-server=lexbz2250
-applyChanges=1
-debugLevel=warn
-sleepPeriod=10800

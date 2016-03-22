@@ -1,6 +1,0 @@
-testMode=0
-server=lexbz2250
-applyChanges=1
-loadDeltaOnly=0
-debugLevel=warn
-sleepPeriod=10800

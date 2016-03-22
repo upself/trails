@@ -1,4 +1,0 @@
-server=tap2
-debugLevel=debug
-validationGapHour=24
-sleepPeriod=10800

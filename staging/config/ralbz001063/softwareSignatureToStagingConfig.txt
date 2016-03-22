@@ -1,8 +1,0 @@
-testMode=0
-server=ralbz001063
-applyChanges=1
-loadDeltaOnly=1
-debugLevel=warn
-fullLoadPeriodHours=96
-testBankAccounts=testBankAccounts=DOWLEG,SHAREDSE,SWASSTDB,TLCMZ,SWDISCRP,DORANA,EMEATLM
-sleepPeriod=10800

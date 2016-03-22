@@ -1,2 +1,0 @@
-IBM Confedential
-Account ID	Account Name	Account Type	Department	Hostname	Asset Type	ATP Serial Number	BIOS Serial Number	Hardware	Software	Hardware Status	Machine Type	Customer Number	Scantime Date	SW Processor Count	HW Processor Count	HW_EXT_ID	HW_TechImgID 

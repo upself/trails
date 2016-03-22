@@ -1,6 +1,0 @@
-trails.password=Gr0wl3rs
-trails.user=eaadmin
-trails.name=TRAILS
-staging.password=apr03db2
-staging.user=eaadmin
-staging.name=STAGIGHO

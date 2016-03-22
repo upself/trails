@@ -1,3 +1,0 @@
-server=ralbz2088
-debugLevel=error
-sleepPeriod=10800

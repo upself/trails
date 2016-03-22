@@ -1,5 +1,0 @@
-server=ralbz2088
-applyChanges=1
-loadDeltaOnly=1
-debugLevel=warn
-sleepPeriod=10800

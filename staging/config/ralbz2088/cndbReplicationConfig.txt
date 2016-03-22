@@ -1,7 +1,0 @@
-testMode=0
-server=ralbz2088
-applyChanges=1
-loadDeltaOnly=1
-debugLevel=warn
-fullLoadPeriodHours=12
-sleepPeriod=10800

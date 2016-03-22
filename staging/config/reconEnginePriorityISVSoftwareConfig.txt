@@ -1,3 +1,0 @@
-server=tap3
-debugLevel=error
-sleepPeriod=10800

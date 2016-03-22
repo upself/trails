@@ -1,9 +1,0 @@
-testMode=0
-server=tap
-applyChanges=1
-loadDeltaOnly=1
-debugLevel=error
-fullLoadPeriodHours=12
-testBankAccounts=
-testCustomerIds=
-sleepPeriod=10800
