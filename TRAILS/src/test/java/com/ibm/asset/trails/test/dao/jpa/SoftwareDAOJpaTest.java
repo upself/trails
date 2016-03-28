@@ -13,7 +13,6 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.SoftwareDAO;
-import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.Software;
 
 
@@ -28,12 +27,13 @@ public class SoftwareDAOJpaTest {
 	private final String softwareName ="IBM AIX";
 	private final String inactiveSoftwareName ="MICROSOFT SQL SERVER 2000 CAL";
 
-	@Test
-	public void testSoftwareDetail() {
-		Software software = softwareDAO.getSoftwareDetails(softwareId);
-		assertNotNull(software);
-		System.out.println(software.getSoftwareName().toString());
-	}
+//	@Test
+//	public void testSoftwareDetail() {
+//		Software software = softwareDAO.getSoftwareDetails(softwareId);
+//		assertNotNull(software);
+//		System.out.println(software.getSoftwareName().toString());
+//		System.out.println("ok!!!!!!!!!!");
+//	}
 	
 	@Test
 	public void testSoftwareBySoftwareName() {
