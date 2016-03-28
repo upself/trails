@@ -23,7 +23,7 @@
 				<value>
 					  file:src/test/resources/h2/hibernate.properties
 				</value>
-				<value>file:C://z/work/Trails_props/trails.properties
+				<value>file:/opt/trails/conf/trailsDST1185.properties
 				</value>
 				<!-- 
 				<value>
