@@ -18,7 +18,7 @@ import com.ibm.asset.trails.domain.Software;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/test/resources/applicationContext-test.xml" })
+@ContextConfiguration(locations = { "file:src/test/resources/h2/applicationContext-test-h2.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class SoftwareDAOJpaTest {
