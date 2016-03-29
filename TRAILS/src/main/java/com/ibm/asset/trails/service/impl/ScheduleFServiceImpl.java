@@ -415,15 +415,28 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					|| !psfSave.getStatus().equals(lsfExists.getStatus())) {
 				lbSaveExistReconRow = true;
 			}
-
-			if (!psfSave.getSoftwareName().equals(lsfExists.getSoftwareName())
-					|| !psfSave.getLevel().equals(lsfExists.getLevel())) {
+			
+			if (!psfSave.getLevel().equals(lsfExists.getLevel())){
 				lbSaveReconRow = true;
 				lbSaveExistReconRow = true;
 			}
 			
-			if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName())
-					|| !psfSave.getLevel().equals(lsfExists.getLevel())) {
+            if (psfSave.getSoftwareName() != null && lsfExists.getSoftwareName() != null){
+			if (!psfSave.getSoftwareName().equals(lsfExists.getSoftwareName())) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+            } else if ((psfSave.getSoftwareName() != null && lsfExists.getSoftwareName() == null) || (psfSave.getSoftwareName() == null && lsfExists.getSoftwareName() != null)){
+            	lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+            }
+			
+			if (psfSave.getManufacturerName() != null && lsfExists.getManufacturerName() != null){
+				if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName())){
+					lbSaveReconRow = true;
+					lbSaveExistReconRow = true;
+				}
+			} else if ((psfSave.getManufacturerName() != null && lsfExists.getManufacturerName() == null) || (psfSave.getManufacturerName() == null && lsfExists.getManufacturerName() != null)) {
 				lbSaveReconRow = true;
 				lbSaveExistReconRow = true;
 			}
@@ -517,6 +530,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfExists.setSoftwareTitle(psfSave.getSoftwareTitle());
 			lsfExists.setSoftwareName(psfSave.getSoftwareName());
 			lsfExists.setManufacturer(psfSave.getManufacturer());
+			lsfExists.setManufacturerName(psfSave.getManufacturerName());
 			lsfExists.setScope(psfSave.getScope());
 			lsfExists.setSource(psfSave.getSource());
 			lsfExists.setSourceLocation(psfSave.getSourceLocation());
@@ -664,6 +678,35 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					lrcsSave.setRecordTime(new Date());
 					lrcsSave.setRemoteUser(psRemoteUser);
 					getEntityManager().persist(lrcsSave);
+				}
+			}
+			
+			if (psfSave.getLevel().equals(
+					ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
+				ArrayList<Software> llProductInfo = null;
+				llProductInfo = findSoftwareByManufacturer(psfSave
+						.getManufacturerName());
+				if (llProductInfo != null && !llProductInfo.isEmpty()) {
+					for (Software productInfotemp : llProductInfo) {
+						@SuppressWarnings("unchecked")
+						List<ReconCustomerSoftware> results = getEntityManager()
+								.createNamedQuery("reconCustomerSwExists")
+								.setParameter("software", productInfotemp)
+								.setParameter("account",
+										psfSave.getAccount())
+								.getResultList();
+
+						if (results == null || results.isEmpty()) {
+							ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
+
+							lrcsSave.setAccount(psfSave.getAccount());
+							lrcsSave.setSoftware(productInfotemp);
+							lrcsSave.setAction("UPDATE");
+							lrcsSave.setRecordTime(new Date());
+							lrcsSave.setRemoteUser(psRemoteUser);
+							getEntityManager().persist(lrcsSave);
+						}
+					}
 				}
 			}
 
