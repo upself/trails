@@ -268,6 +268,7 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setSerial(null);
 				bjScheduleF.setMachineType(null);
 				bjScheduleF.setHostname(null);
+				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
@@ -281,6 +282,7 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setMachineType(scheduleFView.getMachineType());
 				bjScheduleF.setHwOwner(null);
 				bjScheduleF.setHostname(null);
+				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
@@ -292,6 +294,7 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setHwOwner(null);
 				bjScheduleF.setSerial(null);
 				bjScheduleF.setMachineType(null);
+				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
@@ -317,6 +320,7 @@ public class ScheduleFServiceEndpoint {
 			bjScheduleF.setHwOwner(null);
 			bjScheduleF.setSerial(null);
 			bjScheduleF.setMachineType(null);
+			bjScheduleF.setManufacturerName(null);
 		}
 
 		bjScheduleF.setAccount(account);
