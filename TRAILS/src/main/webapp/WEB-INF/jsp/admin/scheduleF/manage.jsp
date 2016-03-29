@@ -129,8 +129,13 @@
 					change : function(event, ui) {
 						if (ui.item == null) {
 							$("#manufacturerId").val('');
+							if ($('#manufacturerName').val() != null || $('#manufacturerName').val() != ''){
 							$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
 							$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+							} 
+							if ($('#manufacturerName').val() == null || $('#manufacturerName').val() == '') {
+							$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
+							}
 						}
 					},
 					source : function(request, response) {
