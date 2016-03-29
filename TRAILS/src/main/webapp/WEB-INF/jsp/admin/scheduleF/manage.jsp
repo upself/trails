@@ -129,6 +129,8 @@
 					change : function(event, ui) {
 						if (ui.item == null) {
 							$("#manufacturerId").val('');
+							$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+							$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
 						}
 					},
 					source : function(request, response) {
@@ -159,6 +161,7 @@
 					minLength : 3,
 					select : function(event, ui) {
 						$("#manufacturerId").val(ui.item.id);
+						$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 					}
 				});
 	});
