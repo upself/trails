@@ -14,19 +14,18 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "SCHEDULE_F_H")
 @NamedQueries({
-	@NamedQuery(name = "findscheduleFHIdTotal",query="select count(*) from ScheduleFH  where scheduleF =:scheduleF"),
-	@NamedQuery(name = "scheduleFHList", query = "FROM ScheduleFH SH JOIN FETCH SH.scheduleF WHERE SH.scheduleF.id =:scheduleFId ") })
+		@NamedQuery(name = "findscheduleFHIdTotal", query = "select count(*) from ScheduleFH  where scheduleF =:scheduleF"),
+		@NamedQuery(name = "scheduleFHList", query = "FROM ScheduleFH SH JOIN FETCH SH.scheduleF WHERE SH.scheduleF.id =:scheduleFId ") })
 public class ScheduleFH {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
-	
+
 	@Column(name = "LEVEL")
 	private String level;
 
@@ -51,7 +50,7 @@ public class ScheduleFH {
 	private Account account;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName="SOFTWARE_ID")
+	@JoinColumn(name = "SOFTWARE_ID", referencedColumnName = "SOFTWARE_ID")
 	private Software software;
 
 	@Column(name = "SOFTWARE_TITLE")
@@ -62,6 +61,9 @@ public class ScheduleFH {
 
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
+
+	@Column(name = "MANUFACTURER_NAME")
+	private String manufacturerName;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SCOPE_ID")
@@ -86,19 +88,19 @@ public class ScheduleFH {
 
 	@Column(name = "RECORD_TIME")
 	private Date recordTime;
-	
-	//AB added begin
-	@Column(name="SW_FINANCIAL_RESP")
+
+	// AB added begin
+	@Column(name = "SW_FINANCIAL_RESP")
 	private String SWFinanceResp;
-	
+
 	public void setSWFinanceResp(String sWFinanceResp) {
 		SWFinanceResp = sWFinanceResp;
 	}
 
 	public String getSWFinanceResp() {
 		return SWFinanceResp;
-	}	
-	
+	}
+
 	public String getLevel() {
 		return level;
 	}
@@ -140,115 +142,123 @@ public class ScheduleFH {
 	}
 
 	public Account getAccount() {
-  	return account;
-  }
+		return account;
+	}
 
 	public void setAccount(Account account) {
-  	this.account = account;
-  }
+		this.account = account;
+	}
 
 	public String getBusinessJustification() {
-  	return businessJustification;
-  }
+		return businessJustification;
+	}
 
 	public void setBusinessJustification(String businessJustification) {
-  	this.businessJustification = businessJustification;
-  }
+		this.businessJustification = businessJustification;
+	}
 
 	public Long getId() {
-  	return id;
-  }
+		return id;
+	}
 
 	public void setId(Long id) {
-  	this.id = id;
-  }
+		this.id = id;
+	}
 
 	public String getManufacturer() {
-  	return manufacturer;
-  }
+		return manufacturer;
+	}
 
 	public void setManufacturer(String manufacturer) {
-  	this.manufacturer = manufacturer;
-  }
+		this.manufacturer = manufacturer;
+	}
+
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
+	}
 
 	public Date getRecordTime() {
-  	return recordTime;
-  }
+		return recordTime;
+	}
 
 	public void setRecordTime(Date recordTime) {
-  	this.recordTime = recordTime;
-  }
+		this.recordTime = recordTime;
+	}
 
 	public String getRemoteUser() {
-  	return remoteUser;
-  }
+		return remoteUser;
+	}
 
 	public void setRemoteUser(String remoteUser) {
-  	this.remoteUser = remoteUser;
-  }
+		this.remoteUser = remoteUser;
+	}
 
 	public ScheduleF getScheduleF() {
-  	return scheduleF;
-  }
+		return scheduleF;
+	}
 
 	public void setScheduleF(ScheduleF scheduleF) {
-  	this.scheduleF = scheduleF;
-  }
+		this.scheduleF = scheduleF;
+	}
 
 	public Scope getScope() {
-  	return scope;
-  }
+		return scope;
+	}
 
 	public void setScope(Scope scope) {
-  	this.scope = scope;
-  }
+		this.scope = scope;
+	}
 
 	public Software getSoftware() {
-  	return software;
-  }
+		return software;
+	}
 
 	public void setSoftware(Software software) {
-  	this.software = software;
-  }
+		this.software = software;
+	}
 
 	public String getSoftwareName() {
-  	return softwareName;
-  }
+		return softwareName;
+	}
 
 	public void setSoftwareName(String softwareName) {
-  	this.softwareName = softwareName;
-  }
+		this.softwareName = softwareName;
+	}
 
 	public String getSoftwareTitle() {
-  	return softwareTitle;
-  }
+		return softwareTitle;
+	}
 
 	public void setSoftwareTitle(String softwareTitle) {
-  	this.softwareTitle = softwareTitle;
-  }
+		this.softwareTitle = softwareTitle;
+	}
 
 	public Source getSource() {
-  	return source;
-  }
+		return source;
+	}
 
 	public void setSource(Source source) {
-  	this.source = source;
-  }
+		this.source = source;
+	}
 
 	public String getSourceLocation() {
-  	return sourceLocation;
-  }
+		return sourceLocation;
+	}
 
 	public void setSourceLocation(String sourceLocation) {
-  	this.sourceLocation = sourceLocation;
-  }
+		this.sourceLocation = sourceLocation;
+	}
 
 	public Status getStatus() {
-  	return status;
-  }
+		return status;
+	}
 
 	public void setStatus(Status status) {
-  	this.status = status;
-  }
-	
+		this.status = status;
+	}
+
 }

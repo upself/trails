@@ -442,7 +442,7 @@ public class ReconServiceImpl implements ReconService {
 	// User Story - 17236 - Manual License Allocation at HW level can
 	// automatically close Alerts on another account on the same Shared HW as
 	// requested by users End
-
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	private ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
 	

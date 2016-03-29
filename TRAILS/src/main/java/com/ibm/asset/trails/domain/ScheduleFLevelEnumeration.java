@@ -2,7 +2,7 @@ package com.ibm.asset.trails.domain;
 
 public enum ScheduleFLevelEnumeration {
 
-	PRODUCT,HWOWNER,HWBOX,HOSTNAME;
+	PRODUCT,MANUFACTURER,HWOWNER,HWBOX,HOSTNAME;
 
 	public String value() {
 		return name();
