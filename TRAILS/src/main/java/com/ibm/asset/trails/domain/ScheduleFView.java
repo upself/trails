@@ -12,6 +12,7 @@ public class ScheduleFView {
   private String machineType;
   private String softwareTitle;
   private String manufacturer;
+  private String manufacturerName;
   private String scopeDescription;
   private String SWFinanceResp;
   private String SourceDescription;
@@ -77,6 +78,12 @@ public String getManufacturer() {
 }
 public void setManufacturer(String manufacturer) {
 	this.manufacturer = manufacturer;
+}
+public String getManufacturerName() {
+	return manufacturerName;
+}
+public void setManufacturerName(String manufacturerName) {
+	this.manufacturerName = manufacturerName;
 }
 public String getScopeDescription() {
 	return scopeDescription;

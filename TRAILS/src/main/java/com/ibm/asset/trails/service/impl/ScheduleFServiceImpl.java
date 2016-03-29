@@ -93,13 +93,14 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware,
+	public List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware, String manufacturerName,
 			String level) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwAndLevel")
 				.setParameter("account", pAccount)
 				.setParameter("softwareName", pSoftware.getSoftwareName())
+				.setParameter("manufacturerName", manufacturerName)
 				.setParameter("level", level).getResultList();
 
 		if (results == null || results.isEmpty()) {
@@ -110,6 +111,23 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		return results;
 	}
 
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public ArrayList<Software> findSoftwareByManufacturer(String manufacturerName) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Software> softwareforList =  (ArrayList<Software>) getEntityManager()
+				.createNamedQuery("softwareByManufacturerName")
+				.setParameter("manufacturerName", manufacturerName)
+				.getResultList();
+		
+		if (softwareforList == null || softwareforList.isEmpty()) {
+			softwareforList = null;
+		} else {
+			return softwareforList;
+		}
+
+		return softwareforList;
+	}
+	
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
 	public ArrayList<Software> findSoftwareBySoftwareName(String psSoftwareName) {
 		@SuppressWarnings("unchecked")
@@ -304,7 +322,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				} else if (sf.getAccount() != null && sf.getSoftware() != null
 						&& sf.getLevel() != null) {
 					List<ScheduleF> lsfExists = findScheduleF(sf.getAccount(),
-							sf.getSoftware(), sf.getLevel());
+							sf.getSoftware(), sf.getManufacturerName(), sf.getLevel());
 					if (lsfExists != null) {
 						for (ScheduleF existsSF : lsfExists) {
 							if (existsSF instanceof ScheduleF) {
@@ -355,7 +373,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 
 	@SuppressWarnings("null")
-	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void insertInswRecon(List<InstalledSoftware> installedswlist,
 			String psRemoteUser) {
 
@@ -382,7 +400,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 	}
 
-	@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public void saveScheduleF(ScheduleF psfSave, String psRemoteUser) {
 		boolean lbSaveReconRow = false;
 		boolean lbSaveExistReconRow = false;
@@ -399,6 +417,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 
 			if (!psfSave.getSoftwareName().equals(lsfExists.getSoftwareName())
+					|| !psfSave.getLevel().equals(lsfExists.getLevel())) {
+				lbSaveReconRow = true;
+				lbSaveExistReconRow = true;
+			}
+			
+			if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName())
 					|| !psfSave.getLevel().equals(lsfExists.getLevel())) {
 				lbSaveReconRow = true;
 				lbSaveExistReconRow = true;
@@ -462,6 +486,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfhSave.setSoftwareTitle(lsfExists.getSoftwareTitle());
 			lsfhSave.setSoftwareName(lsfExists.getSoftwareName());
 			lsfhSave.setManufacturer(lsfExists.getManufacturer());
+			lsfhSave.setManufacturerName(lsfExists.getManufacturerName());
 			lsfhSave.setLevel(lsfExists.getLevel());
 			lsfhSave.setHwOwner(lsfExists.getHwOwner());
 			lsfhSave.setMachineType(lsfExists.getMachineType());
@@ -513,6 +538,35 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					ArrayList<Software> llProductInfo = null;
 					llProductInfo = findSoftwareBySoftwareName(lsfhSave
 							.getSoftwareName());
+					if (llProductInfo != null && !llProductInfo.isEmpty()) {
+						for (Software productInfotemp : llProductInfo) {
+							@SuppressWarnings("unchecked")
+							List<ReconCustomerSoftware> results = getEntityManager()
+									.createNamedQuery("reconCustomerSwExists")
+									.setParameter("software", productInfotemp)
+									.setParameter("account",
+											lsfhSave.getAccount())
+									.getResultList();
+
+							if (results == null || results.isEmpty()) {
+								ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
+
+								lrcsSave.setAccount(lsfhSave.getAccount());
+								lrcsSave.setSoftware(productInfotemp);
+								lrcsSave.setAction("UPDATE");
+								lrcsSave.setRecordTime(new Date());
+								lrcsSave.setRemoteUser(psRemoteUser);
+								getEntityManager().persist(lrcsSave);
+							}
+						}
+					}
+				}
+				
+				if (lsfhSave.getLevel().equals(
+						ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
+					ArrayList<Software> llProductInfo = null;
+					llProductInfo = findSoftwareByManufacturer(lsfhSave
+							.getManufacturerName());
 					if (llProductInfo != null && !llProductInfo.isEmpty()) {
 						for (Software productInfotemp : llProductInfo) {
 							@SuppressWarnings("unchecked")
@@ -746,9 +800,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		Long total = (Long)getEntityManager().createNamedQuery("findscheduleFHIdTotal").setParameter("scheduleF", scheduleF).getSingleResult();
 		return total;
 	}
-	
-	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	private ScheduleF findScheduleF(Long plId) {
+    
+	public ScheduleF findScheduleF(Long plId) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFById").setParameter("id", plId)

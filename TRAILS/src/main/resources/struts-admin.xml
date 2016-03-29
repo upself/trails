@@ -10,6 +10,8 @@
 			<result type="tiles">tiles.admin.home</result>
 		</action>
 		<action name="liveSearch" method="liveSearch" class="ScheduleFAjaxAction"></action>
+		<action name="manufacturer" method="getManufacturerByNameJson"
+			class="ScheduleFAjaxAction" />
 	</package>
 
 	<package name="adminPvuMapping" extends="trails-struts-default"
