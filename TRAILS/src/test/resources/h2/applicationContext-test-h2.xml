@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.ibm.asset.trails.dao" />
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>
+					  file:src/test/resources/h2/hibernate.properties
+				</value>
+				<value>file:/opt/trails/conf/trailsDST1185.properties
+				</value>
+				<!-- 
+				<value>
+					file:/opt/trails/conf/hibernateDST1185.properties
+				</value>
+				<value>file:/opt/trails/conf/trailsDST1185.properties
+				</value> -->
+			</list>
+		</property>
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="persistenceUnitName" value="trailspd" />
+	</bean>
+
+	<bean id="hibernateJpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="database" value="${pd.database}" />
+		<property name="showSql" value="${pd.showSql}" />
+		<property name="databasePlatform" value="com.ibm.asset.trails.domain.DB2Dialect" />
+	</bean>
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${pd.driverClassName}" />
+		<property name="url" value="${pd.url}" />
+		<property name="username" value="${pd.username}" />
+		<property name="password" value="${pd.password}" />
+	</bean>
+
+	<bean id="namedParamJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<!-- Constuct H2 in-memory tables and import data -->
+	<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
+        <jdbc:script location="classpath:h2/schema.sql" />
+        <jdbc:script location="classpath:h2/data_import_*.sql" encoding="UTF-8"/>
+    </jdbc:initialize-database>
+
+	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
+	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
+	<bean id="reconWorkspaceService"
+		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl">
+		<property name="reconRules">
+			<list>
+				<bean class="com.ibm.ea.common.reconcile.MipMsuReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.HardwareIflReconRule" />
+				<bean class="com.ibm.ea.common.reconcile.PvuReconRule" />
+			</list>
+		</property>
+	</bean>
+	<bean id="reconService" class="com.ibm.asset.trails.service.impl.ReconServiceImpl" />
+	<bean id="allocationMethodologyService"
+		class="com.ibm.asset.trails.service.impl.AllocationMethodologyServiceImpl" />
+	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
+	<bean id="reportDeliveryTrackingService"
+		class="com.ibm.asset.trails.service.impl.ReportDeliveryTrackingServiceImpl" />
+</beans>
