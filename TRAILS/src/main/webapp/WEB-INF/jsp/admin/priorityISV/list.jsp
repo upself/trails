@@ -1,10 +1,4 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<%@ taglib prefix="s" uri="/struts-tags"%>
-<s:if test="hasErrors()">
-	<s:actionerror />
-	<s:fielderror />
-</s:if>
 <div class="ibm-columns">
 
 	<!-- SORTABLE DATA TABLE -->

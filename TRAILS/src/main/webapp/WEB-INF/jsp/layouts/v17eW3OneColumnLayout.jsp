@@ -43,22 +43,16 @@
 	
 
 <style type="text/css">
-@media only screen and (min-width: 1024px) {
-	#ibm-content-main {
-		width: 760px;
-	}
-	#ibm-content-sidebar {
-		width: 220px;
-	}
+
+#ibm-content-main > .ibm-columns > .ibm-col-1-1{
+	width: 95%;
+	background: white;
 }
 
-@media only screen and (min-width: 1100px) {
-
+#ibm-content-main > .ibm-columns > .ibm-col-1-1 > table{
+	background: white;
 }
 
-@media only screen and (min-width: 1200px) {
-
-}
 
 .nobreak{
 	word-break: keep-all;
@@ -76,6 +70,7 @@
 }
 
 </style>
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">
 	ibmweb.config.set({
 		siteid : 'w3',
@@ -111,7 +106,7 @@
 </head>
 
 
-<body id="ibm-com">
+<body id="ibm-com" class="ibm-default">
 	<div id="ibm-top">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
@@ -143,30 +138,27 @@
 		</div>
 		<!-- MASTHEAD_END -->
 
-		<div id="ibm-pcon" style="width: 100%;">
+		<div id="ibm-pcon" style="width: inherit">
 			<!-- CONTENT_BEGIN -->
 			<div id="ibm-content">
-				<div id="ibm-content-head">
-					<!-- LEADSPACE_BEGIN -->
-					<div id="ibm-leadspace-head" class="ibm-alternate">
-						<div id="ibm-leadspace-body">
-							<div class="ibm-columns">
-								<div class="ibm-col-1-1"  style="margin-left:0px">
-									<br>
-									<h1 id="titleContent" style="font-size:23px"><tmp:insertAttribute name="contentTitle" /></h1>
-								</div>
+				<!-- LEADSPACE_BEGIN -->
+				<div id="ibm-leadspace-head" class="ibm-alternate">
+					<div id="ibm-leadspace-body">
+						<div class="ibm-columns">
+							<div class="ibm-col-1-1">
+								<h1 id="titleContent" style="font-size:23px" ><tmp:insertAttribute name="contentTitle" /></h1>
 							</div>
 						</div>
 					</div>
-					<!-- LEADSPACE_END -->
 				</div>
+				<!-- LEADSPACE_END -->
 				
 				<div id="ibm-content-body">
-					<div id="ibm-content-main" >
+					<div id="ibm-content-main" style="width:100%;">
 						<tmp:insertAttribute name="content" />      
 					</div>
 				</div>
-				
+					
 				<!-- FEATURES_BEGIN -->
 				<div id="ibm-content-sidebar">
 					<tmp:insertAttribute name="contentSidebar" />

@@ -1,6 +1,5 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<%@ taglib prefix="s" uri="/struts-tags"%>
+
 
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">

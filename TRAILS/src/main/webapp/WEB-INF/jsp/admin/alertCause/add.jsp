@@ -1,11 +1,4 @@
 <!-- BEGIN CASUE CODE ADD -->
-<%@ taglib prefix="s" uri="/struts-tags"%>
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-
 <script type="text/javascript">
 	$(function() {
 		initArTypeList();

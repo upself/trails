@@ -1,19 +1,14 @@
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- show loading -->
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<p style="font-weight:bold">IBM Confidential</p>
-<br />
-<p>Below lists the unique processor brands and models as taken from
-the software group website located <a
-	href="https://www-112.ibm.com/software/howtobuy/passportadvantage/valueunitcalculator/vucalc.wss?jadeAction=DOWNLOAD_PVU_TABLE_SELECT">here</a>.
-Click on one of the links to customize processor value unit mappings
-and/or view further details.</p>
-<br />
-<br />
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<h6>IBM Confidential</h6>
+		<p>Below lists the unique processor brands and models as taken from the software group website located 
+		<a href="https://www-112.ibm.com/software/howtobuy/passportadvantage/valueunitcalculator/vucalc.wss?jadeAction=DOWNLOAD_PVU_TABLE_SELECT">here</a>.
+		Click on one of the links to customize processor value unit mappings and/or view further details.
+		</p>
 
-<br />
+	</div>
 	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable PVU Mapping">
 			<thead>
@@ -26,6 +21,8 @@ and/or view further details.</p>
 			</tbody>
 		</table>
 	</div>
+</div>
+	
 <script type="text/javascript">
 $(document).ready(function(){
 	searchData();

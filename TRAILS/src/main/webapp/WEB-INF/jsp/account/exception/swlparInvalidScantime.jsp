@@ -1,4 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <!-- Search form -->
 <div class="ibm-columns">

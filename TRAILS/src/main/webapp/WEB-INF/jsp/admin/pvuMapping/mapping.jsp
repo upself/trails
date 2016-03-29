@@ -1,16 +1,17 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <jsp:include page="mappingHead.jsp"></jsp:include>
-<p style="font-weight:bold">IBM Confidential</p>
-<p>Add or Remove one or more Asset machine models, based on the PVU
-details listed at the bottom of the screen. Click Submit to save your
-selections.</p>
-<br />
-
-Processor brand: ${pvu.processorBrand}
-<br />
-Processor model: ${pvu.processorModel}
-
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<h6>IBM Confidential</h6>
+		<p>Add or Remove one or more Asset machine models, based on the PVU details listed at the bottom of the screen. Click Submit to save your selections.</p>
+	</div>
+	<br />
+	<div class="ibm-col-1-1" style="font-size: 12px;">
+		Processor brand: ${pvu.processorBrand}<br />
+		Processor model: ${pvu.processorModel}<br />
+	</div>
+</div>
 <div class="clear"></div>
 <br />
 <div class="map_hidden" id="map_stat_wait">
