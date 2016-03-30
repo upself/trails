@@ -27,7 +27,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ibm.tap.sigbank.framework.common.Constants;
+
 import org.apache.struts.action.ActionMessage;
+
 import com.ibm.tap.sigbank.framework.common.Delegate;
 import com.ibm.tap.sigbank.framework.common.Pagination;
 import com.ibm.tap.sigbank.framework.common.Util;
@@ -172,6 +174,36 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		}
 	}
 
+	public static void changeSoftwareFilterAssignment2(List softwareFilters,
+			Product to, String changeJustification, String comments,
+			String remoteUser, Session session, String catalogType) throws HibernateException,
+			NamingException, IllegalAccessException, InvocationTargetException {
+
+		Iterator i = softwareFilters.iterator();
+		while (i.hasNext()) {
+			SoftwareFilter sf = (SoftwareFilter) i.next();
+			if (sf.getProduct().getName().equals(to.getName())) {
+				continue;
+			}
+
+			if (to.getName().equals(Constants.UNKNOWN)) {
+				sf.setStatus(Constants.INACTIVE);
+			} else {
+				sf.setStatus(Constants.ACTIVE);
+			}
+
+			sf.setProduct(to);
+			sf.setChangeJustification(changeJustification);
+			sf.setComments(comments);
+			if(catalogType!=null){
+			  catalogType = catalogType.trim().toUpperCase();
+			}
+			sf.setCatalogType(catalogType);
+			save(sf, remoteUser, session);
+		}
+	}
+	
+	
 	public static void save(SoftwareFilter sf, String remoteUser,
 			Session session) throws HibernateException, NamingException,
 			IllegalAccessException, InvocationTargetException {
@@ -345,6 +377,13 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		// Now we need to go through the logic of updating a new piece of
 		// software
 		ActionErrors errors = new ActionErrors();
+		
+		//Check if the catalog type value is valid or not when do software filter update operation
+		String catalogType = softwareFilterForm.getCatalogType();
+		if(catalogType!=null && !catalogType.trim().equals("") && Util.findValue(catalogType.trim().toUpperCase(), null,Constants.CATALOG_TYPES)==null){
+		  errors.add("catalogType", new ActionMessage("errors.catalogtype"));
+		  return errors;
+		}
 
 		// Save the software
 		save(softwareFilter, remoteUser, session);
@@ -369,7 +408,14 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		if (!Util.isBlankString(sff.getComments())) {
 			sf.setComments(sff.getComments());
 		}
-
+		
+		if(sff.getCatalogType()!=null){
+		  sf.setCatalogType(sff.getCatalogType().trim().toUpperCase());
+		}
+		else{
+		  sf.setCatalogType(sff.getCatalogType());
+		}
+		
 		return sf;
 	}
 
@@ -401,6 +447,14 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 			NamingException, IllegalAccessException, InvocationTargetException {
 
 		ActionErrors errors = new ActionErrors();
+	
+		//Check if the catalog type value is valid or not when do software filter add operation
+		String catalogType = sff.getCatalogType();
+		if(catalogType!=null && !catalogType.trim().equals("") && Util.findValue(catalogType.trim().toUpperCase(), null,Constants.CATALOG_TYPES)==null){
+		  errors.add("catalogType", new ActionMessage("errors.catalogtype"));
+		  return errors;
+		}
+		
 		if (to.getDeleted()) {
 			errors.add("softwareInactive", new ActionMessage(
 					"errors.software.software.inactive"));
@@ -419,9 +473,9 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		softwareFilters = getSoftwareFilters(selected, softwareFilters,
 				session);
 
-		changeSoftwareFilterAssignment(softwareFilters, to, sff
+		changeSoftwareFilterAssignment2(softwareFilters, to, sff
 				.getChangeJustification(), sff.getComments(), remoteUser,
-				session);
+				session, sff.getCatalogType());
 
 		tx.commit();
 		session.close();
@@ -519,7 +573,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		String patternStr = "	";
 		String[] f = str.split(patternStr);
 
-		if (f.length != 8) {
+		if (f.length != 9) {
 			return "Invalid number of columns on line " + i + "\n";
 		}
 
@@ -535,6 +589,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		sff.setMapSoftwareVersion(f[5].trim());
 		sff.setComments(f[6]);
 		sff.setChangeJustification(f[7]);
+		sff.setCatalogType(Util.isBlankString(f[8]) ? null : f[8].trim());
 
 		Product product = null;
 		String productName = f[4];
@@ -596,7 +651,18 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 				return "Invalid OS Type on line " + i + " \n";
 			}
 		}
+		
+		//Check if Catalog type value is valid or not
+		if (!Util.isBlankString(sff.getCatalogType())) {
+			sff.setCatalogType(Util.findValue(sff.getCatalogType().trim().toUpperCase(), null,
+					Constants.CATALOG_TYPES));
 
+			if (sff.getCatalogType() == null) {
+				session.close();
+				return "Invalid Catalog type on line " + i + " \n";
+			}
+		}
+		
 		SoftwareFilter softwareFilter = null;
 
 		softwareFilter = SoftwareFilterDelegate.getSoftwareFilter(sff
@@ -618,6 +684,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		softwareFilter.setChangeJustification(sff.getChangeJustification());
 		softwareFilter.setComments(sff.getComments());
 		softwareFilter.setStatus(Constants.ACTIVE);
+		softwareFilter.setCatalogType(sff.getCatalogType());
 
 		try {
 			SoftwareFilterDelegate.save(softwareFilter, remoteUser, session);

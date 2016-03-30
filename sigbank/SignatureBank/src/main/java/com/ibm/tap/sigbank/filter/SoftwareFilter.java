@@ -50,6 +50,8 @@ public class SoftwareFilter implements Serializable {
 	private String status;
 
 	private Set history;
+	
+	private String catalogType;
 
 	public String getChangeJustification() {
 		return changeJustification;
@@ -169,5 +171,13 @@ public class SoftwareFilter implements Serializable {
 					+ Constants.ICON_SYSTEM_STATUS_ALERT
 					+ "\" width=\"12\" height=\"10\"/>";
 		}
+	}
+
+	public String getCatalogType() {
+		return catalogType;
+	}
+
+	public void setCatalogType(String catalogType) {
+		this.catalogType = catalogType;
 	}
 }

@@ -7,6 +7,7 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.ibm.tap.sigbank.framework.common.BaseAction;
@@ -242,12 +243,12 @@ public class ActionSoftwareFilter extends BaseAction {
 		// Try to save the object
 		ActionErrors errors = SoftwareFilterDelegate.updateSoftwareFilter(
 				softwareFilterForm, request.getRemoteUser());
-
+		
 		// If there are errors send them back to the form and display errors
 		if (!errors.isEmpty()) {
 			saveErrors(request, (ActionMessages) errors);
 
-			return mapping.findForward(Constants.ERROR);
+			return mapping.getInputForward();
 		}
 
 		// Reset our token

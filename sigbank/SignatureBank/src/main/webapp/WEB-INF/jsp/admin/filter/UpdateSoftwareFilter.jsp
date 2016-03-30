@@ -66,6 +66,12 @@ in to complete the form.
 			<td><div class="input-note">&nbsp;</div><bean:write name="softwareFilterForm" property="endOfSupport" /></td>
 		</tr>
 		<tr>
+			<td class="t1"><label for="catalogType"> Catalog type: </label></td>
+			<td>
+			<div class="input-note">maximum 32 characters</div>
+			<html:text property="catalogType" styleClass="input" /></td>
+		</tr>
+		<tr>
 			<td class="t1"><label for="osType"> Operating System: </label></td>
 			<td><div class="input-note">&nbsp;</div><bean:write name="softwareFilterForm" property="osType" /></td>
 		</tr>
@@ -117,6 +123,8 @@ in to complete the form.
 	<display:column title="Map version" property="mapSoftwareVersion"
 		headerClass="blue-med" />
 	<display:column title="End of support" property="endOfSupport"
+		headerClass="blue-med" />
+	<display:column title="Catalog type" property="catalogType"
 		headerClass="blue-med" />
 	<display:column title="Operating System" property="osType"
 		headerClass="blue-med" />

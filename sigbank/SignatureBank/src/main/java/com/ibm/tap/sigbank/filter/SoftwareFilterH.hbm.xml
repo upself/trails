@@ -46,6 +46,8 @@
 
 		<property name="status" column="STATUS" length="32"
 			not-null="true" />
+	    
+	    <property name="catalogType" column="CATALOG_TYPE" length="32" />
 	</class>
 </hibernate-mapping>
 

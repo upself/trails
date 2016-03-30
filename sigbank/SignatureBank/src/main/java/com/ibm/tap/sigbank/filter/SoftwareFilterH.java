@@ -48,6 +48,8 @@ public class SoftwareFilterH implements Serializable {
 	private Date recordTime;
 
 	private String status;
+	
+	private String catalogType;
 
 	public String getChangeJustification() {
 		return changeJustification;
@@ -151,6 +153,14 @@ public class SoftwareFilterH implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getCatalogType() {
+		return catalogType;
+	}
+
+	public void setCatalogType(String catalogType) {
+		this.catalogType = catalogType;
 	}
 
 }
