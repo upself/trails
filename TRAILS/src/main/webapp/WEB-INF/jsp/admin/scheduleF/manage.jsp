@@ -414,10 +414,7 @@
 		}
 
 		this.timer = setTimeout(
-				function() {
-
-					$
-							.ajax({
+				function() {$.ajax({
 								url : "${pageContext.request.contextPath}/admin/liveSearch.htm",
 								async : true,
 								type : "POST",
@@ -437,9 +434,20 @@
 								success : function(data, status) {
 									liveSearch.empty();
 									if (!data.length) {
-										liveSearch
-												.append("no matched item found.")
+										$( "#statusDescription")
+										.find( 'option[value="ACTIVE"]')
+										.attr( "disabled", true);
+										
+										$("#statusDescription")
+										.find('option[value="INACTIVE"]')
+										.attr("selected", true);
+										
+										liveSearch.append("no matched item found.")
 									} else {
+										$( "#statusDescription")
+										.find( 'option[value="ACTIVE"]')
+										.attr( "enabled", true);
+										
 										liveSearch.append(data);
 									}
 									liveSearch.show("slow");
@@ -466,15 +474,10 @@
 														if (type.name == 'softwareName') {
 															type.value = $(this)
 																	.text()
-																	.slice(11,
-																			-10);
+																	.slice(11, -10);
 															if ($(this)
 																	.text()
-																	.slice(
-																			-10,
-																			$(
-																					this)
-																					.text().length) == '(INACTIVE)') {
+																	.slice(-10, $(this).text().length) == '(INACTIVE)') {
 																$(
 																		"#statusDescription")
 																		.find(
@@ -502,6 +505,7 @@
 															type.value = $(this)
 																	.text();
 														}
+														liveSearch.empty();
 													});
 								}
 							})
