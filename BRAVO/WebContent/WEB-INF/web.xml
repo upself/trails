@@ -136,6 +136,7 @@
 			<role-name>com.ibm.tap.sigbank.admin</role-name>
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
+			<role-name>com.ibm.tap.bravo.user.emea.dpe</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
@@ -165,6 +166,7 @@
 			<role-name>com.ibm.tap.sigbank.admin</role-name>
 			<role-name>com.ibm.tap.bravo.user</role-name>
 			<role-name>com.ibm.tap.bravo.user.division</role-name>
+			<role-name>com.ibm.tap.bravo.user.emea.dpe</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
@@ -232,5 +234,9 @@
 	<security-role>
 		<description>com.ibm.tap.asset.la</description>
 		<role-name>com.ibm.tap.asset.la</role-name>
+	</security-role>
+	<security-role>
+		<description>com.ibm.tap.bravo.user.emea.dpe</description>
+		<role-name>com.ibm.tap.bravo.user.emea.dpe</role-name>
 	</security-role>
 </web-app>
