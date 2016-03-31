@@ -21,7 +21,7 @@ public interface ScheduleFService {
 	ScheduleF findScheduleF(Account pAccount, Software pSoftware);
 	ScheduleF findScheduleF(Long plScheduleFId);
 	ScheduleF findScheduleF(Long plScheduleFId, Account pAccount, Software pSoftware);
-	List<ScheduleF> findScheduleF(Account pAccount, Software pSoftware, String manufacturerName, String level);
+	List<ScheduleF> findScheduleF(Account pAccount, String softwareName, String manufacturerName, String level);
 
 	ArrayList<Software> findSoftwareBySoftwareName(String psSoftwareName);
 

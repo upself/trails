@@ -244,7 +244,7 @@ public class ScheduleFServiceEndpoint {
 		} else {
 
 			lsfExists = getScheduleFService().findScheduleF(account,
-					laSoftware.get(0), scheduleFView.getManufacturerName(),
+					laSoftware.get(0).getSoftwareName(), scheduleFView.getManufacturerName(),
 					scheduleFView.getLevel());
 			if (lsfExists != null) {
 				sfoExists = findSfInExistsList(lsfExists, scheduleFView);
