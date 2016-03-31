@@ -519,9 +519,13 @@ public class ScheduleFServiceEndpoint {
 					ScheduleFView schFView = new ScheduleFView();
 
 					schFView.setId(scheduleF.getId());
-					schFView.setSoftwareName(scheduleF.getSoftwareName());
 					schFView.setLevel(scheduleF.getLevel());
-
+					
+					if (null != scheduleF.getSoftwareName()) {
+						schFView.setSoftwareName(scheduleF.getSoftwareName());
+					} else {
+						schFView.setSoftwareName("");
+					}
 					if (null != scheduleF.getHwOwner()) {
 						schFView.setHwOwner(scheduleF.getHwOwner());
 					} else {
