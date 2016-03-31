@@ -10,6 +10,7 @@ import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
+import com.ibm.asset.trails.form.BreakResult;
 
 public interface ReconService {
 
@@ -25,9 +26,9 @@ public interface ReconService {
 	public AlertUnlicensedSw breakReconcileByAlert(Long alertId,
 			Account account, String remoteUser, Set<UsedLicenseHistory> usedLicHis);
 	
-	public Map<InstalledSoftware,Set<License>> breakReconcileByAlertWithoutQueue(Long alertId,String remoteUser, Set<UsedLicenseHistory> usedLicHis);
+	public BreakResult breakReconcileByAlertWithoutQueue(Long alertId,String remoteUser, Set<UsedLicenseHistory> usedLicHis);
 	
-	public void breakResultToQueue(List<Map<InstalledSoftware,Set<License>>> mapList, String remoteUser);
+	public void breakResultToQueue(List<BreakResult> breakResultList);
 
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon precon);

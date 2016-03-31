@@ -2,7 +2,6 @@ package com.ibm.asset.trails.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,14 +11,17 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.ibm.asset.trails.dao.ReconLicenseDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
@@ -35,6 +37,7 @@ import com.ibm.asset.trails.domain.ReconcileH;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
+import com.ibm.asset.trails.form.BreakResult;
 import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.ReconService;
 
@@ -86,10 +89,10 @@ public class ReconServiceImpl implements ReconService {
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Map<InstalledSoftware, Set<License>> breakReconcileByAlertWithoutQueue(Long alertId, String remoteUser, Set<UsedLicenseHistory> usedLicHis) {
+	public BreakResult breakReconcileByAlertWithoutQueue(Long alertId, String remoteUser, Set<UsedLicenseHistory> usedLicHis) {
 
-		//Construct result
-		Map<InstalledSoftware, Set<License>> map = null;
+		
+		BreakResult breakResult = null;
 		
 		AlertUnlicensedSw alert = findAlertById(alertId);
 		Reconcile reconcile = findReconcile(alert);
@@ -103,10 +106,12 @@ public class ReconServiceImpl implements ReconService {
 		alert = openAlert(alert);
 		
 		//Step 3: Break reconcile
-		map = breakReconcileWithoutQueue(alert.getReconcile(), remoteUser);
+		Account account = alert.getReconcile().getInstalledSoftware().getSoftwareLpar().getAccount();
+		account.getId();//avoid no session issue
+		breakResult = breakReconcileWithoutQueue(alert.getReconcile(), account, remoteUser);
 		
 		
-		return map;
+		return breakResult;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -146,81 +151,36 @@ public class ReconServiceImpl implements ReconService {
 	
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void breakResultToQueue(List<Map<InstalledSoftware, Set<License>>> mapList, String remoteUser) {
+	public void breakResultToQueue(List<BreakResult> breakResultList) {
 		// TODO Auto-generated method stub
-		List<ReconInstalledSoftware> risQueue = new ArrayList<ReconInstalledSoftware>();
-		Set<ReconLicense> rlQueue = new HashSet<ReconLicense>();
-		
 	   
-	    for(Map<InstalledSoftware, Set<License>> map : mapList){
-	    	for(Map.Entry<InstalledSoftware, Set<License>> entry: map.entrySet()){
-	    		InstalledSoftware ins = entry.getKey();
-	    		Set<License> licenseSet = entry.getValue();
-	    		
-	    		//Construct ReconInstalledSoftware
-	    		ReconInstalledSoftware ris = findQueueByInstalledSoftwareId(ins.getId());
-				if (ris == null) {
-					ris = new ReconInstalledSoftware();
-					ris.setAccount(ins.getSoftwareLpar().getAccount());
-					ris.setAction("UPDATE");
-					ris.setInstalledSoftware(ins);
-					ris.setRecordTime(new Date());
-					ris.setRemoteUser(remoteUser);
-					
-					risQueue.add(ris);
-				}
-				
-				//Construct License
-				for(License license : licenseSet){
-					ReconLicense rl = reconLicenseDAO.getExistingReconLicense(license.getId());
-					if (rl == null) {
-						rl = new ReconLicense();
-						rl.setAccount(license.getAccount());
-						rl.setAction("UPDATE");
-						rl.setLicense(license);
-						rl.setRecordTime(new Date());
-						rl.setRemoteUser(remoteUser);
-						rlQueue.add(rl);
-					}
-				}
+		Set<ReconLicense> reconLicenseSet = new HashSet<ReconLicense>();
+		
+		//save ReconInstalledSoftware and construct reconLicenseSet
+	    for(BreakResult breakResult : breakResultList){
+	    	ReconInstalledSoftware reconInstalledSoftware = breakResult.getReconInstalledSoftware();
+	    	
+	    	if(reconInstalledSoftware != null){
+	    		ReconInstalledSoftware dbRis = findQueueByInstalledSoftwareId(reconInstalledSoftware.getInstalledSoftware().getId());
+	    		if(null == dbRis){
+	    			getEntityManager().persist(reconInstalledSoftware);
+	    		}
+	    	}
+	    	
+	    	Set<ReconLicense> rlSet = breakResult.getReconLicenseSet();
+	    	if(null != rlSet && rlSet.size() > 0){
+	    		reconLicenseSet.addAll(rlSet);
 	    	}
 	    }
-		
 	    
-	    int i = 0;
-	    int batchSize = 100;  
-         
-        //batch save ReconInstalledSoftware
-        for (ReconLicense rl : rlQueue) {  
-            getEntityManager().persist(rl);  
-            i++;  
-            if (i % batchSize == 0) {  
-                getEntityManager().flush();  
-                getEntityManager().clear();  
-            }  
-        } 
-        
-        if(i % batchSize != 0){
-        	getEntityManager().flush();  
-            getEntityManager().clear();
-        }
-      
-        
-        i = 0;
-        //batch save ReconInstalledSoftware
-        for (ReconInstalledSoftware ris : risQueue) {  
-            getEntityManager().persist(ris);  
-            i++;  
-            if (i % batchSize == 0) {  
-                getEntityManager().flush();  
-                getEntityManager().clear();  
-            }  
-        }
-        
-        if(i % batchSize != 0){
-        	getEntityManager().flush();  
-            getEntityManager().clear();
-        }
+	    //Save ReconLicense
+	    for(ReconLicense reconLicense : reconLicenseSet){
+			//always persist result
+	    	ReconLicense dbRl = reconLicenseDAO.getExistingReconLicense(reconLicense.getLicense().getId());
+	    	if(null == dbRl){
+	    		getEntityManager().persist(reconLicense);
+	    	}
+		}
 	}
 
 	private boolean reconcileValidate(AlertUnlicensedSw alert) {
@@ -628,29 +588,59 @@ public class ReconServiceImpl implements ReconService {
 		getEntityManager().remove(reconcile);
 	}
 	
-	private Map<InstalledSoftware,Set<License>> breakReconcileWithoutQueue(Reconcile reconcile,String remoteUser){
+	private BreakResult breakReconcileWithoutQueue(Reconcile reconcile, Account account, String remoteUser){
 		
-		Map<InstalledSoftware,Set<License>> map = new HashMap<InstalledSoftware,Set<License>>();
+		BreakResult breakResult = new BreakResult();
+		
 		
 		InstalledSoftware is = reconcile.getInstalledSoftware();
-		Set<License> licenseSet = clearUsedLicenseReconcile(reconcile, remoteUser);
+		is.getId(); //avoid no session issue;
+		Set<ReconLicense> reconLicenseSet= clearUsedLicenseReconcile(reconcile, remoteUser);
+		ReconInstalledSoftware reconInstalledSoftware = findQueueByInstalledSoftwareId(is.getId());
+		if (reconInstalledSoftware == null) {
+			reconInstalledSoftware = new ReconInstalledSoftware();
+			reconInstalledSoftware.setAccount(account);
+			reconInstalledSoftware.setAction("UPDATE");
+			reconInstalledSoftware.setInstalledSoftware(is);
+			reconInstalledSoftware.setRecordTime(new Date());
+			reconInstalledSoftware.setRemoteUser(remoteUser);
+			breakResult.setReconInstalledSoftware(reconInstalledSoftware);
+		}
 		getEntityManager().remove(reconcile);
+		breakResult.setReconLicenseSet(reconLicenseSet);
 		
-		map.put(is, licenseSet);
-		return map;
+		return breakResult;
 	}
 
-	private Set<License> clearUsedLicenseReconcile(Reconcile reconcile, String remoteUser){
-		Set<License> licenseSet = new HashSet<License>();
+	private Set<ReconLicense> clearUsedLicenseReconcile(Reconcile reconcile, String remoteUser){
+		Set<ReconLicense> reconLicenseSet = null;
 		
 		Set<UsedLicense> usedLics = reconcile.getUsedLicenses();
 		for (UsedLicense ul : usedLics) {
 			License license = ul.getLicense();
-			licenseSet.add(license);
+			Account account = license.getAccount();
+			license.getId();//avoid no session issue
+			account.getId();//avoid no session issue
+			ReconLicense queue = reconLicenseDAO.getExistingReconLicense(license.getId());
+			if (queue == null) {
+				queue = new ReconLicense();
+				queue.setAccount(account);
+				queue.setAction("UPDATE");
+				queue.setLicense(license);
+				queue.setRecordTime(new Date());
+				queue.setRemoteUser(remoteUser);
+				
+				if(reconLicenseSet == null){
+					reconLicenseSet = new HashSet<ReconLicense>();
+				}
+				
+				reconLicenseSet.add(queue);
+			}
+			
 			removeUsedLicenseReconcile(ul, reconcile);
 		}
 		
-		return licenseSet;
+		return reconLicenseSet;
 	}
 	
 	private void clearUsedLicenses(Reconcile reconcile, String remoteUser) {

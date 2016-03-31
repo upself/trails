@@ -40,6 +40,7 @@ import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
 import com.ibm.asset.trails.domain.VSoftwareLpar;
+import com.ibm.asset.trails.form.BreakResult;
 import com.ibm.asset.trails.service.ReconService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.ea.common.reconcile.IReconcileRule;
@@ -146,6 +147,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	public void setAlertsTotal(int alertsTotal) {
 		this.alertsTotal = alertsTotal;
 	}
+
 
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> reconcileTypeActions() {
@@ -712,7 +714,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			List<ReconWorkspace> selectedList, ReconcileType reconcileType,
 			String owner) {
 		
-		List<Map<InstalledSoftware,Set<License>>> mapList = new ArrayList<Map<InstalledSoftware,Set<License>>>();
+		List<BreakResult> breakResultList = new ArrayList<BreakResult>();
 		List<Long> alertList = findAffectedAlertList(selectedList, false, true);
 
 		setAlertsProcessed(0);
@@ -720,19 +722,23 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		for (Long alertId : alertList) {
 			AlertUnlicensedSw alert = alertDAO.findById(alertId);
 			alertDAO.refresh(alert);
-			   if (alert.isOpen()){
-	            	continue;
-	            }
+			if (alert.isOpen()){
+				setAlertsProcessed(getAlertsProcessed() + 1);
+	            continue;
+	        }
+			
 			List<Long> alertIds = new ArrayList<Long>();
 			Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
 			assembleAlertIdUsedLicHset(alertIds, alert, existsUsedLicenseHistorieSet);
 			for (Long id : alertIds) {
-				Map<InstalledSoftware,Set<License>> map = reconService.breakReconcileByAlertWithoutQueue(id, remoteUser, existsUsedLicenseHistorieSet);
-				mapList.add(map);
+				BreakResult breakResult = reconService.breakReconcileByAlertWithoutQueue(id, remoteUser, existsUsedLicenseHistorieSet);
+				breakResultList.add(breakResult);
 			}
+			
+			setAlertsProcessed(getAlertsProcessed() + 1);
 		}
-		setAlertsProcessed(getAlertsProcessed() + 1);
-		reconService.breakResultToQueue(mapList, remoteUser);
+		
+		reconService.breakResultToQueue(breakResultList);
 	}
 
 	private void breakManualReconGroup(Account account, String remoteUser,
@@ -745,44 +751,46 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			lhsSoftwareItemId.add(rw.getProductInfoId());
 		}
 
-		List<Map<InstalledSoftware,Set<License>>> mapList = new ArrayList<Map<InstalledSoftware,Set<License>>>();
+		List<BreakResult> breakResultList = new ArrayList<BreakResult>();
 		for (Long llSoftwareItemId : lhsSoftwareItemId) {
-
 			log.debug("Processing softwareItemId: " + llSoftwareItemId);
 
-			List<Long> alertList = alertDAO.findAffectedAlertList(
-					account.getId(), llSoftwareItemId, false, true, owner,
-					false);
+			List<Long> alertList = alertDAO.findAffectedAlertList(account.getId(), llSoftwareItemId, false, true, owner,false);
 
 			setAlertsProcessed(0);
 			setAlertsTotal(alertList.size());
-			log.debug("alertList: " + alertList.size());
 			for (Long alertId : alertList) {
 				AlertUnlicensedSw alert = alertDAO.findById(alertId);
 				alertDAO.refresh(alert);
-					if (alert == null || alert.getReconcile() == null || alert.isOpen()) {
+				if (alert == null || alert.getReconcile() == null || alert.isOpen()) {
+					setAlertsProcessed(getAlertsProcessed() + 1);
 					continue;
 				}
+				
 				List<Long> alertIds = new ArrayList<Long>();
 				Set<UsedLicenseHistory> existsUsedLicenseHistorieSet = new HashSet<UsedLicenseHistory>();
 				assembleAlertIdUsedLicHset(alertIds, alert, existsUsedLicenseHistorieSet);
 				for (Long id : alertIds) {
-					Map<InstalledSoftware,Set<License>> map = reconService.breakReconcileByAlertWithoutQueue(id, remoteUser, existsUsedLicenseHistorieSet);
-					mapList.add(map);
+					BreakResult breakResult = reconService.breakReconcileByAlertWithoutQueue(id, remoteUser, existsUsedLicenseHistorieSet);
+					breakResultList.add(breakResult);
 				}
+				
+				setAlertsProcessed(getAlertsProcessed() + 1);
 			}
-			setAlertsProcessed(getAlertsProcessed() + 1);
+			
 		}
 		
-		reconService.breakResultToQueue(mapList, remoteUser);
+		reconService.breakResultToQueue(breakResultList);
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	public void breakLicenseRecon(Account account, String remoteUser,
 			List<ReconWorkspace> reconWorkspaces, ReconcileType reconcileType) {
+		
+		List<BreakResult> breakResultList = new ArrayList<BreakResult>();
+		
 		for (ReconWorkspace reconWorkspace : reconWorkspaces) {
-			AlertUnlicensedSw alert = alertDAO.findById(reconWorkspace
-					.getAlertId());
+			AlertUnlicensedSw alert = alertDAO.findById(reconWorkspace.getAlertId());
 			alertDAO.refresh(alert);
             if (alert.isOpen()){
             	continue;
@@ -793,13 +801,14 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 			setAlertsProcessed(0);
 			setAlertsTotal(alertIds.size());
 			for (Long alertId : alertIds) {
-				AlertUnlicensedSw alertObj = alertDAO.findById(alertId);
-				reconService.breakReconcileByAlert(alertId, alertObj
-						.getInstalledSoftware().getSoftwareLpar().getAccount(),
-						remoteUser,existsUsedLicenseHistorieSet);
+				BreakResult breakResult = reconService.breakReconcileByAlertWithoutQueue(alertId,remoteUser,existsUsedLicenseHistorieSet);
+				breakResultList.add(breakResult);
 				setAlertsProcessed(getAlertsProcessed() + 1);
 			}
 		}
+		
+
+		reconService.breakResultToQueue(breakResultList);
 	}
 	// End break reconcile manual action
 	
