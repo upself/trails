@@ -26,7 +26,8 @@ import javax.persistence.Table;
 		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.manufacturerName = :manufacturerName  AND SF.level = :level") })
+		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.level = :level"),
+		@NamedQuery(name = "findScheduleFByAccountAndManAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE AND SF.software = null AND SF.account = :account AND SF.manufacturerName = :manufacturerName  AND SF.level = :level")})
 public class ScheduleF {
 
 	@Id

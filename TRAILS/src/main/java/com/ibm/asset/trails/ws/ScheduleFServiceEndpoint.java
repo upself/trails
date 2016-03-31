@@ -110,15 +110,7 @@ public class ScheduleFServiceEndpoint {
 			schfList.add(result);
 			schFViewList = scheduleFtransformer(schfList);
 			ScheduleFView sfView = schFViewList.get(0);
-			if (sfView.getLevel().equals(
-					ScheduleFLevelEnumeration.MANUFACTURER
-					.toString())){
-				if(manufactuerService
-				.findManufacturerByName(sfView.getManufacturerName()) == null){
-					sfView.setSoftwareStatus(true);
-					sfView.setStatusId((long) 1);
-				}
-			}
+			
 			if (!sfView.getLevel().equals(
 					ScheduleFLevelEnumeration.MANUFACTURER
 					.toString()) && !getScheduleFService().findSoftwareBySoftwareName(
@@ -129,6 +121,14 @@ public class ScheduleFServiceEndpoint {
 				sfView.setSoftwareStatus(false);
 				sfView.setStatusId(result.getStatus().getId());
 
+			} else if (sfView.getLevel().equals(
+					ScheduleFLevelEnumeration.MANUFACTURER
+					.toString())){
+				if(manufactuerService
+				.findManufacturerByName(sfView.getManufacturer()) == null){
+					sfView.setSoftwareStatus(true);
+					sfView.setStatusId((long) 1);
+				}
 			} else {
 				sfView.setSoftwareStatus(true);
 				sfView.setStatusId((long) 1);
@@ -180,7 +180,6 @@ public class ScheduleFServiceEndpoint {
 		scheduleFView.setMachineType(machineType);
 		scheduleFView.setSoftwareTitle(softwareTitle);
 		scheduleFView.setManufacturer(manufacturer);
-		scheduleFView.setManufacturerName(manufacturer);
 		scheduleFView.setScopeDescription(scopeDescription);
 		scheduleFView.setSourceLocation(sourceLocation);
 		scheduleFView.setStatusDescription(statusDescription);
@@ -243,9 +242,20 @@ public class ScheduleFServiceEndpoint {
 			}
 		} else {
 
+			if (!scheduleFView.getLevel().equals(
+					ScheduleFLevelEnumeration.MANUFACTURER
+					.toString())){
 			lsfExists = getScheduleFService().findScheduleF(account,
-					laSoftware.get(0).getSoftwareName(), scheduleFView.getManufacturerName(),
+					laSoftware.get(0).getSoftwareName(), 
 					scheduleFView.getLevel());
+			}
+			if (scheduleFView.getLevel().equals(
+					ScheduleFLevelEnumeration.MANUFACTURER
+					.toString())){
+			lsfExists = getScheduleFService().findScheduleFbyManufacturer(account,
+					scheduleFView.getManufacturer(), 
+					scheduleFView.getLevel());
+			}
 			if (lsfExists != null) {
 				sfoExists = findSfInExistsList(lsfExists, scheduleFView);
 			}
@@ -256,6 +266,7 @@ public class ScheduleFServiceEndpoint {
 		}
 		bjScheduleF.setSoftwareTitle(scheduleFView.getSoftwareTitle());
 		bjScheduleF.setSoftwareName(scheduleFView.getSoftwareName());
+		if (laSoftware.size() != 0 ){ bjScheduleF.setSoftware(laSoftware.get(0));}
 		bjScheduleF.setLevel(scheduleFView.getLevel());
 		if (scheduleFView.getLevel().equals(
 				ScheduleFLevelEnumeration.HWOWNER.toString())) {
@@ -267,7 +278,6 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setSerial(null);
 				bjScheduleF.setMachineType(null);
 				bjScheduleF.setHostname(null);
-				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
@@ -281,7 +291,6 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setMachineType(scheduleFView.getMachineType());
 				bjScheduleF.setHwOwner(null);
 				bjScheduleF.setHostname(null);
-				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
@@ -293,12 +302,11 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setHwOwner(null);
 				bjScheduleF.setSerial(null);
 				bjScheduleF.setMachineType(null);
-				bjScheduleF.setManufacturerName(null);
 			}
 
 		} else if (scheduleFView.getLevel().equals(
 				ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-			if (StringUtils.isEmpty(scheduleFView.getManufacturerName())) {
+			if (StringUtils.isEmpty(scheduleFView.getManufacturer())) {
 				return WSMsg.failMessage("MANUFACTURER field is empty");
 			} else {
 				bjScheduleF.setHostname(scheduleFView.getHostName());
@@ -307,7 +315,6 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setMachineType(null);
 				bjScheduleF.setSoftware(null);
 				bjScheduleF.setSoftwareTitle(null);
-				bjScheduleF.setManufacturerName(scheduleFView.getManufacturerName());
 				if (manufacturer1 == null) {
 					bjScheduleF.setStatus(findStatusInList((long) 1,
 							getScheduleFService().getStatusList()));
@@ -319,12 +326,11 @@ public class ScheduleFServiceEndpoint {
 			bjScheduleF.setHwOwner(null);
 			bjScheduleF.setSerial(null);
 			bjScheduleF.setMachineType(null);
-			bjScheduleF.setManufacturerName(null);
 		}
 
 		bjScheduleF.setAccount(account);
-		bjScheduleF.setSoftware(laSoftware.get(0));
 		bjScheduleF.setManufacturer(scheduleFView.getManufacturer());
+		bjScheduleF.setManufacturerName(scheduleFView.getManufacturer());
 
 		Scope sfScope = findScopeInList(scheduleFView.getScopeDescription(),
 				getScheduleFService().getScopeList());
@@ -555,12 +561,6 @@ public class ScheduleFServiceEndpoint {
 					} else {
 						schFView.setManufacturer("");
 					}
-					if (null != scheduleF.getManufacturerName()) {
-						schFView.setManufacturerName(scheduleF
-								.getManufacturerName());
-					} else {
-						schFView.setManufacturerName("");
-					}
 					if (null != scheduleF.getSWFinanceResp()) {
 						schFView.setSWFinanceResp(scheduleF.getSWFinanceResp());
 					} else {
@@ -628,9 +628,14 @@ public class ScheduleFServiceEndpoint {
 					ScheduleFView schFView = new ScheduleFView();
 
 					schFView.setId(scheduleFH.getId());
-					schFView.setSoftwareName(scheduleFH.getSoftwareName());
+					
 					schFView.setLevel(scheduleFH.getLevel());
 
+					if (null != scheduleFH.getSoftwareName()) {
+						schFView.setSoftwareName(scheduleFH.getSoftwareName());
+					} else {
+						schFView.setSoftwareName("");
+					}
 					if (null != scheduleFH.getHwOwner()) {
 						schFView.setHwOwner(scheduleFH.getHwOwner());
 					} else {
@@ -660,12 +665,6 @@ public class ScheduleFServiceEndpoint {
 						schFView.setManufacturer(scheduleFH.getManufacturer());
 					} else {
 						schFView.setManufacturer("");
-					}
-					if (null != scheduleFH.getManufacturerName()) {
-						schFView.setManufacturerName(scheduleFH
-								.getManufacturerName());
-					} else {
-						schFView.setManufacturerName("");
 					}
 					if (null != scheduleFH.getSWFinanceResp()) {
 						schFView.setSWFinanceResp(scheduleFH.getSWFinanceResp());
@@ -845,7 +844,7 @@ public class ScheduleFServiceEndpoint {
 				break;
 			} else if ((scheduleFView.getLevel().toString()
 					.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) && scheduleFView
-					.getManufacturerName().equals(lsFind.getManufacturerName()))
+					.getManufacturer().equals(lsFind.getManufacturer()))
 					|| (scheduleFView
 							.getLevel()
 							.toString()

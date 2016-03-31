@@ -15,7 +15,6 @@ public class ScheduleFH_ {
 	public static volatile SingularAttribute<ScheduleFH, String> softwareTitle;
 	public static volatile SingularAttribute<ScheduleFH, String> softwareName;
 	public static volatile SingularAttribute<ScheduleFH, String> manufacturer;
-	public static volatile SingularAttribute<ScheduleFH, String> manufacturerName;
 	public static volatile SingularAttribute<ScheduleFH, Scope> scope;
 	public static volatile SingularAttribute<ScheduleFH, Source> source;
 	public static volatile SingularAttribute<ScheduleFH, String> sourceLocation;

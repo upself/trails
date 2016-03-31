@@ -21,11 +21,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,13 +90,28 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	}
 
 	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-	public List<ScheduleF> findScheduleF(Account pAccount, String softwareName, String manufacturerName,
-			String level) {
+	public List<ScheduleF> findScheduleF(Account pAccount, String softwareName, String level) {
 		@SuppressWarnings("unchecked")
 		List<ScheduleF> results = getEntityManager()
 				.createNamedQuery("findScheduleFByAccountAndSwAndLevel")
 				.setParameter("account", pAccount)
 				.setParameter("softwareName", softwareName)
+				.setParameter("level", level).getResultList();
+
+		if (results == null || results.isEmpty()) {
+			results = null;
+		} else {
+			return results;
+		}
+		return results;
+	}
+	
+	@Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+	public List<ScheduleF> findScheduleFbyManufacturer(Account pAccount, String manufacturerName,	String level) {
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createNamedQuery("findScheduleFByAccountAndManAndLevel")
+				.setParameter("account", pAccount)
 				.setParameter("manufacturerName", manufacturerName)
 				.setParameter("level", level).getResultList();
 
@@ -321,8 +333,12 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 							.toString()));
 				} else if (sf.getAccount() != null && (sf.getSoftware() != null || sf.getManufacturerName() != null)
 						&& sf.getLevel() != null) {
-					List<ScheduleF> lsfExists = findScheduleF(sf.getAccount(),
-							sf.getSoftwareName(), sf.getManufacturerName(), sf.getLevel());
+					List<ScheduleF> lsfExists = null;
+					if(sf.getLevel().toString().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
+					 lsfExists = findScheduleFbyManufacturer(sf.getAccount(), sf.getManufacturer(), sf.getLevel());
+					} else {
+					 lsfExists = findScheduleF(sf.getAccount(), sf.getSoftwareName(), sf.getLevel());
+					}
 					if (lsfExists != null) {
 						for (ScheduleF existsSF : lsfExists) {
 							if (existsSF instanceof ScheduleF) {
@@ -436,15 +452,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				lbSaveExistReconRow = true;
             }
 			
-			if (psfSave.getManufacturerName() != null && lsfExists.getManufacturerName() != null){
-				if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName())){
+			if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName()) && (psfSave.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) || lsfExists.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()))){
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
-				}
-			} else if ((psfSave.getManufacturerName() != null && lsfExists.getManufacturerName() == null) || (psfSave.getManufacturerName() == null && lsfExists.getManufacturerName() != null)) {
-				lbSaveReconRow = true;
-				lbSaveExistReconRow = true;
-			}
+			} 
 
 			if (psfSave.getHostname() != null
 					&& lsfExists.getHostname() != null) {
@@ -504,7 +515,6 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			lsfhSave.setSoftwareTitle(lsfExists.getSoftwareTitle());
 			lsfhSave.setSoftwareName(lsfExists.getSoftwareName());
 			lsfhSave.setManufacturer(lsfExists.getManufacturer());
-			lsfhSave.setManufacturerName(lsfExists.getManufacturerName());
 			lsfhSave.setLevel(lsfExists.getLevel());
 			lsfhSave.setHwOwner(lsfExists.getHwOwner());
 			lsfhSave.setMachineType(lsfExists.getMachineType());
@@ -583,9 +593,21 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				
 				if (lsfhSave.getLevel().equals(
 						ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-					ArrayList<Software> llProductInfo = null;
-					llProductInfo = findSoftwareByManufacturer(lsfhSave
-							.getManufacturerName());
+					ArrayList<Software> llProductInfo = new ArrayList<Software>();
+					List swResultList = findSoftwareByManufacturer(lsfhSave.getManufacturer());
+					if (!swResultList.isEmpty()) {
+						for (Object resultElement : swResultList) {
+							if (!(resultElement instanceof Object[])) {
+								continue;
+							}
+
+							for (Object object : (Object[]) resultElement) {
+								if (object instanceof Software) {
+									llProductInfo.add((Software) object);
+								}
+							}
+						}
+					}
 					if (llProductInfo != null && !llProductInfo.isEmpty()) {
 						for (Software productInfotemp : llProductInfo) {
 							@SuppressWarnings("unchecked")

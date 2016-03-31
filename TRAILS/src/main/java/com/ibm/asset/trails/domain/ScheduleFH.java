@@ -62,9 +62,6 @@ public class ScheduleFH {
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
 
-	@Column(name = "MANUFACTURER_NAME")
-	private String manufacturerName;
-
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SCOPE_ID")
 	private Scope scope;
@@ -171,14 +168,6 @@ public class ScheduleFH {
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
-	}
-
-	public String getManufacturerName() {
-		return manufacturerName;
-	}
-
-	public void setManufacturerName(String manufacturerName) {
-		this.manufacturerName = manufacturerName;
 	}
 
 	public Date getRecordTime() {
