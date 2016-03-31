@@ -160,7 +160,6 @@ public class ScheduleFServiceEndpoint {
 			@FormParam("machineType") String machineType,
 			@FormParam("softwareTitle") String softwareTitle,
 			@FormParam("manufacturer") String manufacturer,
-			@FormParam("manufacturerName") String manufacturerName,
 			@FormParam("scopeDescription") String scopeDescription,
 			@FormParam("sourceLocation") String sourceLocation,
 			@FormParam("statusDescription") String statusDescription,
@@ -181,7 +180,7 @@ public class ScheduleFServiceEndpoint {
 		scheduleFView.setMachineType(machineType);
 		scheduleFView.setSoftwareTitle(softwareTitle);
 		scheduleFView.setManufacturer(manufacturer);
-		scheduleFView.setManufacturerName(manufacturerName);
+		scheduleFView.setManufacturerName(manufacturer);
 		scheduleFView.setScopeDescription(scopeDescription);
 		scheduleFView.setSourceLocation(sourceLocation);
 		scheduleFView.setStatusDescription(statusDescription);
@@ -196,7 +195,7 @@ public class ScheduleFServiceEndpoint {
 		ArrayList<Software> laSoftware = getScheduleFService()
 				.findSoftwareBySoftwareName(scheduleFView.getSoftwareName());
 		Manufacturer manufacturer1 = manufactuerService
-				.findManufacturerByName(manufacturerName);
+				.findManufacturerByName(manufacturer);
 		List<ScheduleF> lsfExists = null;
 		Long llScheduleFId = null;
 		ScheduleF sfoExists = null;
