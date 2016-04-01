@@ -1,5 +1,5 @@
 <%@taglib prefix="s" uri="/struts-tags" %>
-
+ <div class="ibm-columns"><div class="ibm-col-1-1">
 <h1>Administration</h1>	
 <br>
 <img src="${pageContext.request.contextPath}/images/f1_w3162.jpg" width="95"
@@ -18,3 +18,5 @@ Your one stop shop for software  reconciliation and administration.<br /><br />
 </p>
 
 <div class="clear"></div>
+</div>
+</div>

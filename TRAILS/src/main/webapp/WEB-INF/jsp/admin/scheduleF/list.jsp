@@ -1,4 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
@@ -190,7 +189,7 @@
 
 	});
 </script>
-
+<div class="ibm-columns"><div class="ibm-col-1-1">
 <s:if test="hasErrors()">
 	<s:actionerror />
 	<s:fielderror />
@@ -317,7 +316,8 @@
 			<tbody id="schedule_f_list" />
 		</table>
 </div>
-
+</div>
+</div>
 <script type="text/javascript">
 
 

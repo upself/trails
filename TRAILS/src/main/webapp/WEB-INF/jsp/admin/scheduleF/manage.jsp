@@ -1,4 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script
@@ -601,8 +600,7 @@
 
 </script>
 
-<div class="ibm-container">
-	<div class="ibm-container-body">
+<div class="ibm-columns"><div class="ibm-col-1-1">
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"
