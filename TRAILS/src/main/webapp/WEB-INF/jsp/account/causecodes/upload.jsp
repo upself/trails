@@ -81,7 +81,7 @@
 		<p style="font-weight: bold">IBM Confidential</p>
 	</div>
 	<br>
-	<div class="ibm-col-1-1" style="width:135%"> 
+	<div class="ibm-col-1-1" style="width: auto"> 
 	    TRAILS Cause Codes are used to document the root cause of an alert and
 		the team(s) responsible for the next action to resolve the alert. The standard global Cause Codes are not intended to replace rigorous
 		review of open alerts and creation of action plans to resolve them; they are concise text description. Consensus on the ownership of 'next
@@ -117,7 +117,7 @@
 		If there were errors in the file, TRAILS will display the file used with error fields marked in red. No data
 		from the file will be loaded to TRAILS until the errors are corrected and the file resubmitted. If there were no errors, TRAILS will display a message that 'Your data has been loaded successfully' in a separate pop-up window.
 	</div>
-	<div class="ibm-rule" style="width: 108%">
+	<div class="ibm-rule">
 		<hr>
 		<hr>
 	</div>
