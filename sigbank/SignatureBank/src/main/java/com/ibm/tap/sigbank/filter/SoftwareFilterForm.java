@@ -49,6 +49,8 @@ public class SoftwareFilterForm extends ValidatorActionForm {
 	private String[] selectedItems;
 
 	private String action;
+	
+	private String catalogType;
 
 	public String getChangeJustification() {
 		return changeJustification;
@@ -160,6 +162,14 @@ public class SoftwareFilterForm extends ValidatorActionForm {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public String getCatalogType() {
+		return catalogType;
+	}
+
+	public void setCatalogType(String catalogType) {
+		this.catalogType = catalogType;
 	}
 
 }

@@ -95,6 +95,12 @@ when complete.</p>
 			headerClass="blue-med" />
 	</display:table>
 	<table cellspacing="0" cellpadding="0" class="sign-in-table">
+	    <tr>
+			<td class="t1"><label for="catalogType"> Catalog type: </label></td>
+			<td>
+			<div class="input-note">maximum 32 characters</div>
+			<html:text property="catalogType" styleClass="input" /></td>
+		</tr>
 		<tr>
 			<td class="t1"><label for="changeJustification"> *Change
 			Justification:</label></td>
