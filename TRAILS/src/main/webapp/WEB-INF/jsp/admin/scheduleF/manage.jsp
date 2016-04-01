@@ -575,13 +575,13 @@
 							html += "<td>" + list[i].softwareName + "</td>";
 							html += "<td>" + list[i].level + "</td>";
 							html += "<td>" + list[i].hwOwner + "</td>";
-							html += "<td>" + list[i].hostname  + "</td>";
+							html += "<td>" + list[i].hostName  + "</td>";
 							html += "<td>" + list[i].serial + "</td>";
 							html += "<td>" + list[i].machineType + "</td>";
 							html += "<td>" + list[i].softwareTitle+ "</td>";
 							html += "<td>" + list[i].manufacturer + "</td>";
 							html += "<td>" + list[i].scopeDescription + "</td>";
-							html += "<td>" + list[i].SWFinanceResp + "</td>";
+							html += "<td>" + list[i].swfinanceResp + "</td>";
 							html += "<td>" + list[i].sourceDescription + "</td>";
 							html += "<td>" + list[i].sourceLocation + "</td>";
 							html += "<td>" + list[i].statusDescription + "</td>";
@@ -706,11 +706,7 @@
 				</p>
 			</div>
 		</form>
-	</div>
-</div>
 
-<div class="ibm-columns">
-	<div class="ibm-col-1-1">
 		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="ScheduleF history table">
 			<thead>
