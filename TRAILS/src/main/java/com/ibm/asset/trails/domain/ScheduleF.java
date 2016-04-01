@@ -23,11 +23,11 @@ import javax.persistence.Table;
 		@NamedQuery(name = "findScheduleFTotal",query="select count(*) from ScheduleF where account=:account"),
 		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName AND id = :id"),
-		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
+		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.level = :level"),
-		@NamedQuery(name = "findScheduleFByAccountAndManAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE AND SF.software = null AND SF.account = :account AND SF.manufacturerName = :manufacturerName  AND SF.level = :level")})
+		@NamedQuery(name = "findScheduleFByAccountAndManAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.software is null AND SF.account = :account AND SF.manufacturerName = :manufacturerName  AND SF.level = :level")})
 public class ScheduleF {
 
 	@Id
@@ -283,12 +283,6 @@ public class ScheduleF {
 			    }
 			}
 			
-			if(null != this.getSoftwareName() && null != other.getSoftwareName()){
-			   if (!this.getSoftwareName().equals(other.getSoftwareName())) {
-				  return false;
-			   }
-			}
-
 			if (!this.getManufacturer().equals(other.getManufacturer())) {
 				return false;
 			}
@@ -422,8 +416,8 @@ public class ScheduleF {
 				return false;
 			}
 			
-			if(null != this.getManufacturerName() && null != other.getManufacturerName()){
-				if (!this.getManufacturerName().equals(other.getManufacturerName())) {
+			if( this.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) && other.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
+				if (!this.getManufacturer().equals(other.getManufacturer())) {
 					return false;
 				}
 			}

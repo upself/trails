@@ -25,7 +25,6 @@
 				|| scheduleFId == undefined) {
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
-			$("#statusId").val(2);
 			$("#btnSubmit").attr('disabled', false);
 		} else {
 			feedPage(scheduleFId);
@@ -34,11 +33,6 @@
 
 		scopeFlip();
 		
-		$("#statusDescription").change(function() {
-		   var statusId =	$('#statusDescription option:selected').attr("id");
-		        $("#statusId").val(statusId);
-		});
-
 		$("#scopeDescription").change(
 				function() {
 					var scopeVal = $('#scopeDescription option:selected')
@@ -90,52 +84,13 @@
 				{
 					change : function(event, ui) {
 						if (ui.item == null) {
-							$("#manufacturerId").val('');
-						}
-					},
-					source : function(request, response) {
-						$.ajax({
-							url : manufacturerJsonURI,
-							dataType : "json",
-							data : {
-								q : request.term
-							},
-							success : function(data) {
-								if (isArray(data)) {
-									var result = new Array()
-									for (i = 0; i < data.length; i++) {
-										var obj = {
-											"id" : data[i].id,
-											"label" : data[i].manufacturerName,
-											"value" : data[i].manufacturerName,
-										};
-										result.push(obj);
-									}
-									response(result);
-								} else {
-									response(data);
+							if ($('#manufacturer').val() != null || $('#manufacturer').val() != ''){
+								$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+								} 
+								if ($('#manufacturer').val() == null || $('#manufacturer').val() == '') {
+								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 								}
-							}
-						});
-					},
-					minLength : 3,
-					select : function(event, ui) {
-						$("#manufacturerId").val(ui.item.id);
-					}
-				});
-		
-		$("#manufacturerName").autocomplete(
-				{
-					change : function(event, ui) {
-						if (ui.item == null) {
-							$("#manufacturerId").val('');
-							if ($('#manufacturerName').val() != null || $('#manufacturerName').val() != ''){
-							$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
-							$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
-							} 
-							if ($('#manufacturerName').val() == null || $('#manufacturerName').val() == '') {
-							$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
-							}
 						}
 					},
 					source : function(request, response) {
@@ -211,11 +166,9 @@
 				$("#serial").val(result.data.serial);
 				$("#machineType").val(result.data.machineType);
 				$("#hostName").val(result.data.hostName);
-				$("#manufacturerName").val(result.data.manufacturerName);
 				$("#scopeDescription").val(result.data.scopeDescription);
 				$("#sourceDescription").val(result.data.sourceDescription);
 				$("#statusDescription").val(result.data.statusDescription);
-				$("#statusId").val(result.data.statusId);
 				$("#swfinanceResp").val(result.data.swfinanceResp);
 				$("#sourceLocation").val(result.data.sourceLocation);
 				$("#businessJustification").val(
@@ -418,18 +371,7 @@
 		if (value == 'MANUFACTURER') {
 			$("#swTitle").hide();
 			$("#swName").hide();
-			if ($('#manufacturerName').length) {
-				$("#manufacturerNameLabel").show();
-				$("#manufacturerName").show();
-			} else {
-				$("#levelSpan")
-						.after(
-								'<label id="manufacturerNameLabel" for="manufacturerName">Manufacturer Name:</label>'
-					+ '<span><input size="40" id="manufacturerName" name="manufacturerName" /></span>');
-			}
 		} else {
-			$("#manufacturerNameLabel").hide();
-			$("#manufacturerName").hide();
 			$("#swTitle").show();
 			$("#swName").show();
 			$("#alertLabel1").remove();
@@ -627,13 +569,12 @@
 					var html = '';
 					var list = result.data.list;
 					if(null == list || list == undefined || list.length == 0){
-						html += "<tr><td colspan='17' align='center'>No data found</td></tr>"
+						html += "<tr><td colspan='16' align='center'>No data found</td></tr>"
 					}else{
 						for(var i = 0; i < list.length; i++){
 							html += "<tr>";
 							html += "<td>" + list[i].softwareName + "</td>";
 							html += "<td>" + list[i].level + "</td>";
-							html += "<td>" + list[i].manufacturerName + "</td>";
 							html += "<td>" + list[i].hwOwner + "</td>";
 							html += "<td>" + list[i].hostname  + "</td>";
 							html += "<td>" + list[i].serial + "</td>";
@@ -715,8 +656,6 @@
 					onKeyUp="keyup(this)"></span> <label id="hostnameLabel"
 					for="hostName" style="width: 30%">Hostname:</label> <span><input
 					name="hostName" id="hostName" value="" size="40"></span>
-				<label id="manufacturerNameLabel" for="manufacturerName" style="width: 30%">Manufacturer Name:</label> 
-				<span><input size="40"	id="manufacturerName" name="manufacturerName" /></span>
 			</p>
 			<p>
 				<label for="scopeDescription" style="width: 30%">Scope:</label> <span><select
@@ -751,7 +690,6 @@
 				<label for="statusDescription" style="width: 30%">Status:</label> <span><select
 					name="statusDescription" id="statusDescription">
 				</select></span>
-				<span><input name="statusId" id="statusId" value="" type="hidden" /></span>
 			</p>
 			<p>
 				<label for="businessJustification" style="width: 30%">Business Justification:<span
@@ -781,7 +719,6 @@
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hw owner</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hostname</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>

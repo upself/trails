@@ -331,7 +331,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					cell.setCellStyle(lcsError);
 					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
 							.toString()));
-				} else if (sf.getAccount() != null && (sf.getSoftware() != null || sf.getManufacturerName() != null)
+				} else if (sf.getAccount() != null && (sf.getSoftware() != null || sf.getManufacturer() != null)
 						&& sf.getLevel() != null) {
 					List<ScheduleF> lsfExists = null;
 					if(sf.getLevel().toString().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
@@ -351,8 +351,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 										.getLevel()
 										.toString()
 										.equals(ScheduleFLevelEnumeration.MANUFACTURER
-												.toString()) && sf.getManufacturerName()
-										.equals(existsSF.getManufacturerName()))||(sf
+												.toString()) && sf.getManufacturer()
+										.equals(existsSF.getManufacturer()))||(sf
 										.getLevel()
 										.toString()
 										.equals(ScheduleFLevelEnumeration.HWOWNER
@@ -425,7 +425,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 	public void saveScheduleF(ScheduleF psfSave, String psRemoteUser) {
 		boolean lbSaveReconRow = false;
 		boolean lbSaveExistReconRow = false;
-		if (psfSave.getId() != null) {
+		if (psfSave.getId() != null && ((!psfSave.getLevel().equals(
+				ScheduleFLevelEnumeration.MANUFACTURER.toString()) && psfSave.getSoftware() != null) || (psfSave.getLevel().equals(
+						ScheduleFLevelEnumeration.MANUFACTURER.toString())))) {
 			ScheduleF lsfExists = findScheduleF(psfSave.getId());
 			ScheduleFH lsfhSave = new ScheduleFH();
 			// Determine if we should insert a row into the Recon_Customer_Sw
@@ -452,7 +454,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				lbSaveExistReconRow = true;
             }
 			
-			if (!psfSave.getManufacturerName().equals(lsfExists.getManufacturerName()) && (psfSave.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) || lsfExists.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()))){
+			if (!psfSave.getManufacturer().equals(lsfExists.getManufacturer()) && (psfSave.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) || lsfExists.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()))){
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 			} 
@@ -595,7 +597,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
 					ArrayList<Software> llProductInfo = new ArrayList<Software>();
 					List swResultList = findSoftwareByManufacturer(lsfhSave.getManufacturer());
-					if (!swResultList.isEmpty()) {
+					if (swResultList != null &&!swResultList.isEmpty()) {
 						for (Object resultElement : swResultList) {
 							if (!(resultElement instanceof Object[])) {
 								continue;
@@ -683,7 +685,11 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			// Always insert a row into the Recon_Customer_Sw table for the new
 			// data
+			if ((!psfSave.getLevel().equals(
+					ScheduleFLevelEnumeration.MANUFACTURER.toString()) && psfSave.getSoftware() != null) || (psfSave.getLevel().equals(
+							ScheduleFLevelEnumeration.MANUFACTURER.toString()))){
 			lbSaveReconRow = true;
+			}
 		}
 
 		if (lbSaveReconRow) {
@@ -712,9 +718,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
 				ArrayList<Software> llProductInfo = new ArrayList<Software>();
 				@SuppressWarnings("rawtypes")
-				List swResultList = findSoftwareByManufacturer(psfSave
-						.getManufacturerName());
-				if (!swResultList.isEmpty()) {
+				List swResultList = findSoftwareByManufacturer(psfSave.getManufacturer());
+				if (swResultList != null && !swResultList.isEmpty()) {
 					for (Object resultElement : swResultList) {
 						if (!(resultElement instanceof Object[])) {
 							continue;

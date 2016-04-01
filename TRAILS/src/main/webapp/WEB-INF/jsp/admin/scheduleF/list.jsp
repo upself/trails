@@ -300,7 +300,6 @@
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Level</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hw Owner</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Hostname</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
@@ -348,7 +347,7 @@ function searchData() {
 				var html = '';
 				var list = result.data.list;
 				if(null == list || list == undefined || list.length == 0){
-					html += "<tr><td colspan='15' align='center'>No data found</td></tr>"
+					html += "<tr><td colspan='14' align='center'>No data found</td></tr>"
 				}else{
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
@@ -358,17 +357,16 @@ function searchData() {
 						html += "<td>" + list[i].softwareName + "</td>";
 						}
 						html += "<td>" + list[i].level + "</td>";
-						if(list[i].level == 'MANUFACTURER'){
-						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].manufacturerName + "</a></td>";
-						} else {
-						html += "<td>" + list[i].manufacturerName + "</td>";
-						}
 						html += "<td>" + list[i].hwOwner + "</td>";
 						html += "<td>" + list[i].hostName + "</td>"
 						html += "<td>" + list[i].serial + "</td>";
 						html += "<td>" + list[i].machineType + "</td>";
 						html += "<td>" + list[i].softwareTitle + "</td>";
+						if(list[i].level == 'MANUFACTURER'){
+						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].manufacturer + "</a></td>";
+						} else {
 						html += "<td>" + list[i].manufacturer + "</td>";
+						}
 						html += "<td>" + list[i].scopeDescription + "</td>";
 						html += "<td>" + list[i].swfinanceResp + "</td>";
 						html += "<td>" + list[i].sourceDescription + "</td>";
@@ -385,7 +383,7 @@ function searchData() {
 				$("#schedule_f_list").html(html);
 			}
 		},
-		orderColumns: ['softwareName','level','manufacturerName','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
 	});
 }
 
