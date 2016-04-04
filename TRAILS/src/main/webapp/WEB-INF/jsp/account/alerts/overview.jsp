@@ -67,7 +67,7 @@ function searchData(){
         	   redTotal += data.data.overviewList[i].redSum;
            }
            
-           html += '<tr><td></td><td>'+assignTotal+'</td><td>'+greenTotal+'</td>';
+           html += '<tr><td><h3>Total:</h3></td><td>'+assignTotal+'</td><td>'+greenTotal+'</td>';
            html += '<td>'+yellowTotal+'</td><td>'+redTotal+'</td></tr>';
            
            $('#reportTimestamp').text(reportTimestamp);
