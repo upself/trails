@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.ReconLicenseDAO;
+import com.ibm.asset.trails.dao.VSoftwareLparDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
@@ -54,6 +55,9 @@ public class ReconServiceImpl implements ReconService {
 	
 	@Autowired
 	private ReconLicenseDAO reconLicenseDAO;
+
+	@Autowired
+	private VSoftwareLparDAO vSwLparDAO;
 
 	public List<String> getScheduleFDefInRecon() {
 		return ScheduleFDefInRecon;
@@ -258,7 +262,7 @@ public class ReconServiceImpl implements ReconService {
 
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon recon) {
-		ScheduleF scheduleF = getScheduleFItem(alert.getInstalledSoftware()
+		ScheduleF scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
 				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
 				.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
 				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
@@ -335,7 +339,7 @@ public class ReconServiceImpl implements ReconService {
 			AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert) {
 		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
 
-		ScheduleF scheduleF4WorkingAlert = getScheduleFItem(workingAlert
+		ScheduleF scheduleF4WorkingAlert = vSwLparDAO.getScheduleFItem(workingAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				workingAlert.getInstalledSoftware().getSoftware()
 						.getSoftwareName(), workingAlert.getInstalledSoftware()
@@ -351,7 +355,7 @@ public class ReconServiceImpl implements ReconService {
 						.getManufacturerId()
 						.getManufacturerName());
 
-		ScheduleF scheduleF4RelatedAlert = getScheduleFItem(relatedAlert
+		ScheduleF scheduleF4RelatedAlert = vSwLparDAO.getScheduleFItem(relatedAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				relatedAlert.getInstalledSoftware().getSoftware()
 						.getSoftwareName(), relatedAlert.getInstalledSoftware()
@@ -402,91 +406,6 @@ public class ReconServiceImpl implements ReconService {
 	// User Story - 17236 - Manual License Allocation at HW level can
 	// automatically close Alerts on another account on the same Shared HW as
 	// requested by users End
-
-	private ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
-	
-		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
-		@SuppressWarnings("unchecked")
-		List<ScheduleF> results = getEntityManager()
-				.createQuery(
-						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
-				.setParameter("account", account)
-				.setParameter("swname", swname).getResultList();
-		
-		boolean isExist = false;
-
-		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
-		
-
-		for (ScheduleF sf : results) {
-			String level = sf.getLevel();
-			if ("HOSTNAME".equals(level)) {
-				hostNameLevel.add(sf);
-			} else if ("HWBOX".equals(level)) {
-				hwboxLevel.add(sf);
-			} else if ("HWOWNER".equals(level)) {
-				hwOwnerLevel.add(sf);
-			} else if("PRODUCT".equals(level)) {
-				proudctLevel.add(sf);
-			} else {
-				
-			}
-		}
-
-		for (ScheduleF sf : hostNameLevel) {
-			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwboxLevel) {
-			if (null != sf.getSerial() 
-					&& sf.getSerial().equals(serial)
-					&& null != sf.getMachineType() 
-					&& sf.getMachineType().equals(machineType)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwOwnerLevel) {
-			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : proudctLevel) {
-			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
-				isExist = true;
-				return sf;
-			}
-		}
-		
-		// Manufacture level
-		if(!isExist){
-			@SuppressWarnings("unchecked")
-			List<ScheduleF> manufactureResults = getEntityManager()
-					.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
-					.setParameter("account", account)
-					.setParameter("manufacturerName", manufacturerName)
-					.getResultList();
-			
-			if(null == manufactureResults || manufactureResults.size() == 0){
-				return null;
-			}else{
-				return manufactureResults.get(0);
-			}
-		}
-
-		return null;
-	}
 
 	private void closeAlert(AlertUnlicensedSw alert) {
 		if (alert.isOpen()) {

@@ -484,7 +484,7 @@ public class VSoftwareLparDAOJpa extends
 			@SuppressWarnings("unchecked")
 			List<ScheduleF> manufactureResults = getEntityManager()
 					.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
+							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturer =:manufacturerName and a.level = 'MANUFACTURER' ")
 					.setParameter("account", account)
 					.setParameter("manufacturerName", manufacturerName)
 					.getResultList();

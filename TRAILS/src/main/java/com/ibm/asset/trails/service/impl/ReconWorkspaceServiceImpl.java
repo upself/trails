@@ -1043,7 +1043,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					targetAffectedBreakAlertList4MachineLevel
 							.add(affectedAlertObj.getId());
 				} else {// Cross Account
-					ScheduleF scheduleF4WorkingAlert = getScheduleFItem(
+					ScheduleF scheduleF4WorkingAlert = vSwLparDAO.getScheduleFItem(
 							workingAlert.getInstalledSoftware()
 									.getSoftwareLpar().getAccount(),
 							workingAlert.getInstalledSoftware().getSoftware()
@@ -1064,7 +1064,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 									.getManufacturerId()
 									.getManufacturerName());
 
-					ScheduleF scheduleF4AffectedAlert = getScheduleFItem(
+					ScheduleF scheduleF4AffectedAlert = vSwLparDAO.getScheduleFItem(
 							affectedAlertObj.getInstalledSoftware()
 									.getSoftwareLpar().getAccount(),
 							affectedAlertObj.getInstalledSoftware()
@@ -1134,90 +1134,6 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		return targetAffectedBreakAlertList4MachineLevel;
 	}
 
-	private ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
-	
-		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
-		@SuppressWarnings("unchecked")
-		List<ScheduleF> results = getEntityManager()
-				.createQuery(
-						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
-				.setParameter("account", account)
-				.setParameter("swname", swname).getResultList();
-		
-		boolean isExist = false;
-
-		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
-		
-
-		for (ScheduleF sf : results) {
-			String level = sf.getLevel();
-			if ("HOSTNAME".equals(level)) {
-				hostNameLevel.add(sf);
-			} else if ("HWBOX".equals(level)) {
-				hwboxLevel.add(sf);
-			} else if ("HWOWNER".equals(level)) {
-				hwOwnerLevel.add(sf);
-			} else if("PRODUCT".equals(level)) {
-				proudctLevel.add(sf);
-			} else {
-				
-			}
-		}
-
-		for (ScheduleF sf : hostNameLevel) {
-			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwboxLevel) {
-			if (null != sf.getSerial() 
-					&& sf.getSerial().equals(serial)
-					&& null != sf.getMachineType() 
-					&& sf.getMachineType().equals(machineType)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwOwnerLevel) {
-			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : proudctLevel) {
-			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
-				isExist = true;
-				return sf;
-			}
-		}
-		
-		// Manufacture level
-		if(!isExist){
-			@SuppressWarnings("unchecked")
-			List<ScheduleF> manufactureResults = getEntityManager()
-					.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
-					.setParameter("account", account)
-					.setParameter("manufacturerName", manufacturerName)
-					.getResultList();
-			
-			if(null == manufactureResults || manufactureResults.size() == 0){
-				return null;
-			}else{
-				return manufactureResults.get(0);
-			}
-		}
-
-		return null;
-	}
 	// User Story - 17236 - Manual License Allocation at HW level can
 	// automatically close Alerts on another account on the same Shared HW as
 	// requested by users End
