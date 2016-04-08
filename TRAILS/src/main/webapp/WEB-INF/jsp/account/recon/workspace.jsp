@@ -283,11 +283,11 @@
 				value="%{#attr.row.owner}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetType"
 				value="%{#attr.row.assetType}" />
-			<!-- story_30027 -->
 			<s:hidden name="list[%{#attr.row_rowNum-1}].assetName"
 				value="%{#attr.row.assetName}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].scope" value="%{#attr.row.scope}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].scopeId" value="%{#attr.row.scopeId}"/>
+			<s:hidden name="list[%{#attr.row_rowNum-1}].level" value="%{#attr.row.level}"/>
 			<s:hidden name="list[%{#attr.row_rowNum-1}].pid"
 				value="%{#attr.row.pid}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].lparServerType"
@@ -384,10 +384,9 @@
 			sortProperty="h.chips" sortable="true" />
 			<!-- story 30027 -->
 		<display:column property="scope" title="Scope" sortProperty="scope" sortable="true"/>
-		<display:column sortProperty="sw.softwareName" title="Software"
-			sortable="true">
-			<a
-				href="javascript:popupBravoSl(<s:property value="%{#attr.row.installedSoftwareId}"/>)">${row.productInfoName}</a>
+		<display:column property="level" title="Level" sortProperty="level" sortable="true"/>
+		<display:column sortProperty="sw.softwareName" title="Software" sortable="true">
+			<a href="javascript:popupBravoSl(<s:property value="%{#attr.row.installedSoftwareId}"/>)">${row.productInfoName}</a>
 		</display:column>
 		<display:column title="Action" sortProperty="rt.name" sortable="true">
 			<s:if test="#attr.row.reconcileId!=null">

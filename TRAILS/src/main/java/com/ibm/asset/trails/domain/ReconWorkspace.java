@@ -76,6 +76,16 @@ public class ReconWorkspace implements Serializable {
 	private String assetName;
 	
 	private String manufacturerName;
+	
+	private String level;
+
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
 
 	public String getAssetName() {
 		return assetName;
