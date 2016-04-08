@@ -742,7 +742,8 @@
 			value="TRAILS geography operational metric" />
 	</definition>
 
-	<definition name="tiles.reports.operational.region" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.reports.operational.region"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/regionHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -752,7 +753,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.countryCode"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/countryCodeHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -761,7 +762,8 @@
 		<put-attribute name="keywords" value="TRAILS country operational metric" />
 	</definition>
 
-	<definition name="tiles.reports.operational.sector" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.reports.operational.sector"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/sectorHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -771,7 +773,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.department"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/departmentHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -783,7 +785,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.accountByName"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -795,7 +797,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.accountByNumber"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -807,7 +809,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.account.error"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountErrorHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -819,7 +821,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.account.number.error"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountNumberErrorHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -831,7 +833,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.accountDetail"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountDetailHead.jsp" />
 		<put-attribute name="content" type="template"
