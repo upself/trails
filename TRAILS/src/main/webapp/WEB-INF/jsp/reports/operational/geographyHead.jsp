@@ -1,5 +1,4 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
-
 <s:url id="trails" action="home" namespace="/" includeContext="true"
 	includeParams="none">
 </s:url>
@@ -17,26 +16,26 @@
 	includeParams="none">
 </s:url>
 
-<p id="breadcrumbs">
-	<s:a href="%{trails}">TRAILS</s:a>
-	&gt;
-	<s:a href="%{reports}">Reports</s:a>
-	&gt;
-	<s:a href="%{alerts}">Operational metrics</s:a>
-	&gt;
-</p>
+<ul id="ibm-navigation-trail">
+	<li><s:a href="%{trails}">TRAILS</s:a></li>
+	<li><s:a href="%{reports}">Reports</s:a></li>
+	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
+</ul>
+
 
 <h1>Geography</h1>
 <h4>Operational metrics reports</h4>
-<h6>IBM Confidential</h6>
+<p class="ibm-important">IBM Confidential</p>
 <p>The following reports reflect metric purification where customer
 	financial responsible software has been counted towards closed alerts
 	where IBM has documented report delivery dates in Schedule F Report
 	Date Tracking.</p>
 <br />
 Data last refreshed:
-<s:date name="reportTimestamp" format="MM-dd-yyyy HH:mm:ss 'EST'" />
+<span class="ibm-item-note"><s:date name="reportTimestamp"
+		format="MM-dd-yyyy HH:mm:ss 'EST'" /></span>
 <br />
 Data age (in minutes):
-<s:property value="reportMinutesOld" />
+<span class="ibm-item-note"> <s:property value="reportMinutesOld" />
+</span>
 <br />

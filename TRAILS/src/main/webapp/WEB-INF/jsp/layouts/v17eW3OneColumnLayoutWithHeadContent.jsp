@@ -76,6 +76,10 @@
 .orange-med {
 	color: #FFC125;
 }
+
+ul.horizontal-list li {
+	display: inline;
+}
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">
