@@ -604,32 +604,25 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					List<Manufacturer> manufacturerList = new ArrayList<Manufacturer>();
 				    manufacturerList = manufactuerService.findManufacturerListByName(lsfhSave.getManufacturer());
 					if (manufacturerList != null && !manufacturerList.isEmpty()) {
-						for (Object resultElement : manufacturerList) {
-							if (!(resultElement instanceof Object[])) {
-								continue;
-							}
-
-							for (Object object : (Object[]) resultElement) {
-								if (object instanceof Manufacturer) {
+							for (Manufacturer manufacturer :  manufacturerList) {
 									@SuppressWarnings("unchecked")
 									List<ReconPriorityISVSoftware> results = getEntityManager()
 											.createNamedQuery("findReconPriorityISVSoftwareByUniqueKeys2")
 											.setParameter("customerId", lsfhSave.getAccount().getId())
-											.setParameter("manufacturerId",((Manufacturer) object).getId())
+											.setParameter("manufacturerId",manufacturer.getId())
 											.getResultList();
 
 									if (results == null || results.isEmpty()) {
 										ReconPriorityISVSoftware rcPISVSWSave = new ReconPriorityISVSoftware();
 										rcPISVSWSave.setAccount(lsfhSave.getAccount());
-										rcPISVSWSave.setManufacturer((Manufacturer) object);
+										rcPISVSWSave.setManufacturer(manufacturer);
 										rcPISVSWSave.setAction("UPDATE");
 										rcPISVSWSave.setRecordTime(new Date());
 										rcPISVSWSave.setRemoteUser(psRemoteUser);
 										getEntityManager().persist(rcPISVSWSave);
 									}
-								}
 							}
-						}
+						
 					}
 				}
 
@@ -715,44 +708,29 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			
 			if (psfSave.getLevel().equals(
 					ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-				ArrayList<Software> llProductInfo = new ArrayList<Software>();
-				@SuppressWarnings("rawtypes")
-				List swResultList = findSoftwareByManufacturer(psfSave.getManufacturer());
-				if (swResultList != null && !swResultList.isEmpty()) {
-					for (Object resultElement : swResultList) {
-						if (!(resultElement instanceof Object[])) {
-							continue;
-						}
-
-						for (Object object : (Object[]) resultElement) {
-							if (object instanceof Software) {
-								llProductInfo.add((Software) object);
-							}
-						}
-					}
-				}
-				if (llProductInfo != null && !llProductInfo.isEmpty()) {
-					for (Software productInfotemp : llProductInfo) {
+				List<Manufacturer> manufacturerList = new ArrayList<Manufacturer>();
+			    manufacturerList = manufactuerService.findManufacturerListByName(psfSave.getManufacturer());
+				if (manufacturerList != null && !manufacturerList.isEmpty()) {
+					for (Manufacturer manufacturer :  manufacturerList) {
 						@SuppressWarnings("unchecked")
-						List<ReconCustomerSoftware> results = getEntityManager()
-								.createNamedQuery("reconCustomerSwExists")
-								.setParameter("software", productInfotemp)
-								.setParameter("account",
-										psfSave.getAccount())
+						List<ReconPriorityISVSoftware> results = getEntityManager()
+								.createNamedQuery("findReconPriorityISVSoftwareByUniqueKeys2")
+								.setParameter("customerId", psfSave.getAccount().getId())
+								.setParameter("manufacturerId",manufacturer.getId())
 								.getResultList();
 
 						if (results == null || results.isEmpty()) {
-							ReconCustomerSoftware lrcsSave = new ReconCustomerSoftware();
-
-							lrcsSave.setAccount(psfSave.getAccount());
-							lrcsSave.setSoftware(productInfotemp);
-							lrcsSave.setAction("UPDATE");
-							lrcsSave.setRecordTime(new Date());
-							lrcsSave.setRemoteUser(psRemoteUser);
-							getEntityManager().persist(lrcsSave);
+							ReconPriorityISVSoftware rcPISVSWSave = new ReconPriorityISVSoftware();
+							rcPISVSWSave.setAccount(psfSave.getAccount());
+							rcPISVSWSave.setManufacturer(manufacturer);
+							rcPISVSWSave.setAction("UPDATE");
+							rcPISVSWSave.setRecordTime(new Date());
+							rcPISVSWSave.setRemoteUser(psRemoteUser);
+							getEntityManager().persist(rcPISVSWSave);
 						}
-					}
 				}
+			
+		}
 			}
 
 			if (psfSave.getLevel().equals(

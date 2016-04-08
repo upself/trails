@@ -42,7 +42,10 @@ public class ManufacturerDAOJap extends
 		List<Manufacturer> list = entityManager
 				.createNamedQuery("manufacturerListByName")
 				.setParameter("name", name.toUpperCase()).getResultList();
+		if (list.size() == 0) {
+		return null;
+		} else {
 		return list;
-
+		}
 	}
 }
