@@ -14,8 +14,7 @@
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
 			<item value="Help" link="/help/home.htm" icon="false" />
-			<item value="Asset home" link="https://ibm.biz/gamwiki"
-				icon="false" />
+			<item value="Asset home" link="https://ibm.biz/gamwiki" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/home.htm">
 			<item value="Schedule F" link="/admin/scheduleF/showUpload.htm"
@@ -56,22 +55,22 @@
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
 			<item value="SOM1a: HW WITH HOSTNAME" link="/account/alerts/alertHardware.htm"
 				icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED"
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account" />
 			<item value="SOM2a: HW LPAR WITH SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
 				icon="account" />
 			<item value="SOM2b: SW LPAR WITH HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
 				icon="account" />
 			<item value="SOM2c: UNEXPIRED SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
-			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" 
-				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
-			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertIbmSwInstancesReviewed.htm" icon="account"/>
-			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account"/>
-			<item value="SOM4c: ISV SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertIsvSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE"
+				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account" />
+			<item value="SOM4a: IBM SW INSTANCES REVIEWED" link="/account/alerts/alertIbmSwInstancesReviewed.htm"
+				icon="account" />
+			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED"
+				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account" />
+			<item value="SOM4c: ISV SW INSTANCES REVIEWED" link="/account/alerts/alertIsvSwInstancesReviewed.htm"
+				icon="account" />
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -234,8 +233,7 @@
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
 			<item value="Help" link="/help/home.htm" icon="false" />
-			<item value="Asset home" link="https://ibm.biz/gamwiki"
-				icon="false" />
+			<item value="Asset home" link="https://ibm.biz/gamwiki" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/home.htm">
 			<item value="Schedule F" link="/admin/scheduleF/showUpload.htm"
@@ -257,14 +255,19 @@
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/nonInstancebasedSW/list.htm">
-		    <item value="View" link="/admin/nonInstancebasedSW/list.htm" icon="NonInstanceList"/>
-			<item value="Non Instance based SW Manage" link="/admin/nonInstancebasedSW/manage.htm?type=add" icon="NonInstanceManage"/>
-			<item value="Non Instance based SW Upload" link="/admin/nonInstancebasedSW/upload.htm" icon="NonInstanceUpload"/>
+			<item value="View" link="/admin/nonInstancebasedSW/list.htm"
+				icon="NonInstanceList" />
+			<item value="Non Instance based SW Manage" link="/admin/nonInstancebasedSW/manage.htm?type=add"
+				icon="NonInstanceManage" />
+			<item value="Non Instance based SW Upload" link="/admin/nonInstancebasedSW/upload.htm"
+				icon="NonInstanceUpload" />
 		</put-list-attribute>
 		<put-list-attribute name="/admin/priorityISV/list.htm">
-			<item value="View" link="/admin/priorityISV/list.htm" icon="priorityISVList"/>
-			<item value="Priority ISV SW Manage" link="/admin/priorityISV/add.htm" icon="priorityISVAdd"/>
-			<item value="Priority ISV SW Upload" link="/admin/priorityISV/upload.htm" icon="priorityISVUpload"/>
+			<item value="View" link="/admin/priorityISV/list.htm" icon="priorityISVList" />
+			<item value="Priority ISV SW Manage" link="/admin/priorityISV/add.htm"
+				icon="priorityISVAdd" />
+			<item value="Priority ISV SW Upload" link="/admin/priorityISV/upload.htm"
+				icon="priorityISVUpload" />
 		</put-list-attribute>
 
 		<put-list-attribute name="/search/home.htm">
@@ -286,22 +289,22 @@
 			<item value="Overview" link="/account/alerts/overview.htm" icon="account" />
 			<item value="SOM1a: HW WITH HOSTNAME" link="/account/alerts/alertHardware.htm"
 				icon="account" />
-			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" 
-				link="/account/alerts/alertHardwareCfgData.htm" icon="account"/>
+			<item value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED"
+				link="/account/alerts/alertHardwareCfgData.htm" icon="account" />
 			<item value="SOM2a: HW LPAR WITH SW LPAR" link="/account/alerts/alertHardwareLpar.htm"
 				icon="account" />
 			<item value="SOM2b: SW LPAR WITH HW LPAR" link="/account/alerts/alertSoftwareLpar.htm"
 				icon="account" />
 			<item value="SOM2c: UNEXPIRED SW LPAR" link="/account/alerts/alertExpiredScan.htm"
 				icon="account" />
-			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE" 
-				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account"/>
-			<item value="SOM4a: IBM SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertIbmSwInstancesReviewed.htm" icon="account"/>
-			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account"/>
-			<item value="SOM4c: ISV SW INSTANCES REVIEWED" 
-				link="/account/alerts/alertIsvSwInstancesReviewed.htm" icon="account"/>
+			<item value="SOM3:  SW INSTANCES WITH DEFINED CONTRACT SCOPE"
+				link="/account/alerts/alertWithDefinedContractScope.htm" icon="account" />
+			<item value="SOM4a: IBM SW INSTANCES REVIEWED" link="/account/alerts/alertIbmSwInstancesReviewed.htm"
+				icon="account" />
+			<item value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED"
+				link="/account/alerts/alertPriorityIsvSwInstancesReviewed.htm" icon="account" />
+			<item value="SOM4c: ISV SW INSTANCES REVIEWED" link="/account/alerts/alertIsvSwInstancesReviewed.htm"
+				icon="account" />
 			<!-- CPA - Commenting out code because we are not ready for this new alert 
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
@@ -410,21 +413,33 @@
 			<item value="On page reference" link="/help/onPageRef.htm" icon="false" />
 		</put-list-attribute>
 	</definition>
-	<definition name="tiles.v17e.w3OneColumnLayout" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
+	<definition name="tiles.v17e.w3OneColumnLayout"
+		template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
 		<put-attribute name="content" type="template" value="" />
 		<put-attribute name="contentSidebar" type="template"
 			value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
 	</definition>
+
+	<definition name="tiles.v17e.w3OneColumnLayoutWithHeadContent"
+		template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayoutWithHeadContent.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="contentSidebar" type="template"
+			value="" />
+		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+	</definition>
+
 	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
 		<put-attribute name="content" type="template" value="" />
 	</definition>
-	
+
 	<definition name="tiles.alerts.history.v17e.popup" extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS alert history" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/alerts/v17eAlertHistoryPopup.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/alerts/v17eAlertHistoryPopup.jsp" />
 	</definition>
 
 
@@ -464,7 +479,8 @@
 
 	<definition name="tiles.account.alerts.overview" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Alert overview" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/alerts/overview.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/alerts/overview.jsp" />
 		<put-attribute name="description" value="TRAILS alert overview" />
 		<put-attribute name="keywords" value="TRAILS alert overview" />
 	</definition>
@@ -475,40 +491,54 @@
 		<put-attribute name="description" value="TRAILS browse all alerts" />
 		<put-attribute name="keywords" value="TRAILS browse all alerts" />
 	</definition>
-	
-	<definition name="tiles.alerts.alertHardwareCfgData.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
+
+	<definition name="tiles.alerts.alertHardwareCfgData.list"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle"
+			value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareCfgDataList.jsp" />
-		<put-attribute name="description" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
-		<put-attribute name="keywords" value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
+		<put-attribute name="description"
+			value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
+		<put-attribute name="keywords"
+			value="SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED" />
 	</definition>
-	
-	<definition name="tiles.alerts.alertWithDefinedContractScope.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+
+	<definition name="tiles.alerts.alertWithDefinedContractScope.list"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle"
+			value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertWithDefinedContractScope.jsp" />
-		<put-attribute name="description" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
-		<put-attribute name="keywords" value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+		<put-attribute name="description"
+			value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
+		<put-attribute name="keywords"
+			value="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE" />
 	</definition>
-	
-	<definition name="tiles.alerts.alertIbmSwInstancesReviewed.list" extends="tiles.v17e.w3OneColumnLayout">
+
+	<definition name="tiles.alerts.alertIbmSwInstancesReviewed.list"
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="SOM4a: IBM SW INSTANCES REVIEWED" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertIbmSwInstancesReviewed.jsp" />
 		<put-attribute name="description" value="SOM4a: IBM SW INSTANCES REVIEWED" />
 		<put-attribute name="keywords" value="SOM4a: IBM SW INSTANCES REVIEWED" />
 	</definition>
-	
-	<definition name="tiles.alerts.alertPriorityIsvSwInstancesReviewed.list" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+
+	<definition name="tiles.alerts.alertPriorityIsvSwInstancesReviewed.list"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle"
+			value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertPriorityIsvSwInstancesReviewed.jsp" />
-		<put-attribute name="description" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
-		<put-attribute name="keywords" value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="description"
+			value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
+		<put-attribute name="keywords"
+			value="SOM4b: PRIORITY ISV SW INSTANCES REVIEWED" />
 	</definition>
-	
-	<definition name="tiles.alerts.alertIsvSwInstancesReviewed.list" extends="tiles.v17e.w3OneColumnLayout">
+
+	<definition name="tiles.alerts.alertIsvSwInstancesReviewed.list"
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="SOM4c: ISV SW INSTANCES REVIEWED" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertIsvSwInstancesReviewed.jsp" />
@@ -517,7 +547,7 @@
 	</definition>
 
 	<definition name="tiles.alerts.alertHardware.list" extends="tiles.v17e.w3OneColumnLayout">
-	    <put-attribute name="contentTitle" value="SOM1a: HW WITH HOSTNAME" />
+		<put-attribute name="contentTitle" value="SOM1a: HW WITH HOSTNAME" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/alerts/alertHardwareList.jsp" />
 		<put-attribute name="description" value="SOM1a: HW WITH HOSTNAME" />
@@ -699,7 +729,7 @@
 	</definition>
 
 	<definition name="tiles.reports.operational.geography"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/geographyHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -707,6 +737,8 @@
 		<put-attribute name="description"
 			value="TRAILS geography operational metric" />
 		<put-attribute name="keywords"
+			value="TRAILS geography operational metric" />
+		<put-attribute name="contentTitle"
 			value="TRAILS geography operational metric" />
 	</definition>
 
@@ -1067,27 +1099,33 @@
 		<put-attribute name="description" value="TRAILS alert history" />
 		<put-attribute name="keywords" value="TRAILS alert history" />
 	</definition>
-	
-	<definition name="tiles.exception.swlpar.history.popup" extends="tiles.v17ePopupLayout">
+
+	<definition name="tiles.exception.swlpar.history.popup"
+		extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS data exception history" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/exceptionSwlparHistoryPopup.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionSwlparHistoryPopup.jsp" />
 	</definition>
-	
-	<definition name="tiles.exception.hwlpar.history.popup" extends="tiles.v17ePopupLayout">
+
+	<definition name="tiles.exception.hwlpar.history.popup"
+		extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS data exception history" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
 	</definition>
 
 	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS Account License View" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS account license" />
 		<put-attribute name="keywords" value="TRAILS account license" />
 	</definition>
 
 	<definition name="tiles.account.license.details" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS Account License Details" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseDetails.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/license/licenseDetails.jsp" />
 		<put-attribute name="description" value="TRAILS account license detail" />
 		<put-attribute name="keywords" value="TRAILS account license detail" />
 	</definition>
@@ -1279,20 +1317,17 @@
 	</definition>
 	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS license freepool" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS license freepool" />
 		<put-attribute name="navigation" value="" />
 		<put-attribute name="keywords" value="TRAILS license freepool" />
 	</definition>
-<!-- 
-	<definition name="tiles.account.license.freepool" extends="tiles.w3OneColumnLayoutNoNav">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
-		<put-attribute name="legend" type="template" value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" />
-		<put-attribute name="description" value="TRAILS license freepool" />
-		<put-attribute name="keywords" value="TRAILS license freepool" />
-	</definition>
- -->
+	<!-- <definition name="tiles.account.license.freepool" extends="tiles.w3OneColumnLayoutNoNav"> 
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" 
+		/> <put-attribute name="legend" type="template" value="/WEB-INF/jsp/legend/account/license/licenseLegend.jsp" 
+		/> <put-attribute name="description" value="TRAILS license freepool" /> <put-attribute 
+		name="keywords" value="TRAILS license freepool" /> </definition> -->
 
 	<definition name="tiles.account.reports.home" extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
@@ -1396,71 +1431,69 @@
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>
-	
+
 	<definition name="tiles.admin.scheduleF.upload" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Upload Schedule F" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload" />
 	</definition>
 
-	<definition name="tiles.admin.scheduleF.upload.success" extends="tiles.v17e.w3OneColumnLayout">
+	<definition name="tiles.admin.scheduleF.upload.success"
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F Upload Result" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/scheduleF/upload.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F upload success" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload success" />
 	</definition>
 
 	<definition name="tiles.admin.scheduleF.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F List" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/scheduleF/list.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list" />
 		<put-attribute name="keywords" value="TRAILS schedule F list" />
 	</definition>
 
 	<definition name="tiles.admin.scheduleF.listError" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F List" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/scheduleF/listError.jsp" />
 		<put-attribute name="description" value="TRAILS schedule F list error" />
 		<put-attribute name="keywords" value="TRAILS schedule F list error" />
 	</definition>
 
 	<definition name="tiles.admin.scheduleF.manage" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F Manage" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/admin/scheduleF/manage.jsp" />
 		<put-attribute name="description" value="TRAILS manage schedule F" />
 		<put-attribute name="keywords" value="TRAILS manage schedule F" />
 	</definition>
-<!-- 
-	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.w3OneColumnLayout">
- -->
- 	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.v17e.w3OneColumnLayout">
- 	<put-attribute name="contentTitle" value="PVU mapping" />
+	<!-- <definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.w3OneColumnLayout"> -->
+	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="PVU mapping" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/listPvu.jsp" />
 		<put-attribute name="description" value="TRAILS PVU list" />
 		<put-attribute name="keywords" value="TRAILS PVU list" />
 	</definition>
-<!-- 
-	<definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.w3OneColumnLayout">
- -->
- 	<definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.v17e.w3OneColumnLayout">
- 	<put-attribute name="contentTitle" value="PVU mapping" />
-		<!-- 
-		<put-attribute name="headInsert" type="template"
-			value="/WEB-INF/jsp/admin/pvuMapping/mappingHead.jsp" />
-		 -->
+	<!-- <definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.w3OneColumnLayout"> -->
+	<definition name="tiles.admin.pvuMapping.mappingPvu"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="PVU mapping" />
+		<!-- <put-attribute name="headInsert" type="template" value="/WEB-INF/jsp/admin/pvuMapping/mappingHead.jsp" 
+			/> -->
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/mapping.jsp" />
 		<put-attribute name="description" value="TRAILS PVU mapping" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping" />
 	</definition>
-	
-	<!-- 
+
+	<!-- <definition name="tiles.admin.pvuMapping.updateSuccess" extends="tiles.w3OneColumnLayout"> -->
 	<definition name="tiles.admin.pvuMapping.updateSuccess"
-		extends="tiles.w3OneColumnLayout">
-	 -->
-	 	<definition name="tiles.admin.pvuMapping.updateSuccess"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Update PVU mapping result" />
 		<put-attribute name="content" type="template"
@@ -1554,18 +1587,23 @@
 		<put-attribute name="description" value="Priority ISV SW Upload" />
 		<put-attribute name="keywords" value="Priority ISV SW Upload" />
 	</definition>
-	
-	<definition name="tiles.account.exception.lparNULLTIME" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Active SW LPAR with NULL or 1970 Scan Date" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparInvalidScantime.jsp" />
+
+	<definition name="tiles.account.exception.lparNULLTIME"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle"
+			value="Active SW LPAR with NULL or 1970 Scan Date" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/swlparInvalidScantime.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with invalid scantime" />
 	</definition>
 	<definition name="tiles.account.exception.lparNOOS" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Active SW LPAR without Operating System" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoOperatingSystem.jsp" />
+		<put-attribute name="contentTitle"
+			value="Active SW LPAR without Operating System" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/swlparNoOperatingSystem.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no operating system" />
 		<put-attribute name="keywords"
@@ -1573,23 +1611,28 @@
 	</definition>
 	<definition name="tiles.account.exception.lparNOSW" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Active SW LPAR without Software" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoSoftware.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/swlparNoSoftware.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no software" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no software" />
 	</definition>
 	<definition name="tiles.account.exception.lparNOLP" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Active SW LPAR without Licensable Products" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoProducts.jsp" />
+		<put-attribute name="contentTitle"
+			value="Active SW LPAR without Licensable Products" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/swlparNoProducts.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no licensable products" />
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no licensable products" />
 	</definition>
-	<definition name="tiles.account.exception.lparNOCUST" extends="tiles.v17e.w3OneColumnLayout">
+	<definition name="tiles.account.exception.lparNOCUST"
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Active SW LPAR without Customer" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/swlparNoCustomer.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/swlparNoCustomer.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception software lpar with no customer" />
 		<put-attribute name="keywords"
@@ -1599,7 +1642,8 @@
 	<definition name="tiles.account.exception.lparHWNPRC"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Hardware Box No Processor" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/hwlparNoProcessor.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoProcessor.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception hardware box no processor" />
 		<put-attribute name="keywords"
@@ -1608,7 +1652,8 @@
 	<definition name="tiles.account.exception.lparHWNCHP"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Hardware Box No Chips" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/hwlparNoChip.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoChip.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception hardware box no chip" />
 		<put-attribute name="keywords"
@@ -1617,7 +1662,8 @@
 	<definition name="tiles.account.exception.lparNPRCTYP"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="HW LPAR NO PROCESSOR TYPE" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/hwlparNoProcessorType.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoProcessorType.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception hardware lpar no processor type" />
 		<put-attribute name="keywords"
@@ -1626,7 +1672,8 @@
 	<definition name="tiles.account.exception.lparNCPMDL"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="HW LPAR NO CPU MODEL" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/exception/hwlparNoCpuModel.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/hwlparNoCpuModel.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account data exception hardware lpar no cpu model" />
 		<put-attribute name="keywords"
@@ -1634,12 +1681,13 @@
 	</definition>
 	<definition name="tiles.account.causecodes.upload" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Upload Cause Codes" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
 		<put-attribute name="description" value="TRAILS account cause codes upload" />
 		<put-attribute name="keywords" value="TRAILS account cause code upload" />
 	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.v17e.w3OneColumnLayout">
-	    <put-attribute name="contentTitle" value="Data exception overview" />
+		<put-attribute name="contentTitle" value="Data exception overview" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/overview.jsp" />
 		<put-attribute name="description"
@@ -1655,7 +1703,7 @@
 		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
 
 	<definition name="tiles.admin.alertCause.list" extends="tiles.v17e.w3OneColumnLayout">
-	    <put-attribute name="contentTitle" value="Cause code" />
+		<put-attribute name="contentTitle" value="Cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/list.jsp" />
 		<put-attribute name="description" value="TRAILS alert cause list" />
@@ -1663,7 +1711,7 @@
 	</definition>
 
 	<definition name="tiles.admin.alertCause.add" extends="tiles.v17e.w3OneColumnLayout">
-	<put-attribute name="contentTitle" value="Add  cause code" />
+		<put-attribute name="contentTitle" value="Add  cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/add.jsp" />
 		<put-attribute name="description" value="TRAILS add alert causes" />
@@ -1671,7 +1719,7 @@
 	</definition>
 
 	<definition name="tiles.admin.alertCause.manage" extends="tiles.v17e.w3OneColumnLayout">
-	<put-attribute name="contentTitle" value="Edit  cause code" />
+		<put-attribute name="contentTitle" value="Edit  cause code" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/alertCause/manage.jsp" />
 		<put-attribute name="description" value="TRAILS manage alert causes" />

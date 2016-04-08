@@ -12,20 +12,28 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="geography" action="geography" namespace="/reports/operational"
-	includeContext="true" includeParams="none">
+<s:url id="geography" action="geography"
+	namespace="/reports/operational" includeContext="true"
+	includeParams="none">
 </s:url>
 
-<p id="breadcrumbs"><s:a href="%{trails}">TRAILS</s:a> &gt; <s:a
-	href="%{reports}">Reports</s:a> &gt; <s:a href="%{alerts}">Operational metrics</s:a>
-&gt;</p>
+<p id="breadcrumbs">
+	<s:a href="%{trails}">TRAILS</s:a>
+	&gt;
+	<s:a href="%{reports}">Reports</s:a>
+	&gt;
+	<s:a href="%{alerts}">Operational metrics</s:a>
+	&gt;
+</p>
 
-<h1>Geography </h1>
+<h1>Geography</h1>
 <h4>Operational metrics reports</h4>
-<p class="confidential">IBM Confidential</p>
-<p>The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.</p>
+<h6>IBM Confidential</h6>
+<p>The following reports reflect metric purification where customer
+	financial responsible software has been counted towards closed alerts
+	where IBM has documented report delivery dates in Schedule F Report
+	Date Tracking.</p>
 <br />
-
 Data last refreshed:
 <s:date name="reportTimestamp" format="MM-dd-yyyy HH:mm:ss 'EST'" />
 <br />
