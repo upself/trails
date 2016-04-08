@@ -34,4 +34,15 @@ public class ManufacturerDAOJap extends
 		return list.get(0);
 
 	}
+	
+	@Override
+	public List<Manufacturer> findManufacturerListbyName(String name) {
+		// TODO Auto-generated method stub
+		@SuppressWarnings("unchecked")
+		List<Manufacturer> list = entityManager
+				.createNamedQuery("manufacturerListByName")
+				.setParameter("name", name.toUpperCase()).getResultList();
+		return list;
+
+	}
 }

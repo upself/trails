@@ -1,5 +1,3 @@
-<%@ taglib prefix="s" uri="/struts-tags"%>
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script
@@ -18,13 +16,14 @@
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
 		 $("#schFhTable").hide();
 		 $("#btnSubmit").attr('disabled', true);
+		 $("#swClmanag").text('${account.softwareComplianceManagement}');
+		 $("#accountId").val('${account.id}');
 		populateArraryList();
 		setTimeout(function (){  
 		if (scheduleFId == null || scheduleFId == ""
 				|| scheduleFId == undefined) {
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
-			$("#statusId").val(2);
 			$("#btnSubmit").attr('disabled', false);
 		} else {
 			feedPage(scheduleFId);
@@ -33,11 +32,6 @@
 
 		scopeFlip();
 		
-		$("#statusDescription").change(function() {
-		   var statusId =	$('#statusDescription option:selected').attr("id");
-		        $("#statusId").val(statusId);
-		});
-
 		$("#scopeDescription").change(
 				function() {
 					var scopeVal = $('#scopeDescription option:selected')
@@ -83,6 +77,52 @@
 		var value = $('#level').val();
 		levelChange(value);
 	 }, 1000); 
+		
+		var manufacturerJsonURI = "${pageContext.request.contextPath}/admin/manufacturer.htm";
+		$("#manufacturer").autocomplete(
+				{
+					change : function(event, ui) {
+						if (ui.item == null) {
+							if ($('#manufacturer').val() != null || $('#manufacturer').val() != ''){
+								$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+								} 
+								if ($('#manufacturer').val() == null || $('#manufacturer').val() == '') {
+								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
+								}
+						}
+					},
+					source : function(request, response) {
+						$.ajax({
+							url : manufacturerJsonURI,
+							dataType : "json",
+							data : {
+								q : request.term
+							},
+							success : function(data) {
+								if (isArray(data)) {
+									var result = new Array()
+									for (i = 0; i < data.length; i++) {
+										var obj = {
+											"id" : data[i].id,
+											"label" : data[i].manufacturerName,
+											"value" : data[i].manufacturerName,
+										};
+										result.push(obj);
+									}
+									response(result);
+								} else {
+									response(data);
+								}
+							}
+						});
+					},
+					minLength : 3,
+					select : function(event, ui) {
+						$("#manufacturerId").val(ui.item.id);
+						$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
+					}
+				});
 	});
 
 	function feedPage(scheduleFId) {
@@ -128,7 +168,6 @@
 				$("#scopeDescription").val(result.data.scopeDescription);
 				$("#sourceDescription").val(result.data.sourceDescription);
 				$("#statusDescription").val(result.data.statusDescription);
-				$("#statusId").val(result.data.statusId);
 				$("#swfinanceResp").val(result.data.swfinanceResp);
 				$("#sourceLocation").val(result.data.sourceLocation);
 				$("#businessJustification").val(
@@ -222,21 +261,11 @@
 	function validateForm() {
 		var softwareName = $("#softwareName").val();
 		var softwareTitle = $("#softwareTitle").val();
-		var manufacturerName = $("#manufacturer").val();
+		var manufacturer = $("#manufacturer").val();
 		var sourceLocation = $("#sourceLocation").val();
 		var businessJustification = $("#businessJustification").val();
 
-		if(softwareName.trim() == ''){
-			alert('Software Name is required');
-			return false;
-		}
-			
-		if(softwareTitle.trim() == ''){
-			alert('Software Title is required');
-			return false;
-		}
-		
-		if(manufacturerName.trim() == ''){
+		if(manufacturer.trim() == ''){
 			alert('Manufacturer is required');
 			return false;
 		}
@@ -338,6 +367,15 @@
 			$("#alertLabel1").remove();
 			$("#alertLabel2").remove();
 		}
+		if (value == 'MANUFACTURER') {
+			$("#swTitle").hide();
+			$("#swName").hide();
+		} else {
+			$("#swTitle").show();
+			$("#swName").show();
+			$("#alertLabel1").remove();
+			$("#alertLabel2").remove();
+		}
 	}
 
 	function hwowerChng() {
@@ -350,9 +388,9 @@
 		if (levelvalue == 'HWOWNER') {
 			if (hwovalue == 'IBM' && selectedVal != 'IBM owned') {
 
-				$("#hwOwner")
+				$("#hwownerSpan")
 						.after(
-								'<label id="alertLabel1">Your selected HW owner is not matched to selected Scope !</label>');
+								'<span id="alertLabel1">Your selected HW owner is not matched to selected Scope !</span>');
 
 			} else {
 				$("#alertLabel1").remove();
@@ -360,9 +398,9 @@
 
 			if (hwovalue == 'CUSTO' && selectedVal != 'Customer owned') {
 
-				$("#hwOwner")
+				$("#hwownerSpan")
 						.after(
-								'<label id="alertLabel2">Your selected HW owner is not matched to selected Scope !</label>');
+								'<span id="alertLabel2">Your selected HW owner is not matched to selected Scope !</span>');
 
 			} else {
 				$("#alertLabel2").remove();
@@ -414,10 +452,7 @@
 		}
 
 		this.timer = setTimeout(
-				function() {
-
-					$
-							.ajax({
+				function() {$.ajax({
 								url : "${pageContext.request.contextPath}/admin/liveSearch.htm",
 								async : true,
 								type : "POST",
@@ -437,9 +472,20 @@
 								success : function(data, status) {
 									liveSearch.empty();
 									if (!data.length) {
-										liveSearch
-												.append("no matched item found.")
+										$( "#statusDescription")
+										.find( 'option[value="ACTIVE"]')
+										.attr( "disabled", true);
+										
+										$("#statusDescription")
+										.find('option[value="INACTIVE"]')
+										.attr("selected", true);
+										
+										liveSearch.append("no matched item found.")
 									} else {
+										$( "#statusDescription")
+										.find( 'option[value="ACTIVE"]')
+										.attr( "enabled", true);
+										
 										liveSearch.append(data);
 									}
 									liveSearch.show("slow");
@@ -466,15 +512,10 @@
 														if (type.name == 'softwareName') {
 															type.value = $(this)
 																	.text()
-																	.slice(11,
-																			-10);
+																	.slice(11, -10);
 															if ($(this)
 																	.text()
-																	.slice(
-																			-10,
-																			$(
-																					this)
-																					.text().length) == '(INACTIVE)') {
+																	.slice(-10, $(this).text().length) == '(INACTIVE)') {
 																$(
 																		"#statusDescription")
 																		.find(
@@ -502,6 +543,7 @@
 															type.value = $(this)
 																	.text();
 														}
+														liveSearch.empty();
 													});
 								}
 							})
@@ -533,13 +575,13 @@
 							html += "<td>" + list[i].softwareName + "</td>";
 							html += "<td>" + list[i].level + "</td>";
 							html += "<td>" + list[i].hwOwner + "</td>";
-							html += "<td>" + list[i].hostname  + "</td>";
+							html += "<td>" + list[i].hostName  + "</td>";
 							html += "<td>" + list[i].serial + "</td>";
 							html += "<td>" + list[i].machineType + "</td>";
 							html += "<td>" + list[i].softwareTitle+ "</td>";
 							html += "<td>" + list[i].manufacturer + "</td>";
 							html += "<td>" + list[i].scopeDescription + "</td>";
-							html += "<td>" + list[i].SWFinanceResp + "</td>";
+							html += "<td>" + list[i].swfinanceResp + "</td>";
 							html += "<td>" + list[i].sourceDescription + "</td>";
 							html += "<td>" + list[i].sourceLocation + "</td>";
 							html += "<td>" + list[i].statusDescription + "</td>";
@@ -558,8 +600,7 @@
 
 </script>
 
-<div class="ibm-container">
-	<div class="ibm-container-body">
+<div class="ibm-columns"><div class="ibm-col-1-1">
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"
@@ -571,25 +612,21 @@
 			<p>
 				<input name="id" id="id" value="" type="hidden" />
 			</p>
-
-			<p>
-				<label for="softwareTitle">Software title:<span
-					class="ibm-required">*</span></label> <span><input
+			<p id="swTitle">
+				<label for="softwareTitle" style="width: 30%">Software title:</label> <span><input
 					name="softwareTitle" id="softwareTitle" value="" size="40" /></span>
 			</p>
 
-			<p>
-				<label for="softwareName">Software name:<span
-					class="ibm-required">*</span></label><span> <input
+			<p id="swName">
+				<label for="softwareName" style="width: 30%">Software name:</label><span> <input
 					name="softwareName" id="softwareName" size="40"
 					onKeyUp="keyup(this)" /></span> <span> <input
 					name="softwareStatus" id="softwareStatus" value="" type="hidden" />
-				</span> <span><input name="accountId" id="accountId"
-					value="<s:property value='account.id' />" type="hidden" /></span>
+				</span> 
 			</p>
 
 			<p>
-				<label for="manufacturer">Manufacturer:<span
+				<label for="manufacturer" style="width: 30%">Manufacturer:<span
 					class="ibm-required">*</span></label> <span><input size="40"
 					id="manufacturer" name="manufacturer" /></span><span
 					class="ibm-error-link" id="manufacturerError" style="display: none"></span><input
@@ -597,34 +634,35 @@
 			</p>
 
 			<p id="levelSpan">
-				<label for="level">Level:</label> <span><select name="level"
-					id="level" onchange="levelSltChng(this)">
+				<label for="level" style="width: 30%">Level:</label> <span><select name="level"
+					id="level" onchange="levelSltChng(this)"> 
 						<option value="PRODUCT">PRODUCT</option>
+						<option value="MANUFACTURER">MANUFACTURER</option>
 						<option value="HWOWNER">HWOWNER</option>
 						<option value="HWBOX">HWBOX</option>
 						<option value="HOSTNAME">HOSTNAME</option>
 				</select></span>
-				<label id="hwownerLabel" for="hwOwner">Hwowner:</label> <span>
+				<label id="hwownerLabel" for="hwOwner" style="width: 30%">Hwowner:</label> <span id="hwownerSpan">
 					<select name="hwOwner" id="hwOwner" onChange="hwowerChng()">
 						<option value="IBM">IBM</option>
 						<option value="CUSTO">CUSTO</option>
 				</select>
-				</span> <label id="serialLabel" for="serialNumber">Serial:</label> <span><input
+				</span> <label id="serialLabel" for="serialNumber" style="width: 30%">Serial:</label> <span><input
 					name="serial" id="serial" value="" size="40"></span> <label
-					id="machineTypeLabel" for="machineType">MachineType:</label> <span><input
+					id="machineTypeLabel" for="machineType" style="width: 30%">MachineType:</label> <span><input
 					name="machineType" id="machineType" value="" size="40"
 					onKeyUp="keyup(this)"></span> <label id="hostnameLabel"
-					for="hostName">Hostname:</label> <span><input
+					for="hostName" style="width: 30%">Hostname:</label> <span><input
 					name="hostName" id="hostName" value="" size="40"></span>
 			</p>
 			<p>
-				<label for="scopeDescription">Scope:</label> <span><select
+				<label for="scopeDescription" style="width: 30%">Scope:</label> <span><select
 					name="scopeDescription" id="scopeDescription">
 				</select></span>
 			</p>
 
 			<p>
-				<label for="swfinanceResp">SW Financial Resp:</label> <span><select
+				<label for="swfinanceResp" style="width: 30%">SW Financial Resp:</label> <span><select
 					name="swfinanceResp" id="swfinanceResp">
 						<option value="N/A">N/A</option>
 						<option value="IBM">IBM</option>
@@ -632,27 +670,27 @@
 				</select></span>
 			</p>
 			<p>
-				<label for="complianceReporting">Compliance reporting:</label> <span><s:text
-						name="account.softwareComplianceManagement" /></span>
+				<label for="complianceReporting" style="width: 30%">Compliance reporting:</label><span id="swClmanag"></span>
+				<input type="hidden" name="accountId" id="accountId"/>
 			</p>
 			<p>
-				<label for="sourceDescription">Source:</label> <span><select
+				<label for="sourceDescription" style="width: 30%">Source:</label> <span><select
 					name="sourceDescription" id="sourceDescription">
 				</select></span>
 			</p>
 			<p>
-				<label for="sourceLocation">Source location:</label> <span><input
+				<label for="sourceLocation" style="width: 30%">Source location:<span
+					class="ibm-required">*</span></label> <span><input
 					name="sourceLocation" id="sourceLocation" value="" size="40"
 					type="text"> </span>
 			</p>
 			<p>
-				<label for="statusDescription">Status:</label> <span><select
+				<label for="statusDescription" style="width: 30%">Status:</label> <span><select
 					name="statusDescription" id="statusDescription">
 				</select></span>
-				<span><input name="statusId" id="statusId" value="" type="hidden" /></span>
 			</p>
 			<p>
-				<label for="businessJustification">Business Justification:<span
+				<label for="businessJustification" style="width: 30%">Business Justification:<span
 					class="ibm-required">*</span></label> <span> <input type="text"
 					value="" size="40" id="businessJustification"
 					name="businessJustification" /></span><span class="ibm-error-link"
@@ -668,11 +706,7 @@
 				</p>
 			</div>
 		</form>
-	</div>
-</div>
 
-<div class="ibm-columns">
-	<div class="ibm-col-1-1">
 		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="ScheduleF history table">
 			<thead>

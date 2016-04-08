@@ -23,10 +23,11 @@ import javax.persistence.Table;
 		@NamedQuery(name = "findScheduleFTotal",query="select count(*) from ScheduleF where account=:account"),
 		@NamedQuery(name = "findScheduleFByAccountAndSw", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName"),
 		@NamedQuery(name = "findScheduleFByAccountAndSwNotId", query = "FROM ScheduleF WHERE account = :account AND software.softwareName = :softwareName AND id = :id"),
-		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.id = :id"),
+		@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFDetails", query = "FROM ScheduleF SF LEFT OUTER JOIN FETCH SF.scheduleFHList JOIN FETCH SF.account WHERE SF.id = :id"),
 		@NamedQuery(name = "scheduleFList", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.account = :account"),
-		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.level = :level") })
+		@NamedQuery(name = "findScheduleFByAccountAndSwAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account JOIN FETCH SF.software WHERE SF.account = :account AND SF.software.softwareName = :softwareName AND SF.level = :level"),
+		@NamedQuery(name = "findScheduleFByAccountAndManAndLevel", query = "FROM ScheduleF SF JOIN FETCH SF.account WHERE SF.software is null AND SF.account = :account AND SF.manufacturerName = :manufacturerName  AND SF.level = :level")})
 public class ScheduleF {
 
 	@Id
@@ -276,13 +277,12 @@ public class ScheduleF {
 			// check are these object same, writing them separately for easy
 			// reading.
 			ScheduleF other = (ScheduleF) o;
-			if (!this.getSoftwareTitle().equals(other.getSoftwareTitle())) {
-				return false;
+			if(null != this.getSoftwareTitle() && null != other.getSoftwareTitle()){
+			    if (!this.getSoftwareTitle().equals(other.getSoftwareTitle())) {
+				   return false;
+			    }
 			}
-			if (!this.getSoftwareName().equals(other.getSoftwareName())) {
-				return false;
-			}
-
+			
 			if (!this.getManufacturer().equals(other.getManufacturer())) {
 				return false;
 			}
@@ -371,8 +371,10 @@ public class ScheduleF {
 
 			ScheduleF other = (ScheduleF) o;
 
-			if (!this.getSoftwareName().equals(other.getSoftwareName())) {
-				return false;
+			if(null != this.getSoftwareName() && null != other.getSoftwareName()){
+				if (!this.getSoftwareName().equals(other.getSoftwareName())) {
+					  return false;
+				 }
 			}
 
 			if (!this.getLevel().equals(other.getLevel())) {
@@ -412,6 +414,12 @@ public class ScheduleF {
 			} else if (!((this.getHostname() == null || this.getHostname() == "" ) && ( other.getHostname() == null ||  other.getHostname() == "" ))
 					) {
 				return false;
+			}
+			
+			if( this.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString()) && other.getLevel().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
+				if (!this.getManufacturer().equals(other.getManufacturer())) {
+					return false;
+				}
 			}
 
 			return true;
