@@ -237,7 +237,7 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link"
 					cssStyle="font-weight: bold;text-decoration: underline;">Sector operational metrics</s:a></li>
 			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
@@ -388,9 +388,9 @@ Data age (in minutes):
 
 		<ul class="ibm-link-list horizontal-list">
 			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link"
-					cssStyle="font-weight: bold;text-decoration: underline;">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a>|</li>
-			<li><s:a href="%{accountByNameLink}" cssClass="ibm-forward-link">Account by name operational metrics</s:a>|</li>
+					cssStyle="font-weight: bold;text-decoration: underline;">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+			<li><s:a href="%{accountByNameLink}" cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			<li><s:a href="%{accountByNumberLink}"
 					cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 		</ul>

@@ -27,9 +27,10 @@
 			<s:param name="6578706f7274" value="1" />
 		</s:url>
 	</s:else>
-	<span class="download-link"> <s:a
-			href="%{accountCountryCodeLink}">Account report</s:a>
-	</span>
+	<ul class="ibm-link-list">
+		<li><s:a href="%{accountCountryCodeLink}"
+				cssClass="ibm-download-link">Account report</s:a></li>
+	</ul>
 </s:if>
 
 <display:table name="data.list"

@@ -414,18 +414,24 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 			<s:param name="departmentId" value="deparment.id" />
 		</s:url>
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -464,18 +470,24 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -527,22 +539,29 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
 
-		<ul class="text-tabs">
-			<li><s:a href="%{sectorLink}">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}">Department operational metrics</s:a>|</li>
+		<ul class="ibm-link-list horizontal-list">
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
+
 
 		<br />
 		<h2 class="green-dark">
@@ -574,18 +593,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -618,18 +643,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -663,18 +694,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -708,18 +745,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -753,18 +796,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -798,18 +847,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -852,20 +907,26 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
 
-		<ul class="text-tabs">
-			<li><s:a href="%{sectorLink}">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}">Department operational metrics</s:a>|</li>
+		<ul class="ibm-link-list horizontal-list">
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -903,22 +964,29 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
 
-		<ul class="text-tabs">
-			<li><s:a href="%{sectorLink}">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}">Department operational metrics</s:a>|</li>
+		<ul class="ibm-link-list horizontal-list">
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
+
 
 		<br />
 		<h2 class="green-dark">
@@ -943,18 +1011,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -981,18 +1055,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1019,18 +1099,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1057,18 +1143,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1095,18 +1187,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1133,18 +1231,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1179,20 +1283,26 @@ Data age (in minutes):
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
 
-		<ul class="text-tabs">
-			<li><s:a href="%{sectorLink}">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}">Department operational metrics</s:a>|</li>
+		<ul class="ibm-link-list horizontal-list">
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1213,18 +1323,24 @@ Data age (in minutes):
 			<s:param name="sectorId" value="sector.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1245,18 +1361,24 @@ Data age (in minutes):
 			<s:param name="departmentId" value="department.id" />
 		</s:url>
 
-		<ul class="text-tabs">
+		<ul class="ibm-link-list horizontal-list">
 			<s:if test="accountMethod == 'name'">
-				<li><s:a href="%{accountByNameLink}" cssClass="active">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNameLink}">Account by name operational metrics</s:a>|</li>
+				<li><s:a href="%{accountByNameLink}"
+						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
-				<li><s:a href="%{accountByNumberLink}" cssClass="active">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link"
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
 			</s:if>
 			<s:else>
-				<li><s:a href="%{accountByNumberLink}">Account by number operational metrics</s:a></li>
+				<li><s:a href="%{accountByNumberLink}"
+						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
 			</s:else>
 		</ul>
 

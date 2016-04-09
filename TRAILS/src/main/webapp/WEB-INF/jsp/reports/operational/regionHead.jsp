@@ -67,11 +67,12 @@ Data age (in minutes):
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 
-		<ul class="text-tabs">
-			<li><s:a href="%{regionLink}" cssClass="active">Region operational metrics</s:a>|</li>
-			<li><s:a href="%{countryCodeLink}">Country code operational metrics</s:a>|</li>
-			<li><s:a href="%{sectorLink}">Sector operational metrics</s:a>|</li>
-			<li><s:a href="%{departmentLink}">Department operational metrics</s:a></li>
+		<ul class="ibm-link-list horizontal-list">
+			<li><s:a href="%{regionLink}" cssClass="ibm-forward-link"
+					cssStyle="font-weight: bold;text-decoration: underline;">Region operational metrics</s:a></li>
+			<li><s:a href="%{countryCodeLink}" cssClass="ibm-forward-link"> Country code operational metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
 		</ul>
 
 		<br>

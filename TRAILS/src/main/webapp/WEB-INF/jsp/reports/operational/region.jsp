@@ -7,7 +7,11 @@
 			<s:param name="geographyId" value="geography.id" />
 			<s:param name="d-49653-e" value="2" />
 			<s:param name="6578706f7274" value="1" />
-		</s:url> <s:a href="%{accountRegionLink}">Account report</s:a>
+		</s:url>
+		<ul class="ibm-link-list">
+			<li><s:a href="%{accountRegionLink}"
+					cssClass="ibm-download-link">Account report</s:a></li>
+		</ul>
 	</span>
 </s:if>
 
