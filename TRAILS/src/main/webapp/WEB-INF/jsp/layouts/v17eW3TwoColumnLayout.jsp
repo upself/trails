@@ -78,6 +78,10 @@
 ul.horizontal-list li {
 	display: inline;
 }
+
+h2.green-dark {
+	color: red;
+}
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">

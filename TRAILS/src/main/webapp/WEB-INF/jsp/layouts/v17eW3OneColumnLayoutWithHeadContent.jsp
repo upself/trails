@@ -80,6 +80,18 @@
 ul.horizontal-list li {
 	display: inline;
 }
+
+ul.horizontal-list {
+	padding-top: 10px;
+	padding-bottom: 20px;
+	border-bottom: 1px dashed #333;
+	padding-bottom: 20px;
+}
+
+h2.green-dark {
+	color: green;
+	font-weight: normal;
+}
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">
@@ -157,7 +169,7 @@ ul.horizontal-list li {
 			<div id="ibm-content">
 				<!-- LEADSPACE_BEGIN -->
 				<div id="ibm-leadspace-head" class="ibm-alternate">
-					<div id="ibm-leadspace-body">
+					<div id="ibm-leadspace-body" style="width: 95%">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
 								<tmp:insertAttribute name="contentHead" />
@@ -168,7 +180,7 @@ ul.horizontal-list li {
 				<!-- LEADSPACE_END -->
 
 				<div id="ibm-content-body">
-					<div id="ibm-content-main" style="width: 100%;">
+					<div id="ibm-content-main" style="width: 95%;">
 						<tmp:insertAttribute name="content" />
 					</div>
 				</div>
