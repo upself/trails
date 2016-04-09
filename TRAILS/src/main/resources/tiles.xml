@@ -188,6 +188,14 @@
 		<put-attribute name="legend" type="template" value="" />
 	</definition>
 
+	<definition name="tiles.v17eW3TwoColumnLayout"
+		template="/WEB-INF/jsp/layouts/v17eW3TwoColumnLayout.jsp">
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="sidebar" type="template" value="" />
+		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+		<put-attribute name="legend" type="template" value="" />
+	</definition>
+
 	<definition name="tiles.w3OneColumnLayout"
 		template="/WEB-INF/jsp/layouts/w3OneColumnLayout.jsp">
 		<put-attribute name="headInsert" type="template" value="" />
@@ -645,11 +653,11 @@
 		<put-attribute name="keywords" value="TRAILS reports dataExceptions home" />
 	</definition>
 
-	<definition name="tiles.reports.operational.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.reports.operational.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/operational/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS reports operational home" />
 		<put-attribute name="keywords" value="TRAILS reports operational home" />
 	</definition>
