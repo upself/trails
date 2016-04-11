@@ -224,15 +224,6 @@ public class ScheduleFServiceEndpoint {
 					sfiExists = getScheduleFService().getScheduleFDetails(
 							llScheduleFId);
 					sfiExists.setStatus(status);
-					try {
-						getScheduleFService().saveScheduleF(sfiExists,
-								request.getRemoteUser());
-						return WSMsg
-								.successMessage("Update Schedule F success");
-					} catch (Exception e) {
-						return WSMsg
-								.failMessage("Encounter Exception while updating Schedule F ");
-					}
 				}
 			}
 		} else {
