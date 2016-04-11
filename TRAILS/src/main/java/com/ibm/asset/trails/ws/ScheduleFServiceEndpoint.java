@@ -220,11 +220,7 @@ public class ScheduleFServiceEndpoint {
 					return WSMsg.failMessage("Software does not exist in catalog. It may already been removed in SWKB Toolkit.");
 				}
 			} else {
-				if (llScheduleFId != null) {
-					sfiExists = getScheduleFService().getScheduleFDetails(
-							llScheduleFId);
-					sfiExists.setStatus(status);
-				}
+					bjScheduleF.setStatus(status);
 			}
 		} else {
 
