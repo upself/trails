@@ -1293,10 +1293,9 @@
 		<put-attribute name="keywords" value="TRAILS license freepool" />
 	</definition>
  -->
-
-	<definition name="tiles.account.reports.home" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/reports/home.jsp" />
+	<definition name="tiles.account.reports.home" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Reports listing" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/reports/home.jsp" />
 		<put-attribute name="description" value="TRAILS account reports home" />
 		<put-attribute name="keywords" value="TRAILS account reports home" />
 	</definition>
