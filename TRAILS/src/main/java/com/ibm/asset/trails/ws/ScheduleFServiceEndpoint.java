@@ -375,7 +375,9 @@ public class ScheduleFServiceEndpoint {
 		bjScheduleF.setBusinessJustification(scheduleFView
 				.getBusinessJustification());
         if (bjScheduleF.getStatus().getDescription().equalsIgnoreCase("ACTIVE")){
-		if ((sfiExists != null  && sfiExists.equals(bjScheduleF)) || (sfoExists != null && null != bjScheduleF.getId() && bjScheduleF.getId().longValue() != sfoExists.getId().longValue()  && sfoExists.Keyquals(bjScheduleF))){
+		if ((sfiExists != null  && sfiExists.equals(bjScheduleF)) 
+				|| (sfoExists != null && null == bjScheduleF.getId()  && sfoExists.Keyquals(bjScheduleF)) 
+				|| (sfoExists != null && null != bjScheduleF.getId() && bjScheduleF.getId().longValue() != sfoExists.getId().longValue()  && sfoExists.Keyquals(bjScheduleF))){
 			if (bjScheduleF.getLevel().equals(
 				ScheduleFLevelEnumeration.MANUFACTURER.toString())){
 			return WSMsg
