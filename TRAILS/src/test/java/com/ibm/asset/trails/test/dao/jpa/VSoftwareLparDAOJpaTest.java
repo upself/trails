@@ -33,14 +33,13 @@ public class VSoftwareLparDAOJpaTest {
 	private final static String HOSTNAME_LEVEL     = "HOSTNAME";
 	
 	//Testing Data
-	private final static String MANUFACTURER_NAME  = "IBM";
-	private final static String HW_OWNER           = "IBM";
-	private final static String HWBOX_MACHINE_TYPE = "2373";
-	private final static String HWBOX_SERIAL       = "00RTST5";
-	private final static String HOSTNAME           = "RECONTEST3";
-	private final static String SOFTWARE_NAME      = "IBM Lotus Notes";
-	
-	
+	private final static String MANUFACTURER_IBM     = "IBM";
+	private final static String MANUFACTURER_IBM_ITD = "IBM_ITD";
+	private final static String HW_OWNER             = "IBM";
+	private final static String HWBOX_MACHINE_TYPE   = "2373";
+	private final static String HWBOX_SERIAL         = "00RTST5";
+	private final static String HOSTNAME             = "RECONTEST3";
+	private final static String SOFTWARE_NAME        = "IBM Lotus Notes";
 	
     @Autowired
     private VSoftwareLparDAO vSoftwareLparDAO;
@@ -77,8 +76,9 @@ public class VSoftwareLparDAOJpaTest {
     	scheduleFService.saveScheduleF(hostnameLevelscheduleF, REMOTE_USER);
     	
     	Account account = accountService.getAccountByAccountNumber(35400L);
-    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_NAME);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
     	assertNotNull(scheduleF);
+    	assertEquals(MANUFACTURER_IBM,scheduleF.getManufacturer());//Manufacturer Name 'IBM'
     	assertEquals(MANUFACTURER_LEVEL,scheduleF.getLevel());//Schedule Level 'MANUFACTURER'
     }
     
@@ -100,7 +100,7 @@ public class VSoftwareLparDAOJpaTest {
     	scheduleFService.saveScheduleF(hostnameLevelscheduleF, REMOTE_USER);
     	
     	Account account = accountService.getAccountByAccountNumber(35400L);
-    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_NAME);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
     	assertNotNull(scheduleF);
     	assertEquals(SOFTWARE_NAME,scheduleF.getSoftwareName());//Software Name 'IBM Lotus Notes'
     	assertEquals(PRODUCT_LEVEL,scheduleF.getLevel());//Schedule Level 'PRODUCT'
@@ -119,7 +119,7 @@ public class VSoftwareLparDAOJpaTest {
     	scheduleFService.saveScheduleF(hostnameLevelscheduleF, REMOTE_USER);
     	
     	Account account = accountService.getAccountByAccountNumber(35400L);
-    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_NAME);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
     	assertNotNull(scheduleF);
     	assertEquals(SOFTWARE_NAME,scheduleF.getSoftwareName());//Software Name 'IBM Lotus Notes'
     	assertEquals(HWOWNER_LEVEL,scheduleF.getLevel());//Schedule Level 'HWOWNER'
@@ -133,7 +133,7 @@ public class VSoftwareLparDAOJpaTest {
     	scheduleFService.saveScheduleF(hostnameLevelscheduleF, REMOTE_USER);
     	
     	Account account = accountService.getAccountByAccountNumber(35400L);
-    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_NAME);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
     	assertNotNull(scheduleF);
     	assertEquals(SOFTWARE_NAME,scheduleF.getSoftwareName());//Software Name 'IBM Lotus Notes'
     	assertEquals(HWBOX_LEVEL,scheduleF.getLevel());//Schedule Level 'HWBOX'
@@ -142,9 +142,19 @@ public class VSoftwareLparDAOJpaTest {
     @Test
     public void testGetScheduleFItem4HostnameLevel() {
     	Account account = accountService.getAccountByAccountNumber(35400L);
-    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_NAME);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
     	assertNotNull(scheduleF);
     	assertEquals(SOFTWARE_NAME,scheduleF.getSoftwareName());//Software Name 'IBM Lotus Notes'
     	assertEquals(HOSTNAME_LEVEL,scheduleF.getLevel());//Schedule Level 'HOSTNAME'
+    }
+    
+    
+    @Test
+    public void testGetScheduleFItem4ManufacturerIBM_ITD() {
+    	Account account = accountService.getAccountByAccountNumber(35400L);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getScheduleFItem(account, SOFTWARE_NAME, HOSTNAME, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM_ITD);
+    	assertNotNull(scheduleF);
+    	assertEquals(MANUFACTURER_IBM_ITD,scheduleF.getManufacturer());//Manufacturer Name 'IBM_ITD'
+    	assertEquals(MANUFACTURER_LEVEL,scheduleF.getLevel());//Schedule Level 'MANUFACTURER'
     }
 }
