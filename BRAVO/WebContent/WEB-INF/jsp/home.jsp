@@ -92,12 +92,6 @@
 					<div id="ibm-leadspace-body">
 						<h1>BRAVO Home</h1>
 					</div>
-					
-					<h2>We envision to support "BRAVO" with a new virtual cognitive Agent - EMMA.</h2>
-					<h3>We need your support:  <font color="red">#makeEMMAhappen</font>  at:  <a href="https://cognitivebuild.bluefundit.com/project/56edc2f13ac2fcc31848dcea" target="_blank">this link</a></h3>
-					<h3>More information can be found:  <a href="https://w3-connections.ibm.com/wikis/home?lang=en-us#!/wiki/W2cd82bc3e399_4815_931e_55a53ae35786/page/EMMA%20A.%20WATSON" target="_blank">here</a></h3>
-					<br/>
-					
 				</div>
 				<!-- CONTENT_BODY -->
 				<div id="ibm-content-body">
