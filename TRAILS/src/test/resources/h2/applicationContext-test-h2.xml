@@ -23,7 +23,7 @@
 				<value>
 					  file:src/test/resources/h2/hibernate.properties
 				</value>
-				<value>file:/opt/trails/conf/trails.properties
+				<value>file:src/test/resources/h2/trails.properties
 				</value>
 				<!-- 
 				<value>
