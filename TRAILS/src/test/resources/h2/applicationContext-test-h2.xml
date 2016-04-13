@@ -11,10 +11,9 @@
 	<context:annotation-config />
 	<context:component-scan base-package="com.ibm.asset.trails.dao" />
 	<bean
-		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven transaction-manager="transactionManager2" />
 
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -35,18 +34,25 @@
 		</property>
 	</bean>
 
-	<bean id="entityManagerFactory"
+	<bean id="entityManagerFactory1"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
 		<property name="persistenceUnitName" value="trailspd" />
+	</bean>
+	
+	<bean id="entityManagerFactory2"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="persistenceUnitName" value="trailsst" />
 	</bean>
 
 	<bean id="hibernateJpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 		<property name="database" value="${pd.database}" />
 		<property name="showSql" value="${pd.showSql}" />
-		<property name="databasePlatform" value="com.ibm.asset.trails.domain.DB2Dialect" />
+		<property name="databasePlatform" value="com.ibm.asset.trails.test.domain.H2Dialect" />
 	</bean>
 
 	<bean id="dataSource"
@@ -63,7 +69,13 @@
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="entityManagerFactory" ref="entityManagerFactory1" />
+		<qualifier value="trailspd" />
+	</bean>
+	
+	<bean id="transactionManager2" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory2" />
+		<qualifier value="trailsst" />
 	</bean>
 	
 	<!-- Constuct H2 in-memory tables and import data -->
@@ -74,6 +86,19 @@
 
 	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
 	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
+	<bean id="manufacturerService" class="com.ibm.asset.trails.service.impl.ManufacturerServiceImpl" />
+	<bean id="scheduleFServiceEndpoint" class="com.ibm.asset.trails.ws.ScheduleFServiceEndpoint"/>
+	<bean id="reportService" class="com.ibm.asset.trails.service.impl.ReportServiceImpl">
+		<constructor-arg>
+			<ref bean="dbdeterminativeService" />
+		</constructor-arg>
+	</bean>
+	<bean id="dbdeterminativeService"
+		class="com.ibm.asset.trails.service.impl.DatabaseDeterminativeServiceImpl">
+		<property name="gapseconds">
+			<value>${sync.gap.seconds}</value>
+		</property>
+	</bean>
 	<bean id="reconWorkspaceService"
 		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl">
 		<property name="reconRules">
