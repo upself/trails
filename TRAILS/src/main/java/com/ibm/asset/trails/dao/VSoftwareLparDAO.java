@@ -14,4 +14,6 @@ public interface VSoftwareLparDAO extends BaseEntityDAO<VSoftwareLpar,Long> {
 			String sort, String dir);
 
 	public ScheduleF getScheduleFItem(Account account, String swname, String hostName, String hwOwner, String machineType, String serial, String manufacturerName);
+	public ScheduleF getMachineLevelScheduleF(Account account, String swname, String hwOwner, String machineType, String serial, String manufacturerName);
+	public ScheduleF getHostnameLevelScheduleF(Account account, String swname, String hostname);
 }

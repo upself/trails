@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
+import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
@@ -38,4 +39,6 @@ public interface ReconService {
 	public List<String> getScheduleFDefInRecon();
 
 	public boolean isAllocateByHardware(Recon pRecon);
+	
+	public AllocationMethodology getAllocationMethodology(String per);
 }
