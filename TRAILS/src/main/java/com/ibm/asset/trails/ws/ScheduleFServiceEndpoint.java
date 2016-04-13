@@ -205,7 +205,11 @@ public class ScheduleFServiceEndpoint {
 			bjScheduleF = new ScheduleF();
 		}
 
-		if (manufacturer1 == null || laSoftware.size() == 0) {
+		if ((scheduleFView.getLevel().equals(
+				ScheduleFLevelEnumeration.MANUFACTURER
+				.toString()) && manufacturer1 == null) || (!scheduleFView.getLevel().equals(
+						ScheduleFLevelEnumeration.MANUFACTURER
+						.toString()) && laSoftware.size() == 0)) {
 			if (status.getId() != 1) {
 				if (manufacturer1 == null
 						&& scheduleFView.getLevel().equals(
