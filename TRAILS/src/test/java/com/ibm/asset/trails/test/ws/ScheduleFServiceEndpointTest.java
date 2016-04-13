@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.test.ws;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -7,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.http.HttpEntity;
@@ -19,12 +23,15 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ibm.asset.trails.domain.ScheduleF;
+import com.ibm.asset.trails.domain.ScheduleFView;
 import com.ibm.asset.trails.ws.ScheduleFServiceEndpoint;
 import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
@@ -35,38 +42,10 @@ import com.ibm.asset.trails.ws.common.WSMsg;
 @Transactional
 public class ScheduleFServiceEndpointTest {
 	
-	private static final String RESTFUL_SERVICE_ROOT_URL = "http://localhost:8080/TRAILS/ws";//Local Restful Service Root
-	
 	@Autowired
 	private ScheduleFServiceEndpoint scheduleFServiceEndpoint;
 	
-	private WSMsg generateReturnWSMsgObject(HttpEntity entity) throws IllegalStateException, IOException, JSONException{
-		String responseEntityString="";  
-        String responseLineString="";
-        InputStream inputStream=entity.getContent();
-		BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));  
-		
-        while((responseLineString=reader.readLine())!=null){  
-        	responseEntityString+=responseLineString;  
-        }
-        
-        JSONObject wsMsgJSONObject = new JSONObject(responseEntityString);
-        String appStatusCode = wsMsgJSONObject.getString("status");
-        String appMessage = wsMsgJSONObject.getString("msg");
-        WSMsg wsMsgObject = null;
-        
-        if(appStatusCode!=null && appStatusCode.trim().equals(WSMsg.SUCCESS)){
-          wsMsgObject = WSMsg.successMessage(appMessage);
-        }
-        else{
-          wsMsgObject = WSMsg.failMessage(appMessage);
-        }
-       
-		return wsMsgObject;
-	}
-	
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testGetOnePageOfScheduleFView(){
 	    WSMsg wsMsg = scheduleFServiceEndpoint.getAllScheduleFByAccount(1,10,"id","desc",2541L);
 		Pagination page = (Pagination) wsMsg.getData();
@@ -76,39 +55,41 @@ public class ScheduleFServiceEndpointTest {
 	    }
 	    assertTrue(null != page);
 	}
+
+	@Test
+	public void testGetScheduleFViewbyId(){
+		 WSMsg wsMsg = scheduleFServiceEndpoint.getScheduleFViewById(4L,2541L);
+		    if(null!=wsMsg){
+		    	assertNotNull(wsMsg.getData());
+		    	assertTrue(wsMsg.getData() instanceof ScheduleFView);
+		    	System.out.println("wsMsg : " +wsMsg.getMsg());
+		    }
+	}
 	
-	@SuppressWarnings("deprecation")
-	//@Test
-	public void testGetScheduleFbyId(){
-		int httpStatusCode = -1;
-		WSMsg returnWSMsgObj = null;
-		String appStatusCode = "";
-		String sfid = "1300133";
-        
-		try {
-			@SuppressWarnings("resource")
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpGet httpGet = new HttpGet(RESTFUL_SERVICE_ROOT_URL+"/scheduleF/"+sfid);
-			httpGet.addHeader("ACCEPT", MediaType.APPLICATION_JSON);
-			
-			HttpResponse response = httpClient.execute(httpGet);
-			StatusLine statusLine = response.getStatusLine();
-			httpStatusCode = statusLine.getStatusCode();
-			
-			if(httpStatusCode == 200){
-				returnWSMsgObj = this.generateReturnWSMsgObject(response.getEntity());
-				if(returnWSMsgObj!=null){
-					appStatusCode = returnWSMsgObj.getStatus();
-				}
-			}
-		  } 
-		catch (Exception e) {
-			System.out.println("Exception: "+e.getMessage());
-		}
-		
-		System.out.println("httpStatusCode "+httpStatusCode +"appStatusCode"+appStatusCode);
-		assertTrue(httpStatusCode == 200 && appStatusCode!=null && appStatusCode.trim().equals(WSMsg.SUCCESS));
-		
+	@Test
+	public void testAddToExistingSwScheduleF(){
+		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getRemoteUser()).thenReturn("zhysz@cn.ibm.com");
+	    WSMsg wsMsg = scheduleFServiceEndpoint.saveUpdateScheduleF(	2541L,null,"IBM Lotus Notes","HWOWNER","IBM"
+	    		,null,null,null,"IBM Lotus Notes","IBM","IBM owned, IBM managed","AMCB-SLM-16206-03","ACTIVE","IBM",true,"IBM","PE note","Test Duplicating ACTIVE sw level record"
+	    		, request);
+	    if(null!=wsMsg){
+	    	assertTrue(wsMsg.getMsg().equals("Same entry with the given software name already exists."));
+	    	System.out.println("wsMsg : " +wsMsg.getMsg());
+	    }
+	}
+	
+	@Test
+	public void testAddToExistingManufacturerScheduleF(){
+		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getRemoteUser()).thenReturn("zhysz@cn.ibm.com");
+	    WSMsg wsMsg = scheduleFServiceEndpoint.saveUpdateScheduleF(	2541L,null,"","MANUFACTURER",null
+	    		,null,null,null,null,"CI SOLUTIONS","IBM owned, IBM managed","JMCB-SLM-10197-03","ACTIVE","IBM",true,"IBM","PE note","Test Duplicating ACTIVE manufacturer level record"
+	    		, request);
+	    if(null!=wsMsg){
+	    	assertTrue(wsMsg.getMsg().equals("Same entry with the given manufacturer name already exists."));
+	    	System.out.println("wsMsg : " +wsMsg.getMsg());
+	    }
 	}
 
 }
