@@ -23,7 +23,7 @@
 				<value>
 					  file:src/test/resources/h2/hibernate.properties
 				</value>
-				<value>file:/opt/trails/conf/trails.properties
+				<value>file:src/test/resources/h2/trails.properties
 				</value>
 				<!-- 
 				<value>
@@ -74,6 +74,8 @@
 
 	<bean id="accountService" class="com.ibm.asset.trails.service.impl.AccountServiceImpl" />
 	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
+    <bean id="manufactuerService" class="com.ibm.asset.trails.service.impl.ManufacturerServiceImpl" />
+	         
 	<bean id="reconWorkspaceService"
 		class="com.ibm.asset.trails.service.impl.ReconWorkspaceServiceImpl">
 		<property name="reconRules">
