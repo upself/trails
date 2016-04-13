@@ -383,8 +383,8 @@
 		<display:column property="chips" title="# Chips"
 			sortProperty="h.chips" sortable="true" />
 			<!-- story 30027 -->
-		<display:column property="scope" title="Scope" sortProperty="scope" sortable="true"/>
-		<display:column property="level" title="Level" sortProperty="level" sortable="true"/>
+		<display:column property="scope" title="Scope" sortProperty="scope" sortable="false"/>
+		<display:column property="level" title="Level" sortProperty="level" sortable="false"/>
 		<display:column sortProperty="sw.softwareName" title="Software" sortable="true">
 			<a href="javascript:popupBravoSl(<s:property value="%{#attr.row.installedSoftwareId}"/>)">${row.productInfoName}</a>
 		</display:column>
