@@ -23,10 +23,11 @@
 </script>
 
 <br />
-<div class="ibm-container ibm-show-hide">
-	<h2>
+<div class="ibm-container">
+	<h2 style="background-color: #d7d7d8">
 		<label for="searchAccount.searchString">Search accounts</label>
 	</h2>
+	<br />
 	<div class="table-wrap">
 		<s:form action="accounts" method="post" namespace="/search"
 			theme="simple">
