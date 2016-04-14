@@ -24,6 +24,7 @@
 				|| scheduleFId == undefined) {
 			$("#spinner").hide();
 			$("#scopeDescription").val("IBM owned, IBM managed");
+			$('#level').val("PRODUCT");
 			$("#btnSubmit").attr('disabled', false);
 		} else {
 			feedPage(scheduleFId);
@@ -312,6 +313,10 @@
 	}
 
 	function levelChange(value) {
+		if (value == 'PRODUCT') {
+			$("#swTitle").show();
+			$("#swName").show();
+		} 
 		if (value == 'HWOWNER') {
 			if ($('#hwOwner').length) {
 				$("#hwownerLabel").show();
@@ -636,8 +641,8 @@
 			<p id="levelSpan">
 				<label for="level" style="width: 30%">Level:</label> <span><select name="level"
 					id="level" onchange="levelSltChng(this)"> 
-						<option value="PRODUCT">PRODUCT</option>
 						<option value="MANUFACTURER">MANUFACTURER</option>
+						<option value="PRODUCT">PRODUCT</option>
 						<option value="HWOWNER">HWOWNER</option>
 						<option value="HWBOX">HWBOX</option>
 						<option value="HOSTNAME">HOSTNAME</option>

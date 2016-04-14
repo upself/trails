@@ -301,6 +301,7 @@ public class ScheduleFServiceEndpoint {
 				bjScheduleF.setMachineType(null);
 				bjScheduleF.setSoftware(null);
 				bjScheduleF.setSoftwareTitle(null);
+				bjScheduleF.setSoftwareName(null);
 				if (manufacturer1 == null) {
 					bjScheduleF.setStatus(findStatusInList("INACTIVE",
 							getScheduleFService().getStatusList()));
