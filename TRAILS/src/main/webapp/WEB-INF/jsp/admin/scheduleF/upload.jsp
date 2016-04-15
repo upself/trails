@@ -1,4 +1,4 @@
-<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
+ <div class="ibm-columns"><div class="ibm-col-1-1">
 <p class="confidential">IBM Confidential</p>
 <p>Use <a href="/TRAILS/template/scheduleFUploadTemplate.xls">this
 form</a> to upload Schedule F contract information. After you have selected
@@ -22,7 +22,8 @@ out to complete the upload.</p>
 		</tr>
 	</table>
 </form>
-
+</div>
+</div>
 <script>
 function doValidation(){
 	var file =  $("#uploadedFile").val();

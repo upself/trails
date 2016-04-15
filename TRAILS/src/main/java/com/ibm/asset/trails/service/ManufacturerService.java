@@ -12,5 +12,7 @@ public interface ManufacturerService {
 	public List<Manufacturer> findByNameLike(String name);
 
 	public Manufacturer findManufacturerByName(String name);
+	
+	public List<Manufacturer> findManufacturerListByName(String name);
 
 }

@@ -1,8 +1,6 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<%@ taglib prefix="s" uri="/struts-tags"%>
 	
 <script>
 	$(function() {
@@ -190,33 +188,20 @@
 
 	});
 </script>
+<div class="ibm-columns"><div class="ibm-col-1-1">
 
-<s:if test="hasErrors()">
-	<s:actionerror />
-	<s:fielderror />
-</s:if>
-<!-- 
-<div style="font-size: 22px; display: inline">
-	<s:property value="account.name" />
-	(
-	<s:property value="account.account" />
-	)
-</div>
- -->
 <p style="font-weight:bold">IBM Confidential</p>
 <br />
-<div class="ibm-rule" style="width:108%"><hr><hr></div>
+<div class="ibm-rule"><hr><hr></div>
 <div style="font-size: 18px;">
 <h2>Software License Management Report Delivery Tracking</h2>
 </div>
 <p style="font-size: 16px;">Track the required report delivery cycle and most recent report delivery date.</p>
 <br>
-	<form id="reportTracking">
-		<div id="firstline" style="width:100%;float:left">
-		   <div id="line1col1" style="width:30%; float:left">
+	<form id="reportTracking" class="ibm-column-form">
+	    <p>
 			<label>Report Delivery Cycle:</label> 
-		   </div>
-		   <div id="line1col2" style="width:20%; float:left">
+		   <span>
 			<select
 				name="reportForm.reportDeliveryCycle" id="reportDeliveryCycle">
 				<option value="7">Weekly</option>
@@ -227,60 +212,55 @@
 				<option value="182">Bi-Annually</option>
 				<option value="365">Annually</option>
 			</select> 
-		   </div>
-		   <div id="line1col3" style="width:30%; float:left">
+		   </span>
+		   </p>
+		   <p>
 			 <label>Next Report Delivery Due Date:</label> 
-		   </div>
-		   <div id="line1col4" style="width:20%; float:left">
+	
+		   <span>
 			<input type="text" id="nextReportDeliveryDueDate" name="reportForm.nextReportDeliveryDate" readonly style="background-color:#EAEAEA"> 
-		   </div>			
-		</div>
-		
-		<br /> 
-		<div id="secondline" style="width:100%;float:left;margin-top:10px">
-			<div id="line2col1" style="width:30%; float:left">
+		   </span>			
+          </p>
+
+          <p>
 				<label>Last Report Delivery Date:</label> 
-			</div>
-			<div id="line2col2" style="width:20%; float:left">
-				<input type="text" id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate" readonly style="width:138px">
-			</div>
-			<div id="line2col3" style="width:30%; float:left">
+
+			<span>
+				<input type="text" id="lastReportDeliveryDate" name="reportForm.lastReportDeliveryDate" readonly >
+			</span>
+	       </p>
+	       <p>
 				<label for="qmxReference">Evidence Posted to QMX: </label>
-			</div>			
-			<div id="line2col4" style="width:20%; float:left">
-				<s:textfield id="qmxReference" name="reportForm.qmxReference" required="true" />
-			</div>
-		</div>	
-	</form>
-	<div style="clear:both">
+		
+			<span >
+				<input type="text"  id="qmxReference" name="reportForm.qmxReference" required="true" />
+			</span>
+         </p>
+	
+
 		<input type="button" id="reportTrackingUpdateBtn" value="Update">
 		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
-	</div>
+</form>
 <br>
-<style>
-#reportTrackingHistory table, #reportTrackingHistory th,
-	#reportTrackingHistory td {
-	border: 1px solid black;
-}
-</style>
-<div id="reportTrackingHistory" style="width:110%;float:left">
+
+<div id="reportTrackingHistory">
 	<h2>Report Delivery Tracking History</h2>
-	<div id="historyContent" style="max-height:180px"></div>
+	<div id="historyContent" ></div>
 </div>
 <br>
-<div class="ibm-rule" style="width:108%"><hr><hr></div>
+<div class="ibm-rule"><hr><hr></div>
 <div style="float: left">
 <div style="font-size: 18px;">
 <h2 class="oneline">Schedule F</h2>
 </div>
-<p style="width:110%;font-size: 16px;">To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
-	<div style="width:110%;">
-		<div id="addScheFdiv" style="float: right;width:10%;margin:10px">
+<p >To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
+	<div>
+		<div id="addScheFdiv">
 			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
 			</p>
 		</div>
-		<div id="downloadDiv" style="float: right;width:15%;margin:10px">
+		<div id="downloadDiv">
 			<p class="ibm-button-link-alternate ibm-btn-small">
 			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
 			</p>
@@ -289,13 +269,7 @@
 </div>
 <br />
 <br />
-<!-- 
-<s:hidden name="page" value="%{#attr.page}" />
-<s:hidden name="dir" value="%{#attr.dir}" />
-<s:hidden name="sort" value="%{#attr.sort}" />
- -->
-<div class="ibm-col-1-1" style="margin-left: 0px;">
-		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="Schedule F list">
+		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>
@@ -317,7 +291,7 @@
 			<tbody id="schedule_f_list" />
 		</table>
 </div>
-
+</div>
 <script type="text/javascript">
 
 
@@ -351,14 +325,22 @@ function searchData() {
 				}else{
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
-						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].softwareName + "</a></td>";		
+						if(list[i].level != 'MANUFACTURER'){
+						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].softwareName + "</a></td>";	
+						} else {
+						html += "<td>" + list[i].softwareName + "</td>";
+						}
 						html += "<td>" + list[i].level + "</td>";
 						html += "<td>" + list[i].hwOwner + "</td>";
 						html += "<td>" + list[i].hostName + "</td>"
 						html += "<td>" + list[i].serial + "</td>";
 						html += "<td>" + list[i].machineType + "</td>";
 						html += "<td>" + list[i].softwareTitle + "</td>";
+						if(list[i].level == 'MANUFACTURER'){
+						html += "<td><a href='${pageContext.request.contextPath}/admin/scheduleF/manage.htm?scheduleFId=" + list[i].id + "'>" + list[i].manufacturer + "</a></td>";
+						} else {
 						html += "<td>" + list[i].manufacturer + "</td>";
+						}
 						html += "<td>" + list[i].scopeDescription + "</td>";
 						html += "<td>" + list[i].swfinanceResp + "</td>";
 						html += "<td>" + list[i].sourceDescription + "</td>";

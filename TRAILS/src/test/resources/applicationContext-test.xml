@@ -103,6 +103,7 @@
 		</property>
 	</bean>
 	<bean id="priorityISVSoftwareService" class="com.ibm.asset.trails.service.impl.PriorityISVSoftwareServiceImpl" />
+	<bean id="scheduleFServiceEndpoint" class="com.ibm.asset.trails.ws.ScheduleFServiceEndpoint"/>
     <bean id="statusService" class="com.ibm.asset.trails.service.impl.StatusServiceImpl" />
    
     <!--web services -->

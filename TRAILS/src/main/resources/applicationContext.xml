@@ -111,6 +111,7 @@
 
 	<bean id="ScheduleFAjaxAction" class="com.ibm.asset.trails.action.ScheduleFAjaxAction">
 		<property name="scheduleFService" ref="scheduleFServiceImpl" />
+	    <property name="manufacturerService" ref="manufacturerServiceImpl" />
 	</bean>
 
 	<bean id="nonInstanceAjaxAction" class="com.ibm.asset.trails.action.NonInstanceAjaxAction">
