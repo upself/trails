@@ -2,6 +2,7 @@ package com.ibm.asset.trails.test.dao.jpa;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -157,5 +158,23 @@ public class VSoftwareLparDAOJpaTest {
     	assertNotNull(scheduleF);
     	assertEquals(MANUFACTURER_IBM_ITD,scheduleF.getManufacturer());//Manufacturer Name 'IBM_ITD'
     	assertEquals(MANUFACTURER_LEVEL,scheduleF.getLevel());//Schedule Level 'MANUFACTURER'
+    }
+    
+    @Test
+    public void testGetMachineLevelScheduleF(){
+    	Account account = accountService.getAccountByAccountNumber(35400L);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getMachineLevelScheduleF(account, SOFTWARE_NAME_IBM, HW_OWNER, HWBOX_MACHINE_TYPE, HWBOX_SERIAL, MANUFACTURER_IBM);
+    	assertNotNull(scheduleF);
+    	assertEquals(SOFTWARE_NAME_IBM,scheduleF.getSoftwareName());
+    	assertNotEquals(HOSTNAME_LEVEL,scheduleF.getLevel());
+    }
+    
+    @Test
+    public void testGetHostnameLevelScheduleF(){
+    	Account account = accountService.getAccountByAccountNumber(35400L);
+    	ScheduleF scheduleF = vSoftwareLparDAO.getHostnameLevelScheduleF(account, SOFTWARE_NAME_IBM, HOSTNAME);
+    	assertNotNull(scheduleF);
+    	assertEquals(SOFTWARE_NAME_IBM,scheduleF.getSoftwareName());
+    	assertEquals(HOSTNAME_LEVEL,scheduleF.getLevel());//Schedule Level 'MANUFACTURER'
     }
 }
