@@ -45,6 +45,7 @@ import com.ibm.asset.trails.domain.Status;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ManufacturerService;
 import com.ibm.asset.trails.service.ScheduleFService;
+import com.ibm.ea.common.InvalidException;
 import com.ibm.tap.trails.framework.DisplayTagList;
 
 @Service
@@ -281,6 +282,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		ScheduleF sf = null;
 		boolean error = false;
 		StringBuffer lsbErrorMessage = null;
+		StringBuffer successMessage = null;
 		HSSFCellStyle lcsError = wb.createCellStyle();
 		HSSFCellStyle lcsNormal = wb.createCellStyle();
 		HSSFCellStyle lcsMessage = wb.createCellStyle();
@@ -299,13 +301,14 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			sf = new ScheduleF();
 			error = false;
 			lsbErrorMessage = new StringBuffer();
+			successMessage  = new StringBuffer();
 			lbHeaderRow = false;
 
 			for (int i = 0; i <= 14; i++) {
 				cell = row.getCell(i);
 				if (cell == null) {
 					cell = row.createCell(i);
-					if (i == 0 || i > 4) {
+					if (i == 0 || i == 5 || i > 7) {
 						cell.setCellStyle(lcsError);
 						lsbErrorMessage.append(error ? "\n" : "").append(
 								getErrorMessage(i));
@@ -321,6 +324,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						} else {
 							parseCell(cell, sf);
 						}
+					} catch (InvalidException nv) {
+						cell.setCellStyle(lcsMessage);
+						successMessage.append(nv.getMessage())
+								.append(" BUT ");
 					} catch (Exception e) {
 						cell.setCellStyle(lcsError);
 						// e.printStackTrace();
@@ -337,13 +344,20 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					cell.setCellStyle(lcsError);
 					cell.setCellValue(new HSSFRichTextString(lsbErrorMessage
 							.toString()));
-				} else if (sf.getAccount() != null && (sf.getSoftware() != null || sf.getManufacturer() != null)
+				} else if (sf.getAccount() != null
+						&& (sf.getSoftware() != null || sf.getManufacturer() != null)
 						&& sf.getLevel() != null) {
 					List<ScheduleF> lsfExists = null;
-					if(sf.getLevel().toString().equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
-					 lsfExists = findScheduleFbyManufacturer(sf.getAccount(), sf.getManufacturer(), sf.getLevel());
+					if (sf.getLevel()
+							.toString()
+							.equals(ScheduleFLevelEnumeration.MANUFACTURER
+									.toString())) {
+						lsfExists = findScheduleFbyManufacturer(
+								sf.getAccount(), sf.getManufacturer(),
+								sf.getLevel());
 					} else {
-					 lsfExists = findScheduleF(sf.getAccount(), sf.getSoftwareName(), sf.getLevel());
+						lsfExists = findScheduleF(sf.getAccount(),
+								sf.getSoftwareName(), sf.getLevel());
 					}
 					if (lsfExists != null) {
 						for (ScheduleF existsSF : lsfExists) {
@@ -357,13 +371,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 										.getLevel()
 										.toString()
 										.equals(ScheduleFLevelEnumeration.MANUFACTURER
-												.toString()) && sf.getManufacturer()
-										.equals(existsSF.getManufacturer()))||(sf
-										.getLevel()
-										.toString()
-										.equals(ScheduleFLevelEnumeration.HWOWNER
-												.toString()) && sf.getHwOwner()
-										.equals(existsSF.getHwOwner()))
+												.toString()) && sf
+										.getManufacturer().equals(
+												existsSF.getManufacturer()))
+										|| (sf.getLevel()
+												.toString()
+												.equals(ScheduleFLevelEnumeration.HWOWNER
+														.toString()) && sf
+												.getHwOwner().equals(
+														existsSF.getHwOwner()))
 										|| (sf.getLevel()
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HOSTNAME
@@ -387,8 +403,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					saveScheduleF(sf, psRemoteUser);
 					cell = row.createCell(16);
 					cell.setCellStyle(lcsMessage);
-					cell.setCellValue(new StringBuffer(
-							"YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString());
+					cell.setCellValue(new HSSFRichTextString(successMessage.append("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString()));
 				}
 			}
 		}
@@ -884,7 +899,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 	@SuppressWarnings("null")
 	private void parseCell(HSSFCell cell, ScheduleF sf) throws Exception {
-
+		@SuppressWarnings("unchecked")
+		List<Status> statusresults = getEntityManager()
+				.createNamedQuery("statusDetails")
+				.setParameter("description", "INACTIVE").getResultList();
 		switch (cell.getColumnIndex()) {
 		case 0: { // Level
 			if (cell.getRow().getCell(4) != null) {
@@ -895,6 +913,22 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 			if (cell.getRow().getCell(3) != null) {
 				cell.getRow().getCell(3).setCellType(Cell.CELL_TYPE_STRING);
+			}
+			if (cell.getRow().getCell(6) != null) {
+				cell.getRow().getCell(6).setCellType(Cell.CELL_TYPE_STRING);
+			}
+			if (cell.getRow().getCell(7) != null) {
+				cell.getRow().getCell(7).setCellType(Cell.CELL_TYPE_STRING);
+			}
+			if (cell.getRow().getCell(8) != null) {
+				cell.getRow().getCell(8).setCellType(Cell.CELL_TYPE_STRING);
+			}
+			if (!cell.getRichStringCellValue().getString()
+					.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())
+					&& (cell.getRow().getCell(7) == null || StringUtils
+							.isEmpty(cell.getRow().getCell(7)
+									.getRichStringCellValue().getString()))) {
+				throw new Exception("Software name is required.");
 			}
 			if (StringUtils.isEmpty(cell.getRichStringCellValue().getString())) {
 				throw new Exception("Level is required.");
@@ -1043,65 +1077,67 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 		case 6: { // Software title
-
-			if (cell != null && StringUtils.isNotEmpty(cell.getRichStringCellValue()
-					.getString())) {
+			if (cell != null) {
 				cell.setCellType(Cell.CELL_TYPE_STRING);
-				if (cell.getRow().getCell(0).getRichStringCellValue()
+			}
+			if (StringUtils.isNotEmpty(cell.getRichStringCellValue()
+							.getString())) {
+				if (cell.getRow()
+						.getCell(0)
+						.getRichStringCellValue()
 						.getString()
-						.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-					throw new Exception("Level is not specified with any equal or lower PRODUCT level.");
+						.equals(ScheduleFLevelEnumeration.MANUFACTURER
+								.toString())) {
+					throw new Exception(
+							"Level is not specified with any equal or lower PRODUCT level.");
 				} else {
-					sf.setSoftwareTitle(cell.getRichStringCellValue().getString()
-							.trim());
+					sf.setSoftwareTitle(cell.getRichStringCellValue()
+							.getString().trim());
 				}
-			} else if (( cell == null||StringUtils.isEmpty(cell.getRichStringCellValue()
-					.getString())) && !cell.getRow().getCell(0).getRichStringCellValue()
-					.getString()
-					.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-				throw new Exception("Software title is required.");
 			}
 
 			break;
 		}
 
 		case 7: { // Software name
-
-			if (cell != null && StringUtils.isNotEmpty(cell.getRichStringCellValue()
-					.getString())) {
+			if (cell != null) {
 				cell.setCellType(Cell.CELL_TYPE_STRING);
-				if (cell.getRow().getCell(0).getRichStringCellValue()
+			}
+			if (StringUtils.isNotEmpty(cell.getRichStringCellValue()
+							.getString())) {
+				if (cell.getRow()
+						.getCell(0)
+						.getRichStringCellValue()
 						.getString()
-						.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-					throw new Exception("Level is not specified with any equal or lower PRODUCT level.");
+						.equals(ScheduleFLevelEnumeration.MANUFACTURER
+								.toString())) {
+					throw new Exception(
+							"Level is not specified with any equal or lower PRODUCT level.");
 				} else {
-					
+
 					ArrayList<Software> lalProductInfo = null;
-					sf.setSoftwareName(cell.getRichStringCellValue().getString()
-								.trim());
-					lalProductInfo = findSoftwareBySoftwareName(sf.getSoftwareName());
+					sf.setSoftwareName(cell.getRichStringCellValue()
+							.getString().trim());
+					lalProductInfo = findSoftwareBySoftwareName(sf
+							.getSoftwareName());
 					if (lalProductInfo.size() > 0) {
 						sf.setSoftware(lalProductInfo.get(0));
 						if (lalProductInfo.get(0).getStatus()
 								.equalsIgnoreCase("INACTIVE")) {
-							@SuppressWarnings("unchecked")
-							List<Status> results = getEntityManager()
-									.createNamedQuery("statusDetails")
-									.setParameter("description", "INACTIVE")
-									.getResultList();
-							sf.setStatus(results.get(0));
+							sf.setStatus(statusresults.get(0));
 						}
 
+					} else if (cell.getRow().getCell(13)
+							.getRichStringCellValue().getString()
+							.equals("ACTIVE")) {
+						throw new Exception(
+								"Software does not exist in catalog");
 					} else {
-						throw new Exception("Software does not exist in catalog");
+						sf.setStatus(statusresults.get(0));
+						throw new InvalidException("Software is invalid");
 					}
-					
+
 				}
-			} else if (( cell == null||StringUtils.isEmpty(cell.getRichStringCellValue()
-					.getString())) && !cell.getRow().getCell(0).getRichStringCellValue()
-					.getString()
-					.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())) {
-				throw new Exception("Software name is required.");
 			}
 
 			break;
@@ -1114,15 +1150,24 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				throw new Exception("Manufacturer is required.");
 			} else {
-				sf.setManufacturer(cell.getRichStringCellValue().getString()
-						.trim());
-				
-				if (cell.getRow().getCell(0).getRichStringCellValue().getString()
-						.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())){
-					sf.setManufacturerName(cell.getRichStringCellValue().getString()
-							.trim());
+				Manufacturer manufacturer = manufactuerService
+						.findManufacturerByName(cell.getRichStringCellValue()
+								.getString().trim());
+				if (null != manufacturer) {
+					sf.setManufacturer(manufacturer.getManufacturerName());
+					sf.setManufacturerName(manufacturer.getManufacturerName());
+				} else if (cell.getRow().getCell(13).getRichStringCellValue()
+						.getString().equals("INACTIVE")) {
+					sf.setManufacturer(cell.getRichStringCellValue()
+							.getString().trim());
+					sf.setManufacturerName(cell.getRichStringCellValue()
+							.getString().trim());
+					sf.setStatus(statusresults.get(0));
+					throw new InvalidException("Manufacturer is invalid");
+				} else {
+					throw new Exception(
+							"Manufacturer does not exist in catalog");
 				}
-				
 			}
 
 			break;
@@ -1247,7 +1292,9 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					throw new Exception("Status is invalid.");
 				} else if (!(sf.getStatus() instanceof Status && sf.getStatus()
 						.getId() > 0)) {
-					sf.setStatus(results.get(0));
+					if (null == sf.getStatus()) {
+						sf.setStatus(results.get(0));
+					}
 				}
 			} else {
 				throw new Exception("Status is not a string.");
@@ -1309,13 +1356,11 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 		case 6: { // Software title
-			lsErrorMessage = "Software title is required.";
 
 			break;
 		}
 
 		case 7: { // Software name
-			lsErrorMessage = "Software name is required.";
 
 			break;
 		}
