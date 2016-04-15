@@ -3,7 +3,9 @@ package com.ibm.asset.trails.test.service.impl;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,13 +20,18 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.SoftwareDAO;
+import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.ScheduleFLevelEnumeration;
+import com.ibm.asset.trails.domain.Scope;
 import com.ibm.asset.trails.domain.Software;
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.Source;
+import com.ibm.asset.trails.domain.Status;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ScheduleFService;
 import com.ibm.asset.trails.service.impl.ScheduleFServiceImpl;
+import com.ibm.asset.trails.test.utils.PartyMatcher;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/test/resources/h2/applicationContext-test-h2.xml" })
@@ -37,11 +44,60 @@ public class ScheduleFServiceImplTest {
 	private AccountService accountService;
 	@Autowired
 	private SoftwareDAO softwareDAO;
-	private String psSoftwareName = "IBM Lotus Notes" ;
+	private String psSoftwareName = "ADOBE ACROBAT ELEMENTS" ;
 	private String psSoftwareName2 = "PASSLOGIX V-GO SSPR" ;
 	private String psSoftwareName3 =  "Beyond Trust";
 	private String manufacturerName = "CI SOLUTIONS";
+	private String manufacturerName2 = "PASSLOGIX";
+	private String scopeDescription = "IBM owned, IBM managed";
+	private String sourceDescription = "C&N contract reading";
+	private String remoteUser = "zhysz@cn.ibm.com";
 	private Account testAccount;
+	
+	private Scope findScopeInList(String plScopeDes, ArrayList<Scope> plFind) {
+		ListIterator<Scope> lliFind = plFind.listIterator();
+		Scope lsFind = null;
+
+		while (lliFind.hasNext()) {
+			lsFind = lliFind.next();
+
+			if (lsFind.getDescription().equalsIgnoreCase(plScopeDes)) {
+				break;
+			}
+		}
+
+		return lsFind;
+	}
+
+	private Source findSourceInList(String plSourceDes, ArrayList<Source> plFind) {
+		ListIterator<Source> lliFind = plFind.listIterator();
+		Source lsFind = null;
+
+		while (lliFind.hasNext()) {
+			lsFind = lliFind.next();
+
+			if (lsFind.getDescription().equalsIgnoreCase(plSourceDes)) {
+				break;
+			}
+		}
+
+		return lsFind;
+	}
+	
+	private Status findStatusInList(String plStatusDesc, ArrayList<Status> plFind) {
+		ListIterator<Status> lliFind = plFind.listIterator();
+		Status lsFind = null;
+
+		while (lliFind.hasNext()) {
+			lsFind = lliFind.next();
+
+			if (lsFind.getDescription().equalsIgnoreCase(plStatusDesc.toString())) {
+				break;
+			}
+		}
+
+		return lsFind;
+	}
 	
 	@Test
 	public void testScheduleFfindSoftwareByName(){
@@ -81,15 +137,37 @@ public class ScheduleFServiceImplTest {
 	
 	//@Test
 	public void testTriggeredReconWhenScheduleFSave(){
-		String psRemoteUser = "zhysz@cn.ibm.com";
 		testAccount = accountService.getAccount(Long.valueOf(2541));
 		ArrayList<Software> softwareList = scheduleFService.findSoftwareBySoftwareName(psSoftwareName2);
 		ScheduleF psfSave = new ScheduleF();
+		psfSave.setId(null);
 		psfSave.setAccount(testAccount);
 		psfSave.setLevel(ScheduleFLevelEnumeration.PRODUCT.toString());
+		psfSave.setHostname(null);
+		psfSave.setHwOwner(null);
+		psfSave.setMachineType(null);
+		psfSave.setSerial(null);
 		psfSave.setSoftware(softwareList.get(0));
+		psfSave.setManufacturer(manufacturerName2);
+		psfSave.setManufacturerName(manufacturerName2);
+		psfSave.setSoftwareName(psSoftwareName2);
+		psfSave.setSoftwareTitle(psSoftwareName2);
+		psfSave.setScope(findScopeInList(scopeDescription, scheduleFService
+				.getScopeList()));
+		psfSave.setSource(findSourceInList(sourceDescription,
+				scheduleFService.getSourceList()));
+		psfSave.setStatus(findStatusInList("ACTIVE",
+				scheduleFService.getStatusList()));
+		psfSave.setSWFinanceResp("IBM");
+		psfSave.setScheduleFHList(null);
+		psfSave.setSourceLocation("JMCB-SLM-10197-03");
+		psfSave.setRemoteUser(remoteUser);
+		psfSave.setBusinessJustification("Test triggering Recon queue when scheduleF Save");
+		psfSave.setRecordTime(new Date());
+		
 		ScheduleFService scheduleFServiceImpl = Mockito.mock(ScheduleFServiceImpl.class);
-		scheduleFServiceImpl.saveScheduleF(psfSave, psRemoteUser);
+		scheduleFServiceImpl.saveScheduleF(psfSave, remoteUser);
+		
 	}
 
 }

@@ -70,8 +70,8 @@ public class ScheduleFServiceEndpointTest {
 	public void testAddToExistingSwScheduleF(){
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRemoteUser()).thenReturn("zhysz@cn.ibm.com");
-	    WSMsg wsMsg = scheduleFServiceEndpoint.saveUpdateScheduleF(	2541L,null,"IBM Lotus Notes","HWOWNER","IBM"
-	    		,null,null,null,"IBM Lotus Notes","IBM","IBM owned, IBM managed","AMCB-SLM-16206-03","ACTIVE","IBM",true,"IBM","PE note","Test Duplicating ACTIVE sw level record"
+	    WSMsg wsMsg = scheduleFServiceEndpoint.saveUpdateScheduleF(	2541L,null,"ADOBE ACROBAT ELEMENTS","HWOWNER","IBM"
+	    		,null,null,null,"ADOBE ACROBAT ELEMENTS","ADOBE","IBM owned, IBM managed","AMCB-SLM-16206-03","ACTIVE","IBM",true,"IBM","PE note","Test Duplicating ACTIVE sw level record"
 	    		, request);
 	    if(null!=wsMsg){
 	    	assertTrue(wsMsg.getMsg().equals("Same entry with the given software name already exists."));
