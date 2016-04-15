@@ -35,7 +35,7 @@
 			length="64" />
 
 		<many-to-one name="contactDPE" column="CONTACT_DPE_ID"
-			class="com.ibm.ea.cndb.Contact" index="IDX_CCDPE" />
+			class="com.ibm.ea.cndb.Contact" index="IDX_CCDPE" not-null="false" />
 
 		<many-to-one name="contactFA" column="CONTACT_FA_ID"
 			class="com.ibm.ea.cndb.Contact" index="IDX_CCFA" />

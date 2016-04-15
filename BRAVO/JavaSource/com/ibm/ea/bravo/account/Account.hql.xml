@@ -46,7 +46,7 @@
 			from com.ibm.ea.cndb.Customer c
 				join fetch c.industry
 				join fetch c.sector
-				join fetch c.contactDPE
+				left join fetch c.contactDPE
 				join fetch c.pod
 				join fetch c.customerType
 			where 
@@ -61,7 +61,7 @@
 			from com.ibm.ea.cndb.Customer c
 				join fetch c.industry
 				join fetch c.sector
-				join fetch c.contactDPE
+				left join fetch c.contactDPE
 				join fetch c.pod
 				join fetch c.customerType
 				left join fetch c.bluegroups
