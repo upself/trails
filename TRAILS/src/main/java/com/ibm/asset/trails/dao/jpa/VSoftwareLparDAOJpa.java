@@ -416,6 +416,104 @@ public class VSoftwareLparDAOJpa extends
 	private EntityManager getEntityManager() {
 		return em;
 	}
+	
+	@Override
+	public ScheduleF getHostnameLevelScheduleF(Account account, String swname, String hostname) {
+		// TODO Auto-generated method stub
+		
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createQuery(
+						" from ScheduleF a where a.status.description='ACTIVE' and a.level = 'HOSTNAME' and a.account =:account and a.softwareName =:swname and a.hostname =:hostname")
+				.setParameter("account", account)
+				.setParameter("swname", swname)
+				.setParameter("hostname", hostname)
+				.getResultList();
+		
+		if(null != results && results.size() > 0){
+			return results.get(0);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public ScheduleF getMachineLevelScheduleF(Account account, String swname,
+			String hwOwner, String machineType, String serial,
+			String manufacturerName) {
+	
+		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
+		@SuppressWarnings("unchecked")
+		List<ScheduleF> results = getEntityManager()
+				.createQuery(
+						" from ScheduleF a where a.status.description='ACTIVE' and a.level <> 'HOSTNAME' and a.account =:account and a.softwareName =:swname")
+				.setParameter("account", account)
+				.setParameter("swname", swname).getResultList();
+		
+		boolean isExist = false;
+
+		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
+		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
+		
+
+		for (ScheduleF sf : results) {
+			String level = sf.getLevel();
+			if ("HWBOX".equals(level)) {
+				hwboxLevel.add(sf);
+			} else if ("HWOWNER".equals(level)) {
+				hwOwnerLevel.add(sf);
+			} else if("PRODUCT".equals(level)) {
+				proudctLevel.add(sf);
+			} else {
+				
+			}
+		}
+
+		for (ScheduleF sf : hwboxLevel) {
+			if (null != sf.getSerial() 
+					&& sf.getSerial().equals(serial)
+					&& null != sf.getMachineType() 
+					&& sf.getMachineType().equals(machineType)) {
+				isExist = true;
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : hwOwnerLevel) {
+			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
+				isExist = true;
+				return sf;
+			}
+		}
+
+		for (ScheduleF sf : proudctLevel) {
+			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
+				isExist = true;
+				return sf;
+			}
+		}
+		
+		// Manufacture level
+		if(!isExist){
+			@SuppressWarnings("unchecked")
+			List<ScheduleF> manufactureResults = getEntityManager()
+					.createQuery(
+							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturer =:manufacturerName and a.level = 'MANUFACTURER' ")
+					.setParameter("account", account)
+					.setParameter("manufacturerName", manufacturerName)
+					.getResultList();
+			
+			if(null == manufactureResults || manufactureResults.size() == 0){
+				return null;
+			}else{
+				return manufactureResults.get(0);
+			}
+		}
+
+		return null;
+	}
+
 	public ScheduleF getScheduleFItem(Account account, String swname,
 			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
 	

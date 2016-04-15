@@ -28,6 +28,7 @@ import com.ibm.asset.trails.dao.ReconcileTypeDAO;
 import com.ibm.asset.trails.dao.VSoftwareLparDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
+import com.ibm.asset.trails.domain.AllocationMethodology;
 import com.ibm.asset.trails.domain.InstalledSoftware;
 import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
@@ -407,10 +408,25 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		setAlertsProcessed(0);
 		setAlertsTotal(lalAlertUnlicensedSw.size());
 		int owner = reconService.validateScheduleFowner(lausTemp, pRecon);
+		boolean isMachineLevel = reconService.isAllocateByHardware(pRecon);
 
 		// AB added, if no scheduleF defined for the alert, set the flag as N
 		if (owner == 2) {
-			setScheduleFValResult("Schedule F not defined");
+			if(isMachineLevel){
+				ScheduleF hostnameSf = vSwLparDAO.getHostnameLevelScheduleF(lausTemp.getInstalledSoftware()
+						.getSoftwareLpar().getAccount(), lausTemp.getInstalledSoftware()
+						.getSoftware().getSoftwareName(), lausTemp.getInstalledSoftware()
+						.getSoftwareLpar().getName());
+				if(null != hostnameSf){
+					AllocationMethodology allocationMethodology  = reconService.getAllocationMethodology(pRecon.getPer());
+					setScheduleFValResult("The Machine Level Allocation Methodology "+ allocationMethodology.getName() +" could not be applied on alerts with HOSTNAME level scope.");
+				}else{
+					setScheduleFValResult("Schedule F not defined");
+				}
+				
+			}else{
+				setScheduleFValResult("Schedule F not defined");
+			}
 		}
 
 		if (!lalAlertUnlicensedSw.isEmpty() && liLicensesNeeded > 0
@@ -509,120 +525,121 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		log.debug("lalAlertUnlicensedSw: " + lalAlertUnlicensedSw.size());
 
 		// Story 26012
+		int alertWithoutMachineLevelScheduleFcounter = 0;
 		int alertWithoutScheduleFcounter = 0;
 
 		for (Long alertId : lalAlertUnlicensedSw) {
 			AlertUnlicensedSw lausTemp = alertDAO.findById(alertId);
-			int scheduleFOwner = reconService.validateScheduleFowner(lausTemp,
-					pRecon);
 
-			if (scheduleFOwner == 2) {
-				alertWithoutScheduleFcounter++;
-			}
-
-			liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
-
-			if (liLicensesNeeded > 0
-					&& !isAlertHardwareRelatedAndProcessed(pRecon,
-							processedHwIds, lausTemp) && scheduleFOwner != 2) {
-				lmTempLicenseAvailableQty = new HashMap<Long, Integer>();
-				copyMap(lmLicenseAvailableQty, lmTempLicenseAvailableQty);
-				lmLicenseApplied = new HashMap<License, Integer>();
-
-				for (License llTemp : pRecon.getLicenseList()) {
-
-					// scheduleFOwner: the owner defined in schedule f.
-					// 0 - Customer owned, 1 - IBM owned, 2 - none correspond
-					// schedule f item defined.
-					boolean isScheduleFIBMOwner = scheduleFOwner == 1 ? true
-							: false;
-
-					// check if license and schedule f item owner same, skip
-					// when not same.
-					if (llTemp.getIbmOwned() != isScheduleFIBMOwner) {
-						continue;
+			int scheduleFOwner = reconService.validateScheduleFowner(lausTemp, pRecon);
+			boolean isMachineLevel = reconService.isAllocateByHardware(pRecon);
+			if(scheduleFOwner == 2){
+				if(isMachineLevel){
+					ScheduleF hostnameSf = vSwLparDAO.getHostnameLevelScheduleF(lausTemp.getInstalledSoftware()
+							.getSoftwareLpar().getAccount(), lausTemp.getInstalledSoftware()
+							.getSoftware().getSoftwareName(), lausTemp.getInstalledSoftware()
+							.getSoftwareLpar().getName());
+					if(null != hostnameSf){
+						alertWithoutMachineLevelScheduleFcounter++;
+					}else{
+						alertWithoutScheduleFcounter++;
 					}
+					
+				}else{
+					alertWithoutScheduleFcounter++;
+				}
+			}else{
+				liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
+				if (liLicensesNeeded > 0 && !isAlertHardwareRelatedAndProcessed(pRecon, processedHwIds, lausTemp)) {
 
-					// start of reconcile rules check.
-					boolean skip = false;
-					for (IReconcileRule rule : reconRules) {
-						if (!rule.inMyScope(pRecon.getPer()))
+					lmTempLicenseAvailableQty = new HashMap<Long, Integer>();
+					copyMap(lmLicenseAvailableQty, lmTempLicenseAvailableQty);
+					lmLicenseApplied = new HashMap<License, Integer>();
+
+					for (License llTemp : pRecon.getLicenseList()) {
+
+						// scheduleFOwner: the owner defined in schedule f.
+						// 0 - Customer owned, 1 - IBM owned, 2 - none correspond
+						// schedule f item defined.
+						boolean isScheduleFIBMOwner = scheduleFOwner == 1 ? true : false;
+
+						// check if license and schedule f item owner same, skip
+						// when not same.
+						if (llTemp.getIbmOwned() != isScheduleFIBMOwner) {
 							continue;
+						}
 
-						if (!rule.allocate(pRecon, llTemp, lausTemp)) {
-							skip = true;
+						// start of reconcile rules check.
+						boolean skip = false;
+						for (IReconcileRule rule : reconRules) {
+							if (!rule.inMyScope(pRecon.getPer())) {
+								continue;
+							}
+
+							if (!rule.allocate(pRecon, llTemp, lausTemp)) {
+								skip = true;
+								break;
+							}
+						}
+
+						if (skip){
+							continue;
+						}
+							
+						// end of reconcile rules check
+
+						if (!lmTempLicenseAvailableQty.containsKey(llTemp.getId())) {
+							lmTempLicenseAvailableQty.put(llTemp.getId(),llTemp.getAvailableQty());
+						}
+
+						if (lmTempLicenseAvailableQty.get(llTemp.getId()).intValue() < 1) {
+							continue;
+						}
+
+						// If there are enough licenses available to cover this
+						// alert,
+						// then use all that are necessary
+						if (lmTempLicenseAvailableQty.get(llTemp.getId()).intValue() >= liLicensesNeeded) {
+							liLicensesApplied = liLicensesNeeded;
+							lmTempLicenseAvailableQty.put(llTemp.getId(),new Integer(lmTempLicenseAvailableQty.get(llTemp.getId()).intValue() - liLicensesNeeded));
+						} else {
+							liLicensesApplied = lmTempLicenseAvailableQty.get(llTemp.getId()).intValue();
+							lmTempLicenseAvailableQty.put(llTemp.getId(),new Integer(0));
+						}
+						liLicensesNeeded -= liLicensesApplied;
+						lmLicenseApplied.put(llTemp, liLicensesApplied);
+
+						// If the number of needed licenses applied is now zero,
+						// then break out
+						// of the license loop to process the next alert
+						if (liLicensesNeeded == 0) {
 							break;
 						}
 					}
 
-					if (skip)
-						continue;
-					// end of reconcile rules check
-
-					if (!lmTempLicenseAvailableQty.containsKey(llTemp.getId())) {
-						lmTempLicenseAvailableQty.put(llTemp.getId(),
-								llTemp.getAvailableQty());
-					}
-
-					if (lmTempLicenseAvailableQty.get(llTemp.getId())
-							.intValue() < 1) {
-						continue;
-					}
-
-					// If there are enough licenses available to cover this
-					// alert,
-					// then use all that are necessary
-					if (lmTempLicenseAvailableQty.get(llTemp.getId())
-							.intValue() >= liLicensesNeeded) {
-						liLicensesApplied = liLicensesNeeded;
-						lmTempLicenseAvailableQty.put(
-								llTemp.getId(),
-								new Integer(lmTempLicenseAvailableQty.get(
-										llTemp.getId()).intValue()
-										- liLicensesNeeded));
-					} else {
-						liLicensesApplied = lmTempLicenseAvailableQty.get(
-								llTemp.getId()).intValue();
-						lmTempLicenseAvailableQty.put(llTemp.getId(),
-								new Integer(0));
-					}
-					liLicensesNeeded -= liLicensesApplied;
-					lmLicenseApplied.put(llTemp, liLicensesApplied);
-
-					// If the number of needed licenses applied is now zero,
-					// then break out
-					// of the license loop to process the next alert
+					// liLicensesNeeded not equal zero means still require more
+					// license to cover the alert.
 					if (liLicensesNeeded == 0) {
-						break;
-					}
-				}
+						Long llHardwareId = reconService.manualReconcileByAlert(alertId, null, pRecon, psRemoteUser, null, pAccount, lmLicenseApplied, "group", scheduleFOwner);
 
-				// liLicensesNeeded not equal zero means still require more
-				// license to cover the alert.
-				if (liLicensesNeeded == 0) {
-					Long llHardwareId = reconService
-							.manualReconcileByAlert(alertId, null, pRecon,
-									psRemoteUser, null, pAccount,
-									lmLicenseApplied, "group", scheduleFOwner);
-
-					// AB added, when reconService process
-					// manualReconcileByAlert, it also needs to validate
-					// ScheduleF again, so need to set its validation result
-					// after the process
-					// Story 26012
-					List<String> scheduleFflagInRecon = reconService
-							.getScheduleFDefInRecon();
-					if (scheduleFflagInRecon != null
-							&& !scheduleFflagInRecon.isEmpty()) {
-						for (String result : scheduleFflagInRecon) {
-							setScheduleFValResult(result);
+						// AB added, when reconService process
+						// manualReconcileByAlert, it also needs to validate
+						// ScheduleF again, so need to set its validation result
+						// after the process
+						// Story 26012
+						List<String> scheduleFflagInRecon = reconService.getScheduleFDefInRecon();
+						if (scheduleFflagInRecon != null && !scheduleFflagInRecon.isEmpty()) {
+							for (String result : scheduleFflagInRecon) {
+								setScheduleFValResult(result);
+							}
 						}
-					}
 
-					if (llHardwareId != null) {
-						processedHwIds.add(llHardwareId);
+						if (llHardwareId != null) {
+							processedHwIds.add(llHardwareId);
+						}
+						copyMap(lmTempLicenseAvailableQty, lmLicenseAvailableQty);
 					}
-					copyMap(lmTempLicenseAvailableQty, lmLicenseAvailableQty);
+				
 				}
 			}
 
@@ -631,14 +648,17 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		// Story 26012, above manualReconcileByAlert process, if already set
 		// validation result of schedule F, then will ignore here, to avoid of
 		// make conflict error msg
-		if (getScheduleFValResult() == null
-				|| getScheduleFValResult().isEmpty()) {
+		if (getScheduleFValResult() == null || getScheduleFValResult().isEmpty()) {
 			if (alertWithoutScheduleFcounter == lalAlertUnlicensedSw.size()) {
-				setScheduleFValResult("Schedule F not defined");
-			} else if (alertWithoutScheduleFcounter > 0
-					&& alertWithoutScheduleFcounter < lalAlertUnlicensedSw
-							.size()) {
 				setScheduleFValResult("Schedule F not defined for all alerts");
+			} else if (alertWithoutScheduleFcounter > 0 && alertWithoutScheduleFcounter < lalAlertUnlicensedSw.size()) {
+				setScheduleFValResult("Schedule F not defined");
+				
+			}
+			
+			if(alertWithoutMachineLevelScheduleFcounter > 0){
+				AllocationMethodology allocationMethodology  = reconService.getAllocationMethodology(pRecon.getPer());
+				setScheduleFValResult("The Machine Level Allocation Methodology "+ allocationMethodology.getName() +" could not be applied on alerts with HOSTNAME level scope.");
 			}
 		}
 	}

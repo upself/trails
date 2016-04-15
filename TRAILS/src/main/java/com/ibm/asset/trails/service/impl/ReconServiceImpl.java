@@ -262,17 +262,34 @@ public class ReconServiceImpl implements ReconService {
 
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon recon) {
-		ScheduleF scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
-				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
-				.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				alert.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getHardware().getMachineType()
-						.getName(), alert.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial(),alert.getInstalledSoftware().getSoftware()
-						.getManufacturerId().getManufacturerName());
+		ScheduleF scheduleF = null;
+		boolean isMachineLevel = isAllocateByHardware(recon);
+		
+		if(isMachineLevel){
+			scheduleF = vSwLparDAO.getMachineLevelScheduleF(alert.getInstalledSoftware()
+					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+					.getSoftware().getSoftwareName(),alert.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+					alert.getInstalledSoftware().getSoftwareLpar()
+							.getHardwareLpar().getHardware().getMachineType()
+							.getName(), alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware()
+							.getSerial(),alert.getInstalledSoftware().getSoftware()
+							.getManufacturerId().getManufacturerName());
+		}else{
+			scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
+					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+					.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
+					.getSoftwareLpar().getName(), alert.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+					alert.getInstalledSoftware().getSoftwareLpar()
+							.getHardwareLpar().getHardware().getMachineType()
+							.getName(), alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware()
+							.getSerial(),alert.getInstalledSoftware().getSoftware()
+							.getManufacturerId().getManufacturerName());
+		}
+		
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
@@ -339,11 +356,10 @@ public class ReconServiceImpl implements ReconService {
 			AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert) {
 		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
 
-		ScheduleF scheduleF4WorkingAlert = vSwLparDAO.getScheduleFItem(workingAlert
+		ScheduleF scheduleF4WorkingAlert = vSwLparDAO.getMachineLevelScheduleF(workingAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				workingAlert.getInstalledSoftware().getSoftware()
-						.getSoftwareName(), workingAlert.getInstalledSoftware()
-						.getSoftwareLpar().getName(), workingAlert
+						.getSoftwareName(), workingAlert
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getOwner(),
 				workingAlert.getInstalledSoftware().getSoftwareLpar()
@@ -355,11 +371,10 @@ public class ReconServiceImpl implements ReconService {
 						.getManufacturerId()
 						.getManufacturerName());
 
-		ScheduleF scheduleF4RelatedAlert = vSwLparDAO.getScheduleFItem(relatedAlert
+		ScheduleF scheduleF4RelatedAlert = vSwLparDAO.getMachineLevelScheduleF(relatedAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				relatedAlert.getInstalledSoftware().getSoftware()
-						.getSoftwareName(), relatedAlert.getInstalledSoftware()
-						.getSoftwareLpar().getName(), relatedAlert
+						.getSoftwareName(), relatedAlert
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getOwner(),
 				relatedAlert.getInstalledSoftware().getSoftwareLpar()
@@ -379,22 +394,10 @@ public class ReconServiceImpl implements ReconService {
 
 			if (scopeId4WorkingAlert.intValue() == 3// Working Alert Scope must
 													// be IBM owned, IBM managed
-					&& scheduleF4WorkingAlert.getLevel() != null
-					&& !scheduleF4WorkingAlert.getLevel().trim()
-							.equals("HOSTNAME")// Working Alert Level must be
-												// great than "HOSTNAME"(The
-												// value can be
-												// 'HWBOX','HWOWNER','PRODUCT')
 					&& scopeId4RelatedAlert.intValue() == 3// Cross Account
 															// Alert Scope must
 															// be IBM owned, IBM
 															// managed
-					&& scheduleF4RelatedAlert.getLevel() != null
-					&& !scheduleF4RelatedAlert.getLevel().trim()
-							.equals("HOSTNAME")// Cross Account Alert Level must
-												// be great than "HOSTNAME"(The
-												// value can be
-												// 'HWBOX','HWOWNER','PRODUCT')
 			) {
 				validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;
 			}
@@ -719,8 +722,9 @@ public class ReconServiceImpl implements ReconService {
 		}
 
 		// Story 26012
-		int alertWithoutScheduleFcounter = 0;
 		int hasInvalidAlertcount = 0;
+		int alertWithoutScheduleFcounter = 0;
+		int alertWithoutMachineLevelScheduleFcounter = 0;
 		for (AlertUnlicensedSw affectedAlert : affectedAlertList) {
 			boolean bReconcileValidation = reconcileValidate(affectedAlert,
 					pRecon, totalUsedLicenses);
@@ -739,10 +743,24 @@ public class ReconServiceImpl implements ReconService {
 
 				// AB added
 				alertlistSwOwner = validateScheduleFowner(affectedAlert, pRecon);
+				boolean isMachineLevel = isAllocateByHardware(pRecon);
 				// this only used to export the schedule F defined flag to
 				// ReconWorkspaceImpl
 				if (alertlistSwOwner == 2) {
-					alertWithoutScheduleFcounter++;
+					if(isMachineLevel){
+						ScheduleF hostnameSf = vSwLparDAO.getHostnameLevelScheduleF(affectedAlert.getInstalledSoftware()
+								.getSoftwareLpar().getAccount(), affectedAlert.getInstalledSoftware()
+								.getSoftware().getSoftwareName(), affectedAlert.getInstalledSoftware()
+								.getSoftwareLpar().getName());
+						if(null != hostnameSf){
+							alertWithoutMachineLevelScheduleFcounter++;
+						}else{
+							alertWithoutScheduleFcounter++;
+						}
+					}else{
+						alertWithoutScheduleFcounter++;
+					}
+					
 				}
 
 			} else {// cross account alert
@@ -806,12 +824,18 @@ public class ReconServiceImpl implements ReconService {
 
 		// Story 26012
 		if (alertWithoutScheduleFcounter == affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined");
+			setScheduleFDefInRecon("Schedule F not defined for all alerts");
+			
 		} else if (alertWithoutScheduleFcounter > 0
 				&& alertWithoutScheduleFcounter < affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined for all alerts");
+			setScheduleFDefInRecon("Schedule F not defined");
 		}
 
+		if(alertWithoutMachineLevelScheduleFcounter > 0){
+			AllocationMethodology allocationMethodology  = getAllocationMethodology(pRecon.getPer());
+			setScheduleFDefInRecon("The Machine Level Allocation Methodology "+ allocationMethodology.getName() +" could not be applied on alerts with HOSTNAME level scope.");
+		}
+		
 		return selectedAlert.getInstalledSoftware().getSoftwareLpar()
 				.getHardwareLpar().getHardware().getId();
 
@@ -824,7 +848,14 @@ public class ReconServiceImpl implements ReconService {
 				|| pRecon.getPer().equalsIgnoreCase("CHIP")
 				|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
 				|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
-				|| pRecon.getPer().equalsIgnoreCase("HWMSU");
+				|| pRecon.getPer().equalsIgnoreCase("HWMSU")
+				|| pRecon.getPer().equalsIgnoreCase("HWIFL");
+	}
+
+	@Override
+	public AllocationMethodology getAllocationMethodology(String per) {
+		// TODO Auto-generated method stub
+		return allocationMethodologyService.findByCode(per.toUpperCase());
 	}
 
 	private Reconcile createReconcile(InstalledSoftware installedSoftware,
