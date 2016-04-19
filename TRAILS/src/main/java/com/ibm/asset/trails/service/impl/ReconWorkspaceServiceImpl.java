@@ -421,11 +421,11 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					AllocationMethodology allocationMethodology  = reconService.getAllocationMethodology(pRecon.getPer());
 					setScheduleFValResult("The Machine Level Allocation Methodology "+ allocationMethodology.getName() +" could not be applied on alerts with HOSTNAME level scope.");
 				}else{
-					setScheduleFValResult("Schedule F not defined");
+					setScheduleFValResult("The reconciliation action could not be applied to alerts where Schedule F is not defined.");
 				}
 				
 			}else{
-				setScheduleFValResult("Schedule F not defined");
+				setScheduleFValResult("The reconciliation action could not be applied to alerts where Schedule F is not defined.");
 			}
 		}
 
@@ -650,9 +650,9 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 		// make conflict error msg
 		if (getScheduleFValResult() == null || getScheduleFValResult().isEmpty()) {
 			if (alertWithoutScheduleFcounter == lalAlertUnlicensedSw.size()) {
-				setScheduleFValResult("Schedule F not defined for all alerts");
+				setScheduleFValResult("Schedule F not defined for all alerts.");
 			} else if (alertWithoutScheduleFcounter > 0 && alertWithoutScheduleFcounter < lalAlertUnlicensedSw.size()) {
-				setScheduleFValResult("Schedule F not defined");
+				setScheduleFValResult("The reconciliation action could not be applied to alerts where Schedule F is not defined.");
 				
 			}
 			
