@@ -824,11 +824,11 @@ public class ReconServiceImpl implements ReconService {
 
 		// Story 26012
 		if (alertWithoutScheduleFcounter == affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined for all alerts");
+			setScheduleFDefInRecon("Schedule F not defined for all alerts.");
 			
 		} else if (alertWithoutScheduleFcounter > 0
 				&& alertWithoutScheduleFcounter < affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined");
+			setScheduleFDefInRecon("The reconciliation action could not be applied to alerts where Schedule F is not defined.");
 		}
 
 		if(alertWithoutMachineLevelScheduleFcounter > 0){
