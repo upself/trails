@@ -1,16 +1,17 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <jsp:include page="mappingHead.jsp"></jsp:include>
-<p style="font-weight:bold">IBM Confidential</p>
-<p>Add or Remove one or more Asset machine models, based on the PVU
-details listed at the bottom of the screen. Click Submit to save your
-selections.</p>
-<br />
-
-Processor brand: ${pvu.processorBrand}
-<br />
-Processor model: ${pvu.processorModel}
-
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
+		<h6>IBM Confidential</h6>
+		<p>Add or Remove one or more Asset machine models, based on the PVU details listed at the bottom of the screen. Click Submit to save your selections.</p>
+	</div>
+	<br />
+	<div class="ibm-col-1-1" style="font-size: 12px;">
+		Processor brand: ${pvu.processorBrand}<br />
+		Processor model: ${pvu.processorModel}<br />
+	</div>
+</div>
 <div class="clear"></div>
 <br />
 <div class="map_hidden" id="map_stat_wait">
@@ -52,61 +53,67 @@ $('#button_remove').click(function(event) {
       return;
   }); 
 </script>
-<s:form action="updatePvuMap" method="post" namespace="/admin/pvuMapping" theme="simple">
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
 
-	<s:hidden name="pvuId" id="pvu_id"></s:hidden>
-
-	<label for="asset_processor_brand_select">Asset processor type: </label>
-	<s:select name="selectedProcessorBrands" list="selectedProcessorBrands"
-		id="asset_processor_brand_select" value="" cssClass="map_freez_width"
-		headerValue="Please make a selection" headerKey=""
-		onchange="getMachineTypes(this.value);" />
-	<br />
-	<br />
-
-	<label for="machineTypeSelect">Machine type: </label>
-	<s:select name="machineTypeId" list="machineTypeList"
-		id="machineTypeSelect" value="" cssClass="map_dropdown_width"
-		headerValue="Please select an Asset processor type" headerKey=""
-		onchange="getAvailableProcessorModels(this.value);" />
-	<br />
-	<br />
-			<div class="map_result_title">
-				<label for="free_model_select">Free asset machine model</label> 
-				<s:select name="free_model_select" list="freeProcessorModels" cssClass="map_items" id="free_model_select" multiple="true" size="10"></s:select>
+	<s:form action="updatePvuMap" method="post" namespace="/admin/pvuMapping" theme="simple">
+	
+		<s:hidden name="pvuId" id="pvu_id"></s:hidden>
+	<div>
+		<label for="asset_processor_brand_select">Asset processor type: </label>
+		<s:select name="selectedProcessorBrands" list="selectedProcessorBrands"
+			id="asset_processor_brand_select" value="" cssClass="map_freez_width"
+			headerValue="Please make a selection" headerKey=""
+			onchange="getMachineTypes(this.value);" />
+		<br />
+		<br />
+	
+		<label for="machineTypeSelect">Machine type: </label>
+		<s:select name="machineTypeId" list="machineTypeList"
+			id="machineTypeSelect" value="" cssClass="map_dropdown_width"
+			headerValue="Please select an Asset processor type" headerKey=""
+			onchange="getAvailableProcessorModels(this.value);" />
+	</div>
+		<br />
+		<br />
+			<div id="map_zone">
+					<div class="map_result_title">
+						<label for="free_model_select">Free asset machine model</label> 
+						<s:select name="free_model_select" list="freeProcessorModels" cssClass="map_items" id="free_model_select" multiple="true" size="10"></s:select>
+					</div>
+				
+				
+					<div class="map_seprator">
+						<span> 
+						<p class="ibm-button-link-alternate">
+							<a href="#" id="button_add" class="ibm-btn-small">&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;</a><br>
+							<a href="#" id="button_remove" class="ibm-btn-small">&lt;&lt;Remove</a>
+						</p>
+							<br />
+							<br />
+						</span>
+					</div>
+				
+				
+					<div class="map_result_title">
+						<div class="label">Mapped asset machine model</div> 
+					    <!-- 
+					     <label for="mapped_model_hide_select">mapped model select hide</label>
+					    <label for="mapped_model_select">mapped model select</label>
+					     -->	    
+						    <s:select name="selectedProcessorModels" list="selectedProcessorModels" 
+							cssClass="map_items" id="mapped_model_select" size="10" multiple="true">
+							</s:select>		
+					</div>
 			</div>
-		
-		
-			<div class="map_seprator">
-				<span> 
-				<p class="ibm-button-link-alternate">
-					<a href="#" id="button_add" class="ibm-btn-small">&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;</a><br>
-					<a href="#" id="button_remove" class="ibm-btn-small">&lt;&lt;Remove</a>
-				</p>
-					<br />
-					<br />
-				</span>
-			</div>
-		
-		
-			<div class="map_result_title">
-				<div class="label">Mapped asset machine model</div> 
-			    <!-- 
-			     <label for="mapped_model_hide_select">mapped model select hide</label>
-			    <label for="mapped_model_select">mapped model select</label>
-			     -->	    
-				    <s:select name="selectedProcessorModels" list="selectedProcessorModels" 
-					cssClass="map_items" id="mapped_model_select" size="10" multiple="true">
-					</s:select>		
-			</div>
-			<div style="float:right">
+			<div id="mapping_submit" style="width:100%;float:left">
+				<input value="Submit" id="submit_button" name="ibm-submit" class="ibm-btn-pri" type="submit">
+				<input value="Cancel" id="map_cancel" name="ibm-cancel" class="ibm-btn-pri" type="submit">
 				<br/>
-				<br/>
-					<input value="Submit" id="submit_button" name="ibm-submit" class="ibm-btn-pri" type="submit">
-					<input value="Cancel" id="map_cancel" name="ibm-cancel" class="ibm-btn-pri" type="submit">
-				<br/>
 			</div>
-</s:form>
+	</s:form>
+	</div>
+</div>
 <div class="ibm-rule">
 </div>
 

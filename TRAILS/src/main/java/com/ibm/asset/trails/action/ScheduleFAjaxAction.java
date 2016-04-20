@@ -1,18 +1,32 @@
 package com.ibm.asset.trails.action;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.ibm.asset.trails.domain.MachineType;
+import com.ibm.asset.trails.domain.Manufacturer;
+import com.ibm.asset.trails.domain.ReportDeliveryTrackingHistory;
 import com.ibm.asset.trails.domain.Software;
+import com.ibm.asset.trails.service.ManufacturerService;
 import com.ibm.asset.trails.service.ScheduleFService;
+import com.ibm.tap.trails.annotation.UserRole;
+import com.ibm.tap.trails.annotation.UserRoleType;
 
 
 public class ScheduleFAjaxAction implements ServletResponseAware, SessionAware {
@@ -24,6 +38,8 @@ public class ScheduleFAjaxAction implements ServletResponseAware, SessionAware {
 	private HttpServletResponse response;
 
 	private ScheduleFService scheduleFService;
+	
+	private ManufacturerService manufacturerService;
 
 	private String key;
 
@@ -86,7 +102,48 @@ public class ScheduleFAjaxAction implements ServletResponseAware, SessionAware {
 	
 		feedback(result.toString());
 	}
+	
+	@UserRole(userRole = UserRoleType.READER)
+	public String getManufacturerByNameJson() throws IOException {
+		String str = ServletActionContext.getRequest().getParameter("q");
 
+		if (str == null || str == "") {
+			return com.opensymphony.xwork2.Action.NONE;
+		}
+		str = "%" + str + "%";
+		str = str.toUpperCase();
+
+		List<Manufacturer> list = manufacturerService.findByNameLike(str);
+
+		PrintWriter writer = ServletActionContext.getResponse().getWriter();
+		if (list == null || list.size() == 0) {
+			writer.write("{}");
+		} else {
+			GsonBuilder builder = new GsonBuilder();
+			Gson gson = builder.registerTypeAdapter(
+					ReportDeliveryTrackingHistory.class,
+					new JsonSerializer<Manufacturer>() {
+
+						public JsonElement serialize(Manufacturer src,
+								Type typeOfSrc, JsonSerializationContext context) {
+							JsonObject obj = new JsonObject();
+							obj.addProperty("id", src.getId());
+							obj.addProperty("name", src.getManufacturerName());
+
+							return obj;
+						}
+					}).create();
+			writer.write(gson.toJson(list));
+		}
+
+		return com.opensymphony.xwork2.Action.NONE;
+
+	}
+	
+	public void setManufacturerService(ManufacturerService manufacturerService) {
+		this.manufacturerService = manufacturerService;
+	}
+	
 	public void setKey(String key) {
 		this.key = key;
 	}

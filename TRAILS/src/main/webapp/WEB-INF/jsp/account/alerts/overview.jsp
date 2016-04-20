@@ -1,7 +1,5 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-
-<div class="ibm-columns" style="width: 155%;">
-	<div class="ibm-col-1-1" style="width:100%;">
+<div class="ibm-columns">
+	<div class="ibm-col-1-1">
 		<h6>IBM Confidential</h6>
 		<p>
 			The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.
@@ -9,11 +7,11 @@
 		<br />
 	</div>
 	<br />
-	<div class="ibm-col-1-1" style="font-size: 12px; width:100%;">
+	<div class="ibm-col-1-1" style="font-size: 12px;">
 		Data last refreshed: <span id="reportTimestamp"></span><br />
 		Data age (in minutes): <span id="reportMinutesOld"></span><br />
 	</div>
-	<div class="ibm-col-1-1" style="width:100%;">
+	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Alert overview">
 			<thead>
 				<tr>
@@ -69,7 +67,7 @@ function searchData(){
         	   redTotal += data.data.overviewList[i].redSum;
            }
            
-           html += '<tr><td></td><td>'+assignTotal+'</td><td>'+greenTotal+'</td>';
+           html += '<tr><td><h3>Total:</h3></td><td>'+assignTotal+'</td><td>'+greenTotal+'</td>';
            html += '<td>'+yellowTotal+'</td><td>'+redTotal+'</td></tr>';
            
            $('#reportTimestamp').text(reportTimestamp);

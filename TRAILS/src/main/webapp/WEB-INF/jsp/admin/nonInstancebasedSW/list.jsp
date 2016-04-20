@@ -1,9 +1,8 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
-	<div class="ibm-col-1-1">
+	<div class="ibm-col-4-3">
 		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
 			<p>
 				<label style="width:30%" for="softwareName_id">
@@ -87,7 +86,32 @@
 		</form>
 		<!-- FORM_END -->
 	</div>
+	<div class="ibm-col-4-1">
+		<%
+	boolean admin = request.isUserInRole("com.ibm.tap.admin");
+	if(admin){
+		%>
+			<s:set name="admin" value="1" ></s:set>
+			<p class="ibm-button-link">
+				<a class="ibm-btn-small" href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=add">Add Non Instance base SW</a> 
+				<a class="ibm-btn-small" href="${pageContext.request.contextPath}/ws/noninstance/download">Export Non Instance based SW</a>
+				<a class="ibm-btn-small" href="${pageContext.request.contextPath}/admin/nonInstancebasedSW/upload.htm">Import Non Instance based SW</a> 
+			</p>
+		<%
+		} else{
+			
+		%>
+			<s:set name="admin" value="0" ></s:set>
+			<p class="ibm-button-link">
+				<a class="ibm-btn-small" href="${pageContext.request.contextPath}/ws/noninstance/download">Export Non Instance based SW</a>
+			</p>
+		<%
+		}
+		%>
+	</div>
 	
+</div>
+<div class="ibm-columns">
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
@@ -109,19 +133,6 @@
 		</table>
 	</div>
 </div>
-
-<%
-	boolean admin = request.isUserInRole("com.ibm.tap.admin");
-	if(admin){
-%>
-	<s:set name="admin" value="1" ></s:set>
-<%
-	} else{
-%>
-	<s:set name="admin" value="0" ></s:set>
-<%
-	}
-%>
 
 <script>
 

@@ -12,13 +12,16 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<p id="breadcrumbs"><s:a href="%{trails}">TRAILS</s:a> &gt; <s:a
-	href="%{reports}">Reports</s:a> &gt; <s:a href="%{alerts}">Operational metrics</s:a>
-&gt; 
-<br>
-</p>
 
-<div style="font-size:22px; display:inline">Operational metrics reports by</div><h1 class="oneline">&nbsp;Account number</h1>
+<ul id="ibm-navigation-trail">
+	<li><s:a href="%{trails}">TRAILS</s:a></li>
+	<li><s:a href="%{reports}">Reports</s:a></li>
+	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
+</ul>
+
+<div style="font-size: 22px; display: inline">Operational metrics
+	reports by</div>
+<h1 class="oneline">&nbsp;Account number</h1>
 <br>
 
 

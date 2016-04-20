@@ -1,5 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 	<h6>IBM Confidential</h6>

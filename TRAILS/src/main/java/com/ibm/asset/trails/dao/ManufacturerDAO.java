@@ -10,5 +10,7 @@ public interface ManufacturerDAO extends BaseEntityDAO<Manufacturer, Long> {
 	List<Manufacturer> findByNameLike(String name);
 
 	public Manufacturer findManufacturerByName(String name); 
+	
+	List<Manufacturer> findManufacturerListbyName(String name);
 
 }

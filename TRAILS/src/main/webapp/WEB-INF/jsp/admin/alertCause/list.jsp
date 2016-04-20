@@ -1,19 +1,13 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<%@ taglib prefix="s" uri="/struts-tags"%>
-<s:if test="hasErrors()">
-	<s:actionerror />
-	<s:fielderror />
-</s:if>
-
-<p style="font-weight:bold">IBM Confidential</p> 
-<br />
-<p>Below is a list of the cause codes in the application. Press one
-	of the links to edit the cause code details. You can also add a new
-	cause code to the application by pressing the Add a cause code link.</p>
-<br />
-
 <div class="ibm-columns">
-
+	<div class="ibm-col-1-1">
+		<h6>IBM Confidential</h6>
+		<p>
+			Below is a list of the cause codes in the application. Press one
+	of the links to edit the cause code details. You can also add a new
+	cause code to the application by pressing the Add a cause code link.
+		</p>
+		<br />
+	</div>
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<div style="height: 80px; width: 100%; float: left">

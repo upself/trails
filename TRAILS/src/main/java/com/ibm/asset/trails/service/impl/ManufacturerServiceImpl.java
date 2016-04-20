@@ -30,5 +30,10 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		// TODO Auto-generated method stub
 		return manufacturerDAO.findManufacturerByName(name);
 	}
+	
+	@Override
+	public  List<Manufacturer> findManufacturerListByName(String name) {
+		return manufacturerDAO.findManufacturerListbyName(name);
+	}
 
 }

@@ -11,17 +11,19 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ibm.asset.trails.dao.AlertUnlicensedSoftwareDAO;
 import com.ibm.asset.trails.dao.ReconLicenseDAO;
+import com.ibm.asset.trails.dao.VSoftwareLparDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
 import com.ibm.asset.trails.domain.AlertUnlicensedSwH;
@@ -36,6 +38,7 @@ import com.ibm.asset.trails.domain.ReconcileH;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
+import com.ibm.asset.trails.form.BreakResult;
 import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.ReconService;
 
@@ -52,6 +55,9 @@ public class ReconServiceImpl implements ReconService {
 	
 	@Autowired
 	private ReconLicenseDAO reconLicenseDAO;
+
+	@Autowired
+	private VSoftwareLparDAO vSwLparDAO;
 
 	public List<String> getScheduleFDefInRecon() {
 		return ScheduleFDefInRecon;
@@ -83,6 +89,33 @@ public class ReconServiceImpl implements ReconService {
 
 	private EntityManager getEntityManager() {
 		return em;
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public BreakResult breakReconcileByAlertWithoutQueue(Long alertId, String remoteUser, Set<UsedLicenseHistory> usedLicHis) {
+
+		
+		BreakResult breakResult = null;
+		
+		AlertUnlicensedSw alert = findAlertById(alertId);
+		Reconcile reconcile = findReconcile(alert);
+		
+		//Step 1: Break reconcile History
+		ReconcileH reconcileH = findReconcileHistory(alert);
+		breakReconcileHistory(reconcile, reconcileH, alert, remoteUser, usedLicHis);
+		
+		//Step 2: Open alert 
+		createAlertHistory(alert);
+		alert = openAlert(alert);
+		
+		//Step 3: Break reconcile
+		Account account = alert.getReconcile().getInstalledSoftware().getSoftwareLpar().getAccount();
+		account.getId();//avoid no session issue
+		breakResult = breakReconcileWithoutQueue(alert.getReconcile(), account, remoteUser);
+		
+		
+		return breakResult;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -117,6 +150,40 @@ public class ReconServiceImpl implements ReconService {
 			alert.setReconcile(reconcile);
 			alert.setReconcileH(reconcileH);
 			closeAlert(alert);
+		}
+	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void breakResultToQueue(List<BreakResult> breakResultList) {
+		// TODO Auto-generated method stub
+	   
+		Set<ReconLicense> reconLicenseSet = new HashSet<ReconLicense>();
+		
+		//save ReconInstalledSoftware and construct reconLicenseSet
+	    for(BreakResult breakResult : breakResultList){
+	    	ReconInstalledSoftware reconInstalledSoftware = breakResult.getReconInstalledSoftware();
+	    	
+	    	if(reconInstalledSoftware != null){
+	    		ReconInstalledSoftware dbRis = findQueueByInstalledSoftwareId(reconInstalledSoftware.getInstalledSoftware().getId());
+	    		if(null == dbRis){
+	    			getEntityManager().persist(reconInstalledSoftware);
+	    		}
+	    	}
+	    	
+	    	Set<ReconLicense> rlSet = breakResult.getReconLicenseSet();
+	    	if(null != rlSet && rlSet.size() > 0){
+	    		reconLicenseSet.addAll(rlSet);
+	    	}
+	    }
+	    
+	    //Save ReconLicense
+	    for(ReconLicense reconLicense : reconLicenseSet){
+			//always persist result
+	    	ReconLicense dbRl = reconLicenseDAO.getExistingReconLicense(reconLicense.getLicense().getId());
+	    	if(null == dbRl){
+	    		getEntityManager().persist(reconLicense);
+	    	}
 		}
 	}
 
@@ -195,17 +262,34 @@ public class ReconServiceImpl implements ReconService {
 
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon recon) {
-		ScheduleF scheduleF = getScheduleFItem(alert.getInstalledSoftware()
-				.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
-				.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getName(), alert.getInstalledSoftware()
-				.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-				alert.getInstalledSoftware().getSoftwareLpar()
-						.getHardwareLpar().getHardware().getMachineType()
-						.getName(), alert.getInstalledSoftware()
-						.getSoftwareLpar().getHardwareLpar().getHardware()
-						.getSerial(),alert.getInstalledSoftware().getSoftware()
-						.getManufacturerId().getManufacturerName());
+		ScheduleF scheduleF = null;
+		boolean isMachineLevel = isAllocateByHardware(recon);
+		
+		if(isMachineLevel){
+			scheduleF = vSwLparDAO.getMachineLevelScheduleF(alert.getInstalledSoftware()
+					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+					.getSoftware().getSoftwareName(),alert.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+					alert.getInstalledSoftware().getSoftwareLpar()
+							.getHardwareLpar().getHardware().getMachineType()
+							.getName(), alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware()
+							.getSerial(),alert.getInstalledSoftware().getSoftware()
+							.getManufacturerId().getManufacturerName());
+		}else{
+			scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
+					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+					.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
+					.getSoftwareLpar().getName(), alert.getInstalledSoftware()
+					.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+					alert.getInstalledSoftware().getSoftwareLpar()
+							.getHardwareLpar().getHardware().getMachineType()
+							.getName(), alert.getInstalledSoftware()
+							.getSoftwareLpar().getHardwareLpar().getHardware()
+							.getSerial(),alert.getInstalledSoftware().getSoftware()
+							.getManufacturerId().getManufacturerName());
+		}
+		
 		int owner = 2;
 		if (scheduleF != null) {
 			String[] scDesParts = scheduleF.getScope().getDescription()
@@ -272,11 +356,10 @@ public class ReconServiceImpl implements ReconService {
 			AlertUnlicensedSw workingAlert, AlertUnlicensedSw relatedAlert) {
 		boolean validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = false;
 
-		ScheduleF scheduleF4WorkingAlert = getScheduleFItem(workingAlert
+		ScheduleF scheduleF4WorkingAlert = vSwLparDAO.getMachineLevelScheduleF(workingAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				workingAlert.getInstalledSoftware().getSoftware()
-						.getSoftwareName(), workingAlert.getInstalledSoftware()
-						.getSoftwareLpar().getName(), workingAlert
+						.getSoftwareName(), workingAlert
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getOwner(),
 				workingAlert.getInstalledSoftware().getSoftwareLpar()
@@ -288,11 +371,10 @@ public class ReconServiceImpl implements ReconService {
 						.getManufacturerId()
 						.getManufacturerName());
 
-		ScheduleF scheduleF4RelatedAlert = getScheduleFItem(relatedAlert
+		ScheduleF scheduleF4RelatedAlert = vSwLparDAO.getMachineLevelScheduleF(relatedAlert
 				.getInstalledSoftware().getSoftwareLpar().getAccount(),
 				relatedAlert.getInstalledSoftware().getSoftware()
-						.getSoftwareName(), relatedAlert.getInstalledSoftware()
-						.getSoftwareLpar().getName(), relatedAlert
+						.getSoftwareName(), relatedAlert
 						.getInstalledSoftware().getSoftwareLpar()
 						.getHardwareLpar().getHardware().getOwner(),
 				relatedAlert.getInstalledSoftware().getSoftwareLpar()
@@ -312,22 +394,10 @@ public class ReconServiceImpl implements ReconService {
 
 			if (scopeId4WorkingAlert.intValue() == 3// Working Alert Scope must
 													// be IBM owned, IBM managed
-					&& scheduleF4WorkingAlert.getLevel() != null
-					&& !scheduleF4WorkingAlert.getLevel().trim()
-							.equals("HOSTNAME")// Working Alert Level must be
-												// great than "HOSTNAME"(The
-												// value can be
-												// 'HWBOX','HWOWNER','PRODUCT')
 					&& scopeId4RelatedAlert.intValue() == 3// Cross Account
 															// Alert Scope must
 															// be IBM owned, IBM
 															// managed
-					&& scheduleF4RelatedAlert.getLevel() != null
-					&& !scheduleF4RelatedAlert.getLevel().trim()
-							.equals("HOSTNAME")// Cross Account Alert Level must
-												// be great than "HOSTNAME"(The
-												// value can be
-												// 'HWBOX','HWOWNER','PRODUCT')
 			) {
 				validateScheduleF4WorkingAlertAndCrossAccountAlertFlag = true;
 			}
@@ -339,91 +409,6 @@ public class ReconServiceImpl implements ReconService {
 	// User Story - 17236 - Manual License Allocation at HW level can
 	// automatically close Alerts on another account on the same Shared HW as
 	// requested by users End
-
-	private ScheduleF getScheduleFItem(Account account, String swname,
-			String hostName, String hwOwner, String machineType, String serial, String manufacturerName) {
-	
-		// HOSTNAME,HWBOX, HWOWNER,PRODUCT
-		@SuppressWarnings("unchecked")
-		List<ScheduleF> results = getEntityManager()
-				.createQuery(
-						" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.softwareName =:swname")
-				.setParameter("account", account)
-				.setParameter("swname", swname).getResultList();
-		
-		boolean isExist = false;
-
-		List<ScheduleF> hostNameLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwboxLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> hwOwnerLevel = new ArrayList<ScheduleF>();
-		List<ScheduleF> proudctLevel = new ArrayList<ScheduleF>();
-		
-
-		for (ScheduleF sf : results) {
-			String level = sf.getLevel();
-			if ("HOSTNAME".equals(level)) {
-				hostNameLevel.add(sf);
-			} else if ("HWBOX".equals(level)) {
-				hwboxLevel.add(sf);
-			} else if ("HWOWNER".equals(level)) {
-				hwOwnerLevel.add(sf);
-			} else if("PRODUCT".equals(level)) {
-				proudctLevel.add(sf);
-			} else {
-				
-			}
-		}
-
-		for (ScheduleF sf : hostNameLevel) {
-			if (null != sf.getHostname() && sf.getHostname().equals(hostName)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwboxLevel) {
-			if (null != sf.getSerial() 
-					&& sf.getSerial().equals(serial)
-					&& null != sf.getMachineType() 
-					&& sf.getMachineType().equals(machineType)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : hwOwnerLevel) {
-			if (null != sf.getHwOwner() && sf.getHwOwner().equals(hwOwner)) {
-				isExist = true;
-				return sf;
-			}
-		}
-
-		for (ScheduleF sf : proudctLevel) {
-			if (null != sf.getSoftwareName() && sf.getSoftwareName().equals(swname)) {
-				isExist = true;
-				return sf;
-			}
-		}
-		
-		// Manufacture level
-		if(!isExist){
-			@SuppressWarnings("unchecked")
-			List<ScheduleF> manufactureResults = getEntityManager()
-					.createQuery(
-							" from ScheduleF a where a.status.description='ACTIVE' and a.account =:account and a.manufacturerName =:manufacturerName")
-					.setParameter("account", account)
-					.setParameter("manufacturerName", manufacturerName)
-					.getResultList();
-			
-			if(null == manufactureResults || manufactureResults.size() == 0){
-				return null;
-			}else{
-				return manufactureResults.get(0);
-			}
-		}
-
-		return null;
-	}
 
 	private void closeAlert(AlertUnlicensedSw alert) {
 		if (alert.isOpen()) {
@@ -515,7 +500,8 @@ public class ReconServiceImpl implements ReconService {
 		}
 		return reconcile;
 	}
-
+	
+	
 	private void breakReconcile(Reconcile reconcile, Account account,
 			String remoteUser) {
 		InstalledSoftware is = reconcile.getInstalledSoftware();
@@ -523,7 +509,62 @@ public class ReconServiceImpl implements ReconService {
 		addToQueue(is, account, remoteUser);
 		getEntityManager().remove(reconcile);
 	}
+	
+	private BreakResult breakReconcileWithoutQueue(Reconcile reconcile, Account account, String remoteUser){
+		
+		BreakResult breakResult = new BreakResult();
+		
+		
+		InstalledSoftware is = reconcile.getInstalledSoftware();
+		is.getId(); //avoid no session issue;
+		Set<ReconLicense> reconLicenseSet= clearUsedLicenseReconcile(reconcile, remoteUser);
+		ReconInstalledSoftware reconInstalledSoftware = findQueueByInstalledSoftwareId(is.getId());
+		if (reconInstalledSoftware == null) {
+			reconInstalledSoftware = new ReconInstalledSoftware();
+			reconInstalledSoftware.setAccount(account);
+			reconInstalledSoftware.setAction("UPDATE");
+			reconInstalledSoftware.setInstalledSoftware(is);
+			reconInstalledSoftware.setRecordTime(new Date());
+			reconInstalledSoftware.setRemoteUser(remoteUser);
+			breakResult.setReconInstalledSoftware(reconInstalledSoftware);
+		}
+		getEntityManager().remove(reconcile);
+		breakResult.setReconLicenseSet(reconLicenseSet);
+		
+		return breakResult;
+	}
 
+	private Set<ReconLicense> clearUsedLicenseReconcile(Reconcile reconcile, String remoteUser){
+		Set<ReconLicense> reconLicenseSet = null;
+		
+		Set<UsedLicense> usedLics = reconcile.getUsedLicenses();
+		for (UsedLicense ul : usedLics) {
+			License license = ul.getLicense();
+			Account account = license.getAccount();
+			license.getId();//avoid no session issue
+			account.getId();//avoid no session issue
+			ReconLicense queue = reconLicenseDAO.getExistingReconLicense(license.getId());
+			if (queue == null) {
+				queue = new ReconLicense();
+				queue.setAccount(account);
+				queue.setAction("UPDATE");
+				queue.setLicense(license);
+				queue.setRecordTime(new Date());
+				queue.setRemoteUser(remoteUser);
+				
+				if(reconLicenseSet == null){
+					reconLicenseSet = new HashSet<ReconLicense>();
+				}
+				
+				reconLicenseSet.add(queue);
+			}
+			
+			removeUsedLicenseReconcile(ul, reconcile);
+		}
+		
+		return reconLicenseSet;
+	}
+	
 	private void clearUsedLicenses(Reconcile reconcile, String remoteUser) {
 		Set<UsedLicense> usedLics = reconcile.getUsedLicenses();
 		for (UsedLicense ul : usedLics) {
@@ -681,8 +722,9 @@ public class ReconServiceImpl implements ReconService {
 		}
 
 		// Story 26012
-		int alertWithoutScheduleFcounter = 0;
 		int hasInvalidAlertcount = 0;
+		int alertWithoutScheduleFcounter = 0;
+		int alertWithoutMachineLevelScheduleFcounter = 0;
 		for (AlertUnlicensedSw affectedAlert : affectedAlertList) {
 			boolean bReconcileValidation = reconcileValidate(affectedAlert,
 					pRecon, totalUsedLicenses);
@@ -701,10 +743,24 @@ public class ReconServiceImpl implements ReconService {
 
 				// AB added
 				alertlistSwOwner = validateScheduleFowner(affectedAlert, pRecon);
+				boolean isMachineLevel = isAllocateByHardware(pRecon);
 				// this only used to export the schedule F defined flag to
 				// ReconWorkspaceImpl
 				if (alertlistSwOwner == 2) {
-					alertWithoutScheduleFcounter++;
+					if(isMachineLevel){
+						ScheduleF hostnameSf = vSwLparDAO.getHostnameLevelScheduleF(affectedAlert.getInstalledSoftware()
+								.getSoftwareLpar().getAccount(), affectedAlert.getInstalledSoftware()
+								.getSoftware().getSoftwareName(), affectedAlert.getInstalledSoftware()
+								.getSoftwareLpar().getName());
+						if(null != hostnameSf){
+							alertWithoutMachineLevelScheduleFcounter++;
+						}else{
+							alertWithoutScheduleFcounter++;
+						}
+					}else{
+						alertWithoutScheduleFcounter++;
+					}
+					
 				}
 
 			} else {// cross account alert
@@ -768,12 +824,18 @@ public class ReconServiceImpl implements ReconService {
 
 		// Story 26012
 		if (alertWithoutScheduleFcounter == affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined");
+			setScheduleFDefInRecon("Schedule F not defined for all alerts.");
+			
 		} else if (alertWithoutScheduleFcounter > 0
 				&& alertWithoutScheduleFcounter < affectedAlertList.size()) {
-			setScheduleFDefInRecon("Schedule F not defined for all alerts");
+			setScheduleFDefInRecon("The reconciliation action could not be applied to alerts where Schedule F is not defined.");
 		}
 
+		if(alertWithoutMachineLevelScheduleFcounter > 0){
+			AllocationMethodology allocationMethodology  = getAllocationMethodology(pRecon.getPer());
+			setScheduleFDefInRecon("The Machine Level Allocation Methodology "+ allocationMethodology.getName() +" could not be applied on alerts with HOSTNAME level scope.");
+		}
+		
 		return selectedAlert.getInstalledSoftware().getSoftwareLpar()
 				.getHardwareLpar().getHardware().getId();
 
@@ -786,7 +848,14 @@ public class ReconServiceImpl implements ReconService {
 				|| pRecon.getPer().equalsIgnoreCase("CHIP")
 				|| pRecon.getPer().equalsIgnoreCase("HWGARTMIPS")
 				|| pRecon.getPer().equalsIgnoreCase("HWLSPRMIPS")
-				|| pRecon.getPer().equalsIgnoreCase("HWMSU");
+				|| pRecon.getPer().equalsIgnoreCase("HWMSU")
+				|| pRecon.getPer().equalsIgnoreCase("HWIFL");
+	}
+
+	@Override
+	public AllocationMethodology getAllocationMethodology(String per) {
+		// TODO Auto-generated method stub
+		return allocationMethodologyService.findByCode(per.toUpperCase());
 	}
 
 	private Reconcile createReconcile(InstalledSoftware installedSoftware,

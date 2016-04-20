@@ -1,4 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <div class="ibm-columns">
 	<div class="ibm-col-5-4">
 		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Data Exception History">

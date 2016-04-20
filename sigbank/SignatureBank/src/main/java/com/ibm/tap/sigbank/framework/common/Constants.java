@@ -16,7 +16,7 @@ public class Constants {
 
 	// Configuration Constatns
 	public static final String CONF_DIR = "/opt/sigbank/conf";
-
+	
 	public static final String APP_PROPERTIES = CONF_DIR
 			+ "/sigbank.properties";
 
@@ -95,7 +95,9 @@ public class Constants {
 	public static final String EMAIL_ADDRESS_FROM = "tap@tap.raleigh.ibm.com";
 
 	public static final String[] OS_TYPES = { "JVM", "OS/400", "Unix", "Windows" };
-
+	
+	public static final String[] CATALOG_TYPES = { "BFI" };
+	
 	// Common Navigation Constants
 	public static final String USER_CONTAINER = "user.container";
 

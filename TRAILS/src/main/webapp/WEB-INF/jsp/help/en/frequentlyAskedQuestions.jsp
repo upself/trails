@@ -1,5 +1,4 @@
 <!-- start help doc -->
-
 <p><a href="#_What_is_TRAILS">What is TRAILS?</a></p>
 
 <p />
@@ -161,7 +160,7 @@ audit posture</p>
 <p>There are two types of access; read and administrative
 access. By default, the Asset Management community has read access. If you are
 outside this group and need either read or administrative access, contact your
-Asset Management Focal to request access on your behalf.  </p>
+Asset Management Focal to request access on your behalf.ï¿½ </p>
 
 <h3><a name="_Can_TRAILS_data"></a>&nbsp;</h3>
 <h3>Can TRAILS data be distributed externally? </h3>

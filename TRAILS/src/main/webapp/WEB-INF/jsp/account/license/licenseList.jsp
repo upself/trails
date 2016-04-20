@@ -1,9 +1,5 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
 
 <script type="text/javascript">
 $(function() {
@@ -70,10 +66,6 @@ $(function() {
 	}	
 	
 </script>
-<s:if test="hasErrors()">
-	<s:actionerror />
-	<s:fielderror />
-</s:if>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 	<p style="font-weight:bold">IBM Confidential</p>
@@ -87,7 +79,7 @@ $(function() {
 	<br />
 	
 	<div class="ibm-col-1-1">
-			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" style="width:140%" summary="License list">
+			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="License list">
 				<thead>
 					<tr>
 						<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>

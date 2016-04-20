@@ -111,6 +111,7 @@
 
 	<bean id="ScheduleFAjaxAction" class="com.ibm.asset.trails.action.ScheduleFAjaxAction">
 		<property name="scheduleFService" ref="scheduleFServiceImpl" />
+	    <property name="manufacturerService" ref="manufacturerServiceImpl" />
 	</bean>
 
 	<bean id="nonInstanceAjaxAction" class="com.ibm.asset.trails.action.NonInstanceAjaxAction">
@@ -200,6 +201,7 @@
 		<property name="idleConnectionTestPeriod" value="300" />
 		<property name="acquireRetryAttempts" value="3" />
 		<property name="acquireRetryDelay" value="500" />
+		<property name="connectionCustomizerClassName" value="com.ibm.asset.trails.extensions.IsolationLevelConnectionCustomizer" />
 	</bean>
 
 	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource"
@@ -216,6 +218,7 @@
 		<property name="idleConnectionTestPeriod" value="300" />
 		<property name="acquireRetryAttempts" value="3" />
 		<property name="acquireRetryDelay" value="500" />
+		<property name="connectionCustomizerClassName" value="com.ibm.asset.trails.extensions.IsolationLevelConnectionCustomizer" />
 	</bean>
 
 	<bean id="transactionManager1" class="org.springframework.orm.jpa.JpaTransactionManager">
