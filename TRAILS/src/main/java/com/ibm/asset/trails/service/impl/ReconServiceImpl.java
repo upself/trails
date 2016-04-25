@@ -263,19 +263,34 @@ public class ReconServiceImpl implements ReconService {
 	// AB added2
 	public int validateScheduleFowner(AlertUnlicensedSw alert, Recon recon) {
 		ScheduleF scheduleF = null;
-		boolean isMachineLevel = isAllocateByHardware(recon);
-		
-		if(isMachineLevel){
-			scheduleF = vSwLparDAO.getMachineLevelScheduleF(alert.getInstalledSoftware()
-					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
-					.getSoftware().getSoftwareName(),alert.getInstalledSoftware()
-					.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
-					alert.getInstalledSoftware().getSoftwareLpar()
-							.getHardwareLpar().getHardware().getMachineType()
-							.getName(), alert.getInstalledSoftware()
-							.getSoftwareLpar().getHardwareLpar().getHardware()
-							.getSerial(),alert.getInstalledSoftware().getSoftware()
-							.getManufacturerId().getManufacturerName());
+		int reconcileTypeId = recon.getReconcileType().getId().intValue();
+		if(reconcileTypeId == 1){
+			boolean isMachineLevel = isAllocateByHardware(recon);
+			
+			if(isMachineLevel){
+				scheduleF = vSwLparDAO.getMachineLevelScheduleF(alert.getInstalledSoftware()
+						.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+						.getSoftware().getSoftwareName(),alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+						alert.getInstalledSoftware().getSoftwareLpar()
+								.getHardwareLpar().getHardware().getMachineType()
+								.getName(), alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getHardware()
+								.getSerial(),alert.getInstalledSoftware().getSoftware()
+								.getManufacturerId().getManufacturerName());
+			}else{
+				scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
+						.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
+						.getSoftware().getSoftwareName(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getName(), alert.getInstalledSoftware()
+						.getSoftwareLpar().getHardwareLpar().getHardware().getOwner(),
+						alert.getInstalledSoftware().getSoftwareLpar()
+								.getHardwareLpar().getHardware().getMachineType()
+								.getName(), alert.getInstalledSoftware()
+								.getSoftwareLpar().getHardwareLpar().getHardware()
+								.getSerial(),alert.getInstalledSoftware().getSoftware()
+								.getManufacturerId().getManufacturerName());
+			}
 		}else{
 			scheduleF = vSwLparDAO.getScheduleFItem(alert.getInstalledSoftware()
 					.getSoftwareLpar().getAccount(), alert.getInstalledSoftware()
@@ -289,6 +304,7 @@ public class ReconServiceImpl implements ReconService {
 							.getSerial(),alert.getInstalledSoftware().getSoftware()
 							.getManufacturerId().getManufacturerName());
 		}
+		
 		
 		int owner = 2;
 		if (scheduleF != null) {
