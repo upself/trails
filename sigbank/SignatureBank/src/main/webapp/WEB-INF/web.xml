@@ -93,7 +93,7 @@
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>person</role-name>
+			<role-name>*</role-name>
 		</auth-constraint>
 <!--  		  
 		<user-data-constraint>
@@ -105,8 +105,4 @@
 		<auth-method>BASIC</auth-method>
 		<realm-name>Default</realm-name>
 	</login-config>
-	<security-role>
-		<description>person</description>
-		<role-name>person</role-name>
-	</security-role>
 </web-app>
