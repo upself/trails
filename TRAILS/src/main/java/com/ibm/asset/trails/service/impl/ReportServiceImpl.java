@@ -83,7 +83,8 @@ public class ReportServiceImpl implements ReportService {
 			"Cross account level", "CPU Model", "CHASSIS ID", "Cloud Name",
 			"Owner", "Country", "Asset type", "Server type", "SPLA",
 			"Virtual Flag", "Virtual Mobility restriction", "OS type",
-			"SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
+			//mf_sysplex
+			"SysPlex","MF_SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
 			"Capped LPAR", "Processor Type", "Processor Manufacturer",
 			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
 			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
@@ -629,6 +630,8 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.virtual_mobility_restriction"
 				+ ",hl.os_type "
 				+ ",cast(hl.SYSPLEX as VARCHAR(8))"
+				//MF_sysplex column
+				+ ",cast(sl.SYSPLEX as VARCHAR(8))"
 				+ ",hl.cluster_type"
 				+ ",hl.backupmethod"
 				+ ",hl.INTERNET_ICC_FLAG"
