@@ -181,7 +181,7 @@ public class ReportServiceImpl implements ReportService {
 			"Internal ID" };
 
 	private final String[] UNLICENSED_GROUP_COLUMN_HEADERS = { "Status",
-			"Hostname", "Installed SW component", "Create date/time", "Age", "Asset type", "OS type",
+			"Hostname", "Software Component", "Create date/time", "Age", "Asset type", "OS type",
 			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
