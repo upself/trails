@@ -72,8 +72,8 @@ $(function() {
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
-		<s:a href="/TRAILS/report/download/licenseBaseline%{#attr.account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</s:a>
+		<a href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Download free license pool report</a> <br>
+		<a href="/TRAILS/report/download/licenseBaseline${account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</a>
 	</div>
 	<br />
 	<br />
@@ -82,7 +82,7 @@ $(function() {
 			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="License list">
 				<thead>
 					<tr>
-						<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>
+						<th scope="col"><span>Primary component catalog match</span><span class="ibm-icon"></span></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
