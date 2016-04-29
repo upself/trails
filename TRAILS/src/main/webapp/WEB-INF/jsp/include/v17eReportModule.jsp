@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(function(){
 	var reportName = document.getElementById("reportFileName").options[document.getElementById("reportFileName").selectedIndex].text;
-   	if(reportName == 'Software compliance summary'){
+   	if(reportName == 'Component compliance summary'){
    		document.getElementById('checkboxlist').style.display='block';
    		document.getElementById('comments').style.display='none';
    	} else {
@@ -80,7 +80,7 @@ $(function(){
 
 function reportChange(id) {
 	var reportName = document.getElementById(id).options[document.getElementById(id).selectedIndex].text;
-	if(reportName == 'Software compliance summary'){
+	if(reportName == 'Component compliance summary'){
 		document.getElementById('checkboxlist').style.display='block';
 		document.getElementById('comments').style.display='none';
 	} else {

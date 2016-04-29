@@ -21,7 +21,7 @@ public class ReportAction extends AccountReportBaseAction {
 		lReport.add(new Report("Full reconciliation", "fullReconciliation"));
 		lReport.add(new Report("Installed software baseline", "installedSoftwareBaseline"));
 		lReport.add(new Report("License baseline", "licenseBaseline"));
-		lReport.add(new Report("Software compliance summary", "softwareComplianceSummary"));
+		lReport.add(new Report("Component compliance summary", "softwareComplianceSummary"));
 		super.setReportList(lReport);
 	}
 
