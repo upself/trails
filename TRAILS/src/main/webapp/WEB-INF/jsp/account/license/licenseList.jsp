@@ -72,8 +72,8 @@ $(function() {
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<a href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Download free license pool report</a> <br>
-		<a href="/TRAILS/report/download/licenseBaseline${account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</a>
+		<s:a href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Download free license pool report</s:a> <br>
+		<s:a href="/TRAILS/report/download/licenseBaseline%{#attr.account.account}.tsv?name=licenseBaseline&selectAllChecked=true">Download License baseline report</s:a>
 	</div>
 	<br />
 	<br />
