@@ -1429,11 +1429,10 @@
 			value="TRAILS workspace pending customer decision confirmation" />
 	</definition>
 
-	<definition name="tiles.admin.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.admin.home" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Administration" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/home.jsp" />
-		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>
