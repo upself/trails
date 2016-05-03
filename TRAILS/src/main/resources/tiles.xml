@@ -617,11 +617,11 @@
 			value="TRAILS alert unlicensed ISV software" />
 	</definition>
 
-	<definition name="tiles.reports.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.reports.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS reports home" />
 		<put-attribute name="keywords" value="TRAILS reports home" />
 	</definition>
