@@ -77,8 +77,8 @@ choose a piece of software below the list. Click on move when complete.</p>
 			<td>
 			<div class="input-note">choose one</div>
 			<html:select property="softwareId" styleClass="input">
-				<html:options collection="softwares" property="softwareId"
-					labelProperty="softwareName" />
+				<html:options collection="softwares" property="id"
+					labelProperty="name" />
 			</html:select></td>
 		</tr>
 		<tr>
