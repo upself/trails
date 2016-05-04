@@ -157,20 +157,6 @@ h2.green-dark {
 		<div id="ibm-pcon" style="width: inherit">
 			<!-- CONTENT_BEGIN -->
 			<div id="ibm-content">
-				<!-- LEADSPACE_BEGIN -->
-				<div id="ibm-leadspace-head" class="ibm-alternate">
-					<div id="ibm-leadspace-body">
-						<div class="ibm-columns">
-							<div class="ibm-col-1-1">
-								<h1 id="titleContent" style="font-size: 23px">
-									<tmp:insertAttribute name="contentTitle" />
-								</h1>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- LEADSPACE_END -->
-
 				<div id="ibm-content-body">
 					<div id="ibm-content-main" style="width: 100%">
 						<div class="ibm-cloumns">

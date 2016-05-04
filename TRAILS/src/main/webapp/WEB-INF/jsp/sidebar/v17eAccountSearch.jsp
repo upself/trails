@@ -22,7 +22,6 @@
 	}
 </script>
 
-<br />
 <div style="padding-left: 10px; width: 100%">
 	<h2 style="background-color: #d7d7d8">
 		<label for="searchAccount.searchString">Search accounts</label>
