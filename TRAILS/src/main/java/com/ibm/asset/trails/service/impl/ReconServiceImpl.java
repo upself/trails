@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.dao.ReconLicenseDAO;
+import com.ibm.asset.trails.dao.ScarletReconcileDAO;
 import com.ibm.asset.trails.dao.VSoftwareLparDAO;
 import com.ibm.asset.trails.domain.Account;
 import com.ibm.asset.trails.domain.AlertUnlicensedSw;
@@ -35,6 +36,7 @@ import com.ibm.asset.trails.domain.ReconInstalledSoftware;
 import com.ibm.asset.trails.domain.ReconLicense;
 import com.ibm.asset.trails.domain.Reconcile;
 import com.ibm.asset.trails.domain.ReconcileH;
+import com.ibm.asset.trails.domain.ScarletReconcile;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.domain.UsedLicense;
 import com.ibm.asset.trails.domain.UsedLicenseHistory;
@@ -58,6 +60,9 @@ public class ReconServiceImpl implements ReconService {
 
 	@Autowired
 	private VSoftwareLparDAO vSwLparDAO;
+	
+	@Autowired
+	private ScarletReconcileDAO scarletReconcileDAO;
 
 	public List<String> getScheduleFDefInRecon() {
 		return ScheduleFDefInRecon;
@@ -808,6 +813,7 @@ public class ReconServiceImpl implements ReconService {
 					aush = getEntityManager().merge(aush);
 				} else {
 					reconcile = affectedAlert.getReconcile();
+					Long oldReconcileTypeId = reconcile.getReconcileType().getId();
 					reconcile.setParentInstalledSoftware(reconcile
 							.getParentInstalledSoftware());
 					reconcile.setReconcileType(pRecon.getReconcileType());
@@ -822,7 +828,18 @@ public class ReconServiceImpl implements ReconService {
 						reconcile
 								.setAllocationMethodology(allocationMethodology);
 					}
-
+					
+					if(null != pRecon.getReconcileTypeId() 
+							&& null != oldReconcileTypeId
+							&& pRecon.getReconcileTypeId().equals(1L) 
+							&& oldReconcileTypeId.equals(5L)  
+							&& pRecon.isAutomated()){
+						ScarletReconcile scarletReconcile = scarletReconcileDAO.findById(reconcile.getId());
+						if(null != scarletReconcile){
+							getEntityManager().remove(scarletReconcile);
+						}
+					}
+					
 					log.debug("Clearing licenses");
 					clearUsedLicenses(reconcile, remoteUser);
 					reconcile.setUsedLicenses(usedLicenseSet);
