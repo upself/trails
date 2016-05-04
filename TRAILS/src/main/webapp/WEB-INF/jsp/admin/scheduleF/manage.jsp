@@ -8,11 +8,44 @@
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
-
+	
+	//abner
+	var levelstatus;
+	var swStatusFlag;
+	var machineTypeFlag=true;
+	var manuStatusFlag=true;		
+	function schFstatus(){
+		if(levelstatus=="HWBOX"){
+			if(!swStatusFlag && manuStatusFlag && machineTypeFlag){
+				//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+				$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
+			}else{
+				$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+				$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+			}
+		}else if(levelstatus!="MANUFACTURER"){
+			if(!swStatusFlag && manuStatusFlag){
+				$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
+			}else{
+				$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+				$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+			}
+		}else{
+			if(manuStatusFlag){
+				$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
+			}else{
+				$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+				$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+			}
+		}
+	}
+	
 	function isArray(obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	}
+	
 	$(function() {
+		
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
 		 $("#schFhTable").hide();
 		 $("#btnSubmit").attr('disabled', true);
@@ -68,12 +101,14 @@
 					}
 				});
 		if ($('#softwareStatus').val() == true) {
-			$("#statusDescription").find('option[value="ACTIVE"]').attr(
-					"disabled", "disabled");
+			swStatusFlag=true;
+			//abner
+			//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled", "disabled");
 		} else {
-			$("#statusDescription").find('option[value="ACTIVE"]').removeAttr(
-					"disabled");
+			swStatusFlag=false;
+			//$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
 		}
+		schFstatus();
 
 		var value = $('#level').val();
 		levelChange(value);
@@ -85,13 +120,17 @@
 					change : function(event, ui) {
 						if (ui.item == null) {
 							if ($('#manufacturer').val() != null || $('#manufacturer').val() != ''){
-								$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
-								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
+									manuStatusFlag=false;
+									//abner
+									//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+									//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
 								} 
 								if ($('#manufacturer').val() == null || $('#manufacturer').val() == '') {
-								$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
+									manuStatusFlag=true;
+									//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 								}
 						}
+						schFstatus();
 					},
 					source : function(request, response) {
 						$.ajax({
@@ -121,7 +160,10 @@
 					minLength : 3,
 					select : function(event, ui) {
 						$("#manufacturerId").val(ui.item.id);
-						$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
+						//abner
+						manuStatusFlag=true;
+						schFstatus();
+						//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 					}
 				});
 	});
@@ -174,6 +216,10 @@
 				$("#businessJustification").val(
 						result.data.businessJustification);
 				levelChange(result.data.level);
+				
+				//abner
+				levelstatus=$("#manufacturer").val()
+				swStatusFlag=$("#softwareStatus").val();
 			},
 			error : function(jqXHR, status, error) {
 				alert(status + ":" + error);
@@ -313,6 +359,10 @@
 	}
 
 	function levelChange(value) {
+		//abner
+		levelstatus=value;
+		schFstatus();
+		
 		if (value == 'PRODUCT') {
 			$("#swTitle").show();
 			$("#swName").show();
@@ -477,22 +527,29 @@
 								success : function(data, status) {
 									liveSearch.empty();
 									if (!data.length) {
-										$( "#statusDescription")
-										.find( 'option[value="ACTIVE"]')
-										.attr( "disabled", true);
-										
-										$("#statusDescription")
-										.find('option[value="INACTIVE"]')
-										.attr("selected", true);
+										//abner
+										if (type.name == 'softwareName'){
+											swStatusFlag=true;
+										}else{
+											machineTypeFlag=false;
+										}
+										//$("#statusDescription").find( 'option[value="ACTIVE"]').attr( "disabled", true);
+										//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected", true);
 										
 										liveSearch.append("no matched item found.")
 									} else {
-										$( "#statusDescription")
-										.find( 'option[value="ACTIVE"]')
-										.attr( "enabled", true);
+										//abner
+										if (type.name == 'softwareName'){
+											swStatusFlag=false;
+										}else{
+											machineTypeFlag=true;
+										}
+										//$( "#statusDescription").find( 'option[value="ACTIVE"]').attr( "enabled", true);
 										
 										liveSearch.append(data);
 									}
+									schFstatus();
+									
 									liveSearch.show("slow");
 
 									var over = {
@@ -511,43 +568,25 @@
 										$(this).css(out);
 									});
 
-									$("li.prompt")
-											.click(
-													function() {
+									$("li.prompt").click(function() {
 														if (type.name == 'softwareName') {
-															type.value = $(this)
-																	.text()
-																	.slice(11, -10);
-															if ($(this)
-																	.text()
-																	.slice(-10, $(this).text().length) == '(INACTIVE)') {
-																$(
-																		"#statusDescription")
-																		.find(
-																				'option[value="INACTIVE"]')
-																		.attr(
-																				"selected",
-																				true);
-																$(
-																		"#statusDescription")
-																		.find(
-																				'option[value="ACTIVE"]')
-																		.attr(
-																				"disabled",
-																				true);
+															type.value = $(this).text().slice(11, -10);
+															
+															if ($(this).text().slice(-10, $(this).text().length) == '(INACTIVE)') {
+																//abner
+																swStatusFlag=true;
+																//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
+																//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",true);
 															} else {
-																$(
-																		"#statusDescription")
-																		.find(
-																				'option[value="ACTIVE"]')
-																		.attr(
-																				"disabled",
-																				false);
+																swStatusFlag=false;
+																//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 															}
 														} else {
-															type.value = $(this)
-																	.text();
+															type.value = $(this).text();
 														}
+														
+														schFstatus();
+														
 														liveSearch.empty();
 													});
 								}
