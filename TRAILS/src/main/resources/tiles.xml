@@ -626,11 +626,11 @@
 		<put-attribute name="keywords" value="TRAILS reports home" />
 	</definition>
 
-	<definition name="tiles.reports.alertredaging.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.reports.alertredaging.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS reports alertRedAging home" />
 		<put-attribute name="keywords" value="TRAILS reports alertRedAging home" />
 	</definition>
@@ -883,67 +883,73 @@
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.geography"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/geographyHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/geography.jsp" />
 		<put-attribute name="description" value="TRAILS geography alert red aging" />
 		<put-attribute name="keywords" value="TRAILS geography alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS geography alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.region"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/regionHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/region.jsp" />
 		<put-attribute name="description" value="TRAILS region alert red aging" />
 		<put-attribute name="keywords" value="TRAILS region alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS region alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.countryCode"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/countryCodeHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/countryCode.jsp" />
 		<put-attribute name="description" value="TRAILS country alert red aging" />
 		<put-attribute name="keywords" value="TRAILS country alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS country alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.sector"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/sectorHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/sector.jsp" />
 		<put-attribute name="description" value="TRAILS sector alert red aging" />
 		<put-attribute name="keywords" value="TRAILS sector alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS sector alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.department"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/departmentHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/department.jsp" />
 		<put-attribute name="description" value="TRAILS department alert red aging" />
 		<put-attribute name="keywords" value="TRAILS department alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS department alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.account"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/accountHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/account.jsp" />
 		<put-attribute name="description" value="TRAILS account alert red aging" />
 		<put-attribute name="keywords" value="TRAILS account alert red aging" />
+		<put-attribute name="contentTitle" value="TRAILS account alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.account.error"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/accountErrorHead.jsp" />
 		<put-attribute name="content" type="template"
@@ -952,10 +958,12 @@
 			value="TRAILS account error alert red aging" />
 		<put-attribute name="keywords"
 			value="TRAILS account error alert red aging" />
+		<put-attribute name="contentTitle"
+			value="TRAILS account error alert red aging" />
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.accountDetail"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/accountDetail.jsp" />
 		<put-attribute name="description"
@@ -965,7 +973,7 @@
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.accountRegion"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/accountRegion.jsp" />
 		<put-attribute name="description"
@@ -975,7 +983,7 @@
 	</definition>
 
 	<definition name="tiles.reports.alertRedAging.accountCountryCode"
-		extends="tiles.w3OneColumnLayout">
+		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/alertRedAging/accountCountryCode.jsp" />
 		<put-attribute name="description"
