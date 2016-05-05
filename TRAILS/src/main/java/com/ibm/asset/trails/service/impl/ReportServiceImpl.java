@@ -83,7 +83,7 @@ public class ReportServiceImpl implements ReportService {
 			"Cross account level", "CPU Model", "CHASSIS ID", "Cloud Name",
 			"Owner", "Country", "Asset type", "Server type", "SPLA",
 			"Virtual Flag", "Virtual Mobility restriction", "OS type",
-			"SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
+			"SysPlex","MF SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
 			"Capped LPAR", "Processor Type", "Processor Manufacturer",
 			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
 			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
@@ -91,16 +91,16 @@ public class ReportServiceImpl implements ReportService {
 			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
 			"Lpar Status", "Physical HW processor count", "Physical chips",
 			"Effective processor count", "Effective threads", "PVU/core",
-			"Primary Component", "PID", "MF SW Last used", "SW Owner", "Alert assignee",
-			"Alert assignee comment", "Inst SW manufacturer",
-			"Inst SW validation status", "Reconciliation action",
+			"Software Component", "PID", "MF SW Last used", "Schedule F scope", "Alert assignee",
+			"Alert assignee comment", "Component Manufacturer",
+			"Component Validation Status", "Reconciliation action",
 			"Allocation methodology", "Reconciliation user",
 			"Reconciliation date/time", "Reconciliation comments",
-			"Reconciliation parent product", "License account number",
-			"License Name", "Catalog match", "License product name", "Version",
+			"Parent Component", "License account number",
+			"License Name", "Primary component catalog match", "License Primary Component", "Version",
 			"Capacity type", "Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
-			"License serial number", "License owner", "SWCM ID",
+			"License serial number", "Licensee", "SWCM ID",
 			"License last updated" };
 	private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
 	private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
@@ -629,6 +629,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.virtual_mobility_restriction"
 				+ ",hl.os_type "
 				+ ",cast(hl.SYSPLEX as VARCHAR(8))"
+				+ ",cast(sl.SYSPLEX as VARCHAR(8))"
 				+ ",hl.cluster_type"
 				+ ",hl.backupmethod"
 				+ ",hl.INTERNET_ICC_FLAG"
