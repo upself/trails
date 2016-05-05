@@ -9,7 +9,6 @@
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
 	
-	//abner
 	var levelstatus;
 	var swStatusFlag;
 	var machineTypeFlag=true;
@@ -17,7 +16,6 @@
 	function schFstatus(){
 		if(levelstatus=="HWBOX"){
 			if(!swStatusFlag && manuStatusFlag && machineTypeFlag){
-				//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
 				$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
 			}else{
 				$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
@@ -102,11 +100,8 @@
 				});
 		if ($('#softwareStatus').val() == true) {
 			swStatusFlag=true;
-			//abner
-			//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled", "disabled");
 		} else {
 			swStatusFlag=false;
-			//$("#statusDescription").find('option[value="ACTIVE"]').removeAttr("disabled");
 		}
 		schFstatus();
 
@@ -121,13 +116,9 @@
 						if (ui.item == null) {
 							if ($('#manufacturer').val() != null || $('#manufacturer').val() != ''){
 									manuStatusFlag=false;
-									//abner
-									//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
-									//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",	true);
 								} 
 								if ($('#manufacturer').val() == null || $('#manufacturer').val() == '') {
 									manuStatusFlag=true;
-									//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 								}
 						}
 						schFstatus();
@@ -160,10 +151,8 @@
 					minLength : 3,
 					select : function(event, ui) {
 						$("#manufacturerId").val(ui.item.id);
-						//abner
 						manuStatusFlag=true;
 						schFstatus();
-						//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 					}
 				});
 	});
@@ -217,7 +206,6 @@
 						result.data.businessJustification);
 				levelChange(result.data.level);
 				
-				//abner
 				levelstatus=$("#manufacturer").val()
 				swStatusFlag=$("#softwareStatus").val();
 			},
@@ -359,7 +347,6 @@
 	}
 
 	function levelChange(value) {
-		//abner
 		levelstatus=value;
 		schFstatus();
 		
@@ -527,24 +514,19 @@
 								success : function(data, status) {
 									liveSearch.empty();
 									if (!data.length) {
-										//abner
 										if (type.name == 'softwareName'){
 											swStatusFlag=true;
 										}else{
 											machineTypeFlag=false;
 										}
-										//$("#statusDescription").find( 'option[value="ACTIVE"]').attr( "disabled", true);
-										//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected", true);
 										
 										liveSearch.append("no matched item found.")
 									} else {
-										//abner
 										if (type.name == 'softwareName'){
 											swStatusFlag=false;
 										}else{
 											machineTypeFlag=true;
 										}
-										//$( "#statusDescription").find( 'option[value="ACTIVE"]').attr( "enabled", true);
 										
 										liveSearch.append(data);
 									}
@@ -573,18 +555,13 @@
 															type.value = $(this).text().slice(11, -10);
 															
 															if ($(this).text().slice(-10, $(this).text().length) == '(INACTIVE)') {
-																//abner
 																swStatusFlag=true;
-																//$("#statusDescription").find('option[value="INACTIVE"]').attr("selected",true);
-																//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",true);
 															} else {
 																swStatusFlag=false;
-																//$("#statusDescription").find('option[value="ACTIVE"]').attr("disabled",false);
 															}
 														} else {
 															type.value = $(this).text();
 														}
-														
 														schFstatus();
 														
 														liveSearch.empty();
