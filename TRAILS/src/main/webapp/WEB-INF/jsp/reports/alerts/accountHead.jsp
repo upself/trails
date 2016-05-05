@@ -75,8 +75,8 @@
 			<s:param name="geographyId" value="geography.id" />
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
-		<li><s:a href="%{sectorLink}">Sector</s:a></li>;
-</s:elseif>
+		<li><s:a href="%{sectorLink}">Sector</s:a></li>
+	</s:elseif>
 	<s:elseif
 		test="geography != null && region != null && countryCode != null">
 		<s:url id="geographyLink" action="geography"
@@ -97,8 +97,8 @@
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
-		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>;
-</s:elseif>
+		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
+	</s:elseif>
 	<s:elseif
 		test="geography != null && region != null && department != null">
 		<s:url id="geographyLink" action="geography"
@@ -147,9 +147,9 @@
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 		</s:url>
-		<li><s:a href="%{geographyLink}">Geography</s:a></li>;
-	
-	<s:url id="countryCodeLink" action="countryCode"
+		<li><s:a href="%{geographyLink}">Geography</s:a></li>
+
+		<s:url id="countryCodeLink" action="countryCode"
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
@@ -177,9 +177,9 @@
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
-		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>;
-	
-	<s:url id="sectorLink" action="sector" namespace="/reports/alerts"
+		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
+
+		<s:url id="sectorLink" action="sector" namespace="/reports/alerts"
 			includeContext="true" includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -191,9 +191,9 @@
 		<s:url id="regionLink" action="region" namespace="/reports/alerts"
 			includeContext="true" includeParams="none">
 		</s:url>
-		<li><s:a href="%{regionLink}">Region</s:a></li>;
-	
-	<s:url id="countryCodeLink" action="countryCode"
+		<li><s:a href="%{regionLink}">Region</s:a></li>
+
+		<s:url id="countryCodeLink" action="countryCode"
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
@@ -275,9 +275,9 @@
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 		</s:url>
-		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>;
-	
-	<s:url id="sectorLink" action="sector" namespace="/reports/alerts"
+		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
+
+		<s:url id="sectorLink" action="sector" namespace="/reports/alerts"
 			includeContext="true" includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
@@ -287,9 +287,9 @@
 		<s:url id="regionLink" action="region" namespace="/reports/alerts"
 			includeContext="true" includeParams="none">
 		</s:url>
-		<li><s:a href="%{regionLink}">Region</s:a></li>;
-	
-	<s:url id="departmentLink" action="department"
+		<li><s:a href="%{regionLink}">Region</s:a></li>
+
+		<s:url id="departmentLink" action="department"
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
@@ -338,21 +338,21 @@
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 		</s:url>
-		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>;
-</s:elseif>
+		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
+	</s:elseif>
 	<s:elseif test="sector != null">
 		<s:url id="sectorLink" action="sector" namespace="/reports/alerts"
 			includeContext="true" includeParams="none">
 		</s:url>
-		<li><s:a href="%{sectorLink}">Sector</s:a></li>;
-   </s:elseif>
+		<li><s:a href="%{sectorLink}">Sector</s:a></li>
+	</s:elseif>
 	<s:else>
 		<s:url id="departmentLink" action="department"
 			namespace="/reports/alerts" includeContext="true"
 			includeParams="none">
 		</s:url>
-		<li><s:a href="%{departmentLink}">Department</s:a></li>;
-   </s:else>
+		<li><s:a href="%{departmentLink}">Department</s:a></li>
+	</s:else>
 </ul>
 
 <br />

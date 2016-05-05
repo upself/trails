@@ -24,10 +24,10 @@ navigation links on the left or choose a link below:
 	includeContext="true" includeParams="none">
 </s:url>
 
-<ul class="ibm-link-list horizontal-list">
-	<li><s:a href="%{geographyLink}">Geography</s:a></li>
-	<li><s:a href="%{regionLink}">Region</s:a></li>
-	<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
-	<li><s:a href="%{sectorLink}">Sector</s:a></li>
-	<li><s:a href="%{departmentLink}">Department</s:a></li>
+<ul class="ibm-bullet-list">
+	<li class="ibm-no-links"><s:a href="%{geographyLink}">Geography</s:a></li>
+	<li class="ibm-no-links"><s:a href="%{regionLink}">Region</s:a></li>
+	<li class="ibm-no-links"><s:a href="%{countryCodeLink}">Country code</s:a></li>
+	<li class="ibm-no-links"><s:a href="%{sectorLink}">Sector</s:a></li>
+	<li class="ibm-no-links"><s:a href="%{departmentLink}">Department</s:a></li>
 </ul>
