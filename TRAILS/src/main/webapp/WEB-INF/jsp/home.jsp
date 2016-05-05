@@ -1,6 +1,6 @@
 <%@taglib prefix="s" uri="/struts-tags" %>
 
-<!-- <h2>TRAILS home</h2> -->
+<h2>TRAILS home</h2>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 		<div style="float:left">

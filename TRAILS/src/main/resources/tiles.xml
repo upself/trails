@@ -452,7 +452,6 @@
 
 
 	<definition name="tiles.home" extends="tiles.v17eW3TwoColumnLayout">
-		<put-attribute name="contentTitle" value="TRAILS home" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/home.jsp" />
 		<put-attribute name="sidebar" type="template"
@@ -469,9 +468,8 @@
 	</definition>
 
 	<definition name="tiles.search.home" extends="tiles.v17eW3TwoColumnLayout">
-	<put-attribute name="contentTitle" value="Search" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/search/home.jsp" />
+			value="/WEB-INF/jsp/home.jsp" />
 		<put-attribute name="sidebar" type="template"
 			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS account search home" />
