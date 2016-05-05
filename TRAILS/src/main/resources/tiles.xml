@@ -460,7 +460,10 @@
 		<put-attribute name="keywords" value="TRAILS home" />
 	</definition>
 
-	<definition name="tiles.search.account" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.search.account"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/search/searchAccountHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/search/account.jsp" />
 		<put-attribute name="description" value="TRAILS account search" />
