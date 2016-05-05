@@ -58,7 +58,7 @@ public class ActionSoftwareSignature extends BaseAction {
 		request.setAttribute(Constants.REPORT, SoftwareSignatureDelegate
 				.getSoftwareSignaturesByProduct(product));
 
-		request.setAttribute("softwares", ProductDelegate.getProducts());
+		request.setAttribute("softwares", ProductDelegate.getProductBriefs());
 
 		if (!user.isAdminAccess()) {
 			return mapping.findForward(Constants.VIEW);

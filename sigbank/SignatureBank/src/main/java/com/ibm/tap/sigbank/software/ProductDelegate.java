@@ -21,7 +21,10 @@ import org.apache.struts.action.ActionMessage;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.transform.Transformers;
+
 import com.ibm.asset.swkbt.domain.Product;
+import com.ibm.asset.swkbt.domain.ProductBrief;
 import com.ibm.asset.trails.domain.ReconSoftware;
 import com.ibm.tap.sigbank.filter.SoftwareFilterDelegate;
 import com.ibm.tap.sigbank.framework.common.Constants;
@@ -491,6 +494,30 @@ public abstract class ProductDelegate extends Delegate {
 
 		results = session.getNamedQuery("products").list();
 
+		return results;
+	}
+	
+	public static List getProductBriefs() throws HibernateException, Exception {
+
+		List products = null;
+
+		Session session = getHibernateSession();
+
+		products = getProductBriefs(products, session);
+
+		session.close();
+
+		return products;
+	}
+	
+	public static List getProductBriefs(List results, Session session){
+		String sql = "select product.id as id, sw_item.name as name";
+		sql += " from eaadmin.PRODUCT product";
+		sql += " inner join eaadmin.SOFTWARE_ITEM sw_item on product.ID=sw_item.ID";
+		sql += " inner join eaadmin.KB_DEFINITION kb on product.ID=kb.ID";
+		sql += " where kb.DELETED<>1 and sw_item.NAME<>'UNKNOWN'";
+		
+		results = session.createSQLQuery(sql).setResultTransformer(Transformers.aliasToBean(ProductBrief.class)).list();
 		return results;
 	}
 
