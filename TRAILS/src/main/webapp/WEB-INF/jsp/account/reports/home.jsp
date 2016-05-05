@@ -63,7 +63,7 @@
 				<a class="ibm-download-link" href="/TRAILS/report/download/casueCodeSummary${account.account}.tsv?name=casueCodeSummary">Cause code summary report</a>
 			</li>
 			<li>
-				<a class="ibm-download-link" href="/TRAILS/report/download/softwareVariance${account.account}.tsv?name=softwareVariance">Contract scope to installed software variance</a>
+				<a class="ibm-download-link" href="/TRAILS/report/download/softwareVariance${account.account}.tsv?name=softwareVariance">Contract scope to scanned component variance</a>
 			</li>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Free license pool</a>

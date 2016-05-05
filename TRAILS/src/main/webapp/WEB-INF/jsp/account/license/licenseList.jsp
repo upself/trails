@@ -82,7 +82,7 @@ $(function() {
 			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="License list">
 				<thead>
 					<tr>
-						<th scope="col"><span>Catalog match</span><span class="ibm-icon"></span></th>
+						<th scope="col"><span>Primary component catalog match</span><span class="ibm-icon"></span></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>

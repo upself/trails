@@ -14,5 +14,5 @@
 	<display:column property="serial" title="Serial" />
 	<display:column property="hardwareLparName" title="Hardware lpar name" />
 	<display:column property="softwareLparName" title="Software lpar name" />
-	<display:column property="softwareName" title="Software name" />
+	<display:column property="softwareName" title="Software Component" />
 </display:table>
