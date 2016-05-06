@@ -1,13 +1,14 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 
-<display:table name="data.list" class="basic-table"
+<display:table name="data.list"
+	class="ibm-data-table ibm-sortable-table"
 	decorator="org.displaytag.decorator.TotalTableDecorator"
-	summary="DataExceptions summary by sector"
-	cellspacing="1" cellpadding="0" defaultsort="1" export="true"
+	summary="DataExceptions summary by sector" cellspacing="1"
+	cellpadding="0" defaultsort="1" export="true"
 	requestURI="/reports/dataExceptions/sector.htm">
 	<display:setProperty name="export.excel.filename"
-		value="dataExceptionsSector.xls"/>
+		value="dataExceptionsSector.xls" />
 	<display:column property="name" title="Sector" group="1"
 		href="account.htm?geographyId=${geography.id}&regionId=${region.id}&countryCodeId=${countryCode.id}"
 		paramId="sectorId" paramProperty="id" media="html" />

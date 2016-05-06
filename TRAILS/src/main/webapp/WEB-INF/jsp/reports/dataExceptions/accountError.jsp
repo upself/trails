@@ -29,7 +29,7 @@ navigation links on the left or choose a link below:
 	includeParams="none">
 </s:url>
 
-<ul>
+<ul class="ibm-bullet-list">
 	<li><s:a href="%{geographyLink}">Geography</s:a></li>
 	<li><s:a href="%{regionLink}">Region</s:a></li>
 	<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
