@@ -1,7 +1,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 
-<display:table name="data.list" class="basic-table"
+<display:table name="data.list" class="ibm-data-table ibm-sortable-table"
 	decorator="org.displaytag.decorator.TotalTableDecorator"
 	summary="Alert summary by department"
 	cellspacing="1" cellpadding="0" defaultsort="1" id="row">
