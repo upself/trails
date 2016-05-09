@@ -16,9 +16,9 @@
 
 		<action name="home" method="home" class="searchAccountAction">
 			<result name="input" type="tiles">
-				tiles.search.home
+				tiles.home
 			</result>
-			<result type="tiles">tiles.search.home</result>
+			<result type="tiles">tiles.home</result>
 		</action>
 
 		<action name="accountJson" method="accountJson" class="searchAccountAction" />
