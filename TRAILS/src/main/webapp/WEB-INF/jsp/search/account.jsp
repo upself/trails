@@ -76,8 +76,9 @@
 	<display:caption media="html">TRAILS results for:
 <s:property value="searchAccount.searchString" />
 	</display:caption>
-	<display:column sortProperty="scope" title="Scope" sortable="true"
-		class="scope" value="" />
+	<display:column title="Scope" sortable="true">
+		<s:property value="%{#attr.row.scope}" />
+	</display:column>
 	<display:column property="accountName" title="Name" sortable="true"
 		href="/TRAILS/account/home.htm" paramId="accountId"
 		paramProperty="accountId" />
