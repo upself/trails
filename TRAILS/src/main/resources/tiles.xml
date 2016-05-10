@@ -236,7 +236,7 @@
 		preparer="v17eNavigationPreparer">
 		<put-list-attribute name="levelOne">
 			<item value="TRAILS home" link="/" icon="false" />
-			<item value="Search" link="/search/home.htm" icon="false" />
+			<item value="Search" link="/home.htm" icon="false" />
 			<item value="Reports" link="/reports/home.htm" icon="false" />
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
@@ -278,7 +278,7 @@
 				icon="priorityISVUpload" />
 		</put-list-attribute>
 
-		<put-list-attribute name="/search/home.htm">
+		<put-list-attribute name="/home.htm">
 			<item value="Accounts" link="/search/accounts.htm" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/account/home.htm">
@@ -449,27 +449,30 @@
 	</definition>
 
 
-	<definition name="tiles.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS home" />
 		<put-attribute name="keywords" value="TRAILS home" />
 	</definition>
 
-	<definition name="tiles.search.account" extends="tiles.w3OneColumnLayout">
+	<definition name="tiles.search.account"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/search/searchAccountHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/search/account.jsp" />
 		<put-attribute name="description" value="TRAILS account search" />
 		<put-attribute name="keywords" value="TRAILS account search" />
 	</definition>
 
-	<definition name="tiles.search.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.search.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/search/home.jsp" />
+			value="/WEB-INF/jsp/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS account search home" />
 		<put-attribute name="keywords" value="TRAILS account search home" />
 	</definition>
@@ -615,11 +618,11 @@
 			value="TRAILS alert unlicensed ISV software" />
 	</definition>
 
-	<definition name="tiles.reports.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.reports.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/reports/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS reports home" />
 		<put-attribute name="keywords" value="TRAILS reports home" />
 	</definition>
@@ -1448,11 +1451,10 @@
 			value="TRAILS workspace pending customer decision confirmation" />
 	</definition>
 
-	<definition name="tiles.admin.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.admin.home" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Administration" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/home.jsp" />
-		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountSearch.jsp" />
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>

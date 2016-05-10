@@ -1,6 +1,6 @@
 <%@taglib prefix="s" uri="/struts-tags" %>
 
-<h1>Search</h1>	
+<!-- <h2>Search</h2>	 -->
 <br>
 <img src="${pageContext.request.contextPath}/images/f1_w3162.jpg" width="95"
 	height="95" alt="A puzzle" class="float-left" style="margin-right: 10px;"/>		
