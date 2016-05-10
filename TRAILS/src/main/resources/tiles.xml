@@ -9,7 +9,7 @@
 		preparer="navigationPreparer">
 		<put-list-attribute name="levelOne">
 			<item value="TRAILS home" link="/" icon="false" />
-			<item value="Search" link="/" icon="false" />
+			<item value="Search" link="/search/home.htm" icon="false" />
 			<item value="Reports" link="/reports/home.htm" icon="false" />
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
@@ -236,7 +236,7 @@
 		preparer="v17eNavigationPreparer">
 		<put-list-attribute name="levelOne">
 			<item value="TRAILS home" link="/" icon="false" />
-			<item value="Search" link="/" icon="false" />
+			<item value="Search" link="/home.htm" icon="false" />
 			<item value="Reports" link="/reports/home.htm" icon="false" />
 			<item value="Account" link="/account/home.htm" icon="account" />
 			<item value="Administration" link="/admin/home.htm" icon="false" />
@@ -278,7 +278,7 @@
 				icon="priorityISVUpload" />
 		</put-list-attribute>
 
-		<put-list-attribute name="/search/home.htm">
+		<put-list-attribute name="/home.htm">
 			<item value="Accounts" link="/search/accounts.htm" icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/account/home.htm">
