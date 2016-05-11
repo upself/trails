@@ -77,7 +77,12 @@
 <s:property value="searchAccount.searchString" />
 	</display:caption>
 	<display:column title="Scope" sortable="true">
-		<s:property value="%{#attr.row.scope}" />
+		<s:if test="%{#attr.row.scope == 'yes' || #attr.row.scope == 'YES'}">
+			Y
+		</s:if>
+		<s:else>
+			N
+		</s:else>
 	</display:column>
 	<display:column property="accountName" title="Name" sortable="true"
 		href="/TRAILS/account/home.htm" paramId="accountId"
