@@ -52,6 +52,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Hardware Status"
 		,"Machine Type"
 		,"CPU Model"
+		,"Hardware Complex"
 		,"CHASSIS ID"
 		,"Cloud Name"
 		,"Customer Number"
