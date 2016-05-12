@@ -78,6 +78,17 @@ public class ReconWorkspace implements Serializable {
 	private String manufacturerName;
 	
 	private String level;
+	
+	private String multi_tenant;
+	
+
+	public String getMulti_tenant() {
+		return multi_tenant;
+	}
+
+	public void setMulti_tenant(String multi_tenant) {
+		this.multi_tenant = multi_tenant;
+	}
 
 	public String getLevel() {
 		return level;

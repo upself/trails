@@ -330,6 +330,7 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("hl.partMsu").as("partMsu"))
 				.add(Projections.property("hl.serverType").as("lparServerType"))
 				.add(Projections.property("h.shared").as("shared"))
+				.add(Projections.property("h.multi_tenant").as("multi_tenant"))
 				.add(Projections.property("mt.type").as("assetType"))
 				.add(Projections.property("mt.name").as("assetName"))
 				.add(Projections.property("h.hardwareStatus").as("hardwareStatus"))

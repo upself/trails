@@ -334,6 +334,8 @@
 				value="%{#attr.row.partMsu}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].shared"
 				value="%{#attr.row.shared}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].multi_tenant"
+				value="%{#attr.row.multi_tenant}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].sysplex"
 				value="%{#attr.row.sysplex}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].spla"
