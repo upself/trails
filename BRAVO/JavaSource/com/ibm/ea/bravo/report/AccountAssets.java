@@ -59,6 +59,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Effective processor count"
 		,"Physical HW processor count"
 		,"Effective Threads Count"
+		,"vCPU"
 		,"HW_EXT_ID"
 		,"SW_EXT_ID"
 		,"HW_TI_ID"
