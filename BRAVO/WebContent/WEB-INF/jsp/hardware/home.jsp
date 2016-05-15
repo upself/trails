@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="ï¿½ Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -57,7 +57,7 @@
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBMï¿½</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -214,6 +214,7 @@
 											<th class="blue-med">OS Type</th>
 											<th class="blue-med">Eff Proc</th>
 											<th class="blue-med">Eff Thr</th>
+											<th class="blue-med">vCPU</th>
 											<th class="blue-med">Sysplex</th>
 											<th class="blue-med">SPLA</th>
 											<th class="blue-med">Internet Acc</th>
@@ -254,6 +255,8 @@
 													value="${hardware.processorCountEff}" /> </font></td>
 											<td><font class="orange-dark">
 												<c:out value="${hardware.effectiveThreads}" /> </font></td>
+										    <td><font class="orange-dark"><c:out
+							                               	value="${hardware.vCPU}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.sysplex}" /> </font></td>
 											<td><font class="orange-dark"> <c:out

@@ -233,6 +233,7 @@
 											<th class="blue-med">OS Type</th> 
 											<th class="blue-med">Eff Proc</th>
 											<th class="blue-med">Eff Thr</th>
+											<th class="blue-med">vCPU</th>
 											<th class="blue-med">Sysplex</th>
 											<th class="blue-med">SPLA</th>
 											<th class="blue-med">Internet Acc</th>
@@ -284,6 +285,8 @@
 													</font></td>
 													<td><font class="orange-dark"><c:out
 							                               	value="${lpar.hardwareLpar.effectiveThreads}" /> </font></td>
+							                        <td><font class="orange-dark"><c:out
+							                               	value="${lpar.hardwareLpar.vCPU}" /> </font></td>
 													<td><font class="orange-dark"> <c:out
 															value="${lpar.hardwareLpar.sysplex}" /> </font></td>
 													<td><font class="orange-dark"> <c:out

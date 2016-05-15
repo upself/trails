@@ -115,6 +115,16 @@ public class FormHardware extends FormBase {
 	private Integer cpuIfl;
 
 	private String os_type;
+	
+	private BigDecimal vCPU;
+
+	public BigDecimal getvCPU() {
+		return vCPU;
+	}
+
+	public void setvCPU(BigDecimal vCPU) {
+		this.vCPU = vCPU;
+	}
 
 	public String getOs_type() {
 		return os_type;
@@ -310,6 +320,7 @@ public class FormHardware extends FormBase {
 			this.spla = hardwareLpar.getSpla();
 			this.internetIccFlag = hardwareLpar.getInternetIccFlag();
 			this.os_type = hardwareLpar.getOs_type();
+			this.vCPU = hardwareLpar.getvCPU();
 			if (hardwareLpar.getHardware() != null) {
 				this.hardware = hardwareLpar.getHardware();
 				this.machineType = hardwareLpar.getHardware().getMachineType()
