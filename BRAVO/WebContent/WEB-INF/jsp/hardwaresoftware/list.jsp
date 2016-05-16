@@ -544,8 +544,8 @@ function popupTrailsReports(accountId) {
 
 									<!-- Account Discrepancies Report -->
 									<li><a class="ibm-download-link"
-										href="/BRAVO/download/accountDiscrepancies.${account.customer.accountNumber}.tsv?name=accountDiscrepancies&accountId=${account.customer.accountNumber}">Account
-											Discrepancies</a></li>
+										href="/BRAVO/download/accountSWComponentDiscrepancies.${account.customer.accountNumber}.tsv?name=accountSWComponentDiscrepancies&accountId=${account.customer.accountNumber}">Account
+											SW Component Discrepancies</a></li>
 
 									<!-- Account Asset Report -->
 									<li><a class="ibm-download-link"

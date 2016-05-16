@@ -28,8 +28,8 @@ import com.ibm.ea.bravo.framework.report.IReport;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class AccountDiscrepancies extends DownloadReport implements IReport {
-	private static final Logger logger = Logger.getLogger(AccountDiscrepancies.class);
+public class AccountSWComponentDiscrepancies extends DownloadReport implements IReport {
+	private static final Logger logger = Logger.getLogger(AccountSWComponentDiscrepancies.class);
 	
 	private String accountId;
 
@@ -39,26 +39,26 @@ public class AccountDiscrepancies extends DownloadReport implements IReport {
 		,"Account Type"
 		,"Department"
 		,"Hostname"
-		,"Software Name"
+		,"Software Component"
 		,"Discrepancy Type"
 		,"Invalid Category"
 		,"Last Updated By"
 		,"Last Updated On"
-		,"Version"
+		,"Component Version"
 		,"Research Flag"
 		,"Comment"
 	};
 	
 	private int ARGS_LENGTH = 1;
 	
-	public AccountDiscrepancies() { }
+	public AccountSWComponentDiscrepancies() { }
 	
-	public AccountDiscrepancies(OutputStream outputStream) {
+	public AccountSWComponentDiscrepancies(OutputStream outputStream) {
 		this.outputStream = outputStream;
 	}
 	
 	public void execute(String[] args, HttpServletRequest request) throws ExceptionAccountAccess {
-		logger.debug("AccountDiscrepancies - start");
+		logger.debug("AccountSWComponentDiscrepancies - start");
 		logger.debug(HEADER);
 		
 		// validate the arguments

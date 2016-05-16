@@ -47,9 +47,14 @@
 <script>                                                                                                                               
 function popupTrailsReports(accountId) { 
 	<%Properties properties = new Properties();
-			properties.load(new FileInputStream(Constants.CONF_DIR + Constants.PROPERTIES));
-			String trailsServerName = properties.getProperty("server.name.trails");%>                                                                                                         
-	newWin=window.open('<%=trailsServerName%>/TRAILS/account/trailsreports/home.htm?accountId=' + accountId,'popupWindow',
+			properties.load(new FileInputStream(Constants.CONF_DIR
+					+ Constants.PROPERTIES));
+			String trailsServerName = properties
+					.getProperty("server.name.trails");%>                                                                                                         
+	newWin=window.open('<%=trailsServerName%>
+	/TRAILS/account/trailsreports/home.htm?accountId='
+								+ accountId,
+						'popupWindow',
 						'height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes');
 		newWin.focus();
 		void (0);
@@ -146,7 +151,8 @@ function popupTrailsReports(accountId) {
 
 								<div class="indent">
 									<h3>
-										Account <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
+										Account <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
@@ -536,8 +542,8 @@ function popupTrailsReports(accountId) {
 
 									<!-- Account Discrepancies Report -->
 									<li><a class="ibm-download-link"
-										href="/BRAVO/download/accountDiscrepancies.${account.customer.accountNumber}.tsv?name=accountDiscrepancies&accountId=${account.customer.accountNumber}">Account
-											Discrepancies</a></li>
+										href="/BRAVO/download/accountSWComponentDiscrepancies.${account.customer.accountNumber}.tsv?name=accountSWComponentDiscrepancies&accountId=${account.customer.accountNumber}">Account
+											SW Component Discrepancies</a></li>
 
 									<!-- Account Asset Report -->
 									<li><a class="ibm-download-link"
@@ -740,5 +746,5 @@ function popupTrailsReports(accountId) {
 			</script>
 		</div>
 	</div>
-  </body>
+</body>
 </html>

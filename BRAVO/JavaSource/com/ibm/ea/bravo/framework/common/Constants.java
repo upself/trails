@@ -30,7 +30,7 @@ public class Constants {
 	public static final String NAME_SEARCH = "Name";
 	public static final String USER = "user";
 	public static final String TYPE_SEARCH = "Type";
-	public static final String ACCOUNT_DISCREPANCIES = "accountDiscrepancies";
+	public static final String ACCOUNT_DISCREPANCIES = "accountSWComponentDiscrepancies";
 	public static final String GLOBAL_DISCREPANCIES = "globalDiscrepancies";
 	public static final String MAINFRAME_SCAN = "mainframeScan";
 	public static final String GLOBAL_SUMMARY = "globalSummary";
