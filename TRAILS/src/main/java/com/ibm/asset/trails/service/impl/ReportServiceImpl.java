@@ -89,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
 			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
 			"CPU Gartner MIPS", "CPU MSU", "Part IBM LPAR MIPS",
 			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
-			"Lpar Status", "Physical HW processor count", "Physical chips",
+			"Lpar Status", "Physical HW processor count", "Physical chips","vCPU",
 			"Effective processor count", "Effective threads", "PVU/core",
 			"Software Component", "PID", "MF SW Last used", "Schedule F scope", "Alert assignee",
 			"Alert assignee comment", "Component Manufacturer",
@@ -652,6 +652,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.lpar_status"
 				+ ",h.processor_count as hwProcCount "
 				+ ",h.chips as hwChips "
+				+ ",hl.vcpu as vCPU "
 				+ ",COALESCE (hle.processor_count,0) as EffProcCount "
 				+ ",hl.EFFECTIVE_THREADS "
 				+ ",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "
