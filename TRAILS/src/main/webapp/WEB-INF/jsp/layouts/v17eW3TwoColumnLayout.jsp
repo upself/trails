@@ -160,7 +160,7 @@ h2.green-dark {
 				<div id="ibm-content-body">
 					<div id="ibm-content-main" style="width: 100%">
 						<div class="ibm-cloumns">
-							<div style="width: 70%; float: left">
+							<div style="width: 82%; float: left">
 								<tmp:insertAttribute name="content" />
 							</div>
 							<div

@@ -22,9 +22,9 @@
 	}
 </script>
 
-<div style="padding-left: 10px; width: 100%">
+<div style="padding-left: 20px; width: 100%">
 	<h2 style="background-color: #d7d7d8">
-		<label for="searchAccount.searchString">Search accounts</label>
+		<label style="padding-left: 15px" for="searchAccount.searchString">Search accounts</label>
 	</h2>
 	<br />
 	<div class="table-wrap">
