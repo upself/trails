@@ -88,7 +88,7 @@ public class ReportServiceImpl implements ReportService {
 			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
 			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
 			"CPU Gartner MIPS", "CPU MSU", "Part IBM LPAR MIPS",
-			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
+			"Part Gartner MIPS", "Part MSU", "SHARED", "Multi Tenant", "Hardware Status",
 			"Lpar Status", "Physical HW processor count", "Physical chips",
 			"Effective processor count", "Effective threads", "PVU/core",
 			"Software Component", "PID", "MF SW Last used", "Schedule F scope", "Alert assignee",
@@ -648,6 +648,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.PART_GARTNER_MIPS"
 				+ ",hl.PART_MSU"
 				+ ",h.SHARED"
+				+ ",h.MULTI_TENANT"
 				+ ",h.hardware_status"
 				+ ",hl.lpar_status"
 				+ ",h.processor_count as hwProcCount "
