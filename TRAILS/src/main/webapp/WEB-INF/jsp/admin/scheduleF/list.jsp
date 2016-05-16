@@ -269,7 +269,7 @@
 </div>
 <br />
 <br />
-		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Schedule F list">
+		<table id="schFTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="Schedule F list">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software name</span><span class="ibm-icon"></span></a></th>

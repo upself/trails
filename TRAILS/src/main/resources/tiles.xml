@@ -477,11 +477,11 @@
 		<put-attribute name="keywords" value="TRAILS account search home" />
 	</definition>
 
-	<definition name="tiles.account.home" extends="tiles.w3TwoColumnLayout">
+	<definition name="tiles.account.home" extends="tiles.v17eW3TwoColumnLayout">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/home.jsp" />
 		<put-attribute name="sidebar" type="template"
-			value="/WEB-INF/jsp/sidebar/accountActions.jsp" />
+			value="/WEB-INF/jsp/sidebar/v17eAccountActions.jsp" />
 		<put-attribute name="description" value="TRAILS account home" />
 		<put-attribute name="keywords" value="TRAILS account home" />
 	</definition>
