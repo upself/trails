@@ -156,21 +156,25 @@ h2.green-dark {
 
 		<div id="ibm-pcon" style="width: inherit">
 			<!-- CONTENT_BEGIN -->
+		<div class="ibm-container">
+           <div class="ibm-container-body">
 			<div id="ibm-content">
 				<div id="ibm-content-body">
 					<div id="ibm-content-main" style="width: 100%">
 						<div class="ibm-cloumns">
-							<div style="width: 82%; float: left">
+							<div class="ibm-col-6-4">
 								<tmp:insertAttribute name="content" />
 							</div>
 							<div
 								style="float: left; width: 1px; height: 320px; background-color: #d7d7d8"></div>
-							<div style="float: left">
+							<div class="ibm-col-6-2">
 								<tmp:insertAttribute name="sidebar" />
 							</div>
 						</div>
 					</div>
 				</div>
+			</div>
+			</div>
 			</div>
 			<!-- CONTENT_END -->
 
