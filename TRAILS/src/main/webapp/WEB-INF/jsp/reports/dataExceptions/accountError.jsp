@@ -35,4 +35,7 @@ navigation links on the left or choose a link below:
 	<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 	<li><s:a href="%{sectorLink}">Sector</s:a></li>
 	<li><s:a href="%{departmentLink}">Department</s:a></li>
+	<li>
+		<a href="https://www-950.ibm.com/ram/assetDetail/generalDetails.faces?guid=0DFB1651-7375-F052-0886-9CBEBA19BB53" target="_blank">See GLOBAL SW EDUCATION: Managing TRAILS Data Exceptions for more details.</a>
+	</li>
 </ul>
