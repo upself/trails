@@ -77,7 +77,7 @@
 
 		<h2 class="bar-blue-med-light">Reconciliation Details</h2>
 
-		<table cellspacing="0" cellpadding="0" class="ibm-data-table">
+		<table cellspacing="0" cellpadding="0" class="ibm-data-table ibm-alternating">
 			<tr>
 				<td style="width: 20%"><span class="caption">Reconciliation Scope</span></td>
 				<td><s:property value="account.swlm" /></td>
@@ -91,7 +91,7 @@
 
 		<h2 class="bar-blue-med-light">Service Details</h2>
 
-		<table cellspacing="0" cellpadding="0" class="ibm-data-table">
+		<table cellspacing="0" cellpadding="0" class="ibm-data-table ibm-alternating">
 			<tr>
 				<td style="width: 20%"><span class="caption">Software Contact Name</span></td>
 				<td><s:property value="account.softwareContact.name" /></td>

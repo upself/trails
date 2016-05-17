@@ -15,36 +15,35 @@
 </script>
 
 
-<div style="padding-left: 10px; width: 100%">
-Hello
- <s:url id="alertUrl" namespace="/account/alert" action="summary" />
+<div style="padding-left: 15px; width: 100%">
+	<s:url id="alertUrl" namespace="/account/alert" action="summary" />
 	<h2 style="background-color: #d7d7d8">
-		<label style="padding-left: 15px" >Account alerts</label>
-	</h2>		
-<!-- 		<div id="alertSummary" class="table-wrap">Loading...</div> -->
-<!-- 		<br /> <br /> -->
-<!-- 		<h2 class="bar-green-med-light"> -->
-<%--  			<span class="style3">Account exceptions</span> --%>
-<!-- 		</h2> -->
-<!-- 		Please use data exception reports on the left navigation -->
-<!-- 		<br /> <br /> -->
+		<label style="padding-left: 10px">Account alerts</label>
+	</h2>
+	<div id="alertSummary" class="table-wrap" style="padding-top: 10px">Loading...</div>
+	<br />
+	<h2 style="background-color: #d7d7d8">
+		<label style="padding-left: 10px">Account exceptions</label>
+	</h2>
+	Please use data exception reports on the left navigation <br /> <br />
 
+	<h2 style="background-color: #d7d7d8">
+		<label style="padding-left: 10px">Account reports</label>
+	</h2>
 
-<!--  	<br /> <br />  -->
-<!--  	<h2 class="bar-green-med-light">  -->
-<%--  			<span class="style3">Account reports</span>  --%>
-<!--  	</h2>  -->
-<%--  		<s:a  --%>
-<%--  			href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool"  --%>
-<%--  			cssClass="download-link">Free license pool</s:a>  --%>
-<%--  		<s:a  --%>
-<%--  			href="/TRAILS/report/download/hardwareBaseline%{#attr.account.account}.tsv?name=hardwareBaseline"  --%>
-<%--  			cssClass="download-link">Hardware baseline</s:a>  --%>
-<%--  		<s:a  --%>
-<%--  			href="/TRAILS/report/download/reconciliationSummary%{#attr.account.account}.tsv?name=reconciliationSummary"  --%>
-<%--  			cssClass="download-link">Reconciliation summary</s:a>  --%>
-<%--  		<s:a  --%>
-<%--  			href="/TRAILS/report/download/softwareLparBaseline%{#attr.account.account}.tsv?name=softwareLparBaseline"  --%>
-<%--  			cssClass="download-link">Software LPAR baseline</s:a>  --%>
-<%--  		<s:include value="/WEB-INF/jsp/include/reportModule.jsp" /> --%>
+	<ul class="ibm-link-list">
+		<li><a
+			href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Free
+				license pool</a></li>
+		<li><a
+			href="/TRAILS/report/download/hardwareBaseline%{#attr.account.account}.tsv?name=hardwareBaseline">Hardware
+				baseline</a></li>
+		<li><a
+			href="/TRAILS/report/download/reconciliationSummary%{#attr.account.account}.tsv?name=reconciliationSummary">Reconciliation
+				summary</a></li>
+		<li><a
+			href="/TRAILS/report/download/softwareLparBaseline%{#attr.account.account}.tsv?name=softwareLparBaseline">Software
+				LPAR baseline</a></li>
+	</ul>
+	<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
 </div>

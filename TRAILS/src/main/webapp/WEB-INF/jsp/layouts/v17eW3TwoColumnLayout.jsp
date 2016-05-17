@@ -49,12 +49,12 @@
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet"
 	title="w3" type="text/css" />
 <style type="text/css">
-#ibm-content-main>.ibm-columns>.ibm-col-1-1 {
-	width: 95%;
+#ibm-content-main>.ibm-columns>.ibm-col-6-4 {
+	width: 74%;
 	background: white;
 }
-
-#ibm-content-main>.ibm-columns>.ibm-col-1-1>table {
+#ibm-content-main>.ibm-columns>.ibm-col-6-2 {
+	width: 20%;
 	background: white;
 }
 
@@ -156,25 +156,23 @@ h2.green-dark {
 
 		<div id="ibm-pcon" style="width: inherit">
 			<!-- CONTENT_BEGIN -->
-		<div class="ibm-container">
-           <div class="ibm-container-body">
-			<div id="ibm-content">
-				<div id="ibm-content-body">
-					<div id="ibm-content-main" style="width: 100%">
-						<div class="ibm-cloumns">
-							<div class="ibm-col-6-4">
-								<tmp:insertAttribute name="content" />
-							</div>
-							<div
-								style="float: left; width: 1px; height: 320px; background-color: #d7d7d8"></div>
-							<div class="ibm-col-6-2">
-								<tmp:insertAttribute name="sidebar" />
+			<div class="ibm-container">
+				<div class="ibm-container-body">
+					<div id="ibm-content">
+						<div id="ibm-content-body">
+							<div id="ibm-content-main" style="width:100%">
+								<div class="ibm-columns">
+									<div class="ibm-col-6-4">
+										<tmp:insertAttribute name="content" />
+									</div>
+									<div class="ibm-col-6-2" style="border-left: 1px solid #d7d7d8">
+										<tmp:insertAttribute name="sidebar" />
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			</div>
 			</div>
 			<!-- CONTENT_END -->
 
