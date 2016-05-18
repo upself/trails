@@ -30,19 +30,18 @@
 	<h2 style="background-color: #d7d7d8">
 		<label style="padding-left: 10px">Account reports</label>
 	</h2>
-
 	<ul class="ibm-link-list">
 		<li><a
-			href="/TRAILS/report/download/freeLicensePool%{#attr.account.account}.tsv?name=freeLicensePool">Free
+			href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Free
 				license pool</a></li>
 		<li><a
-			href="/TRAILS/report/download/hardwareBaseline%{#attr.account.account}.tsv?name=hardwareBaseline">Hardware
+			href="/TRAILS/report/download/hardwareBaseline${account.account}.tsv?name=hardwareBaseline">Hardware
 				baseline</a></li>
 		<li><a
-			href="/TRAILS/report/download/reconciliationSummary%{#attr.account.account}.tsv?name=reconciliationSummary">Reconciliation
+			href="/TRAILS/report/download/reconciliationSummary${account.account}.tsv?name=reconciliationSummary">Reconciliation
 				summary</a></li>
 		<li><a
-			href="/TRAILS/report/download/softwareLparBaseline%{#attr.account.account}.tsv?name=softwareLparBaseline">Software
+			href="/TRAILS/report/download/softwareLparBaseline${account.account}.tsv?name=softwareLparBaseline">Software
 				LPAR baseline</a></li>
 	</ul>
 	<s:include value="/WEB-INF/jsp/include/reportModule.jsp" />
