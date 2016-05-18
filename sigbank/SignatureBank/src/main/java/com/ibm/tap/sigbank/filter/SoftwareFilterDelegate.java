@@ -573,7 +573,7 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		String patternStr = "	";
 		String[] f = str.split(patternStr);
 
-		if (f.length != 9) {
+		if (f.length < 8) {
 			return "Invalid number of columns on line " + i + "\n";
 		}
 
@@ -589,8 +589,9 @@ public abstract class SoftwareFilterDelegate extends Delegate {
 		sff.setMapSoftwareVersion(f[5].trim());
 		sff.setComments(f[6]);
 		sff.setChangeJustification(f[7]);
+		if (f.length == 9){
 		sff.setCatalogType(Util.isBlankString(f[8]) ? null : f[8].trim());
-
+		}
 		Product product = null;
 		String productName = f[4];
 		if(productName.contains(",") && productName.startsWith("\"") && productName.endsWith("\""))
