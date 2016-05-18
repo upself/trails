@@ -83,6 +83,7 @@ public class AccountAssets extends DownloadReport implements IReport {
 		,"Hardware IFL"
 		,"Shared processor"
 		,"Shared"
+		,"Multi Tenant"
 		,"CPU IBM LSPR MIPS"
 		,"CPU Gartner MIPS"
 		,"CPU MSU"
