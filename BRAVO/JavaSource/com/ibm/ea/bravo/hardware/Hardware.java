@@ -72,6 +72,8 @@ public class Hardware implements Serializable {
 	
 	private String shared;
 	
+	private String multiTenant;
+	
 	private Integer cpuMIPS;
 	
 	private BigDecimal cpuGartnerMIPS;
@@ -332,5 +334,13 @@ public class Hardware implements Serializable {
 
 	public void setShared(String shared) {
 		this.shared = shared;
+	}
+
+	public String getMultiTenant() {
+		return multiTenant;
+	}
+
+	public void setMultiTenant(String multiTenant) {
+		this.multiTenant = multiTenant;
 	}
 }

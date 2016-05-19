@@ -150,7 +150,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -201,7 +201,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -316,7 +316,7 @@ function popupTrailsReports(accountId) {
 
 								<br />
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<tr>
 										<th>Composite List <a class="ibm-question-link"
@@ -328,7 +328,7 @@ function popupTrailsReports(accountId) {
 									</tr>
 								</table>
 								<display:table name="composites" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="1" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column sortProperty="name" title="HW name"
@@ -375,7 +375,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"
@@ -400,7 +400,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="hardwareLpars" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"
@@ -431,7 +431,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="hardwares" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"

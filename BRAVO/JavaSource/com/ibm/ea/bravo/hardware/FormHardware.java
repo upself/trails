@@ -85,6 +85,8 @@ public class FormHardware extends FormBase {
 	private BigDecimal nbrOfChipsMax;
 
 	private String shared;
+	
+	private String multiTenant;
 
 	private Integer cpuMIPS;
 
@@ -338,6 +340,7 @@ public class FormHardware extends FormBase {
 				this.nbrOfChipsMax = hardwareLpar.getHardware()
 						.getNbrOfChipsMax();
 				this.shared = hardwareLpar.getHardware().getShared();
+				this.multiTenant = hardwareLpar.getHardware().getMultiTenant();
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
 				this.cpuGartnerMIPS = hardwareLpar.getHardware()
 						.getCpuGartnerMIPS();
@@ -707,5 +710,13 @@ public class FormHardware extends FormBase {
 
 	public void setShared(String shared) {
 		this.shared = shared;
+	}
+
+	public String getMultiTenant() {
+		return multiTenant;
+	}
+
+	public void setMultiTenant(String multiTenant) {
+		this.multiTenant = multiTenant;
 	}
 }

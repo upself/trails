@@ -130,10 +130,6 @@
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
-
-
-
-
 								<div class="indent">
 									<h3>
 										Hardware&nbsp;<a class="ibm-question-link"
@@ -141,7 +137,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -159,6 +155,7 @@
 											<th class="blue-med"># chips max</th>
 											<th class="blue-med">HW IFL</th>
 											<th class="blue-med">Shared</th>
+											<th class="blue-med">Multi Tenant</th>
 											<th class="blue-med">HW Owner</th>
 											<th class="blue-med">ATP Status</th>
 											<c:if
@@ -201,6 +198,8 @@
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.shared}" /></font></td>
 											<td><font class="orange-dark"> <c:out
+													value="${lpar.hardwareLpar.hardware.multiTenant}" /></font></td>
+											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.owner}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${lpar.hardwareLpar.hardware.hardwareStatus}" /></font></td>
@@ -223,7 +222,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -321,7 +320,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -412,7 +411,7 @@
 										</h3>
 									</div>
 									<display:table name="list" requestURI=""
-										class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+										class="ibm-data-table ibm-sortable-table ibm-alternate"
 										id="software">
 										<display:setProperty name="basic.empty.showtable" value="true" />
 										<display:setProperty name="basic.msg.empty_list_row"

@@ -68,6 +68,8 @@
 		
 		<property name="shared" column="SHARED" length="2" />
 		
+		<property name="multiTenant" column="MULTI_TENANT" length="1" />
+		
 		<property name="serverType" column="SERVER_TYPE" length="15" />
 		
 		<property name="cpuMIPS" column="CPU_MIPS"

@@ -106,7 +106,7 @@
 						</p>
 						<h1>
 							Hardware Detail: <font class="green-dark"> <c:out
-								value="${lpar.name}" /></font>
+								value="${hardware.lparName}" /></font>
 						</h1>
 						<p class="confidential">IBM Confidential</p>
 					</div>
@@ -116,8 +116,6 @@
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
-
-
 								<div class="indent">
 									<h3>
 										Hardware <a class="ibm-question-link"
@@ -125,7 +123,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -143,6 +141,7 @@
 											<th class="blue-med"># chips max</th>
 											<th class="blue-med">HW IFL</th>
 											<th class="blue-med">Shared</th>
+											<th class="blue-med">Multi Tenant</th>
 											<th class="blue-med">HW Owner</th>
 											<th class="blue-med">ATP Status</th>
 											<c:if test="${hardware.assetType == 'MAINFRAME'}">
@@ -183,6 +182,8 @@
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.shared}" /></font></td>
 											<td><font class="orange-dark"> <c:out
+													value="${hardware.multiTenant}" /></font></td>
+											<td><font class="orange-dark"> <c:out
 													value="${hardware.owner}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.hardwareStatus}" /></font></td>
@@ -204,7 +205,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -285,7 +286,7 @@
 									</h3>
 								</div>
 								<display:table name="commentList" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two">
+									class="ibm-data-table ibm-sortable-table ibm-alternate">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 
 									<display:column property="action" title="Action"
