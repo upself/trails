@@ -30,7 +30,7 @@ public class Constants {
 	public static final String NAME_SEARCH = "Name";
 	public static final String USER = "user";
 	public static final String TYPE_SEARCH = "Type";
-	public static final String ACCOUNT_DISCREPANCIES = "accountDiscrepancies";
+	public static final String ACCOUNT_DISCREPANCIES = "accountSWComponentDiscrepancies";
 	public static final String GLOBAL_DISCREPANCIES = "globalDiscrepancies";
 	public static final String MAINFRAME_SCAN = "mainframeScan";
 	public static final String GLOBAL_SUMMARY = "globalSummary";
@@ -43,7 +43,7 @@ public class Constants {
 	public static final String SW_MULTI_REPORT = "softwareMulti";
 	public static final String INTERNET = "internet";
 	public static final String ACCOUNT_SOFTWARE = "accountSoftware";
-	public static final String SOFTWARE_DISCREPANCY_BLANK_FILE = "/opt/IBMIHS/htdocs/en_US/downloads/BRAVO Mass Missing SW Discrepancy Template.xls";
+	public static final String SOFTWARE_DISCREPANCY_BLANK_FILE = "/opt/IBMIHS/htdocs/en_US/downloads/BRAVO Mass Missing SW Component Discrepancy Template.xls";
 	public static final String AUTHORIZED_ASSETS_BLANK_FILE = "/opt/IBMIHS/htdocs/en_US/downloads/BRAVO Authorized Assets Template.xls";
 	public static final String HWCOUNT = "HWCOUNT";
 	public static final String DEFINITION_SEARCH = "Definition";

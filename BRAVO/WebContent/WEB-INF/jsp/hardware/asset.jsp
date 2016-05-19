@@ -110,7 +110,6 @@
 				  	<display:column property="scrtReportFile" title="SCRT Report" sortable="false" headerClass="blue-med" href="/BRAVO/download/scrtReport.${account.customer.accountNumber}.csv?name=scrtReport" paramId="scrtReportFile" paramProperty="scrtReportFile" />
 		</display:table>
 	</c:if>
-<!-- <a href="/BRAVO/download/accountDiscrepancies.${account.customer.accountNumber}.tsv?name=accountDiscrepancies&accountId=${account.customer.accountNumber}">Account Discrepancies</a><br/> -->
 
 <!-- END CONTENT HERE -->
 	</div>

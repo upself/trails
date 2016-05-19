@@ -78,8 +78,6 @@ public class ActionUpload extends ActionBase {
         String time = EaUtils.hourMinuteSecond(now);
 
         if (uploadType.equalsIgnoreCase(Constants.TIVOLI)) {
-            // upload = new Tivoli(accountId + "." + request.getRemoteUser() +
-            // ".tar");
             upload = new Tivoli(accountId + ".tar");
             upload.setRemoteUser(request.getRemoteUser());
             dir = upload.getDir();
