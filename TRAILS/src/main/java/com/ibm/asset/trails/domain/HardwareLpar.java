@@ -63,6 +63,9 @@ public class HardwareLpar {
 
 	@Column(name = "EFFECTIVE_THREADS")
 	private BigDecimal effectiveThreads;
+	
+	@Column(name = "VCPU")
+	private BigDecimal vcpu;
 
 	//story 19455
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "hardwareLpar")
@@ -264,4 +267,13 @@ public class HardwareLpar {
 	public void setEffectiveThreads(BigDecimal effectiveThreads) {
 		this.effectiveThreads = effectiveThreads;
 	}
+
+	public BigDecimal getVcpu() {
+		return vcpu;
+	}
+
+	public void setVcpu(BigDecimal vcpu) {
+		this.vcpu = vcpu;
+	}
+
 }

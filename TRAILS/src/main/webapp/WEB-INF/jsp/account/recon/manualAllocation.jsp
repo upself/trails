@@ -122,6 +122,7 @@
 			<display:column property="nbrCoresPerChip" title="cores per chip" />
 			<display:column property="chips" title=" HW chip" />
 			<display:column property="hardwareProcessorCount" title="HW proc" />
+			<display:column property="vcpu" title="vCPU" />
 			<display:column property="nbrOfChipsMax" title=" # chips max" />
 			<display:column property="cpuIFL" title="HW IFL" />
 			<display:column property="effectiveThreads" title="Eff Thr" />

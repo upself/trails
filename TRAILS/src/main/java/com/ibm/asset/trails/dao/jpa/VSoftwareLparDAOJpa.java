@@ -326,6 +326,7 @@ public class VSoftwareLparDAOJpa extends
 				.add(Projections.property("h.cpuGartnerMips").as("cpuGartnerMips"))
 				.add(Projections.property("hl.partGartnerMips").as("partGartnerMips"))
 				.add(Projections.property("hl.effectiveThreads").as("effectiveThreads"))
+				.add(Projections.property("hl.vcpu").as("vcpu"))
 				.add(Projections.property("h.cpuMsu").as("cpuMsu"))
 				.add(Projections.property("hl.partMsu").as("partMsu"))
 				.add(Projections.property("hl.serverType").as("lparServerType"))
