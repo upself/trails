@@ -18,7 +18,7 @@
 	<batch:job id="swkbtLoadJob" job-repository="jobRepository">
 
 		<batch:split id="splitsteps" task-executor="taskExecutor"
-			next="loadStep10">
+			next="updateScheduleF">
 			<batch:flow>
 				<batch:step id="splitStep10" parent="split10.master" />
 			</batch:flow>
@@ -51,7 +51,7 @@
 			</batch:flow>
 		</batch:split>
 
-		<batch:step id="loadStep10" parent="load10.master" next="loadStep0" />
+<!-- 		<batch:step id="loadStep10" parent="load10.master" next="loadStep0" />
 
 		<batch:step id="loadStep0" parent="load0.master" next="loadStep1" />
 
@@ -76,16 +76,16 @@
 				<batch:chunk reader="licensableReader" writer="licensableWriter"
 					commit-interval="100" />
 			</batch:tasklet>
-		</batch:step>
+		</batch:step> -->
 		
-		<batch:step id="updateScheduleF" next="inactivate">
+		<batch:step id="updateScheduleF">
 			<batch:tasklet>
 			     <batch:chunk reader="swViewReader"	writer="scheduleFwriter" 
 			     commit-interval="100" />
 		    </batch:tasklet>
 		</batch:step>
 
-		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
+<!-- 		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
 			<batch:flow>
 				<batch:step id="inactivateSignatures">
 					<batch:tasklet>
@@ -161,7 +161,7 @@
 					</batch:tasklet>
 				</batch:step>
 			</batch:flow>
-		</batch:split>
+		</batch:split> -->
 	</batch:job>
 
 	<bean id="moveFilesTasklet1" class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
@@ -306,44 +306,30 @@
 				<property name="dataSource" ref="dataSource" />
 				<property name="selectClause">
 					<value><![CDATA[
-                         softwareId,softwareName, licensable,status (
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                          p.id,siP.name, pi.licensable, kbP.deleted  
                         ]]>
 					</value>
 				</property>
 				<property name="fromClause">
 					<value><![CDATA[
-                          select p.id as softwareId ,siP.name as softwareName, pi.licensable, kbP.deleted as status
-                          from eaadmin.product p join eaadmin.product_info pi on pi.id=p.id 
+                           eaadmin.product p join eaadmin.product_info pi on pi.id=p.id 
                              join eaadmin.software_item siP on siP.id=p.id 
                              join eaadmin.kb_definition kbP on kbP.id=p.id 
-                             join eaadmin.software_category scP on scP.software_category_id=pi.software_category_id     
-                          union all 
-                            select mv.id as softwareId ,siP.name || ' - ' || siMV.name || ' - V'|| RTRIM(CAST(mv.version AS CHAR(64) )) ,RTRIM(CAST(mv.version AS CHAR(64) ))  as softwareName,mvpi.licensable, kbMV.deleted as status
-                          from eaadmin.mainframe_version mv join eaadmin.software_item siMV on siMV.id=mv.id 
-                             join eaadmin.software_item siP on siP.id=mv.product_id 
-                             join eaadmin.kb_definition kbMV on kbMV.id=mv.id 
-                             join eaadmin.product_info mvpi on mvpi.id=mv.id 
-                             join eaadmin.software_category scMV on scMV.software_category_id=mvpi.software_category_id 
-                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = siMV.id 
-                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id    
-                          union all 
-                             select mf.id as softwareId ,siP.name || ' - ' || siMF.name || ' - V' || RTRIM(CAST(mv.version AS CHAR(64) )) as softwareName,  mfpi.licensable ,kbMF.deleted as status
-                           from eaadmin.mainframe_feature mf join eaadmin.mainframe_version mv on mf.version_id=mv.id 
-                             join eaadmin.software_item siMF on siMF.id=mf.id join eaadmin.software_item siP on siP.id=mv.product_id 
-                             join eaadmin.kb_definition kbMF on kbMF.id=mf.id join eaadmin.product_info mfpi on mfpi.id=mf.id 
-                             join eaadmin.software_category scMF on scMF.software_category_id=mfpi.software_category_id 
-                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = mv.id 
-                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id ) as T              
+                             join eaadmin.software_category scP on scP.software_category_id=pi.software_category_id  
+                             ) as T
                         ]]>
 					</value>
 				</property>
 				<property name="whereClause">
 					<value><![CDATA[
-                        where T.status <>1 and T.licensable =1 
+                        where T.id=218119
                         ]]>
 					</value>
 				</property>
-				<property name="sortKey" value="softwareId" />
+				<property name="sortKey" value="id" />
 			</bean>
 		</property>
 		<property name="pageSize" value="500" />

@@ -2,18 +2,20 @@ package com.ibm.asset.trails.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "SCHEDULE_F")
-@Cacheable
+@org.hibernate.annotations.Entity
+@NamedQueries({@NamedQuery(name = "findScheduleFBySwId",query="SELECT h FROM ScheduleF h where h.softwareId = :swid"),
+	@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF  WHERE id = :sfid")})
 public class ScheduleF extends DomainEntity implements Serializable{
 
 	private static final long serialVersionUID = 4588816967938233569L;
@@ -22,23 +24,19 @@ public class ScheduleF extends DomainEntity implements Serializable{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
-	
-	@Basic
+
 	@Column(name = "SOFTWARE_ID")
 	private Long softwareId;
-	
-	@Basic
+
 	@Column(name = "SOFTWARE_TITLE")
 	private String softwareTitle;
-	
-	@Basic
+
 	@Column(name = "SOFTWARE_NAME")
 	private String softwareName;
-	
-	@Basic
+
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
-		
+
 	public Long getId() {
 		return id;
 	}

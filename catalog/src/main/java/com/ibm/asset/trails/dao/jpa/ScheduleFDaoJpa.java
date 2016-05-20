@@ -5,10 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.springframework.stereotype.Repository;
 
 import com.ibm.asset.trails.dao.ScheduleFDao;
 import com.ibm.asset.trails.domain.ScheduleF;
 
+@Repository
 public class ScheduleFDaoJpa implements ScheduleFDao{
 
 	protected EntityManager entityManager;
@@ -28,12 +32,10 @@ public class ScheduleFDaoJpa implements ScheduleFDao{
 	}
 	
 	public List<ScheduleF> findBySwId(Long id) {
+		
+
 		@SuppressWarnings("unchecked")
-		List<ScheduleF> list = getEntityManager()
-				.createQuery(
-						"SELECT ScheduleF h where h.softwareId = :swid")
-				.setParameter("swid", id)
-				.setHint("org.hibernate.cacheable", Boolean.TRUE)
+		List<ScheduleF> list = getEntityManager().createNamedQuery("findScheduleFById").setParameter("sfid",895941L)
 				.getResultList();
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -41,4 +43,6 @@ public class ScheduleFDaoJpa implements ScheduleFDao{
 			return list;
 		}
 	}
+	
+	public void findswByNaturalKey(Long key) {}
 }
