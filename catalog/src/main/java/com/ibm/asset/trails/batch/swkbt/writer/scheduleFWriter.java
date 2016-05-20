@@ -31,15 +31,19 @@ public class scheduleFWriter implements ItemWriter<Map<String, Object>> {
 			List<? extends Map<String, Object>> items) {
 		logger.debug("processing scheduleF software name Changes");
 		for (Map<String, Object> item : items) {
-			Long id = (Long) item.get("softwareId");
-			String softwareName = (String) item.get("softwareName");
+			Long id = (Long) item.get("id");
+			String softwareName = (String) item.get("name");
+			logger.debug("Software Id is " + id + ", Software Name is " + softwareName);
 			List<ScheduleF> scheduleFList = service.findBySwId(id);
+			if (null != scheduleFList && !scheduleFList.isEmpty()){
 			for(ScheduleF scheduleF:scheduleFList){
+			   logger.debug("Processing ScheduleF id is " + scheduleF.getId() );
 			if (scheduleF.getSoftwareId() == id && !scheduleF.getSoftwareName().equals(softwareName)) {				
 				scheduleF.setSoftwareName(softwareName);
 				service.merge(scheduleF);
 				logger.debug("Update ScheduleF " + scheduleF.toString());
 			} 
+			}
 			}
 		}
 		logger.debug("process scheduleF software name complete");

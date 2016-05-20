@@ -9,4 +9,6 @@ public interface ScheduleFDao{
 	List<ScheduleF> findBySwId(Long id);
 	
 	 void merge(ScheduleF entity) ;
+
+	void findswByNaturalKey(Long id);
 }

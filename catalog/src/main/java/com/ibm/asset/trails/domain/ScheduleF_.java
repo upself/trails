@@ -6,7 +6,6 @@ import javax.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(ScheduleF.class)
 public class ScheduleF_ {
-	public static volatile SetAttribute<ScheduleF, CVersionId> cVersionId;
 	public static volatile SingularAttribute<ScheduleF, Long> id;
 	public static volatile SingularAttribute<ScheduleF, Long> softwareId;
 	public static volatile SingularAttribute<ScheduleF, String> softwareTitle;
