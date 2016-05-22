@@ -2,11 +2,15 @@ package com.ibm.asset.trails.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -16,6 +20,7 @@ import javax.persistence.Table;
 @org.hibernate.annotations.Entity
 @NamedQueries({@NamedQuery(name = "findScheduleFBySwId",query="SELECT h FROM ScheduleF h where h.softwareId = :swid"),
 	@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF  WHERE id = :sfid")})
+@Cacheable
 public class ScheduleF extends DomainEntity implements Serializable{
 
 	private static final long serialVersionUID = 4588816967938233569L;
@@ -36,6 +41,9 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	@Column(name = "MANUFACTURER")
 	private String manufacturer;
+	
+	@Column(name = "STATUS_ID")
+	private Long statusId;
 
 	public Long getId() {
 		return id;
@@ -76,7 +84,14 @@ public class ScheduleF extends DomainEntity implements Serializable{
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
 	}
-   
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
 	
 }
 

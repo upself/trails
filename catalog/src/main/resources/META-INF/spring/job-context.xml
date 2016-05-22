@@ -18,7 +18,7 @@
 	<batch:job id="swkbtLoadJob" job-repository="jobRepository">
 
 		<batch:split id="splitsteps" task-executor="taskExecutor"
-			next="updateScheduleF">
+			next="loadStep10">
 			<batch:flow>
 				<batch:step id="splitStep10" parent="split10.master" />
 			</batch:flow>
@@ -51,7 +51,7 @@
 			</batch:flow>
 		</batch:split>
 
-<!-- 		<batch:step id="loadStep10" parent="load10.master" next="loadStep0" />
+		<batch:step id="loadStep10" parent="load10.master" next="loadStep0" />
 
 		<batch:step id="loadStep0" parent="load0.master" next="loadStep1" />
 
@@ -76,16 +76,36 @@
 				<batch:chunk reader="licensableReader" writer="licensableWriter"
 					commit-interval="100" />
 			</batch:tasklet>
-		</batch:step> -->
+		</batch:step> 
 		
-		<batch:step id="updateScheduleF">
+		<batch:split id="updateScheduleF" next="inactivate"  task-executor="taskExecutor">
+		<batch:flow>
+		    <batch:step id="updateProductScheduleF">
+			    <batch:tasklet>
+			      <batch:chunk reader="swProductViewReader"	writer="scheduleFwriter" 
+			     commit-interval="100" />
+		        </batch:tasklet>
+		    </batch:step>
+		</batch:flow>
+				<batch:flow>
+		<batch:step id="updateMvScheduleF">
 			<batch:tasklet>
-			     <batch:chunk reader="swViewReader"	writer="scheduleFwriter" 
+			     <batch:chunk reader="swMvViewReader"	writer="scheduleFwriter" 
 			     commit-interval="100" />
 		    </batch:tasklet>
 		</batch:step>
+		</batch:flow>
+		<batch:flow>
+		    <batch:step id="updateMfScheduleF">
+			     <batch:tasklet>
+			      <batch:chunk reader="swMfViewReader"	writer="scheduleFwriter" 
+			     commit-interval="100" />
+		         </batch:tasklet>
+		    </batch:step>
+		</batch:flow>
+		</batch:split>
 
-<!-- 		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
+ 		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
 			<batch:flow>
 				<batch:step id="inactivateSignatures">
 					<batch:tasklet>
@@ -161,7 +181,7 @@
 					</batch:tasklet>
 				</batch:step>
 			</batch:flow>
-		</batch:split> -->
+		</batch:split> 
 	</batch:job>
 
 	<bean id="moveFilesTasklet1" class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
@@ -295,7 +315,7 @@
 		scope="step">
 	</bean>
 	
-	<bean id="swViewReader"
+	<bean id="swProductViewReader"
 		class="org.springframework.batch.item.database.JdbcPagingItemReader"
 		scope="step">
 		<property name="dataSource" ref="dataSource" />
@@ -325,7 +345,98 @@
 				</property>
 				<property name="whereClause">
 					<value><![CDATA[
-                        where T.id=218119
+                        where 1=1
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+	
+	<bean id="swMvViewReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                          mv.id,siP.name || ' - ' || siMV.name || ' - V'|| RTRIM(CAST(mv.version AS CHAR(64) )) as name,mvpi.licensable, kbMV.deleted
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                           eaadmin.mainframe_version mv join eaadmin.software_item siMV on siMV.id=mv.id 
+                             join eaadmin.software_item siP on siP.id=mv.product_id 
+                             join eaadmin.kb_definition kbMV on kbMV.id=mv.id 
+                             join eaadmin.product_info mvpi on mvpi.id=mv.id 
+                             join eaadmin.software_category scMV on scMV.software_category_id=mvpi.software_category_id 
+                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = siMV.id 
+                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id 
+                             ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                        where 1=1
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+	
+	<bean id="swMfViewReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                           mf.id as id ,siP.name || ' - ' || siMF.name || ' - V' || RTRIM(CAST(mv.version AS CHAR(64) )) as name,  mfpi.licensable ,kbMF.deleted 
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                           eaadmin.mainframe_feature mf join eaadmin.mainframe_version mv on mf.version_id=mv.id 
+                             join eaadmin.software_item siMF on siMF.id=mf.id join eaadmin.software_item siP on siP.id=mv.product_id 
+                             join eaadmin.kb_definition kbMF on kbMF.id=mf.id join eaadmin.product_info mfpi on mfpi.id=mf.id 
+                             join eaadmin.software_category scMF on scMF.software_category_id=mfpi.software_category_id 
+                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = mv.id 
+                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id 
+                             ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                        where 1=1
                         ]]>
 					</value>
 				</property>
@@ -339,7 +450,7 @@
 	</bean>
 	
 	<bean id="scheduleFwriter"
-		class="com.ibm.asset.trails.batch.swkbt.writer.scheduleFWriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.ScheduleFWriter"
 		scope="step">
 	</bean>	
 

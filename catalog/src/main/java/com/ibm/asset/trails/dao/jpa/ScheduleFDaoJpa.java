@@ -33,9 +33,9 @@ public class ScheduleFDaoJpa implements ScheduleFDao{
 	
 	public List<ScheduleF> findBySwId(Long id) {
 		
-
 		@SuppressWarnings("unchecked")
-		List<ScheduleF> list = getEntityManager().createNamedQuery("findScheduleFById").setParameter("sfid",895941L)
+		List<ScheduleF> list = getEntityManager().createNamedQuery("findScheduleFBySwId").setParameter("swid",id)
+				.setHint("org.hibernate.cacheable", Boolean.TRUE)
 				.getResultList();
 		if (list == null || list.isEmpty()) {
 			return null;
