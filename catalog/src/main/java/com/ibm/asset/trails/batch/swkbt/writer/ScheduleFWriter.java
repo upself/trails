@@ -14,9 +14,9 @@ import com.ibm.asset.trails.domain.ScheduleF;
 
 /* Author zhysz@cn.ibm.com
 */
-public class scheduleFWriter implements ItemWriter<Map<String, Object>> {
+public class ScheduleFWriter implements ItemWriter<Map<String, Object>> {
 	private static final Logger logger = Logger
-			.getLogger(scheduleFWriter.class);
+			.getLogger(ScheduleFWriter.class);
 
 	@Autowired
 	private ScheduleFService service;
@@ -38,7 +38,7 @@ public class scheduleFWriter implements ItemWriter<Map<String, Object>> {
 			if (null != scheduleFList && !scheduleFList.isEmpty()){
 			for(ScheduleF scheduleF:scheduleFList){
 			   logger.debug("Processing ScheduleF id is " + scheduleF.getId() );
-			if (scheduleF.getSoftwareId() == id && !scheduleF.getSoftwareName().equals(softwareName)) {				
+			if (scheduleF.getSoftwareId().equals(id) && !scheduleF.getSoftwareName().equals(softwareName)) {				
 				scheduleF.setSoftwareName(softwareName);
 				service.merge(scheduleF);
 				logger.debug("Update ScheduleF " + scheduleF.toString());
