@@ -494,6 +494,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
 				,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 
@@ -572,6 +573,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 
@@ -645,6 +647,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 
