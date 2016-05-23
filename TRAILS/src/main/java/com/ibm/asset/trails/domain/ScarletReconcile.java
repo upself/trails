@@ -1,52 +1,38 @@
 package com.ibm.asset.trails.domain;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "SCARLET_RECONCILE")
-public class ScarletReconcile extends AbstractDomainEntity {
+@PrimaryKeyJoinColumn(name = "ID")
+public class ScarletReconcile extends Reconcile {
 	private static final long serialVersionUID = -1570160658765275811L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ID")
-	private Long id;
 
 	@Column(name = "LAST_VALIDATE_TIME")
 	private Date lastValidateTime;
-	
+
 	@Column(name = "RECONCILE_MD5_HEX")
 	private String reconcileMd5Hex;
 
-	
 	public ScarletReconcile() {
-		
+
 	}
 
 	public ScarletReconcile(Long id, Date lastValidateTime) {
-		this.id = id;
+		this.setId(id);
 		this.lastValidateTime = lastValidateTime;
 	}
 
 	public ScarletReconcile(Long id, Date lastValidateTime,
 			String reconcileMd5Hex) {
-		this.id = id;
+		this.setId(id);
 		this.lastValidateTime = lastValidateTime;
 		this.reconcileMd5Hex = reconcileMd5Hex;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Date getLastValidateTime() {
@@ -65,29 +51,38 @@ public class ScarletReconcile extends AbstractDomainEntity {
 		this.reconcileMd5Hex = reconcileMd5Hex;
 	}
 
-	
 	@Override
-	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		if(null == obj){
-			return false;
-		} else if(this == obj){
-			return true;
-		} else if(obj instanceof ScarletReconcile){
-			ScarletReconcile other = (ScarletReconcile)obj;
-			if(null != this.getId() && null != other.getId() && this.getId().equals(other.getId())){
-				return true;
-			}else{
-				return false;
-			}
-		} else{
-			return false;
-		}
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime
+				* result
+				+ ((lastValidateTime == null) ? 0 : lastValidateTime.hashCode());
+		result = prime * result
+				+ ((reconcileMd5Hex == null) ? 0 : reconcileMd5Hex.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-	
-		return 17 * 37 + (null == id ? 0 : id.hashCode());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ScarletReconcile other = (ScarletReconcile) obj;
+		if (lastValidateTime == null) {
+			if (other.lastValidateTime != null)
+				return false;
+		} else if (!lastValidateTime.equals(other.lastValidateTime))
+			return false;
+		if (reconcileMd5Hex == null) {
+			if (other.reconcileMd5Hex != null)
+				return false;
+		} else if (!reconcileMd5Hex.equals(other.reconcileMd5Hex))
+			return false;
+		return true;
 	}
+
 }
