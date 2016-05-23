@@ -44,6 +44,9 @@ public class ScheduleF extends DomainEntity implements Serializable{
 	
 	@Column(name = "STATUS_ID")
 	private Long statusId;
+	
+	@Column(name = "BUSINESS_JUSTIFICATION")
+	private String businessJustification;
 
 	public Long getId() {
 		return id;
@@ -91,6 +94,14 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	public void setStatusId(Long statusId) {
 		this.statusId = statusId;
+	}
+
+	public String getBusinessJustification() {
+		return businessJustification;
+	}
+
+	public void setBusinessJustification(String businessJustification) {
+		this.businessJustification = businessJustification;
 	}
 	
 }

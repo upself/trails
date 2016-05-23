@@ -40,6 +40,7 @@ public class ScheduleFWriter implements ItemWriter<Map<String, Object>> {
 			   logger.debug("Processing ScheduleF id is " + scheduleF.getId() );
 			if (scheduleF.getSoftwareId().equals(id) && !scheduleF.getSoftwareName().equals(softwareName)) {				
 				scheduleF.setSoftwareName(softwareName);
+				scheduleF.setBusinessJustification("Automatic name change to" + softwareName);
 				service.merge(scheduleF);
 				logger.debug("Update ScheduleF " + scheduleF.toString());
 			} 
