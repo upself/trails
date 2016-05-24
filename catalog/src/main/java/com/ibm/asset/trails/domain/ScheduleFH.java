@@ -1,38 +1,35 @@
 package com.ibm.asset.trails.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SCHEDULE_F")
+@Table(name = "SCHEDULE_F_H")
 @org.hibernate.annotations.Entity
-@NamedQueries({@NamedQuery(name = "findScheduleFBySwId",query="SELECT h FROM ScheduleF h where h.softwareId = :swid"),
-	@NamedQuery(name = "findScheduleFById", query = "FROM ScheduleF  WHERE id = :sfid")})
 @Cacheable
-public class ScheduleF extends DomainEntity implements Serializable{
+public class ScheduleFH  extends DomainEntity implements Serializable{
 
-	private static final long serialVersionUID = 4588816967938233569L;
 
+	private static final long serialVersionUID = -6203943942246313660L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	private Long id;
 
+	@ManyToOne
+	@JoinColumn(name = "SCHEDULE_F_ID")
+	private ScheduleF scheduleF;
+	
 	@Column(name = "SOFTWARE_ID")
 	private Long softwareId;
 
@@ -86,9 +83,6 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	@Column(name = "RECORD_TIME")
 	private Date recordTime;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "scheduleF", cascade = CascadeType.ALL)
-	private List<ScheduleFH> scheduleFHList = new ArrayList<ScheduleFH>();
 
 	public Long getId() {
 		return id;
@@ -96,6 +90,14 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public ScheduleF getScheduleF() {
+		return scheduleF;
+	}
+
+	public void setScheduleF(ScheduleF scheduleF) {
+		this.scheduleF = scheduleF;
 	}
 
 	public Long getSoftwareId() {
@@ -128,22 +130,6 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
-	}
-
-	public Long getStatusId() {
-		return statusId;
-	}
-
-	public void setStatusId(Long statusId) {
-		this.statusId = statusId;
-	}
-
-	public String getBusinessJustification() {
-		return businessJustification;
-	}
-
-	public void setBusinessJustification(String businessJustification) {
-		this.businessJustification = businessJustification;
 	}
 
 	public String getLevel() {
@@ -194,6 +180,14 @@ public class ScheduleF extends DomainEntity implements Serializable{
 		this.customerId = customerId;
 	}
 
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
+
 	public Long getScopeId() {
 		return scopeId;
 	}
@@ -216,6 +210,14 @@ public class ScheduleF extends DomainEntity implements Serializable{
 
 	public void setSWFinanceResp(String sWFinanceResp) {
 		SWFinanceResp = sWFinanceResp;
+	}
+
+	public String getBusinessJustification() {
+		return businessJustification;
+	}
+
+	public void setBusinessJustification(String businessJustification) {
+		this.businessJustification = businessJustification;
 	}
 
 	public String getSourceLocation() {
@@ -242,13 +244,4 @@ public class ScheduleF extends DomainEntity implements Serializable{
 		this.recordTime = recordTime;
 	}
 
-	public List<ScheduleFH> getScheduleFHList() {
-		return scheduleFHList;
-	}
-
-	public void setScheduleFHList(List<ScheduleFH> scheduleFHList) {
-		this.scheduleFHList = scheduleFHList;
-	}
-		
 }
-
