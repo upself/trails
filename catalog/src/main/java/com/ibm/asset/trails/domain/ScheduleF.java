@@ -87,7 +87,7 @@ public class ScheduleF extends DomainEntity implements Serializable{
 	@Column(name = "RECORD_TIME")
 	private Date recordTime;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "scheduleF", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "scheduleF", cascade = CascadeType.MERGE)
 	private List<ScheduleFH> scheduleFHList = new ArrayList<ScheduleFH>();
 
 	public Long getId() {

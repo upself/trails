@@ -34,7 +34,7 @@ public class ScheduleFWriter implements ItemWriter<Map<String, Object>> {
 			String softwareName = (String) item.get("name");
 			logger.debug("Software Id is " + id + ", Software Name is " + softwareName);
 			List<ScheduleF> scheduleFList = service.findBySwId(id);
-			if (null != scheduleFList && !scheduleFList.isEmpty()) {
+			if (null == scheduleFList || scheduleFList.isEmpty()) {
              continue;
 			}
 			for (ScheduleF scheduleF : scheduleFList) {
