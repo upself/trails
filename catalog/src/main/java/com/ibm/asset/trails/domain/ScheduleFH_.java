@@ -1,14 +1,14 @@
 package com.ibm.asset.trails.domain;
 
-
 import java.util.Date;
 
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@StaticMetamodel(ScheduleF.class)
-public class ScheduleF_ {
+@StaticMetamodel(ScheduleFH.class)
+public class ScheduleFH_ {
 	public static volatile SingularAttribute<ScheduleF, Long> id;
+	public static volatile SingularAttribute<ScheduleF, Long> scheduleFId;
 	public static volatile SingularAttribute<ScheduleF, Long> softwareId;
 	public static volatile SingularAttribute<ScheduleF, String> softwareTitle;
 	public static volatile SingularAttribute<ScheduleF, String> softwareName;
