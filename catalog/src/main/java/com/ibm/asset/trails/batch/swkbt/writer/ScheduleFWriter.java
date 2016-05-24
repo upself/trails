@@ -53,7 +53,7 @@ public class ScheduleFWriter implements ItemWriter<Map<String, Object>> {
 					scheduleFH.setRemoteUser(scheduleF.getRemoteUser());
 					scheduleFH.setScopeId(scheduleF.getScopeId());
 					scheduleFH.setSerial(scheduleF.getSerial());
-					scheduleFH.setSoftwareId(scheduleF.getSourceId());
+					scheduleFH.setSoftwareId(scheduleF.getSoftwareId());
 					scheduleFH.setSoftwareName(scheduleF.getSoftwareName());
 					scheduleFH.setSoftwareTitle(scheduleF.getSoftwareTitle());
 					scheduleFH.setSourceId(scheduleF.getSourceId());
