@@ -64,6 +64,8 @@ public class ReconWorkspace implements Serializable {
 	private BigDecimal cpuGartnerMips;
 
 	private BigDecimal partGartnerMips;
+	
+	private BigDecimal vcpu;
 
 	private String pid;
 
@@ -78,6 +80,17 @@ public class ReconWorkspace implements Serializable {
 	private String manufacturerName;
 	
 	private String level;
+	
+	private String multi_tenant;
+	
+
+	public String getMulti_tenant() {
+		return multi_tenant;
+	}
+
+	public void setMulti_tenant(String multi_tenant) {
+		this.multi_tenant = multi_tenant;
+	}
 
 	public String getLevel() {
 		return level;
@@ -402,6 +415,14 @@ public class ReconWorkspace implements Serializable {
 
 	public void setHwLparEffProcessorStatus(String hwLparEffProcessorStatus) {
 		this.hwLparEffProcessorStatus = hwLparEffProcessorStatus;
+	}
+
+	public BigDecimal getVcpu() {
+		return vcpu;
+	}
+
+	public void setVcpu(BigDecimal vcpu) {
+		this.vcpu = vcpu;
 	}
 
 	public String getAlertStatus() {

@@ -36,7 +36,7 @@
 @import url("https://w3.ibm.com/ui/v8/css/interior.css");
 @import url("https://w3.ibm.com/ui/v8/css/icons.css");
 @import url("https://w3.ibm.com/ui/v8/css/interior-1-col.css");
-@import url("http://w3.ibm.com/ui/v8/css/search.css");
+@import url("https://w3.ibm.com/ui/v8/css/search.css");
 @import url("https://w3.ibm.com/ui/v8/css/tables.css");
 @import url("https://w3.ibm.com/ui/v8/css/interior-partial-sidebar.css");
 	.add-link-dark, .help-link-dark {display:inline;}

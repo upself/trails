@@ -13,13 +13,14 @@
 	includeParams="none">
 </s:url>
 
-<p id="breadcrumbs"><s:a href="%{trails}">TRAILS</s:a> &gt; <s:a
-	href="%{reports}">Reports</s:a> &gt; <s:a href="%{dataExceptions}">Data exceptions</s:a>
-&gt; 
-<br>
-</p>
+<ul id="ibm-navigation-trail">
+	<li><s:a href="%{trails}">TRAILS</s:a></li>
+	<li><s:a href="%{reports}">Reports</s:a></li>
+	<li><s:a href="%{dataExceptions}">Data exceptions</s:a></li>
+</ul>
 
-<div style="font-size:22px; display:inline">Data exceptions reports by</div><h1 class="oneline">&nbsp;Account</h1>
+
+<h1 class="oneline">Data exceptions reports by Account</h1>
 <br>
 
 

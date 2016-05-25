@@ -47,9 +47,14 @@
 <script>                                                                                                                               
 function popupTrailsReports(accountId) { 
 	<%Properties properties = new Properties();
-			properties.load(new FileInputStream(Constants.CONF_DIR + Constants.PROPERTIES));
-			String trailsServerName = properties.getProperty("server.name.trails");%>                                                                                                         
-	newWin=window.open('<%=trailsServerName%>/TRAILS/account/trailsreports/home.htm?accountId=' + accountId,'popupWindow',
+			properties.load(new FileInputStream(Constants.CONF_DIR
+					+ Constants.PROPERTIES));
+			String trailsServerName = properties
+					.getProperty("server.name.trails");%>                                                                                                         
+	newWin=window.open('<%=trailsServerName%>
+	/TRAILS/account/trailsreports/home.htm?accountId='
+								+ accountId,
+						'popupWindow',
 						'height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes');
 		newWin.focus();
 		void (0);
@@ -146,11 +151,12 @@ function popupTrailsReports(accountId) {
 
 								<div class="indent">
 									<h3>
-										Account <a class="ibm-question-link" href="/BRAVO/help/help.do"></a>
+										Account <a class="ibm-question-link"
+											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -201,7 +207,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -316,7 +322,7 @@ function popupTrailsReports(accountId) {
 
 								<br />
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<tr>
 										<th>Composite List <a class="ibm-question-link"
@@ -328,7 +334,7 @@ function popupTrailsReports(accountId) {
 									</tr>
 								</table>
 								<display:table name="composites" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="1" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column sortProperty="name" title="HW name"
@@ -375,7 +381,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="softwareLpars" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"
@@ -400,7 +406,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="hardwareLpars" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"
@@ -431,7 +437,7 @@ function popupTrailsReports(accountId) {
 									</h3>
 								</div>
 								<display:table name="hardwares" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="tall" defaultsort="2" defaultorder="ascending">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 									<display:column property="statusImage" title="" sortable="true"
@@ -536,8 +542,8 @@ function popupTrailsReports(accountId) {
 
 									<!-- Account Discrepancies Report -->
 									<li><a class="ibm-download-link"
-										href="/BRAVO/download/accountDiscrepancies.${account.customer.accountNumber}.tsv?name=accountDiscrepancies&accountId=${account.customer.accountNumber}">Account
-											Discrepancies</a></li>
+										href="/BRAVO/download/accountSWComponentDiscrepancies.${account.customer.accountNumber}.tsv?name=accountSWComponentDiscrepancies&accountId=${account.customer.accountNumber}">Account
+											SW Component Discrepancies</a></li>
 
 									<!-- Account Asset Report -->
 									<li><a class="ibm-download-link"
@@ -740,5 +746,5 @@ function popupTrailsReports(accountId) {
 			</script>
 		</div>
 	</div>
-  </body>
+</body>
 </html>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="ï¿½ Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -57,7 +57,7 @@
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBMï¿½</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -106,7 +106,7 @@
 						</p>
 						<h1>
 							Hardware Detail: <font class="green-dark"> <c:out
-								value="${lpar.name}" /></font>
+								value="${hardware.lparName}" /></font>
 						</h1>
 						<p class="confidential">IBM Confidential</p>
 					</div>
@@ -116,8 +116,6 @@
 					<div id="ibm-content-main">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
-
-
 								<div class="indent">
 									<h3>
 										Hardware <a class="ibm-question-link"
@@ -125,7 +123,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -143,6 +141,7 @@
 											<th class="blue-med"># chips max</th>
 											<th class="blue-med">HW IFL</th>
 											<th class="blue-med">Shared</th>
+											<th class="blue-med">Multi Tenant</th>
 											<th class="blue-med">HW Owner</th>
 											<th class="blue-med">ATP Status</th>
 											<c:if test="${hardware.assetType == 'MAINFRAME'}">
@@ -183,6 +182,8 @@
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.shared}" /></font></td>
 											<td><font class="orange-dark"> <c:out
+													value="${hardware.multiTenant}" /></font></td>
+											<td><font class="orange-dark"> <c:out
 													value="${hardware.owner}" /></font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.hardwareStatus}" /></font></td>
@@ -204,7 +205,7 @@
 									</h3>
 								</div>
 								<table
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
+									class="ibm-data-table ibm-sortable-table ibm-alternate"
 									id="small">
 									<thead>
 										<tr>
@@ -214,6 +215,7 @@
 											<th class="blue-med">OS Type</th>
 											<th class="blue-med">Eff Proc</th>
 											<th class="blue-med">Eff Thr</th>
+											<th class="blue-med">vCPU</th>
 											<th class="blue-med">Sysplex</th>
 											<th class="blue-med">SPLA</th>
 											<th class="blue-med">Internet Acc</th>
@@ -254,6 +256,8 @@
 													value="${hardware.processorCountEff}" /> </font></td>
 											<td><font class="orange-dark">
 												<c:out value="${hardware.effectiveThreads}" /> </font></td>
+										    <td><font class="orange-dark"><c:out
+							                               	value="${hardware.vCPU}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
 													value="${hardware.sysplex}" /> </font></td>
 											<td><font class="orange-dark"> <c:out
@@ -285,7 +289,7 @@
 									</h3>
 								</div>
 								<display:table name="commentList" requestURI=""
-									class="ibm-data-table ibm-sortable-table ibm-alternate-two">
+									class="ibm-data-table ibm-sortable-table ibm-alternate">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 
 									<display:column property="action" title="Action"

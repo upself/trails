@@ -71,7 +71,7 @@ public class ReportServiceImpl implements ReportService {
 			"PHYSICAL HW PROCESSOR COUNT", "HW EXT ID", "HW CHIPS", "ASSIGNEE",
 			"COMMENT" };
 	private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
-			"Status", "Hostname", "Installed SW product name",
+			"Status", "Hostname", "Software Component",
 			"Number of instances", "Create date/time", "Age",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
@@ -83,24 +83,24 @@ public class ReportServiceImpl implements ReportService {
 			"Cross account level", "CPU Model", "CHASSIS ID", "Cloud Name",
 			"Owner", "Country", "Asset type", "Server type", "SPLA",
 			"Virtual Flag", "Virtual Mobility restriction", "OS type",
-			"SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
+			"SysPlex","MF SysPlex", "Cluster type", "Backup method", "Internet ACC Flag",
 			"Capped LPAR", "Processor Type", "Processor Manufacturer",
 			"Processor Model", "NBR Cores per Chip", "NBR of Chips Max",
 			"Hardware IFL", "Shared processor", "CPU IBM LPAR MIPS",
 			"CPU Gartner MIPS", "CPU MSU", "Part IBM LPAR MIPS",
-			"Part Gartner MIPS", "Part MSU", "SHARED", "Hardware Status",
-			"Lpar Status", "Physical HW processor count", "Physical chips",
+			"Part Gartner MIPS", "Part MSU", "SHARED", "Multi Tenant", "Hardware Status",
+			"Lpar Status", "Physical HW processor count", "Physical chips","vCPU",
 			"Effective processor count", "Effective threads", "PVU/core",
-			"Primary Component", "PID", "MF SW Last used", "SW Owner", "Alert assignee",
-			"Alert assignee comment", "Inst SW manufacturer",
-			"Inst SW validation status", "Reconciliation action",
+			"Software Component", "PID", "MF SW Last used", "Schedule F scope", "Alert assignee",
+			"Alert assignee comment", "Component Manufacturer",
+			"Component Validation Status", "Reconciliation action",
 			"Allocation methodology", "Reconciliation user",
 			"Reconciliation date/time", "Reconciliation comments",
-			"Reconciliation parent product", "License account number",
-			"License Name", "Catalog match", "License product name", "Version",
+			"Parent Component", "License account number",
+			"License Name", "Primary component catalog match", "License Primary Component", "Version",
 			"Capacity type", "Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
-			"License serial number", "License owner", "SWCM ID",
+			"License serial number", "Licensee", "SWCM ID",
 			"License last updated" };
 	private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
 	private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
@@ -111,13 +111,13 @@ public class ReportServiceImpl implements ReportService {
 			"Composite" };
 	private final String HARDWARE_BASELINE_REPORT_NAME = "Hardware baseline report";
 	private final String[] INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS = {
-			"Software product name", "Manufacturer", "Vendor managed",
+			"Software Component", "Manufacturer", "Vendor managed",
 			"Hostname", "Bios serial", "Effective processor count", "Chips",
 			"Scan time", "Composite", "Serial", "Machine type", "Asset type" };
-	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed software baseline report";
+	private final String INSTALLED_SOFTWARE_BASELINE_REPORT_NAME = "Installed Software Component Baseline";
 	private final String LICENSE_BASELINE_REPORT_NAME = "License baseline report";
 	private final String[] LICENSE_COLUMN_HEADERS = { "Primary Component",
-			"Catalog match", "License Name", "Software product PID",
+			"Primary component catalog match", "License Name", "Software product PID",
 			"Capacity type", "Environment", "Total qty", "Available qty",
 			"Expiration date", "PO number", "Serial number", "License owner",
 			"SWCM ID", "Pool", "Record date/time" };
@@ -127,26 +127,26 @@ public class ReportServiceImpl implements ReportService {
 			"Country", "Sector", "Workstation count", "HW status" };
 	
 	private final String[] RECONCILIATION_SUMMARY_COLUMN_HEADERS = {
-			"Primary Component", "Installed instances",
-			"Installed instances covered by entitlement",
-			"Installed instances not covered by entitlement",
+			"Software Component", "Scanned instances",
+			"Scanned instances reconciled",
+			"Scanned instances unreconciled",
 			"Unassigned license pool count", "Unassigned license pool type",
 			"Schedule F scope" };
 	private final String RECONCILIATION_SUMMARY_REPORT_NAME = "Reconciliation summary report";
 	private final String[] SOFTWARE_COMPLIANCE_SUMMARY_COLUMN_HEADERS = {
-			"Primary Component", "Installed instances",
-			"Installed instances covered by entitlement",
-			"Installed instances not covered by entitlement",
+			"Software Component", "Scanned instances",
+			"Scanned instances reconciled",
+			"Scanned instances unreconciled",
 			"License pool type", "Unassigned license pool count",
 			"Assigned license pool count" };
-	private final String SOFTWARE_COMPLIANCE_SUMMARY_REPORT_NAME = "Software compliance summary report";
+	private final String SOFTWARE_COMPLIANCE_SUMMARY_REPORT_NAME = "Component compliance summary report";
 	private final String[] SOFTWARE_LPAR_BASELINE_COLUMN_HEADERS = {
 			"Hostname", "Bios serial", "Effective processor count",
 			"Scan time", "Composite", "Serial", "Machine type", "Asset type" };
 	private final String SOFTWARE_LPAR_BASELINE_REPORT_NAME = "Software LPAR baseline report";
 	private final String[] SOFTWARE_VARIANCE_REPORT_COLUMN_HEADERS = {
-			"Primary Component", "Installed instances", "Scope software title" };
-	private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to installed software variance report";
+			"Software Component", "Scanned instances", "Schedule F Software Title" };
+	private final String SOFTWARE_VARIANCE_REPORT_NAME = "Contract scope to scanned component variance report";
 	private final String SQL_QUERY_SW_LPAR = "SELECT CASE WHEN VA.Alert_Age > 90 THEN 'Red' WHEN VA.Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, SL.Name, SL.Bios_Serial, VA.Creation_Time, VA.Alert_Age, VA.Remote_User, VA.Comments, VA.Record_Time , AC.name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id  FROM EAADMIN.V_Alerts VA, EAADMIN.Software_Lpar SL, EAADMIN.cause_code CC, EAADMIN.alert_cause AC WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND SL.Id = VA.FK_Id and VA.id=CC.alert_id and CC.alert_type_id = :alertTypeId and CC.alert_cause_id=AC.id ORDER BY SL.Name ASC";
 	private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Lpar_Name, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age, ac_name, target_date, cc_owner, cc_record_time, cc_remote_user, cc_id FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SL.Name AS Software_Lpar_Name, S.software_name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time, VA.ac_name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id FROM EAADMIN.V_Alerts VA, EAADMIN.software  S, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS , EAADMIN.cause_code CC, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = S.software_id and VA.id=CC.alert_id and CC.alert_type_id=17 AND IS.SOFTWARE_LPAR_ID=SL.ID GROUP BY SL.NAME, S.software_name, VA.ac_name, CC.target_date, CC.owner, CC.remote_user, CC.id, CC.record_time) AS TEMP ORDER BY Software_Item_Name ASC";
 	private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWLPAR_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
@@ -181,7 +181,7 @@ public class ReportServiceImpl implements ReportService {
 			"Internal ID" };
 
 	private final String[] UNLICENSED_GROUP_COLUMN_HEADERS = { "Status",
-			"Hostname", "Installed SW component", "Create date/time", "Age", "Asset type", "OS type",
+			"Hostname", "Software Component", "Create date/time", "Age", "Asset type", "OS type",
 			"Assignee", "Assignee comments", "Assigned date/time",
 			"Cause Code (CC)", "CC target date", "CC owner", "CC change date",
 			"CC change person", "Internal ID" };
@@ -629,6 +629,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.virtual_mobility_restriction"
 				+ ",hl.os_type "
 				+ ",cast(hl.SYSPLEX as VARCHAR(8))"
+				+ ",cast(sl.SYSPLEX as VARCHAR(8))"
 				+ ",hl.cluster_type"
 				+ ",hl.backupmethod"
 				+ ",hl.INTERNET_ICC_FLAG"
@@ -647,10 +648,12 @@ public class ReportServiceImpl implements ReportService {
 				+ ",hl.PART_GARTNER_MIPS"
 				+ ",hl.PART_MSU"
 				+ ",h.SHARED"
+				+ ",h.MULTI_TENANT"
 				+ ",h.hardware_status"
 				+ ",hl.lpar_status"
 				+ ",h.processor_count as hwProcCount "
 				+ ",h.chips as hwChips "
+				+ ",hl.vcpu as vCPU "
 				+ ",COALESCE (hle.processor_count,0) as EffProcCount "
 				+ ",hl.EFFECTIVE_THREADS "
 				+ ",case when ibmb.id is not null then COALESCE( CAST( (select pvui.VALUE_UNITS_PER_CORE from eaadmin.pvu_info pvui where pvui.pvu_id=pvum.pvu_id and "

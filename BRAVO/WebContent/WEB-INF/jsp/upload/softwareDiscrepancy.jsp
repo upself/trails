@@ -161,8 +161,8 @@
 
 									<!-- Download Software Discrepancy Template -->
 									<li><a class="ibm-download-link"
-										href="/BRAVO/download/BRAVO Mass Missing SW Discrepancy Template.xls?name=softwareDiscrepancyBlank&accountId=${account.customer.accountNumber}">SW
-											Discrepancy Upload Template</a></li>
+										href="/BRAVO/download/BRAVO Mass Missing SW Component Discrepancy Template.xls?name=softwareDiscrepancyBlank&accountId=${account.customer.accountNumber}">Mass
+											Missing SW Component Discrepancy Template</a></li>
 
 								</ul>
 
@@ -323,5 +323,5 @@
 			</script>
 		</div>
 	</div>
-  </body>
+</body>
 </html>

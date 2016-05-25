@@ -85,6 +85,8 @@ public class FormHardware extends FormBase {
 	private BigDecimal nbrOfChipsMax;
 
 	private String shared;
+	
+	private String multiTenant;
 
 	private Integer cpuMIPS;
 
@@ -115,6 +117,16 @@ public class FormHardware extends FormBase {
 	private Integer cpuIfl;
 
 	private String os_type;
+	
+	private BigDecimal vCPU;
+
+	public BigDecimal getvCPU() {
+		return vCPU;
+	}
+
+	public void setvCPU(BigDecimal vCPU) {
+		this.vCPU = vCPU;
+	}
 
 	public String getOs_type() {
 		return os_type;
@@ -310,6 +322,7 @@ public class FormHardware extends FormBase {
 			this.spla = hardwareLpar.getSpla();
 			this.internetIccFlag = hardwareLpar.getInternetIccFlag();
 			this.os_type = hardwareLpar.getOs_type();
+			this.vCPU = hardwareLpar.getvCPU();
 			if (hardwareLpar.getHardware() != null) {
 				this.hardware = hardwareLpar.getHardware();
 				this.machineType = hardwareLpar.getHardware().getMachineType()
@@ -338,6 +351,7 @@ public class FormHardware extends FormBase {
 				this.nbrOfChipsMax = hardwareLpar.getHardware()
 						.getNbrOfChipsMax();
 				this.shared = hardwareLpar.getHardware().getShared();
+				this.multiTenant = hardwareLpar.getHardware().getMultiTenant();
 				this.cpuMIPS = hardwareLpar.getHardware().getCpuMIPS();
 				this.cpuGartnerMIPS = hardwareLpar.getHardware()
 						.getCpuGartnerMIPS();
@@ -707,5 +721,13 @@ public class FormHardware extends FormBase {
 
 	public void setShared(String shared) {
 		this.shared = shared;
+	}
+
+	public String getMultiTenant() {
+		return multiTenant;
+	}
+
+	public void setMultiTenant(String multiTenant) {
+		this.multiTenant = multiTenant;
 	}
 }

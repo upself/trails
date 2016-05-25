@@ -12,12 +12,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ibm.asset.trails.dao.LicenseDAO;
 import com.ibm.asset.trails.dao.SoftwareDAO;
 import com.ibm.asset.trails.dao.VSoftwareLparDAO;
+import com.ibm.asset.trails.dao.jpa.VSoftwareLparDAOJpa;
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.ReconSetting;
 import com.ibm.asset.trails.domain.ScheduleF;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.ScheduleFService;
+import com.ibm.tap.trails.framework.DisplayTagList;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/test/resources/h2/applicationContext-test-h2.xml" })
@@ -54,6 +58,11 @@ public class VSoftwareLparDAOJpaTest {
 	
     @Autowired
 	private SoftwareDAO softwareDAO;
+    
+    @Autowired
+    private VSoftwareLparDAO vSoftwareLparDAOJpa;
+    
+    private final DisplayTagList data = new DisplayTagList();
 
     @Test
     public void testGetScheduleFItem4ManufacturerLevel() {
@@ -176,5 +185,47 @@ public class VSoftwareLparDAOJpaTest {
     	assertNotNull(scheduleF);
     	assertEquals(SOFTWARE_NAME_IBM,scheduleF.getSoftwareName());
     	assertEquals(HOSTNAME_LEVEL,scheduleF.getLevel());//Schedule Level 'MANUFACTURER'
+    }
+    
+   // @Test
+    public void testpaginatedList(){
+    	   int startIndex = 0;
+    	   int objectsPerPage = 10;
+    	   String[] countries = new String[6];
+    	   String[] names = new String[6];
+    	   String[] productInfoNames = new String[6];
+    	   String[] serialNumbers = new String[6];
+    	   countries[0] = "US";
+    	   countries[1] = "US";
+    	   countries[2] = "US";
+    	   countries[3] = "US";
+    	   names[0] = "zhysz0";
+    	   names[1] = "zhysz1";
+    	   names[2] = "zhysz2";
+    	   names[3] = "zhysz3";
+    	   productInfoNames[0] = "IBM AIX";
+    	   productInfoNames[1] = "IBM AIX";
+    	   productInfoNames[2] = "IBM AIX";
+    	   productInfoNames[3] = "IBM AIX";
+    	   serialNumbers[0] = "zhysz0";
+    	   serialNumbers[1] = "zhysz1";
+    	   serialNumbers[2] = "zhysz2";
+    	   serialNumbers[3] = "zhysz3";
+    	   ReconSetting reconSetting = new ReconSetting();
+    	   reconSetting.setReconcileType(1L);
+    	   reconSetting.setAlertStatus("OPEN");
+    	   reconSetting.setAlertColor("Green");
+    	   reconSetting.setAssignee("Assigned");
+    	   reconSetting.setOwner("IBM");
+    	   reconSetting.setCountries(countries);
+    	   reconSetting.setSerialNumbers(serialNumbers);
+    	   reconSetting.setProductInfoNames(productInfoNames);
+    	   reconSetting.setNames(names);
+           String sort = "id";
+           String dir = "asc";
+           Account account = accountService.getAccountByAccountNumber(35400L);
+           vSoftwareLparDAOJpa.paginatedList(data, account, reconSetting, startIndex, objectsPerPage, sort,
+                   dir);
+           assertNotNull(data.getList());
     }
 }

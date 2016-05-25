@@ -18,7 +18,7 @@ public class AccountAction extends AccountReportBaseAction {
 
 		List<Report> lReport = new ArrayList<Report>();
 
-		lReport.add(new Report("Installed software baseline",
+		lReport.add(new Report("Installed Software Component Baseline",
 				"installedSoftwareBaseline"));
 		super.setReportList(lReport);
 	}

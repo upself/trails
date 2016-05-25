@@ -149,8 +149,20 @@ public class Hardware {
 	
     @Column(name = "SHARED")
 	private String shared;
+    
+    @Column(name="MULTI_TENANT")
+    private String multi_tenant;
+    
 	
-    public String getCountry() {
+    public String getMulti_tenant() {
+		return multi_tenant;
+	}
+
+	public void setMulti_tenant(String multi_tenant) {
+		this.multi_tenant = multi_tenant;
+	}
+
+	public String getCountry() {
         return country;
     }
 

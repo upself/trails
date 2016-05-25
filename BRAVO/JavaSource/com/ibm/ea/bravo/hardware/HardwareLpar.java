@@ -51,6 +51,16 @@ public class HardwareLpar {
 	
 	private String internetIccFlag;
 	
+	private BigDecimal vCPU;
+	
+	public BigDecimal getvCPU() {
+		return vCPU;
+	}
+
+	public void setvCPU(BigDecimal vCPU) {
+		this.vCPU = vCPU;
+	}
+
 	private Set<AuthorizedProduct> authorizedProducts;
 	
 	private HardwareLparEff hardwareLparEff;

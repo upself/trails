@@ -461,6 +461,7 @@
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
 				,hardware.model as cpu_model
+				,hardware.hardware_complex as hardware_complex
 				,hardware.chassis_id as chassis_id
 				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
@@ -468,6 +469,7 @@
 				,COALESCE (hle.processor_count,0) as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.effective_threads
+				,hardware_lpar.vcpu as vcpu
 				,hardware_lpar.ext_id as hw_ext_id
 				,software_lpar.ext_id as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
@@ -492,6 +494,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
 				,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 
@@ -537,6 +540,7 @@
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
 				,hardware.model as cpu_model
+				,hardware.hardware_complex as hardware_complex
 				,hardware.chassis_id as chassis_id
 				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
@@ -544,6 +548,7 @@
 				,0 as processor_count
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.effective_threads
+				,hardware_lpar.vcpu as vcpu
 				,hardware_lpar.ext_id as hw_ext_id
 				,'' as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
@@ -568,6 +573,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 
@@ -608,6 +614,7 @@
 				,hardware.hardware_status as hardware_status
 				,machine_type.name as machine_type_name
 				,hardware.model as cpu_model
+				,hardware.hardware_complex as hardware_complex
 				,hardware.chassis_id as chassis_id
 				,hardware.cloud_name as cloud_name
 				,hardware.customer_number as customer_number
@@ -615,6 +622,7 @@
 				,0 as processor_count
 				,0 as hw_processor_count
 				,0 as effective_threads
+				,0 as vcpu
 				,'' as hw_ext_id
 				,'' as sw_ext_id
 				,'' as hw_ti_id
@@ -639,6 +647,7 @@
 				,hardware.cpu_ifl
 				,hardware.shared_processor
 				,hardware.shared as shared
+				,hardware.multi_tenant
 				,hardware.cpu_mips 
                 ,hardware.CPU_GARTNER_MIPS
 				,hardware.cpu_msu 

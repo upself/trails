@@ -69,6 +69,9 @@
                     
         <property name="effectiveThreads" column="EFFECTIVE_THREADS"
             type="java.math.BigDecimal" /> 
+        
+        <property name="vCPU" column="VCPU"
+            type="java.math.BigDecimal" />
             
 		<join table="HW_SW_COMPOSITE" optional="true">
 			<key column="HARDWARE_LPAR_ID" unique="true" />

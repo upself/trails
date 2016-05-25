@@ -328,12 +328,16 @@
 				value="%{#attr.row.cpuGartnerMips}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].partGartnerMips"
 				value="%{#attr.row.partGartnerMips}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].vcpu"
+				value="%{#attr.row.vcpu}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].cpuMsu"
 				value="%{#attr.row.cpuMsu}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].partMsu"
 				value="%{#attr.row.partMsu}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].shared"
 				value="%{#attr.row.shared}" />
+			<s:hidden name="list[%{#attr.row_rowNum-1}].multi_tenant"
+				value="%{#attr.row.multi_tenant}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].sysplex"
 				value="%{#attr.row.sysplex}" />
 			<s:hidden name="list[%{#attr.row_rowNum-1}].spla"

@@ -57,7 +57,7 @@ public class DelegateReport extends HibernateDelegate {
 			report = new SoftwareLparOnly();
 
 		if (reportName.equalsIgnoreCase(Constants.ACCOUNT_DISCREPANCIES))
-			report = new AccountDiscrepancies();
+			report = new AccountSWComponentDiscrepancies();
 
 		if (reportName.equalsIgnoreCase(Constants.GLOBAL_DISCREPANCIES))
 			report = new GlobalDiscrepancies();
@@ -313,9 +313,9 @@ public class DelegateReport extends HibernateDelegate {
 		return list;
 	}
 
-	public static ScrollableResults getReport(AccountDiscrepancies report,
+	public static ScrollableResults getReport(AccountSWComponentDiscrepancies report,
 			HttpServletRequest request) throws ExceptionAccountAccess {
-		logger.debug("DelegateReport.getReport(AccountDiscrepancies)");
+		logger.debug("DelegateReport.getReport(AccountSWComponentDiscrepancies)");
 		// List list = new ArrayList();
 		ScrollableResults list = null;
 
