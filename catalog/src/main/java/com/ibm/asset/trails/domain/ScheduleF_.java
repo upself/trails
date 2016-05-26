@@ -2,6 +2,7 @@ package com.ibm.asset.trails.domain;
 
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
@@ -27,4 +28,5 @@ public class ScheduleF_ {
 	public static volatile SingularAttribute<ScheduleF, String> remoteUser;
 	public static volatile SingularAttribute<ScheduleF, Date> recordTime;
 	public static volatile SingularAttribute<ScheduleF, String> businessJustification;
+	public static volatile SingularAttribute<ScheduleF, List<ScheduleFH>> scheduleFHList;
 }
