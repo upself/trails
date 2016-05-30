@@ -17,16 +17,11 @@
 
 <body id="w3-ibm-com" class="article">
 	<script>                                                                                                                               
-function popupTrailsReports(accountId) { 
-    <%Properties properties = new Properties();
-			properties.load(new FileInputStream(Constants.CONF_DIR
-					+ Constants.PROPERTIES));
-			String trailsServerName = properties
-					.getProperty("server.name.trails");%>                                                                                                         
-    newWin=window.open('<%=trailsServerName%>
-		/TRAILS/account/trailsreports/home.htm?accountId='
-									+ accountId,
-							'popupWindow',
+	function popupTrailsReports(accountId) { 
+		<%Properties properties = new Properties();
+				properties.load(new FileInputStream(Constants.CONF_DIR + Constants.PROPERTIES));
+				String trailsServerName = properties.getProperty("server.name.trails");%>                                                                                                         
+		newWin=window.open('<%=trailsServerName%>/TRAILS/account/trailsreports/home.htm?accountId=' + accountId,'popupWindow',
 							'height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes');
 			newWin.focus();
 			void (0);
