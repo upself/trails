@@ -64,6 +64,9 @@
 		<s:property value="per" />
 	</div>
 
+	<div class="float-left" style="width:25%;"><label for="automated">Comments:</label></div>
+	<div class="float-left" style="width:75%;"><s:property value="comments" /></div>
+		
 	<div class="clear"></div>
 	<div class="button-bar">
 		<div class="buttons">

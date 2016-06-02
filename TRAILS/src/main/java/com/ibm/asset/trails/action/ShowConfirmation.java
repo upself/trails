@@ -169,6 +169,7 @@ public class ShowConfirmation extends AccountBaseAction {
 		recon.setAutomated(automated);
 		recon.setManual(manual);
 		recon.setRunon(runon);
+		recon.setComments(comments);
 		if (maxLicenses != null && !"".equals(maxLicenses)) {
 			recon.setMaxLicenses(new Integer(maxLicenses));
 		}
