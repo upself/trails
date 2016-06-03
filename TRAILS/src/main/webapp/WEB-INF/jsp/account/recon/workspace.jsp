@@ -72,7 +72,10 @@
 						$("#filters").empty();
 					}
 				});
-		filter += ' Manufacturer(s): <input type="text" name="filter['
+		filter += ' License ownership:<select name="filter['
+	       		+fltrCntr+
+	       		 '].ownership"><option value=" "></option><option value="1">IBM Owned</option><option value="0">Customer Owned</option></select>'+
+	         	  '</br></br> Manufacturer(s): <input type="text" name="filter['' Manufacturer(s): <input type="text" name="filter['
 				+ fltrCntr
 				+ '].manufacturer" autocomplete="off" onKeyUp="keyup(this)"/>'
 				+ ' Product name(s):<input type="text" name="filter['
