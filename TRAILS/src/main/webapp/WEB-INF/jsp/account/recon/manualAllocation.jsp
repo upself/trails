@@ -226,7 +226,7 @@
 				sortProperty="license.fullDesc" title="License name" sortable="true" />
 			<display:column property="productName"
 				sortProperty="software.softwareName" title="Primary component" sortable="true" />
-			<display:column property="licenseOwner" title="License Ownership" sortable="false" />			
+			<display:column property="licenseOwner" sortProperty="license.ibmOwned" title="License Ownership" sortable="true" />			
 			<display:column property="swproPID"
 				sortProperty="license.swproPID" title="Software product PID" sortable="false" />
 			<display:column property="capTypeDesc"

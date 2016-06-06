@@ -384,7 +384,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				}
 				
 				String ownershipStr = fltr.getLicenseOwner();
-				if(null != ownershipStr && !"".equals(ownershipStr)){
+				if(null != ownershipStr && !"".equals(ownershipStr.trim())){
 					if(Boolean.valueOf(ownershipStr)){
 						andConnected.add(cb.isTrue(license.get(License_.ibmOwned)));
 					}else{
