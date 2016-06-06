@@ -124,11 +124,11 @@ public class LicenseDisplay {
         this.environment = environment;
         this.ownerAccountNumber = ownerAccountNumber;
         this.ibmOwned=ibmOwned;
-//        if(ibmOwned){
-//        	this.licenseOwner="IBM";
-//        }else{
-//        	this.licenseOwner="Customer";
-//        }
+        if(ibmOwned){
+        	this.licenseOwner="IBM";
+        }else{
+        	this.licenseOwner="Customer";
+        }
     }
     public LicenseDisplay(String productName, String catalogMatch, String fullDesc, String swproPID, String capacityType, 
     		String totalQtyString, String availableQtyString, String expireDateString, String poNumber, String cpuSerial,
