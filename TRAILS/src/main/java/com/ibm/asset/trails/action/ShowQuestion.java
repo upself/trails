@@ -11,6 +11,7 @@ import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.domain.Report;
 import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
@@ -38,6 +39,16 @@ public class ShowQuestion extends AccountBaseAction {
 	private List<LicenseFilter> filter;
 
 	private List<AllocationMethodology> allocationMethodologies;
+	
+	private List<Report> reportList;
+
+	public List<Report> getReportList() {
+		return reportList;
+	}
+
+	public void setReportList(List<Report> reportList) {
+		this.reportList = reportList;
+	}
 
 	// TODO just going to admit this is pure laziness
 	// due to the license free pool being way to large to not paginate
@@ -58,6 +69,15 @@ public class ShowQuestion extends AccountBaseAction {
 		private String productName;
 		private String poNo;
 		private String swcmId;
+		private String licenseOwner;
+		
+		public String getLicenseOwner() {
+			return licenseOwner;
+		}
+
+		public void setLicenseOwner(String licenseOwner) {
+			this.licenseOwner = licenseOwner;
+		}
 
 		private String fuzzed(String s) {
 			String str = s.trim();
@@ -135,6 +155,10 @@ public class ShowQuestion extends AccountBaseAction {
 				recon.getReconcileTypeId()));
 
 		if (recon.getReconcileType().getId().intValue() == 1) {
+			 List<Report> lReport = new ArrayList<Report>();
+			 lReport.add(new Report("License baseline", "licenseBaseline"));
+			 setReportList(lReport);
+	        
 			licenseService.freePoolWithParentPaginatedList(getData(),
 					getUserSession().getAccount(), getStartIndex(), getData()
 							.getObjectsPerPage(), getSort(), getDir(), this

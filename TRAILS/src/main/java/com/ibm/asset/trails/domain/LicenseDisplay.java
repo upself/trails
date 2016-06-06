@@ -49,6 +49,15 @@ public class LicenseDisplay {
 	private String availableQtyString;
 
 	private String licenseOwner;
+	private Boolean ibmOwned;
+	
+	public Boolean getIbmOwned() {
+		return ibmOwned;
+	}
+
+	public void setIbmOwned(Boolean ibmOwned) {
+		this.ibmOwned = ibmOwned;
+	}
 
 	public LicenseDisplay() {
     }
@@ -73,7 +82,7 @@ public class LicenseDisplay {
         this.ownerAccountNumber = ownerAccountNumber;
     }
     
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc,
+    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc, 
     		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
             String extSrcId, String environment, Long ownerAccountNumber) {
@@ -94,6 +103,33 @@ public class LicenseDisplay {
         this.ownerAccountNumber = ownerAccountNumber;
     }
     
+    
+    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc, Boolean ibmOwned,
+    		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
+            Integer quantity, Date expireDate, String cpuSerial,
+            String extSrcId, String environment, Long ownerAccountNumber) {
+        super();
+        this.licenseId = licenseId;
+        this.productName = productName;
+        this.product = product;
+        this.fullDesc =  fullDesc;
+        this.swproPID = swproPID;
+        this.capTypeCode = capTypeCode;
+        this.capTypeDesc = capTypeDesc;
+        this.availableQty = availableQty.intValue();
+        this.quantity = quantity;
+        this.expireDate = expireDate;
+        this.cpuSerial = cpuSerial;
+        this.extSrcId = extSrcId;
+        this.environment = environment;
+        this.ownerAccountNumber = ownerAccountNumber;
+        this.ibmOwned=ibmOwned;
+//        if(ibmOwned){
+//        	this.licenseOwner="IBM";
+//        }else{
+//        	this.licenseOwner="Customer";
+//        }
+    }
     public LicenseDisplay(String productName, String catalogMatch, String fullDesc, String swproPID, String capacityType, 
     		String totalQtyString, String availableQtyString, String expireDateString, String poNumber, String cpuSerial,
     		String licenseOwner, String poolAsString, String extSrcId, String recordTimeAsString) {
