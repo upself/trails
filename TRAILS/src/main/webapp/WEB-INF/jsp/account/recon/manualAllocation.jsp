@@ -54,48 +54,62 @@
 	<s:hidden name="page" value="%{#attr.page}" />
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
-	<div class="float-left" style="width: 25%;">
-		<label for="runon">Run on:</label>
-	</div>
-	<div class="float-left" style="width: 75%;">
-		<s:select name="runon" label="Run on"
-			list="#{'SELECTED':'Selected systems', 'IBMHW':'All IBM HW', 'CUSTHW':'All customer owned HW', 'ALL':'All systems'}" />
-	</div>
-
-	<div class="float-left" style="width: 25%;">
-		<label for="automated">Overwrite automated reconciliations:</label>
-	</div>
-	<div class="float-left" style="width: 75%;">
-		<s:checkbox name="automated" label="automated" />
-		Yes
-	</div>
-
-	<div class="float-left" style="width: 25%;">
-		<label for="automated">Overwrite manual reconciliations:</label>
-	</div>
-	<div class="float-left" style="width: 75%;">
-		<s:checkbox name="manual" label="manual" />
-		Yes
-	</div>
-
-	<div class="float-left" style="width: 25%;">
-		<label for="automated">Number of licenses to apply:</label>
-	</div>
-	<div class="float-left" style="width: 75%;">
-		<s:textfield name="maxLicenses" disabled="disabled" />
-	</div>
-
-	<div class="float-left" style="width: 25%;">
-		<label for="automated">Allocation methodology:</label>
-	</div>
-	<div class="float-left" style="width: 75%;">
-		<s:select name="per" list="allocationMethodologies" listKey="code"
-			listValue="name" onchange="disableLicenses(this)" />
+	<div>
+		<div class="float-left" style="width:70%">
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width: 35%;">
+					<label for="runon">Run on:</label>
+				</div>
+				<div class="float-left" style="width: 65%;">
+					<s:select name="runon" label="Run on"
+						list="#{'SELECTED':'Selected systems', 'IBMHW':'All IBM HW', 'CUSTHW':'All customer owned HW', 'ALL':'All systems'}" />
+				</div>
+			</div>
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width: 35%;">
+					<label for="automated">Overwrite automated reconciliations:</label>
+				</div>
+				<div class="float-left" style="width: 65%;">
+					<s:checkbox name="automated" label="automated" />
+					Yes
+				</div>
+			</div>
+		
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width: 35%;">
+					<label for="automated">Overwrite manual reconciliations:</label>
+				</div>
+				<div class="float-left" style="width: 65%;">
+					<s:checkbox name="manual" label="manual" />
+					Yes
+				</div>
+			</div>
+		
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width: 35%;">
+					<label for="automated">Number of licenses to apply:</label>
+				</div>
+				<div class="float-left" style="width: 65%;">
+					<s:textfield name="maxLicenses" disabled="disabled" />
+				</div>
+			</div>
+			
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width: 35%;">
+					<label for="automated">Allocation methodology:</label>
+				</div>
+				<div class="float-left" style="width: 65%;">
+					<s:select name="per" list="allocationMethodologies" listKey="code"
+						listValue="name" onchange="disableLicenses(this)" />
+				</div>
+			</div>
+			<div class="float-left" style="width:100%">
+				<div class="float-left" style="width:25%;"><label for="automated">Comments:</label></div>
+				<div class="float-left" style="width:75%;"><s:textarea rows="4" cols="63" name="comments" id="comments" wrap="virtual" /></div>
+			</div>
+		</div>
 	</div>
 	
-	<div class="float-left" style="width:25%;"><label for="automated">Comments:</label></div>
-	<div class="float-left" style="width:75%;"><s:textarea rows="4"
-		cols="63" name="comments" id="comments" wrap="virtual" /></div>
 		
 	<div class="clear"></div>
 	<div class="button-bar">
