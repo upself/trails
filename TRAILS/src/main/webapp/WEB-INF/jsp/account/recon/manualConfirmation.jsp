@@ -127,6 +127,13 @@
 			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
+			 <display:column title="License Ownership">
+ 				<s:if test="%{#attr.row.ibmOwned}">
+ 				IBM</s:if>
+ 				<s:else>
+ 				Customer
+ 				</s:else>
+ 			</display:column> 	
 			<display:column property="swproPID" title="Software product PID"/>
 			<display:column property="capacityType.code" title="Capacity type" />
 			<display:column property="availableQty" title="Avail qty" />

@@ -217,17 +217,16 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		predicates.add(account.get(Account_.id).in(accountIds));
 		predicates.add(cb.equal(license.get(License_.status), "ACTIVE"));
-		predicates.add(cb.or(cb.and(cb.equal(
-				account.get(Account_.softwareFinancialResponsibility), "IBM"),
-				cb.equal(license.get(License_.ibmOwned), true)), cb.and(cb
-				.equal(account.get(Account_.softwareFinancialResponsibility),
-						"CUSTOMER"), cb.equal(license.get(License_.ibmOwned),
-				false)), cb.equal(
-				account.get(Account_.softwareFinancialResponsibility), "BOTH"),
-				cb.not(cb
-						.in(account
-								.get(Account_.softwareFinancialResponsibility))
-						.value("IBM").value("CUSTOMER").value("BOTH"))));
+		predicates.add(cb.or(
+						cb.and(
+							cb.equal(account.get(Account_.softwareFinancialResponsibility), "IBM"),
+							cb.equal(license.get(License_.ibmOwned), true)), 
+						cb.and(
+								cb.equal(account.get(Account_.softwareFinancialResponsibility),"CUSTOMER"), 
+								cb.equal(license.get(License_.ibmOwned),false)), 
+						cb.equal(account.get(Account_.softwareFinancialResponsibility), "BOTH"),
+						cb.not(
+								cb.in(account.get(Account_.softwareFinancialResponsibility)).value("IBM").value("CUSTOMER").value("BOTH"))));
 
 		predicates.add(cb.and(cb.or(
 				cb.and(cb.equal(license.get(License_.pool), 0),
@@ -240,13 +239,13 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				cb.coalesce(software.get(Software_.softwareName),license.get(License_.fullDesc)).alias("productName"),
 				software.get(Software_.softwareName),
 				license.get(License_.fullDesc).alias("fullDesc"),
+				license.get(License_.ibmOwned).alias("ibmOwned"),
 				license.get(License_.swproPID).alias("swproPID"),
 				capacityType.get(CapacityType_.code).alias("capTypeCode"),
 				capacityType.get(CapacityType_.description),
 				cb.coalesce(
 						cb.diff(license.get(License_.quantity),
-								cb.sum(usedLicense
-										.get(UsedLicense_.usedQuantity))),
+								cb.sum(usedLicense.get(UsedLicense_.usedQuantity))),
 						license.get(License_.quantity)).alias("availableQty")
 						.alias("availableQty"), license.get(License_.quantity)
 						.alias("quantity"), license.get(License_.expireDate)
@@ -260,6 +259,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				cb.coalesce(software.get(Software_.softwareName),license.get(License_.fullDesc)),
 				software.get(Software_.softwareName),
 				license.get(License_.fullDesc),
+				license.get(License_.ibmOwned),
 				license.get(License_.swproPID),
 				capacityType.get(CapacityType_.code),
 				capacityType.get(CapacityType_.description),
@@ -381,6 +381,15 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 					andConnected.add(cb.equal(
 							cb.upper(license.get(License_.extSrcId)),
 							fltrSwcmId.toUpperCase()));
+				}
+				
+				String ownershipStr = fltr.getLicenseOwner();
+				if(null != ownershipStr && !"".equals(ownershipStr.trim())){
+					if(Boolean.valueOf(ownershipStr)){
+						andConnected.add(cb.isTrue(license.get(License_.ibmOwned)));
+					}else{
+						andConnected.add(cb.isFalse(license.get(License_.ibmOwned)));
+					}
 				}
 
 				orConnected.add(cb.and(andConnected
