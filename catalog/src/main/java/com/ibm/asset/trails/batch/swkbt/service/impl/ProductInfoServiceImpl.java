@@ -1,16 +1,9 @@
 package com.ibm.asset.trails.batch.swkbt.service.impl;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,14 +15,13 @@ import com.ibm.asset.trails.batch.swkbt.service.ProductInfoService;
 import com.ibm.asset.trails.batch.swkbt.service.ReconService;
 import com.ibm.asset.trails.dao.ProductDao;
 import com.ibm.asset.trails.dao.ProductInfoDao;
-import com.ibm.asset.trails.domain.DomainEntity;
 import com.ibm.asset.trails.domain.ProductInfo;
 import com.ibm.asset.trails.domain.Recon;
 
 @Service
 public class ProductInfoServiceImpl extends
 		ProductServiceImpl<ProductInfo, DistributedProductType, Long> implements
-		ProductInfoService, InitializingBean {
+		ProductInfoService {
 	private static final Log log = LogFactory
 			.getLog(ProductInfoServiceImpl.class);
 
@@ -39,9 +31,6 @@ public class ProductInfoServiceImpl extends
 	private ManufacturerService manufacturerService;
 	@Autowired
 	private  ReconService<?, ?> reconService;
-	@Autowired
-	private InputStream guidFileInputStream;
-	private static final List<String> licGuids = new ArrayList<String>();
 
 	@Transactional(readOnly = false, propagation = Propagation.MANDATORY)
 	public void save(DistributedProductType xmlEntity) {
@@ -70,7 +59,7 @@ public class ProductInfoServiceImpl extends
 		existing = super.update(existing, xmlEntity);
 		existing.setSoftwareCategoryId(1000L);
 		existing.setPriority(1);
-		existing.setLicensable(false);
+		existing.setLicensable(true);
 		existing.setChangeJustification("New add");
 		existing.setRemoteUser("SWKBT");
 		existing.setRecordTime(new Date());
@@ -87,10 +76,7 @@ public class ProductInfoServiceImpl extends
 			log.debug("software name changed!");
 			recon = true;
 		}
-		if (licenseTypeChange(existing, xmlEntity)) {
-			log.debug("license type changed!");
-			recon = true;
-		} else if (deletedChange(existing, xmlEntity)) {
+		if (deletedChange(existing, xmlEntity)) {
 			log.debug("deleted changed!");
 			recon = true;
 		} else if (vendorManagedChange(existing, xmlEntity)) {
@@ -162,42 +148,6 @@ public class ProductInfoServiceImpl extends
 		return true;
 	}
 
-	private boolean licenseTypeChange(ProductInfo existing,
-			DistributedProductType xmlEntity) {
-		boolean override = licensableOverrideExists(xmlEntity.getGuid());
-		if ( override == true ) {
-			log.debug("Must flip licensable -- " + xmlEntity.getGuid() );			
-		}
-		boolean licensable = false;
-		boolean existingLicensable = existing.getLicensable();
-		if (  manufacturerService.isIBMManufacturer(xmlEntity.getManufacturer())  ) {
-			if ( override ) {
-					existing.setLicensable(true);
-					return (existingLicensable == true)? false:true ;
-			}
-			return false;
-		} else if (xmlEntity.getLicenseType() != null && xmlEntity.getLicenseType().intValue() == 1) {
-				existing.setLicensable(true);
-				return (true == existingLicensable)? false:true ;		
-		} else {
-			licensable = (override == true) ? true : false;			
-				existing.setLicensable(licensable);
-				return (licensable == existingLicensable)? false:true ;
-		}
-	}
-
-	public boolean licensableOverrideExists(String guid) {
-		boolean override;
-		log.debug("Checking to flip -- " + guid);
-		if (licGuids.contains(guid)) {
-			override = true;
-			log.debug("Found guid for licensable flip -- " + guid);
-		} else {
-			override = false;
-		}
-		return override;
-	}
-
 	private boolean manufacturerChange(ProductInfo existing,
 			DistributedProductType xmlEntity) {
 		boolean isExistingIBM = manufacturerService.isIBMManufacturer(existing
@@ -219,23 +169,8 @@ public class ProductInfoServiceImpl extends
 		return false;
 	}
 	
-	public void afterPropertiesSet() throws Exception {
-		String line;
-		try {
-			BufferedReader r1 = new BufferedReader(new InputStreamReader(
-					guidFileInputStream, "UTF-8"));
-			while ((line = r1.readLine()) != null) {
-				licGuids.add(line.trim());
-//				log.debug("Will flip guid -- " + line.trim() );
-			}
-		} finally {
-			guidFileInputStream.close();
-		}
-	}
-
 	@Override
 	public ProductDao<ProductInfo, Long> getDao() {
 		return dao;
 	}
-
 }
