@@ -104,8 +104,8 @@
 				</div>
 			</div>
 			<div class="float-left" style="width:100%">
-				<div class="float-left" style="width:25%;"><label for="automated">Comments:</label></div>
-				<div class="float-left" style="width:75%;"><s:textarea rows="4" cols="63" name="comments" id="comments" wrap="virtual" /></div>
+				<div class="float-left" style="width:35%;"><label for="automated">Comments:</label></div>
+				<div class="float-left" style="width:65%;"><s:textarea rows="4" cols="63" name="comments" id="comments" wrap="virtual" /></div>
 			</div>
 		</div>
 	</div>
