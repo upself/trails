@@ -59,6 +59,7 @@
 	<s:hidden name="page" value="%{#attr.page}" />
 	<s:hidden name="dir" value="%{#attr.dir}" />
 	<s:hidden name="sort" value="%{#attr.sort}" />
+	
 	<div>
 		<div class="float-left" style="width:70%">
 			<div class="float-left" style="width:100%">
@@ -170,7 +171,7 @@
 	<small> <display:table name="reconLicenseList"
 			summary="Recon License List" class="basic-table" id="row"
 			cellspacing="1" cellpadding="0" excludedParams="*"
-			requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}">
+			requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
 			<display:column>
 				<s:checkbox name="selectedLicenseId" fieldValue="%{#attr.row.id}" />
 			</display:column>
@@ -212,7 +213,7 @@
 			summary="Available Licenses"
 			decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 			cellspacing="1" cellpadding="0" excludedParams="*"
-			requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}">
+			requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
 			
 			<display:column>
 				<s:checkbox name="availableLicenseId"

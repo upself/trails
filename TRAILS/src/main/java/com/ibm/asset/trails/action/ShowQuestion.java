@@ -17,6 +17,7 @@ import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
 import com.ibm.tap.trails.annotation.UserRoleType;
+import com.opensymphony.xwork2.ActionContext;
 
 public class ShowQuestion extends AccountBaseAction {
 
@@ -41,6 +42,16 @@ public class ShowQuestion extends AccountBaseAction {
 	private List<AllocationMethodology> allocationMethodologies;
 	
 	private List<Report> reportList;
+	
+	private Boolean sortReq;
+	
+	public Boolean getSortReq() {
+		return sortReq;
+	}
+
+	public void setSortReq(Boolean sortReq) {
+		this.sortReq = sortReq;
+	}
 
 	public List<Report> getReportList() {
 		return reportList;
@@ -140,7 +151,7 @@ public class ShowQuestion extends AccountBaseAction {
 		}
 
 	}
-
+	
 	@Override
 	@UserRole(userRole = UserRoleType.READER)
 	public String execute() {
@@ -149,6 +160,7 @@ public class ShowQuestion extends AccountBaseAction {
 
 		recon.setList(list);
 		recon.setReconcileTypeId(reconcileTypeId);
+		
 
 		// Get the reconcile type chosen
 		recon.setReconcileType(getReconWorkspaceService().findReconcileType(
@@ -159,10 +171,18 @@ public class ShowQuestion extends AccountBaseAction {
 			 lReport.add(new Report("License baseline", "licenseBaseline"));
 			 setReportList(lReport);
 	        
+			 //if sort request from manuallAllocation.jsp
+			if(null!=sortReq && sortReq){
+				setFilter((List<LicenseFilter>)ActionContext.getContext().getSession().get("filters"));				
+			}else{
+				
+			}
 			licenseService.freePoolWithParentPaginatedList(getData(),
 					getUserSession().getAccount(), getStartIndex(), getData()
 							.getObjectsPerPage(), getSort(), getDir(), this
 							.getFilter());
+			ActionContext.getContext().getSession().put("filters", this.getFilter());
+			
 		} else if (recon.getReconcileType().getId().intValue() == 2) {
 			// customer owned
 

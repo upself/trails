@@ -124,7 +124,7 @@
 			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
-			 <display:column title="License Ownership" sortable="true">
+			 <display:column title="License Ownership">
  				<s:if test="%{#attr.row.ibmOwned}">
  				IBM</s:if>
  				<s:else>

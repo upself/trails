@@ -113,10 +113,10 @@ public class ShowConfirmation extends AccountBaseAction {
 		 List<Report> lReport = new ArrayList<Report>();
 		 lReport.add(new Report("License baseline", "licenseBaseline"));
 		 setReportList(lReport);
-		 
+		 setFilter(this.getFilter());
 		 List<License> llLicense = getRecon().getLicenseList();
 		 boolean lbFoundLicense = false;
-
+		 
 		if (llLicense == null) {
 			llLicense = new ArrayList<License>();
 		}
@@ -449,10 +449,12 @@ public class ShowConfirmation extends AccountBaseAction {
 						.equalsIgnoreCase("addAvailableLicenses") || lsMethod
 						.equalsIgnoreCase("deleteSelectedLicenses")))) {
 			if (recon.getReconcileType().getId() == 1) {
+				List<LicenseFilter> filterlist = (List<LicenseFilter>)ActionContext.getContext().getSession().get("filters");
+				
 				licenseService.freePoolWithParentPaginatedList(getData(),
 						getUserSession().getAccount(), getStartIndex(),
 						getData().getObjectsPerPage(), getSort(), getDir(),
-						null);
+						filterlist);
 			}
 
 			list = recon.getList();
