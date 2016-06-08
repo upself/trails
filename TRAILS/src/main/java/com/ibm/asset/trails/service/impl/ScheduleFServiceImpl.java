@@ -391,7 +391,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 										.toString()
 										.equals(ScheduleFLevelEnumeration.MANUFACTURER
 												.toString()) && sf
-										.getManufacturer().equalsIgnoreCase(
+										.getManufacturer().equals(
 												existsSF.getManufacturer()))
 										|| (sf.getLevel()
 												.toString()
