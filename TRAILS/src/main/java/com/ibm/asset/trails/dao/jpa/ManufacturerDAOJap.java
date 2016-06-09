@@ -25,7 +25,7 @@ public class ManufacturerDAOJap extends
 		@SuppressWarnings("unchecked")
 		List<Manufacturer> list = entityManager
 				.createNamedQuery("manufacturerByName")
-				.setParameter("name", name.toUpperCase()).getResultList();
+				.setParameter("name", name).getResultList();
 
 		if (list.size() == 0) {
 			return null;
