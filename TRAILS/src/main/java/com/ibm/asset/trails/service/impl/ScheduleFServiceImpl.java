@@ -397,22 +397,22 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HWOWNER
 														.toString()) && sf
-												.getHwOwner().equals(
+												.getHwOwner().equalsIgnoreCase(
 														existsSF.getHwOwner()))
 										|| (sf.getLevel()
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HOSTNAME
 														.toString()) && sf
-												.getHostname().equals(
+												.getHostname().equalsIgnoreCase(
 														existsSF.getHostname()))
 										|| (sf.getLevel()
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HWBOX
 														.toString())
 												&& sf.getMachineType()
-														.equals(existsSF
+														.equalsIgnoreCase(existsSF
 																.getMachineType()) && sf
-												.getSerial().equals(
+												.getSerial().equalsIgnoreCase(
 														existsSF.getSerial()))) {
 									sf.setId(existsSF.getId());
 								}
@@ -501,7 +501,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			if (psfSave.getHostname() != null
 					&& lsfExists.getHostname() != null) {
-				if (!psfSave.getHostname().equals(lsfExists.getHostname())) {
+				if (!psfSave.getHostname().equalsIgnoreCase(lsfExists.getHostname())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -514,7 +514,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 
 			if (psfSave.getHwOwner() != null && lsfExists.getHwOwner() != null) {
-				if (!psfSave.getHwOwner().equals(lsfExists.getHwOwner())) {
+				if (!psfSave.getHwOwner().equalsIgnoreCase(lsfExists.getHwOwner())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -527,7 +527,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			if (psfSave.getMachineType() != null
 					&& lsfExists.getMachineType() != null) {
 				if (!psfSave.getMachineType()
-						.equals(lsfExists.getMachineType())) {
+						.equalsIgnoreCase(lsfExists.getMachineType())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -540,7 +540,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 
 			if (psfSave.getSerial() != null && lsfExists.getSerial() != null) {
-				if (!psfSave.getSerial().equals(lsfExists.getSerial())) {
+				if (!psfSave.getSerial().equalsIgnoreCase(lsfExists.getSerial())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -1005,7 +1005,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					throw new Exception("Level is not specified with HWOWNER.");
 				} else {
 					sf.setHwOwner(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -1026,7 +1026,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					throw new Exception("Level is not specified with HOSTNAME.");
 				} else {
 					sf.setHostname(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -1047,7 +1047,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					throw new Exception("Level is not specified with HWBOX.");
 				} else {
 					sf.setSerial(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -1066,7 +1066,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					throw new Exception("Level is not specified with HWBOX.");
 				} else {
 					List<MachineType> mtlist = findMachineTypebyName(cell
-							.getRichStringCellValue().getString().toUpperCase());
+							.getRichStringCellValue().getString().trim().toUpperCase());
 					if (mtlist == null || mtlist.isEmpty()) {
 						throw new Exception("Machine Type is invalid.");
 					} else {
@@ -1120,7 +1120,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Level is not specified with any equal or lower PRODUCT level.");
+							"Software name and title is not specified for manufacturer level.");
 				} else {
 					sf.setSoftwareTitle(cell.getRichStringCellValue()
 							.getString().trim());
@@ -1146,7 +1146,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Level is not specified with any equal or lower PRODUCT level.");
+							"Software name and title is not specified for manufacturer level.");
 				} else {
 
 					ArrayList<Software> lalProductInfo = null;
@@ -1220,7 +1220,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.createNamedQuery("scopeDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Scope is invalid.");
@@ -1299,7 +1299,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.createNamedQuery("sourceDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Source is invalid.");
@@ -1340,7 +1340,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.createNamedQuery("statusDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Status is invalid.");
@@ -1367,7 +1367,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 			} else {
 				sf.setBusinessJustification(cell.getRichStringCellValue()
-						.getString());
+						.getString().trim());
 			}
 			break;
 		}
