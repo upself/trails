@@ -18,6 +18,7 @@ public class Constants {
 	public static final String ACTIVE = "ACTIVE";
 	public static final String TOOL_USER_GROUP = "com.ibm.ea.bravo.user";
 	public static final String SCAN_TEAM_GROUP = "Scan Team";
+	public static final String SCAN_TEAM_SUBGROUP = "com.ibm.tap.admin";
 	public static final String TOOL_ADMIN_GROUP = "com.ibm.ea.bravo.admin";
 	public static final String SOFTWARE_LPAR_HEARTBEAT = "softwareLparHeartbeat";
 	public static final String TAB = "\t";

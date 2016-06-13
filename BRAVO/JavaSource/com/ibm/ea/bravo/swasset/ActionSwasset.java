@@ -249,7 +249,7 @@ public class ActionSwasset extends ActionBase {
 
 	private ActionErrors validateUser(HttpServletRequest request) {
 		ActionErrors errors = new ActionErrors();
-		if (!request.isUserInRole(Constants.SCAN_TEAM_GROUP)) {
+		if ((!request.isUserInRole(Constants.SCAN_TEAM_GROUP)) && (!request.isUserInRole(Constants.SCAN_TEAM_SUBGROUP))) {
 			errors.add(Constants.STATUS, 
 					new ActionMessage(Constants.SWASSET_NOT_AUTHORIZED));
 			saveErrors(request, errors);

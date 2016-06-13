@@ -159,6 +159,7 @@
 
 		<auth-constraint>
 			<description>Tool Users</description>
+			<role-name>com.ibm.tap.admin</role-name>
 			<role-name>com.ibm.tap.asset</role-name>
 			<role-name>com.ibm.tap.asset.emea</role-name>
 			<role-name>com.ibm.tap.asset.la</role-name>
