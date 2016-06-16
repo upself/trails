@@ -422,7 +422,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					saveScheduleF(sf, psRemoteUser);
 					cell = row.createCell(16);
 					cell.setCellStyle(lcsMessage);
-					cell.setCellValue(new HSSFRichTextString(successMessage.append("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString()));
+					cell.setCellValue(new HSSFRichTextString(successMessage.append("Schedule F record uploaded successfully").toString()));
 				}
 			}
 		}
