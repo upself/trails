@@ -1162,13 +1162,14 @@
 		<put-attribute name="keywords" value="TRAILS account license detail" />
 	</definition>
 
-	<definition name="tiles.account.recon.settings" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/settings.jsp" />
+	<definition name="tiles.account.recon.settings" extends="tiles.v17e.w3OneColumnLayout">
+	<put-attribute name="contentTitle" value="Reconciliation workspace settings" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settings.jsp" />
 		<put-attribute name="description" value="TRAILS recon settings" />
 		<put-attribute name="keywords" value="TRAILS recon settings" />
 	</definition>
-
+	
+	
 	<definition name="tiles.account.recon.settings.success"
 		extends="tiles.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
