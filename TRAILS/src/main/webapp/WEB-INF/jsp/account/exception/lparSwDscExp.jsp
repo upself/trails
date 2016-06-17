@@ -46,7 +46,6 @@
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW DISCREPANCY EXPIRED">
 			<thead>
 				<tr>
-<<<<<<< HEAD
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Hostname</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Discrepancy record time</span><span class="ibm-icon"></span></a></th>
@@ -94,64 +93,6 @@ function searchData(){
 						html += "<td>" + list[i].swComponentName + "</td>";
 						html += "<td>" + list[i].dataExpAssignee + "</td>";
  						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionSwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
-=======
-				Assign/UnAssign
-				Hostname
-				Discrepancy record time
-				Create date
-				SW Component Name 	
-				Assignee 
-				Comments
-					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Name</span><span class="ibm-icon"></span></a></th>
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Scantime</span><span class="ibm-icon"></span></a></th> -->
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Create date</span><span class="ibm-icon"></span></a></th> -->
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th> -->
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>OS Name</span><span class="ibm-icon"></span></a></th> -->
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assignee</span><span class="ibm-icon"></span></a></th> -->
-<!-- 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Comments</span><span class="ibm-icon"></span></a></th> -->
-				</tr>
-			</thead>
-			<tbody id="tb">
-				
-			</tbody>
-		</table>
-	</div>
-</div>
-<script>
-$(function(){
-	$("#titleContent").text($("#titleContent").text() + ": ${account.name}(${account.account})");
-	searchData();
-});
-
-function searchData(){
-	var params = {};
-	params['accountId'] = '${accountId}';
-	params['sort'] = 'softwareLpar.name';
-	params['dir'] = 'asc';
-	
-	$("#page").paginationTable('destroy').paginationTable({
-		remote: {
-			url: "${pageContext.request.contextPath}/ws/exceptions/SWDSCEXP/search",
-			type: "POST",
-			params: params,
-			success: function(result, pageIndex){
-				var html = '';
-				var list = result.data.list;
-				if(null == list || list == undefined || list.length == 0){
-					html += "<tr><td colspan='8' align='center'>No data found" + list.length + "</td></tr> " 
-				}else{
-					for(var i = 0; i < list.length; i++){
-						html += "<tr>";
-						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].swLparId + ");return false;'>"+list[i].swLparName+"</a></td>";
-// 						html += "<td>" + list[i].swLparScanTime + "</td>";
-// 						html += "<td>" + list[i].dataExpCreationTime + "</td>";
-// 						html += "<td>" + list[i].swLparSerial + "</td>";
-// 						html += "<td>" + list[i].swLparOSName + "</td>";
-// 						html += "<td>" + list[i].dataExpAssignee + "</td>";
-//  					html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionSwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
->>>>>>> refs/remotes/origin/Story_45066
 						html += "</tr>";
 					}
 				}
@@ -159,7 +100,6 @@ function searchData(){
 			}
 		},
 // 		orderColumns: ['id','softwareLpar.name','softwareLpar.scanTime','creationTime','softwareLpar.serial','softwareLpar.osName','assignee','id']
-		orderColumns: ['id','softwareLpar.name']
 	}); 
 };
 function assignComments(type){

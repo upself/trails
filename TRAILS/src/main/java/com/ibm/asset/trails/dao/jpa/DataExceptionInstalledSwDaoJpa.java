@@ -29,8 +29,8 @@ public class DataExceptionInstalledSwDaoJpa extends AbstractDataExceptionJpa imp
 		this.alertTypecode = alertTypecode;
 	}
 
-	public DataExceptionSoftwareLpar getById(Long id) {
-		return getEntityManager().find(DataExceptionSoftwareLpar.class, id);
+	public DataExceptionInstalledSw getById(Long id) {
+		return getEntityManager().find(DataExceptionInstalledSw.class, id);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public class DataExceptionInstalledSwDaoJpa extends AbstractDataExceptionJpa imp
 		System.out.println("alertType.getName(): " + alertType.getName());
 
 		Session session = (Session) getEntityManager().getDelegate();
-		Criteria criteria = session.createCriteria(DataExceptionSoftwareLpar.class);
+		Criteria criteria = session.createCriteria(DataExceptionInstalledSw.class);
 		criteria.add(Restrictions.eq("open", true));
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.eq("alertType", alertType));
