@@ -1,1 +1,3 @@
 drop trigger EAADMIN.SWFR_CHANGE;
+drop trigger EAADMIN.CUST_SCOPE_CHG;
+drop trigger EAADMIN.CUST_STATUS_CHG;
