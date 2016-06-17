@@ -519,7 +519,10 @@
 
 	<bean id="alertHardwareLparDao"
 		class="com.ibm.asset.trails.dao.jpa.DataExceptionHardwareLparDaoJpa" />
-
+		
+	<bean id="alertInstalledSwDao"
+		class="com.ibm.asset.trails.dao.jpa.DataExceptionInstalledSwDaoJpa" />
+	
 	<bean id="alertHistoryDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionHistoryDaoJpa" />
 
 	<bean id="alertCauseDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionCauseDaoJpa" />
@@ -533,6 +536,12 @@
 	<bean id="alertHwlparService"
 		class="com.ibm.asset.trails.service.impl.DataExceptionHardwareLparServiceImpl">
 		<property name="alertHardwareLparDao" ref="alertHardwareLparDao" />
+		<property name="alertHistoryDao" ref="alertHistoryDao" />
+	</bean>
+
+	<bean id="alertInstalledSwService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionInstalledSwServiceImpl">
+		<property name="alertInstalledSwDao" ref="alertInstalledSwDao" />
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 	</bean>
 
@@ -565,6 +574,12 @@
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NULLTIME" />
+	</bean>
+	<bean id="lparSWDSCEXPExpAction" scope="prototype"
+		class="com.ibm.asset.trails.action.InstalledSwExpAction" parent="bravoServerName">
+		<property name="accountService" ref="accountService" />
+		<property name="installedSwExpService" ref="alertInstalledSwService" />
+		<property name="alertTypeCode" value="SWDSCEXP" />
 	</bean>
 	<bean id="lparNOOSExpAction" scope="prototype"
 		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">

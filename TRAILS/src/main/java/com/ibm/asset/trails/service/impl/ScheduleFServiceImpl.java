@@ -1120,7 +1120,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Software name and title is not specified for manufacturer level.");
+							"Level is not specified with any equal or lower PRODUCT level.");
 				} else {
 					sf.setSoftwareTitle(cell.getRichStringCellValue()
 							.getString().trim());
@@ -1146,7 +1146,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Software name and title is not specified for manufacturer level.");
+							"Level is not specified with any equal or lower PRODUCT level.");
 				} else {
 
 					ArrayList<Software> lalProductInfo = null;
