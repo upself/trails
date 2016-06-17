@@ -1169,11 +1169,6 @@
 		<put-attribute name="keywords" value="TRAILS recon settings" />
 	</definition>
 	
-<!-- 	<definition name="tiles.account.recon.settings.success" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
-		<put-attribute name="description" value="TRAILS account recon settings success" />
-		<put-attribute name="keywords" value="TRAILS account recon settings success" />
-	</definition> -->
 	<definition name="tiles.account.recon.settings.success" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS account recon settings success" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
