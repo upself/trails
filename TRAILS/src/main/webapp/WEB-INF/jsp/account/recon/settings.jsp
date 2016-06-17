@@ -7,8 +7,13 @@
 			$("input:text").val("");
 			$("select :first-child").attr("selected", true);
 		});
-
-	})
+		
+	});
+	
+	function updateSettings(){
+		document.settings.action="settings!update.htm";
+		document.settings.submit();
+	}
 </script>
  
 <p>Use the form below to modify the reconciliation workspace settings. All fields are optional.</p>
@@ -172,12 +177,10 @@
 	</div>
 	<div class="ibm-rule"> <hr /> </div>
 	<div style="float:right">
-		<div class="buttons">
-			<span class="button-blue"> 
-				<input type="button" value="Clear" id="clearButton" alt="clear filter" />
-			</span>
-			 <span class="button-blue"> 
-			 <s:submit value="Submit" method="update" alt="Submit" />
+		<div>
+			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter" />
+			 <span class="ibm-btn-pri"> 
+			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateSettings();">
 			</span>
 		</div>
 	</div>
