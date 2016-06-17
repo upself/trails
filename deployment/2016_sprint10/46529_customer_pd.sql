@@ -1,0 +1,1 @@
+drop trigger EAADMIN.SWFR_CHANGE;
