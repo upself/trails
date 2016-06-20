@@ -38,7 +38,7 @@
 		if (value == 1) {
 			$("#filterSpan")
 					.after(
-							'<input id="btnAddFltr" class="ibm-button-link-alternate" type="button" value="+filter" onclick="addFltr()"/>');
+							'<input id="btnAddFltr" type="button" value="+filter" onclick="addFltr()"/>');
 		} else {
 			$("#btnAddFltr").remove();
 			$("div.fltr").empty();
