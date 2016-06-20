@@ -516,6 +516,7 @@ public abstract class ProductDelegate extends Delegate {
 		sql += " inner join eaadmin.SOFTWARE_ITEM sw_item on product.ID=sw_item.ID";
 		sql += " inner join eaadmin.KB_DEFINITION kb on product.ID=kb.ID";
 		sql += " where kb.DELETED<>1 and sw_item.NAME<>'UNKNOWN'";
+		sql += " order by name asc";
 		
 		results = session.createSQLQuery(sql).setResultTransformer(Transformers.aliasToBean(ProductBrief.class)).list();
 		return results;
