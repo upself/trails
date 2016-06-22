@@ -427,14 +427,14 @@ public class ReconWorkspace implements Serializable {
 
 	public String getAlertStatus() {
 		if (reconcileId != null) {
-			return "<font class=\"blue-med\">Blue</font>";
+			return "<font style=\"color:blue\">Blue</font>";
 		} else if (getAlertAgeI() > AlertView.red) {
-			return "<font class=\"alert-stop\">Red</font>";
+			return "<font style=\"color:red\">Red</font>";
 		} else if (getAlertAgeI() > AlertView.yellow) {
-			return "<font class=\"orange-med\">Yellow</font>";
+			return "<font style=\"color:yellow\">Yellow</font>";
 		}
 
-		return "<font class=\"alert-go\">Green</font>";
+		return "<font style=\"color:lightgreen\">Green</font>";
 	}
 
 	/**

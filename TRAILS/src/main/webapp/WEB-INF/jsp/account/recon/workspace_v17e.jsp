@@ -194,14 +194,22 @@
 <s:url id="freepool" action="licenseFreePool"
 	namespace="/account/license" includeContext="true" includeParams="none">
 </s:url>
+<s:url id="settingsLink" action="settings" namespace="/account/recon"
+	includeContext="true" includeParams="none">
+</s:url>
 
-<div class="ibm-columns">
+<div class="ibm-columns" style="width:95%">
+	<div class="ibm-columns">
+		<div class="ibm-col-1-1">
+			<p id="breadcrumbs"><a href="${settingsLink}"> Return to workspace settings </a> &gt;</p>
+		</div>
+	</div>
 	<h1>
 		Reconcile workspace: <s:property value="account.name" /> (<s:property value="account.account" />)
 	</h1>
 	<div class="ibm-columns">
 		<div class="ibm-col-1-1">
-			<h6>IBM Confidential</h6>
+			<em>IBM Confidential</em>
 			<br />
 			<p>The results from your reconciliation workspace settings are displayed below. Select an action to take by using the dropdown box below and then select the assets in which you would like to use for the
 				basis of your action. The actions, manual license allocation and included with other product, will only accept a single line item selection. Once your selection is complete, depress the "GO" button to be taken to the next screen.</p>
@@ -245,7 +253,7 @@
 		<div class="clear"></div>
 		<br />
 	
-		<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-defaultx" id="row"
+		<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternate-two tablesorter tablesorter-default" id="row"
 			summary="Reconciliation Query Results" requestURI="workspace.htm"
 			decorator="org.displaytag.decorator.TotalTableDecorator" cellspacing="1" cellpadding="0" style="font-size:.8em">
 			<display:caption media="html">Reconciliation results</display:caption>
