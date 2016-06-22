@@ -48,11 +48,20 @@ public class V17eNavigationPreparer implements ViewPreparer {
 		HttpSession session = s.getSession();
 		UserSession user = (UserSession) session
 				.getAttribute(UserSession.USER_SESSION);
-		       
+		      
+		System.out.println((String) s.getAttribute("javax.servlet.forward.servlet_path"));
+		
 		String testRequestUrl = (String) s
 				.getAttribute("javax.servlet.forward.servlet_path") == null ? s
 				.getRequestURI().replaceFirst(s.getContextPath(), "")
 				: (String) s.getAttribute("javax.servlet.forward.servlet_path");
+				
+		int start = testRequestUrl.indexOf("!");
+		int end = testRequestUrl.indexOf(".htm");
+		if(end>start){
+			testRequestUrl=testRequestUrl.replaceFirst("!.*\\.htm", ".htm");
+		}
+		
 		testRequestUrl = testRequestUrl.equals("/admin/scheduleF/save.htm") ? "/admin/scheduleF/manage.htm"
 				: (testRequestUrl.equals("/admin/alertCause/add.htm")
 						|| testRequestUrl.equals("/admin/alertCause/save.htm")|| testRequestUrl.equals("/admin/alertCause/edit.htm")
