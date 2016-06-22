@@ -85,15 +85,15 @@ public class DataExceptionServiceEndpointOverviewTest {
     
     @Test
     public void testAccountFoundOneDataExceptionReportActionForm() {
-    	Long id = 999L;
-    	Account account = mock(Account.class);
+    	Long accountId = 999L;
+    	Account accountMocked = mock(Account.class);
     	List<DataExceptionReportActionForm> list = new ArrayList<>();
     	list.add(mock(DataExceptionReportActionForm.class));
     	
-    	when(accountService.getAccount(id)).thenReturn(account);
-    	when(dataExceptionReportService.getAlertsOverview(account)).thenReturn(list);
+    	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
+    	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(account.getAccount());
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
     	assertNotNull(wsmsg);
