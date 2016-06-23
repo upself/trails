@@ -211,6 +211,7 @@ public class VSoftwareLparDAOJpa extends
 		}
 
 		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
+			criteria.add(Restrictions.eq("aus.open", true));
 			if (reconSetting.getAlertColor().equals("Green")) {
 				criteria.add(Restrictions.lt("aus.alertAge", 45));
 			} else if (reconSetting.getAlertColor().equals("Yellow")) {
