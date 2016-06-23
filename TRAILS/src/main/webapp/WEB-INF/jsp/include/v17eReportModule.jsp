@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(function(){
 	var reportName = document.getElementById("reportFileName").options[document.getElementById("reportFileName").selectedIndex].text;
-   	document.getElementById('checkboxlist').style.display='none';
+   	//document.getElementById('checkboxlist').style.display='none';
    	document.getElementById('comments').style.display='block';
 });
  
@@ -22,7 +22,7 @@ $(function(){
 
 function reportChange(id) {
 	var reportName = document.getElementById(id).options[document.getElementById(id).selectedIndex].text;
-		document.getElementById('checkboxlist').style.display='none';
+		//document.getElementById('checkboxlist').style.display='none';
 		document.getElementById('comments').style.display='block';
 }
 
