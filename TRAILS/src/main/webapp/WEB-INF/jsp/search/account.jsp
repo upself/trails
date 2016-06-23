@@ -76,8 +76,16 @@
 	<display:caption media="html">TRAILS results for:
 <s:property value="searchAccount.searchString" />
 	</display:caption>
-	<display:column title="Scope" sortable="true">
+	<display:column title="License Management Scope" sortable="true">
 		<s:if test="%{#attr.row.scope == 'yes' || #attr.row.scope == 'YES'}">
+			Y
+		</s:if>
+		<s:else>
+			N
+		</s:else>
+	</display:column>
+	<display:column title="Software Tracking Scope" sortable="true">
+		<s:if test="%{#attr.row.swTrackingScope == 'yes' || #attr.row.swTrackingScope == 'YES'}">
 			Y
 		</s:if>
 		<s:else>

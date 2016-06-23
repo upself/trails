@@ -1,5 +1,6 @@
 package com.ibm.asset.trails.domain;
 
+import org.springframework.util.StringUtils;
 
 public class AccountSearch {
 
@@ -10,6 +11,8 @@ public class AccountSearch {
 	private Long account;
 
 	private String scope;
+	
+	private String swTrackingScope;
 
 	private String dept;
 
@@ -89,6 +92,17 @@ public class AccountSearch {
 
 	public String getSector() {
 		return sector;
+	}
+	
+	public String getSwTrackingScope() {
+		if (!StringUtils.hasText(swTrackingScope)) {
+			return "No";
+		}
+		return swTrackingScope;
+	}
+
+	public void setSwTrackingScope(String swTrackingScope) {
+		this.swTrackingScope = swTrackingScope;
 	}
 
 	public void setSector(String sector) {
