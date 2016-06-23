@@ -545,6 +545,13 @@
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 	</bean>
 
+	<bean id="alertIntswHistoryService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionHistoryServiceImpl">
+		<property name="alertLparDao" ref="alertInstalledSwDao" />
+		<property name="alertHistoryDao" ref="alertHistoryDao" />
+		<property name="lparType" value="intsw" />
+	</bean>
+	
 	<bean id="alertSwlparHistoryService"
 		class="com.ibm.asset.trails.service.impl.DataExceptionHistoryServiceImpl">
 		<property name="alertLparDao" ref="alertSoftwareLparDao" />
@@ -559,6 +566,11 @@
 		<property name="lparType" value="hwLpar" />
 	</bean>
 
+	<bean id="alertIntswHistory" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertHistoryAction">
+		<property name="historyService" ref="alertIntswHistoryService" />
+	</bean>
+	
 	<bean id="alertSwlparHistory" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertHistoryAction">
 		<property name="historyService" ref="alertSwlparHistoryService" />

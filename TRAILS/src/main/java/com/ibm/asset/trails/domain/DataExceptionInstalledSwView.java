@@ -14,6 +14,7 @@ public class DataExceptionInstalledSwView implements Serializable {
 	private String swLparName; // Hostname
 	private Date discrepancyRecordTime;
 	private String swComponentName;
+	private Long installedSwId;
 
 	public Long getDataExpId() {
 		return dataExpId;
@@ -73,6 +74,14 @@ public class DataExceptionInstalledSwView implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public Long getInstalledSwId() {
+		return installedSwId;
+	}
+
+	public void setInstalledSwId(Long installedSwId) {
+		this.installedSwId = installedSwId;
 	}
 
 }

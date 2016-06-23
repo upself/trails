@@ -70,7 +70,7 @@ $(function(){
 function searchData(){
 	var params = {};
 	params['accountId'] = '${accountId}';
-	params['sort'] = 'softwareLpar.name';
+	params['sort'] = 'installedSw.softwareLpar.name';
 	params['dir'] = 'asc';
 	
 	$("#page").paginationTable('destroy').paginationTable({
@@ -87,19 +87,19 @@ function searchData(){
 					for(var i = 0; i < list.length; i++){
 						html += "<tr>";
 						html += "<td><input value='"+list[i].dataExpId+"' type='checkbox'></td>";
-						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].swLparAccountNumber + ",\""+ list[i].swLparName + "\","+list[i].swLparId + ");return false;'>"+list[i].swLparName+"</a></td>";
+						html += "<td>" + list[i].swLparName + "</td>";						
 						html += "<td>" + list[i].discrepancyRecordTime + "</td>";
 						html += "<td>" + list[i].dataExpCreationTime + "</td>";
-						html += "<td>" + list[i].swComponentName + "</td>";
+						html += "<td><a href='javascript:void()' onclick='popupBravoSl("+list[i].installedSwId + ");return false;'>"+list[i].swComponentName+"</a></td>";
 						html += "<td>" + list[i].dataExpAssignee + "</td>";
- 						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionSwlparHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
+ 						html += "<td><a href='javascript:void()' onclick='displayPopUp(\"${pageContext.request.contextPath}/account/exceptions/exceptionInswHistory.htm?alertId="+list[i].dataExpId+"&dataExpType="+list[i].dataExpType+"\");return false;'>View</a></td>";
 						html += "</tr>";
 					}
 				}
 				$("#tb").html(html);
 			}
 		},
-// 		orderColumns: ['id','softwareLpar.name','softwareLpar.scanTime','creationTime','softwareLpar.serial','softwareLpar.osName','assignee','id']
+ 		orderColumns: ['installedSw.softwareLpar.name','installedSw.recordTime','creationTime','installedSw.software.softwareName','assignee','id']
 	}); 
 };
 function assignComments(type){
@@ -216,8 +216,8 @@ function assignOrNot(url,params){
 	});
 }
 
-function popupBravoSl(accountId,lparName,swId) {
-	  newWin=window.open('//${bravoServerName}/BRAVO/lpar/view.do?accountId=' + accountId + '&lparName=' + lparName + '&swId=' + swId,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
+function popupBravoSl(swId) {
+	  newWin=window.open('//${bravoServerName}/BRAVO/software/view.do?id=' + swId ,'popupWindow','height=600,width=1200,resizable=yes,menubar=yes,status=yes,toolbar=yes,scrollbars=yes'); 
 	  newWin.focus(); 
 	  void(0);
 	}

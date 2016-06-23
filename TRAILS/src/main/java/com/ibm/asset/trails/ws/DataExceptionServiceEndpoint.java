@@ -172,7 +172,10 @@ public class DataExceptionServiceEndpoint {
 																								// Exception
 																								// Type
 					dataExpHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
-				} else {
+				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+					
+					dataExpInstalledSwService.assign(assignList, request.getRemoteUser(), comments);
+                } else {
 					return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
 				}
 
@@ -216,7 +219,10 @@ public class DataExceptionServiceEndpoint {
 																								// Exception
 																								// Type
 					dataExpHardwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
-				} else {
+				}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+					
+					dataExpInstalledSwService.unassign(unassignList, request.getRemoteUser(), comments);
+                } else {
 					return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
 				}
 
@@ -260,7 +266,10 @@ public class DataExceptionServiceEndpoint {
 																									// Exception
 																									// Type
 						dataExpHardwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					} else {
+					} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+						
+						dataExpInstalledSwService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+	                } else {
 						return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
 					}
 
@@ -305,7 +314,10 @@ public class DataExceptionServiceEndpoint {
 																									// Exception
 																									// Type
 						dataExpHardwareLparService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					} else {
+					}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+						
+						dataExpInstalledSwService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+	                } else {
 						return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
 					}
 
@@ -487,6 +499,11 @@ public class DataExceptionServiceEndpoint {
 				installedSwDataExpView.setSwComponentName(installedSwDataExp.getInstalledSw().getSoftware().getSoftwareName());
 			} else {
 				installedSwDataExpView.setSwComponentName("");
+			}
+			if (installedSwDataExp.getInstalledSw().getId() != null) {
+				installedSwDataExpView.setInstalledSwId(installedSwDataExp.getInstalledSw().getId());
+			} else {
+				installedSwDataExpView.setInstalledSwId(null);
 			}
 			installedSwDataExpsTransformList.add(installedSwDataExpView);
 		}

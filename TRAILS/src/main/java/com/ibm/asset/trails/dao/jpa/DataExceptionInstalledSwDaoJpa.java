@@ -3,6 +3,7 @@ package com.ibm.asset.trails.dao.jpa;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -36,20 +37,13 @@ public class DataExceptionInstalledSwDaoJpa extends AbstractDataExceptionJpa imp
 	@SuppressWarnings("unchecked")
 	public List<DataExceptionInstalledSw> paginatedList(Account account, int firstResult, int maxResults, String sortBy, String sortDirection) {
 
-		System.out.println("account.getName(), firstResult, maxResults, sortBy, sortDirection: " + account.getName() + ", " + firstResult + ", " + maxResults
-				+ ", " + sortBy + ", " + sortDirection);
-		System.out.println("alertTypecode: " + alertTypecode);
 		AlertType alertType = (AlertType) getEntityManager().createNamedQuery("getAlertTypeByCode").setParameter("code", alertTypecode).getSingleResult();
-
-		System.out.println("alertType.getName(): " + alertType.getName());
 
 		Session session = (Session) getEntityManager().getDelegate();
 		Criteria criteria = session.createCriteria(DataExceptionInstalledSw.class);
 		criteria.add(Restrictions.eq("open", true));
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.eq("alertType", alertType));
-
-		System.out.println("1 criteria.list(): " + criteria.list());
 
 		String[] associations = sortBy.split("\\.");
 
@@ -70,8 +64,10 @@ public class DataExceptionInstalledSwDaoJpa extends AbstractDataExceptionJpa imp
 		}
 		criteria.setFirstResult(firstResult);
 		criteria.setMaxResults(maxResults);
+		criteria.setFetchMode("installedSw", FetchMode.JOIN);
+		criteria.setFetchMode("installedSw.software", FetchMode.JOIN);
+		criteria.setFetchMode("installedSw.softwareLpar", FetchMode.JOIN);
 
-		System.out.println("2 criteria.list(): " + criteria.list());
 		return criteria.list();
 	}
 
