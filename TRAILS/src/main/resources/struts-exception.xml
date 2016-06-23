@@ -30,7 +30,7 @@
 		</action>
 		
 		<action name="exceptionInswHistory" class="alertIntswHistory">
-			<result type="tiles">tiles.exception.swlpar.history.popup</result>
+			<result type="tiles">tiles.exception.installedSw.history.popup</result>
 		</action>
 		<action name="exceptionSwlparHistory" class="alertSwlparHistory">
 			<result type="tiles">tiles.exception.swlpar.history.popup</result>
