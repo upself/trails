@@ -361,9 +361,9 @@
 		<dependency>
 			<groupId>com.ibm.db2</groupId>
 			<artifactId>jdbc</artifactId>
-			<version>4.0</version>
+			<version>3.0</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc4.jar</systemPath>
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc.jar</systemPath>
 		</dependency>
 
 		<dependency>
