@@ -1153,6 +1153,13 @@
 			value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
 	</definition>
 
+	<definition name="tiles.exception.installedSw.history.popup"
+		extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS data exception history" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
+	</definition>
+
 	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS Account License View" />
 		<put-attribute name="content" type="template"
