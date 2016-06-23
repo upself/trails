@@ -217,16 +217,6 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		predicates.add(account.get(Account_.id).in(accountIds));
 		predicates.add(cb.equal(license.get(License_.status), "ACTIVE"));
-		predicates.add(cb.or(
-						cb.and(
-							cb.equal(account.get(Account_.softwareFinancialResponsibility), "IBM"),
-							cb.equal(license.get(License_.ibmOwned), true)), 
-						cb.and(
-								cb.equal(account.get(Account_.softwareFinancialResponsibility),"CUSTOMER"), 
-								cb.equal(license.get(License_.ibmOwned),false)), 
-						cb.equal(account.get(Account_.softwareFinancialResponsibility), "BOTH"),
-						cb.not(
-								cb.in(account.get(Account_.softwareFinancialResponsibility)).value("IBM").value("CUSTOMER").value("BOTH"))));
 
 		predicates.add(cb.and(cb.or(
 				cb.and(cb.equal(license.get(License_.pool), 0),
@@ -430,17 +420,6 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 
 		predicates.add(account.get(Account_.id).in(accountIds));
 		predicates.add(cb.equal(license.get(License_.status), "ACTIVE"));
-		predicates.add(cb.or(cb.and(cb.equal(
-				account.get(Account_.softwareFinancialResponsibility), "IBM"),
-				cb.equal(license.get(License_.ibmOwned), true)), cb.and(cb
-				.equal(account.get(Account_.softwareFinancialResponsibility),
-						"CUSTOMER"), cb.equal(license.get(License_.ibmOwned),
-				false)), cb.equal(
-				account.get(Account_.softwareFinancialResponsibility), "BOTH"),
-				cb.not(cb
-						.in(account
-								.get(Account_.softwareFinancialResponsibility))
-						.value("IBM").value("CUSTOMER").value("BOTH"))));
 		predicates.add(cb.and(cb.or(
 				cb.and(cb.equal(license.get(License_.pool), 0),
 						cb.equal(account.get(Account_.id), accountId)),
