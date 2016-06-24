@@ -1140,6 +1140,12 @@
 		<put-attribute name="keywords" value="TRAILS alert history" />
 	</definition>
 
+	<definition name="tiles.exception.intsw.history.popup"
+		extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS data exception history" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionInstSwHistoryPopup.jsp" />
+	</definition>
 	<definition name="tiles.exception.swlpar.history.popup"
 		extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS data exception history" />
