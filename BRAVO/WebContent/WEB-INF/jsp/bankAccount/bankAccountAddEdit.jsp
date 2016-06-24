@@ -226,7 +226,7 @@ function setChange() {
 													property="connectionType" value="DISCONNECTED">
 													<html:option value="FACTS">FACTS</html:option>
 													<html:option value="TAD4D">TAD4D</html:option>
-													<html:option value="SCRIPT">SCRIPT</html:option>
+													<html:option value="VMWARE">VMWARE</html:option>
 												</logic:equal>
 												<html:option value="FLEXNET">FLEXNET</html:option>
 												<html:option value="IDD">IDD</html:option>
@@ -263,7 +263,7 @@ function setChange() {
 												<html:option value="ATP">ATP</html:option>
 												<html:option value="BASELINE">BASELINE</html:option>
 												<html:option value="INVENTORY">INVENTORY</html:option>
-												<html:option value="VMWARE">VMWARE</html:option>
+												<html:option value="SCRIPT">SCRIPT</html:option>
 											</html:select>
 										</td>
 									</tr>
