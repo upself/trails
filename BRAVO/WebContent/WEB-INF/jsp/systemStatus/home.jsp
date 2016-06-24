@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" />
 <link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico" />
-<meta name="DC.Rights" content="© Copyright IBM Corp. 2011" />
+<meta name="DC.Rights" content="ï¿½ Copyright IBM Corp. 2011" />
 <meta name="Keywords" content="REPLACE" />
 <meta name="DC.Date" scheme="iso8601" content="2012-09-19" />
 <meta name="Source"
@@ -63,7 +63,7 @@
 			</div>
 			<div id="ibm-universal-nav">
 				<ul id="ibm-unav-links">
-					<li id="ibm-home"><a href="http://www.ibm.com/">IBM®</a></li>
+					<li id="ibm-home"><a href="http://www.ibm.com/">IBMï¿½</a></li>
 				</ul>
 				<ul id="ibm-menu-links">
 					<li><a href="http://www.ibm.com/sitemap/">Site map</a></li>
@@ -135,6 +135,7 @@
 														<option value="SOFTWARE SIGNATURE">SOFTWARE
 															SIGNATURE</option>
 														<option value="SOFTWARE FILTER">SOFTWARE FILTER</option>
+														<option value="SOFTWARE SCRIPT">SOFTWARE SCRIPT</option>
 														<option value="PROCESSOR">PROCESSOR</option>
 														<option value="HDISK">HDISK</option>
 														<option value="MEMMOD">MEMMOD</option>
@@ -179,6 +180,7 @@
 														<html:option value="TADZ">TADZ</html:option>
 														<html:option value="FACTS">FACTS</html:option>
 														<html:option value="TAD4D">TAD4D</html:option>
+														<html:option value="SCRIPT">SCRIPT</html:option>
 													</html:select></td>
 											</tr>
 											<tr>
