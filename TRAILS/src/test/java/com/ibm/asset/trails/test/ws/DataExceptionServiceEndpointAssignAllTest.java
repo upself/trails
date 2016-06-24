@@ -51,6 +51,9 @@ public class DataExceptionServiceEndpointAssignAllTest {
 	// DEPENDENCIES
 	@Mock
 	private DataExceptionService dataExpSoftwareLparService;
+	
+	@Mock
+	private DataExceptionService dataExpHardwareLparService;
 
 	@Mock
 	private DataExceptionReportService dataExceptionReportService;
@@ -88,10 +91,11 @@ public class DataExceptionServiceEndpointAssignAllTest {
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
 	}
 
-//	@SuppressWarnings("unchecked")
 	@Test
 	public void testNoValuesPassedIn() {
 
+		//we are not writing any dependencies because we want to verify that we validate invalid input right away in the response
+		
 		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(null, null, null, null);
 
 		verify(dataExpSoftwareLparService, never()).assignAll(anyLong(), anyString(), anyString(), anyString());
@@ -103,29 +107,26 @@ public class DataExceptionServiceEndpointAssignAllTest {
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testDataExpTypeDeclared() {
+	public void testDataExcepTypeDeclared() {
 		final String exceptionTypeSw = "NULLTIME";
 //		final String exceptionTypeHw = "HWNCHP";
 //		final String exceptionTypeIS = "SWDSCEXP";
 		final Long accountId = 2541L;
 		final String comments = "comment";
-//		WSMsg wsMsgMocked = mock(WSMsg.class);
-		
-//		when(endpoint.assignAllDataExceptionDataList(anyString(), anyLong(), anyString(), any(HttpServletRequest.class)));
-		
-//		when(dataExpSoftwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
 		
 		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(exceptionTypeSw, accountId, comments, request);
 		
-		verify(dataExpSoftwareLparService, atLeastOnce()).assignAll(accountId, exceptionTypeSw, request.getRemoteUser(), comments);
+		verify(dataExpSoftwareLparService, atLeastOnce()).assign(anyList(), anyString(), anyString());
+		verify(dataExpHardwareLparService, never()).assign(anyList(), anyString(), anyString());
 		
 		System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
 		
 		assertNotNull(wsmsg);
+		assertNotNull(wsmsg.getMsg());
 		assertNotNull(wsmsg.getData());
 		assertNotNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
 	}
 

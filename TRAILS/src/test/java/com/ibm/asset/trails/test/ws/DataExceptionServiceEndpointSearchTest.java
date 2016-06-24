@@ -93,6 +93,7 @@ public class DataExceptionServiceEndpointSearchTest {
             list.add(buildTestDataExceptionSoftwareLparItem());
         }
 
+        //doReturn b/c of List<? extends DataException>
         doReturn(list).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
 
         // (2) execute what we are testing

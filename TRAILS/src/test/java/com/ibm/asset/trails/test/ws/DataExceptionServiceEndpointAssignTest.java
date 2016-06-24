@@ -106,45 +106,58 @@ public class DataExceptionServiceEndpointAssignTest {
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
 	}
 
+	@Test
+	public void testPassedDataExceptionIsDeclared(){
+		
+	}
+	
 	/*
-	 * @POST
-	 * 
-	 * @Path("/{dataExpType}/assign")
-	 * 
-	 * @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	 * public WSMsg assignDataExceptionDataList(@PathParam("dataExpType") String
-	 * dataExpType, @FormParam("comments") String comments,
-	 * 
-	 * @FormParam("assignIds") String assignIds, @Context HttpServletRequest
-	 * request) {
-	 * 
-	 * if (null == dataExpType || "".equals(dataExpType.trim())) { return
-	 * WSMsg.failMessage("Data Exception Type is required"); } else if (null ==
-	 * assignIds || "".equals(assignIds.trim())) { return
-	 * WSMsg.failMessage("Assign Ids List is required"); } else if (null ==
-	 * comments || "".equals(comments.trim())) { return
-	 * WSMsg.failMessage("Comment is required"); } else { try { List<Long>
-	 * assignList = new ArrayList<Long>(); for (String idStr :
-	 * assignIds.split(",")) { assignList.add(Long.valueOf(idStr)); }
-	 * 
-	 * dataExpType = dataExpType.trim().toUpperCase(); if
-	 * (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {//
-	 * Software // Lpar // Data // Exception // Type
-	 * dataExpSoftwareLparService.assign(assignList, request.getRemoteUser(),
-	 * comments); } else if
-	 * (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {//
-	 * Hardware // Lpar // Data // Exception // Type
-	 * dataExpHardwareLparService.assign(assignList, request.getRemoteUser(),
-	 * comments); } else if
-	 * (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1)
-	 * {// Installed Software Data Exception
-	 * 
-	 * dataExpInstalledSwService.assign(assignList, request.getRemoteUser(),
-	 * comments); } else { return WSMsg.failMessage("Data Exception Type {" +
-	 * dataExpType + "} doesn't exist"); }
-	 * 
-	 * return WSMsg.successMessage("Assign success"); } catch (Exception e) {
-	 * e.printStackTrace(); return WSMsg.failMessage("Assign failed"); } } }
+	 @POST
+	@Path("/{dataExpType}/assign")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public WSMsg assignDataExceptionDataList(@PathParam("dataExpType") String dataExpType, @FormParam("comments") String comments,
+			@FormParam("assignIds") String assignIds, @Context HttpServletRequest request) {
+
+		if (null == dataExpType || "".equals(dataExpType.trim())) {
+			return WSMsg.failMessage("Data Exception Type is required");
+		} else if (null == assignIds || "".equals(assignIds.trim())) {
+			return WSMsg.failMessage("Assign Ids List is required");
+		} else if (null == comments || "".equals(comments.trim())) {
+			return WSMsg.failMessage("Comment is required");
+		} else {
+			try {
+				List<Long> assignList = new ArrayList<Long>();
+				for (String idStr : assignIds.split(",")) {
+					assignList.add(Long.valueOf(idStr));
+				}
+
+				dataExpType = dataExpType.trim().toUpperCase();
+				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+																						// Lpar
+																						// Data
+																						// Exception
+																						// Type
+					dataExpSoftwareLparService.assign(assignList, request.getRemoteUser(), comments);
+				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+																								// Lpar
+																								// Data
+																								// Exception
+																								// Type
+					dataExpHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
+				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+					
+					dataExpInstalledSwService.assign(assignList, request.getRemoteUser(), comments);
+                } else {
+					return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
+				}
+
+				return WSMsg.successMessage("Assign success");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return WSMsg.failMessage("Assign failed");
+			}
+		}
+	}
 	 */
 
 }
