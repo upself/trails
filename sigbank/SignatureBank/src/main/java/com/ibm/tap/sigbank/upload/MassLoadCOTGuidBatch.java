@@ -29,7 +29,8 @@ import org.apache.log4j.Logger;
 import org.apache.struts.util.MessageResources;
 
 import sun.net.TelnetOutputStream;
-import sun.net.ftp.FtpClient;
+import org.apache.commons.net.ftp.FTPClient;
+//import sun.net.ftp.FtpClient;
 
 import com.ibm.tap.sigbank.software.CotGuidLoadDelegate;
 import com.ibm.tap.sigbank.framework.batch.BatchBase;
@@ -114,8 +115,9 @@ public class MassLoadCOTGuidBatch extends BatchBase implements IBatch,
 			String encoding = "UTF8";
 			OutputStreamWriter osw = new OutputStreamWriter(fop, encoding);
 			BufferedWriter bw = new BufferedWriter(osw);
-			FtpClient fc = new FtpClient();
-
+			//FtpClient fc = new FtpClient();
+			FTPClient fc = new FTPClient();
+			
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();
@@ -168,17 +170,21 @@ public class MassLoadCOTGuidBatch extends BatchBase implements IBatch,
 			fop.flush();
 			fop.close();
 			try {
-				String outfile = "COTProductReport.tsv";
+				String outfile = "a.tsv";
 				String server = properties.getProperty("ftp.server");
 				String user = properties.getProperty("ftp.user");
 				String password = properties.getProperty("ftp.password");
 				String directory = properties.getProperty("ftp.directory");
-				fc.openServer(server);
+				//fc.openServer(server);
+				//fc.login(user, password);
+				//fc.binary();
+				//fc.cd(directory);
+				fc.connect(server);
 				fc.login(user, password);
-				fc.binary();
-				fc.cd(directory);
+				fc.cwd(directory);
+				
 				FileInputStream inputStream = new FileInputStream(filepath);
-				OutputStream outputStream = fc.put(outfile);
+				OutputStream outputStream = fc.storeFileStream(outfile);//fc.put(outfile);
 
 				byte c[] = new byte[4096];
 				int read = 0;
@@ -192,7 +198,8 @@ public class MassLoadCOTGuidBatch extends BatchBase implements IBatch,
 			} finally {
 				if (fc != null) {
 					try {
-						fc.closeServer();
+						//fc.closeServer();
+						fc.disconnect();
 					} catch (IOException e) {
 						logger.error(e.getMessage(), e);
 					}
