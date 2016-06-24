@@ -46,7 +46,7 @@ import com.ibm.asset.trails.ws.DataExceptionServiceEndpoint;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataExceptionServiceEndpointUnassignTest {
+public class DataExceptionServiceEndpointUnassignAllTest {
 
 	// DEPENDENCIES
 	@Mock
@@ -75,12 +75,11 @@ public class DataExceptionServiceEndpointUnassignTest {
 	@Test
 	public void testNoDataExpTypePassedIn() {
 		final Long accountId = 999L;
-		final String unassignIds = "1,2";
 		final String comments = "";
 
-		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(null, unassignIds, comments, request);
+		WSMsg wsmsg = endpoint.unassignAllDataExceptionDataList(null, accountId, comments, request);
 
-		verify(dataExpSoftwareLparService, never()).unassign(anyList(), anyString(), anyString());
+		verify(dataExpSoftwareLparService, never()).unassignAll(anyLong(), anyString(), anyString(), anyString());
 
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
@@ -93,9 +92,9 @@ public class DataExceptionServiceEndpointUnassignTest {
 	@Test
 	public void testNoValuesPassedIn() {
 
-		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(null, null, null, null);
+		WSMsg wsmsg = endpoint.unassignAllDataExceptionDataList(null, null, null, request);
 
-		verify(dataExpSoftwareLparService, never()).unassign(anyList(), anyString(), anyString());
+		verify(dataExpSoftwareLparService, never()).unassignAll(anyLong(), anyString(), anyString(), anyString());
 
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
@@ -106,45 +105,49 @@ public class DataExceptionServiceEndpointUnassignTest {
 
 	/*
 	@POST
-	@Path("/{dataExpType}/unassign")
+	@Path("/{dataExpType}/assignAll")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg unassignDataExceptionDataList(@PathParam("dataExpType") String dataExpType, @FormParam("unassignIds") String unassignIds,
+	public WSMsg assignAllDataExceptionDataList(@PathParam("dataExpType") String dataExpType, @FormParam("accountId") Long accountId,
 			@FormParam("comments") String comments, @Context HttpServletRequest request) {
 
 		if (null == dataExpType || "".equals(dataExpType.trim())) {
 			return WSMsg.failMessage("Data Exception Type is required");
-		} else if (null == unassignIds || "".equals(unassignIds.trim())) {
-			return WSMsg.failMessage("Unassign Ids List is required");
+		} else if (null == accountId) {
+			return WSMsg.failMessage("Account ID is required");
 		} else if (null == comments || "".equals(comments.trim())) {
 			return WSMsg.failMessage("Comment is required");
 		} else {
 			try {
-				List<Long> unassignList = new ArrayList<Long>();
-				for (String idStr : unassignIds.split(",")) {
-					unassignList.add(Long.valueOf(idStr.trim()));
-				}
-
-				dataExpType = dataExpType.trim().toUpperCase();
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
-																						// Lpar
-																						// Data
-																						// Exception
-																						// Type
-					dataExpSoftwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
-																								// Lpar
-																								// Data
-																								// Exception
-																								// Type
-					dataExpHardwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
+				Account account = accountService.getAccount(accountId);
+				if (null == account) {
+					return WSMsg.failMessage("Account doesn't exist");
 				} else {
-					return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
-				}
+					Long customerId = account.getId();
+					dataExpType = dataExpType.trim().toUpperCase();
+					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+																							// Lpar
+																							// Data
+																							// Exception
+																							// Type
+						dataExpSoftwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+																									// Lpar
+																									// Data
+																									// Exception
+																									// Type
+						dataExpHardwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+						
+						dataExpInstalledSwService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+	                } else {
+						return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
+					}
 
-				return WSMsg.successMessage("Unassign success");
+					return WSMsg.successMessage("Assign success");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				return WSMsg.failMessage("Unassign failed");
+				return WSMsg.failMessage("Assign failed");
 			}
 		}
 	}
