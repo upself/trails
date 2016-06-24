@@ -99,7 +99,7 @@ function searchData(){
 				$("#tb").html(html);
 			}
 		},
- 		orderColumns: ['installedSw.softwareLpar.name','installedSw.recordTime','creationTime','installedSw.software.softwareName','assignee','id']
+ 		orderColumns: ['id', 'installedSw.softwareLpar.name','installedSw.recordTime','creationTime','installedSw.software.softwareName','assignee','id']
 	}); 
 };
 function assignComments(type){
