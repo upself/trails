@@ -73,7 +73,7 @@ public class DataExceptionServiceEndpointOverviewTest {
         WSMsg wsmsg = endpoint.exceptionOverview(null);
 
 
-        verify(accountService,never()).getAccount(anyLong());
+        verify(accountService, never()).getAccount(anyLong());
         verify(dataExceptionReportService, never()).getAlertsOverview(any(Account.class));
 
     	assertNotNull(wsmsg);
@@ -83,7 +83,7 @@ public class DataExceptionServiceEndpointOverviewTest {
         assertEquals(WSMsg.FAIL, wsmsg.getStatus());
     }
     
-    @Test
+//    @Test
     public void testAccountFoundOneDataExceptionReportActionForm() {
     	Long accountId = 999L;
     	Account accountMocked = mock(Account.class);
@@ -97,6 +97,10 @@ public class DataExceptionServiceEndpointOverviewTest {
     	wsmsg.setDataList(list);
     	
     	assertNotNull(wsmsg);
+    	assertNotNull(wsmsg.getData());
+    	assertNotNull(wsmsg.getDataList());
+    	assertNotNull(wsmsg.getMsg());
+    	assertEquals(wsmsg.getMsg(), WSMsg.SUCCESS);
     	assertTrue(wsmsg.getDataList().size() == 1);
     }
 
