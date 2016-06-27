@@ -13,6 +13,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -25,6 +26,7 @@ import org.hibernate.SessionFactory;
  * Preferences - Java - Code Style - Code Templates
  */
 public class Delegate {
+	private static final Logger logger = Logger.getLogger(Delegate.class);
 
 	public static List readHqlList(String query) {
 		List returnList = new Vector();
@@ -76,12 +78,25 @@ public class Delegate {
 	 * @@throws NamingException
 	 * @@throws HibernateException
 	 */
-	protected static Session getHibernateSession() throws NamingException,
-			HibernateException {
-		Context ctx = new InitialContext();
-		Object obj = ctx.lookup("HibernateSessionFactory");
-		SessionFactory sessionFactory = (SessionFactory) obj;
-		Session session = sessionFactory.openSession();
+	protected static Session getHibernateSession() throws NamingException, HibernateException {
+		Session session = null;
+		logger.debug("Delegate.getHibernateSession(.....) started");
+		try {
+			Context ctx = new InitialContext();
+			Object obj = ctx.lookup("HibernateSessionFactory");
+			SessionFactory sessionFactory = (SessionFactory) obj;
+			session = sessionFactory.openSession();
+			logger.debug("Delegate.getHibernateSession(.....) ended");
+		} catch (Exception e) {
+			logger.error("Delegate.getHibernateSession(.....) error here with message: "+e.getMessage());
+			try {
+				logger.debug("HibernateUtils.getSession(.....) started");
+				session = HibernateUtils.instance().getSession();
+				logger.debug("HibernateUtils.getSession(.....) ended");
+			} catch (Exception e1) {
+				logger.error("HibernateUtils.getSession(.....) error here with message: "+e1.getMessage());
+			}
+		}
 		return session;
 	}
 
