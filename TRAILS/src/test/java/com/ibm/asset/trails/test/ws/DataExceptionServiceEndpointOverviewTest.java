@@ -83,7 +83,7 @@ public class DataExceptionServiceEndpointOverviewTest {
         assertEquals(WSMsg.FAIL, wsmsg.getStatus());
     }
     
-//    @Test
+    @Test
     public void testAccountFoundOneDataExceptionReportActionForm() {
     	Long accountId = 999L;
     	Account accountMocked = mock(Account.class);
@@ -95,6 +95,8 @@ public class DataExceptionServiceEndpointOverviewTest {
     	
     	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
+    	
+    	System.out.println("wsmsg.getData(): " + wsmsg.getData());
     	
     	assertNotNull(wsmsg);
     	assertNotNull(wsmsg.getData());

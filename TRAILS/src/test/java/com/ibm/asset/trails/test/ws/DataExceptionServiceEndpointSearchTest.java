@@ -49,6 +49,9 @@ public class DataExceptionServiceEndpointSearchTest {
 
     @Mock
     private DataExceptionService dataExpHardwareLparService;
+    
+    @Mock
+    private DataExceptionService dataExpInstalledSwService;
 
     @Mock
     private DataExceptionReportService dataExceptionReportService;
@@ -68,7 +71,7 @@ public class DataExceptionServiceEndpointSearchTest {
     }
 
 
-//    @Test
+    @Test
     public void testSWDSCEXPReturnsSuccessfulListWithItems() {
 
         // (1) test setup
@@ -86,7 +89,7 @@ public class DataExceptionServiceEndpointSearchTest {
         Account accountMocked = mock(Account.class);
         when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
 
-        when(dataExpSoftwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+        when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
 
         List<DataExceptionSoftwareLpar> list = new ArrayList<>();
         for (int i = 0; i < expectedResultListSize; i++) {
@@ -94,7 +97,7 @@ public class DataExceptionServiceEndpointSearchTest {
         }
 
         //doReturn b/c of List<? extends DataException>
-        doReturn(list).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+        doReturn(list).when(dataExpInstalledSwService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
 
         // (2) execute what we are testing
         System.out.println("exceptionType, accountId, currentPage, pageSize, sort, dir: " + exceptionType + ", " +
@@ -104,8 +107,9 @@ public class DataExceptionServiceEndpointSearchTest {
 
         // (3) assertions (did we get what we expected to get)
 
+        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
         verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-        verify(dataExpSoftwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
         
         assertNotNull(wsmsg);
         assertNotNull(wsmsg.getMsg());
@@ -141,6 +145,44 @@ public class DataExceptionServiceEndpointSearchTest {
         when(swlpar.getSerial()).thenReturn("abc");
         when(swlpar.getStatus()).thenReturn("abc");
         when(swlpar.getTechImgId()).thenReturn("abc");
+
+        AlertType alertType = mock(AlertType.class);
+        when(alertType.getId()).thenReturn(1L);
+        when(alertType.getName()).thenReturn("aa");
+        when(alertType.getCode()).thenReturn("bb");
+        when(testItem.getAlertType()).thenReturn(alertType);
+
+        Account account = mock(Account.class);
+        when(account.getAccount()).thenReturn(3L);
+        when(swlpar.getAccount()).thenReturn(account);
+
+        when(testItem.getSoftwareLpar()).thenReturn(swlpar);
+
+        return testItem;
+    }
+    
+    private DataExceptionInstalledSw buildTestDataExceptionInstalledSwItem() {
+        DataExceptionInstalledSw testItem = mock(DataExceptionInstalledSw.class);
+        when(testItem.getId()).thenReturn(1L);
+        
+        InstalledSoftware installedSoftware = mock(InstalledSoftware.class);
+        when(installedSoftware.getId()).thenReturn(2L);
+        
+//        SoftwareLpar swlpar = mock(SoftwareLpar.class);
+//        when(swlpar.getId()).thenReturn(2L);
+
+        when(installedSoftware.get)
+        
+        when(swlpar.getProcessorCount()).thenReturn(1);
+        when(swlpar.getModel()).thenReturn("abc");
+        when(swlpar.getName()).thenReturn("abc");
+        when(swlpar.getOsName()).thenReturn("abc");
+        when(swlpar.getExtId()).thenReturn("abc");
+        when(swlpar.getSerial()).thenReturn("abc");
+        when(swlpar.getStatus()).thenReturn("abc");
+        when(swlpar.getTechImgId()).thenReturn("abc");
+        
+        
 
         AlertType alertType = mock(AlertType.class);
         when(alertType.getId()).thenReturn(1L);
