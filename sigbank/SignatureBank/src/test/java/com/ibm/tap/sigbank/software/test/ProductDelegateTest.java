@@ -27,9 +27,9 @@ public class ProductDelegateTest {
 		try {
 			softwareProductList = ProductDelegate.getProductBriefs();
 		} catch (HibernateException e) {
-			System.out.println(e.getMessage());
+			System.out.println("HibernateException happened with message: "+ e.getMessage());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println("Exception happened with message: "+e.getMessage());
 		}
 
 		assertNotNull(softwareProductList);
@@ -49,9 +49,9 @@ public class ProductDelegateTest {
 		try {
 			software = ProductDelegate.getProductByName(SOFTWARE_NAME);
 		} catch (HibernateException e) {
-			System.out.println(e.getMessage());
+			System.out.println("HibernateException happened with message: "+e.getMessage());
 		} catch (NamingException e) {
-			System.out.println(e.getMessage());
+			System.out.println("NamingException happened with message: "+e.getMessage());
 		}
 
 		assertNotNull(software);
@@ -65,13 +65,13 @@ public class ProductDelegateTest {
 	public void testSearchProductByGuid() {
 		Product software = null;
 		try {
-			software = ProductDelegate.searchProductByGuid(SOFTWARE_GUID, null, HibernateUtils.getSession());
+			software = ProductDelegate.searchProductByGuid(SOFTWARE_GUID, null, HibernateUtils.instance().getSession());
 		} catch (HibernateException e) {
-			System.out.println(e.getMessage());
+			System.out.println("HibernateException happened with message: "+e.getMessage());
 		} catch (NamingException e) {
-			System.out.println(e.getMessage());
+			System.out.println("NamingException happened with message: "+e.getMessage());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println("Exception happened with message: "+e.getMessage());
 		}
 
 		assertNotNull(software);

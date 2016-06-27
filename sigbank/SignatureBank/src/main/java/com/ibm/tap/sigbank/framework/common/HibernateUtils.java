@@ -10,31 +10,36 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 public class HibernateUtils {
-	private final static HibernateUtils hibernateUtils = new HibernateUtils();
-	private static SessionFactory sessionFactory;
-	private static AnnotationConfiguration hibernateConfiguration;
+	private static HibernateUtils hibernateUtils;
+	private SessionFactory sessionFactory;
+	private AnnotationConfiguration hibernateConfiguration;
 
 	private static final Logger logger = Logger.getLogger(HibernateUtils.class);
 
 	private HibernateUtils() {
 		try {
+			logger.debug("HibernateUtils.HibernateUtils(.....) started");
 			initializeHibernate();
+			logger.debug("HibernateUtils.HibernateUtils(.....) ended");
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("HibernateUtils.HibernateUtils(.....) error here with message: "+e.getMessage());
 		}
 	}
 
 	private void initializeHibernate() throws Exception {
+		logger.debug("HibernateUtils.initializeHibernate(.....) started");
 		loadConfiguration();
 
 		if (hibernateConfiguration == null)
 			throw new Exception("Load Configuration failed for " + Constants.HIBERNATE_PROPERTIES);
 
 		sessionFactory = hibernateConfiguration.buildSessionFactory();
+		logger.debug("HibernateUtils.initializeHibernate(.....) ended");
 	}
 
 	private void loadConfiguration() {
 
+		logger.debug("HibernateUtils.loadConfiguration(.....) started");
 		try {
 			Properties properties = new Properties();
 			String classPathRoot = HibernateUtils.class.getResource("").getPath();
@@ -47,13 +52,21 @@ public class HibernateUtils {
 
 			hibernateConfiguration = new AnnotationConfiguration();
 			hibernateConfiguration.setProperties(properties).configure();
-
+			logger.debug("HibernateUtils.loadConfiguration(.....) ended");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("HibernateUtils.loadConfiguration(.....) error here with message: "+e.getMessage());
 		}
 	}
+	
+	public static synchronized HibernateUtils instance(){
+		if(hibernateUtils == null){
+			hibernateUtils = new HibernateUtils();
+		}
+		
+		return hibernateUtils;
+	}
 
-	public synchronized static Session getSession() throws Exception, HibernateException {
+	public Session getSession() throws Exception, HibernateException {
 		return sessionFactory.openSession();
 	}
 }
