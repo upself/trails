@@ -161,43 +161,43 @@ public class DataExceptionServiceEndpointSearchTest {
         return testItem;
     }
     
-    private DataExceptionInstalledSw buildTestDataExceptionInstalledSwItem() {
-        DataExceptionInstalledSw testItem = mock(DataExceptionInstalledSw.class);
-        when(testItem.getId()).thenReturn(1L);
-        
-        InstalledSoftware installedSoftware = mock(InstalledSoftware.class);
-        when(installedSoftware.getId()).thenReturn(2L);
-        
-//        SoftwareLpar swlpar = mock(SoftwareLpar.class);
-//        when(swlpar.getId()).thenReturn(2L);
-
-        when(installedSoftware.get)
-        
-        when(swlpar.getProcessorCount()).thenReturn(1);
-        when(swlpar.getModel()).thenReturn("abc");
-        when(swlpar.getName()).thenReturn("abc");
-        when(swlpar.getOsName()).thenReturn("abc");
-        when(swlpar.getExtId()).thenReturn("abc");
-        when(swlpar.getSerial()).thenReturn("abc");
-        when(swlpar.getStatus()).thenReturn("abc");
-        when(swlpar.getTechImgId()).thenReturn("abc");
-        
-        
-
-        AlertType alertType = mock(AlertType.class);
-        when(alertType.getId()).thenReturn(1L);
-        when(alertType.getName()).thenReturn("aa");
-        when(alertType.getCode()).thenReturn("bb");
-        when(testItem.getAlertType()).thenReturn(alertType);
-
-        Account account = mock(Account.class);
-        when(account.getAccount()).thenReturn(3L);
-        when(swlpar.getAccount()).thenReturn(account);
-
-        when(testItem.getSoftwareLpar()).thenReturn(swlpar);
-
-        return testItem;
-    }
+//    private DataExceptionInstalledSw buildTestDataExceptionInstalledSwItem() {
+//        DataExceptionInstalledSw testItem = mock(DataExceptionInstalledSw.class);
+//        when(testItem.getId()).thenReturn(1L);
+//        
+//        InstalledSoftware installedSoftware = mock(InstalledSoftware.class);
+//        when(installedSoftware.getId()).thenReturn(2L);
+//        
+////        SoftwareLpar swlpar = mock(SoftwareLpar.class);
+////        when(swlpar.getId()).thenReturn(2L);
+//
+//        when(installedSoftware.get)
+//        
+//        when(swlpar.getProcessorCount()).thenReturn(1);
+//        when(swlpar.getModel()).thenReturn("abc");
+//        when(swlpar.getName()).thenReturn("abc");
+//        when(swlpar.getOsName()).thenReturn("abc");
+//        when(swlpar.getExtId()).thenReturn("abc");
+//        when(swlpar.getSerial()).thenReturn("abc");
+//        when(swlpar.getStatus()).thenReturn("abc");
+//        when(swlpar.getTechImgId()).thenReturn("abc");
+//        
+//        
+//
+//        AlertType alertType = mock(AlertType.class);
+//        when(alertType.getId()).thenReturn(1L);
+//        when(alertType.getName()).thenReturn("aa");
+//        when(alertType.getCode()).thenReturn("bb");
+//        when(testItem.getAlertType()).thenReturn(alertType);
+//
+//        Account account = mock(Account.class);
+//        when(account.getAccount()).thenReturn(3L);
+//        when(swlpar.getAccount()).thenReturn(account);
+//
+//        when(testItem.getSoftwareLpar()).thenReturn(swlpar);
+//
+//        return testItem;
+//    }
     
 	@Test
 	public void testNoValuesPassedIn() {
