@@ -489,7 +489,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 			if (liLicensesNeeded == 0) {
 				reconService.manualReconcileByAlert(alertId, null, pRecon,
-						psRemoteUser, null, pAccount, lmLicenseApplied,
+						psRemoteUser, pRecon.getComments(), pAccount, lmLicenseApplied,
 						"selected", owner);
 				// AB added, when reconService process manualReconcileByAlert,
 				// it also validate ScheduleF again, so need to judge its
@@ -620,7 +620,7 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					// liLicensesNeeded not equal zero means still require more
 					// license to cover the alert.
 					if (liLicensesNeeded == 0) {
-						Long llHardwareId = reconService.manualReconcileByAlert(alertId, null, pRecon, psRemoteUser, null, pAccount, lmLicenseApplied, "group", scheduleFOwner);
+						Long llHardwareId = reconService.manualReconcileByAlert(alertId, null, pRecon, psRemoteUser, pRecon.getComments(), pAccount, lmLicenseApplied, "group", scheduleFOwner);
 
 						// AB added, when reconService process
 						// manualReconcileByAlert, it also needs to validate

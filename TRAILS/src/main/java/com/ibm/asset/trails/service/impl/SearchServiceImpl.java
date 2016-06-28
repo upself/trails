@@ -97,6 +97,7 @@ public class SearchServiceImpl implements SearchService {
                                 .add(Projections.property("account").as(
                                         "account"))
                                 .add(Projections.property("swlm").as("scope"))
+                                .add(Projections.property("softwareTracking").as("swTrackingScope"))
                                 .add(Projections.property("d.name").as("dpe"))
                                 .add(Projections.property("s.name")
                                         .as("sector"))

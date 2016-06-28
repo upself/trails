@@ -436,6 +436,12 @@
 			value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
 	</definition>
+	
+	<definition name="tiles.v17e.w3OneColumnLayoutWithoutNavi" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayoutWithoutNavi.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="contentSidebar" type="template" value="" />
+	</definition>
 
 	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
@@ -1148,8 +1154,7 @@
 
 	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS Account License View" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS account license" />
 		<put-attribute name="keywords" value="TRAILS account license" />
 	</definition>
@@ -1162,32 +1167,34 @@
 		<put-attribute name="keywords" value="TRAILS account license detail" />
 	</definition>
 
-	<definition name="tiles.account.recon.settings" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/settings.jsp" />
+	<definition name="tiles.account.recon.settings" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Reconciliation workspace settings" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settings.jsp" />
 		<put-attribute name="description" value="TRAILS recon settings" />
 		<put-attribute name="keywords" value="TRAILS recon settings" />
 	</definition>
-
-	<definition name="tiles.account.recon.settings.success"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
-		<put-attribute name="description"
-			value="TRAILS account recon settings success" />
-		<put-attribute name="keywords"
-			value="TRAILS account recon settings success" />
-	</definition>
-
+	
+	<definition name="tiles.account.recon.settings.success" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS account recon settings success" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
+		<put-attribute name="description" value="TRAILS account recon settings success" />
+		<put-attribute name="keywords" value="TRAILS account recon settings success" />
+	</definition>	
+	
 	<definition name="tiles.account.recon.workspace" extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/workspace.jsp" />
+		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace.jsp" />
 		<put-attribute name="description" value="TRAILS recon workspace" />
 		<put-attribute name="keywords" value="TRAILS recon workspace" />
 	</definition>
-
+	
+	<definition name="tiles.account.recon.workspace.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS recon workspace" />
+		<put-attribute name="keywords" value="TRAILS recon workspace" />
+	</definition>
+	
 	<definition name="tiles.account.recon.workspace.manualAllocation"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"

@@ -69,16 +69,36 @@
 
 		<batch:step id="loadStep7" parent="load7.master" next="loadStep8" />
 
-		<batch:step id="loadStep8" parent="load8.master" next="licensable" />
-
-		<batch:step id="licensable" next="inactivate">
+		<batch:step id="loadStep8" parent="load8.master" next="updateScheduleF" />
+	
+		<batch:split id="updateScheduleF" next="inactivate"  task-executor="taskExecutor">
+		<batch:flow>
+		    <batch:step id="updateProductScheduleF">
+			    <batch:tasklet>
+			      <batch:chunk reader="swProductViewReader"	writer="scheduleFwriter" 
+			     commit-interval="100" />
+		        </batch:tasklet>
+		    </batch:step>
+		</batch:flow>
+				<batch:flow>
+		<batch:step id="updateMvScheduleF">
 			<batch:tasklet>
-				<batch:chunk reader="licensableReader" writer="licensableWriter"
-					commit-interval="100" />
-			</batch:tasklet>
+			     <batch:chunk reader="swMvViewReader"	writer="scheduleFwriter" 
+			     commit-interval="100" />
+		    </batch:tasklet>
 		</batch:step>
+		</batch:flow>
+		<batch:flow>
+		    <batch:step id="updateMfScheduleF">
+			     <batch:tasklet>
+			      <batch:chunk reader="swMfViewReader"	writer="scheduleFwriter" 
+			     commit-interval="100" />
+		         </batch:tasklet>
+		    </batch:step>
+		</batch:flow>
+		</batch:split>
 
-		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
+ 		<batch:split id="inactivate" next="reports" task-executor="taskExecutor">
 			<batch:flow>
 				<batch:step id="inactivateSignatures">
 					<batch:tasklet>
@@ -129,14 +149,6 @@
 					</batch:tasklet>
 				</batch:step>
 			</batch:flow>
-			<batch:flow>
-				<batch:step id="COTReport" >
-					<batch:tasklet>
-						<batch:chunk reader="swguidReader" processor="swguidReportProcessor"
-							writer="swguidReportWriter" commit-interval="100" />
-					</batch:tasklet>
-				</batch:step>
-			</batch:flow>
 		</batch:split>
 
 		<batch:split id="moveFiles" task-executor="taskExecutor">
@@ -154,7 +166,7 @@
 					</batch:tasklet>
 				</batch:step>
 			</batch:flow>
-		</batch:split>
+		</batch:split> 
 	</batch:job>
 
 	<bean id="moveFilesTasklet1" class="com.ibm.asset.trails.batch.swkbt.FileMovingTasklet">
@@ -214,8 +226,8 @@
 		class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtSourceWriter"
 		scope="step">
 	</bean>
-
-	<bean id="licensableReader"
+	
+	<bean id="swProductViewReader"
 		class="org.springframework.batch.item.database.JdbcPagingItemReader"
 		scope="step">
 		<property name="dataSource" ref="dataSource" />
@@ -226,51 +238,26 @@
 				<property name="dataSource" ref="dataSource" />
 				<property name="selectClause">
 					<value><![CDATA[
-                            newLicensable
-                            ,id
-                        from (
-                        select
-                            pi.id as id
-                            ,pi.licensable as current
-                            ,case when pi.licensable = 0 and sum(pn.id) > 0 then 1
-                            when pi.licensable = 1 and (sum(pn.id) = 0 or sum(pn.id) is null) then 0 end as newLicensable
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                          p.id,siP.name, pi.licensable, kbP.deleted  
                         ]]>
 					</value>
 				</property>
 				<property name="fromClause">
 					<value><![CDATA[
-                            manufacturer m
-                            ,product_info pi
-                            ,product p
-                            left outer join version v on
-                                p.id = v.product_id
-                            left outer join release r on
-                                v.id = r.version_id
-                            left outer join software_item_pid sip on
-                                sip.software_item_id = p.id
-                                or sip.software_item_id = v.id
-                                or sip.software_item_id = r.id
-                            left outer join pid pid on
-                                sip.pid_id = pid.id
-                            left outer join part_number_pid pnp on
-                                pnp.pid_id = pid.id
-                            left outer join part_number pn on
-                                pnp.part_number_id = pn.id
-                        where
-                            m.name in ('IBM', 'IBM FileNet','IBM Tivoli', 'Informix', 'Rational Software Corporation','Ascential Software','IBM WebSphere','Digital CandleWebSphere','IBM Rational','Lotus','Candle','Tivoli','COGNOS')
-                            and m.id = p.manufacturer_id
-                            and p.id = pi.id
-                            and pi.remote_user!='TADZMainframe'
-                        group by
-                            pi.id
-                            ,pi.licensable
-                        ) as T                      
+                           eaadmin.product p join eaadmin.product_info pi on pi.id=p.id 
+                             join eaadmin.software_item siP on siP.id=p.id 
+                             join eaadmin.kb_definition kbP on kbP.id=p.id 
+                             join eaadmin.software_category scP on scP.software_category_id=pi.software_category_id  
+                             ) as T
                         ]]>
 					</value>
 				</property>
 				<property name="whereClause">
 					<value><![CDATA[
-                        where T.newLicensable is not null
+                        where 1=1
                         ]]>
 					</value>
 				</property>
@@ -282,11 +269,102 @@
 			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
 		</property>
 	</bean>
-
-	<bean id="licensableWriter"
-		class="com.ibm.asset.trails.batch.swkbt.writer.LicensableWriter"
+	
+	<bean id="swMvViewReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
 		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                          mv.id,siP.name || ' - ' || siMV.name || ' - V'|| RTRIM(CAST(mv.version AS CHAR(64) )) as name,mvpi.licensable, kbMV.deleted
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                           eaadmin.mainframe_version mv join eaadmin.software_item siMV on siMV.id=mv.id 
+                             join eaadmin.software_item siP on siP.id=mv.product_id 
+                             join eaadmin.kb_definition kbMV on kbMV.id=mv.id 
+                             join eaadmin.product_info mvpi on mvpi.id=mv.id 
+                             join eaadmin.software_category scMV on scMV.software_category_id=mvpi.software_category_id 
+                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = siMV.id 
+                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id 
+                             ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                        where 1=1
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
 	</bean>
+	
+	<bean id="swMfViewReader"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="queryProvider">
+			<bean
+				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="databaseType" value="DB2" />
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause">
+					<value><![CDATA[
+					      id,name,licensable,deleted 
+					      from ( 
+					      select 
+                           mf.id as id ,siP.name || ' - ' || siMF.name || ' - V' || RTRIM(CAST(mv.version AS CHAR(64) )) as name,  mfpi.licensable ,kbMF.deleted 
+                        ]]>
+					</value>
+				</property>
+				<property name="fromClause">
+					<value><![CDATA[
+                           eaadmin.mainframe_feature mf join eaadmin.mainframe_version mv on mf.version_id=mv.id 
+                             join eaadmin.software_item siMF on siMF.id=mf.id join eaadmin.software_item siP on siP.id=mv.product_id 
+                             join eaadmin.kb_definition kbMF on kbMF.id=mf.id join eaadmin.product_info mfpi on mfpi.id=mf.id 
+                             join eaadmin.software_category scMF on scMF.software_category_id=mfpi.software_category_id 
+                             left outer join eaadmin.software_item_pid sipMV on sipMV.software_item_id = mv.id 
+                             left outer join eaadmin.pid pidMV on pidMV.id = sipMV.pid_id 
+                             ) as T
+                        ]]>
+					</value>
+				</property>
+				<property name="whereClause">
+					<value><![CDATA[
+                        where 1=1
+                        ]]>
+					</value>
+				</property>
+				<property name="sortKey" value="id" />
+			</bean>
+		</property>
+		<property name="pageSize" value="500" />
+		<property name="rowMapper">
+			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
+		</property>
+	</bean>
+	
+	<bean id="scheduleFwriter"
+		class="com.ibm.asset.trails.batch.swkbt.writer.ScheduleFWriter"
+		scope="step">
+	</bean>	
 
 	<bean id="signatureHitReportReader"
 		class="org.springframework.batch.item.database.JdbcPagingItemReader"
@@ -706,78 +784,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<bean id="swguidReader"
-		class="org.springframework.batch.item.database.JdbcPagingItemReader"
-		scope="step">
-		<property name="dataSource" ref="dataSource" />
-		<property name="queryProvider">
-			<bean
-				class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
-				<property name="databaseType" value="DB2" />
-				<property name="dataSource" ref="dataSource" />
-				<property name="selectClause">
-					<value><![CDATA[ 
-                            guid
-                            ,softwareName
-                            ,manufacturer
-                            ,productRole
-                            ,status
-                            from (
-                            select
-                                kb.guid as guid
-                                ,s.name as softwareName
-                                ,m.name as manufacturer
-                                ,s.PRODUCT_ROLE as productRole
-                                ,case when kb.deleted = 1 then 'INACTIVE' else 'ACTIVE' end as status
-                        ]]>
-					</value>
-				</property>
-				<property name="fromClause">
-					<value><![CDATA[
-                                kb_definition kb
-                                ,software_item s
-                                ,product p
-                                ,manufacturer m
-                                where
-                                kb.id = s.id
-                                and s.id = p.id
-                                and p.manufacturer_id=m.id
-                                ) as T
-                        ]]>
-					</value>
-				</property>
-				<property name="sortKey" value="guid" />
-			</bean>
-		</property>
-		<property name="pageSize" value="500" />
-		<property name="rowMapper">
-			<bean class="org.springframework.jdbc.core.ColumnMapRowMapper" />
-		</property>
-	</bean>
-	
-	<bean id="swguidReportProcessor"
-		class="com.ibm.asset.trails.batch.swkbt.processor.SwguidReportProcessor" />
-		
-	<bean id="swguidReportWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<property name="resource" value="${cotReportWriterResource}" />
-		<property name="lineAggregator">
-			<bean
-				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
-				<property name="fieldExtractor">
-					<bean
-						class="org.springframework.batch.item.file.transform.PassThroughFieldExtractor">
-					</bean>
-				</property>
-			</bean>
-		</property>
-		<property name="headerCallback">
-			<bean class="com.ibm.asset.trails.batch.swkbt.writer.SwkbtHeaderCallback">
-				<property name="csvHeader"
-					value="GUID,COMPONENT,MANUFACTURER,PRODUCT ROLE,STATUS" />
-			</bean>
-		</property>
-	</bean>
-		
 	<bean id="fileNameListener"
 		class="com.ibm.asset.trails.batch.swkbt.listener.OutputFileListener"
 		scope="step" />

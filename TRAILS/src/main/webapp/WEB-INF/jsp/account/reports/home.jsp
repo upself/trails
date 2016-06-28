@@ -91,18 +91,23 @@ $(function(){
 });
 
 function initDataExceptionReport(){
-	$.get("${pageContext.request.contextPath}/account/alert/alertList.htm?type=DATA_EXCEPTION",function(data){
-		var $html = $(data);
-		var dataExceptionHtml = '';
-		$('#loading').hide();
-		$html.find("a").each(function(){
-			var li = $('<li></li>')
-			var alink = $(this).addClass('ibm-download-link');
-			
-			li.append(alink);
-			$('#dataException').append(li);
-		});
-	})
+	$.post('${pageContext.request.contextPath}/ws/alert/account/summary',{'accountId': ${account.id},'alertType': 'DATA_EXCEPTION'},function(data){
+		var html = '';
+		if(data.msg != 'SUCCESS'){
+			html = '<li>There is data exceptions reports.</li>'
+		} else{
+			for(var i=0;  i < data.dataList.length; i++){
+				var item = data.dataList[i];
+				var url = '/TRAILS/report/download/downloadReportList!get.htm/';
+				url += item.type + item.code + '.tsv';
+				url += '?name=accountDataException&code=' + item.code;
+				
+				html+= '<li><a class="ibm-download-link" href="' + url + '">' + item.name + '</a></li>';
+			}
+			$('#dataException').html(html);
+		}
+		
+	});
 }
 </script>
 

@@ -51,6 +51,25 @@ import com.ibm.tap.trails.framework.DisplayTagList;
 @Service
 public class ScheduleFServiceImpl implements ScheduleFService {
 
+	/**
+	 * 1. (Level)SCHEDULE_F.LEVEL - VARCHAR(16)
+	 * 2. (HW owner)SCHEDULE_F.HW_OWNER - VARCHAR(64)
+	 * 3. (Hostname)SCHEDULE_F.HOSTNAME - VARCHAR(255)
+	 * 4. (Serial)SCHEDULE_F.SERIAL - VARCHAR(32)
+	 * 5. (MachineType)SCHEDULE_F.MACHINE_TYPE - VARCHAR(8)
+	 * 6. (Account Number)CUSTOMER.ACCOUNT_NUMBER - INT//So set it to -1
+	 * 7. (Software Title)SCHEDULE_F.SOFTWARE_TITLE - VARCHAR(256)
+	 * 8. (Software Name)SCHEDULE_F.SOFTWARE_NAME - VARCHAR(128)
+	 * 9. (Manufacturer)SCHEDULE_F.MANUFACTURER - VARCHAR(64)
+	 * 10. (Scope)SCOPE.DESCRIPTION - VARCHAR(64)
+	 * 11. (SW Financial Resp)SCHEDULE_F.SW_FINANCIAL_RESP - VARCHAR(16)
+	 * 12. (Source)SOURCE.DESCRIPTION - VARCHAR(64)
+	 * 13. (Source Location)SCHEDULE_F.SOURCE_LOCATION - VARCHAR(128)
+	 * 14. (Status)STATUS.DESCRIPTION - VARCHAR(64)
+	 * 15. (Business Justification)SCHEDULE_F.BUSINESS_JUSTIFICATION - VARCHAR(256)   
+	 */
+	private final static int[] maxDBColumnLenghs = { 16, 64, 255, 32, 8, -1, 256, 128, 64, 64, 16, 64, 128, 64, 256 };
+
 	private EntityManager em;
 
 	@Autowired
@@ -378,22 +397,22 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HWOWNER
 														.toString()) && sf
-												.getHwOwner().equals(
+												.getHwOwner().equalsIgnoreCase(
 														existsSF.getHwOwner()))
 										|| (sf.getLevel()
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HOSTNAME
 														.toString()) && sf
-												.getHostname().equals(
+												.getHostname().equalsIgnoreCase(
 														existsSF.getHostname()))
 										|| (sf.getLevel()
 												.toString()
 												.equals(ScheduleFLevelEnumeration.HWBOX
 														.toString())
 												&& sf.getMachineType()
-														.equals(existsSF
+														.equalsIgnoreCase(existsSF
 																.getMachineType()) && sf
-												.getSerial().equals(
+												.getSerial().equalsIgnoreCase(
 														existsSF.getSerial()))) {
 									sf.setId(existsSF.getId());
 								}
@@ -403,7 +422,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					saveScheduleF(sf, psRemoteUser);
 					cell = row.createCell(16);
 					cell.setCellStyle(lcsMessage);
-					cell.setCellValue(new HSSFRichTextString(successMessage.append("YOUR TEMPLATE UPLOAD SUCCESSFULLY").toString()));
+					cell.setCellValue(new HSSFRichTextString(successMessage.append("Schedule F record uploaded successfully").toString()));
 				}
 			}
 		}
@@ -482,7 +501,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 			if (psfSave.getHostname() != null
 					&& lsfExists.getHostname() != null) {
-				if (!psfSave.getHostname().equals(lsfExists.getHostname())) {
+				if (!psfSave.getHostname().equalsIgnoreCase(lsfExists.getHostname())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -495,7 +514,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 
 			if (psfSave.getHwOwner() != null && lsfExists.getHwOwner() != null) {
-				if (!psfSave.getHwOwner().equals(lsfExists.getHwOwner())) {
+				if (!psfSave.getHwOwner().equalsIgnoreCase(lsfExists.getHwOwner())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -508,7 +527,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			if (psfSave.getMachineType() != null
 					&& lsfExists.getMachineType() != null) {
 				if (!psfSave.getMachineType()
-						.equals(lsfExists.getMachineType())) {
+						.equalsIgnoreCase(lsfExists.getMachineType())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -521,7 +540,7 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 
 			if (psfSave.getSerial() != null && lsfExists.getSerial() != null) {
-				if (!psfSave.getSerial().equals(lsfExists.getSerial())) {
+				if (!psfSave.getSerial().equalsIgnoreCase(lsfExists.getSerial())) {
 					lbSaveReconRow = true;
 					lbSaveExistReconRow = true;
 				}
@@ -934,6 +953,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 				throw new Exception("Level is required.");
 			} else if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 				throw new Exception("Level is not a string.");
+			} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+				throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 			} else if (cell.getRichStringCellValue().getString()
 					.equals(ScheduleFLevelEnumeration.MANUFACTURER.toString())
 					&& (cell.getRow().getCell(8) == null || StringUtils
@@ -976,13 +997,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 					throw new Exception("HW owner is not a string.");
+				} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 				} else if (!cell.getRow().getCell(0).getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.HWOWNER.toString())) {
 					throw new Exception("Level is not specified with HWOWNER.");
 				} else {
 					sf.setHwOwner(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -995,13 +1018,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 					throw new Exception("Hostname is not a string.");
+				} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 				} else if (!cell.getRow().getCell(0).getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.HOSTNAME.toString())) {
 					throw new Exception("Level is not specified with HOSTNAME.");
 				} else {
 					sf.setHostname(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -1014,13 +1039,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 					.getString())) {
 				if (cell.getCellType() != HSSFCell.CELL_TYPE_STRING) {
 					throw new Exception("Serial number is not a string.");
+				} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 				} else if (!cell.getRow().getCell(0).getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.HWBOX.toString())) {
 					throw new Exception("Level is not specified with HWBOX.");
 				} else {
 					sf.setSerial(cell.getRichStringCellValue().getString()
-							.trim());
+							.trim().toUpperCase());
 				}
 			}
 			break;
@@ -1031,13 +1058,15 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 			if (StringUtils.isNotEmpty(cell.getRichStringCellValue()
 					.getString())) {
-				if (!cell.getRow().getCell(0).getRichStringCellValue()
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				} else if (!cell.getRow().getCell(0).getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.HWBOX.toString())) {
 					throw new Exception("Level is not specified with HWBOX.");
 				} else {
 					List<MachineType> mtlist = findMachineTypebyName(cell
-							.getRichStringCellValue().getString().toUpperCase());
+							.getRichStringCellValue().getString().trim().toUpperCase());
 					if (mtlist == null || mtlist.isEmpty()) {
 						throw new Exception("Machine Type is invalid.");
 					} else {
@@ -1082,14 +1111,16 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 			if (StringUtils.isNotEmpty(cell.getRichStringCellValue()
 							.getString())) {
-				if (cell.getRow()
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				} else if (cell.getRow()
 						.getCell(0)
 						.getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Level is not specified with any equal or lower PRODUCT level.");
+							"Software name and title is not specified for manufacturer level.");
 				} else {
 					sf.setSoftwareTitle(cell.getRichStringCellValue()
 							.getString().trim());
@@ -1105,14 +1136,17 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			}
 			if (StringUtils.isNotEmpty(cell.getRichStringCellValue()
 							.getString())) {
-				if (cell.getRow()
+				
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				} else if (cell.getRow()
 						.getCell(0)
 						.getRichStringCellValue()
 						.getString()
 						.equals(ScheduleFLevelEnumeration.MANUFACTURER
 								.toString())) {
 					throw new Exception(
-							"Level is not specified with any equal or lower PRODUCT level.");
+							"Software name and title is not specified for manufacturer level.");
 				} else {
 
 					ArrayList<Software> lalProductInfo = null;
@@ -1149,6 +1183,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
 				throw new Exception("Manufacturer is required.");
+			} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+				throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 			} else {
 				Manufacturer manufacturer = manufactuerService
 						.findManufacturerByName(cell.getRichStringCellValue()
@@ -1175,12 +1211,16 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 		case 9: { // Scope
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				}
+				
 				@SuppressWarnings("unchecked")
 				List<Scope> results = getEntityManager()
 						.createNamedQuery("scopeDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Scope is invalid.");
@@ -1214,6 +1254,10 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 		case 10: { // SW Financial Resp
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				}
+				
 				String[] scDesParts = cell.getRow().getCell(9)
 						.getRichStringCellValue().getString().split(",");
 				String swFinancialResp = cell.getRichStringCellValue()
@@ -1246,12 +1290,16 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 		case 11: { // Source
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				}
+				
 				@SuppressWarnings("unchecked")
 				List<Source> results = getEntityManager()
 						.createNamedQuery("sourceDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Source is invalid.");
@@ -1271,6 +1319,8 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
 				throw new Exception("Source location is required.");
+			} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+				throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 			} else {
 				sf.setSourceLocation(cell.getRichStringCellValue().getString()
 						.trim());
@@ -1281,12 +1331,16 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 
 		case 13: { // Status
 			if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+					throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
+				}
+				
 				@SuppressWarnings("unchecked")
 				List<Status> results = getEntityManager()
 						.createNamedQuery("statusDetails")
 						.setParameter(
 								"description",
-								cell.getRichStringCellValue().getString()
+								cell.getRichStringCellValue().getString().trim()
 										.toUpperCase()).getResultList();
 				if (results == null || results.isEmpty()) {
 					throw new Exception("Status is invalid.");
@@ -1309,9 +1363,11 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 			} else if (StringUtils.isEmpty(cell.getRichStringCellValue()
 					.getString())) {
 				throw new Exception("Business justification is required.");
+			} else if (getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs) != null) {
+				throw new Exception(getTemplateFieldLengthCheckMessage(cell.getColumnIndex(), cell.getRichStringCellValue().getString(), maxDBColumnLenghs));
 			} else {
 				sf.setBusinessJustification(cell.getRichStringCellValue()
-						.getString());
+						.getString().trim());
 			}
 			break;
 		}
@@ -1409,6 +1465,99 @@ public class ScheduleFServiceImpl implements ScheduleFService {
 		}
 
 		return lsErrorMessage;
+	}
+	
+	
+	private String getTemplateFieldLengthCheckMessage(int piCellIndex, String fieldValue, int[] maxDBColumnLenghs) {
+
+		String fieldLengthCheckMessage = null;
+		String fieldName = null;
+
+		switch (piCellIndex) {
+			case 0: { // Level
+				fieldName = "Level";
+				break;
+			}
+	
+			case 1: { // HWOWNER
+				fieldName = "HW owner";
+				break;
+			}
+	
+			case 2: { // HOSTNAME
+				fieldName = "Hostname";
+				break;
+			}
+	
+			case 3: { // Serial number
+				fieldName = "Serial";
+				break;
+			}
+	
+			case 4: { // Machine Type
+				fieldName = "MachineType";
+				break;
+			}
+	
+			case 5: { // Account number
+				fieldName = "Account Number";
+				break;
+			}
+	
+			case 6: { // Software title
+				fieldName = "Software Title";
+				break;
+			}
+	
+			case 7: { // Software name
+				fieldName = "Software Name";
+				break;
+			}
+	
+			case 8: { // Manufacturer
+				fieldName = "Manufacturer";
+				break;
+			}
+	
+			case 9: { // Scope
+				fieldName = "Scope";
+				break;
+			}
+	
+			case 10: { // SW Financial Resp
+				fieldName = "SW Financial Resp";
+				break;
+			}
+	
+			case 11: { // Source
+				fieldName = "Source";
+				break;
+			}
+	
+			case 12: { // Source location
+				fieldName = "Source Location";
+				break;
+			}
+	
+			case 13: { // Status
+				fieldName = "Status";
+				break;
+			}
+	
+			case 14: { // Business justification
+				fieldName = "Business Justification";
+				break;
+			}
+		}
+
+		if (fieldName != null && !fieldName.equals("Account Number") && fieldValue.length() > maxDBColumnLenghs[piCellIndex]) {
+			fieldLengthCheckMessage = "";
+			fieldLengthCheckMessage += "The length of ";
+			fieldLengthCheckMessage += fieldName;
+			fieldLengthCheckMessage += " field value is greater than "+maxDBColumnLenghs[piCellIndex]+".";
+		}
+
+		return fieldLengthCheckMessage;
 	}
 
 	private EntityManager getEntityManager() {

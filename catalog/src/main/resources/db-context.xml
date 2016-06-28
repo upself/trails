@@ -58,15 +58,5 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="guidFileInputStream" class="java.io.FileInputStream">
-		<constructor-arg>
-			<value>${guidFileLocation}</value>
-		</constructor-arg>
-	</bean>
-		<bean id="mfGuidFileInputStream" class="java.io.FileInputStream">
-		<constructor-arg>
-			<value>${mfGuidFileLocation}</value>
-		</constructor-arg>
-	</bean>
 </beans>
 

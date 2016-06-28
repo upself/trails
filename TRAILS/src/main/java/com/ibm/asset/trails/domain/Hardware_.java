@@ -33,4 +33,5 @@ public class Hardware_ {
 	public static volatile SingularAttribute<Hardware, BigDecimal> nbrOfChipsMax;
 	public static volatile SingularAttribute<Hardware, String> shared;
 	public static volatile SingularAttribute<Hardware, Integer> cpuIfl;
+	public static volatile SingularAttribute<Hardware, String> multi_tenant;
 }

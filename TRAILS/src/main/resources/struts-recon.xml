@@ -34,6 +34,7 @@
 			</interceptor-ref>
 			<result type="tiles">tiles.account.recon.workspace</result>
 			<result name="error" type="redirect">settings.htm</result>
+			<result name="SHOW_V17E" type="tiles">tiles.account.recon.workspace.v17e</result>
 		</action>
 
 		<action name="showQuestion" class="showQuestion">

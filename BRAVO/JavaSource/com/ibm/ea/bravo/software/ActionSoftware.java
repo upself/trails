@@ -149,7 +149,7 @@ public class ActionSoftware extends ActionBase {
 			request.setAttribute(Constants.BANK_ACCOUNT_LIST, bankAccounts);
 			
 			// Show the delete button only for the users in scan team bluegroup.
-			if (request.isUserInRole(Constants.SCAN_TEAM_GROUP)) {
+			if (request.isUserInRole(Constants.SCAN_TEAM_GROUP) || request.isUserInRole(Constants.SCAN_TEAM_SUBGROUP)) {
 				request.setAttribute("showDelete", "TRUE");
 			}
 
@@ -622,7 +622,7 @@ public class ActionSoftware extends ActionBase {
 		FormSoftware softwareForm = (FormSoftware) form;
 
 		// Show the delete button only for the users in scan team bluegroup.
-		if (request.isUserInRole(Constants.SCAN_TEAM_GROUP)) {
+		if (request.isUserInRole(Constants.SCAN_TEAM_GROUP) || request.isUserInRole(Constants.SCAN_TEAM_SUBGROUP)) {
 			request.setAttribute("showDelete", "TRUE");
 		}
 
@@ -826,7 +826,7 @@ public class ActionSoftware extends ActionBase {
 					llBankAccount);
 
 			// Show the delete button only for the users in scan team bluegroup
-			if (pHttpServletRequest.isUserInRole(Constants.SCAN_TEAM_GROUP)) {
+			if (pHttpServletRequest.isUserInRole(Constants.SCAN_TEAM_GROUP) || pHttpServletRequest.isUserInRole(Constants.SCAN_TEAM_SUBGROUP)) {
 				pHttpServletRequest.setAttribute("showDelete", "TRUE");
 			}
 
