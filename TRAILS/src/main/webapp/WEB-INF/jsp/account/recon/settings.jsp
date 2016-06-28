@@ -178,10 +178,10 @@
 	<div class="ibm-rule"> <hr /> </div>
 	<div style="float:right">
 		<div>
-			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter" />
 			 <span class="ibm-btn-pri"> 
 			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateSettings();">
 			</span>
+			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter" />
 		</div>
 	</div>
 </s:form>
