@@ -48,13 +48,11 @@ public class WSMsg {
 		return new WSMsg(SUCCESS,message, null, dataList);
 	} 
 	
-	public static WSMsg successMessage(String message,Object data, List<?> dataList){
-		return new WSMsg(SUCCESS,message, data, dataList);
+	public static WSMsg successMessage(String message, Object data, List<?> dataList){
+		return new WSMsg(SUCCESS, message, data, dataList);
 	}
 	
 	
-	
-
 	public String getStatus() {
 		return status;
 	}
@@ -86,6 +84,5 @@ public class WSMsg {
 	public void setDataList(List<?> dataList) {
 		this.dataList = dataList;
 	} 
-	
 	
 }
