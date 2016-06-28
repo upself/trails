@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @org.hibernate.annotations.Entity(mutable = false)
 @NamedQueries({
 		@NamedQuery(name = "listManufacturerName", query = "SELECT m.manufacturerName FROM Manufacturer m ORDER BY manufacturerName"),
-		@NamedQuery(name = "manufacturerByName", query = "FROM Manufacturer m where m.manufacturerName = :name"),
+		@NamedQuery(name = "manufacturerByName", query = "FROM Manufacturer m where UCASE(m.manufacturerName) = :name"),
 		@NamedQuery(name = "manufacturerListByName", query = "FROM Manufacturer m where UCASE(m.manufacturerName) = :name"),
 		@NamedQuery(name = "manufacturerByNameLike", query = "FROM Manufacturer m where UCASE(m.manufacturerName) like :name") })
 public class Manufacturer extends KbDefinition implements Serializable {

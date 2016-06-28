@@ -61,7 +61,7 @@ $(function(){
 				}
 				
 				html += "<tr>";
-				html += "<td></td>";
+				html += "<td>Total:</td>";
 				html += "<td>" + assignedDataExpTotalNum + "</td>";
 				html += "<td>" + dataExpTotalNum + "</td>";
 				html += "</tr>";

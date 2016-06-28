@@ -519,7 +519,10 @@
 
 	<bean id="alertHardwareLparDao"
 		class="com.ibm.asset.trails.dao.jpa.DataExceptionHardwareLparDaoJpa" />
-
+		
+	<bean id="alertInstalledSwDao"
+		class="com.ibm.asset.trails.dao.jpa.DataExceptionInstalledSwDaoJpa" />
+	
 	<bean id="alertHistoryDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionHistoryDaoJpa" />
 
 	<bean id="alertCauseDao" class="com.ibm.asset.trails.dao.jpa.DataExceptionCauseDaoJpa" />
@@ -536,6 +539,19 @@
 		<property name="alertHistoryDao" ref="alertHistoryDao" />
 	</bean>
 
+	<bean id="alertInstalledSwService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionInstalledSwServiceImpl">
+		<property name="alertInstalledSwDao" ref="alertInstalledSwDao" />
+		<property name="alertHistoryDao" ref="alertHistoryDao" />
+	</bean>
+
+	<bean id="alertIntswHistoryService"
+		class="com.ibm.asset.trails.service.impl.DataExceptionHistoryServiceImpl">
+		<property name="alertLparDao" ref="alertInstalledSwDao" />
+		<property name="alertHistoryDao" ref="alertHistoryDao" />
+		<property name="lparType" value="intsw" />
+	</bean>
+	
 	<bean id="alertSwlparHistoryService"
 		class="com.ibm.asset.trails.service.impl.DataExceptionHistoryServiceImpl">
 		<property name="alertLparDao" ref="alertSoftwareLparDao" />
@@ -550,6 +566,11 @@
 		<property name="lparType" value="hwLpar" />
 	</bean>
 
+	<bean id="alertIntswHistory" scope="prototype"
+		class="com.ibm.asset.trails.action.AlertHistoryAction">
+		<property name="historyService" ref="alertIntswHistoryService" />
+	</bean>
+	
 	<bean id="alertSwlparHistory" scope="prototype"
 		class="com.ibm.asset.trails.action.AlertHistoryAction">
 		<property name="historyService" ref="alertSwlparHistoryService" />
@@ -565,6 +586,12 @@
 		<property name="accountService" ref="accountService" />
 		<property name="softwareLparExpService" ref="alertSwlparService" />
 		<property name="alertTypeCode" value="NULLTIME" />
+	</bean>
+	<bean id="lparSWDSCEXPExpAction" scope="prototype"
+		class="com.ibm.asset.trails.action.InstalledSwExpAction" parent="bravoServerName">
+		<property name="accountService" ref="accountService" />
+		<property name="installedSwExpService" ref="alertInstalledSwService" />
+		<property name="alertTypeCode" value="SWDSCEXP" />
 	</bean>
 	<bean id="lparNOOSExpAction" scope="prototype"
 		class="com.ibm.asset.trails.action.SoftwareLparExpAction" parent="bravoServerName">

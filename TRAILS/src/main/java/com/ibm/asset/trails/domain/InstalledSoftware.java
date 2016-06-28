@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-
 @Entity
 @Table(name = "INSTALLED_SOFTWARE")
 @org.hibernate.annotations.Entity(mutable = false)
@@ -140,14 +139,12 @@ public class InstalledSoftware extends AbstractDomainEntity {
 		if (!(other instanceof InstalledSoftware))
 			return false;
 		InstalledSoftware castOther = (InstalledSoftware) other;
-		return new EqualsBuilder().append(softwareLpar, castOther.softwareLpar)
-				.append(software, castOther.software).isEquals();
+		return new EqualsBuilder().append(softwareLpar, castOther.softwareLpar).append(software, castOther.software).isEquals();
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(softwareLpar).append(software)
-				.toHashCode();
+		return new HashCodeBuilder().append(softwareLpar).append(software).toHashCode();
 	}
 
 }
