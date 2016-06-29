@@ -44,6 +44,8 @@ public class ShowWorkspace extends AccountReportBaseAction {
         super.setReportList(lReport);
     }
     
+    public static final String SHOW_V17E = "SHOW_V17E"; 
+    
 	@Override
     @UserRole(userRole = UserRoleType.READER)
     public String execute() {
@@ -54,8 +56,6 @@ public class ShowWorkspace extends AccountReportBaseAction {
 
         reconcileTypes = getReconWorkspaceService().reconcileTypes(true);
         
-        //AB added
-        //Story 26012
         List<String> schedulefValResults=getUserSession().getSchedulefDefValResult();
         if(schedulefValResults!=null && !schedulefValResults.isEmpty()){
         	for(String msg:schedulefValResults){
@@ -71,10 +71,24 @@ public class ShowWorkspace extends AccountReportBaseAction {
         	getReconWorkspaceService().setProcWarnMsg(null);
         }
         
+        if(null!=gotoV17e && gotoV17e.equalsIgnoreCase("y")){
+        	return SHOW_V17E;
+        }
+        
         return SUCCESS;
     }
+	
+	private String gotoV17e;
+	
+    public String getGotoV17e() {
+		return gotoV17e;
+	}
 
-    public ReconWorkspaceService getReconWorkspaceService() {
+	public void setGotoV17e(String gotoV17e) {
+		this.gotoV17e = gotoV17e;
+	}
+
+	public ReconWorkspaceService getReconWorkspaceService() {
         return reconWorkspaceService;
     }
 

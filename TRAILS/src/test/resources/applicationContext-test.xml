@@ -104,8 +104,12 @@
 	</bean>
 	<bean id="priorityISVSoftwareService" class="com.ibm.asset.trails.service.impl.PriorityISVSoftwareServiceImpl" />
 	<bean id="scheduleFServiceEndpoint" class="com.ibm.asset.trails.ws.ScheduleFServiceEndpoint"/>
-    <bean id="statusService" class="com.ibm.asset.trails.service.impl.StatusServiceImpl" />
-   
-    <!--web services -->
+	<bean id="statusService" class="com.ibm.asset.trails.service.impl.StatusServiceImpl" />
+    <bean id="dataExceptionReportService" class="com.ibm.asset.trails.service.impl.DataExceptionReportServiceImpl" />
+	<bean id="alertSwlparService" class="com.ibm.asset.trails.service.impl.DataExceptionSoftwareLparServiceImpl" />
+	<bean id="alertHwlparService" class="com.ibm.asset.trails.service.impl.DataExceptionHardwareLparServiceImpl" />
+	<bean id="alertInstalledSoftwareService" class="com.ibm.asset.trails.service.impl.DataExceptionInstalledSoftwareServiceImpl" />
+
+	<!--web services -->
 	<import resource="applicationContext-test-ws.xml" />
 </beans>

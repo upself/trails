@@ -11,6 +11,7 @@ import com.ibm.asset.trails.dao.DataExceptionDao;
 import com.ibm.asset.trails.dao.DataExceptionHistoryDao;
 import com.ibm.asset.trails.domain.DataException;
 import com.ibm.asset.trails.domain.DataExceptionHistory;
+import com.ibm.asset.trails.domain.DataExceptionInstalledSw;
 import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
 import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
 import com.ibm.asset.trails.service.DataExceptionHistoryService;
@@ -51,6 +52,12 @@ public class DataExceptionHistoryServiceImpl implements
 			DataExceptionSoftwareLpar swlparAlert = (DataExceptionSoftwareLpar) alertLparDao
 					.getById(alertId);
 			DataExceptionHistory history = transformToHistory(swlparAlert);
+			list.add(history);
+		}
+		if (lparType.equalsIgnoreCase("intsw")) {
+			DataExceptionInstalledSw inswAlert = (DataExceptionInstalledSw) alertLparDao
+					.getById(alertId);
+			DataExceptionHistory history = transformToHistory(inswAlert);
 			list.add(history);
 		}
 

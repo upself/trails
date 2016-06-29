@@ -22,11 +22,7 @@
 	</h2>
 	<div id="alertSummary" class="table-wrap" style="padding-top: 10px">Loading...</div>
 	<br />
-	<h2 style="background-color: #d7d7d8">
-		<label style="padding-left: 10px">Account exceptions</label>
-	</h2>
-	Please use data exception reports on the left navigation <br /> <br />
-
+	
 	<h2 style="background-color: #d7d7d8">
 		<label style="padding-left: 10px">Account reports</label>
 	</h2>

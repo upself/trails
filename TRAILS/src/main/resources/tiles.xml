@@ -75,6 +75,7 @@
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
 		</put-list-attribute>
+
 		<put-list-attribute name="/account/exceptions/home.htm">
 			<item value="Overview" link="/account/exceptions/overview.htm"
 				icon="account" />
@@ -96,7 +97,10 @@
 				icon="account" />
 			<item value="HW LPAR NO CPU MODEL" link="/account/exceptions/lparNCPMDL.htm"
 				icon="account" />
+			<item value="SW DISCREPANCY EXPIRED" link="/account/exceptions/lparSWDSCEXP.htm"
+				icon="account" />
 		</put-list-attribute>
+
 		<put-list-attribute name="/account/license/license.htm">
 			<item value="License details" link="/account/license/licenseDetails.htm"
 				icon="account" />
@@ -317,6 +321,7 @@
 				<item value="Expired maintenance" link="/account/alerts/alertExpiredMaint.htm" 
 				icon="account" /> -->
 		</put-list-attribute>
+
 		<put-list-attribute name="/account/exceptions/home.htm">
 			<item value="Overview" link="/account/exceptions/overview.htm"
 				icon="account" />
@@ -338,7 +343,10 @@
 				icon="account" />
 			<item value="HW LPAR NO CPU MODEL" link="/account/exceptions/lparNCPMDL.htm"
 				icon="account" />
+			<item value="SW DISCREPANCY EXPIRED" link="/account/exceptions/lparSWDSCEXP.htm"
+				icon="account" />
 		</put-list-attribute>
+
 		<put-list-attribute name="/account/license/license.htm">
 			<item value="License details" link="/account/license/licenseDetails.htm"
 				icon="account" />
@@ -435,6 +443,12 @@
 		<put-attribute name="contentSidebar" type="template"
 			value="" />
 		<put-attribute name="navigation" value="tiles.v17e.navigation" />
+	</definition>
+	
+	<definition name="tiles.v17e.w3OneColumnLayoutWithoutNavi" template="/WEB-INF/jsp/layouts/v17eW3OneColumnLayoutWithoutNavi.jsp">
+		<put-attribute name="contentTitle" value="" />
+		<put-attribute name="content" type="template" value="" />
+		<put-attribute name="contentSidebar" type="template" value="" />
 	</definition>
 
 	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
@@ -1132,14 +1146,26 @@
 		<put-attribute name="keywords" value="TRAILS alert history" />
 	</definition>
 
+	<definition name="tiles.exception.intsw.history.popup"
+		extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS data exception history" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionInstSwHistoryPopup.jsp" />
+	</definition>
 	<definition name="tiles.exception.swlpar.history.popup"
 		extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS data exception history" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/exception/exceptionSwlparHistoryPopup.jsp" />
 	</definition>
-
 	<definition name="tiles.exception.hwlpar.history.popup"
+		extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS data exception history" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/exception/exceptionHwlparHistoryPopup.jsp" />
+	</definition>
+
+	<definition name="tiles.exception.installedSw.history.popup"
 		extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TRAILS data exception history" />
 		<put-attribute name="content" type="template"
@@ -1148,8 +1174,7 @@
 
 	<definition name="tiles.account.license.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS Account License View" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/license/licenseList.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/license/licenseList.jsp" />
 		<put-attribute name="description" value="TRAILS account license" />
 		<put-attribute name="keywords" value="TRAILS account license" />
 	</definition>
@@ -1162,32 +1187,34 @@
 		<put-attribute name="keywords" value="TRAILS account license detail" />
 	</definition>
 
-	<definition name="tiles.account.recon.settings" extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/settings.jsp" />
+	<definition name="tiles.account.recon.settings" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Reconciliation workspace settings" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settings.jsp" />
 		<put-attribute name="description" value="TRAILS recon settings" />
 		<put-attribute name="keywords" value="TRAILS recon settings" />
 	</definition>
-
-	<definition name="tiles.account.recon.settings.success"
-		extends="tiles.w3OneColumnLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
-		<put-attribute name="description"
-			value="TRAILS account recon settings success" />
-		<put-attribute name="keywords"
-			value="TRAILS account recon settings success" />
-	</definition>
-
+	
+	<definition name="tiles.account.recon.settings.success" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="TRAILS account recon settings success" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/settingsSuccess.jsp" />
+		<put-attribute name="description" value="TRAILS account recon settings success" />
+		<put-attribute name="keywords" value="TRAILS account recon settings success" />
+	</definition>	
+	
 	<definition name="tiles.account.recon.workspace" extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/workspace.jsp" />
+		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace.jsp" />
 		<put-attribute name="description" value="TRAILS recon workspace" />
 		<put-attribute name="keywords" value="TRAILS recon workspace" />
 	</definition>
-
+	
+	<definition name="tiles.account.recon.workspace.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS recon workspace" />
+		<put-attribute name="keywords" value="TRAILS recon workspace" />
+	</definition>
+	
 	<definition name="tiles.account.recon.workspace.manualAllocation"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"
@@ -1347,6 +1374,7 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace unassignment confirmation" />
 	</definition>
+
 	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="TRAILS license freepool" />
 		<put-attribute name="content" type="template"
@@ -1425,7 +1453,6 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace enterprise agreement confirmation" />
 	</definition>
-
 	<definition name="tiles.account.recon.workspace.pendingCustomerDecision"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"
@@ -1437,7 +1464,6 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace pending customer decision" />
 	</definition>
-
 	<definition
 		name="tiles.account.recon.workspace.pendingCustomerDecisionConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1458,7 +1484,6 @@
 		<put-attribute name="description" value="TRAILS admin home" />
 		<put-attribute name="keywords" value="TRAILS admin home" />
 	</definition>
-
 	<definition name="tiles.admin.scheduleF.upload" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Upload Schedule F" />
 		<put-attribute name="content" type="template"
@@ -1466,7 +1491,6 @@
 		<put-attribute name="description" value="TRAILS schedule F upload" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload" />
 	</definition>
-
 	<definition name="tiles.admin.scheduleF.upload.success"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F Upload Result" />
@@ -1475,7 +1499,6 @@
 		<put-attribute name="description" value="TRAILS schedule F upload success" />
 		<put-attribute name="keywords" value="TRAILS schedule F upload success" />
 	</definition>
-
 	<definition name="tiles.admin.scheduleF.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F List" />
 		<put-attribute name="content" type="template"
@@ -1483,7 +1506,6 @@
 		<put-attribute name="description" value="TRAILS schedule F list" />
 		<put-attribute name="keywords" value="TRAILS schedule F list" />
 	</definition>
-
 	<definition name="tiles.admin.scheduleF.listError" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F List" />
 		<put-attribute name="content" type="template"
@@ -1491,7 +1513,6 @@
 		<put-attribute name="description" value="TRAILS schedule F list error" />
 		<put-attribute name="keywords" value="TRAILS schedule F list error" />
 	</definition>
-
 	<definition name="tiles.admin.scheduleF.manage" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Schedule F Manage" />
 		<put-attribute name="content" type="template"
@@ -1499,7 +1520,6 @@
 		<put-attribute name="description" value="TRAILS manage schedule F" />
 		<put-attribute name="keywords" value="TRAILS manage schedule F" />
 	</definition>
-	<!-- <definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.w3OneColumnLayout"> -->
 	<definition name="tiles.admin.pvuMapping.listPvu" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="PVU mapping" />
 		<put-attribute name="content" type="template"
@@ -1507,19 +1527,14 @@
 		<put-attribute name="description" value="TRAILS PVU list" />
 		<put-attribute name="keywords" value="TRAILS PVU list" />
 	</definition>
-	<!-- <definition name="tiles.admin.pvuMapping.mappingPvu" extends="tiles.w3OneColumnLayout"> -->
 	<definition name="tiles.admin.pvuMapping.mappingPvu"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="PVU mapping" />
-		<!-- <put-attribute name="headInsert" type="template" value="/WEB-INF/jsp/admin/pvuMapping/mappingHead.jsp" 
-			/> -->
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/admin/pvuMapping/mapping.jsp" />
 		<put-attribute name="description" value="TRAILS PVU mapping" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping" />
 	</definition>
-
-	<!-- <definition name="tiles.admin.pvuMapping.updateSuccess" extends="tiles.w3OneColumnLayout"> -->
 	<definition name="tiles.admin.pvuMapping.updateSuccess"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Update PVU mapping result" />
@@ -1528,7 +1543,6 @@
 		<put-attribute name="description" value="TRAILS PVU mapping success" />
 		<put-attribute name="keywords" value="TRAILS PVU mapping success" />
 	</definition>
-
 	<definition name="tiles.admin.nonInstancebasedSW.list"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW" />
@@ -1539,7 +1553,6 @@
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
-
 	<definition name="tiles.admin.nonInstancebasedSW.history"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW history" />
@@ -1548,7 +1561,6 @@
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
-
 	<definition name="tiles.admin.nonInstancebasedSW.manage"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
@@ -1557,7 +1569,6 @@
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
-
 	<definition name="tiles.admin.nonInstancebasedSW.update"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW manage" />
@@ -1566,7 +1577,6 @@
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
-
 	<definition name="tiles.admin.nonInstancebasedSW.upload"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Non Instance based SW upload" />
@@ -1575,7 +1585,6 @@
 		<put-attribute name="description" value="TRAILS Non Instance based SW page" />
 		<put-attribute name="keywords" value="TRAILS Non Instance based SW page" />
 	</definition>
-
 	<definition name="tiles.admin.priorityISV.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV SW" />
 		<put-attribute name="content" type="template"
@@ -1583,7 +1592,6 @@
 		<put-attribute name="description" value="Priority ISV" />
 		<put-attribute name="keywords" value="Priority ISV" />
 	</definition>
-
 	<definition name="tiles.admin.priorityISV.add" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV SW Add" />
 		<put-attribute name="content" type="template"
@@ -1591,7 +1599,6 @@
 		<put-attribute name="description" value="Priority ISV SW Add" />
 		<put-attribute name="keywords" value="Priority ISV SW Add" />
 	</definition>
-
 	<definition name="tiles.admin.priorityISV.update" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV SW Update" />
 		<put-attribute name="content" type="template"
@@ -1606,7 +1613,6 @@
 		<put-attribute name="description" value="Priority ISV History" />
 		<put-attribute name="keywords" value="Priority ISV History" />
 	</definition>
-
 	<definition name="tiles.admin.priorityISV.upload" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Priority ISV SW Upload" />
 		<put-attribute name="content" type="template"
@@ -1665,7 +1671,6 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception software lpar with no customer" />
 	</definition>
-
 	<definition name="tiles.account.exception.lparHWNPRC"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Hardware Box No Processor" />
@@ -1706,12 +1711,15 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception hardware lpar no cpu model" />
 	</definition>
-	<definition name="tiles.account.causecodes.upload" extends="tiles.v17e.w3OneColumnLayout">
-		<put-attribute name="contentTitle" value="Upload Cause Codes" />
+	<definition name="tiles.account.exception.lparSWDSCEXP"
+		extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="SW DISCREPANCY EXPIRED" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
-		<put-attribute name="description" value="TRAILS account cause codes upload" />
-		<put-attribute name="keywords" value="TRAILS account cause code upload" />
+			value="/WEB-INF/jsp/account/exception/lparSwDscExp.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account data exception hardware lpar no cpu model" />
+		<put-attribute name="keywords"
+			value="TRAILS account data exception hardware lpar no cpu model" />
 	</definition>
 	<definition name="tiles.account.exception.overview" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Data exception overview" />
@@ -1722,12 +1730,18 @@
 		<put-attribute name="keywords"
 			value="TRAILS account data exception overview" />
 	</definition>
-
 	<definition name="tiles.account.exception.assigment.Hwlpar.result"
 		template="/WEB-INF/jsp/account/exception/hwlparAssigmentStatus.jsp" />
-
 	<definition name="tiles.account.exception.assigment.Swlpar.result"
 		template="/WEB-INF/jsp/account/exception/swlparAssigmentStatus.jsp" />
+
+	<definition name="tiles.account.causecodes.upload" extends="tiles.v17e.w3OneColumnLayout">
+		<put-attribute name="contentTitle" value="Upload Cause Codes" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/causecodes/upload.jsp" />
+		<put-attribute name="description" value="TRAILS account cause codes upload" />
+		<put-attribute name="keywords" value="TRAILS account cause code upload" />
+	</definition>
 
 	<definition name="tiles.admin.alertCause.list" extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="contentTitle" value="Cause code" />

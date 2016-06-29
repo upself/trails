@@ -53,7 +53,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.4.2</version>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 				</configuration>
 			</plugin>
 
@@ -145,16 +145,15 @@
 			<version>1.2</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.ibm</groupId>
 			<artifactId>db2jcc</artifactId>
-			<version>1.0</version>
+			<version>3.65.110</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm</groupId>
 			<artifactId>db2jcc_license_cu</artifactId>
-			<version>1.0</version>
+			<version>3.65.110</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm</groupId>
@@ -164,8 +163,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.5</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>1.4.1</version>
 		</dependency>
 	</dependencies>
 </project>

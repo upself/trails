@@ -6,8 +6,6 @@ import com.ibm.asset.trails.domain.ProductInfo;
 public interface ProductInfoService extends
 		ProductService<ProductInfo, DistributedProductType, Long> {
 
-	boolean licensableOverrideExists(String guid);
-
 	void addToRecon(ProductInfo pInfo);
 
 }

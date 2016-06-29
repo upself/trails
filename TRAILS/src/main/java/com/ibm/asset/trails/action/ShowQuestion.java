@@ -11,11 +11,13 @@ import com.ibm.asset.trails.domain.License;
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconWorkspace;
 import com.ibm.asset.trails.domain.ReconcileType;
+import com.ibm.asset.trails.domain.Report;
 import com.ibm.asset.trails.service.AllocationMethodologyService;
 import com.ibm.asset.trails.service.LicenseService;
 import com.ibm.asset.trails.service.ReconWorkspaceService;
 import com.ibm.tap.trails.annotation.UserRole;
 import com.ibm.tap.trails.annotation.UserRoleType;
+import com.opensymphony.xwork2.ActionContext;
 
 public class ShowQuestion extends AccountBaseAction {
 
@@ -38,6 +40,26 @@ public class ShowQuestion extends AccountBaseAction {
 	private List<LicenseFilter> filter;
 
 	private List<AllocationMethodology> allocationMethodologies;
+	
+	private List<Report> reportList;
+	
+	private Boolean sortReq;
+	
+	public Boolean getSortReq() {
+		return sortReq;
+	}
+
+	public void setSortReq(Boolean sortReq) {
+		this.sortReq = sortReq;
+	}
+
+	public List<Report> getReportList() {
+		return reportList;
+	}
+
+	public void setReportList(List<Report> reportList) {
+		this.reportList = reportList;
+	}
 
 	// TODO just going to admit this is pure laziness
 	// due to the license free pool being way to large to not paginate
@@ -58,6 +80,15 @@ public class ShowQuestion extends AccountBaseAction {
 		private String productName;
 		private String poNo;
 		private String swcmId;
+		private String licenseOwner;
+		
+		public String getLicenseOwner() {
+			return licenseOwner;
+		}
+
+		public void setLicenseOwner(String licenseOwner) {
+			this.licenseOwner = licenseOwner;
+		}
 
 		private String fuzzed(String s) {
 			String str = s.trim();
@@ -120,7 +151,7 @@ public class ShowQuestion extends AccountBaseAction {
 		}
 
 	}
-
+	
 	@Override
 	@UserRole(userRole = UserRoleType.READER)
 	public String execute() {
@@ -129,16 +160,29 @@ public class ShowQuestion extends AccountBaseAction {
 
 		recon.setList(list);
 		recon.setReconcileTypeId(reconcileTypeId);
+		
 
 		// Get the reconcile type chosen
 		recon.setReconcileType(getReconWorkspaceService().findReconcileType(
 				recon.getReconcileTypeId()));
 
 		if (recon.getReconcileType().getId().intValue() == 1) {
+			 List<Report> lReport = new ArrayList<Report>();
+			 lReport.add(new Report("License baseline", "licenseBaseline"));
+			 setReportList(lReport);
+	        
+			 //if sort request from manuallAllocation.jsp
+			if(null!=sortReq && sortReq){
+				setFilter((List<LicenseFilter>)ActionContext.getContext().getSession().get("filters"));				
+			}else{
+				
+			}
 			licenseService.freePoolWithParentPaginatedList(getData(),
 					getUserSession().getAccount(), getStartIndex(), getData()
 							.getObjectsPerPage(), getSort(), getDir(), this
 							.getFilter());
+			ActionContext.getContext().getSession().put("filters", this.getFilter());
+			
 		} else if (recon.getReconcileType().getId().intValue() == 2) {
 			// customer owned
 

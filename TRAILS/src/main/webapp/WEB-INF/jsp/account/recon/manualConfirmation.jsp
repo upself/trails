@@ -64,6 +64,9 @@
 		<s:property value="per" />
 	</div>
 
+	<div class="float-left" style="width:25%;"><label for="automated">Comments:</label></div>
+	<div class="float-left" style="width:75%;"><s:property value="comments" /></div>
+		
 	<div class="clear"></div>
 	<div class="button-bar">
 		<div class="buttons">
@@ -124,6 +127,13 @@
 			<display:column property="productName" title="Primary Component"
 				href="/TRAILS/account/license/licenseDetails.htm"
 				paramId="licenseId" paramProperty="id" />
+			 <display:column title="License Ownership">
+ 				<s:if test="%{#attr.row.ibmOwned}">
+ 				IBM</s:if>
+ 				<s:else>
+ 				Customer
+ 				</s:else>
+ 			</display:column> 	
 			<display:column property="swproPID" title="Software product PID"/>
 			<display:column property="capacityType.code" title="Capacity type" />
 			<display:column property="availableQty" title="Avail qty" />
