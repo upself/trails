@@ -11,6 +11,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.FormParam;
@@ -70,17 +71,77 @@ public class DataExceptionServiceEndpointSearchTest {
         MockitoAnnotations.initMocks(this);
     }
 
-
     @Test
-    public void testSWDSCEXPReturnsSuccessfulListWithItems() {
+    public void testSwLparReturnsSuccessfulListWithItems() {
 
         // (1) test setup
-        final String exceptionType = "SWDSCEXP";
+    	final String swLparExceptionType = (String) endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray()[0];
         final Long accountId = 1000L;
         final Integer currentPage = 100;
         final Integer pageSize = 99;
-        final String sort = "something";
-        final String dir = "what is this?";
+        final String sort = "sorting";
+        final String dir = "ascending";
+        final int expectedResultListSize = 3;
+        final Integer expectedTotalResultSize = expectedResultListSize;
+
+        // return a list of 3 items
+
+        Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
+        when(dataExpSoftwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+
+        List<DataExceptionSoftwareLpar> list = new ArrayList<>();
+        for (int i = 0; i < expectedResultListSize; i++) {
+            list.add(buildTestDataExceptionSoftwareLparItem());
+        }
+
+        //doReturn b/c of List<? extends DataException>
+        doReturn(list).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+
+        // (2) execute what we are testing
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(swLparExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+        // (3) assertions (did we get what we expected to get)       
+        verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpSoftwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+        
+        
+        assertNotNull(wsmsg);
+        assertNotNull(wsmsg.getMsg());
+        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+
+        System.out.println("wsmsg.getData(): " + wsmsg.getData());
+        
+        // checking the data object
+        assertNotNull(wsmsg.getData());
+        assertTrue(wsmsg.getData() instanceof Pagination);
+        final Pagination pagination = (Pagination) wsmsg.getData();
+        
+        System.out.println("pagination: " + pagination);
+        
+        assertEquals(pageSize.intValue(), pagination.getPageSize().intValue());
+        assertEquals(currentPage.intValue(), pagination.getCurrentPage().intValue());
+        assertEquals(expectedTotalResultSize.intValue(), pagination.getTotal().intValue());
+        assertNotNull(pagination.getList());
+        assertEquals(expectedResultListSize, pagination.getList().size());
+
+        // checking the data list object
+        assertNotNull(wsmsg.getDataList());
+        assertEquals(expectedResultListSize, wsmsg.getDataList().size());
+
+    }
+    
+    @Test
+    public void testHwLparReturnsSuccessfulListWithItems() {
+
+        // (1) test setup
+    	final String hwLparExceptionType = (String) endpoint.HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray()[0];
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
         final int expectedResultListSize = 3;
         final Integer expectedTotalResultSize = expectedResultListSize;
 
@@ -89,24 +150,79 @@ public class DataExceptionServiceEndpointSearchTest {
         Account accountMocked = mock(Account.class);
         when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
 
-        when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+        when(dataExpHardwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
 
-        List<DataExceptionSoftwareLpar> list = new ArrayList<>();
+        List<DataExceptionHardwareLpar> list = new ArrayList<>();
         for (int i = 0; i < expectedResultListSize; i++) {
-            list.add(buildTestDataExceptionSoftwareLparItem());
+//            list.add(buildTestDataExceptionHardwareLparItem());
         }
 
         //doReturn b/c of List<? extends DataException>
+        doReturn(list).when(dataExpHardwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+
+        // (2) execute what we are testing
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(hwLparExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+        // (3) assertions (did we get what we expected to get)       
+        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpHardwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+        
+        
+        assertNotNull(wsmsg);
+        assertNotNull(wsmsg.getMsg());
+        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+
+        // checking the data object
+        
+        System.out.println("wsmsg.getData(): " + wsmsg.getData()); 
+        
+        assertNotNull(wsmsg.getData());
+        assertTrue(wsmsg.getData() instanceof Pagination);
+        final Pagination pagination = (Pagination) wsmsg.getData();
+        assertEquals(pageSize.intValue(), pagination.getPageSize().intValue());
+        assertEquals(currentPage.intValue(), pagination.getCurrentPage().intValue());
+        assertEquals(expectedTotalResultSize.intValue(), pagination.getTotal().intValue());
+        assertNotNull(pagination.getList());
+        assertEquals(expectedResultListSize, pagination.getList().size());
+
+        // checking the data list object
+        assertNotNull(wsmsg.getDataList());
+        assertEquals(expectedResultListSize, wsmsg.getDataList().size());
+
+    }
+
+    @Test
+    public void testInstalledSwReturnsSuccessfulListWithItems() {
+
+        // (1) test setup
+    	final String installedSwExceptionType = (String) endpoint.INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.toArray()[0];
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+        final int expectedResultListSize = 3;
+        final Integer expectedTotalResultSize = expectedResultListSize;
+
+        // return a list of 3 items
+
+        Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
+        when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+
+        List<DataExceptionInstalledSw> list = new ArrayList<>();
+        for (int i = 0; i < expectedResultListSize; i++) {
+            list.add(buildTestDataExceptionInstalledSwItem());
+        }
+        
+        //"doReturn" is being used b/c of List<? extends DataException>
         doReturn(list).when(dataExpInstalledSwService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
 
         // (2) execute what we are testing
-        System.out.println("exceptionType, accountId, currentPage, pageSize, sort, dir: " + exceptionType + ", " +
-        		accountId + ", " + currentPage + ", " + pageSize + ", " + sort + ", " + dir);
-        final WSMsg wsmsg = endpoint.getDataExceptionDataList(exceptionType, accountId, currentPage, pageSize, sort, dir);
-        System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
 
         // (3) assertions (did we get what we expected to get)
-
         verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
         verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
         verify(dataExpInstalledSwService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
@@ -161,43 +277,49 @@ public class DataExceptionServiceEndpointSearchTest {
         return testItem;
     }
     
-//    private DataExceptionInstalledSw buildTestDataExceptionInstalledSwItem() {
-//        DataExceptionInstalledSw testItem = mock(DataExceptionInstalledSw.class);
-//        when(testItem.getId()).thenReturn(1L);
-//        
-//        InstalledSoftware installedSoftware = mock(InstalledSoftware.class);
-//        when(installedSoftware.getId()).thenReturn(2L);
-//        
-////        SoftwareLpar swlpar = mock(SoftwareLpar.class);
-////        when(swlpar.getId()).thenReturn(2L);
-//
-//        when(installedSoftware.get)
-//        
-//        when(swlpar.getProcessorCount()).thenReturn(1);
-//        when(swlpar.getModel()).thenReturn("abc");
-//        when(swlpar.getName()).thenReturn("abc");
-//        when(swlpar.getOsName()).thenReturn("abc");
-//        when(swlpar.getExtId()).thenReturn("abc");
-//        when(swlpar.getSerial()).thenReturn("abc");
-//        when(swlpar.getStatus()).thenReturn("abc");
-//        when(swlpar.getTechImgId()).thenReturn("abc");
-//        
-//        
-//
-//        AlertType alertType = mock(AlertType.class);
-//        when(alertType.getId()).thenReturn(1L);
-//        when(alertType.getName()).thenReturn("aa");
-//        when(alertType.getCode()).thenReturn("bb");
-//        when(testItem.getAlertType()).thenReturn(alertType);
-//
-//        Account account = mock(Account.class);
-//        when(account.getAccount()).thenReturn(3L);
-//        when(swlpar.getAccount()).thenReturn(account);
-//
-//        when(testItem.getSoftwareLpar()).thenReturn(swlpar);
-//
-//        return testItem;
-//    }
+    private DataExceptionInstalledSw buildTestDataExceptionInstalledSwItem() {
+        DataExceptionInstalledSw testItem = mock(DataExceptionInstalledSw.class);
+        when(testItem.getId()).thenReturn(1L);
+        
+        InstalledSoftware installedSoftware = mock(InstalledSoftware.class);
+        when(installedSoftware.getId()).thenReturn(2L);
+        when(installedSoftware.getProcessorCount()).thenReturn(1);
+        when(installedSoftware.getRecordTime()).thenReturn(new Date());
+        when(installedSoftware.getRemoteUser()).thenReturn("remoteUser");
+        when(installedSoftware.getStatus()).thenReturn("status");
+        when(installedSoftware.getUsers()).thenReturn(1);
+
+        AlertType alertType = mock(AlertType.class);
+        when(alertType.getId()).thenReturn(1L);
+        when(alertType.getName()).thenReturn("name");
+        when(alertType.getCode()).thenReturn("code");
+        when(testItem.getAlertType()).thenReturn(alertType);
+
+        VSoftwareLpar vSwlpar = mock(VSoftwareLpar.class);
+        when(vSwlpar.getId()).thenReturn(2L);
+        when(vSwlpar.getProcessorCount()).thenReturn(1);
+        when(vSwlpar.getName()).thenReturn("name");
+        when(vSwlpar.getName()).thenReturn("name");
+        when(vSwlpar.getStatus()).thenReturn("status");
+
+        Account account = mock(Account.class);
+        when(account.getAccount()).thenReturn(3L);
+        when(vSwlpar.getAccount()).thenReturn(account);
+
+        when(installedSoftware.getSoftwareLpar()).thenReturn(vSwlpar);
+        
+        
+        Software software = mock(Software.class);
+        when(software.getSoftwareName()).thenReturn("softwareName");
+    
+        when(installedSoftware.getSoftware()).thenReturn(software);
+
+        
+        
+        when(testItem.getInstalledSw()).thenReturn(installedSoftware);
+
+        return testItem;
+    }
     
 	@Test
 	public void testNoValuesPassedIn() {

@@ -1,7 +1,10 @@
 package com.ibm.asset.trails.ws;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -54,9 +57,21 @@ public class DataExceptionServiceEndpoint {
 	@Autowired
 	private DataExceptionHistoryDao alertHistoryDao;
 
-	private final String SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/NULLTIME/NOCUST/NOLP/NOOS/ZEROPROC/NOSW/";
-	private final String HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = "/HWNCHP/HWNPRC/NCPMDL/NPRCTYP/";
-	private final String INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST = "/SWDSCEXP/";
+	public enum SW_LPAR {
+		NULLTIME, NOCUST, NOLP, NOOS, ZEROPROC, NOWS
+	}
+	
+	public enum HW_LPAR {
+		HWNCHP, HWNPRC, NCPMDL, NPRCTYP
+	}
+	
+	public enum INSTALLED_SW {
+		SWDSCEXP
+	}
+
+	public final Set<String> SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("NULLTIME", "NOCUST", "NOLP", "NOOS", "ZEROPROC", "NOSW"));
+	public final Set<String> HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("HWNCHP", "HWNPRC", "NCPMDL", "NPRCTYP"));
+	public final Set<String> INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("SWDSCEXP"));
 
 	@GET
 	@Path("/overview/{accountId}")
@@ -106,21 +121,20 @@ public class DataExceptionServiceEndpoint {
 				Long total = null;
 				List list = null;
 				AlertType alertType = null;
-				dataExpType = dataExpType.trim().toUpperCase();
-
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				dataExpType = dataExpType.trim().toUpperCase();					
+				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpSoftwareLparService.setAlertTypeCode(dataExpType);
 					alertType = dataExpSoftwareLparService.getAlertType();
 					total = new Long(dataExpSoftwareLparService.getAlertListSize(account, alertType));
 					list = dataExpSoftwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
 					list = this.swLparDataExpsTransformer(list);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpHardwareLparService.setAlertTypeCode(dataExpType);
 					alertType = dataExpHardwareLparService.getAlertType();
 					total = new Long(dataExpHardwareLparService.getAlertListSize(account, alertType));
 					list = dataExpHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
 					list = this.hwLparDataExpsTransformer(list);
-				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpInstalledSwService.setAlertTypeCode(dataExpType);
 					alertType = dataExpInstalledSwService.getAlertType();
 					total = new Long(dataExpInstalledSwService.getAlertListSize(account, alertType));
@@ -160,19 +174,19 @@ public class DataExceptionServiceEndpoint {
 				}
 
 				dataExpType = dataExpType.trim().toUpperCase();
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Software
 																						// Lpar
 																						// Data
 																						// Exception
 																						// Type
 					dataExpSoftwareLparService.assign(assignList, request.getRemoteUser(), comments);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Hardware
 																								// Lpar
 																								// Data
 																								// Exception
 																								// Type
 					dataExpHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
-				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Installed Software Data Exception 
 					
 					dataExpInstalledSwService.assign(assignList, request.getRemoteUser(), comments);
                 } else {
@@ -207,19 +221,19 @@ public class DataExceptionServiceEndpoint {
 				}
 
 				dataExpType = dataExpType.trim().toUpperCase();
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Software
 																						// Lpar
 																						// Data
 																						// Exception
 																						// Type
 					dataExpSoftwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Hardware
 																								// Lpar
 																								// Data
 																								// Exception
 																								// Type
 					dataExpHardwareLparService.unassign(unassignList, request.getRemoteUser(), comments);
-				}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+				}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Installed Software Data Exception 
 					
 					dataExpInstalledSwService.unassign(unassignList, request.getRemoteUser(), comments);
                 } else {
@@ -254,19 +268,19 @@ public class DataExceptionServiceEndpoint {
 				} else {
 					Long customerId = account.getId();
 					dataExpType = dataExpType.trim().toUpperCase();
-					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Software
 																							// Lpar
 																							// Data
 																							// Exception
 																							// Type
 						dataExpSoftwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Hardware
 																									// Lpar
 																									// Data
 																									// Exception
 																									// Type
 						dataExpHardwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+					} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Installed Software Data Exception 
 						
 						dataExpInstalledSwService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
 	                } else {
@@ -302,19 +316,19 @@ public class DataExceptionServiceEndpoint {
 				} else {
 					Long customerId = account.getId();
 					dataExpType = dataExpType.trim().toUpperCase();
-					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
+					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Software
 																							// Lpar
 																							// Data
 																							// Exception
 																							// Type
 						dataExpSoftwareLparService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
+					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Hardware
 																									// Lpar
 																									// Data
 																									// Exception
 																									// Type
 						dataExpHardwareLparService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
-					}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Installed Software Data Exception 
+					}  else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Installed Software Data Exception 
 						
 						dataExpInstalledSwService.unassignAll(customerId, dataExpType, request.getRemoteUser(), comments);
 	                } else {
@@ -472,36 +486,36 @@ public class DataExceptionServiceEndpoint {
 	private List installedSwDataExpsTransformer(List<DataExceptionInstalledSw> installedSwDataExpsList) {
 		List installedSwDataExpsTransformList = new ArrayList();
 
-		for (DataExceptionInstalledSw installedSwDataExp : installedSwDataExpsList) {
+		for (DataExceptionInstalledSw installedSwDataException : installedSwDataExpsList) {
 
 			DataExceptionInstalledSwView installedSwDataExpView = new DataExceptionInstalledSwView();
 
-			installedSwDataExpView.setDataExpId(installedSwDataExp.getId());
-			installedSwDataExpView.setDataExpType(installedSwDataExp.getAlertType().getCode());
+			installedSwDataExpView.setDataExpId(installedSwDataException.getId());
+			installedSwDataExpView.setDataExpType(installedSwDataException.getAlertType().getCode());
 
-			if (installedSwDataExp.getAssignee() != null) {
-				installedSwDataExpView.setDataExpAssignee(installedSwDataExp.getAssignee());
+			if (installedSwDataException.getAssignee() != null) {
+				installedSwDataExpView.setDataExpAssignee(installedSwDataException.getAssignee());
 			} else {
 				installedSwDataExpView.setDataExpAssignee("");
 			}
 
-			installedSwDataExpView.setDataExpCreationTime(installedSwDataExp.getCreationTime());
+			installedSwDataExpView.setDataExpCreationTime(installedSwDataException.getCreationTime());
 
-			if (installedSwDataExp.getInstalledSw().getSoftwareLpar().getName() != null) {
-				installedSwDataExpView.setSwLparName(installedSwDataExp.getInstalledSw().getSoftwareLpar().getName());
+			if (installedSwDataException.getInstalledSw().getSoftwareLpar().getName() != null) {
+				installedSwDataExpView.setSwLparName(installedSwDataException.getInstalledSw().getSoftwareLpar().getName());
 			} else {
 				installedSwDataExpView.setSwLparName("");
 			}
 
-			installedSwDataExpView.setDiscrepancyRecordTime(installedSwDataExp.getInstalledSw().getRecordTime());
+			installedSwDataExpView.setDiscrepancyRecordTime(installedSwDataException.getInstalledSw().getRecordTime());
 
-			if (installedSwDataExp.getInstalledSw().getSoftware().getSoftwareName() != null) {
-				installedSwDataExpView.setSwComponentName(installedSwDataExp.getInstalledSw().getSoftware().getSoftwareName());
+			if (installedSwDataException.getInstalledSw().getSoftware().getSoftwareName() != null) {
+				installedSwDataExpView.setSwComponentName(installedSwDataException.getInstalledSw().getSoftware().getSoftwareName());
 			} else {
 				installedSwDataExpView.setSwComponentName("");
 			}
-			if (installedSwDataExp.getInstalledSw().getId() != null) {
-				installedSwDataExpView.setInstalledSwId(installedSwDataExp.getInstalledSw().getId());
+			if (installedSwDataException.getInstalledSw().getId() != null) {
+				installedSwDataExpView.setInstalledSwId(installedSwDataException.getInstalledSw().getId());
 			} else {
 				installedSwDataExpView.setInstalledSwId(null);
 			}
