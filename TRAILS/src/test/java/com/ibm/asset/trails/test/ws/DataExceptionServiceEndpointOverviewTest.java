@@ -89,20 +89,16 @@ public class DataExceptionServiceEndpointOverviewTest {
     	Account accountMocked = mock(Account.class);
     	List<DataExceptionReportActionForm> list = new ArrayList<>();
     	list.add(mock(DataExceptionReportActionForm.class));
-    	
+
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
     	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
-    	System.out.println("wsmsg.getData(): " + wsmsg.getData());
-    	
     	assertNotNull(wsmsg);
-    	assertNotNull(wsmsg.getData());
     	assertNotNull(wsmsg.getDataList());
     	assertNotNull(wsmsg.getMsg());
-    	assertEquals(wsmsg.getMsg(), WSMsg.SUCCESS);
     	assertTrue(wsmsg.getDataList().size() == 1);
     }
 
