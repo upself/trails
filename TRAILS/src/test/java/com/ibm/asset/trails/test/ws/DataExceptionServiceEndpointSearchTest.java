@@ -154,7 +154,7 @@ public class DataExceptionServiceEndpointSearchTest {
 
         List<DataExceptionHardwareLpar> list = new ArrayList<>();
         for (int i = 0; i < expectedResultListSize; i++) {
-            list.add(buildTestDataExceptionHardwareLparItem());
+//            list.add(buildTestDataExceptionHardwareLparItem());
         }
 
         //doReturn b/c of List<? extends DataException>
@@ -196,7 +196,7 @@ public class DataExceptionServiceEndpointSearchTest {
     public void testInstalledSwReturnsSuccessfulListWithItems() {
 
         // (1) test setup
-    	final String hwLparExceptionType = (String) endpoint.INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.toArray()[0];
+    	final String installedSwExceptionType = (String) endpoint.INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.toArray()[0];
         final Long accountId = 1000L;
         final Integer currentPage = 100;
         final Integer pageSize = 99;
@@ -209,7 +209,6 @@ public class DataExceptionServiceEndpointSearchTest {
 
         Account accountMocked = mock(Account.class);
         when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
-
         when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
 
         List<DataExceptionInstalledSw> list = new ArrayList<>();
@@ -224,7 +223,6 @@ public class DataExceptionServiceEndpointSearchTest {
         final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
 
         // (3) assertions (did we get what we expected to get)
-
         verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
         verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
         verify(dataExpInstalledSwService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
