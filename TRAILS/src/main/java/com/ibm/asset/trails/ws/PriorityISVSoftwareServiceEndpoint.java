@@ -164,7 +164,7 @@ public class PriorityISVSoftwareServiceEndpoint {
 		  if(dbPISVSW.getAccount()!=null){
 			 returnISV.setCustomerId(dbPISVSW.getAccount().getId());
 			 returnISV.setAccountName(dbPISVSW.getAccount().getName());
-			 returnISV.setAccountNumber(dbPISVSW.getAccount().getAccount());
+			 returnISV.setAccountNumber(dbPISVSW.getAccount().getAccountAsLong());
 		  }
 		  returnISV.setManufacturerId(dbPISVSW.getManufacturer().getId());
 		  returnISV.setManufacturerName(dbPISVSW.getManufacturer().getManufacturerName());

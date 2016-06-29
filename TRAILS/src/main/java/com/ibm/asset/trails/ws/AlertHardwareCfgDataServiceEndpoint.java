@@ -169,7 +169,7 @@ public class AlertHardwareCfgDataServiceEndpoint {
 			
 			//story 35896
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfig" + account.getAccount() + ".xls");
+			response.setHeader("Content-Disposition","attachment; filename=alertHardwareConfig" + account.getAccountAsLong() + ".xls");
 			reportService.getAlertHardwareCfgDataReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
 			//story 35896
 			response.flushBuffer();

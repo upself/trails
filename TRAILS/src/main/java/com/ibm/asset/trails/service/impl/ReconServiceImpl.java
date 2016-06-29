@@ -377,8 +377,8 @@ public class ReconServiceImpl implements ReconService {
 		boolean crossAccountAlertFlag = false;
 		if (alertExistedAccount != null
 				&& currentWorkingAccount != null
-				&& alertExistedAccount.getAccount().intValue() != currentWorkingAccount
-						.getAccount().intValue()) {
+				&& alertExistedAccount.getAccountAsLong().intValue() != currentWorkingAccount
+						.getAccountAsLong().intValue()) {
 			crossAccountAlertFlag = true;
 		}
 		return crossAccountAlertFlag;

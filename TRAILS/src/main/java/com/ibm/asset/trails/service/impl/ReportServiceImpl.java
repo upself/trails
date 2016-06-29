@@ -227,7 +227,7 @@ public class ReportServiceImpl implements ReportService {
 				.setString("type", "EXPIRED_MAINT")
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(ALERT_EXPIRED_MAINT_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_EXPIRED_MAINT_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_EXPIRED_MAINT_REPORT_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -267,15 +267,15 @@ public class ReportServiceImpl implements ReportService {
 				.setInteger("alertTypeId", alertType.getId().intValue())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert Unexpired SW Lpar "
-				+ pAccount.getAccount() + " Report");
-		printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccount(),
+				+ pAccount.getAccountAsLong() + " Report");
+		printHeader(ALERT_EXPIRED_SCAN_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_EXPIRED_SCAN_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
 			int k = 1;
 			if (i > 65535) {
 				k++;
-				sheet = phwb.createSheet("Alert Unexpired SW Lpar " + pAccount.getAccount() + " Report Sheet" + k);
+				sheet = phwb.createSheet("Alert Unexpired SW Lpar " + pAccount.getAccountAsLong() + " Report Sheet" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -317,7 +317,7 @@ public class ReportServiceImpl implements ReportService {
                 .setInteger("alertTypeId", alertType.getId().intValue())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert HwLPAR Report");
-		printHeader(ALERT_HARDWARE_LPAR_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_HARDWARE_LPAR_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_HARDWARE_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -366,7 +366,7 @@ public class ReportServiceImpl implements ReportService {
 				.setInteger("alertTypeId", alertType.getId().intValue())
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert Hardware Report");
-		printHeader(ALERT_HARDWARE_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_HARDWARE_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_HARDWARE_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -414,7 +414,7 @@ public class ReportServiceImpl implements ReportService {
 				.setInteger("alertTypeId", alertType.getId().intValue()).scroll(ScrollMode.FORWARD_ONLY);
 
 		HSSFSheet sheet = phwb.createSheet("Alert SwLpar Report");
-		printHeader(ALERT_SOFTWARE_LPAR_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_SOFTWARE_LPAR_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_SW_LPAR_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -471,7 +471,7 @@ public class ReportServiceImpl implements ReportService {
 				.setString("alertCode", pAlertCode)
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ACCOUNT_DATA_EXCEPTIONS_REPORT_NAME, pAccount.getAccountAsLong(),
 				header_of_data_exception, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -489,7 +489,7 @@ public class ReportServiceImpl implements ReportService {
 				.setString("type", "UNLICENSED_IBM_SW")
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert UNLICENSED_IBM_SW Report");
-		printHeader(ALERT_UNLICENSED_IBM_SW_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_UNLICENSED_IBM_SW_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -532,7 +532,7 @@ public class ReportServiceImpl implements ReportService {
 				.setString("type", "UNLICENSED_ISV_SW")
 				.scroll(ScrollMode.FORWARD_ONLY);
 		HSSFSheet sheet = phwb.createSheet("Alert UNLICENSED_ISV_SW Report");
-		printHeader(ALERT_UNLICENSED_ISV_SW_REPORT_NAME, pAccount.getAccount(),
+		printHeader(ALERT_UNLICENSED_ISV_SW_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -571,10 +571,10 @@ public class ReportServiceImpl implements ReportService {
 			Exception {
 		ScrollableResults lsrReport = ((Session) getEntityManager()
 				.getDelegate()).getNamedQuery("freePoolReport")
-				.setLong("account", pAccount.getAccount())
+				.setLong("account", pAccount.getAccountAsLong())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(FREE_LICENSE_POOL_REPORT_NAME, pAccount.getAccount(),
+		printHeader(FREE_LICENSE_POOL_REPORT_NAME, pAccount.getAccountAsLong(),
 				LICENSE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -839,7 +839,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(FULL_RECONCILIATION_REPORT_NAME, pAccount.getAccount(),
+		printHeader(FULL_RECONCILIATION_REPORT_NAME, pAccount.getAccountAsLong(),
 				FULL_RECONCILIATION_REPORT_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -858,7 +858,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(HARDWARE_BASELINE_REPORT_NAME, pAccount.getAccount(),
+		printHeader(HARDWARE_BASELINE_REPORT_NAME, pAccount.getAccountAsLong(),
 				HARDWARE_BASELINE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1007,7 +1007,7 @@ public class ReportServiceImpl implements ReportService {
 				.scroll(ScrollMode.FORWARD_ONLY);
 
 		printHeader(INSTALLED_SOFTWARE_BASELINE_REPORT_NAME,
-				pAccount.getAccount(),
+				pAccount.getAccountAsLong(),
 				INSTALLED_SOFTWARE_BASELINE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1116,7 +1116,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(LICENSE_BASELINE_REPORT_NAME, pAccount.getAccount(),
+		printHeader(LICENSE_BASELINE_REPORT_NAME, pAccount.getAccountAsLong(),
 				LICENSE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1223,7 +1223,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(RECONCILIATION_SUMMARY_REPORT_NAME, pAccount.getAccount(),
+		printHeader(RECONCILIATION_SUMMARY_REPORT_NAME, pAccount.getAccountAsLong(),
 				RECONCILIATION_SUMMARY_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputReconciliationSummaryData(lsrReport
@@ -1243,7 +1243,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(CAUSE_CODE_SUMMARY_REPORT_NAME, pAccount.getAccount(),
+		printHeader(CAUSE_CODE_SUMMARY_REPORT_NAME, pAccount.getAccountAsLong(),
 				CAUSE_CODE_SUMMARY_REPORT_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1297,7 +1297,7 @@ public class ReportServiceImpl implements ReportService {
 								: 0).scroll(ScrollMode.FORWARD_ONLY);
 
 		printHeader(SOFTWARE_COMPLIANCE_SUMMARY_REPORT_NAME,
-				pAccount.getAccount(),
+				pAccount.getAccountAsLong(),
 				SOFTWARE_COMPLIANCE_SUMMARY_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1331,7 +1331,7 @@ public class ReportServiceImpl implements ReportService {
 				.setLong("customerId", pAccount.getId())
 				.scroll(ScrollMode.FORWARD_ONLY);
 
-		printHeader(SOFTWARE_LPAR_BASELINE_REPORT_NAME, pAccount.getAccount(),
+		printHeader(SOFTWARE_LPAR_BASELINE_REPORT_NAME, pAccount.getAccountAsLong(),
 				SOFTWARE_LPAR_BASELINE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
@@ -1456,8 +1456,8 @@ public class ReportServiceImpl implements ReportService {
 				.scroll(ScrollMode.FORWARD_ONLY);
 
 		HSSFSheet sheet = phwb.createSheet("Alert Hardware Config "
-				+ pAccount.getAccount() + " Report");
-		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccount(),
+				+ pAccount.getAccountAsLong() + " Report");
+		printHeader(ALERT_HARDWARE_CFGDATA_REPORT_NAME, pAccount.getAccountAsLong(),
 				ALERT_HARDWARE_CFGDATA_REPORT_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -1465,7 +1465,7 @@ public class ReportServiceImpl implements ReportService {
 			if (i > 65535) {
 				k++;
 				sheet = phwb.createSheet("Alert Hardware Config "
-						+ pAccount.getAccount() + " Report" + k);
+						+ pAccount.getAccountAsLong() + " Report" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);
@@ -1512,8 +1512,8 @@ public class ReportServiceImpl implements ReportService {
 				.scroll(ScrollMode.FORWARD_ONLY);
 
 		HSSFSheet sheet = phwb.createSheet(sheetName + " "
-				+ pAccount.getAccount() + " Report");
-		printHeader(reportName, pAccount.getAccount(),
+				+ pAccount.getAccountAsLong() + " Report");
+		printHeader(reportName, pAccount.getAccountAsLong(),
 				UNLICENSED_GROUP_COLUMN_HEADERS, sheet);
 		int i = 3;
 		while (lsrReport.next()) {
@@ -1521,7 +1521,7 @@ public class ReportServiceImpl implements ReportService {
 			if (i > 65535) {
 				k++;
 				sheet = phwb.createSheet("Alert Contract Scope "
-						+ pAccount.getAccount() + " Report" + k);
+						+ pAccount.getAccountAsLong() + " Report" + k);
 				i = 1;
 			}
 			HSSFRow row = sheet.createRow((int) i);

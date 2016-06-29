@@ -165,7 +165,7 @@ public class AlertHardwarelparServiceEndpoint {
 			HSSFWorkbook hwb=new HSSFWorkbook();
 			Account account = accountService.getAccount(accountId);
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertHardwareLpar" + account.getAccount() + ".xls");
+			response.setHeader("Content-Disposition","attachment; filename=alertHardwareLpar" + account.getAccountAsLong() + ".xls");
 			reportService.getAlertHardwareLparReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());			
 			//story 35896			
 			response.flushBuffer();

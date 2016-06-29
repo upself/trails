@@ -89,7 +89,7 @@ public class AlertIbmSwInstancesReviewedServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=alertUnlicensedIbmSw" + account.getAccount() + ".xls");
+					"attachment; filename=alertUnlicensedIbmSw" + account.getAccountAsLong() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWIBM","SWIBM","SOM4a: IBM SW INSTANCES REVIEWED", "IBM");
