@@ -386,7 +386,7 @@ public class DataExceptionServiceEndpoint {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList) {
+	public List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList) {
 
 		List swLparDataExpsTransformList = new ArrayList();
 		for (DataExceptionSoftwareLpar swLparDataExp : swLparDataExpsList) {
@@ -429,7 +429,7 @@ public class DataExceptionServiceEndpoint {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List hwLparDataExpsTransformer(List<DataExceptionHardwareLpar> hwLparDataExpsList) {
+	public List hwLparDataExpsTransformer(List<DataExceptionHardwareLpar> hwLparDataExpsList) {
 		List hwLparDataExpsTransformList = new ArrayList();
 
 		for (DataExceptionHardwareLpar hwLparDataExp : hwLparDataExpsList) {
@@ -483,7 +483,7 @@ public class DataExceptionServiceEndpoint {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List installedSwDataExpsTransformer(List<DataExceptionInstalledSw> installedSwDataExpsList) {
+	public List installedSwDataExpsTransformer(List<DataExceptionInstalledSw> installedSwDataExpsList) {
 		List installedSwDataExpsTransformList = new ArrayList();
 
 		for (DataExceptionInstalledSw installedSwDataException : installedSwDataExpsList) {
