@@ -48,7 +48,7 @@ public class ReportStatisticLogAspect {
             joinPoint.proceed();           
             Calendar cale = Calendar.getInstance();
             String endTime = dateFormat.format(cale.getTime()).toUpperCase();
-            pw.printf(" " + ((Account) joinPoint.getArgs()[0]).getAccountAsLong()+","+(joinPoint.getArgs()[1])+","+(joinPoint.getArgs()[2])+","+persistenceDB+",StartTime : "+stTime+", EndTime : "+endTime+"\r\n");
+            pw.printf(" " + ((Account) joinPoint.getArgs()[0]).getAccount()+","+(joinPoint.getArgs()[1])+","+(joinPoint.getArgs()[2])+","+persistenceDB+",StartTime : "+stTime+", EndTime : "+endTime+"\r\n");
             pw.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

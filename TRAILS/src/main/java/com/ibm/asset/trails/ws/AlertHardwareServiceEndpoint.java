@@ -159,7 +159,7 @@ public class AlertHardwareServiceEndpoint {
 			Account account = accountService.getAccount(accountId);
 			
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment; filename=alertHardware" + account.getAccountAsLong() + ".xls");
+			response.setHeader("Content-Disposition","attachment; filename=alertHardware" + account.getAccount() + ".xls");
 			reportService.getAlertHardwareReport(account, request.getRemoteUser(), null, hwb, response.getOutputStream());
 			//story 35896
 			response.flushBuffer();

@@ -94,7 +94,7 @@ public class DataExceptionServiceEndpointOverviewTest {
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccountAsLong());
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
     	assertNotNull(wsmsg);
@@ -122,7 +122,8 @@ public class DataExceptionServiceEndpointOverviewTest {
     	final Long accountId = 999L;
     	final Account accountMocked = mock(Account.class);
     	final int expectedResultListSize = 3;
-    	    	
+    	
+    	//be careful when building a list of mockedObjects, they can't be interacted with later!(iterate through the list, call methods on em or w/e)
     	List<DataExceptionReportActionForm> list = new ArrayList<>();
     	for (int i = 0; i < expectedResultListSize; i++) {
     		list.add(mock(DataExceptionReportActionForm.class));
@@ -131,13 +132,14 @@ public class DataExceptionServiceEndpointOverviewTest {
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccountAsLong());
-    	wsmsg.setDataList(list);
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountId);
     	
     	assertNotNull(wsmsg);
     	assertNotNull(wsmsg.getDataList());
+    	assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
     	assertNotNull(wsmsg.getMsg());
     	assertTrue(wsmsg.getDataList().size() == expectedResultListSize);
+    	
     }
 
 /*
@@ -146,10 +148,9 @@ public class DataExceptionServiceEndpointOverviewTest {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public WSMsg exceptionOverview(@PathParam("accountId") Long accountId){
         if(null == accountId){
-        }else{
             return WSMsg.failMessage("Account ID is required");
+        }else{
             Account account = accountService.getAccount(accountId);
-            
             if(null == account){
                 return WSMsg.failMessage("Account doesn't exist");
             }else{
