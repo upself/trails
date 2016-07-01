@@ -106,7 +106,7 @@ public class Account {
     @Column(name = "SCAN_VALIDITY")
     private Integer scanValidity;
 
-    public Long getAccountAsLong() {
+    public Long getAccount() {
         return account;
     }
 

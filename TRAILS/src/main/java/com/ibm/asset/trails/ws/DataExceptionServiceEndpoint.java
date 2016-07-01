@@ -365,7 +365,7 @@ public class DataExceptionServiceEndpoint {
 		for (DataExceptionHistory dataExpHistory : dataExpHistoryList) {
 			DataExceptionHistoryView dataExpHistoryView = new DataExceptionHistoryView();
 			dataExpHistoryView.setCustomerId(dataExpHistory.getAccount().getId());
-			dataExpHistoryView.setAccountNumber(dataExpHistory.getAccount().getAccountAsLong());
+			dataExpHistoryView.setAccountNumber(dataExpHistory.getAccount().getAccount());
 			dataExpHistoryView.setDataExpHistoryId(dataExpHistory.getId());
 			dataExpHistoryView.setDataExpId(dataExpHistory.getAlert().getId());
 			dataExpHistoryView.setDataExpTypeId(dataExpHistory.getAlertType().getId());
@@ -422,7 +422,7 @@ public class DataExceptionServiceEndpoint {
 				swLparDataExpView.setSwLparSerial("");
 			}
 
-			swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccountAsLong());
+			swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccount());
 			swLparDataExpsTransformList.add(swLparDataExpView);
 		}
 		return swLparDataExpsTransformList;
@@ -476,7 +476,7 @@ public class DataExceptionServiceEndpoint {
 			} else {
 				hwLparDataExpView.setHwProcessors("");
 			}
-			hwLparDataExpView.setHwLparAccountNumber(hwLparDataExp.getHardwareLpar().getAccount().getAccountAsLong());
+			hwLparDataExpView.setHwLparAccountNumber(hwLparDataExp.getHardwareLpar().getAccount().getAccount());
 			hwLparDataExpsTransformList.add(hwLparDataExpView);
 		}
 		return hwLparDataExpsTransformList;
