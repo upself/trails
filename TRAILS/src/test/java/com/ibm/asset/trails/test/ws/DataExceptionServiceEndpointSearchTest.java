@@ -3,27 +3,26 @@ package com.ibm.asset.trails.test.ws;
 //import static org.junit.Assert.assertEquals;
 //import static org.junit.Assert.assertNotNull;
 //import static org.junit.Assert.assertNull;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import com.ibm.asset.trails.domain.*;
-import com.ibm.asset.trails.service.impl.AccountServiceImpl;
-import com.ibm.asset.trails.ws.common.Pagination;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +31,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-
 import com.ibm.asset.trails.dao.DataExceptionHistoryDao;
-import com.ibm.asset.trails.form.DataExceptionReportActionForm;
+import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.AlertType;
+import com.ibm.asset.trails.domain.DataExceptionHardwareLpar;
+import com.ibm.asset.trails.domain.DataExceptionInstalledSw;
+import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
+import com.ibm.asset.trails.domain.Hardware;
+import com.ibm.asset.trails.domain.HardwareLpar;
+import com.ibm.asset.trails.domain.InstalledSoftware;
+import com.ibm.asset.trails.domain.Software;
+import com.ibm.asset.trails.domain.SoftwareLpar;
+import com.ibm.asset.trails.domain.VSoftwareLpar;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.DataExceptionReportService;
 import com.ibm.asset.trails.service.DataExceptionService;
 import com.ibm.asset.trails.ws.DataExceptionServiceEndpoint;
+import com.ibm.asset.trails.ws.common.Pagination;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -280,7 +289,7 @@ public class DataExceptionServiceEndpointSearchTest {
         when(testItem.getAlertType()).thenReturn(alertType);
 
         Account account = mock(Account.class);
-        when(account.getAccountAsLong()).thenReturn(3L);
+        when(account.getAccount()).thenReturn(3L);
         when(swlpar.getAccount()).thenReturn(account);
 
         when(testItem.getSoftwareLpar()).thenReturn(swlpar);
@@ -306,7 +315,7 @@ public class DataExceptionServiceEndpointSearchTest {
         when(hardware.getSerial()).thenReturn("serial");      
         
         Account account = mock(Account.class);
-        when(account.getAccountAsLong()).thenReturn(3L);
+        when(account.getAccount()).thenReturn(3L);
 
         when(hwlpar.getAccount()).thenReturn(account);
 
@@ -342,7 +351,7 @@ public class DataExceptionServiceEndpointSearchTest {
         when(vSwlpar.getStatus()).thenReturn("status");
 
         Account account = mock(Account.class);
-        when(account.getAccountAsLong()).thenReturn(3L);
+        when(account.getAccount()).thenReturn(3L);
         when(vSwlpar.getAccount()).thenReturn(account);
         when(installedSoftware.getSoftwareLpar()).thenReturn(vSwlpar);
         
@@ -355,6 +364,7 @@ public class DataExceptionServiceEndpointSearchTest {
         return testItem;
     }
     
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testNoValuesPassedIn() {
 
@@ -362,8 +372,16 @@ public class DataExceptionServiceEndpointSearchTest {
 
 		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
 		verify(dataExpSoftwareLparService, never()).getAlertType();
+		verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+		verify(dataExpSoftwareLparService, never()).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+		verify(dataExpHardwareLparService, never()).setAlertTypeCode(anyString());
+		verify(dataExpHardwareLparService, never()).getAlertType();
 		verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
 		verify(dataExpHardwareLparService, never()).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+		verify(dataExpInstalledSwService, never()).setAlertTypeCode(anyString());
+		verify(dataExpInstalledSwService, never()).getAlertType();
+		verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+		verify(dataExpInstalledSwService, never()).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
 
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
@@ -373,7 +391,7 @@ public class DataExceptionServiceEndpointSearchTest {
 	}
     
     /*
-     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
 	@POST
 	@Path("/{dataExpType}/search")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -403,21 +421,20 @@ public class DataExceptionServiceEndpointSearchTest {
 				Long total = null;
 				List list = null;
 				AlertType alertType = null;
-				dataExpType = dataExpType.trim().toUpperCase();
-
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				dataExpType = dataExpType.trim().toUpperCase();					
+				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpSoftwareLparService.setAlertTypeCode(dataExpType);
 					alertType = dataExpSoftwareLparService.getAlertType();
 					total = new Long(dataExpSoftwareLparService.getAlertListSize(account, alertType));
 					list = dataExpSoftwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
 					list = this.swLparDataExpsTransformer(list);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpHardwareLparService.setAlertTypeCode(dataExpType);
 					alertType = dataExpHardwareLparService.getAlertType();
 					total = new Long(dataExpHardwareLparService.getAlertListSize(account, alertType));
 					list = dataExpHardwareLparService.paginatedList(account, startIndex, pageSize, sort, dir);
 					list = this.hwLparDataExpsTransformer(list);
-				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {
+				} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {
 					dataExpInstalledSwService.setAlertTypeCode(dataExpType);
 					alertType = dataExpInstalledSwService.getAlertType();
 					total = new Long(dataExpInstalledSwService.getAlertListSize(account, alertType));

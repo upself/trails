@@ -94,7 +94,7 @@ public class DataExceptionServiceEndpointOverviewTest {
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccountAsLong());
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
     	assertNotNull(wsmsg);
@@ -131,7 +131,7 @@ public class DataExceptionServiceEndpointOverviewTest {
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccountAsLong());
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
     	assertNotNull(wsmsg);
@@ -146,10 +146,9 @@ public class DataExceptionServiceEndpointOverviewTest {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public WSMsg exceptionOverview(@PathParam("accountId") Long accountId){
         if(null == accountId){
-        }else{
             return WSMsg.failMessage("Account ID is required");
+        }else{
             Account account = accountService.getAccount(accountId);
-            
             if(null == account){
                 return WSMsg.failMessage("Account doesn't exist");
             }else{
