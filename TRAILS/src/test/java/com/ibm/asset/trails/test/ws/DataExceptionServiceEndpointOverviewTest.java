@@ -122,7 +122,8 @@ public class DataExceptionServiceEndpointOverviewTest {
     	final Long accountId = 999L;
     	final Account accountMocked = mock(Account.class);
     	final int expectedResultListSize = 3;
-    	    	
+    	
+    	//be careful when building a list of mockedObjects, they can't be interacted with later!(iterate through the list, call methods on em or w/e)
     	List<DataExceptionReportActionForm> list = new ArrayList<>();
     	for (int i = 0; i < expectedResultListSize; i++) {
     		list.add(mock(DataExceptionReportActionForm.class));
@@ -131,13 +132,14 @@ public class DataExceptionServiceEndpointOverviewTest {
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
-    	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
-    	wsmsg.setDataList(list);
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountId);
     	
     	assertNotNull(wsmsg);
     	assertNotNull(wsmsg.getDataList());
+    	assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
     	assertNotNull(wsmsg.getMsg());
     	assertTrue(wsmsg.getDataList().size() == expectedResultListSize);
+    	
     }
 
 /*
