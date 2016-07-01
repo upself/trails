@@ -89,7 +89,7 @@ public class AlertPriorityIsvSwInstancesReviewedServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=PrioISV" + account.getAccount() + ".xls");
+					"attachment; filename=PrioISV" + account.getAccountAsLong() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWISVPR","SWISVPR","SOM4b: PRIORITY ISV SW INSTANCES REVIEWED", "PrioISV");
