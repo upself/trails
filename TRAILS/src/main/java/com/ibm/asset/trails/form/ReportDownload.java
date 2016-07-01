@@ -107,12 +107,12 @@ public class ReportDownload extends HttpServlet implements ServletContextAware {
 				if(lsCode != null){
 				pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
 						"filename=").append(lsName).append(lsCode).append(
-						lAccount != null ? lAccount.getAccount().toString() : "").append(
+						lAccount != null ? lAccount.getAccountAsLong().toString() : "").append(
 						".xls").toString());
 				} else {
 					pHttpServletResponse.setHeader("Content-Disposition", new StringBuffer(
 							"filename=").append(lsName).append(
-							lAccount != null ? lAccount.getAccount().toString() : "").append(
+							lAccount != null ? lAccount.getAccountAsLong().toString() : "").append(
 							".xls").toString());
 				}
 				lReportBase = getReport(lsName, lsCode, lReportService,

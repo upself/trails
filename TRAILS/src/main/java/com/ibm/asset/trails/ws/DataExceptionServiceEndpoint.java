@@ -365,7 +365,7 @@ public class DataExceptionServiceEndpoint {
 		for (DataExceptionHistory dataExpHistory : dataExpHistoryList) {
 			DataExceptionHistoryView dataExpHistoryView = new DataExceptionHistoryView();
 			dataExpHistoryView.setCustomerId(dataExpHistory.getAccount().getId());
-			dataExpHistoryView.setAccountNumber(dataExpHistory.getAccount().getAccount());
+			dataExpHistoryView.setAccountNumber(dataExpHistory.getAccount().getAccountAsLong());
 			dataExpHistoryView.setDataExpHistoryId(dataExpHistory.getId());
 			dataExpHistoryView.setDataExpId(dataExpHistory.getAlert().getId());
 			dataExpHistoryView.setDataExpTypeId(dataExpHistory.getAlertType().getId());
@@ -386,7 +386,7 @@ public class DataExceptionServiceEndpoint {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList) {
+	private List swLparDataExpsTransformer(List<DataExceptionSoftwareLpar> swLparDataExpsList) {
 
 		List swLparDataExpsTransformList = new ArrayList();
 		for (DataExceptionSoftwareLpar swLparDataExp : swLparDataExpsList) {
@@ -422,14 +422,14 @@ public class DataExceptionServiceEndpoint {
 				swLparDataExpView.setSwLparSerial("");
 			}
 
-			swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccount());
+			swLparDataExpView.setSwLparAccountNumber(swLparDataExp.getSoftwareLpar().getAccount().getAccountAsLong());
 			swLparDataExpsTransformList.add(swLparDataExpView);
 		}
 		return swLparDataExpsTransformList;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List hwLparDataExpsTransformer(List<DataExceptionHardwareLpar> hwLparDataExpsList) {
+	private List hwLparDataExpsTransformer(List<DataExceptionHardwareLpar> hwLparDataExpsList) {
 		List hwLparDataExpsTransformList = new ArrayList();
 
 		for (DataExceptionHardwareLpar hwLparDataExp : hwLparDataExpsList) {
@@ -476,14 +476,14 @@ public class DataExceptionServiceEndpoint {
 			} else {
 				hwLparDataExpView.setHwProcessors("");
 			}
-			hwLparDataExpView.setHwLparAccountNumber(hwLparDataExp.getHardwareLpar().getAccount().getAccount());
+			hwLparDataExpView.setHwLparAccountNumber(hwLparDataExp.getHardwareLpar().getAccount().getAccountAsLong());
 			hwLparDataExpsTransformList.add(hwLparDataExpView);
 		}
 		return hwLparDataExpsTransformList;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List installedSwDataExpsTransformer(List<DataExceptionInstalledSw> installedSwDataExpsList) {
+	private List installedSwDataExpsTransformer(List<DataExceptionInstalledSw> installedSwDataExpsList) {
 		List installedSwDataExpsTransformList = new ArrayList();
 
 		for (DataExceptionInstalledSw installedSwDataException : installedSwDataExpsList) {

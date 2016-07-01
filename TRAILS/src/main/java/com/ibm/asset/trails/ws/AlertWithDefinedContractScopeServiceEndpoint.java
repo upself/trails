@@ -90,7 +90,7 @@ public class AlertWithDefinedContractScopeServiceEndpoint {
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition",
-					"attachment; filename=alertContractScope" + account.getAccount() + ".xls");
+					"attachment; filename=alertContractScope" + account.getAccountAsLong() + ".xls");
 			reportService.getAlertUnlicensed(account,
 					request.getRemoteUser(), null, hwb,
 					response.getOutputStream(),"SWISCOPE","SWISCOPE","SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE", "Alert Contract Scope");
