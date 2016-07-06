@@ -1,8 +1,11 @@
 target
+*/build
 */.project
 */.classpath
 */.springBeans
 */build.gradle
+*/*.iml
+*.iml
 */.settings/*
 *.
 */.*

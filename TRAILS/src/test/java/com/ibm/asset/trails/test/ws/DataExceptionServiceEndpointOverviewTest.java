@@ -22,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ibm.asset.trails.dao.DataExceptionHistoryDao;
 import com.ibm.asset.trails.domain.Account;
+import com.ibm.asset.trails.domain.DataExceptionSoftwareLpar;
 import com.ibm.asset.trails.form.DataExceptionReportActionForm;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.DataExceptionReportService;
@@ -85,24 +86,20 @@ public class DataExceptionServiceEndpointOverviewTest {
     
     @Test
     public void testAccountFoundOneDataExceptionReportActionForm() {
-    	Long accountId = 999L;
-    	Account accountMocked = mock(Account.class);
+    	final Long accountId = 999L;
+    	final Account accountMocked = mock(Account.class);
     	List<DataExceptionReportActionForm> list = new ArrayList<>();
     	list.add(mock(DataExceptionReportActionForm.class));
-    	
+
     	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
     	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
     	
     	WSMsg wsmsg = endpoint.exceptionOverview(accountMocked.getAccount());
     	wsmsg.setDataList(list);
     	
-    	System.out.println("wsmsg.getData(): " + wsmsg.getData());
-    	
     	assertNotNull(wsmsg);
-    	assertNotNull(wsmsg.getData());
     	assertNotNull(wsmsg.getDataList());
     	assertNotNull(wsmsg.getMsg());
-    	assertEquals(wsmsg.getMsg(), WSMsg.SUCCESS);
     	assertTrue(wsmsg.getDataList().size() == 1);
     }
 
@@ -120,7 +117,28 @@ public class DataExceptionServiceEndpointOverviewTest {
         assertNotNull(wsmsg.getMsg());
     }
 
+    @Test
     public void testAccountFoundManyDataExceptionReportActionForm() {
+    	final Long accountId = 999L;
+    	final Account accountMocked = mock(Account.class);
+    	final int expectedResultListSize = 3;
+    	
+    	//be careful when building a list of mockedObjects, they can't be interacted with later!(iterate through the list, call methods on em or w/e)
+    	List<DataExceptionReportActionForm> list = new ArrayList<>();
+    	for (int i = 0; i < expectedResultListSize; i++) {
+    		list.add(mock(DataExceptionReportActionForm.class));
+    	}
+
+    	when(accountService.getAccount(accountId)).thenReturn(accountMocked);
+    	when(dataExceptionReportService.getAlertsOverview(accountMocked)).thenReturn(list);
+    	
+    	WSMsg wsmsg = endpoint.exceptionOverview(accountId);
+    	
+    	assertNotNull(wsmsg);
+    	assertNotNull(wsmsg.getDataList());
+    	assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+    	assertNotNull(wsmsg.getMsg());
+    	assertTrue(wsmsg.getDataList().size() == expectedResultListSize);
     	
     }
 
