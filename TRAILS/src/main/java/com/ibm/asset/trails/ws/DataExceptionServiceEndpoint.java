@@ -57,18 +57,6 @@ public class DataExceptionServiceEndpoint {
 	@Autowired
 	private DataExceptionHistoryDao alertHistoryDao;
 
-	public enum SW_LPAR {
-		NULLTIME, NOCUST, NOLP, NOOS, ZEROPROC, NOWS
-	}
-	
-	public enum HW_LPAR {
-		HWNCHP, HWNPRC, NCPMDL, NPRCTYP
-	}
-	
-	public enum INSTALLED_SW {
-		SWDSCEXP
-	}
-
 	public final Set<String> SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("NULLTIME", "NOCUST", "NOLP", "NOOS", "ZEROPROC", "NOSW"));
 	public final Set<String> HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("HWNCHP", "HWNPRC", "NCPMDL", "NPRCTYP"));
 	public final Set<String> INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST = new HashSet<String>(Arrays.asList("SWDSCEXP"));
