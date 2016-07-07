@@ -1,8 +1,5 @@
 package com.ibm.asset.trails.test.ws;
 
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -250,14 +247,15 @@ public class DataExceptionServiceEndpointSearchTest {
         assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
 
         // checking the data object
-        assertNotNull(wsmsg.getData());
-        assertTrue(wsmsg.getData() instanceof Pagination);
-        final Pagination pagination = (Pagination) wsmsg.getData();
-        assertEquals(pageSize.intValue(), pagination.getPageSize().intValue());
-        assertEquals(currentPage.intValue(), pagination.getCurrentPage().intValue());
-        assertEquals(expectedTotalResultSize.intValue(), pagination.getTotal().intValue());
-        assertNotNull(pagination.getList());
-        assertEquals(expectedResultListSize, pagination.getList().size());
+        assertPaginationObject(wsmsg.getData(), pageSize, currentPage, expectedTotalResultSize, expectedResultListSize);
+//        assertNotNull(wsmsg.getData());
+//        assertTrue(wsmsg.getData() instanceof Pagination);
+//        final Pagination pagination = (Pagination) wsmsg.getData();
+//        assertEquals(pageSize.intValue(), pagination.getPageSize().intValue());
+//        assertEquals(currentPage.intValue(), pagination.getCurrentPage().intValue());
+//        assertEquals(expectedTotalResultSize.intValue(), pagination.getTotal().intValue());
+//        assertNotNull(pagination.getList());
+//        assertEquals(expectedResultListSize, pagination.getList().size());
 
         // checking the data list object
         // wsmsg.getDataList() does not get populated, instead, wsmsg.setData(being a Pagination object) is being set in
@@ -358,110 +356,123 @@ public class DataExceptionServiceEndpointSearchTest {
         Software software = mock(Software.class);
         when(software.getSoftwareName()).thenReturn("softwareName");
         when(installedSoftware.getSoftware()).thenReturn(software);
-
         when(testItem.getInstalledSw()).thenReturn(installedSoftware);
 
         return testItem;
     }
     
-//    @Test
-//    public void testSwLparReturnsEmptyListItems() {
-//
-//    	final String swLparExceptionType = getKnownValidSwLparExceptionType();
-//        final Long accountId = 1000L;
-//        final Integer currentPage = 100;
-//        final Integer pageSize = 99;
-//        final String sort = "sorting";
-//        final String dir = "ascending";
-//        final int expectedResultListSize = 0;
-//
-//        Account accountMocked = mock(Account.class);
-//        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
-//        when(dataExpSoftwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
-//
-//        //doReturn b/c of List<? extends DataException>
-//        doReturn(null).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
-//        
-//        final WSMsg wsmsg = endpoint.getDataExceptionDataList(swLparExceptionType, accountId, currentPage, pageSize, sort, dir);
-//
-//        verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpSoftwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
-//
-//        assertNotNull(wsmsg);
-//        assertNotNull(wsmsg.getMsg());
-//        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
-//        assertNull(wsmsg.getData());
-//        assertNull(wsmsg.getDataList());
+    @Test
+    public void testSwLparReturnsEmptyListItems() {
 
-//    }
+    	final String swLparExceptionType = getKnownValidSwLparExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+        final int expectedResultListSize = 0;
+        final int expectedTotalResultSize = expectedResultListSize;
+
+        Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
+        when(dataExpSoftwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+
+        //doReturn b/c of List<? extends DataException>
+        doReturn(null).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+        
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(swLparExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+        verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpSoftwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+
+        assertNotNull(wsmsg);
+        assertNotNull(wsmsg.getMsg());
+        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+        assertNotNull(wsmsg.getData());
+        assertNull(wsmsg.getDataList());
+        assertPaginationObject(wsmsg.getData(), pageSize, currentPage, expectedTotalResultSize, expectedResultListSize);
+
+    }
+
+	@Test
+    public void testHwLparReturnsEmptyListItems() {
+
+    	final String hwLparExceptionType = getKnownValidHwLparExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+        final int expectedResultListSize = 0;
+        final int expectedTotalResultSize = expectedResultListSize;
+
+        Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
+        when(dataExpHardwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+
+        //doReturn b/c of List<? extends DataException>
+        doReturn(null).when(dataExpHardwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+        
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(hwLparExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpHardwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+
+        assertNotNull(wsmsg);
+        assertNotNull(wsmsg.getMsg());
+        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+        assertNotNull(wsmsg.getData());
+        assertNull(wsmsg.getDataList());
+        assertPaginationObject(wsmsg.getData(), pageSize, currentPage, expectedTotalResultSize, expectedResultListSize);
+
+    }
     
-//    @Test
-//    public void testHwLparReturnsEmptyListItems() {
-//
-//    	final String hwLparExceptionType = getKnownValidHwLparExceptionType();
-//        final Long accountId = 1000L;
-//        final Integer currentPage = 100;
-//        final Integer pageSize = 99;
-//        final String sort = "sorting";
-//        final String dir = "ascending";
-//        final int expectedResultListSize = 0;
-//
-//        Account accountMocked = mock(Account.class);
-//        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
-//        when(dataExpHardwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
-//
-//        //doReturn b/c of List<? extends DataException>
-//        doReturn(null).when(dataExpHardwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
-//        
-//        final WSMsg wsmsg = endpoint.getDataExceptionDataList(hwLparExceptionType, accountId, currentPage, pageSize, sort, dir);
-//
-//        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpInstalledSwService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpHardwareLparService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
-//
-//        assertNotNull(wsmsg);
-//        assertNotNull(wsmsg.getMsg());
-//        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
-//        assertNull(wsmsg.getData());
-//        assertNull(wsmsg.getDataList());
-//
-//    }
+    @Test
+    public void testInstalledSwReturnsEmptyListItems() {
+
+    	final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+        final int expectedResultListSize = 0;
+        final int expectedTotalResultSize = expectedResultListSize;
+
+        Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
+        when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
+
+        //doReturn b/c of List<? extends DataException>
+        doReturn(null).when(dataExpInstalledSwService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
+        
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
+        verify(dataExpInstalledSwService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
+
+        assertNotNull(wsmsg);
+        assertNotNull(wsmsg.getMsg());
+        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+        assertNotNull(wsmsg.getData());
+        assertNull(wsmsg.getDataList());
+        assertPaginationObject(wsmsg.getData(), pageSize, currentPage, expectedTotalResultSize, expectedResultListSize);
+
+    }
     
-//    @Test
-//    public void testInstalledSwReturnsEmptyListItems() {
-//
-//    	final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
-//        final Long accountId = 1000L;
-//        final Integer currentPage = 100;
-//        final Integer pageSize = 99;
-//        final String sort = "sorting";
-//        final String dir = "ascending";
-//        final int expectedResultListSize = 0;
-//
-//        Account accountMocked = mock(Account.class);
-//        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
-//        when(dataExpInstalledSwService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
-//
-//        //doReturn b/c of List<? extends DataException>
-//        doReturn(null).when(dataExpInstalledSwService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
-//        
-//        final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
-//
-//        verify(dataExpSoftwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpHardwareLparService, never()).getAlertListSize(any(Account.class), any(AlertType.class));
-//        verify(dataExpInstalledSwService, atLeastOnce()).getAlertListSize(any(Account.class), any(AlertType.class));
-//
-//        assertNotNull(wsmsg);
-//        assertNotNull(wsmsg.getMsg());
-//        assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
-    // NULL & FAIL, why not ?
-//        assertNull(wsmsg.getData());
-//        assertNull(wsmsg.getDataList());
-//
-//    }
+    private void assertPaginationObject(Object object, Integer pageSize, Integer currentPage, int expectedTotalResultSize, int expectedResultListSize) {
+    	assertTrue(object instanceof Pagination);
+        final Pagination pagination = (Pagination) object;
+        assertEquals(pageSize.intValue(), pagination.getPageSize().intValue());
+        assertEquals(currentPage.intValue(), pagination.getCurrentPage().intValue());
+        assertEquals(expectedTotalResultSize, pagination.getTotal().intValue());
+        assertNotNull(pagination.getList());
+        assertEquals(expectedResultListSize, pagination.getList().size());
+	}
     
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testNoValuesPassedIn() {
 
