@@ -72,9 +72,9 @@ public class DataExceptionServiceEndpointUnassignTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testNoDataExpTypePassedIn() {
-		final Long accountId = 999L;
 		final String unassignIds = "1,2";
 		final String comments = "";
 
@@ -87,9 +87,10 @@ public class DataExceptionServiceEndpointUnassignTest {
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
 	}
 
-//	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testNoValuesPassedIn() {
 
@@ -102,6 +103,79 @@ public class DataExceptionServiceEndpointUnassignTest {
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
+	}
+	
+	private String getKnownValidSwLparExceptionType(){
+    	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+
+	@Test
+	public void testSwLparUnassignedSuccessfully(){
+		final String swLparExceptionType = getKnownValidSwLparExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, unassign() returns void
+//		when(dataExpSoftwareLparService.unassign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(swLparExceptionType, assignIds, comments, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Unassign success");
+		
+	}
+	
+	private String getKnownValidHwLparExceptionType(){
+    	return endpoint.HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+
+	@Test
+	public void testHwLparUnassignedSuccessfully(){
+		final String hwLparExceptionType = getKnownValidHwLparExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, unassign() returns void
+//		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(hwLparExceptionType, assignIds, comments, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Unassign success");
+		
+	}
+	
+    private String getKnownValidInstalledSwExceptionType(){
+    	return endpoint.INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+
+	@Test
+	public void testInstalledSwUnassignedSuccessfully(){
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, unassign() returns void
+//		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(installedSwExceptionType, assignIds, comments, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Unassign success");
+		
 	}
 
 	/*

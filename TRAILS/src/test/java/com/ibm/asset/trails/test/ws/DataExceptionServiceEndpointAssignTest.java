@@ -76,10 +76,10 @@ public class DataExceptionServiceEndpointAssignTest {
 	// ??
 	@Test
 	public void testNoDataExpTypePassedIn() {
-		final String assignIDs = "1,2";
+		final String assignIds = "1,2";
 		final String comments = "";
 
-		WSMsg wsmsg = endpoint.assignDataExceptionDataList(null, comments, assignIDs, request);
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(null, comments, assignIds, request);
 
 		verify(dataExpSoftwareLparService, never()).assign(anyList(), anyString(), anyString());
 
@@ -88,6 +88,7 @@ public class DataExceptionServiceEndpointAssignTest {
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
 	}
 
 	// @SuppressWarnings("unchecked")
@@ -104,10 +105,78 @@ public class DataExceptionServiceEndpointAssignTest {
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
 	}
 
+	private String getKnownValidSwLparExceptionType(){
+    	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
 	@Test
-	public void testPassedDataExceptionIsDeclared(){
+	public void testSwLparAssignedSuccessfully(){
+		final String swLparExceptionType = getKnownValidSwLparExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, assign() returns void
+//		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(swLparExceptionType, comments, assignIds, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Assign success");
+		
+	}
+	
+	private String getKnownValidHwLparExceptionType(){
+    	return endpoint.HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
+	@Test
+	public void testHwLparAssignedSuccessfully(){
+		final String hwLparExceptionType = getKnownValidHwLparExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, assign() returns void
+//		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(hwLparExceptionType, comments, assignIds, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Assign success");
+		
+	}
+	
+    private String getKnownValidInstalledSwExceptionType(){
+    	return endpoint.INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
+	@Test
+	public void testInstalledSwAssignedSuccessfully(){
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+		final String assignIds = "1,2";
+		final String comments = "comment";
+
+		//can't, assign() returns void
+//		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
+		
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(installedSwExceptionType, comments, assignIds, request);
+		
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());		
+		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Assign success");
 		
 	}
 	
