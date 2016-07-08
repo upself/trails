@@ -234,6 +234,90 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="reportSwTracking" extends="trails-struts-default"
+		namespace="/reports/softwareTracking">
+
+		<action name="home" method="operationalHome" class="alertAction">
+			<result type="tiles">tiles.reports.swTracking.home</result>
+		</action>
+
+		<action name="geography" method="geography" class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.geography
+			</result>
+		</action>
+
+		<action name="region" method="region" class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.region
+			</result>
+		</action>
+
+		<action name="countryCode" method="countryCode" class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.countryCode
+			</result>
+		</action>
+
+		<action name="sector" method="sector" class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.sector
+			</result>
+		</action>
+
+
+		<action name="department" method="department" class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.department
+			</result>
+		</action>
+
+		<action name="accountByName" method="accountByName"
+			class="SwTrackingReportAction">
+			<result name="success" type="tiles">
+				tiles.reports.swTracking.accountByName
+			</result>
+			<result name="detail" type="tiles">
+				tiles.reports.swTracking.accountDetail
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.swTracking.account.error
+			</result>
+		</action>
+
+		<action name="accountByNumber" method="accountByNumber"
+			class="SwTrackingReportAction">
+			<result name="success" type="tiles">
+				tiles.reports.swTracking.accountByNumber
+			</result>
+			<result name="error" type="tiles">
+				tiles.reports.swTracking.account.number.error
+			</result>
+		</action>
+
+		<action name="accountDetailDownload" method="accountDetailDownload"
+			class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.accountDetailDownload
+			</result>
+		</action>
+
+		<action name="accountRegion" method="accountRegion"
+			class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.accountRegion
+			</result>
+		</action>
+
+		<action name="accountCountryCode" method="accountCountryCode"
+			class="SwTrackingReportAction">
+			<result type="tiles">
+				tiles.reports.swTracking.accountCountryCode
+			</result>
+		</action>
+	</package>
+	
 
 	<package name="reportRedAging" extends="trails-struts-default"
 		namespace="/reports/alertRedAging">
