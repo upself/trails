@@ -4,7 +4,7 @@
 	<div class="ibm-col-1-1">
 		<div id="fourth-level">
 			<h1>Reconcile details</h1>
-			<em>IBM Confidential</em>
+			<p class="ibm-important">IBM Confidential</p>
 		</div>
 	</div>
 </div>
