@@ -486,7 +486,28 @@ public class DataExceptionServiceEndpointSearchTest {
 		assertNull(wsmsg.getData());
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
+		System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
+	}
+	
+	@Test
+	public void testNoDataExpTypePassedIn() {
+		final Long accountId = 1000L;
+		final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+
+		WSMsg wsmsg = endpoint.getDataExceptionDataList(null, accountId, currentPage, pageSize, sort, dir);
+
+		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
 	}
     
     /*
