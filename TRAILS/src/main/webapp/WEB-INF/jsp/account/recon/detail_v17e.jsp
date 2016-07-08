@@ -1,6 +1,6 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<div class="ibm-columns">
+<div class="ibm-columns" style="width:95%">
 	<div class="ibm-col-1-1">
 		<div id="fourth-level">
 			<h1>Reconcile details</h1>
@@ -8,7 +8,7 @@
 		</div>
 	</div>
 </div>
-<div class="ibm-columns">
+<div class="ibm-columns" style="width:95%">
 	<div class="ibm-col-1-1">
 	<h2>&nbsp;</h2>
 		<p class="lead-in">Reconcile details</p>
@@ -65,8 +65,7 @@
 				<td><s:property value="reconcile.comments" /></td>
 			</tr>
 		</table>
-	</div>
-</div>
+
 <br />
 <display:table name="reconcile.usedLicenses" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" 
 	summary="used Licenses" id="row" cellspacing="1" cellpadding="0">
@@ -82,6 +81,7 @@
 	<display:column property="license.extSrcId" title="SWCM ID" />
 	<display:column property="license.recordTime" title="Record time" />
 </display:table>
-
+	</div>
+</div>
 
 <p class="note">&nbsp;</p>
