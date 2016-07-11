@@ -162,7 +162,6 @@ public class DataExceptionServiceEndpointSearchTest {
 
         Account accountMocked = mock(Account.class);
         when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
-
         when(dataExpHardwareLparService.getAlertListSize(any(Account.class), any(AlertType.class))).thenReturn((long) expectedResultListSize);
 
         List<DataExceptionHardwareLpar> list = new ArrayList<>();
@@ -473,22 +472,22 @@ public class DataExceptionServiceEndpointSearchTest {
         assertEquals(expectedResultListSize, pagination.getList().size());
 	}
     
-	@Test
-	public void testNoValuesPassedIn() {
-
-		final WSMsg wsmsg = endpoint.getDataExceptionDataList(null, null, null, null, null, null);
-
-//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
-//		verify(dataExpHardwareLparService, never()).setAlertTypeCode(anyString());
-//		verify(dataExpInstalledSwService, never()).setAlertTypeCode(anyString());
-
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
-		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
-	}
+//	@Test
+//	public void testNoValuesPassedIn() {
+//
+//		final WSMsg wsmsg = endpoint.getDataExceptionDataList(null, null, null, null, null, null);
+//
+////		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+////		verify(dataExpHardwareLparService, never()).setAlertTypeCode(anyString());
+////		verify(dataExpInstalledSwService, never()).setAlertTypeCode(anyString());
+//
+//		assertNotNull(wsmsg);
+//		assertNull(wsmsg.getData());
+//		assertNull(wsmsg.getDataList());
+//		assertNotNull(wsmsg.getMsg());
+//		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+//		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
+//	}
 	
 	@Test
 	public void testNoDataExpTypePassedIn() {
@@ -507,9 +506,34 @@ public class DataExceptionServiceEndpointSearchTest {
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
+//		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
 	}
-    
+	
+	@Test
+	public void testNoAccountIdPassedIn() {
+		final Long accountId = 1000L;
+		final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+
+		WSMsg wsmsg = endpoint.getDataExceptionDataList(null, accountId, currentPage, pageSize, sort, dir);
+
+		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
+		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+//		assertEquals(wsmsg.getMsg(), "Data Exception Type is required");
+	}
+    //
+    //
+    //
+    //
+    //
+	
     /*
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	@POST

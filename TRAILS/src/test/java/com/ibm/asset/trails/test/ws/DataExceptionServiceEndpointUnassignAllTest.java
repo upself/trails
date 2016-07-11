@@ -81,11 +81,16 @@ public class DataExceptionServiceEndpointUnassignAllTest {
 		final String swLparExceptionType = getKnownValidSwLparExceptionType();
 		final Long accountId = 999L;
 		final String comments = "comment";
+		
+		Account accountMocked = mock(Account.class);
+        when(accountService.getAccount(anyLong())).thenReturn(accountMocked);
 
-		//can't, assign() returns void
+		//can't, assign() returns void = then do a verify!
 //		when(dataExpSoftwareLparService.assign(anyList(), anyString(), anyString()));
 		
 		WSMsg wsmsg = endpoint.unassignAllDataExceptionDataList(swLparExceptionType, accountId, comments, request);
+		
+		//verify....
 		
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
