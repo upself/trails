@@ -10,17 +10,18 @@
 		
 	});
 	
-	function updateSettings(){
-		document.settings.action="settings!update.htm";
-		document.settings.submit();
+	function updateAction(){
+		document.reconform.action="settings!update.htm";
+		document.reconform.submit();
 	}
+	
 </script>
  
 <p>Use the form below to modify the reconciliation workspace settings. All fields are optional.</p>
 <div class="ibm-rule"> <hr /> </div>
 		
 <div class="ibm-column-form">
-<s:form action="settings" method="post" namespace="/account/recon" theme="simple">
+<s:form name="reconform" action="settings" method="post" namespace="/account/recon" theme="simple">
 	
 	<div id="recon_settings" class="ibm-columns">
 		<div class="ibm-col-1-1" style="float:left;width:100%">
@@ -178,10 +179,10 @@
 	<div class="ibm-rule"> <hr /> </div>
 	<div style="float:right">
 		<div>
-			 <span class="ibm-btn-pri"> 
-			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateSettings();">
+			<span class="ibm-btn-pri"> 
+				 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateAction();"/>
 			</span>
-			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter" />
+			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter"/>
 		</div>
 	</div>
 </s:form>
