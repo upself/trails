@@ -84,6 +84,7 @@
 
 		<action name="alertUnlicensedIbmSwHistory" class="alertUnlicensedIbmSwHistory">
 			<result type="tiles">tiles.alerts.history.popup</result>
+			<result type="tiles" name="SHOW_V17E">tiles.alerts.history.popup.v17e</result>
 		</action>
 
 		<action name="alertUnlicensedIsvSwHistory" class="alertUnlicensedIsvSwHistory">
