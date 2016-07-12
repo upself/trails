@@ -20,7 +20,7 @@
 			</li>
 			<%}else{%>
 			<li>
-				<a class="ibm-download-link" href="/TRAILS/reports/operational/accountDetailDownloadForSwTracking.htm?d-49653-e=2&6578706f7274=1&accountId=${account.id}">SW tracking only Operational metrics</a>
+				<a class="ibm-download-link" href="/TRAILS/reports/softwareTracking/accountDetailDownload.htm?d-49653-e=2&6578706f7274=1&accountId=${account.id}">SW tracking only Operational metrics</a>
 			</li>
 			<%}%>
 		</ul>
