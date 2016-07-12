@@ -5,21 +5,21 @@ Please narrow the result set by selecting one of the alert report
 navigation links on the left or choose a link below:
 
 <s:url id="geographyLink" action="geography"
-	namespace="/reports/operational" includeContext="true"
+	namespace="/reports/softwareTracking" includeContext="true"
 	includeParams="none">
 </s:url>
 
-<s:url id="regionLink" action="region" namespace="/reports/operational"
+<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 	includeContext="true" includeParams="none">
 </s:url>
 
 <s:url id="countryCodeLink" action="countryCode"
-	namespace="/reports/operational" includeContext="true"
+	namespace="/reports/softwareTracking" includeContext="true"
 	includeParams="none">
 </s:url>
 
 <s:url id="departmentLink" action="department"
-	namespace="/reports/operational" includeContext="true"
+	namespace="/reports/softwareTracking" includeContext="true"
 	includeParams="none">
 </s:url>
 

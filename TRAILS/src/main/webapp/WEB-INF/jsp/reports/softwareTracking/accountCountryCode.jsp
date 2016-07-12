@@ -3,11 +3,11 @@
 
 <display:table name="data" class="basic-table"
 	decorator="org.displaytag.decorator.TotalTableDecorator"
-	summary="Operational Metric summary by accountCountryCode"
+	summary="Software Tracking Only Metrc summary by accountCountryCode"
 	cellspacing="1" cellpadding="0" defaultsort="2" export="true"
-	requestURI="/reports/operational/accountCountryCode.htm">
+	requestURI="/reports/softwareTracking/accountCountryCode.htm">
 	<display:setProperty name="export.excel.filename"
-		value="operationalAccountCountryCode.xls"/>
+		value="alertSwTrackingOnlyByAccountCountryCode.xls"/>
 	<!--<display:caption media="excel">
 		<s:if test="geography != null && region != null">${geography.name} - ${region.name} - IBM confidential</s:if>
 		<s:elseif test="geography != null">${geography.name} - IBM confidential</s:elseif>
@@ -24,7 +24,7 @@
 	<display:column property="countryCodeName" title="Country code" />
 	<display:column property="sectorName" title="Sector" />
 	<display:column property="accountTypeName" title="Account type" />
-	<display:column property="alertNameWithCount" title="Software Operational Metrics(Alert #)" />
+	<display:column property="alertNameWithCount" title="Software Tracking Only Metrics(Alert #)" />
 	<display:column property="greenSum" title="Green(0-45)" total="true"
 		format="{0,number,0}" />
 	<display:column property="yellowSum" title="Yellow(46-90)" total="true"
@@ -33,6 +33,6 @@
 		format="{0,number,0}" />
 	<display:column property="assetSum" title="Universe" total="true"
 		format="{0,number,0}" />
-	<display:column property="operationalMetric" title="Operational metric"
+	<display:column property="operationalMetric" title="Software Tracking Only metric"
 		format="{0,number,0.00}%" total="true" />
 </display:table>

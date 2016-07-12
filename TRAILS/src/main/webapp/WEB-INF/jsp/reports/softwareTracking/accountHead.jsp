@@ -8,31 +8,31 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="alerts" action="home" namespace="/reports/operational"
+<s:url id="alerts" action="home" namespace="/reports/softwareTracking"
 	includeContext="true" includeParams="none">
 </s:url>
 
 <ul id="ibm-navigation-trail">
 	<li><s:a href="%{trails}">TRAILS</s:a></li>
 	<li><s:a href="%{reports}">Reports</s:a></li>
-	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
+	<li><s:a href="%{alerts}">Software Tracking Only metrics</s:a></li>
 	<s:if
 		test="geography != null && region != null && countryCode != null && department != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -40,7 +40,7 @@
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -52,20 +52,20 @@
 	<s:elseif
 		test="geography != null && region != null && countryCode != null && sector != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -73,7 +73,7 @@
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -84,20 +84,20 @@
 	<s:elseif
 		test="geography != null && region != null && countryCode != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -107,20 +107,20 @@
 	<s:elseif
 		test="geography != null && region != null && department != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -129,20 +129,20 @@
 	</s:elseif>
 	<s:elseif test="geography != null && region != null && sector != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -152,20 +152,20 @@
 	<s:elseif
 		test="geography != null && countryCode != null && department != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -175,20 +175,20 @@
 	<s:elseif
 		test="geography != null && countryCode != null && sector != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -198,20 +198,20 @@
 	<s:elseif
 		test="region != null && countryCode != null && department != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -221,20 +221,20 @@
 	<s:elseif
 		test="region != null && countryCode != null && sector != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 			<s:param name="geographyId" value="geography.id" />
@@ -243,13 +243,13 @@
 	</s:elseif>
 	<s:elseif test="geography != null && countryCode != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
@@ -257,13 +257,13 @@
 	</s:elseif>
 	<s:elseif test="region != null && countryCode != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 		</s:url>
@@ -271,13 +271,13 @@
 	</s:elseif>
 	<s:elseif test="countryCode != null && department != null">
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
@@ -285,13 +285,13 @@
 	</s:elseif>
 	<s:elseif test="countryCode != null && sector != null">
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="countryCodeId" value="countryCode.id" />
 		</s:url>
@@ -299,13 +299,13 @@
 	</s:elseif>
 	<s:elseif test="region != null && department != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 		</s:url>
@@ -313,13 +313,13 @@
 	</s:elseif>
 	<s:elseif test="region != null && sector != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="regionId" value="region.id" />
 		</s:url>
@@ -327,13 +327,13 @@
 	</s:elseif>
 	<s:elseif test="geography != null && department != null">
 		<s:url id="geographyLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
@@ -341,13 +341,13 @@
 	</s:elseif>
 	<s:elseif test="geography != null && sector != null">
 		<s:url id="geographyLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
@@ -355,21 +355,21 @@
 	</s:elseif>
 	<s:elseif test="countryCode != null">
 		<s:url id="countryCodeLink" action="countryCode"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{countryCodeLink}">Country code</s:a></li>
 	</s:elseif>
 	<s:elseif test="sector != null">
 		<s:url id="sectorLink" action="sector"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{sectorLink}">Sector</s:a></li>
 	</s:elseif>
 	<s:else>
 		<s:url id="departmentLink" action="department"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{departmentLink}">Department</s:a></li>
@@ -377,7 +377,7 @@
 </ul>
 
 <br />
-<h1>Account operational metrics</h1>
+<h1>Account Software Tracking Only metrics</h1>
 <s:if
 	test="geography != null || region != null || countryCode != null || department != null || sector != null">
 	<p class="ibm-important">IBM Confidential</p>
@@ -418,20 +418,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -474,20 +474,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -540,25 +540,25 @@ Data age (in minutes):
 		</s:url>
 
 		<ul class="ibm-link-list horizontal-list">
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -597,20 +597,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -647,20 +647,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -698,20 +698,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -749,20 +749,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -800,20 +800,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -851,20 +851,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -908,25 +908,25 @@ Data age (in minutes):
 		</s:url>
 
 		<ul class="ibm-link-list horizontal-list">
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -965,25 +965,25 @@ Data age (in minutes):
 		</s:url>
 
 		<ul class="ibm-link-list horizontal-list">
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1015,20 +1015,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1059,20 +1059,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1103,20 +1103,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1147,20 +1147,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1191,20 +1191,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1235,20 +1235,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1284,25 +1284,25 @@ Data age (in minutes):
 		</s:url>
 
 		<ul class="ibm-link-list horizontal-list">
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1327,20 +1327,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 
@@ -1365,20 +1365,20 @@ Data age (in minutes):
 			<s:if test="accountMethod == 'name'">
 				<li><s:a href="%{accountByNameLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by name operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by name Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNameLink}"
-						cssClass="ibm-forward-link">Account by name operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by name Software Tracking Only metrics</s:a></li>
 			</s:else>
 			<s:if test="accountMethod == 'number'">
 				<li><s:a href="%{accountByNumberLink}"
 						cssClass="ibm-forward-link"
-						cssStyle="font-weight: bold;text-decoration: underline;">Account by number operational metrics</s:a></li>
+						cssStyle="font-weight: bold;text-decoration: underline;">Account by number Software Tracking Only metrics</s:a></li>
 			</s:if>
 			<s:else>
 				<li><s:a href="%{accountByNumberLink}"
-						cssClass="ibm-forward-link">Account by number operational metrics</s:a></li>
+						cssClass="ibm-forward-link">Account by number Software Tracking Only metrics</s:a></li>
 			</s:else>
 		</ul>
 

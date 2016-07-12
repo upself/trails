@@ -8,24 +8,24 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="alerts" action="home" namespace="/reports/operational"
+<s:url id="alerts" action="home" namespace="/reports/softwareTracking"
 	includeContext="true" includeParams="none">
 </s:url>
 
 <ul id="ibm-navigation-trail">
 	<li><s:a href="%{trails}">TRAILS</s:a></li>
 	<li><s:a href="%{reports}">Reports</s:a></li>
-	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
+	<li><s:a href="%{alerts}">Software Tracking Only metrics</s:a></li>
 
 	<s:if test="geography != null && region != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 			<s:param name="geographyId" value="geography.id" />
 		</s:url>
@@ -33,14 +33,14 @@
 	</s:if>
 	<s:elseif test="geography != null">
 		<s:url id="geographyLink" action="geography"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{geographyLink}">Geography</s:a></li>
 	</s:elseif>
 	<s:elseif test="region != null">
 		<s:url id="regionLink" action="region"
-			namespace="/reports/operational" includeContext="true"
+			namespace="/reports/softwareTracking" includeContext="true"
 			includeParams="none">
 		</s:url>
 		<li><s:a href="%{regionLink}">Region</s:a></li>
@@ -49,7 +49,7 @@
 
 <br>
 <h1>Country code</h1>
-<h4>Operational metrics reports</h4>
+<h4>Software Tracking Only metrics reports</h4>
 <p class="ibm-important">IBM Confidential</p>
 <p>The following reports reflect metric purification where customer
 	financial responsible software has been counted towards closed alerts
@@ -87,9 +87,9 @@ Data age (in minutes):
 
 		<ul class="ibm-link-list horizontal-list">
 			<li><s:a href="%{countryCodeLink}" cssClass="ibm-forward-link"
-					cssStyle="font-weight: bold;text-decoration: underline;">Country code operational metrics</s:a></li>
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+					cssStyle="font-weight: bold;text-decoration: underline;">Country code Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 		</ul>
 
 		<br>
@@ -124,11 +124,11 @@ Data age (in minutes):
 		</s:url>
 
 		<ul class="ibm-link-list horizontal-list">
-			<li><s:a href="%{regionLink}" cssClass="ibm-forward-link">Region operational metrics</s:a></li>
+			<li><s:a href="%{regionLink}" cssClass="ibm-forward-link">Region Software Tracking Only metrics</s:a></li>
 			<li><s:a href="%{countryCodeLink}" cssClass="ibm-forward-link"
-					cssStyle="font-weight: bold;text-decoration: underline;">Country code operational metrics</s:a></li>
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+					cssStyle="font-weight: bold;text-decoration: underline;">Country code Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 		</ul>
 
 		<br>
@@ -155,9 +155,9 @@ Data age (in minutes):
 
 		<ul class="ibm-link-list horizontal-list">
 			<li><s:a href="%{countryCodeLink}" cssClass="ibm-forward-link"
-					cssStyle="font-weight: bold;text-decoration: underline;">Country code operational metrics</s:a></li>
-			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector operational metrics</s:a></li>
-			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department operational metrics</s:a></li>
+					cssStyle="font-weight: bold;text-decoration: underline;">Country code Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{sectorLink}" cssClass="ibm-forward-link">Sector Software Tracking Only metrics</s:a></li>
+			<li><s:a href="%{departmentLink}" cssClass="ibm-forward-link">Department Software Tracking Only metrics</s:a></li>
 		</ul>
 
 		<br>
