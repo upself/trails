@@ -312,6 +312,17 @@
 			<value>${server.name.trails}</value>
 		</property>
 	</bean>
+	
+		<bean id="SwTrackingReportAction" scope="prototype"
+		class="com.ibm.asset.trails.action.SwTrackingReportAction">
+		<property name="accountService" ref="accountService" />
+		<property name="trailsFileServerName">
+			<value>${server.name.trails.file}</value>
+		</property>
+		<property name="trailsServerName">
+			<value>${server.name.trails}</value>
+		</property>
+	</bean>
 
 	<bean id="bravoServerName" class="com.ibm.asset.trails.action.AlertAssignment">
 		<property name="bravoServerName">
