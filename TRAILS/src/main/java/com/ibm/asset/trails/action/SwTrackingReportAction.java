@@ -95,7 +95,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doGeography() {
         retrieveReportInfo();
         getData().setList(
-                getAlertReportService().getGeographyAlertOperationalReport());
+                getAlertReportService().getGeographySwTrackingAlertReport());
 
         return Action.SUCCESS;
     }
@@ -104,7 +104,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doRegion() {
         retrieveReportInfo();
         getData().setList(
-                getAlertReportService().getRegionAlertOperationalReport(
+                getAlertReportService().getRegionSwTrackingAlertReport(
                         getGeography()));
 
         return Action.SUCCESS;
@@ -114,7 +114,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doCountryCode() {
         retrieveReportInfo();
         getData().setList(
-                getAlertReportService().getCountryCodeAlertOperationalReport(
+                getAlertReportService().getCountryCodeSwTrackingAlertReport(
                         getGeography(), getRegion()));
 
         return Action.SUCCESS;
@@ -124,7 +124,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doSector() {
         retrieveReportInfo();
         getData().setList(
-                getAlertReportService().getSectorAlertOperationalReport(
+                getAlertReportService().getSectorSwTrackingAlertReport(
                         getGeography(), getRegion(), getCountryCode()));
 
         return Action.SUCCESS;
@@ -134,7 +134,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doDepartment() {
         retrieveReportInfo();
         getData().setList(
-                getAlertReportService().getDepartmentAlertOperationalReport(
+                getAlertReportService().getDepartmentSwTrackingAlertReport(
                         getGeography(), getRegion(), getCountryCode()));
 
         return Action.SUCCESS;
@@ -152,14 +152,14 @@ public class SwTrackingReportAction extends BaseListAction{
         if (isDetail()) {
             getData().setList(
                     getAlertReportService()
-                            .getAccountDetailAlertOperationalReport(
+                            .getAccountDetailSwTrackingAlertReport(
                                     getAccountName()));
             return "detail";
         }
 
         setAccountMethod("name");
         getData().setList(
-                getAlertReportService().getAccountByNameAlertOperationalReport(
+                getAlertReportService().getAccountByNameSwTrackingAlertReport(
                         getGeography(), getRegion(), getCountryCode(),
                         getSector(), getDepartment()));
 
@@ -177,7 +177,7 @@ public class SwTrackingReportAction extends BaseListAction{
         setAccountMethod("number");
         getData().setList(
                 getAlertReportService()
-                        .getAccountByNumberAlertOperationalReport(
+                        .getAccountByNumberSwTrackingAlertReport(
                                 getGeography(), getRegion(), getCountryCode(),
                                 getSector(), getDepartment()));
 
@@ -187,7 +187,7 @@ public class SwTrackingReportAction extends BaseListAction{
     @UserRole(userRole = UserRoleType.REPORTSREADER)
     public String doAccountDetailDownload() {
         getData().setList(
-                getAlertReportService().getAccountDetailAlertOperationalReport(
+                getAlertReportService().getAccountDetailSwTrackingAlertReport(
                         getAccount()));
 
         return Action.SUCCESS;
@@ -196,7 +196,7 @@ public class SwTrackingReportAction extends BaseListAction{
     @UserRole(userRole = UserRoleType.READER)
     public String doAccountRegion() {
         getData().setList(
-                getAlertReportService().getAccountRegionAlertOperationalReport(
+                getAlertReportService().getAccountRegionSwTrackingAlertReport(
                         getGeography()));
 
         return Action.SUCCESS;
@@ -206,7 +206,7 @@ public class SwTrackingReportAction extends BaseListAction{
     public String doAccountCountryCode() {
         getData().setList(
                 getAlertReportService()
-                        .getAccountCountryCodeAlertOperationalReport(
+                        .getAccountCountryCodeSwTrackingAlertReport(
                                 getGeography(), getRegion()));
 
         return Action.SUCCESS;

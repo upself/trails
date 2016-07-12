@@ -12,15 +12,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.asset.trails.domain.Account;
-import com.ibm.asset.trails.domain.AlertViewRedAging;
 import com.ibm.asset.trails.domain.CountryCode;
 import com.ibm.asset.trails.domain.Department;
 import com.ibm.asset.trails.domain.Geography;
 import com.ibm.asset.trails.domain.Region;
 import com.ibm.asset.trails.domain.Sector;
-import com.ibm.asset.trails.form.AlertOperationalReport;
-import com.ibm.asset.trails.form.AlertOverviewReport;
-import com.ibm.asset.trails.form.AlertRedAgingReport;
+import com.ibm.asset.trails.form.SwTrackingAlertReport;
 import com.ibm.asset.trails.service.SwTrackingReportService;
 
 @Service
@@ -37,304 +34,9 @@ public class SwTrackingReportServiceImpl implements SwTrackingReportService {
         return em;
     }
 
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getGeographyAlertOverviewReport() {
-        return (ArrayList<AlertOverviewReport>) getEntityManager()
-                .createNamedQuery("geographyAlertOverviewReport")
-                .getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getRegionAlertOverviewReport(
-            Geography geography) {
-
-        if (geography == null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("regionAlertOverviewReport")
-                    .getResultList();
-        } else {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("regionAlertOverviewReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getCountryCodeAlertOverviewReport(
-            Geography geography, Region region) {
-
-        if (region != null && geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "countryCodeAlertOverviewReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "countryCodeAlertOverviewReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("countryCodeAlertOverviewReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("countryCodeAlertOverviewReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getSectorAlertOverviewReport(
-            Geography geography, Region region, CountryCode countryCode) {
-
-        if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertOverviewReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertOverviewReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertOverviewReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertOverviewReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOverviewReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOverviewReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOverviewReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOverviewReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getDepartmentAlertOverviewReport(
-            Geography geography, Region region, CountryCode countryCode) {
-
-        if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("departmentAlertOverviewReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertOverviewReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("departmentAlertOverviewReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOverviewReport> getAccountAlertOverviewReport(
-            Geography geography, Region region, CountryCode countryCode,
-            Sector sector, Department department) {
-
-        if (region != null && geography != null && countryCode != null
-                && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByRegionByCountryCodeByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && geography != null && countryCode != null
-                && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByRegionByCountryCodeBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByRegionByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && geography != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByRegionBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("sector", sector).getResultList();
-        } else if (region != null && countryCode != null && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByRegionByCountryCodeByDepartment")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByRegionByCountryCodeBySector")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && countryCode != null
-                && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByCountryCodeByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (geography != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByCountryCodeBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (countryCode != null && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByCountryCodeByDepartment")
-                    .setParameter("department", department)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (countryCode != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByCountryCodeBySector")
-                    .setParameter("sector", sector)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByRegionByDepartment")
-                    .setParameter("region", region)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByRegionBySector")
-                    .setParameter("region", region)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && department != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("department", department).getResultList();
-        } else if (geography != null && sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertOverviewReportByGeographyBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("sector", sector).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("accountAlertOverviewReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (sector != null) {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("accountAlertOverviewReportBySector")
-                    .setParameter("sector", sector).getResultList();
-        } else {
-            return (ArrayList<AlertOverviewReport>) getEntityManager()
-                    .createNamedQuery("accountAlertOverviewReportByDepartment")
-                    .setParameter("department", department).getResultList();
-        }
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAlertsOverview(Account account) {
-        return (ArrayList<AlertOverviewReport>) getEntityManager()
-                .createNamedQuery("alertOverviewReportByAccount")
-                .setParameter("account", account).getResultList();
-    }
-
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Date selectReportTimestamp() {
-        String query = "SELECT recordTime FROM MqtAlertReport";
+        String query = "SELECT recordTime FROM SwTrackingAlertReport";
         Query q = getEntityManager().createQuery(query).setFirstResult(0)
                 .setMaxResults(1);
 
@@ -343,7 +45,7 @@ public class SwTrackingReportServiceImpl implements SwTrackingReportService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Integer selectReportMinutesOld() {
-        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM MqtAlertReport a";
+        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM SwTrackingAlertReport a";
         Query lQuery = getEntityManager().createQuery(lsQuery)
                 .setFirstResult(0).setMaxResults(1);
         Double diff = Math
@@ -353,797 +55,508 @@ public class SwTrackingReportServiceImpl implements SwTrackingReportService {
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getGeographyAlertOperationalReport() {
-        return (ArrayList<AlertOperationalReport>) getEntityManager()
-                .createNamedQuery("geographyAlertOperationalReport")
+    public ArrayList<SwTrackingAlertReport> getGeographySwTrackingAlertReport() {
+        return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                .createNamedQuery("geographySwTrackingAlertReport")
                 .getResultList();
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getRegionAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getRegionSwTrackingAlertReport(
             Geography geography) {
 
         if (geography == null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("regionAlertOperationalReport")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("regionSwTrackingAlertReport")
                     .getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("regionAlertOperationalReportByGeography")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("regionSwTrackingAlertReportByGeography")
                     .setParameter("geography", geography).getResultList();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getCountryCodeAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getCountryCodeSwTrackingAlertReport(
             Geography geography, Region region) {
 
         if (region != null && geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "countryCodeAlertOperationalReportByGeographyByRegion")
+                            "countryCodeSwTrackingAlertReportByGeographyByRegion")
                     .setParameter("geography", geography)
                     .setParameter("region", region).getResultList();
         } else if (geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "countryCodeAlertOperationalReportByGeography")
+                            "countryCodeSwTrackingAlertReportByGeography")
                     .setParameter("geography", geography).getResultList();
         } else if (region != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "countryCodeAlertOperationalReportByRegion")
+                            "countryCodeSwTrackingAlertReportByRegion")
                     .setParameter("region", region).getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("countryCodeAlertOperationalReport")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("countryCodeSwTrackingAlertReport")
                     .getResultList();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getSectorAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getSectorSwTrackingAlertReport(
             Geography geography, Region region, CountryCode countryCode) {
 
         if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "sectorAlertOperationalReportByGeographyByRegionByCountryCode")
+                            "sectorSwTrackingAlertReportByGeographyByRegionByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "sectorAlertOperationalReportByGeographyByRegion")
+                            "sectorSwTrackingAlertReportByGeographyByRegion")
                     .setParameter("geography", geography)
                     .setParameter("region", region).getResultList();
         } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "sectorAlertOperationalReportByGeographyByCountryCode")
+                            "sectorSwTrackingAlertReportByGeographyByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "sectorAlertOperationalReportByRegionByCountryCode")
+                            "sectorSwTrackingAlertReportByRegionByCountryCode")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOperationalReportByGeography")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("sectorSwTrackingAlertReportByGeography")
                     .setParameter("geography", geography).getResultList();
         } else if (region != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOperationalReportByRegion")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("sectorSwTrackingAlertReportByRegion")
                     .setParameter("region", region).getResultList();
         } else if (countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "sectorAlertOperationalReportByCountryCode")
+                            "sectorSwTrackingAlertReportByCountryCode")
                     .setParameter("countryCode", countryCode).getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertOperationalReport")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("sectorSwTrackingAlertReport")
                     .getResultList();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getDepartmentAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getDepartmentSwTrackingAlertReport(
             Geography geography, Region region, CountryCode countryCode) {
 
         if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByGeographyByRegionByCountryCode")
+                            "departmentSwTrackingAlertReportByGeographyByRegionByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByGeographyByRegion")
+                            "departmentSwTrackingAlertReportByGeographyByRegion")
                     .setParameter("geography", geography)
                     .setParameter("region", region).getResultList();
         } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByGeographyByCountryCode")
+                            "departmentSwTrackingAlertReportByGeographyByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByRegionByCountryCode")
+                            "departmentSwTrackingAlertReportByRegionByCountryCode")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (geography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByGeography")
+                            "departmentSwTrackingAlertReportByGeography")
                     .setParameter("geography", geography).getResultList();
         } else if (region != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByRegion")
+                            "departmentSwTrackingAlertReportByRegion")
                     .setParameter("region", region).getResultList();
         } else if (countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "departmentAlertOperationalReportByCountryCode")
+                            "departmentSwTrackingAlertReportByCountryCode")
                     .setParameter("countryCode", countryCode).getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("departmentAlertOperationalReport")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("departmentSwTrackingAlertReport")
                     .getResultList();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getAccountByNameAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getAccountByNameSwTrackingAlertReport(
             Geography geography, Region region, CountryCode countryCode,
             Sector sector, Department department) {
 
         if (region != null && geography != null && countryCode != null
                 && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByRegionByCountryCodeByDepartment")
+                            "accountByNameSwTrackingAlertReportByGeographyByRegionByCountryCodeByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (region != null && geography != null && countryCode != null
                 && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByRegionByCountryCodeBySector")
+                            "accountByNameSwTrackingAlertReportByGeographyByRegionByCountryCodeBySector")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByRegionByCountryCode")
+                            "accountByNameSwTrackingAlertReportByGeographyByRegionByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && geography != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByRegionBySector")
+                            "accountByNameSwTrackingAlertReportByGeographyByRegionBySector")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && geography != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByRegionByDepartment")
+                            "accountByNameSwTrackingAlertReportByGeographyByRegionByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("department", department).getResultList();
         } else if (region != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByRegionByCountryCodeBySector")
+                            "accountByNameSwTrackingAlertReportByRegionByCountryCodeBySector")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && countryCode != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByRegionByCountryCodeByDepartment")
+                            "accountByNameSwTrackingAlertReportByRegionByCountryCodeByDepartment")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByCountryCodeBySector")
+                            "accountByNameSwTrackingAlertReportByGeographyByCountryCodeBySector")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (geography != null && countryCode != null
                 && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByCountryCodeByDepartment")
+                            "accountByNameSwTrackingAlertReportByGeographyByCountryCodeByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByCountryCode")
+                            "accountByNameSwTrackingAlertReportByGeographyByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByRegionByCountryCode")
+                            "accountByNameSwTrackingAlertReportByRegionByCountryCode")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByCountryCodeBySector")
+                            "accountByNameSwTrackingAlertReportByCountryCodeBySector")
                     .setParameter("sector", sector)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (countryCode != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByCountryCodeByDepartment")
+                            "accountByNameSwTrackingAlertReportByCountryCodeByDepartment")
                     .setParameter("department", department)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByRegionBySector")
+                            "accountByNameSwTrackingAlertReportByRegionBySector")
                     .setParameter("region", region)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByRegionByDepartment")
+                            "accountByNameSwTrackingAlertReportByRegionByDepartment")
                     .setParameter("region", region)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyBySector")
+                            "accountByNameSwTrackingAlertReportByGeographyBySector")
                     .setParameter("geography", geography)
                     .setParameter("sector", sector).getResultList();
         } else if (geography != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByGeographyByDepartment")
+                            "accountByNameSwTrackingAlertReportByGeographyByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("department", department).getResultList();
         } else if (countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByCountryCode")
+                            "accountByNameSwTrackingAlertReportByCountryCode")
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportBySector")
+                            "accountByNameSwTrackingAlertReportBySector")
                     .setParameter("sector", sector).getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNameAlertOperationalReportByDepartment")
+                            "accountByNameSwTrackingAlertReportByDepartment")
                     .setParameter("department", department).getResultList();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertOperationalReport> getAccountByNumberAlertOperationalReport(
+    public ArrayList<SwTrackingAlertReport> getAccountByNumberSwTrackingAlertReport(
             Geography geography, Region region, CountryCode countryCode,
             Sector sector, Department department) {
 
         if (region != null && geography != null && countryCode != null
                 && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByRegionByCountryCodeByDepartment")
+                            "accountByNumberSwTrackingAlertReportByGeographyByRegionByCountryCodeByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (region != null && geography != null && countryCode != null
                 && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByRegionByCountryCodeBySector")
+                            "accountByNumberSwTrackingAlertReportByGeographyByRegionByCountryCodeBySector")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByRegionByCountryCode")
+                            "accountByNumberSwTrackingAlertReportByGeographyByRegionByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && geography != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByRegionBySector")
+                            "accountByNumberSwTrackingAlertReportByGeographyByRegionBySector")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && geography != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByRegionByDepartment")
+                            "accountByNumberSwTrackingAlertReportByGeographyByRegionByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("region", region)
                     .setParameter("department", department).getResultList();
         } else if (region != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByRegionByCountryCodeBySector")
+                            "accountByNumberSwTrackingAlertReportByRegionByCountryCodeBySector")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && countryCode != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByRegionByCountryCodeByDepartment")
+                            "accountByNumberSwTrackingAlertReportByRegionByCountryCodeByDepartment")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByCountryCodeBySector")
+                            "accountByNumberSwTrackingAlertReportByGeographyByCountryCodeBySector")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode)
                     .setParameter("sector", sector).getResultList();
         } else if (geography != null && countryCode != null
                 && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByCountryCodeByDepartment")
+                            "accountByNumberSwTrackingAlertReportByGeographyByCountryCodeByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByCountryCode")
+                            "accountByNumberSwTrackingAlertReportByGeographyByCountryCode")
                     .setParameter("geography", geography)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByRegionByCountryCode")
+                            "accountByNumberSwTrackingAlertReportByRegionByCountryCode")
                     .setParameter("region", region)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (countryCode != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByCountryCodeBySector")
+                            "accountByNumberSwTrackingAlertReportByCountryCodeBySector")
                     .setParameter("sector", sector)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (countryCode != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByCountryCodeByDepartment")
+                            "accountByNumberSwTrackingAlertReportByCountryCodeByDepartment")
                     .setParameter("department", department)
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (region != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByRegionBySector")
+                            "accountByNumberSwTrackingAlertReportByRegionBySector")
                     .setParameter("region", region)
                     .setParameter("sector", sector).getResultList();
         } else if (region != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByRegionByDepartment")
+                            "accountByNumberSwTrackingAlertReportByRegionByDepartment")
                     .setParameter("region", region)
                     .setParameter("department", department).getResultList();
         } else if (geography != null && sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyBySector")
+                            "accountByNumberSwTrackingAlertReportByGeographyBySector")
                     .setParameter("geography", geography)
                     .setParameter("sector", sector).getResultList();
         } else if (geography != null && department != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByGeographyByDepartment")
+                            "accountByNumberSwTrackingAlertReportByGeographyByDepartment")
                     .setParameter("geography", geography)
                     .setParameter("department", department).getResultList();
         } else if (countryCode != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByCountryCode")
+                            "accountByNumberSwTrackingAlertReportByCountryCode")
                     .setParameter("countryCode", countryCode).getResultList();
         } else if (sector != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportBySector")
+                            "accountByNumberSwTrackingAlertReportBySector")
                     .setParameter("sector", sector).getResultList();
         } else {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountByNumberAlertOperationalReportByDepartment")
+                            "accountByNumberSwTrackingAlertReportByDepartment")
                     .setParameter("department", department).getResultList();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getGeographyAlertRedAgingReport() {
-        return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                .createNamedQuery("geographyAlertRedAgingReport")
-                .getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getRegionAlertRedAgingReport(
-            Geography geography) {
-
-        if (geography == null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("regionAlertRedAgingReport")
-                    .getResultList();
-        } else {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("regionAlertRedAgingReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getCountryCodeAlertRedAgingReport(
-            Geography geography, Region region) {
-
-        if (region != null && geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "countryCodeAlertRedAgingReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "countryCodeAlertRedAgingReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("countryCodeAlertRedAgingReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("countryCodeAlertRedAgingReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getSectorAlertRedAgingReport(
-            Geography geography, Region region, CountryCode countryCode) {
-
-        if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertRedAgingReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertRedAgingReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertRedAgingReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "sectorAlertRedAgingReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertRedAgingReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertRedAgingReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertRedAgingReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("sectorAlertRedAgingReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getDepartmentAlertRedAgingReport(
-            Geography geography, Region region, CountryCode countryCode) {
-
-        if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByGeographyByRegion")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null && geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (geography != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByGeography")
-                    .setParameter("geography", geography).getResultList();
-        } else if (region != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("departmentAlertRedAgingReportByRegion")
-                    .setParameter("region", region).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "departmentAlertRedAgingReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("departmentAlertRedAgingReport")
-                    .getResultList();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList<AlertRedAgingReport> getAccountAlertRedAgingReport(
-            Geography geography, Region region, CountryCode countryCode,
-            Sector sector, Department department) {
-
-        if (region != null && geography != null && countryCode != null
-                && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByRegionByCountryCodeByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && geography != null && countryCode != null
-                && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByRegionByCountryCodeBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (region != null && geography != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByRegionByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && geography != null && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByRegionByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && geography != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByRegionBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("region", region)
-                    .setParameter("sector", sector).getResultList();
-        } else if (region != null && countryCode != null && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByRegionByCountryCodeByDepartment")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByRegionByCountryCodeBySector")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && countryCode != null
-                && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByCountryCodeByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("department", department).getResultList();
-        } else if (geography != null && countryCode != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByCountryCodeBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByCountryCode")
-                    .setParameter("geography", geography)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByRegionByCountryCode")
-                    .setParameter("region", region)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (countryCode != null && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByCountryCodeByDepartment")
-                    .setParameter("department", department)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (countryCode != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByCountryCodeBySector")
-                    .setParameter("sector", sector)
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (region != null && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByRegionByDepartment")
-                    .setParameter("region", region)
-                    .setParameter("department", department).getResultList();
-        } else if (region != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByRegionBySector")
-                    .setParameter("region", region)
-                    .setParameter("sector", sector).getResultList();
-        } else if (geography != null && department != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyByDepartment")
-                    .setParameter("geography", geography)
-                    .setParameter("department", department).getResultList();
-        } else if (geography != null && sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery(
-                            "accountAlertRedAgingReportByGeographyBySector")
-                    .setParameter("geography", geography)
-                    .setParameter("sector", sector).getResultList();
-        } else if (countryCode != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("accountAlertRedAgingReportByCountryCode")
-                    .setParameter("countryCode", countryCode).getResultList();
-        } else if (sector != null) {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("accountAlertRedAgingReportBySector")
-                    .setParameter("sector", sector).getResultList();
-        } else {
-            return (ArrayList<AlertRedAgingReport>) getEntityManager()
-                    .createNamedQuery("accountAlertRedAgingReportByDepartment")
-                    .setParameter("department", department).getResultList();
-        }
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountDetailAlertRedAgingReport(Account account) {
-        return (ArrayList<AlertViewRedAging>) getEntityManager()
-                .createNamedQuery("alertRedAgingByAccount")
-                .setParameter("account", account.getId()).getResultList();
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountDetailAlertOperationalReport(Account pAccount) {
-        return (ArrayList<AlertOperationalReport>) getEntityManager()
-                .createNamedQuery("alertOperationalReportByAccount")
+    @SuppressWarnings({"unchecked" })
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountDetailSwTrackingAlertReport(Account pAccount) {
+        return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                .createNamedQuery("SwTrackingAlertReportByAccount")
                 .setParameter("account", pAccount).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountDetailAlertOperationalReport(String accountName) {
-        return (ArrayList<AlertOperationalReport>) getEntityManager()
-                .createNamedQuery("alertOperationalReportByAccountName")
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountDetailSwTrackingAlertReport(String accountName) {
+        return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                .createNamedQuery("SwTrackingAlertReportByAccountName")
                 .setParameter("accountName", accountName).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountRegionAlertOperationalReport(Geography pGeography) {
-        return (ArrayList<AlertOperationalReport>) getEntityManager()
-                .createNamedQuery("accountAlertOperationalReportByGeography")
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountRegionSwTrackingAlertReport(Geography pGeography) {
+        return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                .createNamedQuery("accountSwTrackingAlertReportByGeography")
                 .setParameter("geography", pGeography).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountCountryCodeAlertOperationalReport(
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountCountryCodeSwTrackingAlertReport(
             Geography pGeography, Region pRegion) {
         if (pGeography != null && pRegion != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountAlertOperationalReportByGeographyByRegion")
+                            "accountSwTrackingAlertReportByGeographyByRegion")
                     .setParameter("geography", pGeography)
                     .setParameter("region", pRegion).getResultList();
         } else if (pGeography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
-                            "accountAlertOperationalReportByGeography")
+                            "accountSwTrackingAlertReportByGeography")
                     .setParameter("geography", pGeography).getResultList();
         } else { // pRegion != null
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
-                    .createNamedQuery("accountAlertOperationalReportByRegion")
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
+                    .createNamedQuery("accountSwTrackingAlertReportByRegion")
                     .setParameter("region", pRegion).getResultList();
         }
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountRegionAlertRedAgingReport(Geography pGeography) {
-        return (ArrayList<AlertOperationalReport>) getEntityManager()
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountRegionAlertRedAgingReport(Geography pGeography) {
+        return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                 .createNamedQuery("accountAlertRedAgingReportByGeography")
                 .setParameter("geography", pGeography).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountCountryCodeAlertRedAgingReport(
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<SwTrackingAlertReport> getAccountCountryCodeAlertRedAgingReport(
             Geography pGeography, Region pRegion) {
         if (pGeography != null && pRegion != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery(
                             "accountAlertRedAgingReportByGeographyByRegion")
                     .setParameter("geography", pGeography)
                     .setParameter("region", pRegion).getResultList();
         } else if (pGeography != null) {
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery("accountAlertRedAgingReportByGeography")
                     .setParameter("geography", pGeography).getResultList();
         } else { // pRegion != null
-            return (ArrayList<AlertOperationalReport>) getEntityManager()
+            return (ArrayList<SwTrackingAlertReport>) getEntityManager()
                     .createNamedQuery("accountAlertRedAgingReportByRegion")
                     .setParameter("region", pRegion).getResultList();
         }

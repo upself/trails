@@ -9,83 +9,41 @@ import com.ibm.asset.trails.domain.Department;
 import com.ibm.asset.trails.domain.Geography;
 import com.ibm.asset.trails.domain.Region;
 import com.ibm.asset.trails.domain.Sector;
+import com.ibm.asset.trails.form.SwTrackingAlertReport;
 
 public interface SwTrackingReportService {
-
-	public ArrayList getGeographyAlertOverviewReport();
-
-	public ArrayList getRegionAlertOverviewReport(Geography geography);
-
-	public ArrayList getCountryCodeAlertOverviewReport(Geography geography,
-			Region region);
-
-	public ArrayList getSectorAlertOverviewReport(Geography geography,
-			Region region, CountryCode countryCode);
-
-	public ArrayList getDepartmentAlertOverviewReport(Geography geography,
-			Region region, CountryCode countryCode);
-
-	public ArrayList getAccountAlertOverviewReport(Geography geography,
-			Region region, CountryCode countryCode, Sector sector,
-			Department department);
-
-	public ArrayList getAlertsOverview(Account account);
 
 	public Date selectReportTimestamp();
 
 	public Integer selectReportMinutesOld();
 
-	public ArrayList getGeographyAlertOperationalReport();
+	public ArrayList<SwTrackingAlertReport> getGeographySwTrackingAlertReport();
 
-	public ArrayList getRegionAlertOperationalReport(Geography geography);
+	public ArrayList<SwTrackingAlertReport> getRegionSwTrackingAlertReport(Geography geography);
 
-	public ArrayList getCountryCodeAlertOperationalReport(Geography geography,
+	public ArrayList<SwTrackingAlertReport> getCountryCodeSwTrackingAlertReport(Geography geography,
 			Region region);
 
-	public ArrayList getSectorAlertOperationalReport(Geography geography,
+	public ArrayList<SwTrackingAlertReport> getSectorSwTrackingAlertReport(Geography geography,
 			Region region, CountryCode countryCode);
 
-	public ArrayList getDepartmentAlertOperationalReport(Geography geography,
+	public ArrayList<SwTrackingAlertReport> getDepartmentSwTrackingAlertReport(Geography geography,
 			Region region, CountryCode countryCode);
 
-	public ArrayList getAccountByNameAlertOperationalReport(
+	public ArrayList<SwTrackingAlertReport> getAccountByNameSwTrackingAlertReport(
 			Geography geography, Region region, CountryCode countryCode,
 			Sector sector, Department department);
 
-	public ArrayList getAccountByNumberAlertOperationalReport(
+	public ArrayList<SwTrackingAlertReport> getAccountByNumberSwTrackingAlertReport(
 			Geography geography, Region region, CountryCode countryCode,
 			Sector sector, Department department);
 
-	public ArrayList getGeographyAlertRedAgingReport();
+	public ArrayList<SwTrackingAlertReport> getAccountDetailSwTrackingAlertReport(Account pAccount);
 
-	public ArrayList getRegionAlertRedAgingReport(Geography geography);
+	public ArrayList<SwTrackingAlertReport> getAccountDetailSwTrackingAlertReport(String accountName);
 
-	public ArrayList getCountryCodeAlertRedAgingReport(Geography geography,
-			Region region);
+	public ArrayList<SwTrackingAlertReport> getAccountRegionSwTrackingAlertReport(Geography pGeography);
 
-	public ArrayList getSectorAlertRedAgingReport(Geography geography,
-			Region region, CountryCode countryCode);
-
-	public ArrayList getDepartmentAlertRedAgingReport(Geography geography,
-			Region region, CountryCode countryCode);
-
-	public ArrayList getAccountAlertRedAgingReport(Geography geography,
-			Region region, CountryCode countryCode, Sector sector,
-			Department department);
-
-	public ArrayList getAccountDetailAlertRedAgingReport(Account account);
-
-	public ArrayList getAccountDetailAlertOperationalReport(Account pAccount);
-
-	public ArrayList getAccountDetailAlertOperationalReport(String accountName);
-
-	public ArrayList getAccountRegionAlertOperationalReport(Geography pGeography);
-
-	public ArrayList getAccountCountryCodeAlertOperationalReport(
-			Geography pGeography, Region pRegion);
-
-	public ArrayList getAccountRegionAlertRedAgingReport(Geography pGeography);
-
-	public ArrayList getAccountCountryCodeAlertRedAgingReport(
+	public ArrayList<SwTrackingAlertReport> getAccountCountryCodeSwTrackingAlertReport(
 			Geography pGeography, Region pRegion);
 }
