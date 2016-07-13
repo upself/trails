@@ -22,7 +22,7 @@
 	cellpadding="0" defaultsort="1" export="true"
 	requestURI="/reports/softwareTracking/region.htm">
 	<display:setProperty name="export.excel.filename"
-		value="alertSwTrackingOnlyByByRegion.xls" />
+		value="alertSwTrackingOnlyByRegion.xls" />
 	<display:column property="name" title="Region" group="1"
 		href="countryCode.htm?geographyId=${geography.id}" paramId="regionId"
 		paramProperty="id" media="html" />

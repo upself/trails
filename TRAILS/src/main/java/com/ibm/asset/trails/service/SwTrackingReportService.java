@@ -9,9 +9,12 @@ import com.ibm.asset.trails.domain.Department;
 import com.ibm.asset.trails.domain.Geography;
 import com.ibm.asset.trails.domain.Region;
 import com.ibm.asset.trails.domain.Sector;
+import com.ibm.asset.trails.form.AlertOverviewReport;
 import com.ibm.asset.trails.form.SwTrackingAlertReport;
 
 public interface SwTrackingReportService {
+	
+	public ArrayList<AlertOverviewReport> getSwTrackingAlertsOverview(Account account);
 
 	public Date selectReportTimestamp();
 
