@@ -4255,3 +4255,22 @@ AND at.code IN ( 'NOLIC',
                 'SWIBM',
                 'SWISVPR',
                 'SWISVNPR' );
+
+CREATE TABLE 
+   EAADMIN.MQT_OP_METRICS_SWTRACKING (
+ID VARCHAR(41) NOT NULL,
+CUSTOMER_ID BIGINT NOT NULL,
+DISPLAY_NAME VARCHAR(27) NOT NULL,
+ASSET_TYPE VARCHAR(16),
+RECORD_TIME TIMESTAMP NOT NULL,
+ASSIGNED INTEGER,
+RED INTEGER,                    
+YELLOW INTEGER,                      
+GREEN INTEGER,                    
+RED91 INTEGER,                    
+RED121 INTEGER,                    
+RED151 INTEGER,                   
+RED181 INTEGER,                    
+RED366 INTEGER,                     
+ASSET_TOTAL INTEGER   
+);  
