@@ -7,24 +7,24 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="alerts" action="home" namespace="/reports/operational"
+<s:url id="alerts" action="home" namespace="/reports/softwareTracking"
 	includeContext="true" includeParams="none">
 </s:url>
 
 <s:url id="geography" action="geography"
-	namespace="/reports/operational" includeContext="true"
+	namespace="/reports/softwareTracking" includeContext="true"
 	includeParams="none">
 </s:url>
 
 <ul id="ibm-navigation-trail">
 	<li><s:a href="%{trails}">TRAILS</s:a></li>
 	<li><s:a href="%{reports}">Reports</s:a></li>
-	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
+	<li><s:a href="%{alerts}">Software Tracking Only metrics</s:a></li>
 </ul>
 
 
 <h1>Geography</h1>
-<h4>Operational metrics reports</h4>
+<h4>Software Tracking Only metrics reports</h4>
 <p class="ibm-important">IBM Confidential</p>
 <p>The following reports reflect metric purification where customer
 	financial responsible software has been counted towards closed alerts

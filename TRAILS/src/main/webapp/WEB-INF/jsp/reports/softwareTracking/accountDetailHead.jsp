@@ -8,12 +8,12 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="alerts" action="home" namespace="/reports/operational"
+<s:url id="alerts" action="home" namespace="/reports/softwareTracking"
 	includeContext="true" includeParams="none">
 </s:url>
 
 <s:url id="accountByNameLink" action="accountByName.htm"
-	namespace="/reports/operational" includeContext="true"
+	namespace="/reports/softwareTracking" includeContext="true"
 	includeParams="none">
 	<s:param name="geographyId" value="geography.id" />
 	<s:param name="regionId" value="region.id" />
@@ -23,23 +23,23 @@
 </s:url>
 
 <p id="breadcrumbs"><s:a href="%{trails}">TRAILS</s:a> &gt; <s:a
-	href="%{reports}">Reports</s:a> &gt; <s:a href="%{alerts}">Operational metrics</s:a>
+	href="%{reports}">Reports</s:a> &gt; <s:a href="%{alerts}">Software Tracking Only metrics</s:a>
 &gt; <s:if
 	test="geography != null && region != null && countryCode != null && department != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -47,7 +47,7 @@
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -57,26 +57,26 @@
 </s:if> <s:elseif
 	test="geography != null && region != null && countryCode != null && sector != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -86,19 +86,19 @@
 </s:elseif> <s:elseif
 	test="geography != null && region != null && countryCode != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -107,19 +107,19 @@
 </s:elseif> <s:elseif
 	test="geography != null && region != null && department != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -127,18 +127,18 @@
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
 </s:elseif> <s:elseif test="geography != null && region != null && sector != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -147,20 +147,20 @@
 </s:elseif> <s:elseif
 	test="geography != null && countryCode != null && department != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="countryCodeId" value="countryCode.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -169,19 +169,19 @@
 </s:elseif> <s:elseif
 	test="geography != null && countryCode != null && sector != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="countryCodeId" value="countryCode.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -189,20 +189,20 @@
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:elseif
 	test="region != null && countryCode != null && department != null">
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -210,19 +210,19 @@
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
 </s:elseif> <s:elseif
 	test="region != null && countryCode != null && sector != null">
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="regionId" value="region.id" />
 		<s:param name="geographyId" value="geography.id" />
@@ -230,116 +230,116 @@
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:elseif test="geography != null && countryCode != null">
 	<s:url id="geographyLink" action="geography"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 </s:elseif> <s:elseif test="region != null && countryCode != null">
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 </s:elseif> <s:elseif test="countryCode != null && department != null">
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="countryCodeId" value="countryCode.id" />
 	</s:url>
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
 </s:elseif> <s:elseif test="countryCode != null && sector != null">
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="countryCodeId" value="countryCode.id" />
 	</s:url>
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:elseif test="region != null && department != null">
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTrackings"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="regionId" value="region.id" />
 	</s:url>
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
 </s:elseif> <s:elseif test="region != null && sector != null">
-	<s:url id="regionLink" action="region" namespace="/reports/operational"
+	<s:url id="regionLink" action="region" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{regionLink}">Region</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="regionId" value="region.id" />
 	</s:url>
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:elseif test="geography != null && department != null">
 	<s:url id="geographyLink" action="region"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
 </s:elseif> <s:elseif test="geography != null && sector != null">
 	<s:url id="geographyLink" action="region"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{geographyLink}">Geography</s:a> &gt;
 	
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 		<s:param name="geographyId" value="geography.id" />
 	</s:url>
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:elseif test="countryCode != null">
 	<s:url id="countryCodeLink" action="countryCode"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{countryCodeLink}">Country code</s:a> &gt;
 </s:elseif> <s:elseif test="sector != null">
-	<s:url id="sectorLink" action="sector" namespace="/reports/operational"
+	<s:url id="sectorLink" action="sector" namespace="/reports/softwareTracking"
 		includeContext="true" includeParams="none">
 	</s:url>
 	<s:a href="%{sectorLink}">Sector</s:a> &gt;
 </s:elseif> <s:else>
 	<s:url id="departmentLink" action="department"
-		namespace="/reports/operational" includeContext="true"
+		namespace="/reports/softwareTracking" includeContext="true"
 		includeParams="none">
 	</s:url>
 	<s:a href="%{departmentLink}">Department</s:a> &gt;
@@ -349,7 +349,7 @@
 
 <br />
 <h1>Account</h1>
-<h4>Operational metrics reports</h4>
+<h4>Software Tracking Only metrics reports</h4>
 <p class="confidential">IBM Confidential</p>
 <p>The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.</p>
 <br />
