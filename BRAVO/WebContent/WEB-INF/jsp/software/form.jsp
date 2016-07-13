@@ -76,38 +76,43 @@
 		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
 		
 		var softwareCategory= document.getElementsByName("invalidCategory")[0];
-		var dupProd,sharedDASD;
+		var IFAPRD, complexDisc, IBM;
 		
 	    for(var i=0;i<softwareCategory.length;i++){
-	    	if(softwareCategory.options[i].value=='Duplicate product - In Use'){
-	    		dupProd=softwareCategory.options[i];
-	    	}
-			if(softwareCategory.options[i].value=='Shared DASD (not used in this LPAR)'){
-				sharedDASD=softwareCategory.options[i];
-	    	}
+	    	"softwareCategory.options[i].value: " + softwareCategory.options[i].value);
+	    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
+				IFAPRD = softwareCategory.options[i];
+			}
+			if (softwareCategory.options[i].value == 'Complex discovery') {
+				complexDisc = softwareCategory.options[i];
+			}
+			if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
+				IBM = softwareCategory.options[i];
+			}
 	    }
 	    
-		//softwareCategory.options[2].style.display="";
-	    //softwareCategory.options[3].style.display="";
-	    dupProd.style.display="";
-	    sharedDASD.style.display="";
+	    IFAPRD.style.display = "";
+		complexDisc.style.display = "";
+		IBM.style.display = "";
 	    
 		for(var i=0;i<descrepancyType.length;i++){
 			if(descrepancyType.options[i].selected){
 				var descreVal=descrepancyType.options[i].text;
 				if(descreVal=="INVALID"){
-					//var swkbt="${requestScope.software.software.remoteUser}";
-					var tadz="${requestScope.software.tadz}";
-					var tlcmz="${requestScope.software.tlcmz}";
-					
-					if((tadz!=null && tadz != "")||(tlcmz!=null && tlcmz != "")){  //if it is TADz, then remove below 2 child node of Software Category
-					    dupProd.style.display="none";
-					    sharedDASD.style.display="none";
-					}
-					if(tlcmz!=null && tlcmz != ""){  //if it is TLCMz, then reactive child node of Software Category
-					    dupProd.style.display="";
-					    sharedDASD.style.display="";
-					}
+					complexDisc.style.display = "none";
+				} else if (descreVal == "VALID" || descreVal == "NONE") {
+					IFAPRD.style.display = "none";
+					complexDisc.style.display = "none";
+					IBM.style.display = "none";
+				} else if (descreVal == "FALSE HIT") {
+					IFAPRD.style.display = "none";
+					IBM.style.display = "none";
+				}
+				else if (descreVal == "FH RESET") {
+					IFAPRD.style.display = "none";
+					dupProd.style.display = "none";
+					sharedDASD.style.display = "none";
+					IBM.style.display = "none";
 				}
 			}
 		}
@@ -271,7 +276,8 @@
 											</tr>
 											<tr>
 												<td nowrap="nowrap">Discrepancy:</td>
-												<td><c:choose>
+												<td>
+													<c:choose>
 														<c:when
 															test="${software.readOnly['discrepancyType'] == true}">
 															<html:hidden property="discrepancyTypeId" />
@@ -281,11 +287,12 @@
 														</c:when>
 														<c:otherwise>
 														<!-- ab added sprint9 story 27299 -->
-															<html:select property="discrepancyTypeId" styleClass="inputlong" onclick="validateCategory()">
+															<html:select property="discrepancyTypeId" styleClass="inputlong" onchange="validateCategory()">
 																<html:optionsCollection property="discrepancyTypeList" />
 															</html:select>
 														</c:otherwise>
-													</c:choose></td>
+													</c:choose>
+												</td>
 												<td class="error"><html:errors
 														property="discrepancyType" /></td>
 											</tr>
@@ -294,7 +301,6 @@
 												<td><html:select property="invalidCategory"
 														styleClass="inputlong"
 														disabled="${software.readOnly['invalidCategory']}">
-														<!--  DONNIE REMOVED disabled="${software.readOnly['invalidCategory']}" -->
 														<html:optionsCollection property="invalidCategoryList" />
 													</html:select></td>
 												<td class="error"><html:errors
@@ -352,7 +358,7 @@
 									</tr>
 									<tr>
 										<th>INVALID</th>
-										<td>Indicates the software component which is confirmed as either Blocked in IFAPRD, or duplicated (Duplicate product - In Use) or not in use on this LPAR (Shared DASD).</td>
+										<td>Indicates the software component which is confirmed as Blocked in IFAPRD</td>
 									</tr>
 									<tr>
 										<th>FH RESET</th>
@@ -384,16 +390,6 @@
 									<tr>
 										<th>Blocked in IFAPRD</th>
 										<td>When the software component is listed in the IFAPRD member as "Disable"</td>
-									</tr>
-									<tr>
-										<th>Duplicate product - In Use</th>
-										<td>If TADz has identified a software component multiple times, mark this one as duplicate software component and add a comment as to the software component name it is a duplicate of. Make sure that the correct occurrence is marked as a valid software component</td>
-									</tr>
-									<tr>
-										<th>Shared DASD (not in use on this LPAR)</th>
-										<td>Product is on Shared DASD and used on another system
-											but not needed on this system. Add comment as to what LPAR
-											this product is used on</td>
 									</tr>
 									<tr>
 										<td></td>
