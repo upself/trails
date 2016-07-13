@@ -10,7 +10,7 @@
 		
 	});
 	
-	function updateSettings(){
+	function updateAction(){
 		document.settings.action="settings!update.htm";
 		document.settings.submit();
 	}
@@ -179,7 +179,7 @@
 	<div style="float:right">
 		<div>
 			 <span class="ibm-btn-pri"> 
-			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateSettings();">
+			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateAction();">
 			</span>
 			 <input type="button" class="ibm-btn-pri" value="Clear" id="clearButton" alt="clear filter" />
 		</div>

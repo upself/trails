@@ -207,6 +207,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.reconDetail
 			</result>
+			<result type="tiles" name="SHOW_V17E">tiles.account.recon.workspace.reconDetail.v17e</result>
 		</action>
 
 		<action name="showBreakLicenseConfirmation" class="showConfirmation"
