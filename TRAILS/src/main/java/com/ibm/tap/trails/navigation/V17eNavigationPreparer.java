@@ -21,6 +21,7 @@ import org.apache.tiles.context.TilesRequestContext;
 import org.apache.tiles.preparer.PreparerException;
 import org.apache.tiles.preparer.ViewPreparer;
 
+import com.ibm.asset.trails.util.TrailsUtility;
 import com.ibm.tap.trails.annotation.UserRoleType;
 import com.ibm.tap.trails.framework.UserSession;
 
@@ -179,5 +180,9 @@ public class V17eNavigationPreparer implements ViewPreparer {
 		Attribute menuAttribute = new Attribute();
 		menuAttribute.setValue(levelOneMap);
 		aContext.putAttribute("menu", menuAttribute);
+		
+		Attribute swTrackingAccountFlag = new Attribute();
+		swTrackingAccountFlag.setValue(TrailsUtility.isSwTrackingAccount(session));
+		aContext.putAttribute("swTrackingAccountFlag", swTrackingAccountFlag);
 	}
 }
