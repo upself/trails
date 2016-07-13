@@ -37,7 +37,7 @@ initial workspace once the request has completed.</p>
 			<s:fielderror />
 		</s:if>
 		<s:form action="applyManualRecon?gotoV17e=y" namespace="/account/recon" theme="simple">
-			<table width="99%">
+			<table width="99%" padding="3px">
 				<tr>
 					<td style="width: 25%"><label for="runon">Run on:</label></td>
 					<td>

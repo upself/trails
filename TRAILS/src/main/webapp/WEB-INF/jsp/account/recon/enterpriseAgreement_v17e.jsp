@@ -36,7 +36,7 @@
 			<s:fielderror />
 		</s:if>
 		<s:form action="showEnterpriseAgreementConfirmation?gotoV17e=y" namespace="/account/recon" theme="simple">
-			<table width="99%">
+			<table width="99%" padding="3px">
 				<tr>
 					<td style="width: 25%"><label for="runon">Run on:</label></td>
 					<td style="padding-left: 3px;"><s:select name="runon"

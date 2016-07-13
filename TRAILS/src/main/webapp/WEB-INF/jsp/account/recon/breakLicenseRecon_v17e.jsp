@@ -34,7 +34,7 @@ confirmation page. Click on cancel to return to the workspace.</p>
 			<s:fielderror />
 		</s:if>
 		<s:form action="showBreakLicenseConfirmation?gotoV17e=y" namespace="/account/recon" theme="simple">
-			<table width="99%">
+			<table width="99%" padding="3px">
 				<tr>
 					<td style="text-align: right; padding-top: 10px; padding-bottom: 5px;">
 						<s:submit value="Next" cssClass="ibm-btn-cancel-pri ibm-btn-small" />

@@ -38,10 +38,10 @@ the request has completed.</p>
 			<s:fielderror />
 		</s:if>
 		<s:form action="applyManualRecon?gotoV17e=y" namespace="/account/recon" theme="simple">
-			<table width="99%">
+			<table width="99%" padding="3px">
 				<tr>
 					<td style="width: 25%"><label for="runon">Run on:</label></td>
-					<td style="padding-left: 3px;"><s:property value="runon" /></td>
+					<td><s:property value="runon" /></td>
 				</tr>
 				<tr>
 					<td><label for="automated">Overwrite automated reconciliations:</label></td>
@@ -53,8 +53,7 @@ the request has completed.</p>
 				</tr>
 				<tr>
 					<td><label for="comments">Comments:</label></td>
-					<td style="padding-left: 3px;"><s:property value="comments" />
-					</td>
+					<td><s:property value="comments" /></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="text-align: right; padding-top: 10px; padding-bottom: 5px;">

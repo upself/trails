@@ -206,15 +206,8 @@ public class ShowQuestion extends AccountBaseAction {
 			// Customer owned and IBM managed
 		}
 
-		if((recon.getReconcileType().getId().intValue() == 13
-				|| recon.getReconcileType().getId().intValue() == 12
-				|| recon.getReconcileType().getId().intValue() == 11
-				|| recon.getReconcileType().getId().intValue() == 10
-				) && null!=gotoV17e && gotoV17e.equalsIgnoreCase("y")){
-        	return recon.getReconcileType().getId().toString() + "_v17e_beta";
-        }else{
-        	return recon.getReconcileType().getId().toString();
-        }
+		
+        return recon.getReconcileType().getId().toString();
 		
 	}
 
@@ -367,5 +360,26 @@ public class ShowQuestion extends AccountBaseAction {
 
 	public void setGotoV17e(String gotoV17e) {
 		this.gotoV17e = gotoV17e;
+	}
+	
+	public String getV17e(){
+		if(null == this.reconcileTypeId){
+			if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") ){
+				return ".v17e";
+			}else{
+				return null;
+			}
+		} else {
+			if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
+					this.reconcileTypeId.intValue() == 13
+					|| this.reconcileTypeId.intValue() == 12
+					|| this.reconcileTypeId.intValue() == 11
+					|| this.reconcileTypeId.intValue() == 10
+			)){
+				return ".v17e";
+			}else{
+				return null;
+			}
+		}
 	}
 }

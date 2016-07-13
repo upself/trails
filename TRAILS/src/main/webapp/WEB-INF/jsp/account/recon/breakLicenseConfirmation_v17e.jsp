@@ -35,7 +35,7 @@ presented with your initial workspace once the request has completed.</p>
 			<s:fielderror />
 		</s:if>
 		<s:form action="applyManualRecon?gotoV17e=y" namespace="/account/recon" theme="simple">
-			<table width="99%">
+			<table width="99%" padding="3px">
 				<tr>
 					<td style="text-align: right; padding-top: 10px; padding-bottom: 5px;">
 						<s:submit value="Confirm" cssClass="ibm-btn-cancel-pri ibm-btn-small" />

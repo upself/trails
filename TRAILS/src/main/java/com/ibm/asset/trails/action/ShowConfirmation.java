@@ -669,7 +669,12 @@ public class ShowConfirmation extends AccountBaseAction {
 	}
 	
 	public String getV17e(){
-		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y")){
+		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
+				this.recon.getReconcileType().getId().intValue() == 13
+				|| this.recon.getReconcileType().getId().intValue() == 12
+				|| this.recon.getReconcileType().getId().intValue() == 11
+				|| this.recon.getReconcileType().getId().intValue() == 10
+		)){
 			return ".v17e";
 		}else{
 			return null;
