@@ -1280,6 +1280,12 @@
 		<put-attribute name="description" value="TRAILS workspace assignment action" />
 		<put-attribute name="keywords" value="TRAILS workspace assignment action" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.assign.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assign_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace assignment action" />
+		<put-attribute name="keywords" value="TRAILS workspace assignment action" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.unassign"
 		extends="tiles.w3NoColumnLayout">
@@ -1291,6 +1297,12 @@
 			value="TRAILS workspace unassignment action" />
 		<put-attribute name="keywords"
 			value="TRAILS workspace unassignment action" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.unassign.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassign_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace unassignment action" />
+		<put-attribute name="keywords" value="TRAILS workspace unassignment action" />
 	</definition>
 
 	<definition name="tiles.account.recon.workspace.manualConfirmation"
@@ -1362,6 +1374,12 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace assignment confirmation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.assignConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assignConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace assignment confirmation" />
+		<put-attribute name="keywords" value="TRAILS workspace assignment confirmation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.unassignConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1373,6 +1391,12 @@
 			value="TRAILS workspace unassignment confirmation" />
 		<put-attribute name="keywords"
 			value="TRAILS workspace unassignment confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.unassignConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassignConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace unassignment confirmation" />
+		<put-attribute name="keywords" value="TRAILS workspace unassignment confirmation" />
 	</definition>
 
 	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
@@ -1418,6 +1442,12 @@
 		<put-attribute name="keywords"
 			value="TRAILS break license reconciliation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.breakLicenseRecon.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseRecon_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS break license reconciliation" />
+		<put-attribute name="keywords" value="TRAILS break license reconciliation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.breakLicenseConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1425,6 +1455,12 @@
 			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/recon/breakLicenseConfirmation.jsp" />
+		<put-attribute name="description" value="TRAILS break license confirmation" />
+		<put-attribute name="keywords" value="TRAILS break license confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.breakLicenseConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseConfirmation_v17e.jsp" />
 		<put-attribute name="description" value="TRAILS break license confirmation" />
 		<put-attribute name="keywords" value="TRAILS break license confirmation" />
 	</definition>
@@ -1441,6 +1477,12 @@
 			value="TRAILS workspace enterprise agreement" />
 	</definition>
 
+	<definition name="tiles.account.recon.workspace.enterpriseAgreement.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreement_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace enterprise agreement" />
+		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement" />
+	</definition>
+	
 	<definition
 		name="tiles.account.recon.workspace.enterpriseAgreementConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1453,6 +1495,12 @@
 		<put-attribute name="keywords"
 			value="TRAILS workspace enterprise agreement confirmation" />
 	</definition>
+	<definition name="tiles.account.recon.workspace.enterpriseAgreementConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreementConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS workspace enterprise agreement confirmation" />
+		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement confirmation" />
+	</definition>
+	
 	<definition name="tiles.account.recon.workspace.pendingCustomerDecision"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"

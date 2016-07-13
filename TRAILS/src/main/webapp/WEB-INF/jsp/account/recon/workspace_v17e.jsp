@@ -226,7 +226,7 @@
 		<s:actionerror />
 		<s:fielderror />
 	</s:if>
-	<s:form action="showQuestion" namespace="/account/recon" theme="simple">
+	<s:form action="showQuestion?gotoV17e=y" namespace="/account/recon" theme="simple">
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
