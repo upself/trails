@@ -115,4 +115,5 @@
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
 	<bean id="reportDeliveryTrackingService"
 		class="com.ibm.asset.trails.service.impl.ReportDeliveryTrackingServiceImpl" />
+	<bean id="searchService" class="com.ibm.asset.trails.service.impl.SearchServiceImpl" />
 </beans>
