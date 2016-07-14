@@ -35,7 +35,10 @@
 	uri="http://jakarta.apache.org/taglibs/request-1.0"%>
 <%@page
 	import="java.util.Calendar,java.util.Properties,java.io.FileInputStream,java.lang.String,com.ibm.tap.misld.framework.Constants"%>
-	
+
+
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>	
 <script type="text/javascript">
 	function validateDescripancy(){
 		//check discrepancy type
@@ -70,35 +73,34 @@
 			}
 		}
 	}
+	
 
-	//ab added sprint9 story 27299
-	function validateCategory(){
-		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
-		
-		var softwareCategory= document.getElementsByName("invalidCategory")[0];
-		var IFAPRD, complexDisc, IBM;
-		
-	    for(var i=0;i<softwareCategory.length;i++){
-	    	"softwareCategory.options[i].value: " + softwareCategory.options[i].value);
-	    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
-				IFAPRD = softwareCategory.options[i];
-			}
-			if (softwareCategory.options[i].value == 'Complex discovery') {
-				complexDisc = softwareCategory.options[i];
-			}
-			if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
-				IBM = softwareCategory.options[i];
-			}
-	    }
-	    
-	    IFAPRD.style.display = "";
-		complexDisc.style.display = "";
-		IBM.style.display = "";
-	    
-		for(var i=0;i<descrepancyType.length;i++){
-			if(descrepancyType.options[i].selected){
-				var descreVal=descrepancyType.options[i].text;
-				if(descreVal=="INVALID"){
+	$(function() {
+
+		$("#discrepancyTypeId").change(
+			function() {
+				var descrepancyType = $("#discrepancyTypeId option:selected").text();
+				
+				var softwareCategory = $("#invalidCategory").val();
+				var IFAPRD, complexDisc, IBM;
+				
+			    for(var i=0;i<softwareCategory.length;i++){
+			    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
+						IFAPRD = softwareCategory.options[i];
+					}
+					if (softwareCategory.options[i].value == 'Complex discovery') {
+						complexDisc = softwareCategory.options[i];
+					}
+					if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
+						IBM = softwareCategory.options[i];
+					}
+			    }
+			    
+			    IFAPRD.style.display = "";
+				complexDisc.style.display = "";
+				IBM.style.display = "";
+
+				if (descrepancyType == "INVALID") {
 					complexDisc.style.display = "none";
 				} else if (descreVal == "VALID" || descreVal == "NONE") {
 					IFAPRD.style.display = "none";
@@ -107,16 +109,13 @@
 				} else if (descreVal == "FALSE HIT") {
 					IFAPRD.style.display = "none";
 					IBM.style.display = "none";
-				}
-				else if (descreVal == "FH RESET") {
+				} else if (descreVal == "FH RESET") {
 					IFAPRD.style.display = "none";
-					dupProd.style.display = "none";
-					sharedDASD.style.display = "none";
 					IBM.style.display = "none";
 				}
 			}
-		}
-	}
+		);
+	});
 
 </script>
 
@@ -227,8 +226,9 @@
 								</c:otherwise>
 							</c:choose>
 						</p>
-
 						<h1>
+							<c:out value="${descrepancyType}" />
+							<c:out value="${softwareCategory}" />
 							<c:out value="${software.action}" />
 							Software: <font class="green-dark">
 							<c:out value="${software.softwareName}" /></font>
@@ -287,7 +287,7 @@
 														</c:when>
 														<c:otherwise>
 														<!-- ab added sprint9 story 27299 -->
-															<html:select property="discrepancyTypeId" styleClass="inputlong" onchange="validateCategory()">
+															<html:select property="discrepancyTypeId" styleClass="inputlong">
 																<html:optionsCollection property="discrepancyTypeList" />
 															</html:select>
 														</c:otherwise>
