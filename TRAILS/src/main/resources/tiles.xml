@@ -1407,7 +1407,7 @@
 	</definition>
 
 	<definition name="tiles.account.recon.workspace.reconDetail" extends="tiles.w3PopupLayout">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/detail.jsp" />
 		<put-attribute name="description" value="TRAILS reconciliation detail" />
 		<put-attribute name="keywords" value="TRAILS reconciliation detail" />
 	</definition>
