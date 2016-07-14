@@ -865,7 +865,7 @@
 		<put-attribute name="contentHead" type="template"
 			value="/WEB-INF/jsp/reports/operational/accountDetailHead.jsp" />
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/reports/operational/account" />
+			value="/WEB-INF/jsp/reports/operational/accountDetail.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account detail operational metric" />
 		<put-attribute name="keywords"
