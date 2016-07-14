@@ -74,80 +74,65 @@
 		}
 	}
 	
+// 	$( document ).ready(function() {
+// 		resetSelectionsToEmpty();
+// 	});
+	
+// 	function resetSelectionsToEmpty(){
+// 		alert("resetSelectionsToEmpty");
+// 		var softwareCategory = document.getElementsByName("invalidCategory")[0];
+// 		//The value "-1" will deselect all options (if any)
+// 		softwareCategory.selectedIndex = 0;
+// 	    }
+// 	}
+	
 	//ab added sprint9 story 27299
 	function discrepancyChange(){
-		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
-		alert("descrepancyType length: " + descrepancyType.length);
-		var softwareCategory= document.getElementsByName("invalidCategory")[0];
-		alert("softwareCategory length: " + softwareCategory.length);
+		var descrepancyType = document.getElementsByName("discrepancyTypeId")[0];
+		var softwareCategory = document.getElementsByName("invalidCategory")[0];
 		var empty, IFAPRD, complexDisc, IBM;
 		
-	    for(var i=0;i<softwareCategory.length;i++){
+	    for(var i = 0; i < softwareCategory.length; i++){
 	    	if (softwareCategory.options[i].value == '') {
 	    		empty = softwareCategory.options[i];
+	    		empty.style.display = "";
 			}
 	    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
 				IFAPRD = softwareCategory.options[i];
+				IFAPRD.style.display = "";
 			}
 			if (softwareCategory.options[i].value == 'Complex discovery') {
 				complexDisc = softwareCategory.options[i];
+				complexDisc.style.display = "";
 			}
 			if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
 				IBM = softwareCategory.options[i];
+				IBM.style.display = "";
 			}
 	    }
-	    alert("empty: " + empty.value); 
-	    alert("IFAPRD: " + IFAPRD.value);
-	    alert("complexDisc: " + complexDisc.value);
-	    alert("IBM: " + IBM.value);
-	    
-	    empty.style.display = "";
-	    IFAPRD.style.display = "";
-		complexDisc.style.display = "";
-		IBM.style.display = "";
 		
-		for(var i = 0; i < descrepancyType.length; i++){
-			alert("\"for\" started");
+	    for(var i = 0; i < descrepancyType.length; i++){
 			if(descrepancyType.options[i].selected){
 				var descreVal=descrepancyType.options[i].text;
-				alert("descreVal before: " + descreVal);
 				if(descreVal=="INVALID"){
-						alert("descreVal INVALID: " + descreVal);
 					complexDisc.style.display = "none";
-						alert("complexDisc.style.display: " + complexDisc.style.display);
 				} else if (descreVal == "VALID") {
-						alert("descreVal VALID: " + descreVal);
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
-						alert("IFAPRD.style.display: " + IFAPRD.style.display);
-						alert("complexDisc.style.display: " + complexDisc.style.display);
-						alert("IBM.style.display: " + IBM.style.display);
 				} else if (descreVal == "FALSE HIT") {
-						alert("descreVal FALSE HIT: " + descreVal);
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
-						alert("IFAPRD.style.display: " + IFAPRD.style.display);
-						alert("complexDisc.style.display: " + complexDisc.style.display);
-						alert("IBM.style.display: " + IBM.style.display);
 				} else if (descreVal == "NONE") {
-						alert("descreVal NONE: " + descreVal);
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
-						alert("IFAPRD.style.display: " + IFAPRD.style.display);
-						alert("complexDisc.style.display: " + complexDisc.style.display);
-						alert("IBM.style.display: " + IBM.style.display);
 				} else if (descreVal == "FH RESET") {
-					alert("descreVal FH RESET: " + descreVal);	
 					empty.style.display = "none";
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
-						alert("IFAPRD.style.display: " + IFAPRD.style.display);
-						alert("complexDisc.style.display: " + complexDisc.style.display);
-						alert("IBM.style.display: " + IBM.style.display);
 				}
 			}
 		}
@@ -263,7 +248,7 @@
 							</c:choose>
 						</p>
 						<h1>
-							testing 9
+							testing 7
 							<c:out value="${software.action}" />
 							Software: <font class="green-dark">
 							<c:out value="${software.softwareName}" /></font>
@@ -333,7 +318,7 @@
 											</tr>
 											<tr>
 												<td nowrap="nowrap">Software Category:</td>
-												<td><html:select property="invalidCategory"
+												<td><html:select onclick="discrepancyChange()" property="invalidCategory"
 														styleClass="inputlong"
 														disabled="${software.readOnly['invalidCategory']}">
 														<html:optionsCollection property="invalidCategoryList" />
