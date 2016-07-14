@@ -210,8 +210,8 @@ public class ActionSoftware extends ActionBase {
 			request.setAttribute(Constants.COMMENT_LIST, commentList);
 
 			// get the Dorana products
-			List<InstalledDoranaProduct> doranaList = DelegateSoftware.getDoranas(softwareId);
-			request.setAttribute(Constants.DORANA_LIST, doranaList);
+//			List<InstalledDoranaProduct> doranaList = DelegateSoftware.getDoranas(softwareId);
+//			request.setAttribute(Constants.DORANA_LIST, doranaList);
 
 			return mapping.findForward(Constants.SUCCESS);
 		}
