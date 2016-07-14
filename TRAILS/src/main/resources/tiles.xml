@@ -115,6 +115,8 @@
 			<item value="Alerts" link="/reports/alerts/home.htm" icon="false" />
 			<item value="Operational metrics" link="/reports/operational/home.htm"
 				icon="false" />
+			<item value="Software Trackign Only metrics" link="/reports/softwareTracking/home.htm"
+				icon="false" />
 			<item value="Aging red alerts" link="/reports/alertRedAging/home.htm"
 				icon="false" />
 			<item value="Data exceptions" link="/reports/dataExceptions/home.htm"
@@ -145,6 +147,22 @@
 			<item value="Account by name" link="/reports/operational/accountByName.htm"
 				icon="false" />
 			<item value="Account by number" link="/reports/operational/accountByNumber.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/softwareTracking/home.htm">
+			<item value="Geography" link="/reports/softwareTracking/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/softwareTracking/region.htm"
+				icon="false" />
+			<item value="Country code" link="/reports/softwareTracking/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/softwareTracking/sector.htm"
+				icon="false" />
+			<item value="Department" link="/reports/softwareTracking/department.htm"
+				icon="false" />
+			<item value="Account by name" link="/reports/softwareTracking/accountByName.htm"
+				icon="false" />
+			<item value="Account by number" link="/reports/softwareTracking/accountByNumber.htm"
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/reports/alertRedAging/home.htm">
@@ -361,6 +379,8 @@
 			<item value="Alerts" link="/reports/alerts/home.htm" icon="false" />
 			<item value="Operational metrics" link="/reports/operational/home.htm"
 				icon="false" />
+			<item value="Sw Tracking metrics" link="/reports/softwareTracking/home.htm"
+				icon="false" />
 			<item value="Aging red alerts" link="/reports/alertRedAging/home.htm"
 				icon="false" />
 			<item value="Data exceptions" link="/reports/dataExceptions/home.htm"
@@ -391,6 +411,22 @@
 			<item value="Account by name" link="/reports/operational/accountByName.htm"
 				icon="false" />
 			<item value="Account by number" link="/reports/operational/accountByNumber.htm"
+				icon="false" />
+		</put-list-attribute>
+		<put-list-attribute name="/reports/softwareTracking/home.htm">
+			<item value="Geography" link="/reports/softwareTracking/geography.htm"
+				icon="false" />
+			<item value="Region" link="/reports/softwareTracking/region.htm"
+				icon="false" />
+			<item value="Country code" link="/reports/softwareTracking/countryCode.htm"
+				icon="false" />
+			<item value="Sector" link="/reports/softwareTracking/sector.htm"
+				icon="false" />
+			<item value="Department" link="/reports/softwareTracking/department.htm"
+				icon="false" />
+			<item value="Account by name" link="/reports/softwareTracking/accountByName.htm"
+				icon="false" />
+			<item value="Account by number" link="/reports/softwareTracking/accountByNumber.htm"
 				icon="false" />
 		</put-list-attribute>
 		<put-list-attribute name="/reports/alertRedAging/home.htm">
@@ -676,6 +712,15 @@
 		<put-attribute name="description" value="TRAILS reports operational home" />
 		<put-attribute name="keywords" value="TRAILS reports operational home" />
 	</definition>
+	
+	<definition name="tiles.reports.swTracking.home" extends="tiles.v17eW3TwoColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/home.jsp" />
+		<put-attribute name="sidebar" type="template"
+			value="/WEB-INF/jsp/sidebar/v17eAccountSearch.jsp" />
+		<put-attribute name="description" value="TRAILS reports softwareTracking home" />
+		<put-attribute name="keywords" value="TRAILS reports softwareTracking home" />
+	</definition>
 
 
 	<definition name="tiles.reports.alerts.geography"
@@ -901,6 +946,154 @@
 		<put-attribute name="keywords"
 			value="TRAILS account country operational metric" />
 	</definition>
+	
+	<!--  -->
+		<definition name="tiles.reports.swTracking.geography"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/geographyHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/geography.jsp" />
+		<put-attribute name="description"
+			value="TRAILS geography softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS geography softwareTracking metric" />
+		<put-attribute name="contentTitle"
+			value="TRAILS geography softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.region"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/regionHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/region.jsp" />
+		<put-attribute name="description" value="TRAILS region softwareTracking metric" />
+		<put-attribute name="keywords" value="TRAILS region softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.countryCode"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/countryCodeHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/countryCode.jsp" />
+		<put-attribute name="description" value="TRAILS country softwareTracking metric" />
+		<put-attribute name="keywords" value="TRAILS country softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.sector"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/sectorHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/sector.jsp" />
+		<put-attribute name="description" value="TRAILS sector softwareTracking metric" />
+		<put-attribute name="keywords" value="TRAILS sector softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.department"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/departmentHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/department.jsp" />
+		<put-attribute name="description"
+			value="TRAILS department softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS department softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountByName"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountByName.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account by name softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS account by name softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountByNumber"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountByNumber.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account by number softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS account by number softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.account.error"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountErrorHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountError.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account softwareTracking metric error" />
+		<put-attribute name="keywords"
+			value="TRAILS account softwareTracking metric error" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.account.number.error"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountNumberErrorHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountError.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account softwareTracking metric error" />
+		<put-attribute name="keywords"
+			value="TRAILS account softwareTracking metric error" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountDetail"
+		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
+		<put-attribute name="contentHead" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountDetailHead.jsp" />
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountDetail.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account detail softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS account detail softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountDetailDownload"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountDetailDownload.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account detail softwareTracking metric download" />
+		<put-attribute name="keywords"
+			value="TRAILS account detail softwareTracking metric download" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountRegion"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountRegion.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account region softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS account region softwareTracking metric" />
+	</definition>
+
+	<definition name="tiles.reports.swTracking.accountCountryCode"
+		extends="tiles.w3OneColumnLayout">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/reports/softwareTracking/accountCountryCode.jsp" />
+		<put-attribute name="description"
+			value="TRAILS account country softwareTracking metric" />
+		<put-attribute name="keywords"
+			value="TRAILS account country softwareTracking metric" />
+	</definition>
+	<!--  -->
 
 	<definition name="tiles.reports.alertRedAging.geography"
 		extends="tiles.v17e.w3OneColumnLayoutWithHeadContent">
