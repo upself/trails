@@ -985,7 +985,7 @@
 	<definition name="tiles.reports.alertRedAging.accountDetail"
 		extends="tiles.v17e.w3OneColumnLayout">
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/reports/alertRedAging/account" />
+			value="/WEB-INF/jsp/reports/alertRedAging/accountDetail.jsp" />
 		<put-attribute name="description"
 			value="TRAILS account detail alert red aging" />
 		<put-attribute name="keywords"
