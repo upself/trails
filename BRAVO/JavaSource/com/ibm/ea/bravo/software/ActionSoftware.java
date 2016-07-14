@@ -307,13 +307,14 @@ public class ActionSoftware extends ActionBase {
 		Account account = DelegateAccount.getAccount(accountId, request);
 		request.setAttribute(Constants.ACCOUNT, account);
 
-		// initialize action specific form properties
-		/* Donnie changed this to the other method of setting discrepancy
-		software.setDiscrepancyType(DelegateDiscrepancy
-				.getDiscrepancyType(Constants.DISCREPANCY_TYPE_ID_MISSING));
-		*/
+		//MISSING - set up by backend, can't be edit
 		software.setDiscrepancyType(DelegateDiscrepancy
 		.getDiscrepancyType(new String("" + DelegateDiscrepancy.MISSING)));
+		
+//		//FH RESET - set only by automat - can't be edit
+//		software.setDiscrepancyType(DelegateDiscrepancy
+//				.getDiscrepancyType(new String("" + DelegateDiscrepancy.FH_RESET)));
+		
 
 		software.setDiscrepancyTypeId(software.getDiscrepancyType().getId()
 				.toString());

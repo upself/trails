@@ -36,10 +36,10 @@
 <%@page
 	import="java.util.Calendar,java.util.Properties,java.io.FileInputStream,java.lang.String,com.ibm.tap.misld.framework.Constants"%>
 
-
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>	
+<%-- <script src="${pageContext.request.contextPath}/WebContent/js/jquery/jquery.js"></script> --%>
+<script src="/BRAVO/javascript/jquery.js"></script>
 <script type="text/javascript">
+
 	function validateDescripancy(){
 		//check discrepancy type
 		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
@@ -74,48 +74,84 @@
 		}
 	}
 	
-
-	$(function() {
-
-		$("#discrepancyTypeId").change(
-			function() {
-				var descrepancyType = $("#discrepancyTypeId option:selected").text();
-				
-				var softwareCategory = $("#invalidCategory").val();
-				var IFAPRD, complexDisc, IBM;
-				
-			    for(var i=0;i<softwareCategory.length;i++){
-			    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
-						IFAPRD = softwareCategory.options[i];
-					}
-					if (softwareCategory.options[i].value == 'Complex discovery') {
-						complexDisc = softwareCategory.options[i];
-					}
-					if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
-						IBM = softwareCategory.options[i];
-					}
-			    }
-			    
-			    IFAPRD.style.display = "";
-				complexDisc.style.display = "";
-				IBM.style.display = "";
-
-				if (descrepancyType == "INVALID") {
+	//ab added sprint9 story 27299
+	function discrepancyChange(){
+		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
+		alert("descrepancyType length: " + descrepancyType.length);
+		var softwareCategory= document.getElementsByName("invalidCategory")[0];
+		alert("softwareCategory length: " + softwareCategory.length);
+		var empty, IFAPRD, complexDisc, IBM;
+		
+	    for(var i=0;i<softwareCategory.length;i++){
+	    	if (softwareCategory.options[i].value == '') {
+	    		empty = softwareCategory.options[i];
+			}
+	    	if (softwareCategory.options[i].value == 'Blocked in IFAPRD') {
+				IFAPRD = softwareCategory.options[i];
+			}
+			if (softwareCategory.options[i].value == 'Complex discovery') {
+				complexDisc = softwareCategory.options[i];
+			}
+			if (softwareCategory.options[i].value == 'IBM SW GSD Build') {
+				IBM = softwareCategory.options[i];
+			}
+	    }
+	    alert("empty: " + empty.value); 
+	    alert("IFAPRD: " + IFAPRD.value);
+	    alert("complexDisc: " + complexDisc.value);
+	    alert("IBM: " + IBM.value);
+	    
+	    empty.style.display = "";
+	    IFAPRD.style.display = "";
+		complexDisc.style.display = "";
+		IBM.style.display = "";
+		
+		for(var i = 0; i < descrepancyType.length; i++){
+			alert("\"for\" started");
+			if(descrepancyType.options[i].selected){
+				var descreVal=descrepancyType.options[i].text;
+				alert("descreVal before: " + descreVal);
+				if(descreVal=="INVALID"){
+						alert("descreVal INVALID: " + descreVal);
 					complexDisc.style.display = "none";
-				} else if (descreVal == "VALID" || descreVal == "NONE") {
+						alert("complexDisc.style.display: " + complexDisc.style.display);
+				} else if (descreVal == "VALID") {
+						alert("descreVal VALID: " + descreVal);
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
+						alert("IFAPRD.style.display: " + IFAPRD.style.display);
+						alert("complexDisc.style.display: " + complexDisc.style.display);
+						alert("IBM.style.display: " + IBM.style.display);
 				} else if (descreVal == "FALSE HIT") {
+						alert("descreVal FALSE HIT: " + descreVal);
 					IFAPRD.style.display = "none";
+					complexDisc.style.display = "none";
 					IBM.style.display = "none";
+						alert("IFAPRD.style.display: " + IFAPRD.style.display);
+						alert("complexDisc.style.display: " + complexDisc.style.display);
+						alert("IBM.style.display: " + IBM.style.display);
+				} else if (descreVal == "NONE") {
+						alert("descreVal NONE: " + descreVal);
+					IFAPRD.style.display = "none";
+					complexDisc.style.display = "none";
+					IBM.style.display = "none";
+						alert("IFAPRD.style.display: " + IFAPRD.style.display);
+						alert("complexDisc.style.display: " + complexDisc.style.display);
+						alert("IBM.style.display: " + IBM.style.display);
 				} else if (descreVal == "FH RESET") {
+					alert("descreVal FH RESET: " + descreVal);	
+					empty.style.display = "none";
 					IFAPRD.style.display = "none";
+					complexDisc.style.display = "none";
 					IBM.style.display = "none";
+						alert("IFAPRD.style.display: " + IFAPRD.style.display);
+						alert("complexDisc.style.display: " + complexDisc.style.display);
+						alert("IBM.style.display: " + IBM.style.display);
 				}
 			}
-		);
-	});
+		}
+	}
 
 </script>
 
@@ -227,8 +263,7 @@
 							</c:choose>
 						</p>
 						<h1>
-							<c:out value="${descrepancyType}" />
-							<c:out value="${softwareCategory}" />
+							testing 9
 							<c:out value="${software.action}" />
 							Software: <font class="green-dark">
 							<c:out value="${software.softwareName}" /></font>
@@ -287,7 +322,7 @@
 														</c:when>
 														<c:otherwise>
 														<!-- ab added sprint9 story 27299 -->
-															<html:select property="discrepancyTypeId" styleClass="inputlong">
+															<html:select onchange="discrepancyChange()" property="discrepancyTypeId" styleClass="inputlong">
 																<html:optionsCollection property="discrepancyTypeList" />
 															</html:select>
 														</c:otherwise>
