@@ -4,7 +4,7 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="workspaceLink" action="workspace" namespace="/account/recon"
+<s:url id="workspaceLink" action="workspace?gotoV17e=y" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
 <div class="ibm-columns" style="width: 95%;">
