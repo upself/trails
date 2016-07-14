@@ -12,9 +12,7 @@ public class SearchAccount {
 	private boolean nameSearch;
 
 	private boolean accountNumberSearch;
-
-	private boolean outOfScopeSearch;
-
+	
 	public boolean isAccountNumberSearch() {
 		return accountNumberSearch;
 	}
@@ -29,14 +27,6 @@ public class SearchAccount {
 
 	public void setNameSearch(boolean nameSearch) {
 		this.nameSearch = nameSearch;
-	}
-
-	public boolean isOutOfScopeSearch() {
-		return outOfScopeSearch;
-	}
-
-	public void setOutOfScopeSearch(boolean outOfScopeSearch) {
-		this.outOfScopeSearch = outOfScopeSearch;
 	}
 
 	public String getSearchString() {
