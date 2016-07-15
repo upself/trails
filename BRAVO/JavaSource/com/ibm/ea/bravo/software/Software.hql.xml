@@ -24,6 +24,17 @@
 				and i.softwareSignature.status = 'ACTIVE'
 		]]>
 	</query>
+	
+	<query name="installedScriptsByInstalledSoftware">
+		<![CDATA[
+			from
+				InstalledScript i
+				join fetch i.softwareScript
+			where
+				i.installedSoftware = :installedSoftware
+				and i.softwareScript.status = 'ACTIVE'
+		]]>
+	</query>
 
 	<query name="installedFiltersByInstalledSoftware">
 		<![CDATA[
