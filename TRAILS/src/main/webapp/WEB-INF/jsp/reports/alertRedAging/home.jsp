@@ -6,12 +6,15 @@
 <br />
 <br />
 
-<h2 class="bar-blue-med-light">Reports</h2>
+<h2 class="bar-blue-med-light"> Aging red alerts Reports</h2>
 <br />
 <s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a>
 <br />
 <br />
 <s:a href="/TRAILS/reports/operational/home.htm">Operational metrics</s:a>
+<br />
+<br />
+<s:a href="/TRAILS/reports/softwareTracking/home.htm">Software Tracking Only metrics</s:a>
 <br />
 <br />
 <s:a href="/TRAILS/reports/alertRedAging/home.htm">Aging red alerts</s:a>

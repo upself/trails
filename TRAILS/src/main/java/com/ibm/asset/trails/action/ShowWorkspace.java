@@ -71,10 +71,6 @@ public class ShowWorkspace extends AccountReportBaseAction {
         	getReconWorkspaceService().setProcWarnMsg(null);
         }
         
-        if(null!=gotoV17e && gotoV17e.equalsIgnoreCase("y")){
-        	return SHOW_V17E;
-        }
-        
         return SUCCESS;
     }
 	
@@ -86,6 +82,14 @@ public class ShowWorkspace extends AccountReportBaseAction {
 
 	public void setGotoV17e(String gotoV17e) {
 		this.gotoV17e = gotoV17e;
+	}
+	
+	public String getV17e(){
+		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y")){
+			return ".v17e";
+		}else{
+			return null;
+		}
 	}
 
 	public ReconWorkspaceService getReconWorkspaceService() {

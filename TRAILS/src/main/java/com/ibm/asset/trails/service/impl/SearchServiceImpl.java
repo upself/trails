@@ -51,7 +51,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public List<AccountSearch> searchAccounts(String searchString,
-            boolean outOfScopeSearch, boolean nameSearch,
+            boolean nameSearch,
             boolean accountNumberSearch) throws Exception {
 
         Account account = new Account();
@@ -69,14 +69,14 @@ public class SearchServiceImpl implements SearchService {
         Example exampleAccount = Example.create(account).ignoreCase()
                 .enableLike(MatchMode.ANYWHERE);
 
-        return searchAccount(exampleAccount, outOfScopeSearch,
+        return searchAccount(exampleAccount, 
                 accountNumberSearch, nameSearch, searchString);
 
     }
 
     @SuppressWarnings("unchecked")
     private List<AccountSearch> searchAccount(Example account,
-            boolean outOfScopeSearch, boolean accountNumberSearch,
+            boolean accountNumberSearch,
             boolean nameSearch, String searchString) {
 
         Session session = (Session) getEntityManager().getDelegate();
@@ -112,10 +112,6 @@ public class SearchServiceImpl implements SearchService {
             criteria.add(Restrictions.or(Restrictions.ilike("accountStr",
                     searchString, MatchMode.ANYWHERE), Restrictions.ilike(
                     "name", searchString, MatchMode.ANYWHERE)));
-        }
-
-        if (!outOfScopeSearch) {
-            criteria.add(Restrictions.eq("swlm", "YES"));
         }
 
         return criteria.list();

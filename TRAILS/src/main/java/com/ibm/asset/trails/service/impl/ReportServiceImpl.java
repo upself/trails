@@ -121,6 +121,11 @@ public class ReportServiceImpl implements ReportService {
 			"Capacity type", "Environment", "Total qty", "Available qty",
 			"Expiration date", "PO number", "Serial number", "License owner",
 			"SWCM ID", "Pool", "Record date/time" };
+	private final String[] LICENSE_BASELINE_COLUMN_HEADERS = { "Primary Component",
+			"Primary component catalog match", "License Name", "Software product PID",
+			"Capacity type", "Environment", "Total qty", "Available qty",
+			"Expiration date", "END_DATE", "PO number", "Serial number", "License owner",
+			"SWCM ID", "Pool", "Record date/time" };
 	private final String NON_WORKSTATION_ACCOUNTS_REPORT_NAME = "Non-workstation accounts with workstations report";
 	private final String[] NON_WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
 			"Account #", "Account name", "Account type", "Geography", "Region",
@@ -1026,7 +1031,7 @@ public class ReportServiceImpl implements ReportService {
 			boolean pbCustOibmMSWCOSearchChecked,
 			boolean pbTitlesNotSpecifiedInContractScopeSearchChecked,
 			boolean pbSelectAllChecked) throws HibernateException, Exception {
-		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID as swproPID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
+		String lsBaseSelectAndFromClause = "SELECT COALESCE(S.software_name, L.Full_Desc) AS Product_Name, CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID as swproPID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description), L.environment, L.Quantity, coalesce(L.Quantity - sum(VLUQ.Used_Quantity), L.Quantity), L.Expire_Date,L.END_DATE, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time FROM EAADMIN.License L LEFT OUTER JOIN EAADMIN.License_Sw_Map LSWM ON LSWM.License_Id = L.Id LEFT OUTER JOIN EAADMIN.software S ON S.software_id = LSWM.Software_Id LEFT OUTER JOIN EAADMIN.USED_LICENSE VLUQ ON VLUQ.License_Id = L.Id, EAADMIN.Capacity_Type CT";
 		String lsBaseWhereClause = "WHERE L.Customer_Id = :customerId AND L.Status = 'ACTIVE' AND CT.Code = L.Cap_Type";
 		StringBuffer lsbSql = new StringBuffer();
 		StringBuffer lsbScopeSql = new StringBuffer();
@@ -1109,7 +1114,7 @@ public class ReportServiceImpl implements ReportService {
 			lsbSql.append(lsBaseSelectAndFromClause).append(" ")
 					.append(lsBaseWhereClause).append(" ");
 		}
-		lsbSql.append("group by COALESCE(S.software_name, L.Full_Desc), CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
+		lsbSql.append("group by COALESCE(S.software_name, L.Full_Desc), CASE LENGTH(COALESCE(S.software_name, '')) WHEN 0 THEN 'No' ELSE 'Yes' END, L.Full_Desc, L.PID, CONCAT(CONCAT(RTRIM(CHAR(CT.Code)), '-'), CT.Description),L.environment, L.Quantity, L.Expire_Date,L.END_DATE, L.Po_Number, L.Cpu_Serial, CASE L.IBM_Owned WHEN 1 THEN 'IBM' ELSE 'Customer' END, L.Ext_Src_Id, CASE L.Pool WHEN 0 THEN 'No' ELSE 'Yes' END, L.Record_Time ");
 		lsbSql.append("ORDER BY Product_Name ASC");
 		lsrReport = ((Session) getEntityManager().getDelegate())
 				.createSQLQuery(lsbSql.toString())
@@ -1117,7 +1122,7 @@ public class ReportServiceImpl implements ReportService {
 				.scroll(ScrollMode.FORWARD_ONLY);
 
 		printHeader(LICENSE_BASELINE_REPORT_NAME, pAccount.getAccount(),
-				LICENSE_COLUMN_HEADERS, pPrintWriter);
+				LICENSE_BASELINE_COLUMN_HEADERS, pPrintWriter);
 		while (lsrReport.next()) {
 			pPrintWriter.println(outputData(lsrReport.get()));
 		}

@@ -46,12 +46,6 @@ function submitEnter(pEvent, pfoInput) {
 				for="accounts_searchAccount_accountNumberSearch">Search
 			account numbers</label></td>
 		</tr>
-		<tr>
-			<td><s:checkbox label="Include out of scope accounts"
-				name="searchAccount.outOfScopeSearch" /> <label
-				for="accounts_searchAccount_outOfScopeSearch">Include out of
-			scope accounts</label></td>
-		</tr>
 	</table>
 </s:form></div>
 </div>

@@ -7,6 +7,6 @@ import com.ibm.asset.trails.domain.AccountSearch;
 public interface SearchService {
 
 	public List<AccountSearch> searchAccounts(String searchString,
-			boolean outOfScopeSearch, boolean nameSearch,
+			boolean nameSearch,
 			boolean accountNumberSearch) throws Exception;
 }

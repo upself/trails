@@ -20,6 +20,8 @@ import com.ibm.asset.trails.form.AlertOverviewReport;
 import com.ibm.asset.trails.service.AccountDataExceptionService;
 import com.ibm.asset.trails.service.AccountService;
 import com.ibm.asset.trails.service.AlertReportService;
+import com.ibm.asset.trails.service.SwTrackingReportService;
+import com.ibm.asset.trails.util.TrailsUtility;
 import com.ibm.asset.trails.ws.common.AccountAlertOverview;
 import com.ibm.asset.trails.ws.common.WSMsg;
 
@@ -28,6 +30,9 @@ public class AlertReportServiceEndpoint {
 
 	@Autowired
 	private AlertReportService alertReportService;
+	
+	@Autowired
+	private SwTrackingReportService swTrackingReportService;
 	
 	@Autowired
 	private AccountDataExceptionService accountDataExceptionService;
@@ -48,13 +53,24 @@ public class AlertReportServiceEndpoint {
 				return WSMsg.failMessage("Account doesn't exist");
 			}else{
 				AccountAlertOverview overview = new AccountAlertOverview();
-				List list = alertReportService.getAlertsOverview(account);
-				Date reportTimestamp = alertReportService.selectReportTimestamp();
-				Integer reportMinutesOld = alertReportService.selectReportMinutesOld();
+				if(TrailsUtility.isSwTrackingAccount(account)){
+					List list = swTrackingReportService.getSwTrackingAlertsOverview(account);
+					Date reportTimestamp = swTrackingReportService.selectReportTimestamp();
+					Integer reportMinutesOld = swTrackingReportService.selectReportMinutesOld();
+					
+					overview.setOverviewList(list);
+					overview.setReportTimestamp(reportTimestamp);
+					overview.setReportMinutesOld(reportMinutesOld);
+				} else{
+					List list = alertReportService.getAlertsOverview(account);
+					Date reportTimestamp = alertReportService.selectReportTimestamp();
+					Integer reportMinutesOld = alertReportService.selectReportMinutesOld();
+					
+					overview.setOverviewList(list);
+					overview.setReportTimestamp(reportTimestamp);
+					overview.setReportMinutesOld(reportMinutesOld);
+				}
 				
-				overview.setOverviewList(list);
-				overview.setReportTimestamp(reportTimestamp);
-				overview.setReportMinutesOld(reportMinutesOld);
 				
 				return WSMsg.successMessage("SUCCESS", overview);
 			}

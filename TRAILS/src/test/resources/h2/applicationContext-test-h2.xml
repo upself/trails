@@ -88,6 +88,7 @@
 	<bean id="scheduleFService" class="com.ibm.asset.trails.service.impl.ScheduleFServiceImpl" />
 	<bean id="manufacturerService" class="com.ibm.asset.trails.service.impl.ManufacturerServiceImpl" />
 	<bean id="scheduleFServiceEndpoint" class="com.ibm.asset.trails.ws.ScheduleFServiceEndpoint"/>
+	<bean id="SwTrackingReportService" class="com.ibm.asset.trails.service.impl.SwTrackingReportServiceImpl" />
 	<bean id="reportService" class="com.ibm.asset.trails.service.impl.ReportServiceImpl">
 		<constructor-arg>
 			<ref bean="dbdeterminativeService" />
@@ -115,4 +116,5 @@
 	<bean id="licenseService" class="com.ibm.asset.trails.service.impl.LicenseServiceImpl" />
 	<bean id="reportDeliveryTrackingService"
 		class="com.ibm.asset.trails.service.impl.ReportDeliveryTrackingServiceImpl" />
+	<bean id="searchService" class="com.ibm.asset.trails.service.impl.SearchServiceImpl" />
 </beans>
