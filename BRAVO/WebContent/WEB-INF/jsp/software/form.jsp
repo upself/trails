@@ -85,7 +85,7 @@
 			   }
 			}
 		}
-		
+
 		if(isDiscFHReset){
 			alert ("You are not allowed to alter the Discrepancy \"FH RESET\" manually");
 			return false;
