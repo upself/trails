@@ -74,16 +74,15 @@
 		}
 	}
 	
-// 	$( document ).ready(function() {
+	$( document ).ready(function() {
 // 		resetSelectionsToEmpty();
-// 	});
+		discrepancyChange();
+	});
 	
 // 	function resetSelectionsToEmpty(){
-// 		alert("resetSelectionsToEmpty");
+// 		discrepancyChange();	
 // 		var softwareCategory = document.getElementsByName("invalidCategory")[0];
-// 		//The value "-1" will deselect all options (if any)
 // 		softwareCategory.selectedIndex = 0;
-// 	    }
 // 	}
 	
 	//ab added sprint9 story 27299
@@ -110,10 +109,11 @@
 				IBM.style.display = "";
 			}
 	    }
-		
+
 	    for(var i = 0; i < descrepancyType.length; i++){
 			if(descrepancyType.options[i].selected){
 				var descreVal=descrepancyType.options[i].text;
+				
 				if(descreVal=="INVALID"){
 					complexDisc.style.display = "none";
 				} else if (descreVal == "VALID") {
@@ -248,7 +248,7 @@
 							</c:choose>
 						</p>
 						<h1>
-							testing 7
+							testing 8
 							<c:out value="${software.action}" />
 							Software: <font class="green-dark">
 							<c:out value="${software.softwareName}" /></font>

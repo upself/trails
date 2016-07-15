@@ -306,12 +306,12 @@ public class ActionSoftware extends ActionBase {
 		// get the account
 		Account account = DelegateAccount.getAccount(accountId, request);
 		request.setAttribute(Constants.ACCOUNT, account);
-
+		
 		//MISSING - set up by backend, can't be edit
 		software.setDiscrepancyType(DelegateDiscrepancy
-		.getDiscrepancyType(new String("" + DelegateDiscrepancy.MISSING)));
+		.getDiscrepancyType(new String("" + DelegateDiscrepancy.FH_RESET)));
 		
-//		//FH RESET - set only by automat - can't be edit
+////		//FH RESET - set only by automat - can't be edit
 //		software.setDiscrepancyType(DelegateDiscrepancy
 //				.getDiscrepancyType(new String("" + DelegateDiscrepancy.FH_RESET)));
 		
