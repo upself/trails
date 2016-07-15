@@ -19,14 +19,12 @@ public class getInvalidCategoryListTest {
 		List<InvalidCategory> listExpected = new ArrayList<InvalidCategory>();
 		listExpected.add(new InvalidCategory(""));
 		listExpected.add(new InvalidCategory("Blocked in IFAPRD"));
-		listExpected.add(new InvalidCategory("Duplicate product - In Use"));
-		listExpected.add(new InvalidCategory("Shared DASD (not used in this LPAR)"));
 		listExpected.add(new InvalidCategory("Complex discovery"));
 		listExpected.add(new InvalidCategory("IBM SW GSD Build"));
 		
 		list = DelegateSoftware.getInvalidCategoryList("TADZ");
 		
-		assertEquals("TADZ invalid category list",true,equalsInvalidCategoryList(list,listExpected));
+		assertTrue("TADZ invalid category list", equalsInvalidCategoryList(list,listExpected));
 		
 	}
 	
@@ -37,13 +35,11 @@ public class getInvalidCategoryListTest {
 		List<InvalidCategory> listExpected = new ArrayList<InvalidCategory>();
 		listExpected.add(new InvalidCategory(""));
 		listExpected.add(new InvalidCategory("Blocked in IFAPRD"));
-		listExpected.add(new InvalidCategory("Duplicate product - In Use"));
-		listExpected.add(new InvalidCategory("Shared DASD (not used in this LPAR)"));
 		listExpected.add(new InvalidCategory("Complex discovery"));
 		
 		list = DelegateSoftware.getInvalidCategoryList("SWKBT");
 		
-		assertEquals("TADZ invalid category list",true,equalsInvalidCategoryList(list,listExpected));
+		assertTrue("TADZ invalid category list", equalsInvalidCategoryList(list, listExpected));
 		
 	}
 	
