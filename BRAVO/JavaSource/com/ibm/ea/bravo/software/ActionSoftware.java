@@ -309,12 +309,7 @@ public class ActionSoftware extends ActionBase {
 		
 		//MISSING - set up by backend, can't be edit
 		software.setDiscrepancyType(DelegateDiscrepancy
-		.getDiscrepancyType(new String("" + DelegateDiscrepancy.FH_RESET)));
-		
-////		//FH RESET - set only by automat - can't be edit
-//		software.setDiscrepancyType(DelegateDiscrepancy
-//				.getDiscrepancyType(new String("" + DelegateDiscrepancy.FH_RESET)));
-		
+		.getDiscrepancyType(new String("" + DelegateDiscrepancy.MISSING)));		
 
 		software.setDiscrepancyTypeId(software.getDiscrepancyType().getId()
 				.toString());

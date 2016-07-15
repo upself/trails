@@ -41,51 +41,85 @@
 <script type="text/javascript">
 
 	function validateDescripancy(){
-		//check discrepancy type
-		var descrepancyType=document.getElementsByName("discrepancyTypeId")[0];
-		var flag1=false;
-		var flag2=false;
-		for(var i=0;i<descrepancyType.length;i++){
+
+		var descrepancyType = document.getElementsByName("discrepancyTypeId")[0];
+		var isDiscFalseHit = false;
+		var isDiscValid = false;
+		var isDiscNone = false;
+		var isDiscInvalid = false;
+		var isDiscFHReset = false;
+		var isSwCatComplex = false;
+		var isSwCatEmpty = false;
+		var isSwCatIBM = false;
+		var isSwCatIFAPRD = false;
+		
+		for(var i = 0; i < descrepancyType.length; i++){
 			if(descrepancyType.options[i].selected){
-				var descreVal=descrepancyType.options[i].text;
-				if(descreVal=="FALSE HIT"){
-					flag1=true;
+				var descreVal = descrepancyType.options[i].text;
+				if(descreVal == "FALSE HIT"){
+					isDiscFalseHit = true;
+				} else if (descreVal == "VALID"){
+					isDiscValid = true;
+				} else if (descreVal == "NONE"){
+					isDiscNone = true;
+				} else if (descreVal == "INVALID"){
+					isDiscInvalid = true;
+				} else if (descreVal == "FH RESET"){
+					isDiscFHReset = true;
 				}
 			}
 		}
-		
-		//check invalid category
-		var invalideCate=document.getElementsByName("invalidCategory")[0];
-		for(var j=0;j<invalideCate.length;j++){
+
+		var invalideCate = document.getElementsByName("invalidCategory")[0];
+		for(var j = 0 ; j < invalideCate.length; j++){
 			if(invalideCate.options[j].selected){
-			   var category=invalideCate.options[j].text;
-			   if(category=="Complex discovery"){
-				  flag2=true;
+			   var swCategory = invalideCate.options[j].text;
+			   if(swCategory == ""){
+					isSwCatEmpty = true;
+				} else if (swCategory == "Blocked in IFAPRD"){
+					isSwCatIFAPRD = true;
+			   } else if (swCategory == "Complex discovery"){
+					isSwCatComplex = true;
+			   } else if (swCategory == "IBM SW GSD Build"){
+					isSwCatIBM = true;
 			   }
 			}
 		}
 		
-		// if discrepancy is False Hit, then only Complex discovery Category is accepted
-		if(flag2){
-			if(!flag1){
-				alert ("The Software Category Complex discovery is only valid for the Discrepancy FALSE HIT");
+		if(isDiscFHReset){
+			alert ("You are not allowed to alter the Discrepancy \"FH RESET\" manually");
+			return false;
+		}
+		
+		if(isSwCatIFAPRD){
+			if(!isDiscInvalid){
+				alert ("The Software Category \"Blocked in IFAPRD\" is only valid for the Discrepancy \"INVALID\"");
+				return false;
+			}
+		}
+		
+		if(isSwCatIBM){
+			if(!isDiscInvalid){
+				alert ("The Software Category \"IBM SW GSD Build\" is only valid for the Discrepancy \"INVALID\"");
+				return false;
+			}
+		}
+
+		if(isSwCatEmpty){
+			if(isDiscFalseHit || isDiscInvalid ){
+				alert ("The Software Category \"empty\" is only valid for the Discrepancy \"VALID\" and \"NONE\"");
+				return false;
+			}
+		}
+
+		if(isSwCatComplex){
+			if(!isDiscFalseHit){
+				alert ("The Software Category \"Complex discovery\" is only valid for the Discrepancy \"FALSE HIT\"");
 				return false;
 			}
 		}
 	}
-	
-	$( document ).ready(function() {
-// 		resetSelectionsToEmpty();
-		discrepancyChange();
-	});
-	
-// 	function resetSelectionsToEmpty(){
-// 		discrepancyChange();	
-// 		var softwareCategory = document.getElementsByName("invalidCategory")[0];
-// 		softwareCategory.selectedIndex = 0;
-// 	}
-	
-	//ab added sprint9 story 27299
+
 	function discrepancyChange(){
 		var descrepancyType = document.getElementsByName("discrepancyTypeId")[0];
 		var softwareCategory = document.getElementsByName("invalidCategory")[0];
@@ -122,14 +156,12 @@
 					IBM.style.display = "none";
 				} else if (descreVal == "FALSE HIT") {
 					IFAPRD.style.display = "none";
-					complexDisc.style.display = "none";
 					IBM.style.display = "none";
 				} else if (descreVal == "NONE") {
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
 				} else if (descreVal == "FH RESET") {
-					empty.style.display = "none";
 					IFAPRD.style.display = "none";
 					complexDisc.style.display = "none";
 					IBM.style.display = "none";
@@ -248,7 +280,6 @@
 							</c:choose>
 						</p>
 						<h1>
-							testing 8
 							<c:out value="${software.action}" />
 							Software: <font class="green-dark">
 							<c:out value="${software.softwareName}" /></font>
