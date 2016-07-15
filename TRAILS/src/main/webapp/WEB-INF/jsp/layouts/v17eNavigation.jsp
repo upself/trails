@@ -38,9 +38,10 @@
 													<s:iterator value="value">
 														<s:url id="thirdLevelUrl" value="%{link}" includeParams="none" />
 														
-														<!-- Hiden SOM3,SOM4a,SOM4b,SOM4c, HW BOX NO PROCESSOR,HW BOX NO CHIP,
+														<!-- Hiden SOM1b, SOM3,SOM4a,SOM4b,SOM4c, HW BOX NO PROCESSOR,HW BOX NO CHIP,
 														 HW LPAR NO PROCESSOR TYPE, HW LPAR NO CPU MODEL-->
 														<s:if test='link == "/account/alerts/alertWithDefinedContractScope.htm" 
+															|| link == "/account/alerts/alertHardwareCfgData.htm"
 															|| link == "/account/alerts/alertIbmSwInstancesReviewed.htm"
 															|| link == "/account/alerts/alertPriorityIsvSwInstancesReviewed.htm"
 															|| link == "/account/alerts/alertIsvSwInstancesReviewed.htm"
