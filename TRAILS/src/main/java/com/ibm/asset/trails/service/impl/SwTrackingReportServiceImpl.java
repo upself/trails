@@ -17,6 +17,7 @@ import com.ibm.asset.trails.domain.Department;
 import com.ibm.asset.trails.domain.Geography;
 import com.ibm.asset.trails.domain.Region;
 import com.ibm.asset.trails.domain.Sector;
+import com.ibm.asset.trails.form.AlertOverviewReport;
 import com.ibm.asset.trails.form.SwTrackingAlertReport;
 import com.ibm.asset.trails.service.SwTrackingReportService;
 
@@ -33,10 +34,18 @@ public class SwTrackingReportServiceImpl implements SwTrackingReportService {
     private EntityManager getEntityManager() {
         return em;
     }
+    
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOverviewReport> getSwTrackingAlertsOverview(Account account) {
+        return (ArrayList<AlertOverviewReport>) getEntityManager()
+                .createNamedQuery("swTrackingAlertOverviewReportByAccount")
+                .setParameter("account", account).getResultList();
+    }
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Date selectReportTimestamp() {
-        String query = "SELECT recordTime FROM SwTrackingAlertReport";
+        String query = "SELECT recordTime FROM com.ibm.asset.trails.domain.SwTrackingAlertReport";
         Query q = getEntityManager().createQuery(query).setFirstResult(0)
                 .setMaxResults(1);
 
@@ -45,7 +54,7 @@ public class SwTrackingReportServiceImpl implements SwTrackingReportService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Integer selectReportMinutesOld() {
-        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM SwTrackingAlertReport a";
+        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM  com.ibm.asset.trails.domain.SwTrackingAlertReport a";
         Query lQuery = getEntityManager().createQuery(lsQuery)
                 .setFirstResult(0).setMaxResults(1);
         Double diff = Math

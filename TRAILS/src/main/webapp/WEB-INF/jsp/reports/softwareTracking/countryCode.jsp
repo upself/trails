@@ -40,7 +40,7 @@
 	cellpadding="0" defaultsort="1" export="true"
 	requestURI="/reports/softwareTracking/countryCode.htm">
 	<display:setProperty name="export.excel.filename"
-		value="alertSwTrackingOnlyByByCountryCode.xls" />
+		value="alertSwTrackingOnlyByCountryCode.xls" />
 	<display:column property="name" title="Country code"
 		href="sector.htm?geographyId=${geography.id}&regionId=${region.id}"
 		paramId="countryCodeId" paramProperty="id" group="1" media="html" />

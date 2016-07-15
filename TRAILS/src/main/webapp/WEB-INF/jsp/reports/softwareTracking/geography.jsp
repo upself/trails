@@ -11,7 +11,7 @@
           IBM Confidential
     </display:caption>
 	<display:setProperty name="export.excel.filename"
-		value="alertSwTrackingOnlyByByGeography.xls" />
+		value="alertSwTrackingOnlyByGeography.xls" />
 	<display:column property="name" title="Geography" group="1"
 		href="region.htm" paramId="geographyId" paramProperty="id"
 		media="html" />

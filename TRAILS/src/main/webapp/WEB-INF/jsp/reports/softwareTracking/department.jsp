@@ -8,7 +8,7 @@
 	cellpadding="0" defaultsort="1" export="true"
 	requestURI="/reports/softwareTracking/department.htm">
 	<display:setProperty name="export.excel.filename"
-		value="alertSwTrackingOnlyByByDepartment.xls" />
+		value="alertSwTrackingOnlyByDepartment.xls" />
 	<display:column title="Department" group="1"
 		href="accountByName.htm?geographyId=${geography.id}&regionId=${region.id}&countryCodeId=${countryCode.id}"
 		paramId="departmentId" paramProperty="id" media="html">
