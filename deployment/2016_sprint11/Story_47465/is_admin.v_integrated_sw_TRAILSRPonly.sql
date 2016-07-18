@@ -13,7 +13,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and isi.installed_software_id = is.id 
 and isi.software_signature_id = ss.software_signature_id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -25,7 +25,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and isf.installed_software_id = is.id 
 and  isf.software_filter_id = sf.software_filter_id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -37,7 +37,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and isc.installed_software_id = is.id 
 and  isc.SOFTWARE_SCRIPT_ID = scr.SOFTWARE_SCRIPT_ID and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -49,7 +49,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and isa.installed_software_id = is.id 
 and  isa.sa_product_id = sa.id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -61,7 +61,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and it.installed_software_id = is.id 
 and  it.MAINFRAME_FEATURE_ID = mv.id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -73,7 +73,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and it.installed_software_id = is.id 
 and  it.MAINFRAME_FEATURE_ID = mfe.id and mfe.version_id = mv.id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 union all 
 select sl.id ,sw.software_id ,sw.manufacturer_id ,sw.software_category_id ,sw.software_name
 ,sw.level,sw.status,mf.name
@@ -83,7 +83,7 @@ from eaadmin.software_lpar sl ,eaadmin.installed_software is,eaadmin.software sw
 ,eaadmin.software_category sc,eaadmin.customer cs,eaadmin.kb_definition kb 
 where sl.status = 'ACTIVE' and is.status='ACTIVE' and is.discrepancy_type_id=2 and sl.id = is.software_lpar_id
 and is.software_id = sw.software_id and sw.manufacturer_id = mf.id and sl.customer_id = cs.customer_id
-and sc.software_category_id = sw.software_category_id 
+and sc.software_category_id = sw.software_category_id and sw.software_id=kb.id
 );
 GRANT SELECT ON TABLE IS_ADMIN.V_INTEGRATED_SW TO USER IS_ADMIN;
 GRANT SELECT ON TABLE IS_ADMIN.V_INTEGRATED_SW TO USER EAADMIN;
