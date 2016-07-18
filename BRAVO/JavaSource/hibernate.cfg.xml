@@ -68,6 +68,7 @@
 		<mapping resource="com/ibm/ea/sigbank/BankAccount.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/BankAccountInclusion.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/DoranaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/sigbank/SoftwareScript.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/InstalledSoftware.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/InstalledSoftwareEff.hbm.xml" />
 		<mapping resource="com/ibm/ea/sigbank/Manufacturer.hbm.xml" />
@@ -108,6 +109,7 @@
 
 		<!-- SOFTWARE -->
 		<mapping resource="com/ibm/ea/bravo/software/InstalledDoranaProduct.hbm.xml" />
+		<mapping resource="com/ibm/ea/bravo/software/InstalledScript.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/software/InstalledFilter.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/software/InstalledSaProduct.hbm.xml" />
 		<mapping resource="com/ibm/ea/bravo/software/InstalledSignature.hbm.xml" />

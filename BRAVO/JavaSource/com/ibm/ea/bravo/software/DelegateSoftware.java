@@ -30,7 +30,6 @@ import com.ibm.ea.bravo.recon.ReconSoftwareLpar;
 import com.ibm.ea.cndb.Customer;
 import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.sigbank.BankAccountInclusion;
-import com.ibm.ea.sigbank.InstalledScript;
 //Change Bravo to use Software View instead of Product Object Start
 import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.Software;
@@ -826,6 +825,31 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			list = session
 					.getNamedQuery("installedSaProductsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
+
+			closeSession(session);
+
+		} catch (Exception e) {
+			logger.error(e, e);
+		}
+
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<InstalledScript> getScripts(String installedSoftwareId) {
+		List<InstalledScript> list = new ArrayList<InstalledScript>();
+
+		InstalledSoftware installedSoftware = DelegateSoftware
+				.getInstalledSoftware(installedSoftwareId);
+		if (installedSoftware == null)
+			return list;
+
+		try {
+
+			Session session = getSession();
+
+			list = session.getNamedQuery("installedScriptByInstalledSoftware")
 					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);

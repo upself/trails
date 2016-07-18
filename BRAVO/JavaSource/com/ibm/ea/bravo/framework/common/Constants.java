@@ -140,7 +140,7 @@ public class Constants {
 	public static final String[] EDIT_BUTTONS = { "Update", "Delete",
 			"Cancel Edit" };
 	public static final String SOFT_AUDIT_LIST = "softAuditList";
-	public static final String DORANA_LIST = "doranaList";
+	public static final String SCRIPT_LIST = "scriptList";
 	public static final String ACTION_DELETE = "Delete";
 	public static final String EDIT = "edit";
 	public static final String SEARCH = "search";

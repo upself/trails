@@ -209,9 +209,9 @@ public class ActionSoftware extends ActionBase {
 			List<SoftwareDiscrepancyH> commentList = DelegateSoftware.getCommentHistory(softwareId);
 			request.setAttribute(Constants.COMMENT_LIST, commentList);
 
-			// get the Dorana products
-//			List<InstalledDoranaProduct> doranaList = DelegateSoftware.getDoranas(softwareId);
-//			request.setAttribute(Constants.DORANA_LIST, doranaList);
+			// get the script products
+			List<InstalledScript> scriptList = DelegateSoftware.getScripts(softwareId);
+			request.setAttribute(Constants.SCRIPT_LIST, scriptList);
 
 			return mapping.findForward(Constants.SUCCESS);
 		}

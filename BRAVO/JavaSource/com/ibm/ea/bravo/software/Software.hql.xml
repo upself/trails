@@ -47,14 +47,14 @@
 		]]>
 	</query>
 
-	<query name="installedDoranaProductsByInstalledSoftware">
+	<query name="installedScriptByInstalledSoftware">
 		<![CDATA[
 			from
-				InstalledDoranaProduct i
-				join fetch i.doranaProduct
+			    com.ibm.ea.bravo.software.InstalledScript i
+				join fetch i.softwareScript
 			where
 				i.installedSoftware = :installedSoftware
-				and i.doranaProduct.status = 'ACTIVE'
+				and i.softwareScript.status = 'ACTIVE'
 		]]>
 	</query>
 
@@ -414,7 +414,7 @@
 (select max(id) from installed_signature a where a.installed_software_id = i.id and i.status = 'ACTIVE' ),
 (select max(id) from installed_filter b where b.installed_software_id = i.id and i.status = 'ACTIVE'),
 (select max(id) from installed_sa_product c where c.installed_software_id = i.id and i.status = 'ACTIVE'),
-(select max(id) from installed_dorana_product d where d.installed_software_id = i.id and i.status = 'ACTIVE'),
+(select max(id) from Installed_Script d where d.installed_software_id = i.id and i.status = 'ACTIVE'),
 (select max(id) from installed_vm_product e where e.installed_software_id = i.id and i.status = 'ACTIVE' ),
 (select max(id) from installed_tadz f where f.installed_software_id = i.id and i.status = 'ACTIVE' ),
 0
