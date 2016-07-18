@@ -253,7 +253,7 @@
 
 								<div class="indent">
 									<h3>
-										Software Script <a class="ibm-question-link"
+										Script Signatures<a class="ibm-question-link"
 											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
@@ -263,7 +263,7 @@
 									<display:setProperty name="basic.empty.showtable" value="true" />
 
 									<display:column property="softwareScript.softwareName"
-										title="Software Script Software Name" headerClass="blue-med" />
+										title="Script Signature Software Name" headerClass="blue-med" />
 									<display:column property="softwareScript.softwareVersion"
 										title="Version" headerClass="blue-med" />
 									<display:column property="softwareScript.status"
