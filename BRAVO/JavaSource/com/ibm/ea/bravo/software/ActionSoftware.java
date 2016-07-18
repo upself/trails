@@ -23,7 +23,7 @@ import com.ibm.ea.bravo.framework.common.ActionBase;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.hardware.FormHardware;
 import com.ibm.ea.sigbank.BankAccount;
-import com.ibm.ea.sigbank.InstalledScript;
+import com.ibm.ea.bravo.software.InstalledScript;
 //Change Bravo to use Software View instead of Product Object Start
 //import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.Software;
