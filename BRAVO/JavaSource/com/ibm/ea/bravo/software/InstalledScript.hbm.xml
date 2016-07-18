@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.ibm.ea.bravo.software.InstalledScript" table="INSTALLED_SCRIPT">      
+     
+        <id name="id" type="long" column="ID">
+            <generator class="identity" />
+        </id>    
+          
+        <many-to-one name="installedSoftware" class="com.ibm.ea.bravo.software.InstalledSoftware">
+	        <column name="INSTALLED_SOFTWARE_ID" not-null="true" index="IDX_IFISSWS" unique-key="IDX_IFS"/>
+	    </many-to-one>
+        <many-to-one name="softwareScript" class="com.ibm.ea.sigbank.SoftwareScript">
+        	<column name="SOFTWARE_SCRIPT_ID" not-null="true" index="IDX_ISCSSWS" unique-key="IDX_ISCS"/>
+        </many-to-one>
+        <many-to-one name="bankAccount" class="com.ibm.ea.sigbank.BankAccount">
+        	<column name="BANK_ACCOUNT_ID" not-null="true" index="IDX_ISSCBA" unique-key="IDX_ISCS"/>
+        </many-to-one>		
+        
+    </class>
+</hibernate-mapping>
+

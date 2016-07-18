@@ -10,6 +10,7 @@ import com.ibm.ea.bravo.framework.common.OrmBase;
 import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.sigbank.DoranaProduct;
 import com.ibm.ea.sigbank.SaProduct;
+import com.ibm.ea.sigbank.SoftwareScript;
 import com.ibm.ea.sigbank.VmProduct;
 
 /**
@@ -33,6 +34,7 @@ public class InstalledBase extends OrmBase {
 	private SaProduct saProduct;
 	private VmProduct vmProduct;
 	private DoranaProduct doranaProduct;
+	private SoftwareScript softwareScript;
 	/**
 	 * @return Returns the bankAccount.
 	 */
@@ -94,15 +96,24 @@ public class InstalledBase extends OrmBase {
 		this.vmProduct = vmProduct;
 	}
 	/**
-	 * @return Returns the doranaProduct.
+	 * @return Returns the softwareScript.
 	 */
+	public SoftwareScript getSoftwareScript() {
+		return softwareScript;
+	}
+	/**
+	 * @param softwareScript The softwareScritp to set.
+	 */
+	public void setSoftwareScript(SoftwareScript softwareScript) {
+		this.softwareScript = softwareScript;
+	}
+	
 	public DoranaProduct getDoranaProduct() {
 		return doranaProduct;
 	}
-	/**
-	 * @param doranaProduct The doranaProduct to set.
-	 */
 	public void setDoranaProduct(DoranaProduct doranaProduct) {
 		this.doranaProduct = doranaProduct;
 	}
+	
+	
 }

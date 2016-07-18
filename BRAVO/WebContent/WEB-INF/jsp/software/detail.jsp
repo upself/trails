@@ -253,19 +253,21 @@
 
 								<div class="indent">
 									<h3>
-										Dorana Products <a class="ibm-question-link"
+										Software Script <a class="ibm-question-link"
 											href="/BRAVO/help/help.do"></a>
 									</h3>
 								</div>
-								<display:table name="doranaList" requestURI=""
+								<display:table name="scriptList" requestURI=""
 									class="ibm-data-table ibm-sortable-table ibm-alternate-two"
 									id="small">
 									<display:setProperty name="basic.empty.showtable" value="true" />
 
-									<display:column property="doranaProduct.doranaProduct"
-										title="Dorana Product Name" headerClass="blue-med" />
-									<display:column property="doranaProduct.version"
+									<display:column property="softwareScript.softwareName"
+										title="Software Script Software Name" headerClass="blue-med" />
+									<display:column property="softwareScript.softwareVersion"
 										title="Version" headerClass="blue-med" />
+									<display:column property="softwareScript.status"
+										title="Status" headerClass="blue-med" />
 								</display:table>
 
 								<div class="indent">

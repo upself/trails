@@ -761,7 +761,29 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<InstalledScript> getInstalledScripts(String installedSoftwareId) {
+		System.out.println("DelegateSoftware - getInstalledScripts()");
+		List<InstalledScript> list = new ArrayList<InstalledScript>();
 
+		InstalledSoftware installedSoftware = DelegateSoftware
+				.getInstalledSoftware(installedSoftwareId);
+		if (installedSoftware == null)
+			return list;
+		try {
+			Session session = getSession();
+			list = session.getNamedQuery("installedScriptsByInstalledSoftware")
+					.setEntity("installedSoftware", installedSoftware).list();
+			closeSession(session);
+
+		} catch (Exception e) {
+			logger.error(e, e);
+		}
+		System.out.println("DelegateSoftware - getInstalledScripts() list: " + list);
+		return list;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static List<InstalledFilter> getFilters(String installedSoftwareId) {
 		List<InstalledFilter> list = new ArrayList<InstalledFilter>();
@@ -813,11 +835,10 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public static List<InstalledDoranaProduct> getDoranas(
-			String installedSoftwareId) {
-		List<InstalledDoranaProduct> list = new ArrayList<InstalledDoranaProduct>();
+	public static List<InstalledScript> getScripts(String installedSoftwareId) {
+		List<InstalledScript> list = new ArrayList<InstalledScript>();
 
 		InstalledSoftware installedSoftware = DelegateSoftware
 				.getInstalledSoftware(installedSoftwareId);
@@ -828,8 +849,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 			Session session = getSession();
 
-			list = session
-					.getNamedQuery("installedDoranaProductsByInstalledSoftware")
+			list = session.getNamedQuery("installedScriptByInstalledSoftware")
 					.setEntity("installedSoftware", installedSoftware).list();
 
 			closeSession(session);
@@ -840,6 +860,33 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
+
+//	@SuppressWarnings("unchecked")
+//	public static List<InstalledDoranaProduct> getDoranas(
+//			String installedSoftwareId) {
+//		List<InstalledDoranaProduct> list = new ArrayList<InstalledDoranaProduct>();
+//
+//		InstalledSoftware installedSoftware = DelegateSoftware
+//				.getInstalledSoftware(installedSoftwareId);
+//		if (installedSoftware == null)
+//			return list;
+//
+//		try {
+//
+//			Session session = getSession();
+//
+//			list = session
+//					.getNamedQuery("installedDoranaProductsByInstalledSoftware")
+//					.setEntity("installedSoftware", installedSoftware).list();
+//
+//			closeSession(session);
+//
+//		} catch (Exception e) {
+//			logger.error(e, e);
+//		}
+//
+//		return list;
+//	}
 
 	public static boolean getManualStatus(String installedSoftwareId) {
 		BigInteger count = new BigInteger("0");
