@@ -266,6 +266,8 @@
 										title="Software Script Software Name" headerClass="blue-med" />
 									<display:column property="softwareScript.softwareVersion"
 										title="Version" headerClass="blue-med" />
+									<display:column property="softwareScript.status"
+										title="Status" headerClass="blue-med" />
 								</display:table>
 
 								<div class="indent">
