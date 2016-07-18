@@ -33,6 +33,7 @@ public class InstalledBase extends OrmBase {
 	 */
 	private SaProduct saProduct;
 	private VmProduct vmProduct;
+	private DoranaProduct doranaProduct;
 	private SoftwareScript softwareScript;
 	/**
 	 * @return Returns the bankAccount.
@@ -106,4 +107,13 @@ public class InstalledBase extends OrmBase {
 	public void setSoftwareScript(SoftwareScript softwareScript) {
 		this.softwareScript = softwareScript;
 	}
+	
+	public DoranaProduct getDoranaProduct() {
+		return doranaProduct;
+	}
+	public void setDoranaProduct(DoranaProduct doranaProduct) {
+		this.doranaProduct = doranaProduct;
+	}
+	
+	
 }
