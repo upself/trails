@@ -108,7 +108,7 @@ function initDataExceptionReport(){
 	$.post('${pageContext.request.contextPath}/ws/alert/account/summary',{'accountId': ${account.id},'alertType': 'DATA_EXCEPTION'},function(data){
 		var html = '';
 		if(data.msg != 'SUCCESS'){
-			html = '<li>There is data exceptions reports.</li>'
+			html = '<li>There is no data exception reports.</li>'
 		} else{
 			for(var i=0;  i < data.dataList.length; i++){
 				var item = data.dataList[i];
