@@ -124,7 +124,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String[] LICENSE_BASELINE_COLUMN_HEADERS = { "Primary Component",
 			"Primary component catalog match", "License Name", "Software product PID",
 			"Capacity type", "Environment", "Total qty", "Available qty",
-			"Expiration date", "END_DATE", "PO number", "Serial number", "License owner",
+			"Expiration date", "End date", "PO number", "Serial number", "License owner",
 			"SWCM ID", "Pool", "Record date/time" };
 	private final String NON_WORKSTATION_ACCOUNTS_REPORT_NAME = "Non-workstation accounts with workstations report";
 	private final String[] NON_WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
