@@ -76,18 +76,22 @@
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/casueCodeSummary${account.account}.tsv?name=casueCodeSummary">Cause code summary report</a>
 			</li>
+			<%if(!isSwTrackingAccount){%>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/softwareVariance${account.account}.tsv?name=softwareVariance">Contract scope to scanned component variance</a>
 			</li>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Free license pool</a>
 			</li>
+			<%}%>	
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/hardwareBaseline${account.account}.tsv?name=hardwareBaseline">Hardware baseline</a>
 			</li>
+			<%if(!isSwTrackingAccount){%>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/reconciliationSummary${account.account}.tsv?name=reconciliationSummary">Reconciliation summary</a>
 			</li>
+			<%}%>	
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/softwareLparBaseline${account.account}.tsv?name=softwareLparBaseline">Software LPAR baseline</a>
 			</li>
