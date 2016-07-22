@@ -70,6 +70,9 @@
 	<display:caption media="html">TRAILS results for:
 <s:property value="searchAccount.searchString" />
 	</display:caption>
+	<display:column property="accountName" title="Name" sortable="true"
+		href="/TRAILS/account/home.htm" paramId="accountId"
+		paramProperty="accountId" />
 	<display:column title="License Management Scope" sortable="true">
 		<s:if test="%{#attr.row.scope == 'yes' || #attr.row.scope == 'YES'}">
 			Y
@@ -86,9 +89,6 @@
 			N
 		</s:else>
 	</display:column>
-	<display:column property="accountName" title="Name" sortable="true"
-		href="/TRAILS/account/home.htm" paramId="accountId"
-		paramProperty="accountId" />
 	<display:column property="dept" title="Dept." sortable="true" />
 	<display:column property="sector" title="Sector" sortable="true" />
 	<display:column property="type" title="Type" sortable="true" />
