@@ -73,6 +73,9 @@
 	<display:column property="accountName" title="Name" sortable="true"
 		href="/TRAILS/account/home.htm" paramId="accountId"
 		paramProperty="accountId" />
+	<display:column title="Account #" sortable="true">
+		<a href="javascript:popupCNDB(<s:property value="%{#attr.row.accountId}"/>)">${row.account}</a>
+	</display:column>
 	<display:column title="License Management Scope" sortable="true">
 		<s:if test="%{#attr.row.scope == 'yes' || #attr.row.scope == 'YES'}">
 			Y
@@ -93,9 +96,4 @@
 	<display:column property="sector" title="Sector" sortable="true" />
 	<display:column property="type" title="Type" sortable="true" />
 	<display:column property="dpe" title="DPE" sortable="true" />
-	<display:column title="Account #" sortable="true">
-		<a
-			href="javascript:popupCNDB(<s:property value="%{#attr.row.accountId}"/>)">
-			${row.account}</a>
-	</display:column>
 </display:table>
