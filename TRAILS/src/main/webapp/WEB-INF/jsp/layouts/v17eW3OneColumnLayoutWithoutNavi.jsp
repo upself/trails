@@ -66,7 +66,7 @@
 		}
 	});
 </script>
-<script type="text/javascript">
+<%-- <script type="text/javascript">
 	ibmweb.config.set({
 		opinionlab : {
 			floating : {
@@ -76,7 +76,7 @@
 			}
 		}
 	});
-</script>
+</script> --%>
 
 <style type="text/css">
 /* LEADSPACE STYLES */
