@@ -371,10 +371,8 @@ public class ShowQuestion extends AccountBaseAction {
 			}
 		} else {
 			if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
-					this.reconcileTypeId.intValue() == 13
-					|| this.reconcileTypeId.intValue() == 12
-					|| this.reconcileTypeId.intValue() == 11
-					|| this.reconcileTypeId.intValue() == 10
+					this.reconcileTypeId.intValue() != 2
+					|| this.reconcileTypeId.intValue() != 14
 			)){
 				return ".v17e";
 			}else{
