@@ -76,18 +76,22 @@
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/casueCodeSummary${account.account}.tsv?name=casueCodeSummary">Cause code summary report</a>
 			</li>
+			<%if(!isSwTrackingAccount){%>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/softwareVariance${account.account}.tsv?name=softwareVariance">Contract scope to scanned component variance</a>
 			</li>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Free license pool</a>
 			</li>
+			<%}%>	
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/hardwareBaseline${account.account}.tsv?name=hardwareBaseline">Hardware baseline</a>
 			</li>
+			<%if(!isSwTrackingAccount){%>
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/reconciliationSummary${account.account}.tsv?name=reconciliationSummary">Reconciliation summary</a>
 			</li>
+			<%}%>	
 			<li>
 				<a class="ibm-download-link" href="/TRAILS/report/download/softwareLparBaseline${account.account}.tsv?name=softwareLparBaseline">Software LPAR baseline</a>
 			</li>
@@ -108,7 +112,7 @@ function initDataExceptionReport(){
 	$.post('${pageContext.request.contextPath}/ws/alert/account/summary',{'accountId': ${account.id},'alertType': 'DATA_EXCEPTION'},function(data){
 		var html = '';
 		if(data.msg != 'SUCCESS'){
-			html = '<li>There is data exceptions reports.</li>'
+			html = '<li>There is no data exception reports.</li>'
 		} else{
 			for(var i=0;  i < data.dataList.length; i++){
 				var item = data.dataList[i];
