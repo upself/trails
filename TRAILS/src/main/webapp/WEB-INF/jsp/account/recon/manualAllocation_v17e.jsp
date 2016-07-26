@@ -3,7 +3,6 @@
 <s:url id="settingsLink" action="settings" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
-
 <s:url id="workspaceLink" action="workspace?gotoV17e=y" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
@@ -90,7 +89,7 @@
 		</div>
 		<div class="ibm-col-1-1">
 			<small>
-				<display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row" summary="alert" cellspacing="1" cellpadding="0" excludedParams="*">
+				<display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" style="background: white" id="row" summary="alert" cellspacing="1" cellpadding="0" excludedParams="*">
 					<display:column property="alertStatus" title="" />
 					<display:column property="alertAgeI" title="Age" />
 					<display:column property="hostname" title="Hostname" />
@@ -133,14 +132,25 @@
 			<h2>Selected licenses</h2>
 			<s:submit method="deleteSelectedLicenses" value="Delete selected licenses" cssClass="ibm-btn-cancel-pri ibm-btn-small" /> <br/>
 			<small> 
+				
 				<display:table name="reconLicenseList" summary="Recon License List" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row"
 					cellspacing="1" cellpadding="0" excludedParams="*"
 					requestURI="showQuestion.htm?gotoV17e=y&flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
 					<display:column>
 						<s:checkbox name="selectedLicenseId" fieldValue="%{#attr.row.id}" />
 					</display:column>
-					<display:column sortProperty="catalogMatch" title=""
-						class="catalogMatch" value="" />
+					<display:column>
+						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
+							<ul class="ibm-link-list">
+								<li><a class="ibm-confirm-link"></a></li>
+							</ul>
+						</s:if>
+						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
+							<ul class="ibm-link-list ibm-alternate">
+								<li><a class="ibm-cancel-link"></a></li>
+							</ul>
+						</s:if>
+					</display:column>
 					<display:column property="account.account" title="Account number"
 						sortable="true" />
 					<display:column property="fullDesc" title="License Name"
@@ -178,11 +188,19 @@
 				decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 				cellspacing="1" cellpadding="0" excludedParams="*"
 				requestURI="showQuestion.htm?gotoV17e=y&flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
+					<display:column><s:checkbox name="availableLicenseId" fieldValue="%{#attr.row.licenseId}" /> </display:column>
 					<display:column>
-							<s:checkbox name="availableLicenseId"
-								fieldValue="%{#attr.row.licenseId}" />
+						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
+							<ul class="ibm-link-list">
+								<li><a class="ibm-confirm-link"></a></li>
+							</ul>
+						</s:if>
+						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
+							<ul class="ibm-link-list ibm-alternate">
+								<li><a class="ibm-cancel-link"></a></li>
+							</ul>
+						</s:if>
 					</display:column>
-					<display:column title="" class="catalogMatch" value="" />
 					<display:column property="ownerAccountNumber"
 						sortProperty="account.account" title="Account number"
 						sortable="true" />
