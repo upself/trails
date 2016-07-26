@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -364,6 +365,16 @@ public class DataExceptionServiceEndpointSearchTest {
         return testItem;
     }
     
+    private void assertWSMsgIsFail(WSMsg wsmsg){
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
+		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+
+    }
+    
 //    @Test
 //    public void testSwLparReturnsEmptyListItems() {
 //
@@ -461,21 +472,103 @@ public class DataExceptionServiceEndpointSearchTest {
 //
 //    }
     
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testNoValuesPassedIn() {
+	public void testNoDataExpTypePassedIn() {
+		final String installedSwExceptionType = null;
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
 
-		final WSMsg wsmsg = endpoint.getDataExceptionDataList(null, null, null, null, null, null);
-
+		//unnecessary, the assertions are doing the same kind of verification
 //		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
-//		verify(dataExpHardwareLparService, never()).setAlertTypeCode(anyString());
-//		verify(dataExpInstalledSwService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+	@Test
+	public void testNoAccountIdPassedIn() {
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = null;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
 
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		//unnecessary, the assertions are doing the same kind of verification
+//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
+	}
+	@Test
+	public void testNoCurrentPagePassedIn() {
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = null;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = "ascending";
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+		//unnecessary, the assertions are doing the same kind of verification
+//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
+	}
+	@Test
+	public void testNoPageSizePassedIn() {
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = null;
+        final String sort = "sorting";
+        final String dir = "ascending";
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+		//unnecessary, the assertions are doing the same kind of verification
+//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
+	}
+	@Test
+	public void testNoSortPassedIn() {
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = null;
+        final String dir = "ascending";
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+		//unnecessary, the assertions are doing the same kind of verification
+//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
+	}	
+	
+	@Test
+	public void testNoDirPassedIn() {
+		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
+        final Long accountId = 1000L;
+        final Integer currentPage = 100;
+        final Integer pageSize = 99;
+        final String sort = "sorting";
+        final String dir = null;
+		
+		final WSMsg wsmsg = endpoint.getDataExceptionDataList(installedSwExceptionType, accountId, currentPage, pageSize, sort, dir);
+
+		//unnecessary, the assertions are doing the same kind of verification
+//		verify(dataExpSoftwareLparService, never()).setAlertTypeCode(anyString());
+		
+		assertWSMsgIsFail(wsmsg);
 	}
     
     /*

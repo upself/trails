@@ -72,45 +72,52 @@ public class DataExceptionServiceEndpointAssignTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// ??
+	private String getKnownValidSwLparExceptionType(){
+    	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
 	@Test
 	public void testNoDataExpTypePassedIn() {
+		final String dataExptype = null;
+		final String comments = "comment";
 		final String assignIDs = "1,2";
-		final String comments = "";
 
-		WSMsg wsmsg = endpoint.assignDataExceptionDataList(null, comments, assignIDs, request);
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
 
-		verify(dataExpSoftwareLparService, never()).assign(anyList(), anyString(), anyString());
-
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-	}
-
-	// @SuppressWarnings("unchecked")
-	// ??
-	@Test
-	public void testNoValuesPassedIn() {
-
-		WSMsg wsmsg = endpoint.assignDataExceptionDataList(null, null, null, null);
-
-		verify(dataExpSoftwareLparService, never()).assign(anyList(), anyString(), anyString());
-
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-	}
-
-	@Test
-	public void testPassedDataExceptionIsDeclared(){
-		
+		assertWSMsgIsFail(wsmsg);
 	}
 	
+	@Test
+	public void testNoCommentsPassedIn() {
+		final String dataExptype = getKnownValidSwLparExceptionType();
+		final String comments = null;
+		final String assignIDs = "1,2";
+
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
+
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+	@Test
+	public void testNoAssignIDsPassedIn() {
+		final String dataExptype = getKnownValidSwLparExceptionType();
+		final String comments = "comment";
+		final String assignIDs = null;
+
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
+
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+    private void assertWSMsgIsFail(WSMsg wsmsg){
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
+		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+
+    }
 	/*
 	 @POST
 	@Path("/{dataExpType}/assign")

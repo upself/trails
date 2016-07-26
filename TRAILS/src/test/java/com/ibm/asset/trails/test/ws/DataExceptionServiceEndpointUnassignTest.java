@@ -72,37 +72,52 @@ public class DataExceptionServiceEndpointUnassignTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
+	private String getKnownValidSwLparExceptionType(){
+    	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
 	@Test
 	public void testNoDataExpTypePassedIn() {
-		final Long accountId = 999L;
-		final String unassignIds = "1,2";
-		final String comments = "";
+		final String dataExptype = null;
+		final String comments = "comment";
+		final String assignIDs = "1,2";
 
-		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(null, unassignIds, comments, request);
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
 
-		verify(dataExpSoftwareLparService, never()).unassign(anyList(), anyString(), anyString());
-
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertWSMsgIsFail(wsmsg);
 	}
-
-//	@SuppressWarnings("unchecked")
+	
 	@Test
-	public void testNoValuesPassedIn() {
+	public void testNoCommentsPassedIn() {
+		final String dataExptype = getKnownValidSwLparExceptionType();
+		final String comments = null;
+		final String assignIDs = "1,2";
 
-		WSMsg wsmsg = endpoint.unassignDataExceptionDataList(null, null, null, null);
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
 
-		verify(dataExpSoftwareLparService, never()).unassign(anyList(), anyString(), anyString());
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+	@Test
+	public void testNoAssignIDsPassedIn() {
+		final String dataExptype = getKnownValidSwLparExceptionType();
+		final String comments = "comment";
+		final String assignIDs = null;
+
+		WSMsg wsmsg = endpoint.assignDataExceptionDataList(dataExptype, comments, assignIDs, request);
+
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+    private void assertWSMsgIsFail(WSMsg wsmsg){
 
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-	}
+
+    }
 
 	/*
 	@POST
