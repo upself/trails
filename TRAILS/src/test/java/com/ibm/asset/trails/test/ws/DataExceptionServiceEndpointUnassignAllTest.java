@@ -81,11 +81,7 @@ public class DataExceptionServiceEndpointUnassignAllTest {
 
 		verify(dataExpSoftwareLparService, never()).unassignAll(anyLong(), anyString(), anyString(), anyString());
 
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertWSMsgIsFail(wsmsg);
 	}
 
 //	@SuppressWarnings("unchecked")
@@ -96,13 +92,19 @@ public class DataExceptionServiceEndpointUnassignAllTest {
 
 		verify(dataExpSoftwareLparService, never()).unassignAll(anyLong(), anyString(), anyString(), anyString());
 
+		assertWSMsgIsFail(wsmsg);
+	}
+
+    private void assertWSMsgIsFail(WSMsg wsmsg){
+
 		assertNotNull(wsmsg);
 		assertNull(wsmsg.getData());
 		assertNull(wsmsg.getDataList());
 		assertNotNull(wsmsg.getMsg());
 		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-	}
 
+    }
+	
 	/*
 	@POST
 	@Path("/{dataExpType}/assignAll")
