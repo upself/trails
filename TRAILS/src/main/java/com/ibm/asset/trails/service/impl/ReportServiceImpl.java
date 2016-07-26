@@ -72,7 +72,7 @@ public class ReportServiceImpl implements ReportService {
 			"COMMENT" };
 	private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_SWDSCEXP_COLUMN_HEADERS = {
 			"DATA EXCEPTION TYPE", "HOST NAME", "DISCREPANCY RECORD TIME", "CREATION TIME",
-			"SOFTWARE NAME", "ASSIGNEE","COMMENT" };
+			"SOFTWARE COMPONENT NAME", "ASSIGNEE","COMMENT" };
 	private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
 			"Status", "Hostname", "Software Component",
 			"Number of instances", "Create date/time", "Age",
