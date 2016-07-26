@@ -48,42 +48,10 @@
 	title="w3" type="text/css" />
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet"
 	title="w3" type="text/css" />
-<style type="text/css">
-#ibm-content-main>.ibm-columns>.ibm-col-6-4 {
-	width: 74%;
-	background: white;
-}
-#ibm-content-main>.ibm-columns>.ibm-col-6-2 {
-	width: 20%;
-	background: white;
-}
 
-.nobreak {
-	word-break: keep-all;
-	white-space: nowrap;
-}
-
-.alert-go {
-	color: #66CD00;
-}
-
-.alert-stop {
-	color: red;
-}
-
-.orange-med {
-	color: #FFC125;
-}
-
-ul.horizontal-list li {
-	display: inline;
-}
-
-h2.green-dark {
-	color: red;
-}
-</style>
+<script src="${pageContext.request.contextPath}/js/trails_style.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+
 <script type="text/javascript">
 	ibmweb.config.set({
 		siteid : 'w3',
