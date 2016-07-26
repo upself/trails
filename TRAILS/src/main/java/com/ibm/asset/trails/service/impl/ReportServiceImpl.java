@@ -70,6 +70,9 @@ public class ReportServiceImpl implements ReportService {
 			"DATA EXCEPTION TYPE", "HOST NAME", "SERIAL", "CREATION TIME",
 			"PHYSICAL HW PROCESSOR COUNT", "HW EXT ID", "HW CHIPS", "ASSIGNEE",
 			"COMMENT" };
+	private final String[] ACCOUNT_DATA_EXCEPTIONS_REPORT_SWDSCEXP_COLUMN_HEADERS = {
+			"DATA EXCEPTION TYPE", "HOST NAME", "DISCREPANCY RECORD TIME", "CREATION TIME",
+			"SOFTWARE COMPONENT NAME", "ASSIGNEE","COMMENT" };
 	private final String[] ALERT_UNLICENSED_SW_REPORT_COLUMN_HEADERS = {
 			"Status", "Hostname", "Software Component",
 			"Number of instances", "Create date/time", "Age",
@@ -156,6 +159,7 @@ public class ReportServiceImpl implements ReportService {
 	private final String SQL_QUERY_UNLICENSED_SW = "SELECT CASE WHEN Alert_Age > 90 THEN 'Red' WHEN Alert_Age > 45 THEN 'Yellow' ELSE 'Green' END, Software_Lpar_Name, Software_Item_Name, Alert_Count, Creation_Time, Alert_Age, ac_name, target_date, cc_owner, cc_record_time, cc_remote_user, cc_id FROM (SELECT MAX(DAYS(CURRENT TIMESTAMP) - DAYS(VA.Creation_Time)) AS Alert_Age, SL.Name AS Software_Lpar_Name, S.software_name AS Software_Item_Name, COUNT(*) AS Alert_Count, MIN(VA.Creation_Time) AS Creation_Time, VA.ac_name as ac_name, CC.target_date,CC.owner as cc_owner,CC.record_time as cc_record_time,CC.remote_user as cc_remote_user, CC.id as cc_id FROM EAADMIN.V_Alerts VA, EAADMIN.software  S, EAADMIN.Alert_Unlicensed_Sw AUS, EAADMIN.Installed_Software IS , EAADMIN.cause_code CC, EAADMIN.Software_Lpar SL WHERE VA.Customer_Id = :customerId AND VA.Type = :type AND VA.Open = 1 AND AUS.Id = VA.Id AND IS.Id = AUS.Installed_Software_Id AND IS.Software_Id = S.software_id and VA.id=CC.alert_id and CC.alert_type_id=17 AND IS.SOFTWARE_LPAR_ID=SL.ID GROUP BY SL.NAME, S.software_name, VA.ac_name, CC.target_date, CC.owner, CC.remote_user, CC.id, CC.record_time) AS TEMP ORDER BY Software_Item_Name ASC";
 	private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWLPAR_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, SL.Scantime as Scan_Time, A.Creation_time, SL.Bios_serial as Serial, SL.os_name as OS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Software_Lpar ASL, Software_Lpar SL where A.open=:open and A.alert_type_id=AT.id and ASL.id=A.id and ASL.software_lpar_id=SL.id  and SL.customer_id= :customerId and AT.code= :alertCode order by SL.Scantime";
 	private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_HWLPAR_Report = "SELECT  AT.Name as DataException_Type, HL.Name as Lpar_Name,  Hw.SERIAL as Serial, A.Creation_time, HW.PROCESSOR_COUNT,cast(HL.EXT_ID as VARCHAR(8)),HW.CHIPS, A.Assignee, A.COMMENT from Alert A, Alert_type AT, Alert_Hardware_Lpar AHL, hardware_Lpar HL,hardware HW where A.open=:open and A.alert_type_id=AT.id and AHL.id=A.id and AHL.hardware_lpar_id=HL.id and HL.hardware_id=HW.id and HL.customer_id= :customerId and AT.code= :alertCode order by A.Creation_time";
+	private final String SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWDSCEXP_Report = "SELECT  AT.Name as DataException_Type, SL.Name as Lpar_Name, IS.record_time as Discrepancy_record_time, A.Creation_time, S.SOFTWARE_NAME, A.Assignee, A.COMMENT from Alert A inner join Alert_type AT on A.alert_type_id=AT.id inner join alert_installed_software ais on A.id = ais.id inner join installed_software is on ais.INSTALLED_SOFTWARE_ID = is.id inner join software s on is.software_id = s.software_id inner join software_lpar sl on is.software_lpar_id = sl.id where A.open= :open and SL.customer_id= :customerId and AT.code= :alertCode order by IS.record_time";
 	private final String WORKSTATION_ACCOUNTS_REPORT_NAME = "Workstation accounts with non-workstations report";
 	private final String[] WORKSTATION_ACCOUNTS_REPORT_COLUMN_HEADERS = {
 			"Account #", "Account name", "Account type", "Geography", "Region",
@@ -466,6 +470,10 @@ public class ReportServiceImpl implements ReportService {
 				if (l.getLevel().equals("HWLPAR")) {
 					sql_query_data_exception = SQL_QUERY_ACCOUNT_DATAEXCEPTION_HWLPAR_Report;
 					header_of_data_exception = ACCOUNT_DATA_EXCEPTIONS_REPORT_HWLPAR_COLUMN_HEADERS;
+				}
+				if (l.getLevel().equals("INSTSW")) {
+					sql_query_data_exception = SQL_QUERY_ACCOUNT_DATAEXCEPTION_SWDSCEXP_Report;
+					header_of_data_exception = ACCOUNT_DATA_EXCEPTIONS_REPORT_SWDSCEXP_COLUMN_HEADERS;
 				}
 			}
 		}
