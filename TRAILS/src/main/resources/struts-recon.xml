@@ -197,7 +197,7 @@
 			<interceptor-ref name="execAndWait">
 				<param name="delay">10000</param>
 			</interceptor-ref>
-			<result name="wait">/WEB-INF/jsp/account/recon/wait.jsp</result>
+			<result name="wait">/WEB-INF/jsp/account/recon/wait${v17e}.jsp</result>
 			<result name="success" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 		</action>

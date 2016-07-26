@@ -42,7 +42,7 @@
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
-		<div style="width: 70%; float:left">
+		<div style="width: 70%; float:left; padding-left: 10px">
 			<table width="99%" padding="3px">
 				<tr>
 					<td style="width: 25%"><label for="runon">Run on:</label></td>
@@ -141,12 +141,12 @@
 					</display:column>
 					<display:column>
 						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
-							<ul class="ibm-link-list">
+							<ul class="ibm-link-list" style="margin-top: -20px;">
 								<li><a class="ibm-confirm-link"></a></li>
 							</ul>
 						</s:if>
 						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
-							<ul class="ibm-link-list ibm-alternate">
+							<ul class="ibm-link-list ibm-alternate" style="margin-top: -20px;">
 								<li><a class="ibm-cancel-link"></a></li>
 							</ul>
 						</s:if>
@@ -191,12 +191,12 @@
 					<display:column><s:checkbox name="availableLicenseId" fieldValue="%{#attr.row.licenseId}" /> </display:column>
 					<display:column>
 						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
-							<ul class="ibm-link-list">
+							<ul class="ibm-link-list" style="margin-top: -20px;">
 								<li><a class="ibm-confirm-link"></a></li>
 							</ul>
 						</s:if>
 						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
-							<ul class="ibm-link-list ibm-alternate">
+							<ul class="ibm-link-list ibm-alternate" style="margin-top: -20px;">
 								<li><a class="ibm-cancel-link"></a></li>
 							</ul>
 						</s:if>
