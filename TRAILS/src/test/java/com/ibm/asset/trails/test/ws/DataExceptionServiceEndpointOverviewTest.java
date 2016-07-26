@@ -77,11 +77,7 @@ public class DataExceptionServiceEndpointOverviewTest {
         verify(accountService, never()).getAccount(anyLong());
         verify(dataExceptionReportService, never()).getAlertsOverview(any(Account.class));
 
-    	assertNotNull(wsmsg);
-    	assertNull(wsmsg.getData());
-        assertNull(wsmsg.getDataList());
-        assertNotNull(wsmsg.getMsg());
-        assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+        assertWSMsgIsFail(wsmsg);
     }
     
     @Test
@@ -109,12 +105,7 @@ public class DataExceptionServiceEndpointOverviewTest {
 
         WSMsg wsmsg = endpoint.exceptionOverview(1L);
 
-        assertNotNull(wsmsg);
-        assertNull(wsmsg.getData());
-        assertNull(wsmsg.getDataList());
-
-        assertEquals(WSMsg.FAIL, wsmsg.getStatus());
-        assertNotNull(wsmsg.getMsg());
+        assertWSMsgIsFail(wsmsg);
     }
 
     @Test
@@ -141,6 +132,17 @@ public class DataExceptionServiceEndpointOverviewTest {
     	assertTrue(wsmsg.getDataList().size() == expectedResultListSize);
     	
     }
+    
+    private void assertWSMsgIsFail(WSMsg wsmsg){
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
+		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+
+    }
+    
 
 /*
     @GET

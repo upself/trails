@@ -77,57 +77,63 @@ public class DataExceptionServiceEndpointAssignAllTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
+	private String getKnownValidSwLparExceptionType(){
+    	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
+    }
+	
 	@Test
 	public void testNoDataExpTypePassedIn() {
+		final String swLparExceptionType = null;
 		final Long accountId = 999L;
-		final String comments = "";
+		final String comments = "comment";
 
-		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(null, accountId, comments, request);
+		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(swLparExceptionType, accountId, comments, request);
 
-		verify(dataExpSoftwareLparService, never()).assignAll(anyLong(), anyString(), anyString(), anyString());
-
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		assertWSMsgIsFail(wsmsg);
 	}
-
+	
 	@Test
-	public void testNoValuesPassedIn() {
+	public void testNoAccountIdPassedIn() {
+		final String swLparExceptionType = getKnownValidSwLparExceptionType();
+		final Long accountId = null;
+		final String comments = "comment";
 
-		//we are not writing any dependencies because we want to verify that we validate invalid input right away in the response
-		
-		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(null, null, null, null);
+		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(swLparExceptionType, accountId, comments, request);
 
-		verify(dataExpSoftwareLparService, never()).assignAll(anyLong(), anyString(), anyString(), anyString());
+		assertWSMsgIsFail(wsmsg);
+	}
+	
+	@Test
+	public void testNoCommentsPassedIn() {
+		final String swLparExceptionType = getKnownValidSwLparExceptionType();
+		final Long accountId = 999L;
+		final String comments = null;
 
-		assertNotNull(wsmsg);
-		assertNull(wsmsg.getData());
-		assertNull(wsmsg.getDataList());
-		assertNotNull(wsmsg.getMsg());
-		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(swLparExceptionType, accountId, comments, request);
+
+		assertWSMsgIsFail(wsmsg);
 	}
 
 	@SuppressWarnings("unchecked")
-//	@Test
-	public void testDataExcepTypeDeclared() {
-		final String exceptionTypeSw = "NULLTIME";
+	@Test
+	public void testAssignedAllSuccessfully() {
+		final String exceptionTypeSw = getKnownValidSwLparExceptionType();
 //		final String exceptionTypeHw = "HWNCHP";
 //		final String exceptionTypeIS = "SWDSCEXP";
-		final Long accountId = 35400L;
+		final Long accountId = 2541L;
 		final String comments = "comment";
 		
 		WSMsg wsmsgMocked = mock(WSMsg.class);
+		Account accountMocked = mock(Account.class);
 		
 		//when can't be used when method returns void
 //		when(dataExpSoftwareLparService.assignAll(anyLong(), anyString(), anyString(), anyString()))
 		
+		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(exceptionTypeSw, accountMocked.getAccount(), comments, request);
+		//ACCOUNT DOESN'T EXIST
+		System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
+		
 		verify(dataExpSoftwareLparService, atLeastOnce()).assignAll(anyLong(), anyString(), anyString(), anyString());
-		
-		WSMsg wsmsg = endpoint.assignAllDataExceptionDataList(exceptionTypeSw, accountId, comments, request);
-		
-//		verify(dataExpSoftwareLparService, atLeastOnce()).assignAll(anyLong(), anyString(), anyString(), anyString());
 		verify(dataExpHardwareLparService, never()).assignAll(anyLong(), anyString(), anyString(), anyString());
 		
 		System.out.println("wsmsg.getMsg(): " + wsmsg.getMsg());
@@ -138,45 +144,59 @@ public class DataExceptionServiceEndpointAssignAllTest {
 //		assertNotNull(wsmsg.getDataList());
 		assertEquals(WSMsg.SUCCESS, wsmsg.getStatus());
 	}
+	
+    private void assertWSMsgIsFail(WSMsg wsmsg){
+
+		assertNotNull(wsmsg);
+		assertNull(wsmsg.getData());
+		assertNull(wsmsg.getDataList());
+		assertNotNull(wsmsg.getMsg());
+		assertEquals(WSMsg.FAIL, wsmsg.getStatus());
+
+    }
 
 	/*
 	@POST
-	@Path("/{dataExpType}/assign")
+	@Path("/{dataExpType}/assignAll")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public WSMsg assignDataExceptionDataList(@PathParam("dataExpType") String dataExpType, @FormParam("comments") String comments,
-			@FormParam("assignIds") String assignIds, @Context HttpServletRequest request) {
+	public WSMsg assignAllDataExceptionDataList(@PathParam("dataExpType") String dataExpType, @FormParam("accountId") Long accountId,
+			@FormParam("comments") String comments, @Context HttpServletRequest request) {
 
 		if (null == dataExpType || "".equals(dataExpType.trim())) {
 			return WSMsg.failMessage("Data Exception Type is required");
-		} else if (null == assignIds || "".equals(assignIds.trim())) {
-			return WSMsg.failMessage("Assign Ids List is required");
+		} else if (null == accountId) {
+			return WSMsg.failMessage("Account ID is required");
 		} else if (null == comments || "".equals(comments.trim())) {
 			return WSMsg.failMessage("Comment is required");
 		} else {
 			try {
-				List<Long> assignList = new ArrayList<Long>();
-				for (String idStr : assignIds.split(",")) {
-					assignList.add(Long.valueOf(idStr));
-				}
-
-				dataExpType = dataExpType.trim().toUpperCase();
-				if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Software
-																						// Lpar
-																						// Data
-																						// Exception
-																						// Type
-					dataExpSoftwareLparService.assign(assignList, request.getRemoteUser(), comments);
-				} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.indexOf(dataExpType) != -1) {// Hardware
-																								// Lpar
-																								// Data
-																								// Exception
-																								// Type
-					dataExpHardwareLparService.assign(assignList, request.getRemoteUser(), comments);
+				Account account = accountService.getAccount(accountId);
+				if (null == account) {
+					return WSMsg.failMessage("Account doesn't exist");
 				} else {
-					return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
-				}
+					Long customerId = account.getId();
+					dataExpType = dataExpType.trim().toUpperCase();
+					if (SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Software
+																							// Lpar
+																							// Data
+																							// Exception
+																							// Type
+						dataExpSoftwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					} else if (HW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Hardware
+																									// Lpar
+																									// Data
+																									// Exception
+																									// Type
+						dataExpHardwareLparService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+					} else if (INSTALLED_SW_DATA_EXCEPTION_TYPE_CODE_LIST.contains(dataExpType)) {// Installed Software Data Exception 
+						
+						dataExpInstalledSwService.assignAll(customerId, dataExpType, request.getRemoteUser(), comments);
+	                } else {
+						return WSMsg.failMessage("Data Exception Type {" + dataExpType + "} doesn't exist");
+					}
 
-				return WSMsg.successMessage("Assign success");
+					return WSMsg.successMessage("Assign success");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return WSMsg.failMessage("Assign failed");
