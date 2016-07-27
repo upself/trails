@@ -48,8 +48,9 @@
 	title="w3" type="text/css" />
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet"
 	title="w3" type="text/css" />
-
-<script src="${pageContext.request.contextPath}/js/trails_style.js"></script>
+<link href="${pageContext.request.contextPath}/js/trails_style.css" rel="stylesheet"
+	title="w3" type="text/css" />
+	
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 
 <script type="text/javascript">
@@ -114,7 +115,7 @@
 								type="hidden" value="17" name="v" /> <input value="en"
 								type="hidden" name="langopt" /> <input value="all"
 								type="hidden" name="la" /> <input type="submit" id="ibm-search"
-								class="ibm-btn-search" value="Submit" />
+								class="ibm-btn-pri" value="Submit" />
 						</p>
 					</form>
 				</div>

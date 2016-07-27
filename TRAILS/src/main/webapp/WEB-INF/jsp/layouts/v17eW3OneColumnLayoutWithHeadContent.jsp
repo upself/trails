@@ -49,50 +49,9 @@
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet"
 	title="w3" type="text/css" />
 
+<link href="${pageContext.request.contextPath}/js/trails_style.css" rel="stylesheet"
+	title="w3" type="text/css" />
 
-<style type="text/css">
-#ibm-content-main>.ibm-columns>.ibm-col-1-1 {
-	width: 95%;
-	background: white;
-}
-
-#ibm-content-main>.ibm-columns>.ibm-col-1-1>table {
-	background: white;
-}
-
-.nobreak {
-	word-break: keep-all;
-	white-space: nowrap;
-}
-
-.alert-go {
-	color: #66CD00;
-}
-
-.alert-stop {
-	color: red;
-}
-
-.orange-med {
-	color: #FFC125;
-}
-
-ul.horizontal-list li {
-	display: inline;
-}
-
-ul.horizontal-list {
-	padding-top: 10px;
-	padding-bottom: 20px;
-	border-bottom: 1px dashed #333;
-	padding-bottom: 20px;
-}
-
-h2.green-dark {
-	color: green;
-	font-weight: normal;
-}
-</style>
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">
 	ibmweb.config.set({
@@ -156,7 +115,7 @@ h2.green-dark {
 								type="hidden" value="17" name="v" /> <input value="en"
 								type="hidden" name="langopt" /> <input value="all"
 								type="hidden" name="la" /> <input type="submit" id="ibm-search"
-								class="ibm-btn-search" value="Submit" />
+								class="ibm-btn-pri" value="Submit" />
 						</p>
 					</form>
 				</div>
@@ -169,7 +128,7 @@ h2.green-dark {
 			<div id="ibm-content">
 				<!-- LEADSPACE_BEGIN -->
 				<div id="ibm-leadspace-head" class="ibm-alternate">
-					<div id="ibm-leadspace-body" style="width: 95%">
+					<div id="ibm-leadspace-body">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
 								<tmp:insertAttribute name="contentHead" />

@@ -1,0 +1,99 @@
+/* 1rem = 10px */
+
+#ibm-content-main>.ibm-columns>.ibm-col-6-4 {
+	width: 74%;
+	background: white;
+}
+#ibm-content-main>.ibm-columns>.ibm-col-6-2 {
+	width: 20%;
+	background: white;
+}
+
+#ibm-content-main>.ibm-columns>.ibm-col-1-1 {
+	background: white;
+}
+
+#ibm-top h1 {
+	font-size: 2.5rem;
+}
+
+/* #ibm-content-main>.ibm-columns>.ibm-col-1-1> table { */
+/* 	background: white; */
+/* } */
+
+#ibm-content table {
+	font-size: 1.3rem;
+}
+
+#ibm-navigation {
+	font-size: 1.3rem;
+}
+
+/* #ibm-navigation, #navigace2{ */
+/* 	font-size: 20px; */
+/* } */
+
+.ibm-col-6-2 {
+	font-size: 1.3rem;
+}
+
+.ibm-col-6-4 {
+	font-size: 2rem;
+}
+
+.ibm-default #ibm-content .ibm-col-1-1 {
+	font-size: 1.3rem;
+}
+
+
+
+/* #go-btn { */
+/* 	color: red; */
+/* } */
+
+input[class*="ibm-btn-"][class*="-pri"] {
+    min-width: 50px;
+    max-width: 50px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 7px;
+}
+
+.nobreak {
+	word-break: keep-all;
+	white-space: nowrap;
+}
+
+.alert-go {
+	color: #66CD00;
+}
+
+.alert-stop {
+	color: red;
+}
+
+.orange-med {
+	color: #FFC125;
+}
+
+ul.horizontal-list li {
+	display: inline;
+}
+
+h2.green-dark {
+	color: red;
+}
+
+/* ul.horizontal-list li { */
+/* 	display: inline; */
+/* } */
+
+/* ul.horizontal-list { */
+/* 	padding-top: 10px; */
+/* 	padding-bottom: 20px; */
+/* 	border-bottom: 1px dashed #333; */
+/* 	padding-bottom: 20px; */
+/* } */
+

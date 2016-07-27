@@ -41,7 +41,6 @@
 <link href="//1.w3.s81c.com/common/v17e/css/social.css" rel="stylesheet" title="w3" type="text/css" />
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet" title="w3" type="text/css" />
 	
-
 <style type="text/css">
 
 #ibm-content-main > .ibm-columns > .ibm-col-1-1{
@@ -68,8 +67,11 @@
 .orange-med{
 	color: #FFC125;
 }
-
 </style>
+
+<link href="${pageContext.request.contextPath}/js/trails_style.css" rel="stylesheet"
+	title="w3" type="text/css" />
+	
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script type="text/javascript">
 	ibmweb.config.set({
@@ -129,7 +131,7 @@
 						<p>
 							<label for="q"><span class="ibm-access">Search</span></label> <input type="text" maxlength="100" value=""
 								name="qt" id="q" /> <input type="hidden" value="17" name="v" /> <input value="en" type="hidden" name="langopt" />
-							<input value="all" type="hidden" name="la" /> <input type="submit" id="ibm-search" class="ibm-btn-search"
+							<input value="all" type="hidden" name="la" /> <input type="submit" id="ibm-search" class="ibm-btn-pri"
 								value="Submit" />
 						</p>
 					</form>
