@@ -6,6 +6,27 @@
 <s:url id="workspaceLink" action="workspace?gotoV17e=y" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
+<script type="text/javascript">
+<!--
+	function disableLicenses(pfoAllocation) {
+		if (pfoAllocation.value == 'PVU'
+				|| pfoAllocation.value == 'PVU'
+				|| pfoAllocation.value == 'HWGARTMIPS'
+				|| pfoAllocation.value == 'LPARGARTMIPS'
+				|| pfoAllocation.value == 'HWLSPRMIPS'
+				|| pfoAllocation.value == 'LPARLSPRMIPS'
+				|| pfoAllocation.value == 'HWMSU'
+				|| pfoAllocation.value == 'LPARMSU'
+				|| pfoAllocation.value == 'HWIFL'
+			) {
+			document.showManualConfirmation.maxLicenses.value="";
+			document.showManualConfirmation.maxLicenses.disabled = true;
+		} else {
+			document.showManualConfirmation.maxLicenses.disabled = false;
+		}
+	}
+//-->
+</script>
 <div class="ibm-columns" style="width: 95%;">
 	<div class="ibm-col-1-1" >
 		<p id="breadcrumbs">
@@ -38,7 +59,7 @@
 		<s:actionerror />
 		<s:fielderror />
 	</s:if>
-	<s:form action="showManualConfirmation?gotoV17e=y" namespace="/account/recon" theme="simple">
+	<s:form id="showManualConfirmation" action="showManualConfirmation?gotoV17e=y" namespace="/account/recon" theme="simple">
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
@@ -68,7 +89,9 @@
 				</tr>
 				<tr>
 					<td><label>Allocation methodology:</label></td>
-					<td style="padding-left: 3px;padding-top: 3px;"><s:select name="per" list="allocationMethodologies" listKey="code" listValue="name" onchange="disableLicenses(this)" /></td>
+					<td style="padding-left: 3px;padding-top: 3px;">
+						<s:select name="per" list="allocationMethodologies" listKey="code" listValue="name" onchange="disableLicenses(this)" />
+					</td>
 				</tr>
 				<tr>
 					<td><label for="comments">Comments:</label></td>
@@ -141,12 +164,12 @@
 					</display:column>
 					<display:column>
 						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
-							<ul class="ibm-link-list" style="margin-top: -20px;">
+							<ul class="ibm-link-list" style="margin-top: -22px;">
 								<li><a class="ibm-confirm-link"></a></li>
 							</ul>
 						</s:if>
 						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
-							<ul class="ibm-link-list ibm-alternate" style="margin-top: -20px;">
+							<ul class="ibm-link-list ibm-alternate" style="margin-top: -22px;">
 								<li><a class="ibm-cancel-link"></a></li>
 							</ul>
 						</s:if>
@@ -191,12 +214,12 @@
 					<display:column><s:checkbox name="availableLicenseId" fieldValue="%{#attr.row.licenseId}" /> </display:column>
 					<display:column>
 						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
-							<ul class="ibm-link-list" style="margin-top: -20px;">
+							<ul class="ibm-link-list" style="margin-top: -22px;">
 								<li><a class="ibm-confirm-link"></a></li>
 							</ul>
 						</s:if>
 						<s:if test="%{#attr.row.catalogMatch eq 'No'}">
-							<ul class="ibm-link-list ibm-alternate" style="margin-top: -20px;">
+							<ul class="ibm-link-list ibm-alternate" style="margin-top: -22px;">
 								<li><a class="ibm-cancel-link"></a></li>
 							</ul>
 						</s:if>

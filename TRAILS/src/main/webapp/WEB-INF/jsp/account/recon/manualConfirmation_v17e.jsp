@@ -139,12 +139,12 @@
 				decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator" cellspacing="1" cellpadding="0">
 				<display:column>
 					<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
-						<ul class="ibm-link-list" style="margin-top: -20px;">
+						<ul class="ibm-link-list" style="margin-top: -22px;">
 							<li><a class="ibm-confirm-link"></a></li>
 						</ul>
 					</s:if>
 					<s:if test="%{#attr.row.catalogMatch eq 'No'}">
-						<ul class="ibm-link-list ibm-alternate" style="margin-top: -20px;">
+						<ul class="ibm-link-list ibm-alternate" style="margin-top: -22px;">
 							<li><a class="ibm-cancel-link"></a></li>
 						</ul>
 					</s:if>
