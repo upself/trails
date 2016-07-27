@@ -115,7 +115,7 @@ h2.green-dark {
 		}
 	});
 </script>
-<script type="text/javascript">
+<%-- <script type="text/javascript">
 	ibmweb.config.set({
 		opinionlab : {
 			floating : {
@@ -125,7 +125,7 @@ h2.green-dark {
 			}
 		}
 	});
-</script>
+</script> --%>
 </head>
 
 
