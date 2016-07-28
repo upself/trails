@@ -80,6 +80,19 @@ public class DataExceptionServiceEndpointSearchTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
+
+	private static final String ACCOUNT_ID_NULL = null;
+	private static final Integer CURRENT_PAGE_NULL = null;
+	private static final Integer PAGESIZE_NULL = null;
+	private static final String SORT_ON = "sorting";
+	private static final String DIR_ASCENDING = "ascending";
+	
+	private final String SW_LPAR_EXCEPTION_TYPE = getKnownValidSwLparExceptionType();
+	private final String HW_LPAR_EXCEPTION_TYPE = getKnownValidHwLparExceptionType();
+	private final String INSTALLED_SW_EXCEPTION_TYPE = getKnownValidInstalledSwExceptionType();
+	
+	private static final String INSTALLED_SW_EXCEPTION_TYPE_NULL = null;
+	
     
     private String getKnownValidSwLparExceptionType(){
     	return endpoint.SW_LPAR_DATA_EXCEPTION_TYPE_CODE_LIST.toArray(new String[0])[0];
@@ -89,12 +102,9 @@ public class DataExceptionServiceEndpointSearchTest {
     public void testSwLparReturnsSuccessfulListWithItems() {
 
         // (1) test setup
-    	final String swLparExceptionType = getKnownValidSwLparExceptionType();
         final Long accountId = 1000L;
         final Integer currentPage = 100;
         final Integer pageSize = 99;
-        final String sort = "sorting";
-        final String dir = "ascending";
      // return a list of 3 items
         final int expectedResultListSize = 3;
         final Integer expectedTotalResultSize = expectedResultListSize;
@@ -112,7 +122,7 @@ public class DataExceptionServiceEndpointSearchTest {
         doReturn(list).when(dataExpSoftwareLparService).paginatedList(any(Account.class), anyInt(), anyInt(), anyString(), anyString());
         
         // (2) execute what we are testing
-        final WSMsg wsmsg = endpoint.getDataExceptionDataList(swLparExceptionType, accountId, currentPage, pageSize, sort, dir);
+        final WSMsg wsmsg = endpoint.getDataExceptionDataList(SW_LPAR_EXCEPTION_TYPE, accountId, currentPage, pageSize, SORT_ON, DIR_ASCENDING);
 
         // (3) assertions (did we get what we expected to get?)
         // other types of services were not called
@@ -505,6 +515,7 @@ public class DataExceptionServiceEndpointSearchTest {
 		
 		assertWSMsgIsFail(wsmsg);
 	}
+	
 	@Test
 	public void testNoCurrentPagePassedIn() {
 		final String installedSwExceptionType = getKnownValidInstalledSwExceptionType();
