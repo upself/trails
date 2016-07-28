@@ -147,6 +147,14 @@ public class ApplyManualRecon extends AccountBaseAction {
 			return null;
 		}
 	}
+	
+	public String getV17e(){
+		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") ){
+			return "_v17e";
+		}else{
+			return null;
+		}
+	}
 
 	public AlertService getAlertService() {
 		return alertService;
