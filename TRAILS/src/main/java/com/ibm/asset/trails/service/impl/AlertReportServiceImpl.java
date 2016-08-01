@@ -18,6 +18,8 @@ import com.ibm.asset.trails.domain.Department;
 import com.ibm.asset.trails.domain.Geography;
 import com.ibm.asset.trails.domain.Region;
 import com.ibm.asset.trails.domain.Sector;
+import com.ibm.asset.trails.domain.MqtOpMetricsSwlm;
+import com.ibm.asset.trails.domain.VmqtAlertReport;
 import com.ibm.asset.trails.form.AlertOperationalReport;
 import com.ibm.asset.trails.form.AlertOverviewReport;
 import com.ibm.asset.trails.form.AlertRedAgingReport;
@@ -339,8 +341,9 @@ public class AlertReportServiceImpl implements AlertReportService {
         }
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAlertsOverview(Account account) {
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOverviewReport> getAlertsOverview(Account account) {
         return (ArrayList<AlertOverviewReport>) getEntityManager()
                 .createNamedQuery("alertOverviewReportByAccount")
                 .setParameter("account", account).getResultList();
@@ -348,7 +351,7 @@ public class AlertReportServiceImpl implements AlertReportService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Date selectReportTimestamp() {
-        String query = "SELECT recordTime FROM MqtAlertReport";
+        String query = "SELECT recordTime FROM VmqtAlertReport";
         Query q = getEntityManager().createQuery(query).setFirstResult(0)
                 .setMaxResults(1);
 
@@ -357,7 +360,7 @@ public class AlertReportServiceImpl implements AlertReportService {
 
     @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public Integer selectReportMinutesOld() {
-        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM MqtAlertReport a";
+        String lsQuery = "SELECT (DAYS(current_timestamp) - DAYS(a.recordTime)) * 86400 + (MIDNIGHT_SECONDS(current_timestamp) - MIDNIGHT_SECONDS(a.recordTime)) FROM VmqtAlertReport a";
         Query lQuery = getEntityManager().createQuery(lsQuery)
                 .setFirstResult(0).setMaxResults(1);
         Double diff = Math
@@ -1087,36 +1090,41 @@ public class AlertReportServiceImpl implements AlertReportService {
         }
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountDetailAlertRedAgingReport(Account account) {
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertViewRedAging> getAccountDetailAlertRedAgingReport(Account account) {
         return (ArrayList<AlertViewRedAging>) getEntityManager()
                 .createNamedQuery("alertRedAgingByAccount")
                 .setParameter("account", account.getId()).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountDetailAlertOperationalReport(Account pAccount) {
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOperationalReport> getAccountDetailAlertOperationalReport(Account pAccount) {
         return (ArrayList<AlertOperationalReport>) getEntityManager()
                 .createNamedQuery("alertOperationalReportByAccount")
                 .setParameter("account", pAccount).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
     public ArrayList getAccountDetailAlertOperationalReport(String accountName) {
         return (ArrayList<AlertOperationalReport>) getEntityManager()
                 .createNamedQuery("alertOperationalReportByAccountName")
                 .setParameter("accountName", accountName).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountRegionAlertOperationalReport(Geography pGeography) {
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOperationalReport> getAccountRegionAlertOperationalReport(Geography pGeography) {
         return (ArrayList<AlertOperationalReport>) getEntityManager()
                 .createNamedQuery("accountAlertOperationalReportByGeography")
                 .setParameter("geography", pGeography).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountCountryCodeAlertOperationalReport(
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOperationalReport> getAccountCountryCodeAlertOperationalReport(
             Geography pGeography, Region pRegion) {
         if (pGeography != null && pRegion != null) {
             return (ArrayList<AlertOperationalReport>) getEntityManager()
@@ -1136,15 +1144,17 @@ public class AlertReportServiceImpl implements AlertReportService {
         }
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountRegionAlertRedAgingReport(Geography pGeography) {
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOperationalReport> getAccountRegionAlertRedAgingReport(Geography pGeography) {
         return (ArrayList<AlertOperationalReport>) getEntityManager()
                 .createNamedQuery("accountAlertRedAgingReportByGeography")
                 .setParameter("geography", pGeography).getResultList();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
-    public ArrayList getAccountCountryCodeAlertRedAgingReport(
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
+    public ArrayList<AlertOperationalReport> getAccountCountryCodeAlertRedAgingReport(
             Geography pGeography, Region pRegion) {
         if (pGeography != null && pRegion != null) {
             return (ArrayList<AlertOperationalReport>) getEntityManager()
