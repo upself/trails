@@ -49,54 +49,8 @@ public class ActionSoftware extends ActionBase {
 			FormSoftware software = new FormSoftware(lparId);
 			software.setLparId(lparId);
 			request.setAttribute(Constants.SOFTWARE, software);
-			ActionErrors errors = software.init();
-
-			/*// Hide the tables if there is no data
-			SoftwareLpar sl = software.getSoftwareLpar();
-			if ((!EaUtils.isEmpty(sl.getOsName())) || 
-				(!EaUtils.isEmpty(sl.getOsType())) ||
-				(sl.getOsMajorVersion() != null) ||
-				(sl.getOsMinorVersion() != null) ||
-				(!EaUtils.isEmpty(sl.getOsInstallDate())) ||
-				(!EaUtils.isEmpty(sl.getOsSubVersion()))) {
-				request.setAttribute(Constants.DISPLAY_OS, true);
-			}
 			
-			if ((!EaUtils.isEmpty(sl.getBiosManufacturer())) || 
-				(!EaUtils.isEmpty(sl.getBiosModel())) ||
-				(sl.getBiosDate() != null) ||
-				(!EaUtils.isEmpty(sl.getBiosUniqueId())) ||
-				(!EaUtils.isEmpty(sl.getBiosSerialNumber()))) {
-				request.setAttribute(Constants.DISPLAY_BIOS, true);
-			}
-
-			if ((!EaUtils.isEmpty(sl.getServerType())) ||
-				(sl.getDisk() != null) ||
-				(!EaUtils.isEmpty(sl.getBoardSerial())) ||
-				(!EaUtils.isEmpty(sl.getCaseAssetTag())) ||
-				(!EaUtils.isEmpty(sl.getCaseSerial()))) {
-				request.setAttribute(Constants.DISPLAY_MISC, true);
-			}
-
-			if ((sl.getDedicatedProcessors() != null) ||
-				(sl.getTotalProcessors() != null) ||
-				(sl.getSharedProcessors() != null) ||
-				(sl.getProcessorType() != null) ||
-				(sl.getSharedProcByCores() != null) ||
-				(sl.getDedicatedProcByCores() != null) ||
-				(sl.getTotalProcByCores() != null)) {
-				request.setAttribute(Constants.DISPLAY_PROCESSORS, true);
-			}
-
-			if ((sl.getMemory() != null) ||
-				(sl.getPhysicalTotalKB() != null) ||
-				(sl.getVirtualMemory() != null) ||
-				(sl.getPhysicalFreeMemory() != null) ||
-				(sl.getVirtualFreeMemory() != null) ||
-				(sl.getNodeCapacity() != null) ||
-				(sl.getLparCapacity() != null)) {
-				request.setAttribute(Constants.DISPLAY_MEMORY, true);
-			}*/
+			ActionErrors errors = software.init();
 			
 			// if there are errors, return there
 			if (!errors.isEmpty()) {
@@ -118,26 +72,6 @@ public class ActionSoftware extends ActionBase {
 			}
 			request.setAttribute(Constants.LIST, list);
 			
-			// get the ip address
-//			List ipAddress = DelegateSoftware.getSoftwareLparIPAddress(software.getSoftwareLpar());
-//			request.setAttribute(Constants.SOFTWARE_LPAR_IP_ADDRESS, ipAddress);
-
-			/*// get the hdisk
-			List hdisk = DelegateSoftware.getSoftwareLparHDisk(software.getSoftwareLpar());
-			request.setAttribute(Constants.SOFTWARE_LPAR_HDISK, hdisk);
-
-			// get the memory module
-			List memMod = DelegateSoftware.getSoftwareLparMemMod(software.getSoftwareLpar());
-			request.setAttribute(Constants.SOFTWARE_LPAR_MEM_MOD, memMod);
-
-			// get the ADC data
-			List adc = DelegateSoftware.getSoftwareLparADC(software.getSoftwareLpar());
-			request.setAttribute(Constants.SOFTWARE_LPAR_ADC, adc);
-
-			// get the processor data
-			List processor = DelegateSoftware.getSoftwareLparProcessor(software.getSoftwareLpar());
-			request.setAttribute(Constants.SOFTWARE_LPAR_PROCESSOR, processor);*/
-
 			// get the software statistics
 			SoftwareStatistics softwareStatistics = DelegateSoftware
 					.getSoftwareStatistics(software.getSoftwareLpar());
@@ -167,6 +101,9 @@ public class ActionSoftware extends ActionBase {
 
 		// get the id parameter
 		String softwareId = getParameter(request, Constants.ID);
+		
+		System.out.println("softwareId: " + softwareId);
+		
 		String lparId = getParameter(request, Constants.LPAR_ID);
 
 		// if the id parameter exists, we view the detail of one software lpar
