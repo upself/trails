@@ -230,19 +230,18 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 		logger.debug("DelegateSoftware.getInstalledSoftware (String) " + id);
 		InstalledSoftware software = null;
 
-		try {
-			Session session = getSession();
+		if (id != null) {
+			try {
+				Session session = getSession();
 
-			software = (InstalledSoftware) session
-					.getNamedQuery("installedSoftwaresById")
-					.setLong("id", Long.parseLong(id)).uniqueResult();
+				software = (InstalledSoftware) session.getNamedQuery("installedSoftwaresById").setLong("id", Long.parseLong(id)).uniqueResult();
 
-			closeSession(session);
+				closeSession(session);
 
-		} catch (Exception e) {
-			logger.error(e, e);
-		}
-
+			} catch (Exception e) {
+				logger.error(e, e);
+			} 
+		} 
 		return software;
 	}
 
@@ -763,28 +762,6 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static List<InstalledScript> getInstalledScripts(String installedSoftwareId) {
-		System.out.println("DelegateSoftware - getInstalledScripts()");
-		List<InstalledScript> list = new ArrayList<InstalledScript>();
-
-		InstalledSoftware installedSoftware = DelegateSoftware
-				.getInstalledSoftware(installedSoftwareId);
-		if (installedSoftware == null)
-			return list;
-		try {
-			Session session = getSession();
-			list = session.getNamedQuery("installedScriptsByInstalledSoftware")
-					.setEntity("installedSoftware", installedSoftware).list();
-			closeSession(session);
-
-		} catch (Exception e) {
-			logger.error(e, e);
-		}
-		System.out.println("DelegateSoftware - getInstalledScripts() list: " + list);
-		return list;
-	}
-	
-	@SuppressWarnings("unchecked")
 	public static List<InstalledFilter> getFilters(String installedSoftwareId) {
 		List<InstalledFilter> list = new ArrayList<InstalledFilter>();
 
@@ -860,33 +837,6 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 
 		return list;
 	}
-
-//	@SuppressWarnings("unchecked")
-//	public static List<InstalledDoranaProduct> getDoranas(
-//			String installedSoftwareId) {
-//		List<InstalledDoranaProduct> list = new ArrayList<InstalledDoranaProduct>();
-//
-//		InstalledSoftware installedSoftware = DelegateSoftware
-//				.getInstalledSoftware(installedSoftwareId);
-//		if (installedSoftware == null)
-//			return list;
-//
-//		try {
-//
-//			Session session = getSession();
-//
-//			list = session
-//					.getNamedQuery("installedDoranaProductsByInstalledSoftware")
-//					.setEntity("installedSoftware", installedSoftware).list();
-//
-//			closeSession(session);
-//
-//		} catch (Exception e) {
-//			logger.error(e, e);
-//		}
-//
-//		return list;
-//	}
 
 	public static boolean getManualStatus(String installedSoftwareId) {
 		BigInteger count = new BigInteger("0");
@@ -1160,7 +1110,7 @@ public abstract class DelegateSoftware extends HibernateDelegate {
 	public static List<BankAccount> getSoftwareBankAccounts(
 			SoftwareLpar softwareLpar) {
 		List<BankAccount> list = new ArrayList<BankAccount>();
-
+		
 		if (softwareLpar == null)
 			return list;
 
