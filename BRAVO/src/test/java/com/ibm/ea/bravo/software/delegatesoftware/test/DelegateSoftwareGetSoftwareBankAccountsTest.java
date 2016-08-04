@@ -11,10 +11,12 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,12 +29,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.ibm.ea.bravo.account.Account;
 import com.ibm.ea.bravo.account.DelegateAccount;
 import com.ibm.ea.bravo.account.ExceptionAccountAccess;
+import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.common.Constants;
+import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
 import com.ibm.ea.bravo.software.DelegateSoftware;
 import com.ibm.ea.bravo.software.FormSoftware;
 import com.ibm.ea.bravo.software.InstalledScript;
+import com.ibm.ea.bravo.software.InstalledSoftware;
 import com.ibm.ea.bravo.software.SoftwareLpar;
 import com.ibm.ea.sigbank.BankAccount;
+import com.ibm.ea.sigbank.ProductInfo;
+
 import com.ibm.ea.utils.EaUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,16 +47,8 @@ import com.ibm.ea.utils.EaUtils;
 
 
 public class DelegateSoftwareGetSoftwareBankAccountsTest {
-	
-	@Mock
-	private HttpServletRequest request;
-	
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
-	@Test
+//	@Test
 	public void testReadsSpecificLparIdfromDB() {
 		final String lparId = "2223341";
 		
@@ -70,45 +69,64 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 
 	}
 	
+	
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testReadsfromDB() {
-//		final String lparId = "2223341";
+	public void testInsertReadsDeletesfromDB() {
+
+		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
 		
-		//create() - what ?BankAccount? SwLpar?pff
+		System.out.println("discrepancyType: " + discrepancyType.getName());
 		
-		//so far, the accountId = 2541L; ie. Softreq
-		final String accountId = "2541";
+//		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
 		
-		Account account = null;
-		try {
-			account = DelegateAccount.getAccount(accountId, request);
-		} catch (ExceptionAccountAccess e) {
-			e.printStackTrace();
-		}
+//		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
 		
-		System.out.println("account : " + account);
-		
-//		FormSoftware software = new FormSoftware(lparId);
-//		software.setLparId(lparId);
-//		
 //		try {
-//			software.init();
+//			Session session = getSession();
+//
+////			bankAccountsList = session.
+////					.setEntity("softwareLpar", testInstalledScript.getInstalledSoftware().getSoftwareLpar()).list();
+//
+//			closeSession(session);
+//
 //		} catch (Exception e) {
-//			e.printStackTrace();
 //		}
 //		
-//		List<BankAccount> bankAccounts = DelegateSoftware
-//				.getSoftwareBankAccounts(software.getSoftwareLpar());
 //		
-//		assertNotNull(bankAccounts);
-//		assertTrue(bankAccounts.size() > 0);
+//		assertNotNull(bankAccountsList);
+//		assertTrue(bankAccountsList.size() > 0);
 
 	}
 	
-	@Test(expected = NullPointerException.class)
+//	@Test(expected = NullPointerException.class)
 	public void testNoLparIdPassedIn() {
 
 		DelegateSoftware.getSoftwareBankAccounts(null);
+	}
+	
+	public InstalledScript setupDataForInstalledSoftware() {
+		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
+		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createActiveRecord();
+		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
+		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
+		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware.getId());
+		return installedScript;
+	}
+	
+	public void cleanupDataForInstalledSoftware(InstalledScript installedScriptData){
+		Long installedScriptId = installedScriptData.getId();
+		Long softwareLparId = installedScriptData.getInstalledSoftware().getSoftwareLpar().getId();
+		Long installedSoftwareId = installedScriptData.getInstalledSoftware().getId();
+		Long discrepancyTypeId = installedScriptData.getInstalledSoftware().getDiscrepancyType().getId();
+//		Long productInfoId = installedScriptData.getInstalledSoftware().get
+		//???
+		
+//		ProductInfoTestHelper.deleteRecord(productInfoId);
+		SoftwareLparTestHelper.deleteRecord(softwareLparId);
+		DiscrepancyTypeTestHelper.deleteRecord(discrepancyTypeId);
+		InstalledSoftwareTestHelper.deleteRecord(installedSoftwareId);
+		InstalledScriptTesthelper.deleteRecord(installedScriptId);
 	}
 
 }
