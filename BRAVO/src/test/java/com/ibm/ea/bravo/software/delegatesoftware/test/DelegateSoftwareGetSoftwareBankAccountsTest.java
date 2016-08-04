@@ -17,6 +17,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,17 +71,48 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testInsertReadsDeletesfromDB() {
 
-		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
+//		ProductInfo anyProductInfo = ProductInfoTestHelper.getAnyRecord();
+//		System.out.println("anyProductInfo.getRecordTime(): " + anyProductInfo.getRecordTime().toString());
+//		System.out.println("anyProductInfo.getRemoteUser(): " + anyProductInfo.getRemoteUser());
+//		System.out.println("anyProductInfo.getChangeJustification(): " + anyProductInfo.getChangeJustification());
+//		System.out.println("anyProductInfo.getLicensable(): " + anyProductInfo.getLicensable());
+//		System.out.println("anyProductInfo.getPriority(): " + anyProductInfo.getPriority());
+//		System.out.println("anyProductInfo.getSoftwareCategoryId(): " + anyProductInfo.getSoftwareCategoryId());
+//		System.out.println("anyProductInfo.getProductId(): " + anyProductInfo.getProductId());
 		
-		System.out.println("discrepancyType: " + discrepancyType.getName());
+		
+		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
+		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
+		System.out.println("BEFORE productInfo.getProductId(): " + productInfo.getProductId());
+//		ProductInfoTestHelper.deleteRecord(productInfo.getProductId());
+		ProductInfoTestHelper.deleteRecord(productInfo.getProductId());
 		
 //		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
 		
 //		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
+		
+//		Transaction tx = null;
+//		Session session = null;
+//		try {
+//			session = HibernateDelegate.getSession();
+//		    tx = session.beginTransaction();
+//		     
+//		    //do stuff
+//		    
+//		    tx.commit();
+//		 }
+//		 catch (Exception e) {
+//			 System.out.println("whooops");
+//		     if (tx!=null) tx.rollback();
+//		     e.printStackTrace();
+//		 }
+//		 finally {
+//			 session.close();
+//		 }
+		
 		
 //		try {
 //			Session session = getSession();
@@ -120,11 +152,12 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		Long installedSoftwareId = installedScriptData.getInstalledSoftware().getId();
 		Long discrepancyTypeId = installedScriptData.getInstalledSoftware().getDiscrepancyType().getId();
 //		Long productInfoId = installedScriptData.getInstalledSoftware().get
-		//???
+		//how to get productInfo?
+
 		
 //		ProductInfoTestHelper.deleteRecord(productInfoId);
 		SoftwareLparTestHelper.deleteRecord(softwareLparId);
-		DiscrepancyTypeTestHelper.deleteRecord(discrepancyTypeId);
+//		DiscrepancyTypeTestHelper.deleteRecord(discrepancyTypeId);
 		InstalledSoftwareTestHelper.deleteRecord(installedSoftwareId);
 		InstalledScriptTesthelper.deleteRecord(installedScriptId);
 	}
