@@ -76,3 +76,10 @@ is.software_lpar_id = sl.id and sl.id = hsc.software_lpar_id and hl.id
 = hsc.hardware_lpar_id and h.id = hl.hardware_id and h.machine_type_id
 = mt.id and is.software_id = si.id ) as T , eaadmin.customer c , eaadmin.customer_type
 ct where c.customer_id = T.customer_id and c.customer_type_id = ct.customer_type_id;
+
+GRANT CONTROL ON EAADMIN.v_alert_red_aging TO USER EAADMIN		
+;			
+GRANT SELECT ON EAADMIN.v_alert_red_aging TO GROUP TRAILPRD		
+;				
+GRANT SELECT ON EAADMIN.v_alert_red_aging TO GROUP TRAILUPD
+;

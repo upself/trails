@@ -95,3 +95,10 @@ sl.id and aus.installed_software_id= is.id and cc.alert_id=aus.id and cc.alert_t
 and atc.alert_type_id=at.id and ac.id=atc.alert_cause_id and acr.id=ac.alert_cause_responsibility_id
 and cc.alert_cause_id=ac.id and at.code in ( 'NOLIC', 'SWISCOPE', 'SWIBM',
 'SWISVPR', 'SWISVNPR' );
+
+GRANT CONTROL ON EAADMIN.v_alerts TO USER EAADMIN		
+;			
+GRANT SELECT ON EAADMIN.v_alerts TO GROUP TRAILPRD		
+;				
+GRANT SELECT ON EAADMIN.v_alerts TO GROUP TRAILUPD
+;

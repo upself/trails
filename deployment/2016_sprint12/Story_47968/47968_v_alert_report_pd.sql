@@ -63,4 +63,11 @@ timestamp) - days(a.creation_time) between 0 and 45 then 1 else 0 end as
 green , 'SOM1b: HW BOX CRITICAL CONFIGURATION DATA POPULATED' from EAADMIN.alert_hardware_cfgdata
 a , EAADMIN.hardware b , ( select distinct hardware_id,customer_id from
 EAADMIN.hardware_lpar where status='ACTIVE' and lpar_status='ACTIVE'
-) x, customer cus where a.hardware_id = b.id and b.id = x.hardware_id and cus.customer_id = x.customer_id and cus.sw_license_mgmt = 'YES'
+) x, customer cus where a.hardware_id = b.id and b.id = x.hardware_id and cus.customer_id = x.customer_id and cus.sw_license_mgmt = 'YES';
+
+GRANT CONTROL ON EAADMIN.v_alert_report TO USER EAADMIN		
+;			
+GRANT SELECT ON EAADMIN.v_alert_report TO GROUP TRAILPRD		
+;				
+GRANT SELECT ON EAADMIN.v_alert_report TO GROUP TRAILUPD
+;
