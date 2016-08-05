@@ -87,8 +87,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
 		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
 		System.out.println("BEFORE productInfo.getProductId(): " + productInfo.getProductId());
-//		ProductInfoTestHelper.deleteRecord(productInfo.getProductId());
-		ProductInfoTestHelper.deleteRecord(productInfo.getProductId());
+		ProductInfoTestHelper.deleteRecord(productInfo);
 		
 //		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
 		
@@ -128,6 +127,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		
 //		assertNotNull(bankAccountsList);
 //		assertTrue(bankAccountsList.size() > 0);
+//		assertTrue();
 
 	}
 	

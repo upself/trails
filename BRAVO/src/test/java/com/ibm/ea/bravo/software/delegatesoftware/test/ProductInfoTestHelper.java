@@ -72,6 +72,7 @@ public class ProductInfoTestHelper {
 		return productInfo;
 	}
 
+	//create the testHelper out of it, commit!
 	private static SoftwareCategory getSoftwareCategory() {
 		SoftwareCategory softwareCategory = null;
 		
@@ -90,42 +91,43 @@ public class ProductInfoTestHelper {
 		return softwareCategory;
 	}
 
-	public static void deleteRecord(Long productInfoId) {
+	public static void deleteRecord(ProductInfo productInfo) {
 		
-		Session session;
+//		Session session;
+//		try {
+//			session = HibernateDelegate.getSession();
+//			String hqlDelete = "delete ProductInfo where id = :productInfoId";
+//			Transaction tx = session.beginTransaction();
+//			session.createQuery(hqlDelete)
+//					.setLong("productInfoId", new Long(productInfoId))
+//					.executeUpdate();
+//
+//			tx.commit();
+//			session.close();
+//			System.out.println("deleted productInfoId: " + productInfoId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+
+		Transaction tx = null;
+		Session session = null;
 		try {
 			session = HibernateDelegate.getSession();
-			String hqlDelete = "delete ProductInfo where id = :productInfoId";
-			Transaction tx = session.beginTransaction();
-			session.createQuery(hqlDelete)
-					.setLong("productInfoId", new Long(productInfoId))
-					.executeUpdate();
+		    tx = session.beginTransaction();
 
-			tx.commit();
-			session.close();
-			System.out.println("deleted productInfoId: " + productInfoId);
-		} catch (Exception e) {
-			e.printStackTrace();
+		    session.refresh(productInfo);
+		    System.out.println("productInfo.getProductId(): " + productInfo.getProductId());
+		    session.delete(productInfo);
+		     
+		    tx.commit();
 		}
-
-//		Transaction tx = null;
-//		 Session session = null;
-//		 try {
-//			 session = HibernateDelegate.getSession();
-//		     tx = session.beginTransaction();
-//		     
-//		     ProductInfo pi = (ProductInfo) session.get(ProductInfo.class, productInfoId);
-//		     session.delete(pi);
-//		     
-//		     tx.commit();
-//		 }
-//		 catch (Exception e) {
-//		     if (tx!=null) tx.rollback();
-//		     e.printStackTrace();
-//		 }
-//		 finally {
-//			 session.close();
-//		 }
+		catch (Exception e) {
+		    if (tx!=null) tx.rollback();
+		    e.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
 		
 	}
 
