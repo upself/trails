@@ -83,12 +83,23 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		System.out.println("anyProductInfo.getSoftwareCategoryId(): " + anyProductInfo.getSoftwareCategoryId());
 //		System.out.println("anyProductInfo.getProductId(): " + anyProductInfo.getProductId());
 		
-		
+		//ProductInfo separate test
+		/*
 		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
 		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
 		System.out.println("BEFORE productInfo.getProductId(): " + productInfo.getProductId());
 		ProductInfoTestHelper.deleteRecord(productInfo);
+		*/
 		
+		//SoftwareLpar separate test
+		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
+		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
+		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
+		
+//		if (softwareLpar.getId() != null) {
+//			SoftwareLparTestHelper.deleteRecord(softwareLpar);
+//		}
+
 //		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
 		
 //		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
@@ -138,28 +149,35 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	}
 	
 	public InstalledScript setupDataForInstalledSoftware() {
+		
+
 		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
-		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createActiveRecord();
+		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
+		System.out.println("productInfo.getProductId(): " + productInfo.getProductId());
+		
+		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
+		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
+		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
+		
 		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
+		System.out.println("discrepancyType.getId(): " + discrepancyType.getId());
+		
 		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
 		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware.getId());
 		return installedScript;
 	}
 	
-	public void cleanupDataForInstalledSoftware(InstalledScript installedScriptData){
-		Long installedScriptId = installedScriptData.getId();
-		Long softwareLparId = installedScriptData.getInstalledSoftware().getSoftwareLpar().getId();
-		Long installedSoftwareId = installedScriptData.getInstalledSoftware().getId();
-		Long discrepancyTypeId = installedScriptData.getInstalledSoftware().getDiscrepancyType().getId();
-//		Long productInfoId = installedScriptData.getInstalledSoftware().get
-		//how to get productInfo?
+	public void cleanupDataForInstalledSoftware(InstalledScript installedScript){
+		//ProductInfo comes from a catalog. By the business logic it can be accessed as follows:
+		Long productInfoId = installedScript.getInstalledSoftware().getSoftware().getSoftwareId();
+		SoftwareLpar softwareLpar = installedScript.getInstalledSoftware().getSoftwareLpar();
+		InstalledSoftware installedSoftwareId = installedScript.getInstalledSoftware();
 
-		
-//		ProductInfoTestHelper.deleteRecord(productInfoId);
-		SoftwareLparTestHelper.deleteRecord(softwareLparId);
-//		DiscrepancyTypeTestHelper.deleteRecord(discrepancyTypeId);
-		InstalledSoftwareTestHelper.deleteRecord(installedSoftwareId);
-		InstalledScriptTesthelper.deleteRecord(installedScriptId);
+	
+		ProductInfoTestHelper.deleteRecordById(productInfoId);
+//		SoftwareLparTestHelper.deleteRecord(softwareLpar);
+//		InstalledSoftwareTestHelper.deleteRecord(installedSoftwareId);
+//		InstalledScriptTesthelper.deleteRecord(installedScript);
 	}
 
 }
