@@ -1425,6 +1425,14 @@
 		<put-attribute name="keywords" value="TRAILS manual license allocation" />
 	</definition>
 
+	<definition name="tiles.account.recon.workspace.manualAllocation.v17e"
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/recon/manualAllocation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS manual license allocation" />
+		<put-attribute name="keywords" value="TRAILS manual license allocation" />
+	</definition>
+	
 	<definition name="tiles.account.recon.workspace.customerOwned"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"
@@ -1448,6 +1456,14 @@
 		<put-attribute name="keywords"
 			value="TRAILS alternate purchase agreement reconciliation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.altPurchase.v17e"
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/recon/altPurchase_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS alternate purchase agreement reconciliation" />
+		<put-attribute name="keywords" value="TRAILS alternate purchase agreement reconciliation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.included"
 		extends="tiles.w3NoColumnLayout">
@@ -1460,6 +1476,14 @@
 		<put-attribute name="keywords"
 			value="TRAILS included with other product reconciliation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.included.v17e"
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/recon/included_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS included with other product reconciliation" />
+		<put-attribute name="keywords" value="TRAILS included with other product reconciliation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.breakRecon"
 		extends="tiles.w3NoColumnLayout">
@@ -1467,6 +1491,12 @@
 			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/recon/breakRecon.jsp" />
+		<put-attribute name="description" value="TRAILS break reconciliation" />
+		<put-attribute name="keywords" value="TRAILS break reconciliation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.breakRecon.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakRecon_v17e.jsp" />
 		<put-attribute name="description" value="TRAILS break reconciliation" />
 		<put-attribute name="keywords" value="TRAILS break reconciliation" />
 	</definition>
@@ -1516,6 +1546,12 @@
 		<put-attribute name="keywords"
 			value="TRAILS manual allocation confirmation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.manualConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/manualConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS manual allocation confirmation" />
+		<put-attribute name="keywords" value="TRAILS manual allocation confirmation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.customerOwnedConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1538,6 +1574,12 @@
 		<put-attribute name="keywords"
 			value="TRAILS alternate purchase agreement confirmation" />
 	</definition>
+	
+	<definition name="tiles.account.recon.workspace.altPurchaseConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/altPurchaseConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS alternate purchase agreement confirmation" />
+		<put-attribute name="keywords" value="TRAILS alternate purchase agreement confirmation" />
+	</definition>
 
 	<definition name="tiles.account.recon.workspace.includedConfirmation"
 		extends="tiles.w3NoColumnLayout">
@@ -1551,6 +1593,12 @@
 			value="TRAILS included with other product confirmation" />
 	</definition>
 
+	<definition name="tiles.account.recon.workspace.includedConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/includedConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS included with other product confirmation" />
+		<put-attribute name="keywords" value="TRAILS included with other product confirmation" />
+	</definition>
+	
 	<definition name="tiles.account.recon.workspace.breakConfirmation"
 		extends="tiles.w3NoColumnLayout">
 		<put-attribute name="contentHead" type="template"
@@ -1561,6 +1609,12 @@
 			value="TRAILS break reconciliation confirmation" />
 		<put-attribute name="keywords"
 			value="TRAILS break reconciliation confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.breakConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakConfirmation_v17e.jsp" />
+		<put-attribute name="description" value="TRAILS break reconciliation confirmation" />
+		<put-attribute name="keywords" value="TRAILS break reconciliation confirmation" />
 	</definition>
 
 	<definition name="tiles.account.recon.workspace.assignConfirmation"

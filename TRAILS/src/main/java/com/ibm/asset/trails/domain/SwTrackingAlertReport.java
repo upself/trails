@@ -91,7 +91,7 @@ import javax.persistence.Table;
 public class SwTrackingAlertReport {
 
 	@Id
-	@Column(name = "PK", nullable = false)
+	@Column(name = "ID", nullable = false)
 	private String id;
 
 	@ManyToOne

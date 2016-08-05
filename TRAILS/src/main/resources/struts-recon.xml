@@ -43,19 +43,19 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result name="1" type="tiles">
-				tiles.account.recon.workspace.manualAllocation
+				tiles.account.recon.workspace.manualAllocation${v17e}
 			</result>
 			<result name="2" type="tiles">
 				tiles.account.recon.workspace.customerOwned
 			</result>
 			<result name="3" type="tiles">
-				tiles.account.recon.workspace.altPurchase
+				tiles.account.recon.workspace.altPurchase${v17e}
 			</result>
 			<result name="4" type="tiles">
-				tiles.account.recon.workspace.included
+				tiles.account.recon.workspace.included${v17e}
 			</result>
 			<result name="9" type="tiles">
-				tiles.account.recon.workspace.breakRecon
+				tiles.account.recon.workspace.breakRecon${v17e}
 			</result>
 			<result name="10" type="tiles">
 				tiles.account.recon.workspace.assign${v17e}
@@ -86,14 +86,14 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.manualConfirmation
+				tiles.account.recon.workspace.manualConfirmation${v17e}
 			</result>
 			<result type="tiles" name="input">
-				tiles.account.recon.workspace.manualAllocation
+				tiles.account.recon.workspace.manualAllocation${v17e}
 			</result>
 			<result type="redirect" name="cancel">workspace.htm</result>
 			<result type="tiles" name="license">
-				tiles.account.recon.workspace.manualAllocation
+				tiles.account.recon.workspace.manualAllocation${v17e}
 			</result>
 		</action>
 
@@ -118,11 +118,11 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.includedConfirmation
+				tiles.account.recon.workspace.includedConfirmation${v17e}
 			</result>
 			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.included
+				tiles.account.recon.workspace.included${v17e}
 			</result>
 		</action>
 
@@ -134,11 +134,11 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.altPurchaseConfirmation
+				tiles.account.recon.workspace.altPurchaseConfirmation${v17e}
 			</result>
 			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.altPurchase
+				tiles.account.recon.workspace.altPurchase${v17e}
 			</result>
 		</action>
 
@@ -150,7 +150,7 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.breakConfirmation
+				tiles.account.recon.workspace.breakConfirmation${v17e}
 			</result>
 			<result name="cancel" type="redirect">workspace.htm</result>
 		</action>
@@ -197,7 +197,7 @@
 			<interceptor-ref name="execAndWait">
 				<param name="delay">10000</param>
 			</interceptor-ref>
-			<result name="wait">/WEB-INF/jsp/account/recon/wait.jsp</result>
+			<result name="wait">/WEB-INF/jsp/account/recon/wait${v17e}.jsp</result>
 			<result name="success" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 		</action>
