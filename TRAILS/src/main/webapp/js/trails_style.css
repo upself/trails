@@ -16,10 +16,16 @@
 #ibm-top h1 {
 	font-size: 2.5rem;
 }
-
-/* #ibm-content-main>.ibm-columns>.ibm-col-1-1> table { */
-/* 	background: white; */
-/* } */
+/*1st level menu*/
+#ibm-primary-links>li.ibm-active>a,
+/*2nd level menu*/
+#ibm-primary-links>li.ibm-active>ul>li>a.ibm-active,
+/*2nd level menu*/
+#ibm-primary-links>li.ibm-active>ul>li.ibm-active>a,
+/*3th level menu*/
+#ibm-primary-links>li.ibm-active>ul>li.ibm-active>ul>li.ibm-active>a{
+	font-weight: bold;
+}
 
 #ibm-content table {
 	font-size: 1.3rem;
