@@ -53,7 +53,7 @@
 
 input[class*="ibm-btn-"][class*="-pri"] {
     min-width: 50px;
-    max-width: 50px;
+    max-width: 150px;
     padding-top: 3px;
     padding-bottom: 3px;
     padding-left: 5px;
