@@ -41,7 +41,7 @@
 				<td><s:textfield name="searchAccount.searchString"
 						onkeypress="return submitEnter(event, this)"
 						id="searchAccount.searchString" /> <s:submit method="search"
-						value="GO" id="go-btn" cssClass="ibm-btn-search"
+						value="GO" id="go-btn" cssClass="ibm-btn-pri"
 						alt="Search account" /></td>
 			</tr>
 			<tr>
@@ -62,7 +62,7 @@
 <br />
 
 <display:table name="accountSearch"
-	class="ibm-data-table ibm-sortable-table" id="row"
+	class="ibm-data-table ibm-sortable-table ibm-alternate-two" id="row"
 	decorator="com.ibm.tap.trails.framework.DisplayTagDecorator"
 	cellspacing="1" cellpadding="0" summary="Search results"
 	requestURI="accounts.htm">

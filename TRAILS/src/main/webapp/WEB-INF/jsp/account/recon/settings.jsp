@@ -176,7 +176,7 @@
 		</div>
 	</div>
 	<div class="ibm-rule"> <hr /> </div>
-	<div style="float:right">
+	<div>
 		<div>
 			 <span class="ibm-btn-pri"> 
 			 <input type="button" class="ibm-btn-pri" id="ibm-submit" value="Submit" onclick="updateAction();">

@@ -136,7 +136,7 @@
 								type="hidden" value="17" name="v" /> <input value="en"
 								type="hidden" name="langopt" /> <input value="all"
 								type="hidden" name="la" /> <input type="submit" id="ibm-search"
-								class="ibm-btn-search" value="Submit" />
+								class="ibm-btn-pri" value="Submit" />
 						</p>
 					</form>
 				</div>

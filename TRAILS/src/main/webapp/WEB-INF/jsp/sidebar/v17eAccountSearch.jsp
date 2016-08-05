@@ -35,8 +35,9 @@
 					<td><s:textfield name="searchAccount.searchString"
 							onkeypress="return submitEnter(event, this)"
 							id="searchAccount.searchString" /> <s:submit method="search"
-							value="GO" id="go-btn" cssClass="ibm-btn-search"
-							alt="Search account" /></td>
+							value="GO" id="go-btn" cssClass="ibm-btn-pri"
+							alt="Search account" />
+					</td>
 				</tr>
 				<tr>
 					<td><s:checkbox label="Search account names"
