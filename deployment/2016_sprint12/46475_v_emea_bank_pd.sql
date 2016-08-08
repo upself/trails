@@ -1,5 +1,6 @@
 drop view EAADMIN.V_EMEA_BANK;
 
+/*
 create view EAADMIN.V_EMEA_BANK as
 select
 sl.id as software_lpar_id ,b.name bank_name
@@ -107,8 +108,8 @@ and is.status = 'ACTIVE'
 and iscr.bank_account_id = b.id
 ;
 
-GRANT SELECT  on EAADMIN.V_EMEA_BANK to user  EAADMIN;
+GRANT SELECT  ON EAADMIN.V_EMEA_BANK to USER  EAADMIN;
 GRANT SELECT  ON EAADMIN.V_EMEA_BANK TO GROUP TRAILPRD;
 GRANT SELECT  ON EAADMIN.V_EMEA_BANK TO GROUP TRAILUPD;
-
+*/
 
