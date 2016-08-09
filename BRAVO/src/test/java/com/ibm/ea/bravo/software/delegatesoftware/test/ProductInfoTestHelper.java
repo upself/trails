@@ -38,6 +38,7 @@ public class ProductInfoTestHelper {
 		// care of this one
 		// figure out locking, this select max(ID) might be run three times at
 		// the same time from different sources
+		
 		ProductInfo productInfo = new ProductInfo();
 		productInfo.setRecordTime(new Date());
 		productInfo.setRemoteUser("PAVEL");
