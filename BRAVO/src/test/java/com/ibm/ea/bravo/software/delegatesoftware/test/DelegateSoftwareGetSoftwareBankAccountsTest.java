@@ -94,6 +94,9 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		//SoftwareLpar separate test
 		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
 		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
+		System.out.println("softwareLpar.getRecordTime()     : " + softwareLpar.getRecordTime());
+		System.out.println("softwareLpar.getAcquisitionTime(): " + softwareLpar.getAcquisitionTime());
+		System.out.println("softwareLpar.getScantime()       : " + softwareLpar.getScantime());
 		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
 		
 //		if (softwareLpar.getId() != null) {
@@ -171,13 +174,13 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		//ProductInfo comes from a catalog. By the business logic it can be accessed as follows:
 		Long productInfoId = installedScript.getInstalledSoftware().getSoftware().getSoftwareId();
 		SoftwareLpar softwareLpar = installedScript.getInstalledSoftware().getSoftwareLpar();
-		InstalledSoftware installedSoftwareId = installedScript.getInstalledSoftware();
+		InstalledSoftware installedSoftware = installedScript.getInstalledSoftware();
 
 	
 		ProductInfoTestHelper.deleteRecordById(productInfoId);
-//		SoftwareLparTestHelper.deleteRecord(softwareLpar);
-//		InstalledSoftwareTestHelper.deleteRecord(installedSoftwareId);
-//		InstalledScriptTesthelper.deleteRecord(installedScript);
+		SoftwareLparTestHelper.deleteRecord(softwareLpar);
+		InstalledSoftwareTestHelper.deleteRecord(installedSoftware);
+		InstalledScriptTesthelper.deleteRecord(installedScript);
 	}
 
 }
