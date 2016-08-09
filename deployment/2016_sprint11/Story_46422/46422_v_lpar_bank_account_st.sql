@@ -1,6 +1,6 @@
-drop view eaadmin.v_lpar_bank_account;
+drop view EAADMIN.V_LPAR_BANK_ACCOUNT;
 
-create view EAADMIN.v_lpar_bank_account
+create view EAADMIN.V_LPAR_BANK_ACCOUNT
 (
    id , software_lpar_id , bank_account_id
 )
@@ -79,5 +79,5 @@ from
 as a
 ;
 
-GRANT SELECT ON TABLE "EAADMIN "."SOFTWARE_SCRIPT"          TO GROUP "TRAILRPT" ;       
-GRANT SELECT ON TABLE "EAADMIN "."SOFTWARE_SCRIPT"      	TO USER eaadmin ;  
+GRANT SELECT ON TABLE "EAADMIN "."V_LPAR_BANK_ACCOUNT"          TO GROUP "TRAILRPT" ;       
+GRANT SELECT ON TABLE "EAADMIN "."V_LPAR_BANK_ACCOUNT"      	TO USER eaadmin ;  
