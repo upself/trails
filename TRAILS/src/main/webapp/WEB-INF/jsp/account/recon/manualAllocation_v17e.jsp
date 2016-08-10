@@ -110,9 +110,9 @@
 		<div class="ibm-rule">
 			<hr />
 		</div>
-		<div class="ibm-col-1-1">
+		<div class="ibm-col-1-1" style="width: 99%; overflow-x: auto">
 			<small>
-				<display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" style="background: white" id="row" summary="alert" cellspacing="1" cellpadding="0" excludedParams="*">
+				<display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" style="background: white;" id="row" summary="alert" cellspacing="1" cellpadding="0" excludedParams="*">
 					<display:column property="alertStatus" title="" />
 					<display:column property="alertAgeI" title="Age" />
 					<display:column property="hostname" title="Hostname" />
@@ -151,7 +151,7 @@
 				</display:table>
 			</small>
 		</div>
-		<div class="ibm-col-1-1" style="width: 99%;">
+		<div class="ibm-col-1-1" style="width: 99%; overflow-x: auto">
 			<h2>Selected licenses</h2>
 			<s:submit method="deleteSelectedLicenses" value="Delete selected licenses" cssClass="ibm-btn-cancel-pri ibm-btn-small" /> <br/>
 			<small> 
@@ -203,7 +203,7 @@
 			</small>
 		</div>
 		
-		<div class="ibm-col-1-1" style="padding-top: 10px; width: 99%;">
+		<div class="ibm-col-1-1" style="padding-top: 10px; width: 99%; overflow-x: auto">
 			<h2>Available licenses</h2>
 			<s:submit method="addAvailableLicenses" value="Add available licenses" cssClass="ibm-btn-cancel-pri ibm-btn-small" /><br />
 			<small> 

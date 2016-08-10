@@ -47,7 +47,7 @@ confirmation page. Click on cancel to return to the workspace.</p>
 	<div class="ibm-rule">
 		<hr />
 	</div>
-	<div class="ibm-col-1-1">
+	<div class="ibm-col-1-1" style="width:99%; overflow-x: auto">
 		<small>
 			<display:table name="list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" summary="break license Recon" id="row" cellspacing="1" cellpadding="0">
 				<display:column property="alertStatus" title="" />
