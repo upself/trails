@@ -252,7 +252,7 @@
 		</div>
 		<div class="clear"></div>
 		<br />
-	
+		<div style="width:99%; overflow-x: auto">
 		<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row"
 			summary="Reconciliation Query Results" requestURI="workspace.htm"
 			decorator="org.displaytag.decorator.TotalTableDecorator" cellspacing="1" cellpadding="0" style="font-size:.8em">
@@ -403,5 +403,6 @@
 					href="javascript:displayPopUp('/TRAILS/account/alerts/alertUnlicensedIbmSwHistory.htm?gotoV17e=y&&id=<s:property value="%{#attr.row.alertId}" />')">${row.assignee}</a>
 			</display:column>
 		</display:table>
+		</div>
 	</s:form>
 </div>

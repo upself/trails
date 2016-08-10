@@ -87,7 +87,7 @@
 	<div class="ibm-rule">
 		<hr />
 	</div>
-	<div class="ibm-col-1-1">
+	<div class="ibm-col-1-1" style="width:99%; overflow-x: auto">
 		<small>
 			<display:table name="data.list" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default"
 			summary="alert list" id="row" cellspacing="1" cellpadding="0" style="background: white">
@@ -133,7 +133,7 @@
 	<div class="ibm-rule">
 		<hr />
 	</div>
-	<div class="ibm-col-1-1">
+	<div class="ibm-col-1-1" style="width:99%; overflow-x: auto">
 		<small>
 			<display:table name="licenseList" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row" summary="license list" 
 				decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator" cellspacing="1" cellpadding="0">
