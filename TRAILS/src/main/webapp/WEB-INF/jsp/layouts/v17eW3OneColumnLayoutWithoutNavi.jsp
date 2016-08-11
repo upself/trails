@@ -66,7 +66,7 @@
 		}
 	});
 </script>
-<script type="text/javascript">
+<%-- <script type="text/javascript">
 	ibmweb.config.set({
 		opinionlab : {
 			floating : {
@@ -76,7 +76,7 @@
 			}
 		}
 	});
-</script>
+</script> --%>
 
 <style type="text/css">
 /* LEADSPACE STYLES */
@@ -136,7 +136,7 @@
 								type="hidden" value="17" name="v" /> <input value="en"
 								type="hidden" name="langopt" /> <input value="all"
 								type="hidden" name="la" /> <input type="submit" id="ibm-search"
-								class="ibm-btn-search" value="Submit" />
+								class="ibm-btn-pri" value="Submit" />
 						</p>
 					</form>
 				</div>

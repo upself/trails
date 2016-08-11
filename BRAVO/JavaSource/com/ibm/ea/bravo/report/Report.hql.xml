@@ -868,7 +868,7 @@ it if it to a BATCH report as this is a BIG stressor of the system.  -->
 			    ,installed_software is
 			    ,software s
 			    ,manufacturer m
-			    ,installed_dorana_product idp
+			    ,installed_script idp
 			where
 			        c.status = 'ACTIVE'
 			        and c.SW_LICENSE_MGMT = 'YES'

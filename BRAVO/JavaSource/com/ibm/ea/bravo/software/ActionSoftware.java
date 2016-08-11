@@ -23,6 +23,7 @@ import com.ibm.ea.bravo.framework.common.ActionBase;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.hardware.FormHardware;
 import com.ibm.ea.sigbank.BankAccount;
+import com.ibm.ea.bravo.software.InstalledScript;
 //Change Bravo to use Software View instead of Product Object Start
 //import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.Software;
@@ -209,9 +210,9 @@ public class ActionSoftware extends ActionBase {
 			List<SoftwareDiscrepancyH> commentList = DelegateSoftware.getCommentHistory(softwareId);
 			request.setAttribute(Constants.COMMENT_LIST, commentList);
 
-			// get the Dorana products
-			List<InstalledDoranaProduct> doranaList = DelegateSoftware.getDoranas(softwareId);
-			request.setAttribute(Constants.DORANA_LIST, doranaList);
+			// get the script products
+			List<InstalledScript> scriptList = DelegateSoftware.getScripts(softwareId);
+			request.setAttribute(Constants.SCRIPT_LIST, scriptList);
 
 			return mapping.findForward(Constants.SUCCESS);
 		}
@@ -306,14 +307,10 @@ public class ActionSoftware extends ActionBase {
 		// get the account
 		Account account = DelegateAccount.getAccount(accountId, request);
 		request.setAttribute(Constants.ACCOUNT, account);
-
-		// initialize action specific form properties
-		/* Donnie changed this to the other method of setting discrepancy
+		
+		//MISSING - set up by backend, can't be edit
 		software.setDiscrepancyType(DelegateDiscrepancy
-				.getDiscrepancyType(Constants.DISCREPANCY_TYPE_ID_MISSING));
-		*/
-		software.setDiscrepancyType(DelegateDiscrepancy
-		.getDiscrepancyType(new String("" + DelegateDiscrepancy.MISSING)));
+		.getDiscrepancyType(new String("" + DelegateDiscrepancy.MISSING)));		
 
 		software.setDiscrepancyTypeId(software.getDiscrepancyType().getId()
 				.toString());

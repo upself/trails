@@ -116,9 +116,9 @@ function reportChange(id) {
 		<tr>
 			<td><s:select name="reportFileName" label="Report"
 					list="reportList" id="reportFileName" listKey="reportFileName"
-					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; <span
-				class="button-blue"><s:submit value="GO"
-						onclick="return setAction()" alt="Download report" /></span></td>
+					listValue="reportDisplayName"  onChange="reportChange(this.id)" />&nbsp;&nbsp; 
+				<input value="GO" class="ibm-btn-pri" alt="Download report" onclick="return setAction()" type="submit">
+			</td>
 		</tr>
  	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0">
 		<tr>

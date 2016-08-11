@@ -41,7 +41,7 @@
 				<td><s:textfield name="searchAccount.searchString"
 						onkeypress="return submitEnter(event, this)"
 						id="searchAccount.searchString" /> <s:submit method="search"
-						value="GO" id="go-btn" cssClass="ibm-btn-search"
+						value="GO" id="go-btn" cssClass="ibm-btn-pri"
 						alt="Search account" /></td>
 			</tr>
 			<tr>
@@ -56,19 +56,13 @@
 					for="accounts_searchAccount_accountNumberSearch">Search
 						account numbers</label></td>
 			</tr>
-			<tr>
-				<td><s:checkbox label="Include out of scope accounts"
-						name="searchAccount.outOfScopeSearch" /> <label
-					for="accounts_searchAccount_outOfScopeSearch">Include out
-						of scope accounts</label></td>
-			</tr>
 		</table>
 	</s:form>
 </div>
 <br />
 
 <display:table name="accountSearch"
-	class="ibm-data-table ibm-sortable-table" id="row"
+	class="ibm-data-table ibm-sortable-table ibm-alternate-two" id="row"
 	decorator="com.ibm.tap.trails.framework.DisplayTagDecorator"
 	cellspacing="1" cellpadding="0" summary="Search results"
 	requestURI="accounts.htm">
@@ -76,6 +70,10 @@
 	<display:caption media="html">TRAILS results for:
 <s:property value="searchAccount.searchString" />
 	</display:caption>
+	<display:column property="accountName" title="Name" sortable="true"
+		href="/TRAILS/account/home.htm" paramId="accountId"
+		paramProperty="accountId" />
+	<display:column title="Account #" sortable="true">${row.account}</display:column>
 	<display:column title="License Management Scope" sortable="true">
 		<s:if test="%{#attr.row.scope == 'yes' || #attr.row.scope == 'YES'}">
 			Y
@@ -92,16 +90,8 @@
 			N
 		</s:else>
 	</display:column>
-	<display:column property="accountName" title="Name" sortable="true"
-		href="/TRAILS/account/home.htm" paramId="accountId"
-		paramProperty="accountId" />
 	<display:column property="dept" title="Dept." sortable="true" />
 	<display:column property="sector" title="Sector" sortable="true" />
 	<display:column property="type" title="Type" sortable="true" />
 	<display:column property="dpe" title="DPE" sortable="true" />
-	<display:column title="Account #" sortable="true">
-		<a
-			href="javascript:popupCNDB(<s:property value="%{#attr.row.accountId}"/>)">
-			${row.account}</a>
-	</display:column>
 </display:table>

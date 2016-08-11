@@ -79,7 +79,7 @@ ibmweb.config.set({pagetitle: "<tmp:insertAttribute name='contentTitle' />" });
 							<label for="q"> <span class="ibm-access">Search</span>
 							</label> <input id="q" value="" maxlength="100" name="q" type="text" /> <input name="v" type="hidden" value="17" /> <input
 								type="hidden" name="en" value="utf" /> <input name="lang" type="hidden" value="en" /> <input name="cc"
-								type="hidden" value="us" /> <input value="Submit" class="ibm-btn-search" id="ibm-search" type="submit" />
+								type="hidden" value="us" /> <input value="Submit" class="ibm-btn-pri" id="ibm-search" type="submit" />
 						</p>
 					</form>
 				</div>

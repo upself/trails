@@ -1,22 +1,81 @@
 <%@taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script src="${pageContext.request.contextPath}/js/jquery.js"
 	type="text/javascript"></script>
 
 <script type="text/javascript">
-	$(document)
-			.ready(
-					function() {
-						$("#alertSummary")
-								.load(
-										"${pageContext.request.contextPath}/account/alert/summary.htm?type=ALERT");
-					});
+$(function(){
+	loadAccountAlertSummary();
+});
+
+ function loadAccountAlertSummary(){
+	 var params = {};
+	 params['accountId'] = '${account.id}';
+	 params['alertType'] = 'ALERT';
+	 
+	
+	$.ajax({
+		url : '${pageContext.request.contextPath}/ws/alert/account/summary',
+		type : 'POST',
+		dataType : 'json',
+		data : params,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert(textStatus);
+		},
+		success : function(data) {
+			var html = "";
+
+			html += "<table cellspacing='0' cellpadding='0' class='ibm-data-table ibm-alternating'>";
+
+			if (data.msg != "SUCCESS") {
+				html += "<tr><td>There is no alert.</tr></td>";
+			} else {
+				for (var i = 0; i < data.dataList.length; i++) {
+					var item = data.dataList[i];
+					var url = "/TRAILS/account/alerts/";
+					if(item.code == "HARDWARE"){
+					  url += "alertHardware" + ".htm";
+					}
+					else if(item.code == "HWCFGDTA"){
+					  url += "alertHardwareCfgData" + ".htm";
+					}
+					else if(item.code == "HARDWARE_LPAR"){
+					  url += "alertHardwareLpar" + ".htm";
+					}
+					else if(item.code == "SOFTWARE_LPAR"){
+					  url += "alertSoftwareLpar" + ".htm";
+					}
+					else if(item.code == "EXPIRED_SCAN"){
+					  url += "alertExpiredScan" + ".htm";
+					}
+					else if(item.code == "SWISCOPE"){
+					  url += "alertWithDefinedContractScope" + ".htm";
+					}
+					else if(item.code == "SWIBM"){
+					  url += "alertIbmSwInstancesReviewed" + ".htm";
+					}
+					else if(item.code == "SWISVPR"){
+					  url += "alertPriorityIsvSwInstancesReviewed" + ".htm";
+					}
+					else if(item.code == "SWISVNPR"){
+					  url += "alertIsvSwInstancesReviewed" + ".htm";
+					}
+					
+					html += "<tr>";
+					html += "<td>"+item.total+"</td>";
+					html += "<td><a href='"+url+"'>"+item.name+"</a></td>";
+					html += "</tr>";
+				}
+			}
+
+			html += "</table>";
+			$('#alertSummary').html(html);
+		}
+	});
+	}
 </script>
 
 
 <div style="padding-left: 15px; width: 100%">
-	<s:url id="alertUrl" namespace="/account/alert" action="summary" />
 	<h2 style="background-color: #d7d7d8">
 		<label style="padding-left: 10px">Account alerts</label>
 	</h2>

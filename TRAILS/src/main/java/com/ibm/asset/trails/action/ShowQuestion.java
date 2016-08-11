@@ -45,6 +45,8 @@ public class ShowQuestion extends AccountBaseAction {
 	
 	private Boolean sortReq;
 	
+	private String gotoV17e;
+	
 	public Boolean getSortReq() {
 		return sortReq;
 	}
@@ -204,7 +206,9 @@ public class ShowQuestion extends AccountBaseAction {
 			// Customer owned and IBM managed
 		}
 
-		return recon.getReconcileType().getId().toString();
+		
+        return recon.getReconcileType().getId().toString();
+		
 	}
 
 	@Override
@@ -348,5 +352,32 @@ public class ShowQuestion extends AccountBaseAction {
 	public void setAllocationMethodologies(
 			List<AllocationMethodology> allocationMethodologies) {
 		this.allocationMethodologies = allocationMethodologies;
+	}
+
+	public String getGotoV17e() {
+		return gotoV17e;
+	}
+
+	public void setGotoV17e(String gotoV17e) {
+		this.gotoV17e = gotoV17e;
+	}
+	
+	public String getV17e(){
+		if(null == this.reconcileTypeId){
+			if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") ){
+				return ".v17e";
+			}else{
+				return null;
+			}
+		} else {
+			if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
+					this.reconcileTypeId.intValue() != 2
+					|| this.reconcileTypeId.intValue() != 14
+			)){
+				return ".v17e";
+			}else{
+				return null;
+			}
+		}
 	}
 }

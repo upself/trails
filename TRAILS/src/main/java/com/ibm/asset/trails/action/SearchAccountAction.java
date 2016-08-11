@@ -51,7 +51,6 @@ public class SearchAccountAction extends BaseAction implements SearchAction {
 	public String search() throws Exception {
 		setAccountSearch(getSearchService().searchAccounts(
 				getSearchAccount().getSearchString(),
-				getSearchAccount().isOutOfScopeSearch(),
 				getSearchAccount().isNameSearch(),
 				getSearchAccount().isAccountNumberSearch()));
 		return Action.SUCCESS;
@@ -67,7 +66,7 @@ public class SearchAccountAction extends BaseAction implements SearchAction {
 		PrintWriter writer = ServletActionContext.getResponse().getWriter();
 
 		List<AccountSearch> result = getSearchService().searchAccounts(str,
-				false, true, true);
+				true, true);
 		if (result != null && result.size() > 0) {
 			Gson gson = new Gson();
 			writer.write(gson.toJson(result));

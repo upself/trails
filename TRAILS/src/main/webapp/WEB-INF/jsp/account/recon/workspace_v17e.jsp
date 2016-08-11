@@ -226,7 +226,7 @@
 		<s:actionerror />
 		<s:fielderror />
 	</s:if>
-	<s:form action="showQuestion" namespace="/account/recon" theme="simple">
+	<s:form action="showQuestion?gotoV17e=y" namespace="/account/recon" theme="simple">
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
@@ -252,7 +252,7 @@
 		</div>
 		<div class="clear"></div>
 		<br />
-	
+		<div style="width:99%; overflow-x: auto">
 		<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row"
 			summary="Reconciliation Query Results" requestURI="workspace.htm"
 			decorator="org.displaytag.decorator.TotalTableDecorator" cellspacing="1" cellpadding="0" style="font-size:.8em">
@@ -394,14 +394,15 @@
 			<display:column title="Action" sortProperty="rt.name" sortable="true">
 				<s:if test="#attr.row.reconcileId!=null">
 					<a
-						href="javascript:displayPopUp('reconcileDetails.htm?id=<s:property value="%{#attr.row.reconcileId}" />')">${row.reconcileTypeName}</a>
+						href="javascript:displayPopUp('reconcileDetails.htm?gotoV17e=y&&id=<s:property value="%{#attr.row.reconcileId}" />')">${row.reconcileTypeName}</a>
 				</s:if>
 			</display:column>
 			<display:column title="Assignee" sortable="true"
 				sortProperty="assignee">
 				<a
-					href="javascript:displayPopUp('/TRAILS/account/alerts/alertUnlicensedIbmSwHistory.htm?id=<s:property value="%{#attr.row.alertId}" />')">${row.assignee}</a>
+					href="javascript:displayPopUp('/TRAILS/account/alerts/alertUnlicensedIbmSwHistory.htm?gotoV17e=y&&id=<s:property value="%{#attr.row.alertId}" />')">${row.assignee}</a>
 			</display:column>
 		</display:table>
+		</div>
 	</s:form>
 </div>
