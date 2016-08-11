@@ -91,7 +91,7 @@
 			<result type="tiles" name="input">
 				tiles.account.recon.workspace.manualAllocation${v17e}
 			</result>
-			<result type="redirect" name="cancel">workspace.htm</result>
+			<result type="redirect" name="cancel">workspace.htm${v17eParam}</result>
 			<result type="tiles" name="license">
 				tiles.account.recon.workspace.manualAllocation${v17e}
 			</result>
@@ -120,7 +120,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.includedConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="input" type="tiles">
 				tiles.account.recon.workspace.included${v17e}
 			</result>
@@ -136,7 +136,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.altPurchaseConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="input" type="tiles">
 				tiles.account.recon.workspace.altPurchase${v17e}
 			</result>
@@ -152,7 +152,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.breakConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 		</action>
 
 		<action name="showAssignConfirmation" class="showConfirmation"
@@ -165,7 +165,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.assignConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="input" type="tiles">
 				tiles.account.recon.workspace.assign${v17e}
 			</result>
@@ -181,7 +181,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.unassignConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="input" type="tiles">
 				tiles.account.recon.workspace.unassign${v17e}
 			</result>
@@ -219,7 +219,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.breakLicenseConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 		</action>
 
 		<action name="showEnterpriseAgreementConfirmation" class="showConfirmation"
@@ -232,7 +232,7 @@
 			<result type="tiles">
 				tiles.account.recon.workspace.enterpriseAgreementConfirmation${v17e}
 			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
 			<result name="input" type="tiles">
 				tiles.account.recon.workspace.enterpriseAgreement${v17e}
 			</result>
