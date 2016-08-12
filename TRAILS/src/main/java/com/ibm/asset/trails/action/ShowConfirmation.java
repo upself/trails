@@ -678,6 +678,16 @@ public class ShowConfirmation extends AccountBaseAction {
 			return null;
 		}
 	}
+	public String getV17eParam(){
+		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
+				this.recon.getReconcileType().getId().intValue() != 2
+				|| this.recon.getReconcileType().getId().intValue() != 14
+		)){
+			return "?gotoV17e=y";
+		}else{
+			return null;
+		}
+	}
 
 	private boolean hasSameCapacityType(String[] selectedLicenseIds, List<License> licenseListInReconWorkspace){
 		boolean sameCapacityTypeFlag = true;
