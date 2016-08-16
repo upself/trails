@@ -180,7 +180,7 @@
 														<html:option value="TADZ">TADZ</html:option>
 														<html:option value="FACTS">FACTS</html:option>
 														<html:option value="TAD4D">TAD4D</html:option>
-														<html:option value="SCRIPT">SCRIPT</html:option>
+														<html:option value="WMVARE">WMVARE</html:option>
 													</html:select></td>
 											</tr>
 											<tr>
