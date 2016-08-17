@@ -32,7 +32,7 @@ public class ReconServiceImplTest {
 	 * Author: vndwbwan@cn.ibm.com
 	 * Test ReconcileByAlert test (update reconcile comments),Story_25388 in jazzHub 
 	 * */
-	@Test
+//	@Test
 	public void reconcileByAlertTest() throws Exception {
 		
 		Recon recon = new Recon();
