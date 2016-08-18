@@ -195,13 +195,15 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
 						CriteriaSpecification.LEFT_JOIN)
+				.createAlias("r.usedLicenses", "ul")
+				.createAlias("ul.license", "license")
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
 				.createAlias("sw.manufacturer", "mf", CriteriaSpecification.LEFT_JOIN)
 				.add(Restrictions.eq("account", account));
 
-		if (reconSetting.getReconcileType() != null) {
+		if (reconSetting.getReconcileType() != null) { 
 			criteria.add(Restrictions.eq("rt.id",
 					reconSetting.getReconcileType()));
 		}
@@ -286,6 +288,18 @@ public class VSoftwareLparDAOJpa extends
 
 			if (list.size() > 0) {
 				criteria.add(Restrictions.in("hl.name", list));
+			}
+		}
+		
+		if(reconSetting.getSwcmIDs().length>0){
+			List<String> list = new ArrayList<String>();
+			for (int i=9; i<reconSetting.getSwcmIDs().length; i++){
+				if (StringUtils.isNotBlank(reconSetting.getSwcmIDs()[i])) {
+					list.add(reconSetting.getSwcmIDs()[i].toUpperCase());
+				}
+			}
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("license.extSrcId", list));
 			}
 		}
 

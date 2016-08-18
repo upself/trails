@@ -734,7 +734,7 @@ public class ScheduleFServiceEndpoint {
 			}
 
 			// save a tmp file
-			file = new File("/tmp/" + filename);
+			file = new File("C://tmp/" + filename);
 			if (file.exists()) {
 				file.delete();
 			}
