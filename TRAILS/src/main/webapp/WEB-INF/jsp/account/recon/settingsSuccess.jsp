@@ -107,4 +107,21 @@
 			</s:iterator>
 		</div>
 	</div>
+	<div class="ibm-rule"> <hr /> </div>
+	<div id="software_settings" class="ibm-col-1-1"  style="float:left;width:100%">
+		<h4>Schedule F settings</h4>
+		<div style="float:left;width:25%">
+			<label for="scope">Scope:</label>
+		</div>
+		<div style="float:left;width:45%">
+			<s:property	value="reconSetting.scope" />
+		</div>
+		<br />
+		<div style="float:left;width:25%">
+			<label for="finanResp">SW Financial Resp:</label>
+		</div>
+		<div style="float:left;width:45%">
+			<s:property	value="reconSetting.finanResp" />
+		</div>		
+	</div>
 </div>
