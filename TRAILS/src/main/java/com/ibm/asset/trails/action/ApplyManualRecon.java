@@ -104,7 +104,10 @@ public class ApplyManualRecon extends AccountBaseAction {
 				|| recon.getReconcileType().getId().intValue() == 13) {
 			//Story 26012
 			List<String> resultList = getReconWorkspaceService().getScheduleFValResult();
-				getUserSession().setSchedulefDefValResult(resultList);;
+			getUserSession().setSchedulefDefValResult(resultList);
+			
+			String quantityValResult = getReconWorkspaceService().getQuantityValResult();
+			getUserSession().setQuantityValResult(quantityValResult);
 
 		}
 		return SUCCESS;
