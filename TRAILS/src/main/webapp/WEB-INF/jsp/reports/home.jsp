@@ -3,9 +3,8 @@
 <div style="padding-left: 10px; width: 90%">
 	<h2>Reports listing</h2>
 	<p class="ibm-important">IBM Confidential</p>
-	<br /> <br />
 
-	<h2 style="background-color: #d7d7d8">Account reports</h2>
+	<h3 style="background-color: #d7d7d8">Account reports</h3>
 	<ul id="ibm-link-list">
 		<li><s:a
 				href="/TRAILS/report/download/nonWorkstationAccounts.tsv?name=nonWorkstationAccounts">Non-workstation
@@ -16,7 +15,7 @@
 	</ul>
 	<br />
 
-	<h2 style="background-color: #d7d7d8">Alert reports</h2>
+	<h3 style="background-color: #d7d7d8">Alert reports</h3>
 	<br />
 	<ul id="ibm-link-list">
 		<li><s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a></li>

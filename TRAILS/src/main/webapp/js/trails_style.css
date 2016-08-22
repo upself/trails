@@ -1,6 +1,7 @@
 /* 1rem = 10px */
 
 #ibm-content-main>.ibm-columns>.ibm-col-6-4 {
+	font-size: 1.3rem;
 	width: 74%;
 	background: white;
 }
@@ -16,6 +17,19 @@
 #ibm-top h1 {
 	font-size: 2.5rem;
 }
+
+#ibm-top h2 {
+	font-size: 2rem;
+}
+
+#ibm-top h3 {
+	font-size: 1.5rem;
+}
+
+.ibm-default #ibm-content h3 {
+	padding-left: 1.5rem;
+}
+
 /*1st level menu*/
 #ibm-primary-links>li.ibm-active>a,
 /*2nd level menu*/
@@ -35,10 +49,6 @@
 	font-size: 1.3rem;
 }
 
-/* #ibm-navigation, #navigace2{ */
-/* 	font-size: 20px; */
-/* } */
-
 .ibm-col-6-2 {
 	font-size: 1.3rem;
 }
@@ -50,12 +60,6 @@
 .ibm-default #ibm-content .ibm-col-1-1 {
 	font-size: 1.3rem;
 }
-
-
-
-/* #go-btn { */
-/* 	color: red; */
-/* } */
 
 input[class*="ibm-btn-"][class*="-pri"] {
     min-width: 50px;
@@ -91,15 +95,4 @@ ul.horizontal-list li {
 h2.green-dark {
 	color: red;
 }
-
-/* ul.horizontal-list li { */
-/* 	display: inline; */
-/* } */
-
-/* ul.horizontal-list { */
-/* 	padding-top: 10px; */
-/* 	padding-bottom: 20px; */
-/* 	border-bottom: 1px dashed #333; */
-/* 	padding-bottom: 20px; */
-/* } */
 

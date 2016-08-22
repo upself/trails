@@ -3,9 +3,7 @@
 <h2 class="oneline">Alerts reports</h2>
 <p class="ibm-important">IBM Confidential</p>
 <br />
-<br />
-
-<h2 style="background-color: #d7d7d8">Alert reports</h2>
+<h3 style="background-color: #d7d7d8">Alert reports</h3>
 <br />
 
 <ul id="ibm-link-list">
