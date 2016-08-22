@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ibm.ea.bravo.software.DelegateSoftware;
 import com.ibm.ea.bravo.software.InstalledScript;
+import com.ibm.ea.bravo.software.InstalledSoftware;
 
 @RunWith(MockitoJUnitRunner.class)
 
@@ -34,7 +35,7 @@ public class DelegateSoftwareGetScriptsTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	@Test
+//	@Test
 	public void testReadsSpecificSoftwareIdfromDB() {
 		final String softwareId = "243702656";
 
@@ -44,6 +45,24 @@ public class DelegateSoftwareGetScriptsTest {
 		assertTrue(scriptList.size() > 0);
 
 	}
+	
+	@Test
+	public void testReadsfromDB() {
+		
+		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
+		Long softwareId = installedSoftware.getId();
+		System.out.println("softwareId: " + softwareId);
+
+		List<InstalledScript> scriptList = DelegateSoftware.getScripts(softwareId.toString());
+		
+		System.out.println("scriptList.get(0).getSoftwareScript().getSoftware().getSoftwareName(): "
+				+ scriptList.get(0).getSoftwareScript().getSoftware().getSoftwareName());
+		
+		assertNotNull(scriptList);
+		assertTrue(scriptList.size() > 0);
+
+	}
+	
 	
 	@Test(expected = NullPointerException.class)
 	public void testNoSoftwareIdPassedIn() {

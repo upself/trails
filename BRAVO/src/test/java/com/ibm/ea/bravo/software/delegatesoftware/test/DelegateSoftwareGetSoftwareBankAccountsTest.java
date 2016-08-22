@@ -51,6 +51,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 
 //	@Test
 	public void testReadsSpecificLparIdfromDB() {
+		
 		final String lparId = "2223341";
 		
 		FormSoftware software = new FormSoftware(lparId);
@@ -91,6 +92,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		ProductInfoTestHelper.deleteRecord(productInfo);
 		*/
 		
+		/*
 		//SoftwareLpar separate test
 		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
 		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
@@ -102,8 +104,9 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		if (softwareLpar.getId() != null) {
 //			SoftwareLparTestHelper.deleteRecord(softwareLpar);
 //		}
-
-//		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
+		*/
+		
+		InstalledScript installedScript = setupDataForInstalledSoftware();
 		
 //		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
 		
@@ -152,21 +155,27 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	}
 	
 	public InstalledScript setupDataForInstalledSoftware() {
-		
 
 		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
 		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
 		System.out.println("productInfo.getProductId(): " + productInfo.getProductId());
 		
-		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
+		SoftwareLpar softwareLpar = SoftwareLparTestHelper.getAnyRecord();
 		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
 		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
 		
 		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
 		System.out.println("discrepancyType.getId(): " + discrepancyType.getId());
 		
-		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
-		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware.getId());
+//		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
+		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
+		System.out.println("installedSoftware.getId(): " + installedSoftware.getId());
+		System.out.println("installedSoftware.getSoftware().getSoftwareName(): " + installedSoftware.getSoftware().getSoftwareName());
+		System.out.println("installedSoftware.getSoftwareLpar().getName(): " + installedSoftware.getSoftwareLpar().getName());
+		
+		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware);
+		System.out.println("installedScript.getId(): " + installedScript.getId());
+		
 		return installedScript;
 	}
 	
