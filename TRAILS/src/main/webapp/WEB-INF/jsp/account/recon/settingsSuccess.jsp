@@ -38,12 +38,38 @@
 		</div>
 	<br />
 			<div style="float:left;width:25%">
-				<label for="alertColor">Alert color:</label>
+				<label for="alertColor">Alert age1:</label>
 			</div>
 			<div style="float:left;width:45%">
-				<s:property value="reconSetting.alertColor" />
+				<s:if test="reconSetting.alertColor=='lt45'">
+					Alerts<=45 days
+				</s:if>
+				<s:elseif test="reconSetting.alertColor=='45and90'">
+					45 days < Alerts <= 90 days
+				</s:elseif>
+				<s:elseif test="reconSetting.alertColor=='90and120'">
+					90 days < Alerts <= 120 days
+				</s:elseif>
+				<s:elseif test="reconSetting.alertColor=='120and150'">
+					120 days < Alerts <= 150 days
+				</s:elseif>
+				<s:elseif test="reconSetting.alertColor=='150and180'">
+					150 days < Alerts <= 180 days
+				</s:elseif>
+				<s:elseif test="reconSetting.alertColor=='gt180'">
+					Alerts > 180 days
+				</s:elseif>
 			</div>
 	<br />
+			<div style="float:left;width:25%">
+				<label for="alertColor">Alert age2:</label>
+			</div>
+			<div style="float:left;width:45%">
+				From <s:property value="reconSetting.alertFrom"/> To <s:property value="reconSetting.alertTo"/> days
+			</div>
+	<br />
+	
+	
 			<div style="float:left;width:25%">
 				<label for="assigned">Assignment</label>
 			</div>

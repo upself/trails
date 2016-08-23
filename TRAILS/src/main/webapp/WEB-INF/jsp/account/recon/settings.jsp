@@ -85,13 +85,24 @@
 			<br />
 			<div class="ibm-col-1-1" style="float: left; width: 100%">
 				<div style="float: left; width: 25%">
-					<label for="alertColor">Alert color:</label>
+					<label for="alertColor">Alert age1:</label>
 				</div>
 				<div style="float: left; width: 45%">
 					<s:select name="reconSetting.alertColor" label="Alert color"
 						id="alertColor"
-						list="#{'Green':'Green','Yellow':'Yellow','Red':'Red' }"
+						list="#{'lt45':'Alerts<=45 days','45and90':'45 days<Alerts<=90 days','90and120':'90 days<Alerts<=120 days','120and150':'120 days<Alerts<=150 days','150and180':'150 days<Alerts<=180 days','gt180':'Alerts>180 days' }"
 						headerKey="" headerValue="All" />
+				</div>
+				
+			</div>
+			<br />
+			<br />
+			<div class="ibm-col-1-1" style="float: left; width: 100%">
+				<div style="float: left; width: 25%">
+					<label for="alertColor">Alert age2:</label>
+				</div>
+				<div style="float: left; width: 45%">
+					From:<s:textfield style="width:5%" name="reconSetting.alertFrom"></s:textfield> To <s:textfield style="width:5%" name="reconSetting.alertTo"></s:textfield> days
 				</div>
 			</div>
 			<br />
