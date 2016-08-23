@@ -26,6 +26,7 @@
 		items = result.dataList;
 		if (items.length > 0) {
 			$(element).append("<option id='0' value=''>All</option>");
+			$(element).append("<option id='0' value='Not specified'>Not specified</option>");
 			for (var i = 0; i < items.length; i++) {
 				$(element).append(
 						"<option id='"+items[i].id+"' value='"+items[i].description+"'>"

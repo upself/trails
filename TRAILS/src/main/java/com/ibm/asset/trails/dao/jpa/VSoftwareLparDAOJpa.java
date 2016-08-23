@@ -39,8 +39,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
-				.createAlias("is.scheduleF", "sf")
-				.createAlias("sf.scope", "scope")
+				.createAlias("is.scheduleF", "sf", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("sf.scope", "scope", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
@@ -179,8 +179,12 @@ public class VSoftwareLparDAOJpa extends
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getScope())){
-			criteria.add(Restrictions.eq("scope.description",
-					reconSetting.getScope()));
+			if("Not specified".equalsIgnoreCase(reconSetting.getScope())){
+				criteria.add(Restrictions.isNull("scope.description"));
+			}else{
+				criteria.add(Restrictions.eq("scope.description",
+						reconSetting.getScope()));
+			}
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
@@ -207,8 +211,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
-				.createAlias("is.scheduleF", "sf")
-				.createAlias("sf.scope", "scope")
+				.createAlias("is.scheduleF", "sf", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("sf.scope", "scope", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
@@ -349,8 +353,12 @@ public class VSoftwareLparDAOJpa extends
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getScope())){
-			criteria.add(Restrictions.eq("scope.description",
-					reconSetting.getScope()));
+			if("Not specified".equalsIgnoreCase(reconSetting.getScope())){
+				criteria.add(Restrictions.isNull("scope.description"));
+			}else{
+				criteria.add(Restrictions.eq("scope.description",
+						reconSetting.getScope()));
+			}
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
