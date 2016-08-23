@@ -282,7 +282,7 @@
 				</div>
 				<div style="float: left; width: 45%">
 					<s:select id="finanResp" name="reconSetting.finanResp"
-						list="#{'CUSTO':'CUSTO','IBM':'IBM','N/A':'N/A'}" headerKey=""
+						list="#{'Not Specified':'Not Specified','CUSTO':'CUSTO','IBM':'IBM','N/A':'N/A'}" headerKey=""
 						headerValue="All" />
 				</div>
 			</div>

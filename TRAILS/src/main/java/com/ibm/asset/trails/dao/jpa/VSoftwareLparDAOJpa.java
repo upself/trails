@@ -45,8 +45,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
 						CriteriaSpecification.LEFT_JOIN)
-				.createAlias("r.usedLicenses", "ul")
-				.createAlias("ul.license", "license")				
+				.createAlias("r.usedLicenses", "ul", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("ul.license", "license", CriteriaSpecification.LEFT_JOIN)			
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
@@ -180,11 +180,15 @@ public class VSoftwareLparDAOJpa extends
 		
 		if(StringUtils.isNotBlank(reconSetting.getScope())){
 			criteria.add(Restrictions.eq("scope.description",
-					reconSetting.getScope()).ignoreCase());
+					reconSetting.getScope()));
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
-			criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()).ignoreCase());
+			if("Not Specified".trim().equalsIgnoreCase(reconSetting.getFinanResp())){
+				criteria.add(Restrictions.isNull("sf.SWFinanceResp"));
+			}else{
+				criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()));
+			}
 		}
 		
 		criteria.setProjection(Projections.projectionList().add(Projections.rowCount()));
@@ -209,8 +213,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
 						CriteriaSpecification.LEFT_JOIN)
-				.createAlias("r.usedLicenses", "ul")
-				.createAlias("ul.license", "license")
+				.createAlias("r.usedLicenses", "ul", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("ul.license", "license", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
@@ -346,11 +350,15 @@ public class VSoftwareLparDAOJpa extends
 		
 		if(StringUtils.isNotBlank(reconSetting.getScope())){
 			criteria.add(Restrictions.eq("scope.description",
-					reconSetting.getScope()).ignoreCase());
+					reconSetting.getScope()));
 		}
 		
 		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
-			criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()).ignoreCase());
+			if("Not Specified".trim().equalsIgnoreCase(reconSetting.getFinanResp())){
+				criteria.add(Restrictions.isNull("sf.SWFinanceResp"));
+			}else{
+				criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()));
+			}
 		}
 
 		criteria.setProjection(Projections
