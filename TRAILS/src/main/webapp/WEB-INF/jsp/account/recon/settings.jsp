@@ -33,10 +33,49 @@
 			}
 		}
 	}
+	
+	function checkRate(input)  
+	{  
+	     var re = /^[1-9]+[0-9]*]*$/; 
+	     if (!re.test(input))  
+	    {  
+	        return false;  
+	     }  
+	     return true;
+	}  
+
+	
+	function validateFromTo(){
+		var from=document.getElementById("alertFrom").value;
+		var to=document.getElementById("alertTo").value;
+		if(from!=null && from !=''){
+			if(!checkRate(from)){
+				alert("please input number more than 0 in From field.");
+				return false;
+			}
+		}
+		if(to!=null && to !=''){
+			if(!checkRate(to)){
+				alert("please input correct number in To field.");
+				return false;
+			}
+		}
+		
+		if(from!=null && to!=null && to !='' && from !='' && from>to){
+			alert("The From field value should be less that To field value.");
+			return false;
+		}
+		
+		return true;
+	}
 
 	function updateAction() {
-		document.settings.action = "settings!update.htm";
-		document.settings.submit();
+		if(validateFromTo()){
+			document.settings.action = "settings!update.htm";
+			document.settings.submit();
+		}else{
+			return ;
+		}
 	}
 </script>
 
@@ -85,24 +124,10 @@
 			<br />
 			<div class="ibm-col-1-1" style="float: left; width: 100%">
 				<div style="float: left; width: 25%">
-					<label for="alertColor">Alert age1:</label>
+					<label for="alertColor">Alert age:</label>
 				</div>
 				<div style="float: left; width: 45%">
-					<s:select name="reconSetting.alertColor" label="Alert color"
-						id="alertColor"
-						list="#{'lt45':'Alerts<=45 days','45and90':'45 days<Alerts<=90 days','90and120':'90 days<Alerts<=120 days','120and150':'120 days<Alerts<=150 days','150and180':'150 days<Alerts<=180 days','gt180':'Alerts>180 days' }"
-						headerKey="" headerValue="All" />
-				</div>
-				
-			</div>
-			<br />
-			<br />
-			<div class="ibm-col-1-1" style="float: left; width: 100%">
-				<div style="float: left; width: 25%">
-					<label for="alertColor">Alert age2:</label>
-				</div>
-				<div style="float: left; width: 45%">
-					From:<s:textfield style="width:5%" name="reconSetting.alertFrom"></s:textfield> To <s:textfield style="width:5%" name="reconSetting.alertTo"></s:textfield> days
+					From:<s:textfield id="alertFrom" style="width:5%" name="reconSetting.alertFrom"></s:textfield> To <s:textfield id="alertTo" style="width:5%" name="reconSetting.alertTo"></s:textfield> days
 				</div>
 			</div>
 			<br />
