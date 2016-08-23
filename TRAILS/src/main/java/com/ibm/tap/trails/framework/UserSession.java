@@ -20,6 +20,8 @@ public class UserSession {
 //AB added
 	//Story 26012
 	private List<String> SchedulefDefValResult;
+	
+	private String quantityValResult;
  
 	// CPA - 3/31/09 - Commenting out for performance reasons
 	//private Integer maxAlertAge;
@@ -32,6 +34,16 @@ public class UserSession {
 	public void setSchedulefDefValResult(List<String> schedulefDefValResult) {
 		SchedulefDefValResult = schedulefDefValResult;
 	}
+
+	public String getQuantityValResult() {
+		return quantityValResult;
+	}
+
+	public void setQuantityValResult(String quantityValResult) {
+		this.quantityValResult = quantityValResult;
+	}
+
+
 
 	private ReconSetting reconSetting;
 

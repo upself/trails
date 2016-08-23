@@ -80,6 +80,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 
 	// Story 26012
 	private List<String> ScheduleFValResult;
+	
+	private String quantityValResult;
 
 	// defect 27747
 	private String procWarnMsg;
@@ -110,6 +112,20 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 	public List<String> getScheduleFValResult() {
 		return ScheduleFValResult;
 	}
+
+	public String getQuantityValResult() {
+		return quantityValResult;
+	}
+
+	public void setQuantityValResult(String quantityValResult) {
+		this.quantityValResult = quantityValResult;
+	}
+
+
+
+
+
+
 
 	// User Story - 17236 - Manual License Allocation at HW level can
 	// automatically close Alerts on another account on the same Shared HW as
@@ -504,6 +520,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 					}
 				}
 			}
+		} else if(!lalAlertUnlicensedSw.isEmpty() && liLicensesNeeded <= 0 && owner != 2){
+			setQuantityValResult("The allocation methodology calculation resulted in 0 quantity. The reconciliation action was not applied.");
 		}
 		setAlertsProcessed(getAlertsProcessed() + 1);
 	}
@@ -550,7 +568,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 				}
 			}else{
 				liLicensesNeeded = determineLicensesNeeded(pRecon, lausTemp);
-				if (liLicensesNeeded > 0 && !isAlertHardwareRelatedAndProcessed(pRecon, processedHwIds, lausTemp)) {
+				boolean isAlertHardwareRelatedAndProcessed = isAlertHardwareRelatedAndProcessed(pRecon, processedHwIds, lausTemp);
+				if (liLicensesNeeded > 0 && !isAlertHardwareRelatedAndProcessed) {
 
 					lmTempLicenseAvailableQty = new HashMap<Long, Integer>();
 					copyMap(lmLicenseAvailableQty, lmTempLicenseAvailableQty);
@@ -640,6 +659,8 @@ public class ReconWorkspaceServiceImpl implements ReconWorkspaceService {
 						copyMap(lmTempLicenseAvailableQty, lmLicenseAvailableQty);
 					}
 				
+				} else if(liLicensesNeeded <= 0 && !isAlertHardwareRelatedAndProcessed) {
+					setQuantityValResult("The allocation methodology calculation resulted in 0 quantity. The reconciliation action was not applied.");
 				}
 			}
 

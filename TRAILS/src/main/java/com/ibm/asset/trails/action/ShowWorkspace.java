@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
+import org.springframework.util.StringUtils;
 
 import com.ibm.asset.trails.domain.Recon;
 import com.ibm.asset.trails.domain.ReconcileType;
@@ -64,6 +65,13 @@ public class ShowWorkspace extends AccountReportBaseAction {
         }
         //clear the identify to avoid it to existing when refresh workspace page
         getUserSession().setSchedulefDefValResult(null);
+        
+        
+        String quantityValResult = getUserSession().getQuantityValResult();
+        if(StringUtils.hasText(quantityValResult)){
+        	addActionError(quantityValResult);
+        }
+        getUserSession().setQuantityValResult(null);
         
         //defect 27747
         if(getReconWorkspaceService().getProcWarnMsg()!=null){
