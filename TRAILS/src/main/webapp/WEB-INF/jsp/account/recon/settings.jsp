@@ -127,7 +127,7 @@
 					<label for="alertColor">Alert age:</label>
 				</div>
 				<div style="float: left; width: 45%">
-					From:<s:textfield id="alertFrom" style="width:5%" name="reconSetting.alertFrom"></s:textfield> To <s:textfield id="alertTo" style="width:5%" name="reconSetting.alertTo"></s:textfield> days
+					<s:textfield id="alertFrom" placeholder="From" style="width:10%" name="reconSetting.alertFrom"></s:textfield>  <s:textfield id="alertTo" placeholder="To" style="width:10%" name="reconSetting.alertTo"></s:textfield> days
 				</div>
 			</div>
 			<br />
