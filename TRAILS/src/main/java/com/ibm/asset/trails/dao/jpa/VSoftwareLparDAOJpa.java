@@ -141,7 +141,7 @@ public class VSoftwareLparDAOJpa extends
 
 		if(reconSetting.getSwcmIDs().length>0){
 			List<String> list = new ArrayList<String>();
-			for (int i=9; i<reconSetting.getSwcmIDs().length; i++){
+			for (int i=0; i<reconSetting.getSwcmIDs().length; i++){
 				if (StringUtils.isNotBlank(reconSetting.getSwcmIDs()[i])) {
 					list.add(reconSetting.getSwcmIDs()[i].toUpperCase());
 				}
@@ -315,7 +315,7 @@ public class VSoftwareLparDAOJpa extends
 		
 		if(reconSetting.getSwcmIDs().length>0){
 			List<String> list = new ArrayList<String>();
-			for (int i=9; i<reconSetting.getSwcmIDs().length; i++){
+			for (int i=0; i<reconSetting.getSwcmIDs().length; i++){
 				if (StringUtils.isNotBlank(reconSetting.getSwcmIDs()[i])) {
 					list.add(reconSetting.getSwcmIDs()[i].toUpperCase());
 				}
