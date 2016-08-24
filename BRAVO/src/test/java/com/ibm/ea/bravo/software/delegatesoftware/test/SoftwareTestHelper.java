@@ -1,5 +1,9 @@
 package com.ibm.ea.bravo.software.delegatesoftware.test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,7 +12,41 @@ import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
 import com.ibm.ea.sigbank.Software;
 
 public class SoftwareTestHelper {
-	
+
+	public static Software createRecord() {
+
+		Session session = null;
+		try {
+			session = HibernateDelegate.getSession();
+
+			// 1) create each dependent entity
+
+			refreshMQT(session);
+			session.close();
+			return getAnyRecord();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	private static void refreshMQT(Session session) throws SQLException {
+		final Connection connection = session.connection();
+
+		Statement stmt = null;
+		try {
+			stmt = connection.createStatement();
+			stmt.executeQuery("refresh table eaadmin.software");
+		} finally {
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+				}
+		}
+	}
+
 	public static Software getAnyRecord() {
 
 		Software software = null;
@@ -48,5 +86,5 @@ public class SoftwareTestHelper {
 			session.close();
 		}
 	}
-	
+
 }

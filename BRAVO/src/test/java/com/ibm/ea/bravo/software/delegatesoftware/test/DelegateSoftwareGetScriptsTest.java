@@ -50,10 +50,11 @@ public class DelegateSoftwareGetScriptsTest {
 	public void testReadsfromDB() {
 		
 		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
-		Long softwareId = installedSoftware.getId();
-		System.out.println("softwareId: " + softwareId);
+		Long installedSoftwareId = installedSoftware.getId();
+		System.out.println("installedSoftwareId: " + installedSoftwareId);
+		System.out.println("installedSoftwareId.toString(): " + installedSoftwareId.toString());
 
-		List<InstalledScript> scriptList = DelegateSoftware.getScripts(softwareId.toString());
+		List<InstalledScript> scriptList = DelegateSoftware.getScripts(installedSoftwareId.toString());
 		
 		System.out.println("scriptList.get(0).getSoftwareScript().getSoftware().getSoftwareName(): "
 				+ scriptList.get(0).getSoftwareScript().getSoftware().getSoftwareName());
