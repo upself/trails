@@ -1,14 +1,17 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
+    <p class="ibm-important">IBM Confidential</p>
 	<div class="ibm-col-1-1">
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Non Instance based SW history table">
 			<caption>
                 <em>Non Instance based SW history</em>
-                </caption>
+            </caption>
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
@@ -22,7 +25,6 @@
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
-				
 			</tbody>
 		</table>
 	</div>

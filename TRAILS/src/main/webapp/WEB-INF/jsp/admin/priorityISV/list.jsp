@@ -1,8 +1,11 @@
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<div class="ibm-columns">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
+<div class="ibm-columns">
+    <p class="ibm-important">IBM Confidential</p>
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
+	    <div class="ibm-alternate-rule"><hr></div>
 		<div style="height:180px;width: 100%; float: left">
 			<div style="line-height:150px;width:30%;float: left">
 				View as Level:
@@ -165,7 +168,7 @@
 							html += "<td>" + list[i].remoteUser + "</td>";
 							html += "<td>" + list[i].recordTime + "</td>";
 							html += "<td style='text-align:center'>";
-							html += "<p class='ibm-button-link-alternate'>";
+							html += "<p class='ibm-button-link'>";
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 								+ list[i].id + "\")'>Update</a>";
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="

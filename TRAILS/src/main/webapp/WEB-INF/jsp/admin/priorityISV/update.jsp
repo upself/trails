@@ -5,6 +5,8 @@
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">	
+	
 <style>
 .ui-autocomplete-loading, .isv-submiting {
 	background: white
@@ -332,9 +334,10 @@
 	}
 </script>
 <div id="dialog"></div>
+<p class="ibm-important">IBM Confidential</p>
 <div class="ibm-container">
-	<div class="ibm-container-body">
-		<h2>Update priority ISV SW item</h2>
+	 <div class="ibm-container-body">
+	    <h2>Update priority ISV SW item</h2>
 		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>

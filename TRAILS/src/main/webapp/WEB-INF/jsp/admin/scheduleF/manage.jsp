@@ -6,6 +6,8 @@
 	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
 	
@@ -622,6 +624,8 @@
 </script>
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
+<p class="ibm-important">IBM Confidential</p>
+<div class="ibm-alternate-rule"><hr></div>
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"

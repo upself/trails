@@ -2,7 +2,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <h1>Alert type/cause code mapping</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-important">IBM Confidential</p>
 <br />
 <p>Below is a list of the alert types in the application. Press one of the links
 to customize cause code mappings.</p>

@@ -1,5 +1,7 @@
 <script src="${pageContext.request.contextPath}/js/jquery.js"
     type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 <script type="text/javascript">
 var orgMappedModel= new Array;
 var orgFreeModel= new Array;

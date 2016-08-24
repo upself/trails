@@ -1,9 +1,15 @@
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
-	<div class="ibm-col-4-3">
-		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
+    <p class="ibm-important">IBM Confidential</p>
+ 	<div class="ibm-col-1-1">
+      <div class="ibm-alternate-rule"><hr></div>
+	</div>
+ 	<div class="ibm-col-4-3">
+    	<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
 			<p>
 				<label style="width:30%" for="softwareName_id">
 					Software component:<span class="ibm-required">*</span>
@@ -73,7 +79,7 @@
 				</span>
 			</p>
 			
-			<div class="ibm-rule">
+			<div class="ibm-alternate-rule">
 				<hr />
 			</div>
 			<div class="ibm-columns">
@@ -128,9 +134,9 @@
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
-				
 			</tbody>
 		</table>
+	    <span class="ibm-spinner-large" id="loading" style="display: none"></span>
 	</div>
 </div>
 
@@ -146,6 +152,9 @@ function searchData(){
 			url: "${pageContext.request.contextPath}/ws/noninstance/search",
 			type: "POST",
 			params: $("#searchForm").serialize(),
+			beforeSend : function() {
+				showLoading();
+			},
 			success: function(result, pageIndex){
 				var html = '';
 				var list = result.data.list;
@@ -166,7 +175,7 @@ function searchData(){
 						html += "<td>" + list[i].status.description + "</td>";
 						html += "<td style='text-align:center'>";
 						<s:if test='#admin eq 1'>
-							html += "<p class='ibm-button-link-alternate'>"
+							html += "<p class='ibm-button-link'>"
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
 							html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
 						</s:if>
@@ -179,6 +188,9 @@ function searchData(){
 					}
 				}
 				$("#non_instance_list").html(html);
+			},
+			complete : function() {
+				hideLoading();
 			}
 		},
 		orderColumns: ['software.softwareName','manufacturer.manufacturerName','restriction','baseOnly','capacityType.description','status.description','id']
@@ -187,6 +199,14 @@ function searchData(){
 
 function openLink(url){
 	window.location.href = url;
+}
+
+function showLoading() {
+	$('#loading').show();
+}
+
+function hideLoading() {
+	$('#loading').hide();
 }
 </script>
 

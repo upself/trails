@@ -1,9 +1,12 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 <jsp:include page="mappingHead.jsp"></jsp:include>
 <div class="ibm-columns">
+	<p class="ibm-important">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
+	<div class="ibm-alternate-rule"><hr></div>
 		<p>Add or Remove one or more Asset machine models, based on the PVU details listed at the bottom of the screen. Click Submit to save your selections.</p>
 	</div>
 	<br />
@@ -85,7 +88,7 @@ $('#button_remove').click(function(event) {
 				
 					<div class="map_seprator">
 						<span> 
-						<p class="ibm-button-link-alternate">
+						<p class="ibm-button-link">
 							<a href="#" id="button_add" class="ibm-btn-small">&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;</a><br>
 							<a href="#" id="button_remove" class="ibm-btn-small">&lt;&lt;Remove</a>
 						</p>

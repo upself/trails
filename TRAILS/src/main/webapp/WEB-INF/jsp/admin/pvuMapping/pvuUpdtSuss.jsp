@@ -1,6 +1,9 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<p style="font-weight:bold">IBM Confidential</p>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
+<p class="ibm-important">IBM Confidential</p>
+<div class="ibm-alternate-rule"><hr></div>
 <s:if test="addCollection.size!=0||removeCollection.size!=0">
 
     <p>Your modification has been successful. See details below.

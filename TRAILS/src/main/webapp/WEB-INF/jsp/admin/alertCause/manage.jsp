@@ -5,6 +5,8 @@
 	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
+
 
 <script type="text/javascript">
 	$(function() {
@@ -192,7 +194,7 @@
 		$('#loading').hide();
 	}
 </script>
-<p style="font-weight:bold">IBM Confidential</p> 
+<p class="ibm-important">IBM Confidential</p>
 <br/>
 <div id="dialog"></div>
 <div class="ibm-container">
@@ -240,9 +242,9 @@
 			</div>
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
+					<input type="button" class="ibm-btn-pri" name="ibm-submit"
 						value="Submit" id="btnSubmit" /> <input type="button"
-						class="ibm-btn-arrow-pri" name="ibm-cancel" value="Cancel"
+						class="ibm-btn-pri" name="ibm-cancel" value="Cancel"
 						id="btnCancel" />
 				</p>
 			</div>

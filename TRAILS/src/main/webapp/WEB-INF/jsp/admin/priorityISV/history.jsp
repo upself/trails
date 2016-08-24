@@ -1,12 +1,13 @@
 <script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
+    <p class="ibm-important">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+	  <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Priority ISV history table">
-			<caption>
+		    <caption>
                <em>Priority ISV SW History</em>
             </caption>
 			<thead>

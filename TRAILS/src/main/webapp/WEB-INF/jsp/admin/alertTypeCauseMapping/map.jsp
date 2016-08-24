@@ -3,7 +3,7 @@
 
 <s:head />
 <h1>Alert type/cause code mapping</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-important">IBM Confidential</p>
 <br />
 <p>Add or remove cause codes associated with the selected alert type using the
 form below. Press the Save button to save your changes.</p>
