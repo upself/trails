@@ -3,9 +3,9 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
 <div class="ibm-columns">
-	<p class="ibm-important">IBM Confidential</p>
+	<p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-		<div class="ibm-alternate-rule"><hr></div>
+		<div class="ibm-alternate-rule"><hr/></div>
 		<p>Below lists the unique processor brands and models as taken from the software group website located 
 		<a href="https://www-112.ibm.com/software/howtobuy/passportadvantage/valueunitcalculator/vucalc.wss?jadeAction=DOWNLOAD_PVU_TABLE_SELECT">here</a>.
 		Click on one of the links to customize processor value unit mappings and/or view further details.

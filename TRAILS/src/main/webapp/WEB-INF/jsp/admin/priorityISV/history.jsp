@@ -3,7 +3,7 @@
 
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
-    <p class="ibm-important">IBM Confidential</p>
+    <p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
 	  <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
 			summary="Priority ISV history table">

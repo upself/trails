@@ -106,9 +106,9 @@ function keyup(type) {
 </script>
 <!-- manage Non Instance based SW -->
 <div class="ibm-columns">
-    <p class="ibm-important">IBM Confidential</p>
+    <p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-   	    <div class="ibm-alternate-rule"><hr></div>
+   	    <div class="ibm-alternate-rule"><hr/></div>
 		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<s:if test="#request.nonInstanceDisplay != null">
 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" />
@@ -172,9 +172,9 @@ function keyup(type) {
 				</select>
 				</span>
 			</p>
-			<span class="ibm-spinner-large" id="loading" style="display:none"></span>
+			<span class="ibm-spinner-large" id="loading" style="display:none;position:relative;top:-120px;z-index:9999;"></span>
 			<div class="ibm-alternate-rule">
-				<hr />
+				<hr/>
 			</div>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">

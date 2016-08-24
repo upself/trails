@@ -194,7 +194,7 @@
 		$('#loading').hide();
 	}
 </script>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br/>
 <div id="dialog"></div>
 <div class="ibm-container">
@@ -238,7 +238,7 @@
 			</p>
 
 			<div class="ibm-alternate-rule">
-				<hr>
+				<hr/>
 			</div>
 			<div class="ibm-buttons-row">
 				<p>

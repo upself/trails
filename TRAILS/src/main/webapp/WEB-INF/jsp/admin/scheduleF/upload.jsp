@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
-<p class="ibm-important">IBM Confidential</p>
-<div class="ibm-alternate-rule"/><hr></div>
+<p class="ibm-confidential">IBM Confidential</p>
+<div class="ibm-alternate-rule"/><hr/></div>
 <p>Use <a href="/TRAILS/template/scheduleFUploadTemplate.xls">this
 form</a> to upload Schedule F contract information. After you have selected
 a file on your local machine, click on Submit to begin the upload. After
@@ -25,7 +25,7 @@ out to complete the upload.</p>
 		</tr>
 	</table>
 </form>
-<div class="ibm-alternate-rule"/><hr></div>
+<div class="ibm-alternate-rule"/><hr/></div>
 </div>
 </div>
 <script>

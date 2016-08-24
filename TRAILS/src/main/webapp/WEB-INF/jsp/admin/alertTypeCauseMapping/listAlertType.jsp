@@ -2,12 +2,17 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <h1>Alert type/cause code mapping</h1>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
+<div class="ibm-alternate-rule">
+  <hr/>
+</div>
 <p>Below is a list of the alert types in the application. Press one of the links
 to customize cause code mappings.</p>
 <br />
-<div class="hrule-dots"></div>
+<div class="ibm-alternate-rule">
+  <hr/>
+</div>
 <br />
 <s:if test="hasActionMessages()">
 	<s:actionmessage />
