@@ -624,14 +624,14 @@
 </script>
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
-<p class="ibm-important">IBM Confidential</p>
-<div class="ibm-alternate-rule"><hr></div>
+<p class="ibm-confidential">IBM Confidential</p>
+<div class="ibm-alternate-rule"><hr/></div>
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"
 			action="/" class="ibm-column-form" enctype="multipart/form-data"
 			method="post">
-			<div id="spinner">
+			<div id="spinner" style="position:relative;z-index:9999;top:150px;">
 				<span class="ibm-spinner-large"></span>
 			</div>
 			<p>
@@ -722,11 +722,11 @@
 					id="businessJustificationError" style="display: none"></span>
 			</p>
 			<div class="ibm-alternate-rule">
-				<hr>
+				<hr/>
 			</div>
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="submit" class="ibm-btn-arrow-pri" name="ibm-submit"
+					<input type="submit" class="ibm-btn-pri" name="ibm-submit"
 						value="Submit" id="btnSubmit" />
 				</p>
 			</div>

@@ -1,9 +1,9 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
 <div class="ibm-columns">
-    <p class="ibm-important">IBM Confidential</p>
+    <p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-	    <div class="ibm-alternate-rule"><hr></div>
+	    <div class="ibm-alternate-rule"><hr/></div>
 		<p>
 			Use <a href="/TRAILS/template/priorityISVUploadTemplate.xls">this form</a> to upload Priority ISV SW. After you have
 			selected a file on your local machine, click on Submit to begin the upload. After the file loads, you will receive a
@@ -20,6 +20,6 @@
 		       <input name="ibm-submit" type="submit" value="Submit" onclick="$('#myForm').submit()" class="ibm-btn-pri" />
 			</p>
    		</form>
-		<div class="ibm-alternate-rule"><hr></div>
+		<div class="ibm-alternate-rule"><hr/></div>
 	</div>
 </div>

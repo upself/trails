@@ -334,7 +334,7 @@
 	}
 </script>
 <div id="dialog"></div>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <div class="ibm-container">
 	 <div class="ibm-container-body">
 	    <h2>Update priority ISV SW item</h2>
@@ -389,7 +389,7 @@
 			</p>
 
 			<div class="ibm-alternate-rule">
-				<hr>
+				<hr/>
 			</div>
 			<div class="ibm-buttons-row">
 				<p>

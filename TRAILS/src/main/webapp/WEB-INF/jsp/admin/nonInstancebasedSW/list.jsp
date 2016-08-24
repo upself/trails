@@ -4,9 +4,9 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- Search form -->
 <div class="ibm-columns">
-    <p class="ibm-important">IBM Confidential</p>
+    <p class="ibm-confidential">IBM Confidential</p>
  	<div class="ibm-col-1-1">
-      <div class="ibm-alternate-rule"><hr></div>
+      <div class="ibm-alternate-rule"><hr/></div>
 	</div>
  	<div class="ibm-col-4-3">
     	<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
@@ -80,7 +80,7 @@
 			</p>
 			
 			<div class="ibm-alternate-rule">
-				<hr />
+				<hr/>
 			</div>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">
@@ -136,7 +136,6 @@
 			<tbody id="non_instance_list">
 			</tbody>
 		</table>
-	    <span class="ibm-spinner-large" id="loading" style="display: none"></span>
 	</div>
 </div>
 
@@ -152,9 +151,6 @@ function searchData(){
 			url: "${pageContext.request.contextPath}/ws/noninstance/search",
 			type: "POST",
 			params: $("#searchForm").serialize(),
-			beforeSend : function() {
-				showLoading();
-			},
 			success: function(result, pageIndex){
 				var html = '';
 				var list = result.data.list;
@@ -188,9 +184,6 @@ function searchData(){
 					}
 				}
 				$("#non_instance_list").html(html);
-			},
-			complete : function() {
-				hideLoading();
 			}
 		},
 		orderColumns: ['software.softwareName','manufacturer.manufacturerName','restriction','baseOnly','capacityType.description','status.description','id']
@@ -199,14 +192,6 @@ function searchData(){
 
 function openLink(url){
 	window.location.href = url;
-}
-
-function showLoading() {
-	$('#loading').show();
-}
-
-function hideLoading() {
-	$('#loading').hide();
 }
 </script>
 
