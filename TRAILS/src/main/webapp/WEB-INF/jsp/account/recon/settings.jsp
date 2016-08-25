@@ -61,7 +61,8 @@
 			}
 		}
 		
-		if(from!=null && to!=null && to !='' && from !='' && from>to){
+		if(from!=null && to!=null && to !='' && from !='' && parseInt(from)>parseInt(to)){
+			alert("from:"+from+",to:"+to);
 			alert("The From field value should be less that To field value.");
 			return false;
 		}
