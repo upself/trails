@@ -36,7 +36,7 @@
 	
 	function checkRate(input)  
 	{  
-	     var re = /^[1-9]+[0-9]*]*$/; 
+	     var re = /^[0-9]*]*$/; 
 	     if (!re.test(input))  
 	    {  
 	        return false;  
@@ -50,13 +50,13 @@
 		var to=document.getElementById("alertTo").value;
 		if(from!=null && from !=''){
 			if(!checkRate(from)){
-				alert("please input number more than 0 in From field.");
+				alert("please input number in From field.");
 				return false;
 			}
 		}
 		if(to!=null && to !=''){
 			if(!checkRate(to)){
-				alert("please input correct number in To field.");
+				alert("please input number in To field.");
 				return false;
 			}
 		}
