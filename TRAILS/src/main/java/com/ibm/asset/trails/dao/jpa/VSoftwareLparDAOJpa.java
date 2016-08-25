@@ -74,32 +74,16 @@ public class VSoftwareLparDAOJpa extends
 							Restrictions.eqProperty("is.id",
 									"r.installedSoftware.id"))));
 		}
-//
-//		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-//			if (reconSetting.getAlertColor().equals("Green")) {
-//				criteria.add(Restrictions.lt("aus.alertAge", 45));
-//			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-//				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-//			} else if (reconSetting.getAlertColor().equals("Red")) {
-//				criteria.add(Restrictions.gt("aus.alertAge", 90));
-//			}
-//		}
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			if (reconSetting.getAlertColor().equals("lt45")) {
-				criteria.add(Restrictions.le("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("45and90")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 45), Restrictions.le("aus.alertAge", 90)));
-			} else if (reconSetting.getAlertColor().equals("90and120")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 90), Restrictions.le("aus.alertAge", 120)));
-			} else if (reconSetting.getAlertColor().equals("120and150")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 120), Restrictions.le("aus.alertAge", 150)));
-			}else if (reconSetting.getAlertColor().equals("150and180")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 150), Restrictions.le("aus.alertAge", 180)));
-			} else if (reconSetting.getAlertColor().equals("gt180")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 180));
-			}
+		
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
+			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
 		}
-
+		
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
+			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
+		}
+		
+		
 		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
 			if (reconSetting.getAssigned().equals("Assigned")) {
 				criteria.add(Restrictions.ne("aus.remoteUser", "STAGING"));
@@ -259,36 +243,10 @@ public class VSoftwareLparDAOJpa extends
 									"r.installedSoftware.id"))));
 		}
 
-//		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-//			criteria.add(Restrictions.eq("aus.open", true));
-//			if (reconSetting.getAlertColor().equals("Green")) {
-//				criteria.add(Restrictions.lt("aus.alertAge", 45));
-//			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-//				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-//			} else if (reconSetting.getAlertColor().equals("Red")) {
-//				criteria.add(Restrictions.gt("aus.alertAge", 90));
-//			}
-//		}
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			if (reconSetting.getAlertColor().equals("lt45")) {
-				criteria.add(Restrictions.le("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("45and90")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 45), Restrictions.le("aus.alertAge", 90)));
-			} else if (reconSetting.getAlertColor().equals("90and120")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 90), Restrictions.le("aus.alertAge", 120)));
-			} else if (reconSetting.getAlertColor().equals("120and150")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 120), Restrictions.le("aus.alertAge", 150)));
-			}else if (reconSetting.getAlertColor().equals("150and180")) {
-				criteria.add(Restrictions.and(Restrictions.gt("aus.alertAge", 150), Restrictions.le("aus.alertAge", 180)));
-			} else if (reconSetting.getAlertColor().equals("gt180")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 180));
-			}
-		}
-		
-		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom()>0){
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
 			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
 		}
-		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo()>0){
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
 			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
 		}
 
