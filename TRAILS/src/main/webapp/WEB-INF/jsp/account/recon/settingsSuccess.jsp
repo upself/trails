@@ -106,6 +106,16 @@
 				<s:property />
 			</s:iterator>
 		</div>
+		<br/>
+		<div style="float:left;width:25%">
+			<label for="products">SWCM ID(s):</label>
+		</div>
+		<div style="float:left;width:45%">
+			<s:iterator value="reconSetting.swcmIDs">
+				<s:property />
+			</s:iterator>
+		</div>
+		
 	</div>
 	<div class="ibm-rule"> <hr /> </div>
 	<div id="software_settings" class="ibm-col-1-1"  style="float:left;width:100%">

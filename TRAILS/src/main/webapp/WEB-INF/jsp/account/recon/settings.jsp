@@ -26,6 +26,7 @@
 		items = result.dataList;
 		if (items.length > 0) {
 			$(element).append("<option id='0' value=''>All</option>");
+			$(element).append("<option id='0' value='Not specified'>Not specified</option>");
 			for (var i = 0; i < items.length; i++) {
 				$(element).append(
 						"<option id='"+items[i].id+"' value='"+items[i].description+"'>"
@@ -235,6 +236,31 @@
 					</div>
 				</div>
 			</div>
+			<br /> <br />
+			<div class="ibm-col-1-1" style="float: left; width: 100%">
+				<div style="float: left; width: 25%">
+					<label>SWCM ID(s):</label>
+				</div>
+				<div style="float: left; width: 75%">
+					<div class="input-note">Use exact values</div>
+					<div class="date">
+						<s:textfield name="reconSetting.swcmIDs[0]" maxlength="32"
+							id="swcmNo_1" />
+						<s:textfield name="reconSetting.swcmIDs[1]" maxlength="32"
+							id="swcmNo_2" />
+						<s:textfield name="reconSetting.swcmIDs[2]" maxlength="32"
+							id="swcmNo_3" />
+						<br />
+						<s:textfield name="reconSetting.swcmIDs[3]" maxlength="32"
+							id="swcmNo_4" />
+						<s:textfield name="reconSetting.swcmIDs[4]" maxlength="32"
+							id="swcmNo_5" />
+						<s:textfield name="reconSetting.swcmIDs[5]" maxlength="32"
+							id="swcmNo_6" />
+					</div>
+				</div>
+			</div>
+			
 		</div>
 		<div class="ibm-rule">
 			<hr />
@@ -257,7 +283,7 @@
 				</div>
 				<div style="float: left; width: 45%">
 					<s:select id="finanResp" name="reconSetting.finanResp"
-						list="#{'CUSTO':'CUSTO','IBM':'IBM','N/A':'N/A'}" headerKey=""
+						list="#{'Not Specified':'Not Specified','CUSTO':'CUSTO','IBM':'IBM','N/A':'N/A'}" headerKey=""
 						headerValue="All" />
 				</div>
 			</div>

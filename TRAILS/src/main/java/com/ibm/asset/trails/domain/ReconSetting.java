@@ -22,10 +22,19 @@ public class ReconSetting {
 
 	private String[] productInfoNames = new String[6];
 	
+	private String[] swcmIDs = new String[6];
+
+	public String[] getSwcmIDs() {
+		return swcmIDs;
+	}
+
+	public void setSwcmIDs(String[] swcmIDs) {
+		this.swcmIDs = swcmIDs;
+	}
+
 	private String scope; 
 	
 	private String finanResp; 
-	
 	
 	public String getScope() {
 		return scope;
