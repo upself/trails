@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -53,6 +54,18 @@ public class InstalledSoftware extends AbstractDomainEntity {
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "installedSoftware", optional = true)
 	private AlertUnlicensedSwRecon alert;
+	
+	@OneToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinTable(name = "V_SCHEDULE_F", joinColumns = @JoinColumn(name = "INSTALLED_SOFTWARE_ID"), inverseJoinColumns = @JoinColumn(name = "SCHEDULE_F_ID"))
+	private ScheduleF scheduleF;
+
+	public ScheduleF getScheduleF() {
+		return scheduleF;
+	}
+
+	public void setScheduleF(ScheduleF scheduleF) {
+		this.scheduleF = scheduleF;
+	}
 
 	public Long getId() {
 		return id;

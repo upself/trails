@@ -39,6 +39,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
+				.createAlias("is.scheduleF", "sf")
+				.createAlias("sf.scope", "scope")
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
@@ -161,6 +163,16 @@ public class VSoftwareLparDAOJpa extends
 				criteria.add(Restrictions.in("sw.softwareName", list));
 			}
 		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getScope())){
+			criteria.add(Restrictions.eq("scope.description",
+					reconSetting.getScope()).ignoreCase());
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
+			criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()).ignoreCase());
+		}
+		
 		criteria.setProjection(Projections.projectionList().add(Projections.rowCount()));
 		
 		Long total = (Long)criteria.uniqueResult();
@@ -177,6 +189,8 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
+				.createAlias("is.scheduleF", "sf")
+				.createAlias("sf.scope", "scope")
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
@@ -300,6 +314,15 @@ public class VSoftwareLparDAOJpa extends
 			if (list.size() > 0) {
 				criteria.add(Restrictions.in("sw.softwareName", list));
 			}
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getScope())){
+			criteria.add(Restrictions.eq("scope.description",
+					reconSetting.getScope()).ignoreCase());
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
+			criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()).ignoreCase());
 		}
 
 		criteria.setProjection(Projections
