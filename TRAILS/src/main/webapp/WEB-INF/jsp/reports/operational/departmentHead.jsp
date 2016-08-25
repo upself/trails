@@ -105,7 +105,6 @@
 	</s:elseif>
 </ul>
 
-<br>
 <h1>Department</h1>
 <h4>Operational metrics reports</h4>
 <p class="ibm-important">IBM Confidential</p>

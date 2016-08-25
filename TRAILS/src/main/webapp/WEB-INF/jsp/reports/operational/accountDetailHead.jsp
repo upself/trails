@@ -347,7 +347,6 @@
 <s:a href="%{accountByNameLink}">Account by name</s:a> &gt;
 </p>
 
-<br />
 <h1>Account</h1>
 <h4>Operational metrics reports</h4>
 <p class="confidential">IBM Confidential</p>

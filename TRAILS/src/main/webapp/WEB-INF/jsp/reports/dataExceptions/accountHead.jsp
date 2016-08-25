@@ -376,7 +376,6 @@
 	</s:else>
 </ul>
 
-<br />
 <h1>Account</h1>
 <h4>Data exceptions reports</h4>
 <s:if

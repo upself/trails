@@ -355,7 +355,6 @@
 	</s:else>
 </ul>
 
-<br />
 <h1 class="oneline">Account alerts</h1>
 
 <s:if

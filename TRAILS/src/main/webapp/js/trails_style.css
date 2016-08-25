@@ -67,6 +67,10 @@
 	font-size: 1.4rem;
 }
 
+#ibm-content-main, ibm-content-main a {
+   font-size: 13px
+}
+
 input[class*="ibm-btn-"][class*="-pri"] {
 	min-width: 75px;
 	max-width: 150px;
@@ -108,21 +112,4 @@ div.ibm-alternate-rule, div.ibm-rule-alternate {
 	height: 2px;
 	clear: both;
 	margin: 10px;
-}
-
-#alert_settings #alertStatus, #assigned {
-	width: 200px;
-}
-
-#alert_settings #assignee {
-	width: 190px;
-}
-
-#alert_settings #alertFrom {
-	width: 80px;
-	margin-right: 17px;
-}
-
-#alert_settings #alertTo {
-	width: 80px;
 }

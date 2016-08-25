@@ -22,7 +22,6 @@
 	<li><s:a href="%{alerts}">Operational metrics</s:a></li>
 </ul>
 
-
 <h1>Geography</h1>
 <h4>Operational metrics reports</h4>
 <p class="ibm-important">IBM Confidential</p>
