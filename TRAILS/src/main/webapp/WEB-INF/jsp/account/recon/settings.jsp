@@ -50,13 +50,13 @@
 		var to=document.getElementById("alertTo").value;
 		if(from!=null && from !=''){
 			if(!checkRate(from)){
-				alert("please input number in From field.");
+				alert("Please input 0 or greater number into From field.");
 				return false;
 			}
 		}
 		if(to!=null && to !=''){
 			if(!checkRate(to)){
-				alert("please input number in To field.");
+				alert("Please input 0 or greater number into To field.");
 				return false;
 			}
 		}
