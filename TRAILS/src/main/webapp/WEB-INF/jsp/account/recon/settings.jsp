@@ -34,10 +34,49 @@
 			}
 		}
 	}
+	
+	function checkRate(input)  
+	{  
+	     var re = /^[0-9]*]*$/; 
+	     if (!re.test(input))  
+	    {  
+	        return false;  
+	     }  
+	     return true;
+	}  
+
+	
+	function validateFromTo(){
+		var from=document.getElementById("alertFrom").value;
+		var to=document.getElementById("alertTo").value;
+		if(from!=null && from !=''){
+			if(!checkRate(from)){
+				alert("Please input 0 or greater number into From field.");
+				return false;
+			}
+		}
+		if(to!=null && to !=''){
+			if(!checkRate(to)){
+				alert("Please input 0 or greater number into To field.");
+				return false;
+			}
+		}
+		
+		if(from!=null && to!=null && to !='' && from !='' && parseInt(from)>parseInt(to)){
+			alert("The From field value should be less that To field value.");
+			return false;
+		}
+		
+		return true;
+	}
 
 	function updateAction() {
-		document.settings.action = "settings!update.htm";
-		document.settings.submit();
+		if(validateFromTo()){
+			document.settings.action = "settings!update.htm";
+			document.settings.submit();
+		}else{
+			return ;
+		}
 	}
 </script>
 
@@ -86,13 +125,10 @@
 			<br />
 			<div class="ibm-col-1-1" style="float: left; width: 100%">
 				<div style="float: left; width: 25%">
-					<label for="alertColor">Alert color:</label>
+					<label for="alertColor">Alert age:</label>
 				</div>
 				<div style="float: left; width: 45%">
-					<s:select name="reconSetting.alertColor" label="Alert color"
-						id="alertColor"
-						list="#{'Green':'Green','Yellow':'Yellow','Red':'Red' }"
-						headerKey="" headerValue="All" />
+					<s:textfield id="alertFrom" placeholder="From" style="width:10%" name="reconSetting.alertFrom"></s:textfield>  <s:textfield id="alertTo" placeholder="To" style="width:10%" name="reconSetting.alertTo"></s:textfield> days
 				</div>
 			</div>
 			<br />

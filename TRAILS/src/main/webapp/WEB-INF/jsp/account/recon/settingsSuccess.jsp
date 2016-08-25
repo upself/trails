@@ -38,12 +38,20 @@
 		</div>
 	<br />
 			<div style="float:left;width:25%">
-				<label for="alertColor">Alert color:</label>
+				<label for="alertColor">Alert age:</label>
 			</div>
 			<div style="float:left;width:45%">
-				<s:property value="reconSetting.alertColor" />
+				<s:if test="reconSetting.alertFrom != null">
+					More than <s:property value="reconSetting.alertFrom"/> days
+				</s:if>
+				<s:if test="reconSetting.alertFrom!=null && reconSetting.alertTo!=null"> and </s:if>
+				<s:if test="reconSetting.alertTo != null">
+					Less than <s:property value="reconSetting.alertTo"/> days
+				</s:if>
 			</div>
 	<br />
+	
+	
 			<div style="float:left;width:25%">
 				<label for="assigned">Assignment</label>
 			</div>

@@ -23,6 +23,25 @@ public class ReconSetting {
 	private String[] productInfoNames = new String[6];
 	
 	private String[] swcmIDs = new String[6];
+	
+	private Integer alertFrom;
+	private Integer alertTo;
+	
+	public Integer getAlertFrom() {
+		return alertFrom;
+	}
+
+	public void setAlertFrom(Integer alertFrom) {
+		this.alertFrom = alertFrom;
+	}
+
+	public Integer getAlertTo() {
+		return alertTo;
+	}
+
+	public void setAlertTo(Integer alertTo) {
+		this.alertTo = alertTo;
+	}
 
 	public String[] getSwcmIDs() {
 		return swcmIDs;

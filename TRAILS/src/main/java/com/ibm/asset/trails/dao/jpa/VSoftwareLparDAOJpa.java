@@ -74,17 +74,16 @@ public class VSoftwareLparDAOJpa extends
 							Restrictions.eqProperty("is.id",
 									"r.installedSoftware.id"))));
 		}
-
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			if (reconSetting.getAlertColor().equals("Green")) {
-				criteria.add(Restrictions.lt("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-			} else if (reconSetting.getAlertColor().equals("Red")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 90));
-			}
+		
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
+			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
 		}
-
+		
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
+			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
+		}
+		
+		
 		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
 			if (reconSetting.getAssigned().equals("Assigned")) {
 				criteria.add(Restrictions.ne("aus.remoteUser", "STAGING"));
@@ -248,15 +247,11 @@ public class VSoftwareLparDAOJpa extends
 									"r.installedSoftware.id"))));
 		}
 
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			criteria.add(Restrictions.eq("aus.open", true));
-			if (reconSetting.getAlertColor().equals("Green")) {
-				criteria.add(Restrictions.lt("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-			} else if (reconSetting.getAlertColor().equals("Red")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 90));
-			}
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
+			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
+		}
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
+			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
 		}
 
 		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
