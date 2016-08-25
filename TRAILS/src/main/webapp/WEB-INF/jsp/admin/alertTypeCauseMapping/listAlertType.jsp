@@ -1,6 +1,3 @@
-<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
-
 <h1>Alert type/cause code mapping</h1>
 <p class="ibm-confidential">IBM Confidential</p>
 <br />

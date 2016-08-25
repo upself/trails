@@ -1,6 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
-
 <div class="ibm-columns">
     <p class="ibm-confidential">IBM Confidential</p>
 	<!-- SORTABLE DATA TABLE -->

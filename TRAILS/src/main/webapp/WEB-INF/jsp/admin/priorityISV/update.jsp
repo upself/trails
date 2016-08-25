@@ -1,14 +1,7 @@
-<!-- BEGIN PRIORITY ISV UPDATE -->
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">	
-	
+<!-- BEGIN PRIORITY ISV UPDATE -->
 <style>
-.ui-autocomplete-loading, .isv-submiting {
+.ui-	-loading, .isv-submiting {
 	background: white
 		url("${pageContext.request.contextPath}/images/ui-anim_basic_16x16.gif")
 		right center no-repeat;
@@ -403,8 +396,3 @@
 	</div>
 </div>
 <!-- END PRIORITY ISV UPDATE -->
-
-
-
-
-

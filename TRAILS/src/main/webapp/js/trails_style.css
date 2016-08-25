@@ -10,7 +10,12 @@
 	background: white;
 }
 
-#ibm-content-main>.ibm-columns>.ibm-col-1-1 {
+#ibm-content-main > .ibm-columns > .ibm-col-1-1{
+	width: 95%;
+	background: white;
+}
+
+#ibm-content-main > .ibm-columns > .ibm-col-1-1 > table{
 	background: white;
 }
 
@@ -26,12 +31,12 @@
 	font-size: 1.5rem;
 }
 
-#ibm-top p {
-	font-size: 1.5rem;
-}
-
 .ibm-default #ibm-content h3 {
 	padding-left: 1.5rem;
+}
+
+#ibm-content-main p{
+	font-size: 1.4rem;
 }
 
 /*1st level menu*/

@@ -1,7 +1,5 @@
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
-<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
 
 <script type="text/javascript">
 var lastValue = '';

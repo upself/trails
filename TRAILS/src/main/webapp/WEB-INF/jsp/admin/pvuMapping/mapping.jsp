@@ -1,11 +1,9 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
-
 <jsp:include page="mappingHead.jsp"></jsp:include>
 <div class="ibm-columns">
-	<p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
+	<p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-alternate-rule"><hr/></div>
 		<p>Add or Remove one or more Asset machine models, based on the PVU details listed at the bottom of the screen. Click Submit to save your selections.</p>
 	</div>
@@ -88,9 +86,9 @@ $('#button_remove').click(function(event) {
 				
 					<div class="map_seprator">
 						<span> 
-						<p class="ibm-button-link">
-							<a href="#" id="button_add" class="ibm-btn-small">&nbsp;&nbsp;&nbsp;Add&gt;&gt;&nbsp;&nbsp;</a><br>
-							<a href="#" id="button_remove" class="ibm-btn-small">&lt;&lt;Remove</a>
+						<p>
+							<input type="submit" value="Add&gt;&gt;" id="button_add" class="ibm-btn-pri"><br>
+							<input type="submit" value="&lt;&lt;Remove" id="button_remove" class="ibm-btn-pri">
 						</p>
 							<br />
 							<br />
@@ -117,64 +115,9 @@ $('#button_remove').click(function(event) {
 	</s:form>
 	</div>
 </div>
-<div class="ibm-rule">
+<div class="ibm-alternate-rule">
+  <hr/>
 </div>
-
-<!-- 
-<script type="text/javascript">
-var url = "${pageContext.request.contextPath}/ws/pvu/getPvuById/<s:property value='pvuId'/>";
-$
-		.ajax({
-			url : url,
-			type : "GET",
-			dataType : 'json',
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert(textStatus);
-			},
-			success : function(data) {
-				var html = '';
-				if (data.data.status == 400) {
-					html += "<tr><td colspan='7'>" + data.msg
-							+ "</td></tr>"
-				} else {
-					var list = data.data.processorValueUnitInfo;
-					for (var i = 0; i < list.length; i++) {
-						html += "<tr>";
-						html += "<td>" + list[i].processorArchitecture + "</td>";		
-						html += "<td>" + list[i].serverVendor + "</td>";
-						html += "<td>" + list[i].serverBrand + "</td>";
-						html += "<td>" + list[i].processorVendor + "</td>";
-						html += "<td>" + list[i].processorType + "</td>";
-						html += "<td>" + list[i].valueUnitsPerCore + "</td>";
-						html += "<td>" + list[i].status + "</td>";
-						html += "</tr>"; 
-					}
-				}
-				$("#processor_info_list").html(html);
-			}
-		});
-</script>
-
-	<div class="ibm-col-1-1">
-	<br>
-		<table cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-sortable-table"
-			summary="Sortable PVU Mapping">
-			<thead>
-				<tr>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Processor architecture</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Server vendor</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Server brand</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Processor vendor</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Processor type</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>PVUs per core</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="#sort"><span>Status</span><span class="ibm-icon"></span></a></th>
-				</tr>
-			</thead>
-			<tbody id="processor_info_list">
-			</tbody>
-		</table>
-	</div>
- -->
 <div>
 <br>
 	<display:table name="pvu.processorValueUnitInfo" class="ibm-data-table ibm-sortable-table" summary="PVU mapping"

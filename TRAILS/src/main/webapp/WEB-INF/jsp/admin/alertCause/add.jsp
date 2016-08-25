@@ -1,5 +1,3 @@
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
-
 <!-- BEGIN CASUE CODE ADD -->
 <script type="text/javascript">
 	$(function() {
@@ -215,9 +213,9 @@
 		$('#loading').hide();
 	}
 </script>
-<p class="ibm-confidential">IBM Confidential</p>
 <br/>
 <div id="dialog"></div>
+<p class="ibm-confidential">IBM Confidential</p>
 <div class="ibm-container">
 	<div class="ibm-container-body">
 		<br />

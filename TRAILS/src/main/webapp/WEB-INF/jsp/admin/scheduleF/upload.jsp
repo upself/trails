@@ -1,5 +1,3 @@
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
-
 <div class="ibm-columns"><div class="ibm-col-1-1">
 <p class="ibm-confidential">IBM Confidential</p>
 <div class="ibm-alternate-rule"/><hr/></div>

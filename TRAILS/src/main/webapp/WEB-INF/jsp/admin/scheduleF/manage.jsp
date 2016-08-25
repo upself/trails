@@ -1,13 +1,3 @@
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/trails_style.css">
-
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
 	

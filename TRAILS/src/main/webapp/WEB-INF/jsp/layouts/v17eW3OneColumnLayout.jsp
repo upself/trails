@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tmp"%>
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <!DOCTYPE html>
@@ -41,38 +42,14 @@
 <link href="//1.w3.s81c.com/common/v17e/css/social.css" rel="stylesheet" title="w3" type="text/css" />
 <link href="//1.w3.s81c.com/common/v17e/css/module.css" rel="stylesheet" title="w3" type="text/css" />
 	
-<style type="text/css">
-
-#ibm-content-main > .ibm-columns > .ibm-col-1-1{
-	width: 95%;
-	background: white;
-}
-
-#ibm-content-main > .ibm-columns > .ibm-col-1-1 > table{
-	background: white;
-}
-
-
-.nobreak{
-	word-break: keep-all;
-	white-space:nowrap;
-}
-.alert-go{
-	color: #66CD00;
-}
-
-.alert-stop{
-	color: red;
-}
-.orange-med{
-	color: #FFC125;
-}
-</style>
-
-<link href="${pageContext.request.contextPath}/js/trails_style.css" rel="stylesheet"
-	title="w3" type="text/css" />
-	
 <script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
+
+<link href="${pageContext.request.contextPath}/js/trails_style.css" rel="stylesheet" title="w3" type="text/css" />
+
 <script type="text/javascript">
 	ibmweb.config.set({
 		siteid : 'w3',
@@ -94,19 +71,7 @@
 		}
 	});
 </script>
-<%-- <script type="text/javascript">
-	ibmweb.config.set({
-		opinionlab : {
-			floating : {
-				enabled : true,
-				type : 'overlay',
-				hide : 3600
-			}
-		}
-	});
-</script> --%>
 </head>
-
 
 <body id="ibm-com" class="ibm-default">
 	<div id="ibm-top">
@@ -148,7 +113,7 @@
 					<div id="ibm-leadspace-body">
 						<div class="ibm-columns">
 							<div class="ibm-col-1-1">
-								<h1 id="titleContent" style="font-size:23px" ><tmp:insertAttribute name="contentTitle" /></h1>
+								<h1 id="titleContent"><tmp:insertAttribute name="contentTitle" /></h1>
 							</div>
 						</div>
 					</div>
