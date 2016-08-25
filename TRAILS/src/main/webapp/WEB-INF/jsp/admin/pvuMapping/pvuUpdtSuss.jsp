@@ -1,3 +1,6 @@
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+
 <div class="ibm-columns">
 <div class="ibm-col-1-1">
 <p class="ibm-confidential">IBM Confidential</p>
@@ -13,7 +16,7 @@
 	    <br />
 	    <s:if test="addCollection.size!=0">
 	        <p>Added mapping(s):</p>
-	        <display:table name="addCollection" class="ibm-data-table ibm-alternating" id="id"
+	        <display:table name="addCollection" class="ibm-data-table" id="id"
 	            decorator="org.displaytag.decorator.TotalTableDecorator"
 	            cellspacing="1" cellpadding="0">
 	            <display:column title="Processor brand">${pvu.processorBrand}</display:column>
@@ -26,7 +29,7 @@
 	    <br />
 	    <s:if test="removeCollection.size!=0">
 	        <p>Removed mapping(s):</p>
-	        <display:table name="removeCollection" class="ibm-data-table ibm-alternating" 
+	        <display:table name="removeCollection" class="ibm-data-table" 
 	            id="id" summary="remove Collection"
 	            decorator="org.displaytag.decorator.TotalTableDecorator"
 	            cellspacing="1" cellpadding="0">
