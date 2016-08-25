@@ -1,13 +1,11 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<h1>Aging red alerts reports</h1>
-
+<h2>Aging red alerts reports</h2>
 <p class="ibm-important">IBM Confidential</p>
-<br />
+
+<h3 style="background-color: #d7d7d8">Aging red alerts reports</h3>
 <br />
 
-<h2 class="bar-blue-med-light"> Aging red alerts Reports</h2>
-<br />
 <s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a>
 <br />
 <br />

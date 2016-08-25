@@ -194,7 +194,6 @@
 </s:else>
 </p>
 
-<br />
 <h1>Account</h1>
 <h4>Aging red alerts reports</h4>
 <s:if test="geography != null || region != null || countryCode != null || department != null">
