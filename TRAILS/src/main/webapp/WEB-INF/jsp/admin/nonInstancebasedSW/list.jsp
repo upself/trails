@@ -4,9 +4,6 @@
 <!-- Search form -->
 <div class="ibm-columns">
     <p class="ibm-confidential">IBM Confidential</p>
- 	<div class="ibm-col-1-1">
-      <div class="ibm-alternate-rule"><hr/></div>
-	</div>
  	<div class="ibm-col-4-3">
     	<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
 			<p>
@@ -78,9 +75,6 @@
 				</span>
 			</p>
 			
-			<div class="ibm-alternate-rule">
-				<hr/>
-			</div>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">
 					<p>

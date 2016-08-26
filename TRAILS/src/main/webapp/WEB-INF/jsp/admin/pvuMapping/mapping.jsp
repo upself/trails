@@ -4,7 +4,6 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 	<p class="ibm-confidential">IBM Confidential</p>
-	<div class="ibm-alternate-rule"><hr/></div>
 		<p>Add or Remove one or more Asset machine models, based on the PVU details listed at the bottom of the screen. Click Submit to save your selections.</p>
 	</div>
 	<br />

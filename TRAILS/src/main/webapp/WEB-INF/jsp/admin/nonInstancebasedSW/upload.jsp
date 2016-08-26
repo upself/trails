@@ -1,7 +1,6 @@
 <div class="ibm-columns">
 	<p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-    	<div class="ibm-alternate-rule"><hr/></div>
 		<p>
 			Use <a href="/TRAILS/template/nonInstanceUploadTemplate.xls">this
 				form</a> to upload Non Instance Base Software Component. After you have
@@ -23,7 +22,6 @@
 				<input  name="ibm-submit" type="submit" value="Submit" onclick="$('#myForm').submit();" class="ibm-btn-pri" />
 			</p>
 		</form>
-		<div class="ibm-alternate-rule"><hr/></div>
 	</div>
 </div>
 

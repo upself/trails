@@ -1,7 +1,6 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
 	<p class="ibm-confidential">IBM Confidential</p>
-	<div class="ibm-alternate-rule"><hr/></div>
 	<p>
 			Below is a list of the cause codes in the application. Press one
 	of the links to edit the cause code details. You can also add a new

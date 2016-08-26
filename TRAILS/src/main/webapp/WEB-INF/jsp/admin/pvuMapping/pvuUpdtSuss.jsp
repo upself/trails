@@ -4,7 +4,6 @@
 <div class="ibm-columns">
 <div class="ibm-col-1-1">
 <p class="ibm-confidential">IBM Confidential</p>
-<div class="ibm-alternate-rule"><hr/></div>
 	<s:if test="addCollection.size!=0||removeCollection.size!=0">
 	    <p>Your modification has been successful. See details below.
 	    Click <a
@@ -45,6 +44,5 @@
 	No changes to PVU Mapping have been made. Click <a
 	        href="${pageContext.request.contextPath}/admin/pvuMapping/updatePvuMap.htm?pvuId=${pvuId}">here</a> to return to PVU Map screen.
 	</s:else>
-	<div class="ibm-alternate-rule"><hr/></div>
 </div>
 </div>

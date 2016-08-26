@@ -615,7 +615,6 @@
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
 <p class="ibm-confidential">IBM Confidential</p>
-<div class="ibm-alternate-rule"><hr/></div>
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"

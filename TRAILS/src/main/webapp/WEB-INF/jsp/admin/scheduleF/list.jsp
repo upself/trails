@@ -186,7 +186,6 @@
 </script>
 <div class="ibm-columns"><div class="ibm-col-1-1">
 <p class="ibm-confidential">IBM Confidential</p>
-<div class="ibm-alternate-rule"><hr/></div>
 <div>
 <h2>Software License Management Report Delivery Tracking</h2>
 </div>
@@ -242,7 +241,6 @@
 	<div id="historyContent" ></div>
 </div>
 <br>
-<div class="ibm-alternate-rule"><hr/></div>
 <div style="float: left">
 <div>
 <h2 class="oneline">Schedule F</h2>

@@ -106,8 +106,7 @@ function keyup(type) {
 <div class="ibm-columns">
     <p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-   	    <div class="ibm-alternate-rule"><hr/></div>
-		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
+   		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<s:if test="#request.nonInstanceDisplay != null">
 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" />
 			</s:if>
@@ -171,9 +170,6 @@ function keyup(type) {
 				</span>
 			</p>
 			<span class="ibm-spinner-large" id="loading" style="display:none;position:relative;top:-120px;z-index:9999;"></span>
-			<div class="ibm-alternate-rule">
-				<hr/>
-			</div>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">
 					<p>

@@ -2,7 +2,6 @@
     <p class="ibm-confidential">IBM Confidential</p>
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-	    <div class="ibm-alternate-rule"><hr/></div>
 		<div style="height:180px;width: 100%; float: left">
 			<div style="line-height:150px;width:30%;float: left">
 				View as Level:
