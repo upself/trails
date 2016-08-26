@@ -106,10 +106,3 @@ ul.horizontal-list li {
 h2.green-dark {
 	color: red;
 }
-
-div.ibm-alternate-rule, div.ibm-rule-alternate {
-	background-color: black;
-	height: 2px;
-	clear: both;
-	margin: 10px;
-}
