@@ -486,10 +486,6 @@
 		<put-attribute name="content" type="template" value="" />
 		<put-attribute name="contentSidebar" type="template" value="" />
 	</definition>
-	
-	<definition name="tiles.v17e.fluidContentLayout" template="/WEB-INF/jsp/layouts/v17eFluidContentLayout.jsp">
-		<put-attribute name="content" type="template" value="" />
-	</definition>
 
 	<definition name="tiles.v17ePopupLayout" template="/WEB-INF/jsp/layouts/v17ePopupLayout.jsp">
 		<put-attribute name="contentTitle" value="" />
@@ -1430,8 +1426,9 @@
 	</definition>
 
 	<definition name="tiles.account.recon.workspace.manualAllocation.v17e"
-		extends="tiles.v17e.fluidContentLayout">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/manualAllocation_v17e.jsp" />
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template"
+			value="/WEB-INF/jsp/account/recon/manualAllocation_v17e.jsp" />
 		<put-attribute name="description" value="TRAILS manual license allocation" />
 		<put-attribute name="keywords" value="TRAILS manual license allocation" />
 	</definition>
@@ -1550,7 +1547,7 @@
 			value="TRAILS manual allocation confirmation" />
 	</definition>
 	
-	<definition name="tiles.account.recon.workspace.manualConfirmation.v17e" extends="tiles.v17e.fluidContentLayout">
+	<definition name="tiles.account.recon.workspace.manualConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/manualConfirmation_v17e.jsp" />
 		<put-attribute name="description" value="TRAILS manual allocation confirmation" />
 		<put-attribute name="keywords" value="TRAILS manual allocation confirmation" />
