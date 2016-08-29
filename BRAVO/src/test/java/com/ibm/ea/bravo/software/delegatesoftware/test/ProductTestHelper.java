@@ -30,7 +30,6 @@ public class ProductTestHelper {
 	}
 
 	public static Product create() {
-
 		return create(null, ManufacturerTestHelper.create());
 	}
 

@@ -42,7 +42,9 @@ import com.ibm.ea.sigbank.BankAccount;
 import com.ibm.ea.sigbank.KbDefinition;
 import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.ProductInfo;
+
 import com.ibm.ea.sigbank.Software;
+
 import com.ibm.ea.sigbank.SoftwareCategory;
 import com.ibm.ea.sigbank.SoftwareItem;
 import com.ibm.ea.utils.EaUtils;
