@@ -4,7 +4,6 @@
 <p class="ibm-important">IBM Confidential</p>
 
 <h3 style="background-color: #d7d7d8">Software Tracking Only account Metrics reports</h3>
-<br />
 
 <ul id="ibm-link-list">
 	<li><s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a></li>
