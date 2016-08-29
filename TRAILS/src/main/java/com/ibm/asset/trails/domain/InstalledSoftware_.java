@@ -18,4 +18,5 @@ public class InstalledSoftware_ {
 	public static volatile SingularAttribute<InstalledSoftware, Date> recordTime;
 	public static volatile SingularAttribute<InstalledSoftware, String> status;
 	public static volatile SingularAttribute<InstalledSoftware, AlertUnlicensedSwRecon> alert;
+	public static volatile SingularAttribute<InstalledSoftware, ScheduleF> scheduleF;
 }

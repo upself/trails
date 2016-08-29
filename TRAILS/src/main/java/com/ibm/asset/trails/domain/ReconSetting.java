@@ -21,6 +21,55 @@ public class ReconSetting {
 	private String[] serialNumbers = new String[6];
 
 	private String[] productInfoNames = new String[6];
+	
+	private String[] swcmIDs = new String[6];
+	
+	private Integer alertFrom;
+	private Integer alertTo;
+	
+	public Integer getAlertFrom() {
+		return alertFrom;
+	}
+
+	public void setAlertFrom(Integer alertFrom) {
+		this.alertFrom = alertFrom;
+	}
+
+	public Integer getAlertTo() {
+		return alertTo;
+	}
+
+	public void setAlertTo(Integer alertTo) {
+		this.alertTo = alertTo;
+	}
+
+	public String[] getSwcmIDs() {
+		return swcmIDs;
+	}
+
+	public void setSwcmIDs(String[] swcmIDs) {
+		this.swcmIDs = swcmIDs;
+	}
+
+	private String scope; 
+	
+	private String finanResp; 
+	
+	public String getScope() {
+		return scope;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
+	public String getFinanResp() {
+		return finanResp;
+	}
+
+	public void setFinanResp(String finanResp) {
+		this.finanResp = finanResp;
+	}
 
 	public String getAlertColor() {
 		return alertColor;

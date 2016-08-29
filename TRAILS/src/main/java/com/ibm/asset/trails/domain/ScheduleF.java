@@ -11,10 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -78,10 +80,9 @@ public class ScheduleF {
 	@JoinColumn(name = "SOURCE_ID")
 	private Source source;
 	
-	//AB added begin
 	@Column(name="SW_FINANCIAL_RESP")
 	private String SWFinanceResp;
-	
+
 	public String getSWFinanceResp() {
 		return SWFinanceResp;
 	}
@@ -89,7 +90,6 @@ public class ScheduleF {
 	public void setSWFinanceResp(String sWFinanceResp) {
 		SWFinanceResp = sWFinanceResp;
 	}
-	//AB added end
 	
 	@Column(name = "SOURCE_LOCATION")
 	private String sourceLocation;

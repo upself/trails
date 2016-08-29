@@ -63,6 +63,8 @@ public interface ReconWorkspaceService extends BaseService {
 	//Story 26012
 	public List<String> getScheduleFValResult();
 	
+	public String getQuantityValResult();
+	
 	//defect 27747
 	public String getProcWarnMsg();
 	public void setProcWarnMsg(String procWarnMsg);
