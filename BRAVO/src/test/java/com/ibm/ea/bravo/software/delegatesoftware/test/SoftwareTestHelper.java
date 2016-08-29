@@ -9,27 +9,43 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
+import com.ibm.ea.sigbank.KbDefinition;
+import com.ibm.ea.sigbank.Manufacturer;
 import com.ibm.ea.sigbank.Software;
+import com.ibm.ea.sigbank.SoftwareCategory;
 
 public class SoftwareTestHelper {
 
-	public static Software createRecord() {
+	public static Software create() {
 
 		Session session = null;
 		try {
 			session = HibernateDelegate.getSession();
-
-			// 1) create each dependent entity
-
+			
+			KbDefinition kbDefinition = KbDefinitionTestHelper.create();
+			System.out.println("kbDefinition.getId(): " + kbDefinition.getId());
+	
+			Manufacturer manufacturer = ManufacturerTestHelper.create();
+			ProductTestHelper.create(kbDefinition.getId(), manufacturer);
+			
+			SoftwareCategory softwareCategory = SoftwareCategoryTestHelper.create();
+			ProductInfoTestHelper.create(kbDefinition.getId(), softwareCategory);
+			
+			SoftwareItemTestHelper.create(kbDefinition.getId());
+			
 			refreshMQT(session);
+			
 			session.close();
-			return getAnyRecord();
+			return getByKbId(kbDefinition.getId());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 
 	}
+	
+	
 
 	private static void refreshMQT(Session session) throws SQLException {
 		final Connection connection = session.connection();
@@ -37,7 +53,7 @@ public class SoftwareTestHelper {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
-			stmt.executeQuery("refresh table eaadmin.software");
+			stmt.executeUpdate("refresh table eaadmin.software");
 		} finally {
 			if (stmt != null)
 				try {
@@ -47,15 +63,15 @@ public class SoftwareTestHelper {
 		}
 	}
 
-	public static Software getAnyRecord() {
+	public static Software getByKbId(Long KbId) {
 
 		Software software = null;
 
 		try {
 			Session session = HibernateDelegate.getSession();
 
-			Query query = session.createQuery("FROM com.ibm.ea.sigbank.Software");
-			query.setMaxResults(1);
+			String hqlSelect = "FROM com.ibm.ea.sigbank.Software where KbId = :KbId";
+			Query query = session.createQuery(hqlSelect).setLong("KbId", new Long(KbId));
 			software = (Software) query.uniqueResult();
 
 			HibernateDelegate.closeSession(session);
@@ -66,7 +82,7 @@ public class SoftwareTestHelper {
 		return software;
 	}
 
-	public static void deleteRecord(Software software) {
+	public static void delete(Software software) {
 
 		Transaction tx = null;
 		Session session = null;
@@ -85,6 +101,31 @@ public class SoftwareTestHelper {
 		} finally {
 			session.close();
 		}
+	}
+	
+	public static Integer validate() {
+		Integer result = null;
+
+		try {
+			Session session = HibernateDelegate.getSession();
+
+//			String sqlSelect = "" +
+//				"SELECT COUNT(*) FROM EAADMIN.SOFTWARE " +
+//				"SELECT COUNT(*) FROM EAADMIN.PRODUCT " +
+//				"SELECT COUNT(*) FROM EAADMIN.PRODUCT_INFO " +
+//				"SELECT COUNT(*) FROM EAADMIN.SOFTWARE_ITEM " +
+//				"SELECT COUNT(*) FROM EAADMIN.KB_DEFINITION " +
+//				"SELECT COUNT(*) FROM EAADMIN.SOFTWARE_CATEGORY";
+			String sqlSelect = "SELECT COUNT(*) FROM EAADMIN.SOFTWARE";
+			Query query = session.createSQLQuery(sqlSelect);
+			result = (Integer) query.uniqueResult();
+
+			HibernateDelegate.closeSession(session);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 }

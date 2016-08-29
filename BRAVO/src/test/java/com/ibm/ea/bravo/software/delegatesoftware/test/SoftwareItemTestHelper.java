@@ -6,13 +6,22 @@ import org.hibernate.Transaction;
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
 import com.ibm.ea.sigbank.Manufacturer;
 import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.ProductInfo;
+import com.ibm.ea.sigbank.SoftwareItem;
 
-public class ManufacturerTestHelper {
+public class SoftwareItemTestHelper {
 
-	public static Manufacturer create() {
+	public static SoftwareItem create() {
 
-		Manufacturer manufacturer = new Manufacturer();
-		manufacturer.setManufacturerName("manufacturerName");
+		return create(null);
+	}
+	
+	public static SoftwareItem create(Long id) {
+
+		SoftwareItem softwareItem = new SoftwareItem();
+		if (id != null) {
+			softwareItem.setId(id);
+		}
 
 		Transaction tx = null;
 		Session session = null;
@@ -20,7 +29,7 @@ public class ManufacturerTestHelper {
 			session = HibernateDelegate.getSession();
 			tx = session.beginTransaction();
 
-			session.save(manufacturer);
+			session.save(softwareItem);
 
 			tx.commit();
 		} catch (Exception e) {
@@ -30,19 +39,20 @@ public class ManufacturerTestHelper {
 		} finally {
 			session.close();
 		}
-		return manufacturer;
+		return softwareItem;
 	}
 	
-	public static void delete(Manufacturer manufacturer) {
+	public static void delete(SoftwareItem softwareItem) {
 
 		Transaction tx = null;
 		Session session = null;
 		try {
 			session = HibernateDelegate.getSession();
 			tx = session.beginTransaction();
-				
-			session.refresh(manufacturer);
-			session.delete(manufacturer);
+
+			session.refresh(softwareItem);
+			session.delete(softwareItem);
+
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)

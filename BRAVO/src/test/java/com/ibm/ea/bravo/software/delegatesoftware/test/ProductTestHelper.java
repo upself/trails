@@ -1,12 +1,11 @@
 package com.ibm.ea.bravo.software.delegatesoftware.test;
 
-import java.util.Date;
-
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
+import com.ibm.ea.sigbank.Manufacturer;
 import com.ibm.ea.sigbank.Product;
 
 public class ProductTestHelper {
@@ -30,22 +29,19 @@ public class ProductTestHelper {
 		return product;
 	}
 
-	public static Product createRecord() {
+	public static Product create() {
 
-		// createRecord = I mean that, return a record :) Figure out keys, IDs,
-		// expect exceptions, rerun again
-		// Hibernate: select max(ID) from PRODUCT_INFO ~ Hibernate maybe taking
-		// care of this one
-		// figure out locking, this select max(ID) might be run three times at
-		// the same time from different sources
-		
+		return create(null, ManufacturerTestHelper.create());
+	}
+
+	public static Product create(Long id, Manufacturer manufacturer) {
+
 		Product product = new Product();
-		
-		product.setManufacturer(ManufacturerTestHelper.createRecord());
+		if (id != null) {
+			product.setId(id);
+		}
+		product.setManufacturer(manufacturer);
 
-
-		// Transaction(the rollback, mainly) is probably not needed for one save
-		// operation
 		Transaction tx = null;
 		Session session = null;
 		try {
@@ -55,10 +51,12 @@ public class ProductTestHelper {
 			session.save(product);
 
 			tx.commit();
+
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
 			e.printStackTrace();
+			return null;
 		} finally {
 			session.close();
 		}
@@ -75,7 +73,6 @@ public class ProductTestHelper {
 
 			session.refresh(product);
 			session.delete(product);
-
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -91,7 +88,7 @@ public class ProductTestHelper {
 		Session session;
 		try {
 			session = HibernateDelegate.getSession();
-			
+
 			String hqlDelete = "delete ProductInfo where id = :productInfoId";
 			Transaction tx = session.beginTransaction();
 			session.createQuery(hqlDelete).setLong("productInfoId", new Long(productInfoId)).executeUpdate();

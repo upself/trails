@@ -24,7 +24,7 @@ public class InstalledSoftwareTestHelper {
 		installedSoftware.setProcessorCount(1);
 		installedSoftware.setDiscrepancyType(discrepancyType);
 		installedSoftware.setSoftwareLpar(softwareLpar);
-		installedSoftware.setSoftware(SoftwareTestHelper.getAnyRecord());
+		installedSoftware.setSoftware(SoftwareTestHelper.create());
 		
 		// ^^watch out for detached entities - refresh/use one session to build
 		// this
