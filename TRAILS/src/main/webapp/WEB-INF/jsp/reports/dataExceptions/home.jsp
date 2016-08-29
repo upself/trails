@@ -4,7 +4,6 @@
 <p class="ibm-important">IBM Confidential</p>
 
 <h3 style="background-color: #d7d7d8">Data Exceptions reports</h3>
-<br />
 
 <ul class="ibm-bullet-list">
 	<li class="ibm-no-links"><s:a
