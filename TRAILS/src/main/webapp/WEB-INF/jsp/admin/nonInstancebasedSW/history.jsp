@@ -1,31 +1,25 @@
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
-	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
-			summary="Non Instance based SW history table">
-			<caption>
-                <em>Non Instance based SW history</em>
-                </caption>
-			<thead>
-				<tr>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Restriction</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Non Instance based only</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote users</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Record time</span><span class="ibm-icon"></span></a></th>
-				</tr>
-			</thead>
-			<tbody id="non_instance_list">
-				
-			</tbody>
-		</table>
-	</div>
+   <p class="ibm-confidential">IBM Confidential</p>
+   <p>Non Instance based SW history</p>
+   <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+		summary="Non Instance based SW history table">
+	  <thead>
+			<tr>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software title</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Restriction</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Non Instance based only</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Remote users</span><span class="ibm-icon"></span></a></th>
+				<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Record time</span><span class="ibm-icon"></span></a></th>
+			</tr>
+		</thead>
+		<tbody id="non_instance_list">
+		</tbody>
+	</table>
 </div>
 <script>
 
@@ -68,9 +62,3 @@ function searchData(){
 	});
 };
 </script>
-
-
-
-
-
-

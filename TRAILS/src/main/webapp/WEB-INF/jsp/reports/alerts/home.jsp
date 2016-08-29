@@ -2,11 +2,8 @@
 
 <h2 class="oneline">Alerts reports</h2>
 <p class="ibm-important">IBM Confidential</p>
-<br />
-<br />
 
-<h2 style="background-color: #d7d7d8">Alert reports</h2>
-<br />
+<h3 style="background-color: #d7d7d8">Alert reports</h3>
 
 <ul id="ibm-link-list">
 	<li><s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a></li>

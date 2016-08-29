@@ -25,7 +25,6 @@
 	</s:if>
 </ul>
 
-<br>
 <h1>Region</h1>
 <h4>Aging red alerts reports</h4>
 <p class="ibm-important">IBM Confidential</p>

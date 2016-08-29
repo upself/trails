@@ -23,9 +23,9 @@
 </script>
 
 <div style="padding-left: 20px; width: 100%">
-	<h2 style="background-color: #d7d7d8">
-		<label style="padding-left: 15px" for="searchAccount.searchString">Search accounts</label>
-	</h2>
+	<h3 style="background-color: #d7d7d8">
+		<label for="searchAccount.searchString">Search accounts</label>
+	</h3>
 	<br />
 	<div class="table-wrap">
 		<s:form action="accounts" method="post" namespace="/search"

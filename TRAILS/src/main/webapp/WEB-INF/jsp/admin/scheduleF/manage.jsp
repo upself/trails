@@ -1,11 +1,3 @@
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
 	
@@ -622,12 +614,13 @@
 </script>
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
+<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"
 			action="/" class="ibm-column-form" enctype="multipart/form-data"
 			method="post">
-			<div id="spinner">
+			<div id="spinner" style="position:relative;z-index:9999;top:150px;">
 				<span class="ibm-spinner-large"></span>
 			</div>
 			<p>
@@ -717,12 +710,10 @@
 					name="businessJustification" /></span><span class="ibm-error-link"
 					id="businessJustificationError" style="display: none"></span>
 			</p>
-			<div class="ibm-alternate-rule">
-				<hr>
-			</div>
+		
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="submit" class="ibm-btn-arrow-pri" name="ibm-submit"
+					<input type="submit" class="ibm-btn-pri" name="ibm-submit"
 						value="Submit" id="btnSubmit" />
 				</p>
 			</div>

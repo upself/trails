@@ -21,7 +21,6 @@
 	<s:property value="account.name" />
 </h1>
 <p class="ibm-important">IBM Confidential</p>
-		<br /> <br />
 
 		<h2 class="bar-blue-med-light">Customer Details</h2>
 

@@ -22,7 +22,6 @@
 	<li><s:a href="%{alerts}">Software Tracking Only metrics</s:a></li>
 </ul>
 
-
 <h1>Geography</h1>
 <h4>Software Tracking Only metrics reports</h4>
 <p class="ibm-important">IBM Confidential</p>

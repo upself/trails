@@ -1,5 +1,5 @@
- <div class="ibm-columns"><div class="ibm-col-1-1">
-<p class="confidential">IBM Confidential</p>
+<div class="ibm-columns"><div class="ibm-col-1-1">
+<p class="ibm-confidential">IBM Confidential</p>
 <p>Use <a href="/TRAILS/template/scheduleFUploadTemplate.xls">this
 form</a> to upload Schedule F contract information. After you have selected
 a file on your local machine, click on Submit to begin the upload. After

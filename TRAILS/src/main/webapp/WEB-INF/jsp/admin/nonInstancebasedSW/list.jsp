@@ -1,9 +1,11 @@
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+
 <!-- Search form -->
 <div class="ibm-columns">
-	<div class="ibm-col-4-3">
-		<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
+    <p class="ibm-confidential">IBM Confidential</p>
+ 	<div class="ibm-col-4-3">
+    	<form onsubmit="searchData(); return false;" action="" class="ibm-column-form" enctype="multipart/form-data" method="post" id="searchForm">
 			<p>
 				<label style="width:30%" for="softwareName_id">
 					Software component:<span class="ibm-required">*</span>
@@ -73,9 +75,6 @@
 				</span>
 			</p>
 			
-			<div class="ibm-rule">
-				<hr />
-			</div>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">
 					<p>
@@ -128,7 +127,6 @@
 				</tr>
 			</thead>
 			<tbody id="non_instance_list">
-				
 			</tbody>
 		</table>
 	</div>
@@ -166,7 +164,7 @@ function searchData(){
 						html += "<td>" + list[i].status.description + "</td>";
 						html += "<td style='text-align:center'>";
 						<s:if test='#admin eq 1'>
-							html += "<p class='ibm-button-link-alternate'>"
+							html += "<p class='ibm-button-link'>"
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/manage.htm?type=update&nonInstanceId="+list[i].id+"\")'>Update</a>";
 							html += "&nbsp;&nbsp;<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/nonInstancebasedSW/history.htm?nonInstanceId="+list[i].id+"\"); return false;'>View history</a></p>"
 						</s:if>

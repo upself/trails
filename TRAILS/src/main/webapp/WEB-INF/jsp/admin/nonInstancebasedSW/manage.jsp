@@ -1,6 +1,5 @@
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
-<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 var lastValue = '';
@@ -105,8 +104,9 @@ function keyup(type) {
 </script>
 <!-- manage Non Instance based SW -->
 <div class="ibm-columns">
+    <p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
+   		<form id="myForm" onsubmit="submitForm(); return false;" action="/" class="ibm-column-form" enctype="multipart/form-data" method="post">
 			<s:if test="#request.nonInstanceDisplay != null">
 				<input name="id" value="<s:property value='#request.nonInstanceDisplay.id'/>" type="hidden" />
 			</s:if>
@@ -169,10 +169,7 @@ function keyup(type) {
 				</select>
 				</span>
 			</p>
-			<span class="ibm-spinner-large" id="loading" style="display:none"></span>
-			<div class="ibm-rule">
-				<hr />
-			</div>
+			<span class="ibm-spinner-large" id="loading" style="display:none;position:relative;top:-120px;z-index:9999;"></span>
 			<div class="ibm-columns">
 				<div class="ibm-col-6-3">
 					<p>

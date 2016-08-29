@@ -19,5 +19,3 @@
 </ul>
 
 <h1>Alerts Account</h1>
-
-<br>

@@ -213,12 +213,11 @@
 		$('#loading').hide();
 	}
 </script>
-<p style="font-weight:bold">IBM Confidential</p> 
 <br/>
 <div id="dialog"></div>
-<div class="ibm-container">
-	<div class="ibm-container-body">
-		<br />
+<div class="ibm-columns">
+  <p class="ibm-confidential">IBM Confidential</p>
+  <div class="ibm-col-1-1">
 		<p>Add the cause code's name. Press the Save button to save your
 			changes. Fields marked with an asterisk (*) are required.</p>
 		<br />
@@ -258,14 +257,11 @@
 				</select></span>
 			</p>
 
-			<div class="ibm-alternate-rule">
-				<hr>
-			</div>
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
+					<input type="button" class="ibm-btn-pri" name="ibm-submit"
 						value="Submit" id="btnSubmit" /> <input type="button"
-						class="ibm-btn-arrow-pri" name="ibm-cancel" value="Cancel"
+						class="ibm-btn-pri" name="ibm-cancel" value="Cancel"
 						id="btnCancel" />
 				</p>
 			</div>
