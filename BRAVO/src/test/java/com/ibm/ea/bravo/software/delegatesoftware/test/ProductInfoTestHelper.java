@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
+import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.ProductInfo;
 
 public class ProductInfoTestHelper {
@@ -30,6 +31,30 @@ public class ProductInfoTestHelper {
 		return productInfo;
 	}
 
+	public static ProductInfo createRecordById(Long id) {
+
+		ProductInfo productInfo = new ProductInfo();
+		productInfo.setProductId(id);
+
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = HibernateDelegate.getSession();
+			tx = session.beginTransaction();
+
+			session.save(productInfo);
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return productInfo;
+	}
+	
 	public static ProductInfo createRecord() {
 
 		// createRecord = I mean that, return a record :) Figure out keys, IDs,

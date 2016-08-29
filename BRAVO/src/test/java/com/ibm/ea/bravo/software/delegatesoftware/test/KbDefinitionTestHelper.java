@@ -1,18 +1,19 @@
 package com.ibm.ea.bravo.software.delegatesoftware.test;
 
+import java.util.Date;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
-import com.ibm.ea.sigbank.Manufacturer;
-import com.ibm.ea.sigbank.Product;
+import com.ibm.ea.sigbank.KbDefinition;
 
-public class ManufacturerTestHelper {
+public class KbDefinitionTestHelper {
 
-	public static Manufacturer createRecord() {
+	public static KbDefinition createRecord() {
 
-		Manufacturer manufacturer = new Manufacturer();
-		manufacturer.setManufacturerName("manufacturerName");
+		KbDefinition kbDefinition = new KbDefinition();
+		kbDefinition.setCreationTime(new Date());
 
 		Transaction tx = null;
 		Session session = null;
@@ -20,7 +21,7 @@ public class ManufacturerTestHelper {
 			session = HibernateDelegate.getSession();
 			tx = session.beginTransaction();
 
-			session.save(manufacturer);
+			session.save(kbDefinition);
 
 			tx.commit();
 		} catch (Exception e) {
@@ -30,19 +31,20 @@ public class ManufacturerTestHelper {
 		} finally {
 			session.close();
 		}
-		return manufacturer;
+		return kbDefinition;
 	}
-	
-	public static void deleteRecord(Manufacturer manufacturer) {
+
+	public static void deleteRecord(KbDefinition kbDefinition) {
 
 		Transaction tx = null;
 		Session session = null;
 		try {
 			session = HibernateDelegate.getSession();
 			tx = session.beginTransaction();
-				
-			session.refresh(manufacturer);
-			session.delete(manufacturer);
+
+			session.refresh(kbDefinition);
+			session.delete(kbDefinition);
+
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
