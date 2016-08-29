@@ -710,9 +710,7 @@
 					name="businessJustification" /></span><span class="ibm-error-link"
 					id="businessJustificationError" style="display: none"></span>
 			</p>
-			<div class="ibm-alternate-rule">
-				<hr/>
-			</div>
+		
 			<div class="ibm-buttons-row">
 				<p>
 					<input type="submit" class="ibm-btn-pri" name="ibm-submit"

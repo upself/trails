@@ -294,10 +294,10 @@
 	}
 </script>
 
-<p class="ibm-confidential">IBM Confidential</p>
-<div class="ibm-container">
-	<div class="ibm-container-body">
-		<h2>Add new priority ISV SW item</h2>
+<div class="ibm-columns">
+  <p class="ibm-confidential">IBM Confidential</p>
+  <div class="ibm-col-1-1">
+		<p>Add new priority ISV SW item</p>
 		<form class="ibm-column-form">
 			<p>
 				<label for="level">Level:<span class="ibm-required">*</span>
@@ -347,10 +347,7 @@
 					name="businessJustification" /></span><span class="ibm-error-link"
 					id="businessJustificationError" style="display: none"></span>
 			</p>
-
-			<div class="ibm-alternate-rule">
-				<hr/>
-			</div>
+	
 			<div class="ibm-buttons-row">
 				<p>
 					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
