@@ -19,7 +19,7 @@ $(function(){
 		dataType : 'json',
 		data : params,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(textStatus);
+			console.log(textStatus);
 		},
 		success : function(data) {
 			var html = "";

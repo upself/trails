@@ -120,7 +120,7 @@ function reportChange(id) {
 				<input value="GO" class="ibm-btn-pri" alt="Download report" onclick="return setAction()" type="submit">
 			</td>
 		</tr>
- 	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0">
+ 	<table id="checkboxlist" class="basic-table" cellspacing="0" cellpadding="0" style="display: none">
 		<tr>
 			<td><s:checkbox
 					label="Customer owned/customer managed titles/vendors"
