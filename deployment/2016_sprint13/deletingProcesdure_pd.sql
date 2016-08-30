@@ -13,6 +13,8 @@ DECLARE v_delete_total INTEGER DEFAULT 0;
 DECLARE v_round INTEGER DEFAULT 0;
 DECLARE INSTIDLIST EAADMIN.BIGINTLIST;
 DECLARE SFIDLIST EAADMIN.BIGINTLIST;
+DECLARE ULILIST EAADMIN.BIGINTLIST;
+DECLARE ULHLIST EAADMIN.BIGINTLIST;
 
 DECLARE v_empty_discr_history INTEGER DEFAULT 0;
 DECLARE v_empty_alert_cause_code_h INTEGER DEFAULT 0;
@@ -32,6 +34,8 @@ DECLARE v_empty_h_used_license INTEGER DEFAULT 0;
 DECLARE v_empty_h_reconcile_used_license INTEGER DEFAULT 0;
 DECLARE v_empty_reconcile_h INTEGER DEFAULT 0;
 DECLARE v_empty_installed_software INTEGER DEFAULT 0;
+DECLARE v_empty_orphan_used_license INTEGER DEFAULT 0;
+DECLARE v_empty_orphan_h_used_license INTEGER DEFAULT 0;
 DECLARE v_empty_schedule_f_h INTEGER DEFAULT 0;
 DECLARE v_empty_schedule_f INTEGER DEFAULT 0;
 
@@ -55,6 +59,8 @@ DECLARE v_sql_delete_h_used_license VARCHAR(640);
 DECLARE v_sql_delete_h_reconcile_used_license VARCHAR(640);
 DECLARE v_sql_delete_reconcile_h VARCHAR(512);
 DECLARE v_sql_delete_installed_software VARCHAR(512);
+DECLARE v_sql_delete_orphan_used_license VARCHAR(512);
+DECLARE v_sql_delete_orphan_h_used_license VARCHAR(512);
 DECLARE v_sql_delete_schedule_f_h VARCHAR(512);
 DECLARE v_sql_delete_schedule_f VARCHAR(512);
 DECLARE o_res INTEGER;
@@ -83,6 +89,8 @@ DECLARE v_stmt_delete_hulic STATEMENT;
 DECLARE v_stmt_delete_hrulic STATEMENT;
 DECLARE v_stmt_delete_rch STATEMENT;
 DECLARE v_stmt_select_is STATEMENT;
+DECLARE v_stmt_delete_orpulic STATEMENT;
+DECLARE v_stmt_delete_orphulic STATEMENT;
 DECLARE v_stmt_delete_sf_h STATEMENT;
 DECLARE v_stmt_delete_sf STATEMENT;
 DECLARE ct CURSOR WITH HOLD WITH RETURN FOR s1;
@@ -119,26 +127,28 @@ DECLARE EXIT handler FOR SQLexception
 SET v_sql_query_inact_inst_sw = 'select count(is.id) from eaadmin.installed_software is join eaadmin.software_lpar sl on is.software_lpar_id=sl.id join eaadmin.software s on is.software_id=s.software_id where sl.customer_id = '||p_customerId||' and ( (is.status != '''||'ACTIVE'||''' and current timestamp -  '||p_age||' DAYS > is.record_time )   or (sl.status != '''||'ACTIVE'||''' and current timestamp - '||p_age||' DAYS > sl.record_time ) or  (s.status != '''||'ACTIVE'||''') ) with ur';
 SET v_sql_query_inact_sf = 'select count(sf.id) from eaadmin.schedule_f sf where sf.customer_id = '||p_customerId||' and current timestamp - '||p_age||' DAYS > sf.record_time and sf.status_id = 1 with ur';
 
-SET v_sql_delete_discr_history = 'delete from (select 1 from eaadmin.software_discrepancy_h a where a.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_alert_cause_code_h = 'delete from (select 1 from  eaadmin.cause_code_h cch where exists (select 1 from eaadmin.cause_code cc join eaadmin.alert_unlicensed_sw aus on cc.alert_id=aus.id  where cch.cause_code_id=cc.id and cc.alert_type_id=17 and aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids))))';
-SET v_sql_delete_alert_cause_code = 'delete from  (select 1 from  eaadmin.cause_code cc where cc.alert_type_id=17 and exists ( select 1 from eaadmin.alert_unlicensed_sw aus  where cc.alert_id=aus.id and aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids))))';
-SET v_sql_delete_alert_inst_sw_h = 'delete from  (select 1 from eaadmin.alert_unlicensed_sw aus where aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_alert_inst_sw = 'delete from (select 1 from eaadmin.alert_unlicensed_sw e where e.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_installed_filter = 'delete from (select 1 from  eaadmin.installed_filter f where f.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_installed_signature = 'delete from (select 1 from eaadmin.installed_signature g where g.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_installed_dorana =  'delete from (select 1 from eaadmin.installed_dorana_product h where h.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_installed_sa = 'delete from (select 1 from eaadmin.installed_sa_product i where i.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))' ;
-SET v_sql_delete_installed_tadz = 'delete from (select 1 from eaadmin.installed_tadz j where j.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))' ;
-SET v_sql_delete_software_eff =  'delete from (select 1 from eaadmin.installed_software_eff k where k.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_used_license = 'delete from (select 1 from eaadmin.used_license l where exists (select 1 from eaadmin.reconcile_used_license rul  join reconcile rc on rul.reconcile_id=rc.id  where rul.USED_LICENSE_ID = l.id and rc.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids))))';
-SET v_sql_delete_reconcile_used_license = 'delete from (select 1 from eaadmin.reconcile_used_license m where exists(select 1 from  eaadmin.reconcile rc  where m.RECONCILE_ID = rc.id and rc.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids))))';
-SET v_sql_delete_reconcile = 'delete from (select 1 from eaadmin.reconcile n where n.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_h_used_license = 'delete from (select 1 from eaadmin.h_used_license o where exists (select 1 from eaadmin.h_reconcile_used_license hrul  join eaadmin.reconcile_h rch on hrul.h_reconcile_id=rch.id  where  o.id = hrul.h_used_license_id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)) ))';
-SET v_sql_delete_h_reconcile_used_license = 'delete from (select 1 from eaadmin.h_reconcile_used_license p where exists (select 1 from eaadmin.reconcile_h rch  where p.H_RECONCILE_ID = rch.id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids))))';
-SET v_sql_delete_reconcile_h = 'delete from (select 1 from eaadmin.reconcile_h q where q.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_installed_software = 'delete from (select 1 from eaadmin.installed_software r where r.id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS X(ids)))';
-SET v_sql_delete_schedule_f_h = 'delete from (select 1 from eaadmin.schedule_f_h sfh where sfh.SCHEDULE_F_ID in ( select F.id FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS F(id) ))';
-SET v_sql_delete_schedule_f = 'delete from (select 1 from eaadmin.schedule_f sf where sf.id in ( select F.id FROM UNNEST(cast(? as eaadmin.BIGINTLIST)) AS F(id) ))';
+SET v_sql_delete_discr_history = 'delete from (select 1 from eaadmin.software_discrepancy_h a where a.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_alert_cause_code_h = 'delete from (select 1 from  eaadmin.cause_code_h cch where exists (select 1 from eaadmin.cause_code cc join eaadmin.alert_unlicensed_sw aus on cc.alert_id=aus.id  where cch.cause_code_id=cc.id and cc.alert_type_id=17 and aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids))))';
+SET v_sql_delete_alert_cause_code = 'delete from  (select 1 from  eaadmin.cause_code cc where cc.alert_type_id=17 and exists ( select 1 from eaadmin.alert_unlicensed_sw aus  where cc.alert_id=aus.id and aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids))))';
+SET v_sql_delete_alert_inst_sw_h = 'delete from  (select 1 from eaadmin.alert_unlicensed_sw aus where aus.installed_software_id in  (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_alert_inst_sw = 'delete from (select 1 from eaadmin.alert_unlicensed_sw e where e.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_installed_filter = 'delete from (select 1 from  eaadmin.installed_filter f where f.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_installed_signature = 'delete from (select 1 from eaadmin.installed_signature g where g.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_installed_dorana =  'delete from (select 1 from eaadmin.installed_dorana_product h where h.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_installed_sa = 'delete from (select 1 from eaadmin.installed_sa_product i where i.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))' ;
+SET v_sql_delete_installed_tadz = 'delete from (select 1 from eaadmin.installed_tadz j where j.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))' ;
+SET v_sql_delete_software_eff =  'delete from (select 1 from eaadmin.installed_software_eff k where k.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_used_license = 'delete from (select 1 from eaadmin.used_license l where exists (select count(used_license_id) from eaadmin.reconcile_used_license rula where rula.used_license_id=l.id group by used_license_id having count(used_license_id) =1 ) and exists (select 1 from eaadmin.reconcile_used_license rul  join eaadmin.reconcile rc on rul.reconcile_id=rc.id  where rul.USED_LICENSE_ID = l.id and rc.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids))))';
+SET v_sql_delete_reconcile_used_license = 'delete from (select 1 from eaadmin.reconcile_used_license m where exists(select 1 from  eaadmin.reconcile rc  where m.RECONCILE_ID = rc.id and rc.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids))))';
+SET v_sql_delete_reconcile = 'delete from (select 1 from eaadmin.reconcile n where n.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_h_used_license = 'delete from (select 1 from eaadmin.h_used_license o where exists (select count(h_used_license_id) from eaadmin.h_reconcile_used_license hrula where hrula.h_used_license_id=o.id group by h_used_license_id having count(h_used_license_id) =1 ) and  exists (select 1 from eaadmin.h_reconcile_used_license hrul  join eaadmin.reconcile_h rch on hrul.h_reconcile_id=rch.id  where  o.id = hrul.h_used_license_id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)) ))';
+SET v_sql_delete_h_reconcile_used_license = 'delete from (select 1 from eaadmin.h_reconcile_used_license p where exists (select 1 from eaadmin.reconcile_h rch  where p.H_RECONCILE_ID = rch.id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids))))';
+SET v_sql_delete_reconcile_h = 'delete from (select 1 from eaadmin.reconcile_h q where q.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_installed_software = 'delete from (select 1 from eaadmin.installed_software r where r.id in (SELECT X.ids FROM UNNEST(cast(? as BIGINTLIST)) AS X(ids)))';
+SET v_sql_delete_orphan_used_license = 'delete from (select 1 from eaadmin.used_license ul where not exists (select 1 from eaadmin.reconcile_used_license rul where rul.used_license_id=ul.id) and ul.id in (SELECT U.ids FROM  UNNEST(cast(? as BIGINTLIST)) AS U(ids)))';
+SET v_sql_delete_orphan_h_used_license = 'delete from (select 1 from eaadmin.h_used_license hul where not exists (select 1 from eaadmin.h_reconcile_used_license hrul where hrul.h_used_license_id=hul.id) and hul.id in (SELECT H.ids FROM  UNNEST(cast(? as BIGINTLIST)) AS H(ids)))';
+SET v_sql_delete_schedule_f_h = 'delete from (select 1 from eaadmin.schedule_f_h sfh where sfh.SCHEDULE_F_ID in ( select F.id FROM UNNEST(cast(? as BIGINTLIST)) AS F(id) ))';
+SET v_sql_delete_schedule_f = 'delete from (select 1 from eaadmin.schedule_f sf where sf.id in ( select F.id FROM UNNEST(cast(? as BIGINTLIST)) AS F(id) ))';
 
 
  PREPARE s1 FROM  v_sql_query_inact_inst_sw;
@@ -162,11 +172,13 @@ COMMIT;
 	END IF;
 LOOPD:LOOP
 	  SET v_round = v_round + 1;
-	  IF v_tem_total <= 0 THEN     
+	  IF v_tem_total <= 0 THEN      
 	  LEAVE LOOPD;
       END IF;
 	set INSTIDLIST = ( select ARRAY_AGG(T.id) from (select is.id from eaadmin.installed_software is join eaadmin.software_lpar sl on is.software_lpar_id=sl.id join eaadmin.software s on is.software_id=s.software_id where sl.customer_id = CAST(p_customerId AS BIGINT) and ( (is.status != 'ACTIVE' and current timestamp -  CAST(p_age AS integer)  DAYS >is.record_time )   or (sl.status != 'ACTIVE' and current timestamp - CAST(p_age AS integer)  DAYS > sl.record_time ) or  (s.status != 'ACTIVE') ) fetch first 1000 row only ) as T );
     set SFIDLIST = ( select ARRAY_AGG(F.id) from (select sf.id from eaadmin.schedule_f sf where sf.customer_id = CAST(p_customerId AS BIGINT) and current timestamp - CAST(p_age AS integer)  DAYS > sf.record_time  and sf.status_id = 1 fetch first 1000 row only ) as F );
+	set ULILIST = ( select ARRAY_AGG(U.id) from (select l.id from eaadmin.used_license l where  exists (select 1 from eaadmin.reconcile_used_license rul  join eaadmin.reconcile rc on rul.reconcile_id=rc.id  where rul.USED_LICENSE_ID = l.id and rc.installed_software_id in (select is.id from eaadmin.installed_software is join eaadmin.software_lpar sl on is.software_lpar_id=sl.id join eaadmin.software s on is.software_id=s.software_id where sl.customer_id = CAST(p_customerId AS BIGINT) and ( (is.status != 'ACTIVE' and current timestamp -  CAST(p_age AS integer)  DAYS >is.record_time )   or (sl.status != 'ACTIVE' and current timestamp - CAST(p_age AS integer)  DAYS > sl.record_time ) or  (s.status != 'ACTIVE') ) fetch first 1000 row only ))) as U );
+	set ULHLIST = ( select ARRAY_AGG(H.id) from (select o.id from eaadmin.h_used_license o where   exists (select 1 from eaadmin.h_reconcile_used_license hrul  join eaadmin.reconcile_h rch on hrul.h_reconcile_id=rch.id  where  o.id = hrul.h_used_license_id and rch.installed_software_id in (select is.id from eaadmin.installed_software is join eaadmin.software_lpar sl on is.software_lpar_id=sl.id join eaadmin.software s on is.software_id=s.software_id where sl.customer_id = CAST(p_customerId AS BIGINT) and ( (is.status != 'ACTIVE' and current timestamp -  CAST(p_age AS integer)  DAYS >is.record_time )   or (sl.status != 'ACTIVE' and current timestamp - CAST(p_age AS integer)  DAYS > sl.record_time ) or  (s.status != 'ACTIVE') ) fetch first 1000 row only ) )) as H );
 	set v_line = 2;
 	PREPARE v_stmt_delete_dh FROM v_sql_delete_discr_history;
 	   PREPARE v_stmt_delete_cch FROM v_sql_delete_alert_cause_code_h;
@@ -186,8 +198,10 @@ LOOPD:LOOP
                                    PREPARE v_stmt_delete_hrulic FROM v_sql_delete_h_reconcile_used_license;
 				                     PREPARE v_stmt_delete_rch FROM v_sql_delete_reconcile_h;
 					                   PREPARE v_stmt_delete_is FROM v_sql_delete_installed_software;
-									     PREPARE v_stmt_delete_sf_h FROM v_sql_delete_schedule_f_h;
-									       PREPARE v_stmt_delete_sf FROM v_sql_delete_schedule_f;
+									     PREPARE v_stmt_delete_orpulic FROM v_sql_delete_orphan_used_license;
+									       PREPARE v_stmt_delete_orphulic FROM v_sql_delete_orphan_h_used_license;
+									         PREPARE v_stmt_delete_sf_h FROM v_sql_delete_schedule_f_h;
+									           PREPARE v_stmt_delete_sf FROM v_sql_delete_schedule_f;
  IF v_empty_discr_history = 0 THEN
 	 EXECUTE v_stmt_delete_dh USING INSTIDLIST;
 	 IF SQLCODE < 0 THEN 
@@ -368,10 +382,30 @@ IF v_empty_installed_software = 0 THEN
      END IF;
  END IF;
   COMMIT;
+  IF v_empty_orphan_used_license = 0 THEN
+	 EXECUTE v_stmt_delete_orpulic USING ULILIST;
+	  IF SQLCODE < 0 THEN 
+	     set v_line= 21;
+		 LEAVE LOOPD;
+         ELSEIF SQLCODE = 100 THEN
+	     set v_empty_orphan_used_license = 1;
+     END IF;
+ END IF;
+  COMMIT;
+  IF v_empty_orphan_h_used_license = 0 THEN
+	 EXECUTE v_stmt_delete_orphulic USING ULHLIST;
+	  IF SQLCODE < 0 THEN 
+	     set v_line= 22;
+		 LEAVE LOOPD;
+         ELSEIF SQLCODE = 100 THEN
+	     set v_empty_orphan_h_used_license = 1;
+     END IF;
+ END IF;
+  COMMIT;
 IF v_empty_schedule_f_h = 0 THEN
 	 EXECUTE v_stmt_delete_sf_h USING SFIDLIST;
 	  IF SQLCODE < 0 THEN 
-	     set v_line= 21;
+	     set v_line= 23;
 		 LEAVE LOOPD;
           ELSEIF SQLCODE = 100 THEN
 	     set v_empty_schedule_f_h = 1;
@@ -380,7 +414,7 @@ IF v_empty_schedule_f_h = 0 THEN
 IF v_empty_schedule_f = 0 THEN
 	 EXECUTE v_stmt_delete_sf USING SFIDLIST;
 	  IF SQLCODE < 0 THEN 
-	     set v_line= 22;
+	     set v_line= 24;
 		 LEAVE LOOPD;
           ELSEIF SQLCODE = 100 THEN
 	     set v_empty_schedule_f = 1;
@@ -389,9 +423,10 @@ IF v_empty_schedule_f = 0 THEN
  COMMIT;
 	  IF  0 < v_tem_total and v_tem_total <= 1000 THEN 
       SET v_delete_total = v_delete_total + v_tem_total;
-	   set v_line= v_round * 1000 + v_line;
+	    set v_line= v_round * 1000 + v_line;
       ELSEIF v_tem_total > 1000 THEN	  
 	  SET v_delete_total = v_delete_total + 1000;
+	    set v_line= v_round + 1026;
       END IF;
 	  set v_tem_total = v_tem_total - 1000;
 END LOOP LOOPD;

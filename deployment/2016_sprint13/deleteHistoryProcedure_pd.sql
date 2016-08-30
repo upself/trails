@@ -114,7 +114,7 @@ where rt.is_manual = 1
 and rc.reconcile_type_id <> rch.reconcile_type_id
 and sl.customer_id = '||p_customerId||' 
 ) as T with ur ';
-SET v_sql_delete_h_used_license = 'delete from (select 1 from eaadmin.h_used_license o where exists (select 1 from eaadmin.h_reconcile_used_license hrul  join eaadmin.reconcile_h rch on hrul.h_reconcile_id=rch.id  where  o.id = hrul.h_used_license_id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BINTLIST)) AS X(ids)) ))';
+SET v_sql_delete_h_used_license = 'delete from (select 1 from eaadmin.h_used_license o where exists (select count(h_used_license_id) from eaadmin.h_reconcile_used_license hrula where hrula.h_used_license_id=o.id group by h_used_license_id having count(h_used_license_id) =1 ) and  exists (select 1 from eaadmin.h_reconcile_used_license hrul  join eaadmin.reconcile_h rch on hrul.h_reconcile_id=rch.id  where  o.id = hrul.h_used_license_id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BINTLIST)) AS X(ids)) ))';
 SET v_sql_delete_h_reconcile_used_license = 'delete from (select 1 from eaadmin.h_reconcile_used_license p where exists (select 1 from eaadmin.reconcile_h rch  where p.H_RECONCILE_ID = rch.id and rch.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BINTLIST)) AS X(ids))))';
 SET v_sql_delete_reconcile_h = 'delete from (select 1 from eaadmin.reconcile_h q where q.installed_software_id in (SELECT X.ids FROM UNNEST(cast(? as eaadmin.BINTLIST)) AS X(ids)))';
 
