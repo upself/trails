@@ -170,6 +170,7 @@
 				<display:column property="cpuSerial" title="Serial" />
 				<display:column property="environment" title="Environment" />
 				<display:column property="extSrcId" title="SWCM ID" />
+				<display:column property="sku" title="SKU"/>
 			</display:table>
 		</small>
 	</div>

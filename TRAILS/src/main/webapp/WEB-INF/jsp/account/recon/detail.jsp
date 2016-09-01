@@ -76,6 +76,7 @@
 	<display:column property="license.cpuSerial" title="Serial number" />
 	<display:column property="license.ibmOwned" title="IBM owned license" />
 	<display:column property="license.extSrcId" title="SWCM ID" />
+	<display:column property="license.sku" title="SKU" />
 	<display:column property="license.recordTime" title="Record time" />
 </display:table>
 

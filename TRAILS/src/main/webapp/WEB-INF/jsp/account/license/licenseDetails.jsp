@@ -30,6 +30,7 @@
 				$("#poolAsString").text(result.data.poolAsString);
 				$("#extSrcId").text(result.data.extSrcId);
 				$("#recordTimeAsString").text(result.data.recordTimeAsString);
+				$("#skuAsString").text(result.data.skuAsString);
 				if (result.status != '200') {
 					alert(result.msg);
 				}
@@ -111,9 +112,13 @@
 							id="extSrcId"></span>
 					</p>
 					<p style="padding: 3px">
+						<label for="skuAsString" style="width: 30%">SKU</label> <span id="skuAsString"> </span>
+					</p>
+					<p style="padding: 3px">
 						<label for="recordTimeAsString" style="width: 30%">Record
 							date/time:</label> <span id="recordTimeAsString"> </span>
 					</p>
+
 				</form>
 		</div>
 </div>

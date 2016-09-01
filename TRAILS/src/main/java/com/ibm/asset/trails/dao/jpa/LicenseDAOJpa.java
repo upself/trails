@@ -243,7 +243,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 						.alias("cpuSerial"), license.get(License_.extSrcId)
 						.alias("extSrcId"), license.get(License_.environment)
 						.alias("environment"), account.get(Account_.account)
-						.alias("accountName"));
+						.alias("accountName"),license.get(License_.sku).alias("sku"));
 		q.groupBy(
 				license.get(License_.id),
 				cb.coalesce(software.get(Software_.softwareName),license.get(License_.fullDesc)),
@@ -256,7 +256,7 @@ public class LicenseDAOJpa extends AbstractGenericEntityDAOJpa<License, Long>
 				license.get(License_.quantity),
 				license.get(License_.expireDate),
 				license.get(License_.cpuSerial),
-				license.get(License_.extSrcId), license.get(License_.environment), account.get(Account_.account));
+				license.get(License_.extSrcId), license.get(License_.environment), account.get(Account_.account), license.get(License_.sku));
 		q.having(cb.greaterThan(cb.coalesce(
 				cb.diff(license.get(License_.quantity),
 						cb.sum(usedLicense.get(UsedLicense_.usedQuantity))),

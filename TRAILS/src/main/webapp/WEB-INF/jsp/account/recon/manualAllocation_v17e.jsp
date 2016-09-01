@@ -199,6 +199,7 @@
 					<display:column property="cpuSerial" title="Serial" sortable="true" />
 					<display:column property="environment" title="Environment" sortable="true" />
 					<display:column property="extSrcId" title="SWCM ID" sortable="true" />
+					<display:column property="sku" title="SKU" sortable="true"  sortProperty="license.sku"/>
 				</display:table>
 			</small>
 		</div>
@@ -245,6 +246,7 @@
 					<display:column property="cpuSerial" title="Serial" sortable="true" />
 					<display:column property="environment" title="Environment" sortable="true" />
 					<display:column property="extSrcId" title="SWCM ID" sortable="true" />
+					<display:column property="skuAsString" title="SKU" sortable="true"  sortProperty="license.sku"/>
 				</display:table>
 			</small>
 		</div>

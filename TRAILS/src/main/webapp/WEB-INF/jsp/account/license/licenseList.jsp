@@ -17,10 +17,10 @@ $(function() {
 		var order=null;
 		if(requestURI=="license.htm"){
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseBaseline";
-			orders=['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId'];
+			orders=['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId','sku'];
 		}else{
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseFreePool";//licenseFreePool.htm
-			orders=['licenseId','license.fullDesc','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId'];
+			orders=['licenseId','license.fullDesc','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId','license.sku'];
 		}
 		$("#licTable").paginationTable('destroy').paginationTable({
 			remote: {
@@ -31,7 +31,7 @@ $(function() {
 					var html = '';
 					var list = result.data.list;
 					if(null == list || list == undefined || list.length == 0){
-						html += "<tr><td colspan='10' align='center'>No data found</td></tr>"
+						html += "<tr><td colspan='11' align='center'>No data found</td></tr>"
 					}else{
 						for(var i = 0; i < list.length; i++){
 							html += "<tr>"; 
@@ -55,6 +55,7 @@ $(function() {
 							}
 							html += "<td>" + list[i].cpuSerial + "</td>";
 							html += "<td>" + list[i].extSrcId + "</td>";
+							html += "<td>" + list[i].sku + "</td>";
 							html += "</tr>"; 
 						}
 					}
@@ -92,6 +93,7 @@ $(function() {
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Exp date</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SWCM ID</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SKU</span><span class="ibm-icon"></span></a></th>
 					</tr>
 				</thead>
 				<tbody id="license_list" />

@@ -31,4 +31,5 @@ public class License_ {
 	public static volatile SingularAttribute<License, String> swproPID;
 	public static volatile SingularAttribute<License, String> licenseType;
 	public static volatile SingularAttribute<License, Boolean> tryAndBuy;
+	public static volatile SingularAttribute<License, String> sku;
 }
