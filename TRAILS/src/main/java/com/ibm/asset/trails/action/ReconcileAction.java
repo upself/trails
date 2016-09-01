@@ -14,7 +14,7 @@ public class ReconcileAction extends BaseAction {
 	private Reconcile reconcile;
 
 	private Long id;
-    public static final String SHOW_V17E = "SHOW_V17E"; 
+ 
 	@UserRole(userRole = UserRoleType.READER)
 	public void prepare() {
 
@@ -24,21 +24,9 @@ public class ReconcileAction extends BaseAction {
 	public String details() {
 
 		reconcile = getReconWorkspaceService().reconcileDetail(id);
-        if(null!=gotoV17e && gotoV17e.equalsIgnoreCase("y")){
-        	return SHOW_V17E;
-        }
 		return SUCCESS;
 	}
 	
-	private String gotoV17e;
-	
-    public String getGotoV17e() {
-		return gotoV17e;
-	}
-
-	public void setGotoV17e(String gotoV17e) {
-		this.gotoV17e = gotoV17e;
-	}
 	public ReconWorkspaceService getReconWorkspaceService() {
 		return reconWorkspaceService;
 	}
