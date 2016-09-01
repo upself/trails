@@ -191,9 +191,9 @@ function setChange() {
 										<td>*</td>
 										<td><label for="name">Bank account name:</label></td>
 										<td>
-											<div class="input-note">maximum 32 characters</div> <html:text
+											<div class="input-note">maximum 64 characters</div> <html:text
 												styleId="name" property="name" styleClass="input" size="40"
-												maxlength="32" />
+												maxlength="64" />
 										</td>
 									</tr>
 									<tr>

@@ -11,7 +11,7 @@
 					resource="false" />
 				<var>
 					<var-name>maxlength</var-name>
-					<var-value>32</var-value>
+					<var-value>64</var-value>
 				</var>
 			</field>
 			<field property="description" depends="required,maxlength">
