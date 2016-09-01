@@ -15,29 +15,15 @@ public class AlertHistory extends BaseListAction {
 	private List historyList;
 
 	private Long id;
-
-	public static final String SHOW_V17E = "SHOW_V17E"; 
 	 
 	@UserRole(userRole = UserRoleType.READER)
 	public String execute() {
 
 		getData().setList(getAlertService().getAlertHistory(id));
 		
-        if(null!=gotoV17e && gotoV17e.equalsIgnoreCase("y")){
-        	return SHOW_V17E;
-        }
 		return SUCCESS;
 	}
 	
-	private String gotoV17e;
-	
-    public String getGotoV17e() {
-		return gotoV17e;
-	}
-
-	public void setGotoV17e(String gotoV17e) {
-		this.gotoV17e = gotoV17e;
-	}
 	@UserRole(userRole = UserRoleType.READER)
 	public String excuteV17e() {
 
