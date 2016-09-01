@@ -103,7 +103,7 @@ public class ReportServiceImpl implements ReportService {
 			"License Name", "Primary component catalog match", "License Primary Component", "Version",
 			"Capacity type", "Environment", "Quantity used", "Machine level",
 			"Maintenance expiration date", "PO number",
-			"License serial number", "Licensee", "SWCM ID",
+			"License serial number", "Licensee", "SWCM ID","SKU",
 			"License last updated" };
 	private final String FULL_RECONCILIATION_REPORT_NAME = "Full reconciliation report";
 	private final String[] HARDWARE_BASELINE_COLUMN_HEADERS = { "Serial",
@@ -722,7 +722,7 @@ public class ReportServiceImpl implements ReportService {
 				+ ",l.po_number " + ",l.cpu_serial "
 				+ ",case when l.ibm_owned = 0 then 'Customer' "
 				+ "when l.ibm_owned = 1 then 'IBM' " + "else '' end "
-				+ ",l.ext_src_id " + ",l.record_time ";
+				+ ",l.ext_src_id " + ",l.sku" + ",l.record_time ";
 		String lsBaseFromClause = "from  "
 				+ "eaadmin.software_lpar sl "
 				+ "inner join eaadmin.hw_sw_composite hsc on "
