@@ -682,9 +682,7 @@
 						<option value="CUSTO">CUSTO</option>
 				</select></span>
 			</p>
-			<p>
 				<input type="hidden" name="accountId" id="accountId"/>
-			</p>
 			<p>
 				<label for="sourceDescription" style="width: 30%">Source:</label> <span><select
 					name="sourceDescription" id="sourceDescription">
