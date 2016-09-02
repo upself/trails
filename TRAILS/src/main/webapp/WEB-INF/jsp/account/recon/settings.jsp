@@ -116,9 +116,11 @@
 					<label for="alertStatus">Alert status:</label>
 				</div>
 				<div style="float: left; width: 45%">
-					<s:select name="reconSetting.alertStatus" label="Alert status"
-						id="alertStatus" list="#{'OPEN':'Open','CLOSED':'Closed' }"
-						headerKey="" headerValue="All" />
+					<select id="alertStatus" name="reconSetting.alertStatus">
+					  <option value="">All</option>
+   					  <option value="OPEN" selected="selected">Open</option>
+   					  <option value="CLOSED">Closed</option>
+					</select>
 				</div>
 			</div>
 			<br />
