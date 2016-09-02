@@ -470,18 +470,28 @@
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.effective_threads
 				,hardware_lpar.vcpu as vcpu
+				,cr.vcpu as vmcpu
 				,hardware_lpar.ext_id as hw_ext_id
 				,software_lpar.ext_id as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
 				,software_lpar.TECH_IMG_ID as sw_ti_id
 				,hardware.chips as chips
+				,case when cr.hyper_threading is null then ''
+				 when cr.hyper_threading = 1 then 'TRUE'
+				 when cr.hyper_threading = 0 then 'FALSE' 
+				 end as hyper_threading
 				,hardware.server_type as server_type
 				,hardware_lpar.os_type as os_type
 				,hardware_lpar.spla as SPLA
 				,hardware_lpar.virtual_flag as virtualFlag
 				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
+				,case when cr.vm_can_migrate is null then ''
+				 when cr.vm_can_migrate = 1 then 'TRUE'
+				 when cr.vm_can_migrate = 0 then 'FALSE' 
+				 end as vm_can_migrate
 				,hardware_lpar.sysplex as sysplex
 				,software_lpar.sysplex as mf_sysplex
+				,cr.vmware_cluster as vmware_cluster
 				,hardware_lpar.cluster_type as clusterType
 				,hardware_lpar.backupmethod as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
@@ -507,6 +517,7 @@
 				,eaadmin.customer_type as customer_type
 				,eaadmin.pod as pod
 				,eaadmin.software_lpar as software_lpar
+				left outer join eaadmin.config_record as cr on software_lpar.id=cr.software_lpar_id
 				left outer join eaadmin.hw_sw_composite as hw_sw_composite on 
 					hw_sw_composite.software_lpar_id = software_lpar.id 
 				left outer join eaadmin.hardware_lpar as hardware_lpar on 
@@ -549,18 +560,22 @@
 				,hardware.processor_count as hw_processor_count
 				,hardware_lpar.effective_threads
 				,hardware_lpar.vcpu as vcpu
+				,0 as vmcpu
 				,hardware_lpar.ext_id as hw_ext_id
 				,'' as sw_ext_id
 				,hardware_lpar.TECH_IMAGE_ID as hw_ti_id
 				,'' as sw_ti_id
 				,hardware.chips as chips
+				,'' as hyper_threading
 				,hardware.server_type as server_type
 				,hardware_lpar.os_type as os_type
 				,hardware_lpar.spla as SPLA
 				,hardware_lpar.virtual_flag as virtualFlag
 				,hardware_lpar.virtual_mobility_restriction as vMobilRestrict
+				,'' as vm_can_migrate
 				,hardware_lpar.sysplex as sysplex
 				,'' as mf_sysplex
+				,'' as vmware_cluster
 				,hardware_lpar.cluster_type  as clusterType
 				,hardware_lpar.backupmethod  as backupMethod
 				,hardware_lpar.internet_Icc_Flag as internetIccFlag
@@ -623,18 +638,22 @@
 				,0 as hw_processor_count
 				,0 as effective_threads
 				,0 as vcpu
+				,0 as vmcpu
 				,'' as hw_ext_id
 				,'' as sw_ext_id
 				,'' as hw_ti_id
 				,'' as sw_ti_id
 				,0 as chips
+				,'' as hyper_threading
 				,'' as server_type
 				,'' as os_type
 				,'' as SPLA
 				,'' as virtualFlag
 				,'' as vMobilRestrict
+				,'' as vm_can_migrate
 				,'' as sysplex
 				,'' as mf_sysplex
+				,'' as vmware_cluster
 				,'' as clusterType
 				,'' as backupMethod
 				,'' as internetIccFlag
