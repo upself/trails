@@ -39,7 +39,6 @@
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
 		 $("#schFhTable").hide();
 		 $("#btnSubmit").attr('disabled', true);
-		 $("#swClmanag").text('${account.softwareComplianceManagement}');
 		 $("#accountId").val('${account.id}');
 		populateArraryList();
 		setTimeout(function (){  
@@ -684,7 +683,6 @@
 				</select></span>
 			</p>
 			<p>
-				<label for="complianceReporting" style="width: 30%">Compliance reporting:</label><span id="swClmanag"></span>
 				<input type="hidden" name="accountId" id="accountId"/>
 			</p>
 			<p>

@@ -277,7 +277,7 @@
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source location</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><span>Compliance</span></th>
+					
 				</tr>
 			</thead>
 			<tbody id="schedule_f_list" />
@@ -338,18 +338,13 @@ function searchData() {
 						html += "<td>" + list[i].sourceDescription + "</td>";
 						html += "<td>" + list[i].sourceLocation + "</td>";
 						html += "<td>" + list[i].statusDescription + "</td>";
-						if(list[i].softwareComplianceManagement== 'YES'){
-							html += "<td>YES</td>";						
-						}else{
-							html += "<td>NO</td>";		
-						}
 						html += "</tr>"; 
 					}
 				}
 				$("#schedule_f_list").html(html);
 			}
 		},
-		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description']
 	});
 }
 

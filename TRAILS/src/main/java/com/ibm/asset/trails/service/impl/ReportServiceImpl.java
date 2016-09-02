@@ -1405,11 +1405,11 @@ public class ReportServiceImpl implements ReportService {
 		lsrReport.close();
 	}
 
-	private final String[] SCHEDULE_F_REPORT_COLUMN_HEADERS = {"Level","Hw Owner","Hostname","Serial","Machine Type","Account Number","Software title","Software name","Manufacturer","Scope","SW Financial Resp","Source","Source location","Status","Business Justification","Compliance"};
+	private final String[] SCHEDULE_F_REPORT_COLUMN_HEADERS = {"Level","Hw Owner","Hostname","Serial","Machine Type","Account Number","Software title","Software name","Manufacturer","Scope","SW Financial Resp","Source","Source location","Status","Business Justification"};
 	@Transactional(readOnly = false, propagation = Propagation.NOT_SUPPORTED)
 	public void getScheduleFReport(Account account, PrintWriter pPrintWriter) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select sf.Level,sf.hw_Owner,sf.hostname,sf.serial,sf.Machine_Type, c.account_number,sf.software_title,sf.software_name,sf.manufacturer,sc.description as Scope,sf.sw_financial_resp,so.description as Source,sf.source_location,st.description as Status,sf.business_justification,c.SW_COMPLIANCE_MGMT ")
+		sql.append("select sf.Level,sf.hw_Owner,sf.hostname,sf.serial,sf.Machine_Type, c.account_number,sf.software_title,sf.software_name,sf.manufacturer,sc.description as Scope,sf.sw_financial_resp,so.description as Source,sf.source_location,st.description as Status,sf.business_justification")
 		.append(" from eaadmin.schedule_f sf,eaadmin.scope sc, eaadmin.status st,eaadmin.source so,eaadmin.customer c ")
 		.append(" where sc.id=sf.scope_id and st.id=sf.status_id and so.id=sf.source_id and c.customer_id=sf.customer_id and")
 		.append(" c.customer_id=")
