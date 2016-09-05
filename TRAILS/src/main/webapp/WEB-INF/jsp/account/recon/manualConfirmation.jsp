@@ -4,7 +4,7 @@
 	includeContext="true" includeParams="none">
 </s:url>
 
-<s:url id="workspaceLink" action="workspace" namespace="/account/recon"
+<s:url id="workspaceLink" action="workspace?gotoV17e=y" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
 <div class="ibm-columns" style="width: 95%;">
@@ -37,7 +37,7 @@
 			<s:actionerror />
 			<s:fielderror />
 		</s:if>
-		<s:form action="applyManualRecon" namespace="/account/recon" theme="simple">
+		<s:form action="applyManualRecon?gotoV17e=y" namespace="/account/recon" theme="simple">
 			<table width="99%" padding="3px">
 				<tr>
 					<td style="width: 25%"><label for="runon">Run on:</label></td>
@@ -151,6 +151,7 @@
 				</display:column>
 				
 				<display:column property="fullDesc" title="License Name"/>
+				<display:column property="sku" title="SKU"/>
 				<display:column property="productName" title="Primary Component"
 					href="/TRAILS/account/license/licenseDetails.htm"
 					paramId="licenseId" paramProperty="id" />
