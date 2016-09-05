@@ -71,6 +71,7 @@
 	summary="used Licenses" id="row" cellspacing="1" cellpadding="0">
 	<display:column property="license.productName" title="Product name" />
 	<display:column property="license.fullDesc" title="License full description" />
+	<display:column property="license.sku" title="SKU" />
 	<display:column property="license.version" title="Version" />
 	<display:column property="license.capacityType.description" title="Capacity type" />
 	<display:column property="usedQuantity" title="Used quantity" />
