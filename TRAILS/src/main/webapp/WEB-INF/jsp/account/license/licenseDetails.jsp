@@ -72,6 +72,9 @@
 							id="fullDesc"></span>
 					</p>
 					<p style="padding: 3px">
+						<label for="skuAsString" style="width: 30%">SKU</label> <span id="skuAsString"> </span>
+					</p>
+					<p style="padding: 3px">
 						<label for="swproPID" style="width: 30%">Software product
 							PID:</label> <span id="swproPID"> </span>
 					</p>
@@ -110,9 +113,6 @@
 					<p style="padding: 3px">
 						<label for="extSrcId" style="width: 30%">SWCM ID:</label> <span
 							id="extSrcId"></span>
-					</p>
-					<p style="padding: 3px">
-						<label for="skuAsString" style="width: 30%">SKU</label> <span id="skuAsString"> </span>
 					</p>
 					<p style="padding: 3px">
 						<label for="recordTimeAsString" style="width: 30%">Record

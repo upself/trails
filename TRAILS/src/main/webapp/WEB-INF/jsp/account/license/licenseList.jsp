@@ -17,10 +17,10 @@ $(function() {
 		var order=null;
 		if(requestURI=="license.htm"){
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseBaseline";
-			orders=['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId','sku'];
+			orders=['licenseId','fullDesc','sku','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId'];
 		}else{
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseFreePool";//licenseFreePool.htm
-			orders=['licenseId','license.fullDesc','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId','license.sku'];
+			orders=['licenseId','license.fullDesc','license.sku','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId'];
 		}
 		$("#licTable").paginationTable('destroy').paginationTable({
 			remote: {
@@ -37,6 +37,7 @@ $(function() {
 							html += "<tr>"; 
 							html += "<td>" +list[i].catalogMatch+ "</td>";
 							html += "<td>" + list[i].fullDesc + "</td>";
+							html += "<td>" + list[i].sku + "</td>";
 							html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
 							html += "<td>" + list[i].swproPID + "</td>"
 							if(list[i].capTypeDesc==""){
@@ -55,7 +56,6 @@ $(function() {
 							}
 							html += "<td>" + list[i].cpuSerial + "</td>";
 							html += "<td>" + list[i].extSrcId + "</td>";
-							html += "<td>" + list[i].sku + "</td>";
 							html += "</tr>"; 
 						}
 					}
@@ -85,6 +85,7 @@ $(function() {
 					<tr>
 						<th scope="col"><span>Primary component catalog match</span><span class="ibm-icon"></span></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SKU</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>
@@ -93,7 +94,6 @@ $(function() {
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Exp date</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Serial</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SWCM ID</span><span class="ibm-icon"></span></a></th>
-						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SKU</span><span class="ibm-icon"></span></a></th>
 					</tr>
 				</thead>
 				<tbody id="license_list" />

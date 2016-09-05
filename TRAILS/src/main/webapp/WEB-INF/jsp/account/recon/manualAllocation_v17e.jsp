@@ -178,6 +178,7 @@
 						sortable="true" />
 					<display:column property="fullDesc" title="License Name"
 						sortable="true" />
+					<display:column property="sku" title="SKU" sortable="true"  sortProperty="license.sku"/>
 					<display:column property="software.softwareName" title="Primary Component"
 		 				sortable="true" />
 		 			<display:column title="License Ownership" sortable="true">
@@ -199,7 +200,6 @@
 					<display:column property="cpuSerial" title="Serial" sortable="true" />
 					<display:column property="environment" title="Environment" sortable="true" />
 					<display:column property="extSrcId" title="SWCM ID" sortable="true" />
-					<display:column property="sku" title="SKU" sortable="true"  sortProperty="license.sku"/>
 				</display:table>
 			</small>
 		</div>
@@ -230,6 +230,7 @@
 						sortable="true" />
 					<display:column property="fullDesc"
 						sortProperty="license.fullDesc" title="License name" sortable="true" />
+					<display:column property="skuAsString" title="SKU" sortable="true"  sortProperty="license.sku"/>
 					<display:column property="productName"
 						sortProperty="software.softwareName" title="Primary component" sortable="true" />
 					<display:column property="licenseOwner" sortProperty="license.ibmOwned" title="License Ownership" sortable="true" />			
@@ -246,7 +247,6 @@
 					<display:column property="cpuSerial" title="Serial" sortable="true" />
 					<display:column property="environment" title="Environment" sortable="true" />
 					<display:column property="extSrcId" title="SWCM ID" sortable="true" />
-					<display:column property="skuAsString" title="SKU" sortable="true"  sortProperty="license.sku"/>
 				</display:table>
 			</small>
 		</div>

@@ -142,10 +142,10 @@ public class LicenseDisplay {
         }
     }
     
-    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc, Boolean ibmOwned,
+    public LicenseDisplay(Long licenseId, String productName, String product, String fullDesc, String sku, Boolean ibmOwned,
     		String swproPID, Integer capTypeCode, String capTypeDesc, Long availableQty,
             Integer quantity, Date expireDate, String cpuSerial,
-            String extSrcId, String environment, Long ownerAccountNumber, String sku) {
+            String extSrcId, String environment, Long ownerAccountNumber) {
         super();
         this.licenseId = licenseId;
         this.productName = productName;

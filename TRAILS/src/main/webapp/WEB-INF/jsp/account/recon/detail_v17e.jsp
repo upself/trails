@@ -71,6 +71,7 @@
 	summary="used Licenses" id="row" cellspacing="1" cellpadding="0">
 	<display:column property="license.productName" title="Product name" />
 	<display:column property="license.fullDesc" title="License full description" />
+	<display:column property="license.sku" title="SKU" />
 	<display:column property="license.version" title="Version" />
 	<display:column property="license.capacityType.description" title="Capacity type" />
 	<display:column property="usedQuantity" title="Used quantity" />
@@ -79,7 +80,6 @@
 	<display:column property="license.cpuSerial" title="Serial number" />
 	<display:column property="license.ibmOwned" title="IBM owned license" />
 	<display:column property="license.extSrcId" title="SWCM ID" />
-	<display:column property="license.sku" title="SKU" />
 	<display:column property="license.recordTime" title="Record time" />
 </display:table>
 	</div>

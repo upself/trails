@@ -151,6 +151,7 @@
 				</display:column>
 				
 				<display:column property="fullDesc" title="License Name"/>
+				<display:column property="sku" title="SKU"/>
 				<display:column property="productName" title="Primary Component"
 					href="/TRAILS/account/license/licenseDetails.htm"
 					paramId="licenseId" paramProperty="id" />
@@ -170,7 +171,6 @@
 				<display:column property="cpuSerial" title="Serial" />
 				<display:column property="environment" title="Environment" />
 				<display:column property="extSrcId" title="SWCM ID" />
-				<display:column property="sku" title="SKU"/>
 			</display:table>
 		</small>
 	</div>
