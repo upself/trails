@@ -11,101 +11,114 @@ import java.util.Date;
 /**
  * @author Thomas
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class SoftwareCategory {
-    private Long softwareCategoryId;
-    private String softwareCategoryName;
-    private String comments;
-    private String remoteUser;
-    private Date recordTime;
-    private String status;
+	private Long softwareCategoryId;
+	private String softwareCategoryName;
+	private String comments;
+	private String remoteUser;
+	private Date recordTime;
+	private String status;
+	private String changeJustification;
 
-    /**
-     * @return Returns the comments.
-     */
-    public String getComments() {
-        return comments;
-    }
+	/**
+	 * @return Returns the comments.
+	 */
+	public String getComments() {
+		return comments;
+	}
 
-    /**
-     * @param comments
-     *            The comments to set.
-     */
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
+	/**
+	 * @param comments
+	 *            The comments to set.
+	 */
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
 
-    /**
-     * @return Returns the recordTime.
-     */
-    public Date getRecordTime() {
-        return recordTime;
-    }
-    /**
-     * @param recordTime The recordTime to set.
-     */
-    public void setRecordTime(Date recordTime) {
-        this.recordTime = recordTime;
-    }
-    /**
-     * @return Returns the remoteUser.
-     */
-    public String getRemoteUser() {
-        return remoteUser;
-    }
+	/**
+	 * @return Returns the recordTime.
+	 */
+	public Date getRecordTime() {
+		return recordTime;
+	}
 
-    /**
-     * @param remoteUser
-     *            The remoteUser to set.
-     */
-    public void setRemoteUser(String remoteUser) {
-        this.remoteUser = remoteUser;
-    }
+	/**
+	 * @param recordTime
+	 *            The recordTime to set.
+	 */
+	public void setRecordTime(Date recordTime) {
+		this.recordTime = recordTime;
+	}
 
-    /**
-     * @return Returns the softwareCategoryId.
-     */
-    public Long getSoftwareCategoryId() {
-        return softwareCategoryId;
-    }
+	/**
+	 * @return Returns the remoteUser.
+	 */
+	public String getRemoteUser() {
+		return remoteUser;
+	}
 
-    /**
-     * @param softwareCategoryId
-     *            The softwareCategoryId to set.
-     */
-    public void setSoftwareCategoryId(Long softwareCategoryId) {
-        this.softwareCategoryId = softwareCategoryId;
-    }
+	/**
+	 * @param remoteUser
+	 *            The remoteUser to set.
+	 */
+	public void setRemoteUser(String remoteUser) {
+		this.remoteUser = remoteUser;
+	}
 
-    /**
-     * @return Returns the softwareCategoryName.
-     */
-    public String getSoftwareCategoryName() {
-        return softwareCategoryName;
-    }
+	/**
+	 * @return Returns the softwareCategoryId.
+	 */
+	public Long getSoftwareCategoryId() {
+		return softwareCategoryId;
+	}
 
-    /**
-     * @param softwareCategoryName
-     *            The softwareCategoryName to set.
-     */
-    public void setSoftwareCategoryName(String softwareCategoryName) {
-        this.softwareCategoryName = softwareCategoryName;
-    }
+	/**
+	 * @param softwareCategoryId
+	 *            The softwareCategoryId to set.
+	 */
+	public void setSoftwareCategoryId(Long softwareCategoryId) {
+		this.softwareCategoryId = softwareCategoryId;
+	}
 
-    /**
-     * @return Returns the status.
-     */
-    public String getStatus() {
-        return status;
-    }
+	/**
+	 * @return Returns the softwareCategoryName.
+	 */
+	public String getSoftwareCategoryName() {
+		return softwareCategoryName;
+	}
 
-    /**
-     * @param status
-     *            The status to set.
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	/**
+	 * @param softwareCategoryName
+	 *            The softwareCategoryName to set.
+	 */
+	public void setSoftwareCategoryName(String softwareCategoryName) {
+		this.softwareCategoryName = softwareCategoryName;
+	}
+
+	/**
+	 * @return Returns the status.
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            The status to set.
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getChangeJustification() {
+		return changeJustification;
+	}
+
+	public void setChangeJustification(String changeJustification) {
+		this.changeJustification = changeJustification;
+	}
+
 }

@@ -39,8 +39,15 @@ import com.ibm.ea.bravo.software.InstalledScript;
 import com.ibm.ea.bravo.software.InstalledSoftware;
 import com.ibm.ea.bravo.software.SoftwareLpar;
 import com.ibm.ea.sigbank.BankAccount;
+
+import com.ibm.ea.sigbank.KbDefinition;
+import com.ibm.ea.sigbank.Product;
 import com.ibm.ea.sigbank.ProductInfo;
 
+import com.ibm.ea.sigbank.Software;
+
+import com.ibm.ea.sigbank.SoftwareCategory;
+import com.ibm.ea.sigbank.SoftwareItem;
 import com.ibm.ea.utils.EaUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,6 +58,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 
 //	@Test
 	public void testReadsSpecificLparIdfromDB() {
+		
 		final String lparId = "2223341";
 		
 		FormSoftware software = new FormSoftware(lparId);
@@ -83,6 +91,16 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		System.out.println("anyProductInfo.getSoftwareCategoryId(): " + anyProductInfo.getSoftwareCategoryId());
 //		System.out.println("anyProductInfo.getProductId(): " + anyProductInfo.getProductId());
 		
+		//Product separate test
+		/*
+		Product product = ProductTestHelper.createRecord();
+		System.out.println("product.getId(): " + product.getId());
+		System.out.println("product.getRemoteUser(): " + product.getRemoteUser());
+		System.out.println("product.getManufacturer().getManufacturerName(): " + product.getManufacturer().getManufacturerName());
+		
+		ProductTestHelper.deleteRecord(product);
+		*/
+		
 		//ProductInfo separate test
 		/*
 		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
@@ -91,6 +109,32 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		ProductInfoTestHelper.deleteRecord(productInfo);
 		*/
 		
+		//SoftwareItem separate test
+		/*
+		SoftwareItem softwareItem = SoftwareItemTestHelper.createRecord();
+		System.out.println("softwareItem.getId(): " + softwareItem.getId());
+		SoftwareItemTestHelper.deleteRecord(softwareItem);
+		*/
+		
+		//KbDefinition separate test
+		/*
+		KbDefinition kbDefinition = KbDefinitionTestHelper.createRecord();
+		System.out.println("kbDefinition.getId(): " + kbDefinition.getId());
+		System.out.println("kbDefinition.getCreationTime(): " + kbDefinition.getCreationTime());
+		
+		KbDefinitionTestHelper.deleteRecord(kbDefinition);
+		*/
+		
+		//SoftwareCategory separate test
+		/*
+		SoftwareCategory softwareCategory = SoftwareCategoryTestHelper.createRecord();
+		
+		System.out.println("softwareCategory.getCreationTime(): " + softwareCategory.getRecordTime());
+		
+		SoftwareCategoryTestHelper.deleteRecord(softwareCategory);
+		*/
+		
+		/*
 		//SoftwareLpar separate test
 		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
 		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
@@ -102,8 +146,23 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		if (softwareLpar.getId() != null) {
 //			SoftwareLparTestHelper.deleteRecord(softwareLpar);
 //		}
-
-//		InstalledScript testInstalledScript = setupDataForInstalledSoftware();
+		*/
+		
+		//Softwarey separate test
+//		/*
+		
+		System.out.println("before create: " + SoftwareTestHelper.validate());
+		Software software = SoftwareTestHelper.create();
+		System.out.println("after create: " + SoftwareTestHelper.validate());
+		System.out.println("software.getManufacturerId(): " + software.getManufacturerId());
+		
+		SoftwareTestHelper.delete(software);
+		System.out.println("after delete: " + SoftwareTestHelper.validate());
+//		*/
+		
+		//////////////
+//		InstalledScript installedScript = setupDataForInstalledSoftware();
+		//////////////
 		
 //		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
 		
@@ -152,21 +211,27 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	}
 	
 	public InstalledScript setupDataForInstalledSoftware() {
-		
 
-		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
+		ProductInfo productInfo = ProductInfoTestHelper.create();
 		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
 		System.out.println("productInfo.getProductId(): " + productInfo.getProductId());
 		
-		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
+		SoftwareLpar softwareLpar = SoftwareLparTestHelper.getAnyRecord();
 		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
 		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
 		
 		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
 		System.out.println("discrepancyType.getId(): " + discrepancyType.getId());
 		
-		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
-		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware.getId());
+//		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
+		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
+		System.out.println("installedSoftware.getId(): " + installedSoftware.getId());
+		System.out.println("installedSoftware.getSoftware().getSoftwareName(): " + installedSoftware.getSoftware().getSoftwareName());
+		System.out.println("installedSoftware.getSoftwareLpar().getName(): " + installedSoftware.getSoftwareLpar().getName());
+		
+		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware);
+		System.out.println("installedScript.getId(): " + installedScript.getId());
+		
 		return installedScript;
 	}
 	
@@ -177,10 +242,11 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		InstalledSoftware installedSoftware = installedScript.getInstalledSoftware();
 
 	
-		ProductInfoTestHelper.deleteRecordById(productInfoId);
+		ProductInfoTestHelper.deleteById(productInfoId);
 		SoftwareLparTestHelper.deleteRecord(softwareLpar);
 		InstalledSoftwareTestHelper.deleteRecord(installedSoftware);
 		InstalledScriptTesthelper.deleteRecord(installedScript);
+
 	}
 
 }
