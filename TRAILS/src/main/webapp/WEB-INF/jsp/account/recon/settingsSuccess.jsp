@@ -9,10 +9,10 @@
 	<div id="msg" class="ibm-col-1-1" style="float:left;width:100%" >
 		<s:if test="total > 300">
 			<p>Reconciliation workspace settings successfully updated.</p>
-			<p>Your workspace settings will return ${total} alerts, would you like to <a href="settings.htm">revise</a> your workspace settings or <s:a href="%{workspaceLink}">continue</s:a> to the workspace? OR <a class="ibm-new-link" href="workspace.htm?gotoV17e=y">Try new version</a> to workpsace.</p>
+			<p>Your workspace settings will return ${total} alerts, would you like to <a href="settings.htm">revise</a> your workspace settings or <s:a href="%{workspaceLink}">continue</s:a> to the workspace?</p>
 		</s:if>
 		<s:if test="total <= 300">
-			<p>Reconciliation workspace settings successfully updated. Use the navigation on the left to proceed to the workspace or click <s:a href="%{workspaceLink}">here</s:a>, OR <a class="ibm-new-link" href="workspace.htm?gotoV17e=y">Try new version</a></p>
+			<p>Reconciliation workspace settings successfully updated. Use the navigation on the left to proceed to the workspace or click <s:a href="%{workspaceLink}">here</s:a>.</p>
 		</s:if>
 	</div>
 	<div class="ibm-rule"> <hr /> </div>

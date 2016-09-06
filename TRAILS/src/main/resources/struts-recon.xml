@@ -32,7 +32,7 @@
 				<param name="scope.type">start</param>
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
-			<result type="tiles">tiles.account.recon.workspace${v17e}</result>
+			<result type="tiles">tiles.account.recon.workspace</result>
 			<result name="error" type="redirect">settings.htm</result>
 		</action>
 
@@ -43,38 +43,32 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result name="1" type="tiles">
-				tiles.account.recon.workspace.manualAllocation${v17e}
-			</result>
-			<result name="2" type="tiles">
-				tiles.account.recon.workspace.customerOwned
+				tiles.account.recon.workspace.manualAllocation
 			</result>
 			<result name="3" type="tiles">
-				tiles.account.recon.workspace.altPurchase${v17e}
+				tiles.account.recon.workspace.altPurchase
 			</result>
 			<result name="4" type="tiles">
-				tiles.account.recon.workspace.included${v17e}
+				tiles.account.recon.workspace.included
 			</result>
 			<result name="9" type="tiles">
-				tiles.account.recon.workspace.breakRecon${v17e}
+				tiles.account.recon.workspace.breakRecon
 			</result>
 			<result name="10" type="tiles">
-				tiles.account.recon.workspace.assign${v17e}
+				tiles.account.recon.workspace.assign
 			</result>
 			<result name="11" type="tiles">
-				tiles.account.recon.workspace.unassign${v17e}
+				tiles.account.recon.workspace.unassign
 			</result>
 			<result name="12" type="tiles">
-				tiles.account.recon.workspace.breakLicenseRecon${v17e}
+				tiles.account.recon.workspace.breakLicenseRecon
 			</result>
 			<result name="13" type="tiles">
-				tiles.account.recon.workspace.enterpriseAgreement${v17e}
+				tiles.account.recon.workspace.enterpriseAgreement
 			</result>
-			<result name="14" type="tiles">
-				tiles.account.recon.workspace.pendingCustomerDecision
+			<result name="error" type="tiles">tiles.account.recon.workspace
 			</result>
-			<result name="error" type="tiles">tiles.account.recon.workspace${v17e}
-			</result>
-			<result name="input" type="tiles">tiles.account.recon.workspace${v17e}
+			<result name="input" type="tiles">tiles.account.recon.workspace
 			</result>
 		</action>
 
@@ -86,28 +80,15 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.manualConfirmation${v17e}
+				tiles.account.recon.workspace.manualConfirmation
 			</result>
 			<result type="tiles" name="input">
-				tiles.account.recon.workspace.manualAllocation${v17e}
+				tiles.account.recon.workspace.manualAllocation
 			</result>
-			<result type="redirect" name="cancel">workspace.htm${v17eParam}</result>
+			<result type="redirect" name="cancel">workspace.htm</result>
 			<result type="tiles" name="license">
-				tiles.account.recon.workspace.manualAllocation${v17e}
+				tiles.account.recon.workspace.manualAllocation
 			</result>
-		</action>
-
-		<action name="showCustomerOwnedConfirmation" class="showConfirmation"
-			method="customerOwned">
-			<interceptor-ref name="accountStack">
-				<param name="scope.key">workspace</param>
-				<param name="scope.session">recon</param>
-				<param name="scope.autoCreateSession">true</param>
-			</interceptor-ref>
-			<result type="tiles">
-				tiles.account.recon.workspace.customerOwnedConfirmation
-			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
 		</action>
 
 		<action name="showIncludedConfirmation" class="showConfirmation"
@@ -118,11 +99,11 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.includedConfirmation${v17e}
+				tiles.account.recon.workspace.includedConfirmation
 			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.included${v17e}
+				tiles.account.recon.workspace.included
 			</result>
 		</action>
 
@@ -134,11 +115,11 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.altPurchaseConfirmation${v17e}
+				tiles.account.recon.workspace.altPurchaseConfirmation
 			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.altPurchase${v17e}
+				tiles.account.recon.workspace.altPurchase
 			</result>
 		</action>
 
@@ -150,9 +131,9 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.breakConfirmation${v17e}
+				tiles.account.recon.workspace.breakConfirmation
 			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 		</action>
 
 		<action name="showAssignConfirmation" class="showConfirmation"
@@ -163,11 +144,11 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.assignConfirmation${v17e}
+				tiles.account.recon.workspace.assignConfirmation
 			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.assign${v17e}
+				tiles.account.recon.workspace.assign
 			</result>
 		</action>
 
@@ -179,11 +160,40 @@
 				<param name="scope.autoCreateSession">true</param>
 			</interceptor-ref>
 			<result type="tiles">
-				tiles.account.recon.workspace.unassignConfirmation${v17e}
+				tiles.account.recon.workspace.unassignConfirmation
 			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 			<result name="input" type="tiles">
-				tiles.account.recon.workspace.unassign${v17e}
+				tiles.account.recon.workspace.unassign
+			</result>
+		</action>
+		
+		<action name="showBreakLicenseConfirmation" class="showConfirmation"
+			method="breakLicenseRecon">
+			<interceptor-ref name="accountStack">
+				<param name="scope.key">workspace</param>
+				<param name="scope.session">recon</param>
+				<param name="scope.autoCreateSession">true</param>
+			</interceptor-ref>
+			<result type="tiles">
+				tiles.account.recon.workspace.breakLicenseConfirmation
+			</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
+		</action>
+
+		<action name="showEnterpriseAgreementConfirmation" class="showConfirmation"
+			method="enterpriseAgreement">
+			<interceptor-ref name="accountStack">
+				<param name="scope.key">workspace</param>
+				<param name="scope.session">recon</param>
+				<param name="scope.autoCreateSession">true</param>
+			</interceptor-ref>
+			<result type="tiles">
+				tiles.account.recon.workspace.enterpriseAgreementConfirmation
+			</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
+			<result name="input" type="tiles">
+				tiles.account.recon.workspace.enterpriseAgreement
 			</result>
 		</action>
 
@@ -197,63 +207,16 @@
 			<interceptor-ref name="execAndWait">
 				<param name="delay">10000</param>
 			</interceptor-ref>
-			<result name="wait">/WEB-INF/jsp/account/recon/wait${v17e}.jsp</result>
-			<result name="success" type="redirect">workspace.htm${v17eParam}</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
+			<result name="wait">/WEB-INF/jsp/account/recon/wait.jsp</result>
+			<result name="success" type="redirect">workspace.htm</result>
+			<result name="cancel" type="redirect">workspace.htm</result>
 		</action>
 
 		<action name="reconcileDetails" class="reconcileAction" method="details">
 			<result type="tiles">
 				tiles.account.recon.workspace.reconDetail
 			</result>
-			<result type="tiles" name="SHOW_V17E">tiles.account.recon.workspace.reconDetail.v17e</result>
 		</action>
-
-		<action name="showBreakLicenseConfirmation" class="showConfirmation"
-			method="breakLicenseRecon">
-			<interceptor-ref name="accountStack">
-				<param name="scope.key">workspace</param>
-				<param name="scope.session">recon</param>
-				<param name="scope.autoCreateSession">true</param>
-			</interceptor-ref>
-			<result type="tiles">
-				tiles.account.recon.workspace.breakLicenseConfirmation${v17e}
-			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
-		</action>
-
-		<action name="showEnterpriseAgreementConfirmation" class="showConfirmation"
-			method="enterpriseAgreement">
-			<interceptor-ref name="accountStack">
-				<param name="scope.key">workspace</param>
-				<param name="scope.session">recon</param>
-				<param name="scope.autoCreateSession">true</param>
-			</interceptor-ref>
-			<result type="tiles">
-				tiles.account.recon.workspace.enterpriseAgreementConfirmation${v17e}
-			</result>
-			<result name="cancel" type="redirect">workspace.htm${v17eParam}</result>
-			<result name="input" type="tiles">
-				tiles.account.recon.workspace.enterpriseAgreement${v17e}
-			</result>
-		</action>
-
-		<action name="showPendingCustomerDecisionConfirmation" class="showConfirmation"
-			method="pendingCustomerDecision">
-			<interceptor-ref name="accountStack">
-				<param name="scope.key">workspace</param>
-				<param name="scope.session">recon</param>
-				<param name="scope.autoCreateSession">true</param>
-			</interceptor-ref>
-			<result type="tiles">
-				tiles.account.recon.workspace.pendingCustomerDecisionConfirmation
-			</result>
-			<result name="cancel" type="redirect">workspace.htm</result>
-			<result name="input" type="tiles">
-				tiles.account.recon.workspace.pendingCustomerDecision
-			</result>
-		</action>
-
 
 		<action name="getCapcityTypes" method="getCapcityTypes" class="reconAjaxAction"></action>
 		<action name="quickSearch" method="quickSearch" class="reconAjaxAction"></action>

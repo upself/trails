@@ -17,8 +17,6 @@ public class ApplyManualRecon extends AccountBaseAction {
 	private AlertService alertService;
 
 	private Recon recon;
-	
-	private String gotoV17e;
 
 	@UserRole(userRole = UserRoleType.READER)
 	public String cancel() {
@@ -133,30 +131,6 @@ public class ApplyManualRecon extends AccountBaseAction {
 
 	public void setRecon(Recon recon) {
 		this.recon = recon;
-	}
-
-	public String getGotoV17e() {
-		return gotoV17e;
-	}
-
-	public void setGotoV17e(String gotoV17e) {
-		this.gotoV17e = gotoV17e;
-	}
-	
-	public String getV17eParam(){
-		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y")){
-			return "?gotoV17e=y";
-		}else{
-			return null;
-		}
-	}
-	
-	public String getV17e(){
-		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") ){
-			return "_v17e";
-		}else{
-			return null;
-		}
 	}
 
 	public AlertService getAlertService() {

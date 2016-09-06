@@ -1331,17 +1331,10 @@
 		<put-attribute name="keywords" value="TRAILS help on page reference" />
 		<put-attribute name="contentTitle" value="TRAILS help on page reference" />
 	</definition>
-
-	<definition name="tiles.alerts.history.popup" extends="tiles.w3PopupLayout">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/alerts/alertHistoryPopup.jsp" />
-		<put-attribute name="description" value="TRAILS alert history" />
-		<put-attribute name="keywords" value="TRAILS alert history" />
-	</definition>
 	
-	<definition name="tiles.alerts.history.popup.v17e" extends="tiles.v17ePopupLayout">
+	<definition name="tiles.alerts.history.popup" extends="tiles.v17ePopupLayout">
 		<put-attribute name="contentTitle" value="TTRAILS alert history" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/alerts/alertHistoryPopup_v17e.jsp" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/alerts/alertHistoryPopup.jsp" />
 		<put-attribute name="description" value="TRAILS alert history" />
 		<put-attribute name="keywords" value="TRAILS alert history" />
 	</definition>
@@ -1401,256 +1394,120 @@
 		<put-attribute name="keywords" value="TRAILS account recon settings success" />
 	</definition>	
 	
-	<definition name="tiles.account.recon.workspace" extends="tiles.w3NoColumnLayout">
+	<definition name="tiles.account.recon.workspace" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
 		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
 		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace.jsp" />
 		<put-attribute name="description" value="TRAILS recon workspace" />
 		<put-attribute name="keywords" value="TRAILS recon workspace" />
 	</definition>
-	
-	<definition name="tiles.account.recon.workspace.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="contentHead" type="template" value="/WEB-INF/jsp/account/recon/workspaceHead.jsp" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/workspace_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS recon workspace" />
-		<put-attribute name="keywords" value="TRAILS recon workspace" />
-	</definition>
-	
+
 	<definition name="tiles.account.recon.workspace.manualAllocation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/recon/manualAllocation.jsp" />
 		<put-attribute name="description" value="TRAILS manual license allocation" />
 		<put-attribute name="keywords" value="TRAILS manual license allocation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.manualAllocation.v17e"
-		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/manualAllocation_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS manual license allocation" />
-		<put-attribute name="keywords" value="TRAILS manual license allocation" />
-	</definition>
 	
-	<definition name="tiles.account.recon.workspace.customerOwned"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/customerOwned.jsp" />
-		<put-attribute name="description"
-			value="TRAILS customer owned reconciliation" />
-		<put-attribute name="keywords"
-			value="TRAILS customer owned reconciliation" />
-	</definition>
-
 	<definition name="tiles.account.recon.workspace.altPurchase"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
+		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
 		<put-attribute name="content" type="template"
 			value="/WEB-INF/jsp/account/recon/altPurchase.jsp" />
-		<put-attribute name="description"
-			value="TRAILS alternate purchase agreement reconciliation" />
-		<put-attribute name="keywords"
-			value="TRAILS alternate purchase agreement reconciliation" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.altPurchase.v17e"
-		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/altPurchase_v17e.jsp" />
 		<put-attribute name="description" value="TRAILS alternate purchase agreement reconciliation" />
 		<put-attribute name="keywords" value="TRAILS alternate purchase agreement reconciliation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.included"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/included.jsp" />
-		<put-attribute name="description"
-			value="TRAILS included with other product reconciliation" />
-		<put-attribute name="keywords"
-			value="TRAILS included with other product reconciliation" />
-	</definition>
 	
-	<definition name="tiles.account.recon.workspace.included.v17e"
+	<definition name="tiles.account.recon.workspace.included"
 		extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
 		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/included_v17e.jsp" />
+			value="/WEB-INF/jsp/account/recon/included.jsp" />
 		<put-attribute name="description" value="TRAILS included with other product reconciliation" />
 		<put-attribute name="keywords" value="TRAILS included with other product reconciliation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.breakRecon"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/breakRecon.jsp" />
+	
+	<definition name="tiles.account.recon.workspace.breakRecon" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakRecon.jsp" />
 		<put-attribute name="description" value="TRAILS break reconciliation" />
 		<put-attribute name="keywords" value="TRAILS break reconciliation" />
 	</definition>
 	
-	<definition name="tiles.account.recon.workspace.breakRecon.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakRecon_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS break reconciliation" />
-		<put-attribute name="keywords" value="TRAILS break reconciliation" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.assign"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/assign.jsp" />
+	<definition name="tiles.account.recon.workspace.assign" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assign.jsp" />
 		<put-attribute name="description" value="TRAILS workspace assignment action" />
 		<put-attribute name="keywords" value="TRAILS workspace assignment action" />
 	</definition>
 	
-	<definition name="tiles.account.recon.workspace.assign.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assign_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS workspace assignment action" />
-		<put-attribute name="keywords" value="TRAILS workspace assignment action" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.unassign"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/unassign.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace unassignment action" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace unassignment action" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.unassign.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassign_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.unassign" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassign.jsp" />
 		<put-attribute name="description" value="TRAILS workspace unassignment action" />
 		<put-attribute name="keywords" value="TRAILS workspace unassignment action" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.manualConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/manualConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS manual allocation confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS manual allocation confirmation" />
+	
+	<definition name="tiles.account.recon.workspace.breakLicenseRecon" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseRecon.jsp" />
+		<put-attribute name="description" value="TRAILS break license reconciliation" />
+		<put-attribute name="keywords" value="TRAILS break license reconciliation" />
 	</definition>
 	
-	<definition name="tiles.account.recon.workspace.manualConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/manualConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.enterpriseAgreement" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreement.jsp" />
+		<put-attribute name="description" value="TRAILS workspace enterprise agreement" />
+		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.manualConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/manualConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS manual allocation confirmation" />
 		<put-attribute name="keywords" value="TRAILS manual allocation confirmation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.customerOwnedConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/customerOwnedConfirmation.jsp" />
-		<put-attribute name="description" value="TRAILS customer owned confirmation" />
-		<put-attribute name="keywords" value="TRAILS customer owned confirmation" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.altPurchaseConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/altPurchaseConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS alternate purchase agreement confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS alternate purchase agreement confirmation" />
-	</definition>
 	
-	<definition name="tiles.account.recon.workspace.altPurchaseConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/altPurchaseConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.altPurchaseConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/altPurchaseConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS alternate purchase agreement confirmation" />
 		<put-attribute name="keywords" value="TRAILS alternate purchase agreement confirmation" />
 	</definition>
 
-	<definition name="tiles.account.recon.workspace.includedConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/includedConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS included with other product confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS included with other product confirmation" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.includedConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/includedConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.includedConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/includedConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS included with other product confirmation" />
 		<put-attribute name="keywords" value="TRAILS included with other product confirmation" />
 	</definition>
 	
-	<definition name="tiles.account.recon.workspace.breakConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/breakConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS break reconciliation confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS break reconciliation confirmation" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.breakConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.breakConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS break reconciliation confirmation" />
 		<put-attribute name="keywords" value="TRAILS break reconciliation confirmation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.assignConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/assignConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace assignment confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace assignment confirmation" />
-	</definition>
 	
-	<definition name="tiles.account.recon.workspace.assignConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assignConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.assignConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/assignConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS workspace assignment confirmation" />
 		<put-attribute name="keywords" value="TRAILS workspace assignment confirmation" />
 	</definition>
-
-	<definition name="tiles.account.recon.workspace.unassignConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/unassignConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace unassignment confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace unassignment confirmation" />
-	</definition>
 	
-	<definition name="tiles.account.recon.workspace.unassignConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassignConfirmation_v17e.jsp" />
+	<definition name="tiles.account.recon.workspace.unassignConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/unassignConfirmation.jsp" />
 		<put-attribute name="description" value="TRAILS workspace unassignment confirmation" />
 		<put-attribute name="keywords" value="TRAILS workspace unassignment confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.breakLicenseConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseConfirmation.jsp" />
+		<put-attribute name="description" value="TRAILS break license confirmation" />
+		<put-attribute name="keywords" value="TRAILS break license confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.enterpriseAgreementConfirmation" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreementConfirmation.jsp" />
+		<put-attribute name="description" value="TRAILS workspace enterprise agreement confirmation" />
+		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement confirmation" />
+	</definition>
+	
+	<definition name="tiles.account.recon.workspace.reconDetail" extends="tiles.v17ePopupLayout">
+		<put-attribute name="contentTitle" value="TRAILS reconciliation detail" />
+		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/detail.jsp" />
+		<put-attribute name="description" value="TRAILS reconciliation detail" />
+		<put-attribute name="keywords" value="TRAILS reconciliation detail" />
 	</definition>
 
 	<definition name="tiles.account.license.freepool" extends="tiles.v17e.w3OneColumnLayout">
@@ -1675,113 +1532,6 @@
 			value="/WEB-INF/jsp/account/reports/home.jsp" />
 		<put-attribute name="description" value="TRAILS reports home" />
 		<put-attribute name="keywords" value="TRAILS reports home" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.reconDetail" extends="tiles.w3PopupLayout">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/detail.jsp" />
-		<put-attribute name="description" value="TRAILS reconciliation detail" />
-		<put-attribute name="keywords" value="TRAILS reconciliation detail" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.reconDetail.v17e" extends="tiles.v17ePopupLayout">
-		<put-attribute name="contentTitle" value="TRAILS reconciliation detail" />
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/detail_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS reconciliation detail" />
-		<put-attribute name="keywords" value="TRAILS reconciliation detail" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.breakLicenseRecon"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/breakLicenseRecon.jsp" />
-		<put-attribute name="description"
-			value="TRAILS break license reconciliation" />
-		<put-attribute name="keywords"
-			value="TRAILS break license reconciliation" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.breakLicenseRecon.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseRecon_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS break license reconciliation" />
-		<put-attribute name="keywords" value="TRAILS break license reconciliation" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.breakLicenseConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/breakLicenseConfirmation.jsp" />
-		<put-attribute name="description" value="TRAILS break license confirmation" />
-		<put-attribute name="keywords" value="TRAILS break license confirmation" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.breakLicenseConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/breakLicenseConfirmation_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS break license confirmation" />
-		<put-attribute name="keywords" value="TRAILS break license confirmation" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.enterpriseAgreement"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/enterpriseAgreement.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace enterprise agreement" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace enterprise agreement" />
-	</definition>
-
-	<definition name="tiles.account.recon.workspace.enterpriseAgreement.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreement_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS workspace enterprise agreement" />
-		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement" />
-	</definition>
-	
-	<definition
-		name="tiles.account.recon.workspace.enterpriseAgreementConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/enterpriseAgreementConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace enterprise agreement confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace enterprise agreement confirmation" />
-	</definition>
-	<definition name="tiles.account.recon.workspace.enterpriseAgreementConfirmation.v17e" extends="tiles.v17e.w3OneColumnLayoutWithoutNavi">
-		<put-attribute name="content" type="template" value="/WEB-INF/jsp/account/recon/enterpriseAgreementConfirmation_v17e.jsp" />
-		<put-attribute name="description" value="TRAILS workspace enterprise agreement confirmation" />
-		<put-attribute name="keywords" value="TRAILS workspace enterprise agreement confirmation" />
-	</definition>
-	
-	<definition name="tiles.account.recon.workspace.pendingCustomerDecision"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/questionHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/pendingCustomerDecision.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace pending customer decision" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace pending customer decision" />
-	</definition>
-	<definition
-		name="tiles.account.recon.workspace.pendingCustomerDecisionConfirmation"
-		extends="tiles.w3NoColumnLayout">
-		<put-attribute name="contentHead" type="template"
-			value="/WEB-INF/jsp/account/recon/confirmationHead.jsp" />
-		<put-attribute name="content" type="template"
-			value="/WEB-INF/jsp/account/recon/pendingCustomerDecisionConfirmation.jsp" />
-		<put-attribute name="description"
-			value="TRAILS workspace pending customer decision confirmation" />
-		<put-attribute name="keywords"
-			value="TRAILS workspace pending customer decision confirmation" />
 	</definition>
 
 	<definition name="tiles.admin.home" extends="tiles.v17e.w3OneColumnLayout">
