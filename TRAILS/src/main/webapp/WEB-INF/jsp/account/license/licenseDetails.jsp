@@ -30,6 +30,7 @@
 				$("#poolAsString").text(result.data.poolAsString);
 				$("#extSrcId").text(result.data.extSrcId);
 				$("#recordTimeAsString").text(result.data.recordTimeAsString);
+				$("#skuAsString").text(result.data.skuAsString);
 				if (result.status != '200') {
 					alert(result.msg);
 				}
@@ -69,6 +70,9 @@
 					<p style="padding: 3px">
 						<label for="fullDesc" style="width: 30%">License name:</label> <span
 							id="fullDesc"></span>
+					</p>
+					<p style="padding: 3px">
+						<label for="skuAsString" style="width: 30%">SKU</label> <span id="skuAsString"> </span>
 					</p>
 					<p style="padding: 3px">
 						<label for="swproPID" style="width: 30%">Software product
@@ -114,6 +118,7 @@
 						<label for="recordTimeAsString" style="width: 30%">Record
 							date/time:</label> <span id="recordTimeAsString"> </span>
 					</p>
+
 				</form>
 		</div>
 </div>

@@ -33,8 +33,18 @@ public class LicenseBaselineDisplay {
     private Long ownerAccountNumber;
     
     private String swproPID;
+    
+    private String sku;
 
-    public LicenseBaselineDisplay() {
+    public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public LicenseBaselineDisplay() {
     }
 
     public LicenseBaselineDisplay(Long licenseId, String productName, String product, String fullDesc,

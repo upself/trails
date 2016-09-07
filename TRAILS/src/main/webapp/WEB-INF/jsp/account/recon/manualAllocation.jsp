@@ -3,7 +3,7 @@
 <s:url id="settingsLink" action="settings" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
-<s:url id="workspaceLink" action="workspace" namespace="/account/recon"
+<s:url id="workspaceLink" action="workspace?gotoV17e=y" namespace="/account/recon"
 	includeContext="true" includeParams="none">
 </s:url>
 <script type="text/javascript">
@@ -59,7 +59,7 @@
 		<s:actionerror />
 		<s:fielderror />
 	</s:if>
-	<s:form id="showManualConfirmation" action="showManualConfirmation" namespace="/account/recon" theme="simple">
+	<s:form id="showManualConfirmation" action="showManualConfirmation?gotoV17e=y" namespace="/account/recon" theme="simple">
 		<s:hidden name="page" value="%{#attr.page}" />
 		<s:hidden name="dir" value="%{#attr.dir}" />
 		<s:hidden name="sort" value="%{#attr.sort}" />
@@ -158,7 +158,7 @@
 				
 				<display:table name="reconLicenseList" summary="Recon License List" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row"
 					cellspacing="1" cellpadding="0" excludedParams="*"
-					requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
+					requestURI="showQuestion.htm?gotoV17e=y&flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
 					<display:column>
 						<s:checkbox name="selectedLicenseId" fieldValue="%{#attr.row.id}" />
 					</display:column>
@@ -178,6 +178,7 @@
 						sortable="true" />
 					<display:column property="fullDesc" title="License Name"
 						sortable="true" />
+					<display:column property="sku" title="SKU" sortable="true"  sortProperty="license.sku"/>
 					<display:column property="software.softwareName" title="Primary Component"
 		 				sortable="true" />
 		 			<display:column title="License Ownership" sortable="true">
@@ -210,7 +211,7 @@
 				<display:table name="data" class="ibm-data-table ibm-sortable-table ibm-alternating tablesorter tablesorter-default" id="row" summary="Available Licenses"
 				decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator"
 				cellspacing="1" cellpadding="0" excludedParams="*"
-				requestURI="showQuestion.htm?flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
+				requestURI="showQuestion.htm?gotoV17e=y&flag=1&page=${page}&dir=${dir}&sort=${sort}&sortReq=true">
 					<display:column><s:checkbox name="availableLicenseId" fieldValue="%{#attr.row.licenseId}" /> </display:column>
 					<display:column>
 						<s:if test="%{#attr.row.catalogMatch eq 'Yes'}">
@@ -229,6 +230,7 @@
 						sortable="true" />
 					<display:column property="fullDesc"
 						sortProperty="license.fullDesc" title="License name" sortable="true" />
+					<display:column property="skuAsString" title="SKU" sortable="true"  sortProperty="license.sku"/>
 					<display:column property="productName"
 						sortProperty="software.softwareName" title="Primary component" sortable="true" />
 					<display:column property="licenseOwner" sortProperty="license.ibmOwned" title="License Ownership" sortable="true" />			
