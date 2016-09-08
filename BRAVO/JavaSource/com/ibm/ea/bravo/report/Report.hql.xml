@@ -534,6 +534,7 @@
 				and customer.pod_id = pod.pod_id
 				and customer.customer_id = software_lpar.customer_id
 				and software_lpar.status = 'ACTIVE'
+				and (cr.status is null or cr.status = 'ACTIVE')
 				and ( hardware.id is null OR hardware.hardware_status <> 'REMOVED' )
 				and ( hardware_lpar.id is null OR hardware_lpar.status in ('ACTIVE', 'INACTIVE', 'HWCOUNT', 'ON-HOLD'))
 			union
