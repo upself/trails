@@ -2,7 +2,7 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 
 <display:table name="data.list"
-	class="ibm-data-table ibm-sortable-table"
+	class="ibm-data-table ibm-alternating"
 	decorator="org.displaytag.decorator.TotalTableDecorator"
 	summary="DataExceptions summary by countryCode" cellspacing="1"
 	cellpadding="0" defaultsort="1" export="true"

@@ -15,7 +15,7 @@
 		<h1>
 			Reconcile workspace: <s:property value="account.name" />(<s:property value="account.account" />)
 		</h1>
-		<p class="ibm-important">IBM Confidential</p>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Action: Included with other product</h2>
 		<br />
 		<p>Choose which component to use as the parent component for the Included with other product reconciliation action. 

@@ -77,7 +77,7 @@
 		</div>
 		<br />
 		<div style="float:left;width:25%">
-			<label for="countries">Country(s):</label>
+			<label for="countries">Country:</label>
 		</div>
 		<div style="float:left;width:45%">
 			<s:iterator value="reconSetting.countries">

@@ -113,7 +113,7 @@
 <div class="ibm-columns">
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 			summary="Non Instance based SW table">
 			<thead>
 				<tr>

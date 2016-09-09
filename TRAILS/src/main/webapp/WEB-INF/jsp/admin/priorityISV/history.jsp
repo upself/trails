@@ -4,7 +4,7 @@
     <p class="ibm-confidential">IBM Confidential</p>
 	<p>Priority ISV SW History</p>
 	<div class="ibm-col-1-1">
-	  <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+	  <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 			summary="Priority ISV history table">
 			<thead>
 				<tr>

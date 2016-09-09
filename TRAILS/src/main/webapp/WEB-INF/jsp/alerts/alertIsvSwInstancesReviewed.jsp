@@ -2,7 +2,7 @@
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<p>This page displays number of active auditable software instances on active software scans where manufacturer is not IBM and is not on Priority ISV manufacturer list and there was no valid action taken in TRAILS to cover the software instance. Only includes those instances where scan has been matched to corresponding hardware record (SOM2b) and software contract scope is defined (SOM3). Assigment of these alerts can be performed in the reconciliation workspace.</p>
 		
 		<div style="text-align:right">
@@ -12,7 +12,7 @@
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SOM4c: ISV SW INSTANCES REVIEWED">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="SOM4c: ISV SW INSTANCES REVIEWED">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Oldest alert status</span><span class="ibm-icon"></span></a></th>

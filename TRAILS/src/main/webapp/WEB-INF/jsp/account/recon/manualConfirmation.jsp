@@ -8,7 +8,7 @@
 	<s:property value="account.account" />
 	)
 </h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 
 <h2>Action: Manual license allocation</h2>
 <br />

@@ -15,7 +15,7 @@
 		<h1>
 			Reconcile workspace: <s:property value="account.name" />(<s:property value="account.account" />)
 		</h1>
-		<p class="ibm-important">IBM Confidential</p>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Action: Unassign alert</h2>
 		<br />
 		<p>Please confirm your action below and hit the confirm button to execute your

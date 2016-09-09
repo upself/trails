@@ -64,32 +64,19 @@
 
 
 <style>
-.ui-progressbar {
-	position: relative;
-}
 
-.progress-label {
-	position: absolute;
-	left: 50%;
-	top: 4px;
-	font-weight: bold;
-	text-shadow: 1px 1px 0 #fff;
-}
 </style>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<p style="font-weight: bold">IBM Confidential</p>
-	</div>
-	<br>
-	<div class="ibm-col-1-1" style="width: auto"> 
+		<p class="ibm-confidential">IBM Confidential</p>
+
 	    TRAILS Cause Codes are used to document the root cause of an alert and
 		the team(s) responsible for the next action to resolve the alert. The standard global Cause Codes are not intended to replace rigorous
 		review of open alerts and creation of action plans to resolve them; they are concise text description. Consensus on the ownership of 'next
 		action' should be reached between Asset Management and the team outside Asset prior to assigning a Cause Code that indicates action is
 		required outside Asset Management. 
-		<br>   
-		To populate the Cause Code data, take the following steps: 
-		<br>   
+		<br/>   
+		To populate the Cause Code data, take the following steps:
 		<span style="font-weight: bold"> 1. Download a report of existing cause codes.</span> 
 			From the blue navigation bar on the Account Detail
 		screen, click on 'Account' - 'Alerts' - and the name of the desired alert to download a TRAILS Alert report within an account. The report
@@ -107,12 +94,14 @@
 				f. Internal ID: Do not use! Automatically populated by TRAILS to help manage the data.<br>  
 			</div>
 		</span> 
+		<br/>
 		<span style="font-weight: bold">2. Update the desired Cause Codes.</span> 
 		User may update the first three columns (items a, b and c above) for desired alerts. Remove alerts from report when
 		Cause Code is not being updated. Store report on local hard drive with meaningful name; for example, Acct 12435 Alert 3 Cause Codes as of DD MM YYYY. Updates to any other fields will be ignored!!! <br> 
-
+		<br/>
 		<span style="font-weight: bold">3. Upload the cause code data.</span>
 		From the blue navigation bar on the Account Detail screen, click on 'Account' - 'Cause Codes'. Use the 'Browse' function to select the correct file from the local hard drive. Click 'Submit' to initiate upload. <br> 
+		<br/>
 		<span style="font-weight: bold">4. Correct errors as needed.</span> 
 		If there were errors in the file, TRAILS will display the file used with error fields marked in red. No data
 		from the file will be loaded to TRAILS until the errors are corrected and the file resubmitted. If there were no errors, TRAILS will display a message that 'Your data has been loaded successfully' in a separate pop-up window.

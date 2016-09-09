@@ -205,7 +205,7 @@
 	<s:property value="account.account" />
 	)
 </h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 <p>The results from your reconciliation workspace settings are
 	displayed below. Select an action to take by using the dropdown box

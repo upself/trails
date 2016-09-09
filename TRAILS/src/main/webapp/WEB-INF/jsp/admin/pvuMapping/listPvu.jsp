@@ -8,7 +8,7 @@
 
 	</div>
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Sortable PVU Mapping">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="Sortable PVU Mapping">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Processor brand</span><span class="ibm-icon"></span></a></th>

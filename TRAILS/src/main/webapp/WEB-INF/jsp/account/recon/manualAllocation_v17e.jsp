@@ -35,7 +35,7 @@
 		<h1>
 			Reconcile workspace: <s:property value="account.name" />(<s:property value="account.account" />)
 		</h1>
-		<p class="ibm-important">IBM Confidential</p>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Action: Manual license allocation</h2>
 		<br />
 		<p>Choose a license to allocate in the license free pool below, then

@@ -50,7 +50,7 @@
 </script>
 <div class="ibm-columns">
 <div class="ibm-col-1-1">
-<p style="font-weight:bold">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 </div>
 		<div class="ibm-col-1-1">
 		      <div class="ibm-rule">

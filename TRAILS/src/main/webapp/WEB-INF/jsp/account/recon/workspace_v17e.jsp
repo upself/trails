@@ -209,7 +209,7 @@
 	</h1>
 	<div class="ibm-columns">
 		<div class="ibm-col-1-1" style="width:100%">
-			<p class="ibm-important">IBM Confidential</p>
+			<p class="ibm-confidential">IBM Confidential</p>
 			<br />
 			<p>The results from your reconciliation workspace settings are displayed below. Select an action to take by using the dropdown box below and then select the assets in which you would like to use for the
 				basis of your action. The actions, manual license allocation and included with other product, will only accept a single line item selection. Once your selection is complete, depress the "GO" button to be taken to the next screen.</p>

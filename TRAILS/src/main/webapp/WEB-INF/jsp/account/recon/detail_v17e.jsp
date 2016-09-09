@@ -4,7 +4,7 @@
 	<div class="ibm-col-1-1">
 		<div id="fourth-level">
 			<h1>Reconcile details</h1>
-			<p class="ibm-important">IBM Confidential</p>
+			<p class="ibm-confidential">IBM Confidential</p>
 		</div>
 	</div>
 </div>
@@ -13,7 +13,7 @@
 	<h2>&nbsp;</h2>
 		<p class="lead-in">Reconcile details</p>
 		<h3>&nbsp;</h3>
-		<table class="ibm-data-table" cellspacing="1" cellpadding="0" summary="TRAILS reconciliation detail">
+		<table class="ibm-data-table ibm-alternating" cellspacing="1" cellpadding="0" summary="TRAILS reconciliation detail">
 			<tr>
 				<td>Hostname:</td>
 				<td><s:property

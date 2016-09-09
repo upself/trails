@@ -31,7 +31,7 @@
 		</div>
 		<br><br>
 		<table id="isvTable" cellspacing="0" cellpadding="0" border="0"
-			class="ibm-data-table" summary="Priority ISV list">
+			class="ibm-data-table ibm-alternating" summary="Priority ISV list">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>

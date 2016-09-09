@@ -27,7 +27,7 @@
 
 <h1>Region</h1>
 <h4>Operational metrics reports</h4>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <p>The following reports reflect metric purification where customer
 	financial responsible software has been counted towards closed alerts
 	where IBM has documented report delivery dates in Schedule F Report

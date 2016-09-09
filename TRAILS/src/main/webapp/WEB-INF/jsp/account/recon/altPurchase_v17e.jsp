@@ -15,7 +15,7 @@
 		<h1>
 			Reconcile workspace: <s:property value="account.name" />(<s:property value="account.account" />)
 		</h1>
-		<p class="ibm-important">IBM Confidential</p>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Action: Alternate purchase agreement</h2>
 		<br />
 		<p>Choose which systems to mark as customer owned and customer

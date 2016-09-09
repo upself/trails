@@ -33,7 +33,7 @@ function selectAll(psType) {
 
 <h1>Expired maintenance alerts: <s:property value="account.name" />(<s:property
 	value="account.account" />)</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 <p>This page displays expired maintenance alerts. Use the checkboxes to assign,
 update or unassign alerts. You must enter a comment to successfully update the

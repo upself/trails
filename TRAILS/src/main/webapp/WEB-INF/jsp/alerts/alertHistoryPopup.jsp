@@ -2,7 +2,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <div id="fourth-level">
 <h1>Alert History</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 </div>
 <h2>&nbsp;</h2>
 <p class="lead-in">Alert History</p>

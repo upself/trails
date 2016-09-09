@@ -164,7 +164,7 @@
 								<h1>
 									Reconcile workspace: <s:property value="account.name" />(<s:property value="account.account" />)
 								</h1>
-								<p class="ibm-important">IBM Confidential</p>
+								<p class="ibm-confidential">IBM Confidential</p>
 								<h2>Reconciliation processing</h2>
 								<p style="margin-top: 100px;">Please wait while we process your request.</p>
 								<p>Please do not press your browser's back button while the alerts are being processed.</p>

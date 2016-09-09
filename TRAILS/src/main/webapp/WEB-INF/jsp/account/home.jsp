@@ -20,7 +20,7 @@
 	Customer Profile:
 	<s:property value="account.name" />
 </h1>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 
 		<h2 class="bar-blue-med-light">Customer Details</h2>
 
