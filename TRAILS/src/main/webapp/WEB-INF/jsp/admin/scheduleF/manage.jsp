@@ -715,7 +715,7 @@
 			</div>
 		</form>
 
-		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 			summary="ScheduleF history table">
 			<thead>
 				<tr>

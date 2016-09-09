@@ -75,16 +75,15 @@ $(function(){
 </script>
 
 
-<div style="padding-left: 15px; width: 100%">
-	<h2 style="background-color: #d7d7d8">
-		<label style="padding-left: 10px">Account alerts</label>
-	</h2>
-	<div id="alertSummary" class="table-wrap" style="padding-top: 10px">Loading...</div>
-	<br />
-	
-	<h2 style="background-color: #d7d7d8">
-		<label style="padding-left: 10px">Account reports</label>
-	</h2>
+<div style="width: 100%">
+	<h3 style="background-color: #d7d7d8">
+		<label>Account alerts</label>
+	</h3>
+	<div id="alertSummary" class="ibm-data-table ibm-alternating" style="padding-top: 10px; min-height: 250px">Loading...</div>
+
+	<h3 style="background-color: #d7d7d8">
+		<label>Account reports</label>
+	</h3>
 	<ul class="ibm-link-list">
 		<li><a
 			href="/TRAILS/report/download/freeLicensePool${account.account}.tsv?name=freeLicensePool">Free

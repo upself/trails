@@ -2,7 +2,7 @@
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<p>This page displays number of active auditable software instances on active software scans where contract scope is not defined in Schedule F section of TRAILS.</p>
 		
 		<div style="text-align:right">
@@ -48,7 +48,7 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="SOM3: SW INSTANCES WITH DEFINED CONTRACT SCOPE">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Oldest alert status</span><span class="ibm-icon"></span></a></th>

@@ -1,12 +1,9 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<div class="ibm-columns" style="width:95%">
-	<div class="ibm-col-1-1">
-		<div id="fourth-level">
-			<h1>Alert History</h1>
-			<p class="ibm-important">IBM Confidential</p>
-		</div>
-	</div>
+
+<div id="fourth-level">
+<h1>Alert History</h1>
+<p class="ibm-confidential">IBM Confidential</p>
 </div>
 
 <div class="ibm-columns" style="width: 95%">

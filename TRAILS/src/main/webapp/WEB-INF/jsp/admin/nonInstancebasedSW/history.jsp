@@ -3,7 +3,7 @@
 <div class="ibm-columns">
    <p class="ibm-confidential">IBM Confidential</p>
    <p>Non Instance based SW history</p>
-   <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+   <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 		summary="Non Instance based SW history table">
 	  <thead>
 			<tr>

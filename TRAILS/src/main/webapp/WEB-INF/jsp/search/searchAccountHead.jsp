@@ -1,8 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<br />
 <h1>Accounts</h1>
-<h4>Search form</h4>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 <p>Use this form to search for an account within TRAILS. The search
 string must contain at least 2 characters. You must select to search on

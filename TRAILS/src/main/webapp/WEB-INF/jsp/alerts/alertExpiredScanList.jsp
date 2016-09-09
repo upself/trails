@@ -40,7 +40,7 @@ function selectAll(psType) {
 
 <h1>Outdated SW LPAR alerts: <s:property value="account.name" />(<s:property
 	value="account.account" />)</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 <p>This page displays outdated scans. Use the checkboxes to assign,
 update or unassign alerts. You must enter a comment to successfully

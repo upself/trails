@@ -1,7 +1,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <h2>Reports listing</h2>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 
 <h3 style="background-color: #d7d7d8">Account reports</h3>
 <ul id="ibm-link-list">

@@ -380,7 +380,7 @@
 <h4>Data exceptions reports</h4>
 <s:if
 	test="geography != null || region != null || countryCode != null || department != null || sector != null">
-	<p class="ibm-important">IBM Confidential</p>
+	<p class="ibm-confidential">IBM Confidential</p>
 </s:if>
 <br />
 

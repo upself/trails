@@ -2,7 +2,7 @@
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-	<h6>IBM Confidential</h6>
+	<p class="ibm-confidential">IBM Confidential</p>
 	<p>This page displays data exceptions for software lpars with NULL or 1970 Scan Date.</p>
 	<p>You can do assign/unassign/assign all/unassign all operation with clicking proper button below. You must enter a comment to successfully update the data exceptions.</p>
 	<p><a href="https://www-950.ibm.com/ram/assetDetail/generalDetails.faces?guid=0DFB1651-7375-F052-0886-9CBEBA19BB53" target="_blank">See GLOBAL SW EDUCATION: Managing TRAILS Data Exceptions for more details.</a></p>
@@ -44,7 +44,7 @@
 	</div>
 	
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SW LPAR INVALID SCANTIME">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="SW LPAR INVALID SCANTIME">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/UnAssign</span><span class="ibm-icon"></span></a></th>

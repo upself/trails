@@ -1,13 +1,10 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-	<h6>IBM Confidential</h6>
+	<p class="ibm-confidential">IBM Confidential</p>
 	<p>This page displays the total number of data exceptions assigned per data exception type.</p>
 	<p id="msg"></p>
 	<p><a href="https://www-950.ibm.com/ram/assetDetail/generalDetails.faces?guid=0DFB1651-7375-F052-0886-9CBEBA19BB53" target="_blank">See GLOBAL SW EDUCATION: Managing TRAILS Data Exceptions for more details.</a></p>
-	</div>
-	
-	<div class="ibm-col-1-1">
-	   <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="Exception OverView">
+	   <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="Exception OverView">
 			<thead>
 				<tr>
 					<th scope="col">Data exception</th>
@@ -61,7 +58,7 @@ $(function(){
 				}
 				
 				html += "<tr>";
-				html += "<td>Total:</td>";
+				html += "<td style=\"font-weight: bold\">Total:</td>";
 				html += "<td>" + assignedDataExpTotalNum + "</td>";
 				html += "<td>" + dataExpTotalNum + "</td>";
 				html += "</tr>";
