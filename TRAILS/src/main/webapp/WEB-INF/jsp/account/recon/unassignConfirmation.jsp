@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
 <s:url id="settingsLink" action="settings" namespace="/account/recon"

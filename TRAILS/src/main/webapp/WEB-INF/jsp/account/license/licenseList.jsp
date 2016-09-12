@@ -69,7 +69,7 @@ $(function() {
 </script>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-	<p style="font-weight:bold">IBM Confidential</p>
+	<p class="ibm-confidential">IBM Confidential</p>
 	</div>
 	
 	<div class="ibm-col-1-1">
@@ -80,7 +80,7 @@ $(function() {
 	<br />
 	
 	<div class="ibm-col-1-1">
-			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="License list">
+			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"" summary="License list">
 				<thead>
 					<tr>
 						<th scope="col"><span>Primary component catalog match</span><span class="ibm-icon"></span></th>

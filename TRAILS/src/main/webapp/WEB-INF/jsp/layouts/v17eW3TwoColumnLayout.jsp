@@ -134,7 +134,7 @@
 									<div class="ibm-col-6-4">
 										<tmp:insertAttribute name="content" />
 									</div>
-									<div class="ibm-col-6-2" style="border-left: 1px solid #d7d7d8">
+									<div class="ibm-col-6-2">
 										<tmp:insertAttribute name="sidebar" />
 									</div>
 								</div>

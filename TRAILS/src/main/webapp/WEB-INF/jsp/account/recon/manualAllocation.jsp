@@ -251,6 +251,4 @@
 			</small>
 		</div>
 	</s:form>
-	
-	
 </div>

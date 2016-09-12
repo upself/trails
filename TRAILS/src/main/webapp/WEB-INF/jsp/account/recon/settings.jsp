@@ -80,6 +80,25 @@
 	}
 </script>
 
+<style>
+#alert_settings #alertStatus, #assigned, #ownerSelect, #finanResp {
+	width: 200px;
+}
+
+#alert_settings #assignee {
+	width: 190px;
+}
+
+#alert_settings #alertFrom {
+	width: 80px;
+	margin-right: 17px;
+}
+
+#alert_settings #alertTo {
+	width: 80px;
+}
+</style>
+
 <p>Use the form below to modify the reconciliation workspace
 	settings. All fields are optional.</p>
 <div class="ibm-rule">
@@ -176,7 +195,7 @@
 			</div>
 			<br /> <br />
 			<div class="ibm-col-1-1" style="float: left; width: 100%">
-				<div style="float: left; width: 25%">Country(s):</div>
+				<div style="float: left; width: 25%">Country:</div>
 				<div style="float: left; width: 75%">
 					<div class="input-note">Use exact values</div>
 					<div>
@@ -329,7 +348,7 @@
 		<div class="ibm-rule">
 			<hr />
 		</div>
-		<div style="float: right">
+		<div>
 			<div>
 				<span class="ibm-btn-pri"> <input type="button"
 					class="ibm-btn-pri" id="ibm-submit" value="Submit"

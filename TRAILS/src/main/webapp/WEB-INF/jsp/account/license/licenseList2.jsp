@@ -11,7 +11,7 @@
 </s:if>
 <h1>License baseline: <s:property value="account.name" />(<s:property
 	value="account.account" />)</h1>
-<p class="confidential">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 <br />
 <div style="float: right"><s:a
@@ -24,7 +24,7 @@
 <s:hidden name="dir" value="%{#attr.dir}" />
 <s:hidden name="sort" value="%{#attr.sort}" />
 <s:if test="requestURI == 'license.htm'">
-	<display:table name="data" class="basic-table" id="row" summary="License List" cellspacing="1" cellpadding="0" requestURI="license.htm">
+	<display:table name="data" class="ibm-data-table ibm-alternating" id="row" summary="License List" cellspacing="1" cellpadding="0" requestURI="license.htm">
 		<display:column title="" class="catalogMatch" property="catalogMatch"
 			decorator="com.ibm.tap.trails.framework.LicenseCatalogColumnDecorator" />
 		<display:column property="fullDesc" title="License name"
@@ -48,7 +48,7 @@
 	</display:table>
 </s:if>
 <s:else>
-	<display:table name="data" class="basic-table" id="row" summary="License List" decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator" cellspacing="1" cellpadding="0" requestURI="licenseFreePool.htm">
+	<display:table name="data" class="ibm-data-table ibm-alternating" id="row" summary="License List" decorator="com.ibm.tap.trails.framework.LicenseDisplayTagDecorator" cellspacing="1" cellpadding="0" requestURI="licenseFreePool.htm">
 		<display:column title="" class="catalogMatch" value="" />
 		<display:column property="fullDesc" title="License name"
 			sortable="true" />

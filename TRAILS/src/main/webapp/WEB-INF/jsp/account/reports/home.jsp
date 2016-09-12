@@ -5,10 +5,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
-	</div>
-	<br /><br /><br />
-	<div class="ibm-col-1-1">
+		<p class="ibm-confidential">IBM Confidential</p>
 		<h6>Alert reports</h6>
 		<ul class="ibm-link-list">
 			<li>
@@ -28,7 +25,7 @@
 		
 		<div class="ibm-rule"></div>
 		<h6>Data Exception Reports</h6>
-		<ul class="ibm-link-list" id="dataException">
+		<ul class="ibm-link-list" id="dataException" style="min-height: 225px">
 			<li id="loading">Loading...</li>
 		</ul>
 		<!-- Alert reports end -->
