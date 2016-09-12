@@ -70,7 +70,7 @@ public class SoftwareTestHelper {
 		try {
 			Session session = HibernateDelegate.getSession();
 
-			String hqlSelect = "FROM com.ibm.ea.sigbank.Software where KbId = :KbId";
+			String hqlSelect = "FROM com.ibm.ea.sigbank.Software where softwareId = :KbId";
 			Query query = session.createQuery(hqlSelect).setLong("KbId", new Long(KbId));
 			software = (Software) query.uniqueResult();
 

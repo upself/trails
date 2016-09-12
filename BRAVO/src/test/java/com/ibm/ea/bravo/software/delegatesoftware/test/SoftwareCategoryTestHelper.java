@@ -1,6 +1,7 @@
 package com.ibm.ea.bravo.software.delegatesoftware.test;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -19,7 +20,11 @@ public class SoftwareCategoryTestHelper {
 		softwareCategory.setRemoteUser("remoteUser");
 		softwareCategory.setComments("comments");
 		softwareCategory.setChangeJustification("changeJustification");
-		softwareCategory.setSoftwareCategoryName("softwareCategoryName");
+		
+		String randomSoftwareCategoryName = UUID.randomUUID().toString().substring(0, 20);
+		//SoftwareCategoryName is nullable, but has to be unique!
+		
+		softwareCategory.setSoftwareCategoryName("softwareCategoryName-" + randomSoftwareCategoryName);
 		
 		Transaction tx = null;
 		Session session = null;

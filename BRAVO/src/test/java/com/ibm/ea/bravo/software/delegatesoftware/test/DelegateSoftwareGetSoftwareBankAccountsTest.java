@@ -148,7 +148,7 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 //		}
 		*/
 		
-		//Softwarey separate test
+		//Software separate test
 //		/*
 		
 		System.out.println("before create: " + SoftwareTestHelper.validate());

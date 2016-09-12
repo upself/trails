@@ -4,7 +4,7 @@
 	<class name="com.ibm.ea.sigbank.KbDefinition" table="KB_DEFINITION" mutable="false">
 
 		<id name="id" type="long" column="ID">
-			<generator class="identity"/>
+			<generator class="native"/>
 		</id>
 
 		<property name="active" column="ACTIVE"  type="integer" />

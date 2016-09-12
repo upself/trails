@@ -1,6 +1,7 @@
 package com.ibm.ea.bravo.software.delegatesoftware.test;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -14,6 +15,11 @@ public class KbDefinitionTestHelper {
 
 		KbDefinition kbDefinition = new KbDefinition();
 		kbDefinition.setCreationTime(new Date());
+		
+		String uuid = UUID.randomUUID().toString();
+		//GUID is nullable, but has to be unique!
+		System.out.println("uuid = " + uuid);
+		kbDefinition.setGuid(uuid);
 
 		Transaction tx = null;
 		Session session = null;
