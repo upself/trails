@@ -30,7 +30,7 @@ $(function(){
 		type : "GET",
 		dataType : 'json',
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(textStatus);
+			console.log(textStatus);
 		},
 		beforeSend : function() {
 			showLoading();

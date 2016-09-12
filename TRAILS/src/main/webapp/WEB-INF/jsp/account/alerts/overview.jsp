@@ -4,10 +4,10 @@
 		<p>
 			The following reports reflect metric purification where customer financial responsible software has been counted towards closed alerts where IBM has documented report delivery dates in Schedule F Report Date Tracking.
 		</p>
-	<small>
-		Data last refreshed: <span id="reportTimestamp"><
-		Data age (in minutes): <span id="reportMinutesOld"><
-	</small>
+	<div class="ibm-col-1-1" style="font-size: 12px;">
+		Data last refreshed: <span id="reportTimestamp"></span><br />
+		Data age (in minutes): <span id="reportMinutesOld"></span><br />
+	</div>
 		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="Alert overview">
 			<thead>
 				<tr>
