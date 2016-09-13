@@ -73,7 +73,7 @@
 </script>
 </head>
 
-<body id="ibm-com" class="ibm-default">
+<body id="ibm-com" class="ibm-default v17">
 	<div id="ibm-top">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
