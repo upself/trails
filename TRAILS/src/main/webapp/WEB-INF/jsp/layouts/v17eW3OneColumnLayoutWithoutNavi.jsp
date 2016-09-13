@@ -109,7 +109,7 @@
 
 
 </head>
-<body id="ibm-com" class="ibm-type">
+<body id="ibm-com" class="ibm-type v17">
 	<div id="ibm-top" class="ibm-landing-page" style="width:100%">
 		<!-- MASTHEAD_BEGIN -->
 		<div id="ibm-masthead">
