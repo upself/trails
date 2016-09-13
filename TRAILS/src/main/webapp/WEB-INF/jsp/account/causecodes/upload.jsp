@@ -77,6 +77,7 @@
 		required outside Asset Management. 
 		<br/>   
 		To populate the Cause Code data, take the following steps:
+		<br/>
 		<span style="font-weight: bold"> 1. Download a report of existing cause codes.</span> 
 			From the blue navigation bar on the Account Detail
 		screen, click on 'Account' - 'Alerts' - and the name of the desired alert to download a TRAILS Alert report within an account. The report
