@@ -17,10 +17,10 @@ $(function() {
 		var order=null;
 		if(requestURI=="license.htm"){
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseBaseline";
-			orders=['licenseId','fullDesc','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId'];
+			orders=['licenseId','fullDesc','sku','productName','swproPID','capacityType.description','availableQty','quantity','expireDate','cpuSerial','extSrcId'];
 		}else{
 			restUrl="${pageContext.request.contextPath}/ws/license/all/licenseFreePool";//licenseFreePool.htm
-			orders=['licenseId','license.fullDesc','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId'];
+			orders=['licenseId','license.fullDesc','license.sku','software.softwareName','license.swproPID','capacityType.description','license.availableQty','license.quantity','license.expireDate','license.cpuSerial','license.extSrcId'];
 		}
 		$("#licTable").paginationTable('destroy').paginationTable({
 			remote: {
@@ -31,12 +31,13 @@ $(function() {
 					var html = '';
 					var list = result.data.list;
 					if(null == list || list == undefined || list.length == 0){
-						html += "<tr><td colspan='10' align='center'>No data found</td></tr>"
+						html += "<tr><td colspan='11' align='center'>No data found</td></tr>"
 					}else{
 						for(var i = 0; i < list.length; i++){
 							html += "<tr>"; 
 							html += "<td>" +list[i].catalogMatch+ "</td>";
 							html += "<td>" + list[i].fullDesc + "</td>";
+							html += "<td>" + list[i].sku + "</td>";
 							html += "<td><a href='${pageContext.request.contextPath}/account/license/licenseDetails.htm?licenseId=" + list[i].licenseId + "'>" + list[i].productName + "</a></td>";		
 							html += "<td>" + list[i].swproPID + "</td>"
 							if(list[i].capTypeDesc==""){
@@ -68,7 +69,7 @@ $(function() {
 </script>
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-	<p style="font-weight:bold">IBM Confidential</p>
+	<p class="ibm-confidential">IBM Confidential</p>
 	</div>
 	
 	<div class="ibm-col-1-1">
@@ -79,11 +80,12 @@ $(function() {
 	<br />
 	
 	<div class="ibm-col-1-1">
-			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="License list">
+			<table id="licTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"" summary="License list">
 				<thead>
 					<tr>
 						<th scope="col"><span>Primary component catalog match</span><span class="ibm-icon"></span></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>License name</span><span class="ibm-icon"></span></a></th>
+						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>SKU</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Primary Component</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Software product PID</span><span class="ibm-icon"></span></a></th>
 						<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Capacity type</span><span class="ibm-icon"></span></a></th>

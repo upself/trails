@@ -18,10 +18,7 @@
 	<li><s:a href="%{alerts}">Software Tracking Only metrics</s:a></li>
 </ul>
 
-<div style="font-size: 22px; display: inline">Software Tracking Only metrics
-	reports by</div>
-<h1 class="oneline">&nbsp;Account name</h1>
-<br>
+<h1 class="oneline">Software Tracking Only metrics reports by Account name</h1>
 
 
 

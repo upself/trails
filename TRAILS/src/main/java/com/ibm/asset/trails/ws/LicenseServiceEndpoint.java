@@ -175,6 +175,12 @@ public class LicenseServiceEndpoint {
 				} else {
 					lisd.setSwproPID("");
 				}
+				
+				if (licD.getSkuAsString() != null) {
+					lisd.setSku(licD.getSkuAsString());
+				} else {
+					lisd.setSku("");
+				}				
 
 				if (licD.getCapTypeCode() != null) {
 					lisd.setCapTypeCode(licD.getCapTypeCode());
@@ -290,6 +296,12 @@ public class LicenseServiceEndpoint {
 							Integer.valueOf(licmap.get("quantity").toString()));
 				} else {
 					lisd.setQuantity(0);
+				}
+				
+				if (licmap.get("SKU") != null) {
+					lisd.setSku(licmap.get("SKU").toString());
+				} else {
+					lisd.setSku("");
 				}
 
 				if (licmap.get("expireDate") != null) {
@@ -426,6 +438,12 @@ public class LicenseServiceEndpoint {
 				licDisplayResult.setRecordTimeAsString(licenseToTransform.getRecordTime().toString());
 			} else {
 				licDisplayResult.setExtSrcId("");
+			}
+			
+			if (licenseToTransform.getSku() != null) {
+				licDisplayResult.setSkuAsString(licenseToTransform.getSku().toString());
+			} else {
+				licDisplayResult.setSkuAsString("");
 			}
 
 			return licDisplayResult;

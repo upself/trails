@@ -1,14 +1,11 @@
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-
-
+<%@ taglib prefix="s" uri="/struts-tags"%>
 <!-- SORTABLE DATA TABLE -->
 <div class="ibm-columns">
+    <p class="ibm-confidential">IBM Confidential</p>
+	<p>Priority ISV SW History</p>
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+	  <table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 			summary="Priority ISV history table">
-			<caption>
-               <em>Priority ISV SW History</em>
-            </caption>
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>

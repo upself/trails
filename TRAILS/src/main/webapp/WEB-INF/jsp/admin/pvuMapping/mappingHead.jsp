@@ -1,5 +1,4 @@
-<script src="${pageContext.request.contextPath}/js/jquery.js"
-    type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
 var orgMappedModel= new Array;
 var orgFreeModel= new Array;

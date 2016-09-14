@@ -68,7 +68,6 @@ public class ShowConfirmation extends AccountBaseAction {
 	
 	private List<LicenseFilter> filter;
 	
-	private String gotoV17e;
 
 	public List<LicenseFilter> getFilter() {
 		return filter;
@@ -658,35 +657,6 @@ public class ShowConfirmation extends AccountBaseAction {
 	public void setAllocationMethodologies(
 			List<AllocationMethodology> allocationMethodologies) {
 		this.allocationMethodologies = allocationMethodologies;
-	}
-	
-	public String getGotoV17e() {
-		return gotoV17e;
-	}
-
-	public void setGotoV17e(String gotoV17e) {
-		this.gotoV17e = gotoV17e;
-	}
-	
-	public String getV17e(){
-		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
-				this.recon.getReconcileType().getId().intValue() != 2
-				|| this.recon.getReconcileType().getId().intValue() != 14
-		)){
-			return ".v17e";
-		}else{
-			return null;
-		}
-	}
-	public String getV17eParam(){
-		if(null != this.gotoV17e && this.gotoV17e.equalsIgnoreCase("y") && (
-				this.recon.getReconcileType().getId().intValue() != 2
-				|| this.recon.getReconcileType().getId().intValue() != 14
-		)){
-			return "?gotoV17e=y";
-		}else{
-			return null;
-		}
 	}
 
 	private boolean hasSameCapacityType(String[] selectedLicenseIds, List<License> licenseListInReconWorkspace){

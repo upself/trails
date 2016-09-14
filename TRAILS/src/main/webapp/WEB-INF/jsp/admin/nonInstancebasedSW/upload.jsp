@@ -1,6 +1,6 @@
 <div class="ibm-columns">
+	<p class="ibm-confidential">IBM Confidential</p>
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
 		<p>
 			Use <a href="/TRAILS/template/nonInstanceUploadTemplate.xls">this
 				form</a> to upload Non Instance Base Software Component. After you have
@@ -19,9 +19,9 @@
 			<p>
 				* Select a file : <input id="uploadedFile_id" type="file"
 					name="uploadedFile" size="50" class="ibm-btn-small"/>
+				<input  name="ibm-submit" type="submit" value="Submit" onclick="$('#myForm').submit();" class="ibm-btn-pri" />
 			</p>
 		</form>
-		<input  name="ibm-submit" type="submit" value="Upload It" onclick="$('#myForm').submit();" class="ibm-btn-pri" />
 	</div>
 </div>
 

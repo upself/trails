@@ -42,7 +42,7 @@ public class ReconServiceImplTest {
 		reconcileType.setName("Include with other product");
 		
 		InstalledSoftware is =  new InstalledSoftware();
-		is.setId(137310153L);
+		is.setId(39045769L);
 		
 		String comments = "Test comments";
 		
@@ -50,7 +50,7 @@ public class ReconServiceImplTest {
 		recon.setReconcileType(reconcileType);
 		recon.setInstalledSoftware(is);
 		recon.setComments(comments);
-		Long alertId = 16319604L;
+		Long alertId = 690458L;
 		
 		
 		reconService.reconcileByAlert(alertId, null, recon, "tomcatTest", null, null);

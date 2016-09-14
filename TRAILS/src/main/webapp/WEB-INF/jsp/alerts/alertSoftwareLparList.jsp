@@ -2,7 +2,7 @@
 <!-- Search form -->
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
+		<p class="ibm-confidential">IBM Confidential</p>
 		<p>This page displays software lpars without an associated hardware lpar. Use the checkboxes to assign, update or unassign alerts. You must enter a comment to successfully update the alert.</p>
 		<div style="text-align:right">
 			<a href="${pageContext.request.contextPath}/ws/alertSwLparWithHwLpar/download/${accountId}">Download SOM2b: SW LPAR WITH HW LPAR alert report</a>
@@ -46,7 +46,7 @@
 	
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
-		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table" summary="SOM2b: SW LPAR WITH HW LPAR alert report">
+		<table id="page" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating" summary="SOM2b: SW LPAR WITH HW LPAR alert report">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort nobreak"><a href="javascript:void(0)"><span>Assign/Unassign</span><span class="ibm-icon"></span></a></th>

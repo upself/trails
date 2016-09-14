@@ -1,6 +1,5 @@
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
 <div class="ibm-columns">
-
+    <p class="ibm-confidential">IBM Confidential</p>
 	<!-- SORTABLE DATA TABLE -->
 	<div class="ibm-col-1-1">
 		<div style="height:180px;width: 100%; float: left">
@@ -32,7 +31,7 @@
 		</div>
 		<br><br>
 		<table id="isvTable" cellspacing="0" cellpadding="0" border="0"
-			class="ibm-data-table" summary="Priority ISV list">
+			class="ibm-data-table ibm-alternating" summary="Priority ISV list">
 			<thead>
 				<tr>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Manufacturer Name</span><span class="ibm-icon"></span></a></th>
@@ -165,7 +164,7 @@
 							html += "<td>" + list[i].remoteUser + "</td>";
 							html += "<td>" + list[i].recordTime + "</td>";
 							html += "<td style='text-align:center'>";
-							html += "<p class='ibm-button-link-alternate'>";
+							html += "<p class='ibm-button-link'>";
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/update.htm?id="
 								+ list[i].id + "\")'>Update</a>";
 							html += "<a class='ibm-btn-small' href='javascript:void(0)' onclick='openLink(\"${pageContext.request.contextPath}/admin/priorityISV/history.htm?priorityISVSoftwareId="

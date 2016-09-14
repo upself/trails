@@ -1,24 +1,14 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<h1>Aging red alerts reports</h1>
+<h2>Aging red alerts reports</h2>
+<p class="ibm-confidential">IBM Confidential</p>
 
-<p class="ibm-important">IBM Confidential</p>
-<br />
-<br />
+<h3 style="background-color: #d7d7d8">Aging red alerts reports</h3>
 
-<h2 class="bar-blue-med-light"> Aging red alerts Reports</h2>
-<br />
-<s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a>
-<br />
-<br />
-<s:a href="/TRAILS/reports/operational/home.htm">Operational metrics</s:a>
-<br />
-<br />
-<s:a href="/TRAILS/reports/softwareTracking/home.htm">Software Tracking Only metrics</s:a>
-<br />
-<br />
-<s:a href="/TRAILS/reports/alertRedAging/home.htm">Aging red alerts</s:a>
-<br />
-<br />
-<s:a href="/TRAILS/reports/dataExceptions/home.htm">Data exceptions</s:a>
-<br />
+<ul id="ibm-link-list">
+	<li><s:a href="/TRAILS/reports/alerts/home.htm">Alerts</s:a></li>
+	<li><s:a href="/TRAILS/reports/operational/home.htm">Operational metrics</s:a></li>
+	<li><s:a href="/TRAILS/reports/softwareTracking/home.htm">Software Tracking Only metrics</s:a></li>
+	<li><s:a href="/TRAILS/reports/alertRedAging/home.htm">Aging red alerts</s:a></li>
+	<li><s:a href="/TRAILS/reports/dataExceptions/home.htm">Data exceptions</s:a></li>
+</ul>

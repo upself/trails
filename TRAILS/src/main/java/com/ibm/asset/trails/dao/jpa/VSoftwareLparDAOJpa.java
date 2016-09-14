@@ -39,10 +39,14 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
+				.createAlias("is.scheduleF", "sf", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("sf.scope", "scope", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
 						CriteriaSpecification.LEFT_JOIN)
+				.createAlias("r.usedLicenses", "ul", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("ul.license", "license", CriteriaSpecification.LEFT_JOIN)			
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
@@ -70,17 +74,16 @@ public class VSoftwareLparDAOJpa extends
 							Restrictions.eqProperty("is.id",
 									"r.installedSoftware.id"))));
 		}
-
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			if (reconSetting.getAlertColor().equals("Green")) {
-				criteria.add(Restrictions.lt("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-			} else if (reconSetting.getAlertColor().equals("Red")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 90));
-			}
+		
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
+			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
 		}
-
+		
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
+			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
+		}
+		
+		
 		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
 			if (reconSetting.getAssigned().equals("Assigned")) {
 				criteria.add(Restrictions.ne("aus.remoteUser", "STAGING"));
@@ -135,6 +138,18 @@ public class VSoftwareLparDAOJpa extends
 			}
 		}
 
+		if(reconSetting.getSwcmIDs().length>0){
+			List<String> list = new ArrayList<String>();
+			for (int i=0; i<reconSetting.getSwcmIDs().length; i++){
+				if (StringUtils.isNotBlank(reconSetting.getSwcmIDs()[i])) {
+					list.add(reconSetting.getSwcmIDs()[i].toUpperCase());
+				}
+			}
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("license.extSrcId", list));
+			}
+		}
+		
 		if (reconSetting.getSerialNumbers().length > 0) {
 			List<String> list = new ArrayList<String>();
 			for (int i = 0; i < reconSetting.getSerialNumbers().length; i++) {
@@ -161,6 +176,24 @@ public class VSoftwareLparDAOJpa extends
 				criteria.add(Restrictions.in("sw.softwareName", list));
 			}
 		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getScope())){
+			if("Not specified".equalsIgnoreCase(reconSetting.getScope())){
+				criteria.add(Restrictions.isNull("scope.description"));
+			}else{
+				criteria.add(Restrictions.eq("scope.description",
+						reconSetting.getScope()));
+			}
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
+			if("Not Specified".trim().equalsIgnoreCase(reconSetting.getFinanResp())){
+				criteria.add(Restrictions.isNull("sf.SWFinanceResp"));
+			}else{
+				criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()));
+			}
+		}
+		
 		criteria.setProjection(Projections.projectionList().add(Projections.rowCount()));
 		
 		Long total = (Long)criteria.uniqueResult();
@@ -177,17 +210,21 @@ public class VSoftwareLparDAOJpa extends
 				.createAlias("hl.hardware", "h")
 				.createAlias("h.machineType", "mt")
 				.createAlias("installedSoftwares", "is")
+				.createAlias("is.scheduleF", "sf", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("sf.scope", "scope", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.softwareLpar", "sl")
 				.createAlias("is.alert", "aus")
 				.createAlias("aus.reconcile", "r",
 						CriteriaSpecification.LEFT_JOIN)
+				.createAlias("r.usedLicenses", "ul", CriteriaSpecification.LEFT_JOIN)
+				.createAlias("ul.license", "license", CriteriaSpecification.LEFT_JOIN)
 				.createAlias("r.reconcileType", "rt",
 						CriteriaSpecification.LEFT_JOIN)
 				.createAlias("is.software", "sw")
 				.createAlias("sw.manufacturer", "mf", CriteriaSpecification.LEFT_JOIN)
 				.add(Restrictions.eq("account", account));
 
-		if (reconSetting.getReconcileType() != null) {
+		if (reconSetting.getReconcileType() != null) { 
 			criteria.add(Restrictions.eq("rt.id",
 					reconSetting.getReconcileType()));
 		}
@@ -210,15 +247,11 @@ public class VSoftwareLparDAOJpa extends
 									"r.installedSoftware.id"))));
 		}
 
-		if (StringUtils.isNotBlank(reconSetting.getAlertColor())) {
-			criteria.add(Restrictions.eq("aus.open", true));
-			if (reconSetting.getAlertColor().equals("Green")) {
-				criteria.add(Restrictions.lt("aus.alertAge", 45));
-			} else if (reconSetting.getAlertColor().equals("Yellow")) {
-				criteria.add(Restrictions.between("aus.alertAge", 45, 90));
-			} else if (reconSetting.getAlertColor().equals("Red")) {
-				criteria.add(Restrictions.gt("aus.alertAge", 90));
-			}
+		if (null!= reconSetting.getAlertFrom() && reconSetting.getAlertFrom().intValue()>=0){
+			criteria.add(Restrictions.ge("aus.alertAge", reconSetting.getAlertFrom()));
+		}
+		if (null!= reconSetting.getAlertTo() && reconSetting.getAlertTo().intValue()>=0){
+			criteria.add(Restrictions.le("aus.alertAge", reconSetting.getAlertTo()));
 		}
 
 		if (StringUtils.isNotBlank(reconSetting.getAssigned())) {
@@ -274,6 +307,18 @@ public class VSoftwareLparDAOJpa extends
 				criteria.add(Restrictions.in("hl.name", list));
 			}
 		}
+		
+		if(reconSetting.getSwcmIDs().length>0){
+			List<String> list = new ArrayList<String>();
+			for (int i=0; i<reconSetting.getSwcmIDs().length; i++){
+				if (StringUtils.isNotBlank(reconSetting.getSwcmIDs()[i])) {
+					list.add(reconSetting.getSwcmIDs()[i].toUpperCase());
+				}
+			}
+			if (list.size() > 0) {
+				criteria.add(Restrictions.in("license.extSrcId", list));
+			}
+		}
 
 		if (reconSetting.getSerialNumbers().length > 0) {
 			List<String> list = new ArrayList<String>();
@@ -299,6 +344,23 @@ public class VSoftwareLparDAOJpa extends
 
 			if (list.size() > 0) {
 				criteria.add(Restrictions.in("sw.softwareName", list));
+			}
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getScope())){
+			if("Not specified".equalsIgnoreCase(reconSetting.getScope())){
+				criteria.add(Restrictions.isNull("scope.description"));
+			}else{
+				criteria.add(Restrictions.eq("scope.description",
+						reconSetting.getScope()));
+			}
+		}
+		
+		if(StringUtils.isNotBlank(reconSetting.getFinanResp())){
+			if("Not Specified".trim().equalsIgnoreCase(reconSetting.getFinanResp())){
+				criteria.add(Restrictions.isNull("sf.SWFinanceResp"));
+			}else{
+				criteria.add(Restrictions.eq("sf.SWFinanceResp", reconSetting.getFinanResp()));
 			}
 		}
 

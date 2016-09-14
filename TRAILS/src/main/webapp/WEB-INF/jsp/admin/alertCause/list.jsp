@@ -1,11 +1,11 @@
 <div class="ibm-columns">
 	<div class="ibm-col-1-1">
-		<h6>IBM Confidential</h6>
-		<p>
+	<p class="ibm-confidential">IBM Confidential</p>
+	<p>
 			Below is a list of the cause codes in the application. Press one
 	of the links to edit the cause code details. You can also add a new
 	cause code to the application by pressing the Add a cause code link.
-		</p>
+	</p>
 		<br />
 	</div>
 	<!-- SORTABLE DATA TABLE -->

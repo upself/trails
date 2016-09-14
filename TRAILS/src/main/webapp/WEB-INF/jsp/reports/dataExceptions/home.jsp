@@ -1,12 +1,10 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<h1>Data exceptions reports</h1>
-<p class="ibm-important">IBM Confidential</p>
-<br />
-<br />
+<h2>Data exceptions reports</h2>
+<p class="ibm-confidential">IBM Confidential</p>
 
-<h2 class="bar-blue-med-light">Data Exceptions reports</h2>
-<br />
+<h3 style="background-color: #d7d7d8">Data Exceptions reports</h3>
+
 <ul class="ibm-bullet-list">
 	<li class="ibm-no-links"><s:a
 			href="/TRAILS/reports/alerts/home.htm">Alerts</s:a></li>

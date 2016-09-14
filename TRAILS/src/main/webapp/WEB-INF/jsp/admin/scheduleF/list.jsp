@@ -1,7 +1,3 @@
-<script src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<script src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-	
 <script>
 	$(function() {
 		
@@ -160,7 +156,7 @@
 		function drawTable(data) {
 			var historySection = $("#historyContent");
 			historySection.empty();
-			historySection.append("<table id='historytable' class='ibm-data-table' cellspacing='0' cellpadding='0' border='0'><thead><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></thead>");
+			historySection.append("<table id='historytable' class='ibm-data-table ibm-sortable-table ibm-alternating' cellspacing='0' cellpadding='0' border='0'><thead><tr><th class='ibm-sort'>Last Date</th><th class='ibm-sort'>Cycle</th><th class='ibm-sort'>Next Date</th><th class='ibm-sort'>QMX</th><th class='ibm-sort'>Record Date</th><th class='ibm-sort'>User</th></tr></thead>");
 			
 			var newRow;
 			for (var i = 0; i < data.length; i++) {
@@ -189,14 +185,11 @@
 	});
 </script>
 <div class="ibm-columns"><div class="ibm-col-1-1">
-
-<p style="font-weight:bold">IBM Confidential</p>
-<br />
-<div class="ibm-rule"><hr><hr></div>
-<div style="font-size: 18px;">
+<p class="ibm-confidential">IBM Confidential</p>
+<div>
 <h2>Software License Management Report Delivery Tracking</h2>
 </div>
-<p style="font-size: 16px;">Track the required report delivery cycle and most recent report delivery date.</p>
+<p>Track the required report delivery cycle and most recent report delivery date.</p>
 <br>
 	<form id="reportTracking" class="ibm-column-form">
 	    <p>
@@ -238,8 +231,8 @@
          </p>
 	
 
-		<input type="button" id="reportTrackingUpdateBtn" value="Update">
-		<input type="button" id="reportTrackingRestoreBtn" value="Restore">
+		<input type="button" id="reportTrackingUpdateBtn" value="Update" class="ibm-btn-pri">
+		<input type="button" id="reportTrackingRestoreBtn" value="Restore" class="ibm-btn-pri">
 </form>
 <br>
 
@@ -248,20 +241,19 @@
 	<div id="historyContent" ></div>
 </div>
 <br>
-<div class="ibm-rule"><hr><hr></div>
 <div style="float: left">
-<div style="font-size: 18px;">
+<div>
 <h2 class="oneline">Schedule F</h2>
 </div>
 <p >To edit a schedule F record, press one of the links below. If you want to add a new record, press the Add button.</p>
 	<div>
 		<div id="addScheFdiv">
-			<p class="ibm-button-link-alternate ibm-btn-small">
+			<p class="ibm-button-link">
 			    <a class="ibm-btn-small" id="addScheduleF" href="#">Add</a>
 			</p>
 		</div>
 		<div id="downloadDiv">
-			<p class="ibm-button-link-alternate ibm-btn-small">
+			<p class="ibm-button-link">
 			    <a class="ibm-btn-small" id="download" href="#">Export Report</a>
 			</p>
 		</div>
@@ -285,7 +277,7 @@
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Source location</span><span class="ibm-icon"></span></a></th>
 					<th scope="col" class="ibm-sort"><a href="javascript:void(0)"><span>Status</span><span class="ibm-icon"></span></a></th>
-					<th scope="col" class="ibm-sort"><span>Compliance</span></th>
+					
 				</tr>
 			</thead>
 			<tbody id="schedule_f_list" />
@@ -346,18 +338,13 @@ function searchData() {
 						html += "<td>" + list[i].sourceDescription + "</td>";
 						html += "<td>" + list[i].sourceLocation + "</td>";
 						html += "<td>" + list[i].statusDescription + "</td>";
-						if(list[i].softwareComplianceManagement== 'YES'){
-							html += "<td>YES</td>";						
-						}else{
-							html += "<td>NO</td>";		
-						}
 						html += "</tr>"; 
 					}
 				}
 				$("#schedule_f_list").html(html);
 			}
 		},
-		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description','account.softwareComplianceManagement']
+		orderColumns: ['softwareName','level','hwOwner','hostname','serial','machineType','softwareTitle','manufacturer','scope.description','swfinanceResp','source.description','sourceLocation','status.description']
 	});
 }
 

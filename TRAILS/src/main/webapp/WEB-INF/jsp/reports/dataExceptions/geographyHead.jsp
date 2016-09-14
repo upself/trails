@@ -26,7 +26,7 @@
 
 <h1>Geography</h1>
 <h4>Data exceptions reports</h4>
-<p class="ibm-important">IBM Confidential</p>
+<p class="ibm-confidential">IBM Confidential</p>
 <br />
 
 Data last refreshed:

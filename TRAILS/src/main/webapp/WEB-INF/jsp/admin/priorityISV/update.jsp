@@ -1,12 +1,7 @@
-<!-- BEGIN PRIORITY ISV UPDATE -->
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<script src="${pageContext.request.contextPath}/js/jquery/jquery.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
+<!-- BEGIN PRIORITY ISV UPDATE -->
 <style>
-.ui-autocomplete-loading, .isv-submiting {
+.ui-	-loading, .isv-submiting {
 	background: white
 		url("${pageContext.request.contextPath}/images/ui-anim_basic_16x16.gif")
 		right center no-repeat;
@@ -332,76 +327,69 @@
 	}
 </script>
 <div id="dialog"></div>
-<div class="ibm-container">
-	<div class="ibm-container-body">
-		<h2>Update priority ISV SW item</h2>
-		<form class="ibm-column-form">
-			<p>
-				<label for="level">Level:<span class="ibm-required">*</span>
-				</label> <span><select id="level" name="level"
-					onchange="levelChanged()">
-						<option selected="selected" value="">Select one</option>
-						<option value="account">Account</option>
-						<option value="global">Global</option>
-				</select></span><span class="ibm-error-link" style="display: none" id="levelError"></span>
-			</p>
-
-			<p id="inputAccount" style="display: none">
-				<label for="account">Account: <span class="ibm-required">*</span></label>
-				<span><input id="account" size="40"></span><span
-					class="ibm-error-link" id="accountError" style="display: none"></span>
-				<input type="hidden" id="customerId" />
-			</p>
-
-			<p>
-				<label for="manufacturer">Manufacturer:<span
-					class="ibm-required">*</span></label> <span><input size="40"
-					id="manufacturer" name="manufacturer" /></span><span
-					class="ibm-error-link" id="manufacturerError" style="display: none"></span><input
-					type="hidden" id="manufacturerId" />
-			</p>
-
-			<p>
-				<label for="evidenceLocation">Evidence location:<span
-					class="ibm-required">*</span></label> <span><input type="text"
-					value="" size="40" id="evidenceLocation" name="evidenceLocation" /></span>
-				<span class="ibm-error-link" id="evidenceLocationError"
-					style="display: none"></span>
-			</p>
-
-			<p>
-				<label for="status">Status:<span class="ibm-required">*</span>
-				</label> <span><select id="status" name="status">
-						<option value="2" selected="selected">ACTIVE</option>
-						<option value="1">INACTIVE</option>
-				</select></span>
-			</p>
-
-			<p>
-				<label for="businessJustification">Business Justification:<span
-					class="ibm-required">*</span></label> <span><input type="text"
-					value="" size="40" id="businessJustification"
-					name="businessJustification" /></span><span class="ibm-error-link"
-					id="businessJustificationError" style="display: none"></span>
-			</p>
-
-			<div class="ibm-alternate-rule">
-				<hr>
-			</div>
-			<div class="ibm-buttons-row">
-				<p>
-					<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
-						value="Submit" id="btnSubmit" /> <input type="button"
-						class="ibm-btn-arrow-pri" name="ibm-cancel" value="Cancel"
-						id="btnCancel" />
-				</p>
-			</div>
-		</form>
-	</div>
+<div class="ibm-columns">
+	        <p class="ibm-confidential">IBM Confidential</p>
+		    <p>Update priority ISV SW item</p>
+		    <div class="ibm-col-1-1">
+				<form class="ibm-column-form">
+					<p>
+						<label for="level">Level:<span class="ibm-required">*</span>
+						</label> <span><select id="level" name="level"
+							onchange="levelChanged()">
+								<option selected="selected" value="">Select one</option>
+								<option value="account">Account</option>
+								<option value="global">Global</option>
+						</select></span><span class="ibm-error-link" style="display: none" id="levelError"></span>
+					</p>
+		
+					<p id="inputAccount" style="display: none">
+						<label for="account">Account: <span class="ibm-required">*</span></label>
+						<span><input id="account" size="40"></span><span
+							class="ibm-error-link" id="accountError" style="display: none"></span>
+						<input type="hidden" id="customerId" />
+					</p>
+		
+					<p>
+						<label for="manufacturer">Manufacturer:<span
+							class="ibm-required">*</span></label> <span><input size="40"
+							id="manufacturer" name="manufacturer" /></span><span
+							class="ibm-error-link" id="manufacturerError" style="display: none"></span><input
+							type="hidden" id="manufacturerId" />
+					</p>
+		
+					<p>
+						<label for="evidenceLocation">Evidence location:<span
+							class="ibm-required">*</span></label> <span><input type="text"
+							value="" size="40" id="evidenceLocation" name="evidenceLocation" /></span>
+						<span class="ibm-error-link" id="evidenceLocationError"
+							style="display: none"></span>
+					</p>
+		
+					<p>
+						<label for="status">Status:<span class="ibm-required">*</span>
+						</label> <span><select id="status" name="status">
+								<option value="2" selected="selected">ACTIVE</option>
+								<option value="1">INACTIVE</option>
+						</select></span>
+					</p>
+		
+					<p>
+						<label for="businessJustification">Business Justification:<span
+							class="ibm-required">*</span></label> <span><input type="text"
+							value="" size="40" id="businessJustification"
+							name="businessJustification" /></span><span class="ibm-error-link"
+							id="businessJustificationError" style="display: none"></span>
+					</p>
+					
+					<div class="ibm-buttons-row">
+						<p>
+							<input type="button" class="ibm-btn-arrow-pri" name="ibm-submit"
+								value="Submit" id="btnSubmit" /> <input type="button"
+								class="ibm-btn-arrow-pri" name="ibm-cancel" value="Cancel"
+								id="btnCancel" />
+						</p>
+					</div>
+				</form>
+		</div>
 </div>
 <!-- END PRIORITY ISV UPDATE -->
-
-
-
-
-

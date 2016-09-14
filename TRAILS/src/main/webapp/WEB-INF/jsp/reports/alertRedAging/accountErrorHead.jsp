@@ -19,5 +19,3 @@
 </ul>
 
 <h1 class="oneline">Aging red alerts by Account</h1>
-
-<br>

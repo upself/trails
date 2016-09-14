@@ -1,11 +1,3 @@
-<script
-	src="${pageContext.request.contextPath}/js/jquery-ui/jquery-ui.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/jquery-paginationTable-1.0.js"></script>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/js/jquery-ui/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/js/jquery.liveSearch.css" />
 <script type="text/javascript">
 	var loadingMsg = "<p id=\"dialogmsg\">please wait a while.</p><div id=\"progressbar\"></div>";
 	
@@ -47,7 +39,6 @@
 		var scheduleFId = '${scheduleFForm.scheduleFId}';
 		 $("#schFhTable").hide();
 		 $("#btnSubmit").attr('disabled', true);
-		 $("#swClmanag").text('${account.softwareComplianceManagement}');
 		 $("#accountId").val('${account.id}');
 		populateArraryList();
 		setTimeout(function (){  
@@ -622,12 +613,13 @@
 </script>
 
 <div class="ibm-columns"><div class="ibm-col-1-1">
+<p class="ibm-confidential">IBM Confidential</p>
 		<h2>Schedule F details</h2>
 		<div id="dialog"></div>
 		<form id="myScheduleFForm" onsubmit="submitForm(); return false;"
 			action="/" class="ibm-column-form" enctype="multipart/form-data"
 			method="post">
-			<div id="spinner">
+			<div id="spinner" style="position:relative;z-index:9999;top:150px;">
 				<span class="ibm-spinner-large"></span>
 			</div>
 			<p>
@@ -690,10 +682,7 @@
 						<option value="CUSTO">CUSTO</option>
 				</select></span>
 			</p>
-			<p>
-				<label for="complianceReporting" style="width: 30%">Compliance reporting:</label><span id="swClmanag"></span>
 				<input type="hidden" name="accountId" id="accountId"/>
-			</p>
 			<p>
 				<label for="sourceDescription" style="width: 30%">Source:</label> <span><select
 					name="sourceDescription" id="sourceDescription">
@@ -717,18 +706,16 @@
 					name="businessJustification" /></span><span class="ibm-error-link"
 					id="businessJustificationError" style="display: none"></span>
 			</p>
-			<div class="ibm-alternate-rule">
-				<hr>
-			</div>
+		
 			<div class="ibm-buttons-row">
 				<p>
-					<input type="submit" class="ibm-btn-arrow-pri" name="ibm-submit"
+					<input type="submit" class="ibm-btn-pri" name="ibm-submit"
 						value="Submit" id="btnSubmit" />
 				</p>
 			</div>
 		</form>
 
-		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table"
+		<table id="schFhTable" cellspacing="0" cellpadding="0" border="0" class="ibm-data-table ibm-alternating"
 			summary="ScheduleF history table">
 			<thead>
 				<tr>
