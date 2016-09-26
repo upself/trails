@@ -81,87 +81,12 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	
 	@Test
 	public void testInsertReadsDeletesfromDB() {
-
-//		ProductInfo anyProductInfo = ProductInfoTestHelper.getAnyRecord();
-//		System.out.println("anyProductInfo.getRecordTime(): " + anyProductInfo.getRecordTime().toString());
-//		System.out.println("anyProductInfo.getRemoteUser(): " + anyProductInfo.getRemoteUser());
-//		System.out.println("anyProductInfo.getChangeJustification(): " + anyProductInfo.getChangeJustification());
-//		System.out.println("anyProductInfo.getLicensable(): " + anyProductInfo.getLicensable());
-//		System.out.println("anyProductInfo.getPriority(): " + anyProductInfo.getPriority());
-//		System.out.println("anyProductInfo.getSoftwareCategoryId(): " + anyProductInfo.getSoftwareCategoryId());
-//		System.out.println("anyProductInfo.getProductId(): " + anyProductInfo.getProductId());
-		
-		//Product separate test
-		/*
-		Product product = ProductTestHelper.createRecord();
-		System.out.println("product.getId(): " + product.getId());
-		System.out.println("product.getRemoteUser(): " + product.getRemoteUser());
-		System.out.println("product.getManufacturer().getManufacturerName(): " + product.getManufacturer().getManufacturerName());
-		
-		ProductTestHelper.deleteRecord(product);
-		*/
-		
-		//ProductInfo separate test
-		/*
-		ProductInfo productInfo = ProductInfoTestHelper.createRecord();
-		System.out.println("productInfo.getRemoteUser(): " + productInfo.getRemoteUser());
-		System.out.println("BEFORE productInfo.getProductId(): " + productInfo.getProductId());
-		ProductInfoTestHelper.deleteRecord(productInfo);
-		*/
-		
-		//SoftwareItem separate test
-		/*
-		SoftwareItem softwareItem = SoftwareItemTestHelper.createRecord();
-		System.out.println("softwareItem.getId(): " + softwareItem.getId());
-		SoftwareItemTestHelper.deleteRecord(softwareItem);
-		*/
-		
-		//KbDefinition separate test
-		/*
-		KbDefinition kbDefinition = KbDefinitionTestHelper.createRecord();
-		System.out.println("kbDefinition.getId(): " + kbDefinition.getId());
-		System.out.println("kbDefinition.getCreationTime(): " + kbDefinition.getCreationTime());
-		
-		KbDefinitionTestHelper.deleteRecord(kbDefinition);
-		*/
-		
-		//SoftwareCategory separate test
-		/*
-		SoftwareCategory softwareCategory = SoftwareCategoryTestHelper.createRecord();
-		
-		System.out.println("softwareCategory.getCreationTime(): " + softwareCategory.getRecordTime());
-		
-		SoftwareCategoryTestHelper.deleteRecord(softwareCategory);
-		*/
-		
-		/*
-		//SoftwareLpar separate test
-		SoftwareLpar softwareLpar = SoftwareLparTestHelper.createAsActive();
-		System.out.println("softwareLpar.getName(): " + softwareLpar.getName());
-		System.out.println("softwareLpar.getRecordTime()     : " + softwareLpar.getRecordTime());
-		System.out.println("softwareLpar.getAcquisitionTime(): " + softwareLpar.getAcquisitionTime());
-		System.out.println("softwareLpar.getScantime()       : " + softwareLpar.getScantime());
-		System.out.println("softwareLpar.getId(): " + softwareLpar.getId());
-		
-//		if (softwareLpar.getId() != null) {
-//			SoftwareLparTestHelper.deleteRecord(softwareLpar);
-//		}
-		*/
-		
-		//Software separate test
-//		/*
-		
-		System.out.println("before create: " + SoftwareTestHelper.validate());
-		Software software = SoftwareTestHelper.create();
-		System.out.println("after create: " + SoftwareTestHelper.validate());
-		System.out.println("software.getManufacturerId(): " + software.getManufacturerId());
-		
-		SoftwareTestHelper.delete(software);
-		System.out.println("after delete: " + SoftwareTestHelper.validate());
-//		*/
 		
 		//////////////
-//		InstalledScript installedScript = setupDataForInstalledSoftware();
+		InstalledScript installedScript = setupDataForInstalledSoftware();
+		// print out IDs
+		cleanupDataForInstalledSoftware(installedScript);
+		// exists(ID) - expect false
 		//////////////
 		
 //		List<BankAccount> bankAccountsList = new ArrayList<BankAccount>(); 
@@ -223,10 +148,9 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 		DiscrepancyType discrepancyType = DiscrepancyTypeTestHelper.getAnyRecord();
 		System.out.println("discrepancyType.getId(): " + discrepancyType.getId());
 		
-//		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
-		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
+		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.createActiveRecord(productInfo, softwareLpar, discrepancyType);
+//		InstalledSoftware installedSoftware = InstalledSoftwareTestHelper.getAnyRecord();
 		System.out.println("installedSoftware.getId(): " + installedSoftware.getId());
-		System.out.println("installedSoftware.getSoftware().getSoftwareName(): " + installedSoftware.getSoftware().getSoftwareName());
 		System.out.println("installedSoftware.getSoftwareLpar().getName(): " + installedSoftware.getSoftwareLpar().getName());
 		
 		InstalledScript installedScript = InstalledScriptTesthelper.createRecord(installedSoftware);
@@ -237,15 +161,14 @@ public class DelegateSoftwareGetSoftwareBankAccountsTest {
 	
 	public void cleanupDataForInstalledSoftware(InstalledScript installedScript){
 		//ProductInfo comes from a catalog. By the business logic it can be accessed as follows:
-		Long productInfoId = installedScript.getInstalledSoftware().getSoftware().getSoftwareId();
+		ProductInfo productInfo = installedScript.getInstalledSoftware().getProductInfo();
 		SoftwareLpar softwareLpar = installedScript.getInstalledSoftware().getSoftwareLpar();
 		InstalledSoftware installedSoftware = installedScript.getInstalledSoftware();
-
 	
-		ProductInfoTestHelper.deleteById(productInfoId);
-		SoftwareLparTestHelper.deleteRecord(softwareLpar);
-		InstalledSoftwareTestHelper.deleteRecord(installedSoftware);
-		InstalledScriptTesthelper.deleteRecord(installedScript);
+		ProductInfoTestHelper.delete(productInfo);
+		SoftwareLparTestHelper.delete(softwareLpar);
+		InstalledSoftwareTestHelper.delete(installedSoftware);
+		InstalledScriptTesthelper.delete(installedScript);
 
 	}
 

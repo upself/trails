@@ -22,11 +22,11 @@ public class InstalledSoftwareTestHelper {
 		installedSoftware.setRemoteUser("STAGING");
 		installedSoftware.setAuthenticated(0);
 		installedSoftware.setProcessorCount(1);
+		installedSoftware.setUsers(1);
 		installedSoftware.setDiscrepancyType(discrepancyType);
 		installedSoftware.setSoftwareLpar(softwareLpar);
-		installedSoftware.setSoftware(SoftwareTestHelper.create());
+		installedSoftware.setProductInfo(productInfo);
 		
-		// ^^watch out for detached entities - refresh/use one session to build
 		// this
 		// installedSoftware.setP;//roductInfo ??
 
@@ -76,7 +76,7 @@ public class InstalledSoftwareTestHelper {
 		return installedSoftware;
 	}
 	
-	public static void deleteRecord(InstalledSoftware installedSoftware) {
+	public static void delete(InstalledSoftware installedSoftware) {
 
 		Transaction tx = null;
 		Session session = null;

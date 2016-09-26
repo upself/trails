@@ -16,6 +16,7 @@ import com.ibm.ea.bravo.discrepancy.DiscrepancyType;
 import com.ibm.ea.bravo.framework.common.Constants;
 import com.ibm.ea.bravo.framework.common.OrmBase;
 import com.ibm.ea.bravo.framework.hibernate.HibernateDelegate;
+import com.ibm.ea.sigbank.ProductInfo;
 import com.ibm.ea.sigbank.Software;
 
 
@@ -27,6 +28,8 @@ public class InstalledSoftware extends OrmBase {
 			.getLogger(InstalledSoftware.class);
 
 	private Long id;
+	
+	private ProductInfo productInfo;
 
 	private SoftwareLpar softwareLpar;
 	
@@ -161,7 +164,15 @@ public class InstalledSoftware extends OrmBase {
 		}
 		return disabled;
 	}
+	
+	public ProductInfo getProductInfo() {
+		return productInfo;
+	}
 
+	public void setProductInfo(ProductInfo productInfo) {
+		this.productInfo = productInfo;
+	}
+	
 	public Integer getAuthenticated() {
 		return authenticated;
 	}

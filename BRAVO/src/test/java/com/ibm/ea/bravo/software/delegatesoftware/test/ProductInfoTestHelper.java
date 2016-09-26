@@ -93,6 +93,22 @@ public class ProductInfoTestHelper {
 
 	}
 
+	public static void delete(Long productInfoId) {
+		Session session;
+		try {
+			session = HibernateDelegate.getSession();
+
+			String hqlDelete = "delete ProductInfo where id = :productInfoId";
+			Transaction tx = session.beginTransaction();
+			session.createQuery(hqlDelete).setLong("productInfoId", new Long(productInfoId)).executeUpdate();
+
+			tx.commit();
+			session.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void deleteById(Long productInfoId) {
 		Session session;
 		try {

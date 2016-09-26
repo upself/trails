@@ -69,7 +69,7 @@ public class SoftwareLparTestHelper {
 
 	}
 
-	public static void deleteRecord(SoftwareLpar softwareLpar) {
+	public static void delete(SoftwareLpar softwareLpar) {
 
 		Transaction tx = null;
 		Session session = null;

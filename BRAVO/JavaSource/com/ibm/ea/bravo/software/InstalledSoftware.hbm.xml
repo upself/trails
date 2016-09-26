@@ -11,7 +11,11 @@
         	<column name="SOFTWARE_LPAR_ID" not-null="true" unique-key="U_ISW" index="IDX_ISWSWL"/>
         </many-to-one>
         
-         <many-to-one name="software" class="com.ibm.ea.sigbank.Software">
+         <many-to-one name="software" class="com.ibm.ea.sigbank.Software" insert="false" update="false">
+        	<column name="SOFTWARE_ID" not-null="true"/>
+        </many-to-one>
+        
+        <many-to-one name="productInfo" class="com.ibm.ea.sigbank.ProductInfo">
         	<column name="SOFTWARE_ID" not-null="true"/>
         </many-to-one>
         

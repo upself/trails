@@ -38,7 +38,7 @@ public class InstalledScriptTesthelper {
 		return installedScript;
 	}
 
-	public static void deleteRecord(InstalledScript installedScript) {
+	public static void delete(InstalledScript installedScript) {
 		
 		Transaction tx = null;
 		Session session = null;
