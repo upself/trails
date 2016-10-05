@@ -1,1 +1,0 @@
-DROP TABLE EAADMIN.v_installed_software_mqt;

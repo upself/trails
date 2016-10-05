@@ -1,3 +1,0 @@
-add new item into connectionConfig.txt
-
-scarlet.license=http://prodpcrdsherlk3.w3-969.ibm.com:9100/licenses

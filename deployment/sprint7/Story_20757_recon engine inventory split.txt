@@ -1,9 +1,0 @@
-cd /opt/staging/v2/config
-# check if reconEngineInventoryConfig.txt and reconEngineLicensingConfig.txt exist
-cd /var/staging/logs
-mkdir reconEngineInventory
-cd reconEngineInventory
-touch reconEngineInventory.log
-chmod 666 reconEngineInventory.log
-# check if a directory for reconEngineLicensing also exists
-# check if views V_RECON_INVENTORY_QUEUE and V_RECON_LICENSING_QUEUE exist
